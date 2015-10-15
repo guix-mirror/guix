@@ -968,6 +968,36 @@ transformers 0.2 or 0.3 compatibility to run on old versions of the platform,
 but also need those types.")
     (license bsd-3)))
 
+(define-public ghc-iproute
+  (package
+    (name "ghc-iproute")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/iproute/iproute-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1ply0i110c2sppjbfyysgw48jfjnsbam5zwil8xws0hp20rh1pb5"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: Tests cannot find System.ByteOrder,
+                               ; exported by ghc-byteorder.  Doctest issue.
+    (propagated-inputs
+     `(("ghc-appar" ,ghc-appar)
+       ("ghc-byteorder" ,ghc-byteorder)))
+    (inputs
+     `(("ghc-network" ,ghc-network)
+       ("ghc-safe" ,ghc-safe)))
+    (home-page "http://www.mew.org/~kazu/proj/iproute/")
+    (synopsis "IP routing table")
+    (description "IP Routing Table is a tree of IP ranges to search one of
+them on the longest match base.  It is a kind of TRIE with one way branching
+removed.  Both IPv4 and IPv6 are supported.")
+    (license bsd-3)))
+
 (define-public ghc-regex-base
   (package
     (name "ghc-regex-base")
