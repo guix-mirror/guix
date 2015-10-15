@@ -31,6 +31,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages bootstrap)
+  #:use-module (gnu packages zip)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libedit)
@@ -1186,6 +1187,36 @@ complicated text/binary file formats.")
     (synopsis "CSS parser and renderer")
     (description "This package provides a CSS parser and renderer for
 Haskell.")
+    (license bsd-3)))
+
+(define-public ghc-zip-archive
+  (package
+    (name "ghc-zip-archive")
+    (version "0.2.3.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/zip-archive/zip-archive-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "169nkxr5zlbymiz1ydlhlqr66vqiycmg85xh559phpkr64w3nqj1"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-old-time" ,ghc-old-time)
+       ("ghc-digest" ,ghc-digest)))
+    (inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-mtl" ,ghc-mtl)
+       ("zip" ,zip)
+       ("ghc-text" ,ghc-text)
+       ("ghc-zlib" ,ghc-zlib)))
+    (home-page "https://hackage.haskell.org/package/zip-archive")
+    (synopsis "Zip archive library for Haskell")
+    (description "The zip-archive library provides functions for creating,
+modifying, and extracting files from zip archives in Haskell.")
     (license bsd-3)))
 
 (define-public ghc-appar
