@@ -1443,6 +1443,41 @@ regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
 @code{libtre} (fork by Roman Cheplyaka).")
     (license bsd-3)))
 
+(define-public ghc-parsers
+  (package
+    (name "ghc-parsers")
+    (version "0.12.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/parsers/parsers-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "18wzmp8y3py4qa8hdsxqm0jfzmwy744dw7xa48r5s8ynhpimi462"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: Test fails with "cannot satisfy
+                               ; -package attoparsec-0.13.0.1"
+    (propagated-inputs
+     `(("ghc-base-orphans" ,ghc-base-orphans)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-charset" ,ghc-charset)))
+    (inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (home-page "http://github.com/ekmett/parsers/")
+    (synopsis "Parsing combinators")
+    (description "This library provides convenient combinators for working
+with and building parsing combinator libraries.  Given a few simple instances,
+you get access to a large number of canned definitions.  Instances exist for
+the parsers provided by @code{parsec}, @code{attoparsec} and @code{base}'s
+@code{Text.Read}.")
+    (license bsd-3)))
+
 (define-public ghc-attoparsec
   (package
     (name "ghc-attoparsec")
