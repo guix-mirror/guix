@@ -2174,6 +2174,27 @@ command line options in Haskell.")
 available in later versions of base to a wider (older) range of compilers.")
     (license bsd-3)))
 
+(define-public ghc-auto-update
+  (package
+    (name "ghc-auto-update")
+    (version "0.1.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/auto-update/auto-update-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1ns4c5mqhnm7hsiqxf1ivjs5fflyq92b16ldzrcl0p85631h0c3v"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/yesodweb/wai")
+    (synopsis "Efficiently run periodic, on-demand actions")
+    (description "This library provides mechanisms to efficiently run
+periodic, on-demand actions in Haskell.")
+    (license expat)))
+
 (define-public ghc-doctest
   (package
     (name "ghc-doctest")
