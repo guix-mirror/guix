@@ -1850,6 +1850,29 @@ different keys; hence the name.  Also provided is a @code{locker} type,
 representing a store for a single element.")
     (license bsd-3)))
 
+(define-public ghc-mmorph
+  (package
+    (name "ghc-mmorph")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/mmorph/mmorph-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0k5zlzmnixfwcjrqvhgi3i6xg532b0gsjvc39v5jigw69idndqr2"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://hackage.haskell.org/package/mmorph")
+    (synopsis "Monad morphisms")
+    (description
+     "This library provides monad morphism utilities, most commonly used for
+manipulating monad transformer stacks.")
+    (license bsd-3)))
+
 (define-public ghc-async
   (package
     (name "ghc-async")
