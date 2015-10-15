@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;;
@@ -3823,6 +3823,34 @@ programs that have displayed undesired windows on a user's screen.")
     (description
      "XLsClients is used to list information about the client programs
 running on X server.")
+    (license license:x11)))
+
+
+(define-public xlsfonts
+  (package
+    (name "xlsfonts")
+    (version "1.0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/app/xlsfonts-"
+             version
+             ".tar.bz2"))
+       (sha256
+        (base32
+         "1yi774g6r1kafsbnxbkrwyndd3i60362ck1fps9ywz076pn5naa0"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("xproto" ,xproto)
+       ("libx11" ,libx11)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "List fonts available from an X server")
+    (description
+     "xlsfonts lists fonts available from an X server via the X11 core
+protocol.")
     (license license:x11)))
 
 
