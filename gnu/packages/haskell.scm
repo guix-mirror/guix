@@ -3038,6 +3038,44 @@ are implemented as FFI bindings to efficient code from zlib.")
     (description "This package provides bifunctors for Haskell.")
     (license bsd-3)))
 
+(define-public ghc-semigroupoids
+  (package
+    (name "ghc-semigroupoids")
+    (version "5.0.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/semigroupoids/semigroupoids-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1jf7jnfhdvl6p18wdr21yi2fim1xb8alcn6szhrdswj0dkilgq6d"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-base-orphans" ,ghc-base-orphans)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-bifunctors" ,ghc-bifunctors)
+       ("ghc-comonad" ,ghc-comonad)
+       ("ghc-contravariant" ,ghc-contravariant)
+       ("ghc-distributive" ,ghc-distributive)))
+    (arguments `(#:tests? #f)) ; FIXME: doctest packagedb propagation problem.
+    (inputs
+     `(("ghc-semigroups" ,ghc-semigroups)
+       ("ghc-tagged" ,ghc-tagged)))
+    (home-page "http://github.com/ekmett/semigroupoids")
+    (synopsis "Semigroupoids operations for Haskell")
+    (description "This library provides a wide array of (semi)groupoids and
+operations for working with them.  A @code{Semigroupoid} is a @code{Category}
+without the requirement of identity arrows for every object in the category.
+A @code{Category} is any @code{Semigroupoid} for which the Yoneda lemma holds.
+Finally, to work with these weaker structures it is beneficial to have
+containers that can provide stronger guarantees about their contents, so
+versions of @code{Traversable} and @code{Foldable} that can be folded with
+just a @code{Semigroup} are added.")
+    (license bsd-3)))
+
 (define-public ghc-contravariant
   (package
     (name "ghc-contravariant")
