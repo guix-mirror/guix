@@ -2783,4 +2783,27 @@ Kaseorg.")
     (description "Word8 library to be used with @code{Data.ByteString}.")
     (license bsd-3)))
 
+(define-public ghc-stringsearch
+  (package
+    (name "ghc-stringsearch")
+    (version "0.3.6.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/stringsearch/stringsearch-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0jpy9xjcjdbpi3wk6mg7xwd7wfi2mma70p97v1ij5i8bj9qijpr9"))))
+    (build-system haskell-build-system)
+    (home-page "https://bitbucket.org/dafis/stringsearch")
+    (synopsis "Fast searching, splitting and replacing of ByteStrings")
+    (description "This package provides several functions to quickly search
+for substrings in strict or lazy @code{ByteStrings}.  It also provides
+functions for breaking or splitting on substrings and replacing all
+occurrences of a substring (the first in case of overlaps) with another.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
