@@ -2216,6 +2216,29 @@ periodic, on-demand actions in Haskell.")
 having to unsafely pass dummy arguments.")
     (license bsd-3)))
 
+(define-public ghc-unbounded-delays
+  (package
+    (name "ghc-unbounded-delays")
+    (version "0.1.0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/unbounded-delays/unbounded-delays-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1f4h87503m3smhip432q027wj3zih18pmz2rnafh60589ifcl420"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/basvandijk/unbounded-delays")
+    (synopsis "Unbounded thread delays and timeouts")
+    (description "The @code{threadDelay} and @code{timeout} functions from the
+Haskell base library use the bounded @code{Int} type for specifying the delay
+or timeout period.  This package provides alternative functions which use the
+unbounded @code{Integer} type.")
+    (license bsd-3)))
+
 (define-public ghc-doctest
   (package
     (name "ghc-doctest")
