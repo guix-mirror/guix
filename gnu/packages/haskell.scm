@@ -462,7 +462,7 @@ installation of Haskell libraries and programs.")
 (define-public ghc-mtl
   (package
     (name "ghc-mtl")
-    (version "2.1.3.1")
+    (version "2.2.1")
     (outputs '("out" "doc"))
     (source
      (origin
@@ -473,18 +473,17 @@ installation of Haskell libraries and programs.")
              ".tar.gz"))
        (sha256
         (base32
-         "1xpn2wjmqbh2cg1yssc6749xpgcqlrrg4iilwqgkcjgvaxlpdbvp"))))
+         "1icdbj2rshzn0m1zz5wa7v3xvkf6qw811p4s7jgqwvx1ydwrvrfa"))))
     (build-system haskell-build-system)
     (home-page "http://github.com/ekmett/mtl")
     (synopsis
      "Monad classes, using functional dependencies")
-    (description
-     "Monad classes using functional dependencies, with instances
-for various monad transformers, inspired by the paper
-'Functional Programming with Overloading and Higher-Order Polymorphism',
-by Mark P Jones, in 'Advanced School of Functional Programming', 1995
-http://web.cecs.pdx.edu/~mpj/pubs/springschool.html.")
-  (license bsd-3)))
+    (description "Monad classes using functional dependencies, with instances
+for various monad transformers, inspired by the paper 'Functional Programming
+with Overloading and Higher-Order Polymorphism', by Mark P Jones, in 'Advanced
+School of Functional Programming', 1995.  See
+@uref{http://web.cecs.pdx.edu/~mpj/pubs/springschool.html, the paper}.")
+    (license bsd-3)))
 
 (define-public ghc-paths
   (package
