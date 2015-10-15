@@ -2406,6 +2406,39 @@ unbounded @code{Integer} type.")
     (description "This library provides the natural numbers for Haskell.")
     (license bsd-3)))
 
+(define-public ghc-semigroups
+  (package
+    (name "ghc-semigroups")
+    (version "0.17.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/semigroups/semigroups-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0gvpfi7s6ys4qha3y9a1zl1a15gf9cgg33wjb94ghg82ivcxnc3r"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-nats" ,ghc-nats)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)))
+    (inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-hashable" ,ghc-hashable)))
+    (home-page "http://github.com/ekmett/semigroups/")
+    (synopsis "Semigroup operations for Haskell")
+    (description "This package provides semigroups for Haskell.  In
+mathematics, a semigroup is an algebraic structure consisting of a set
+together with an associative binary operation.  A semigroup generalizes a
+monoid in that there might not exist an identity element.  It
+also (originally) generalized a group (a monoid with all inverses) to a type
+where every element did not have to have an inverse, thus the name
+semigroup.")
+    (license bsd-3)))
+
 (define-public ghc-doctest
   (package
     (name "ghc-doctest")
