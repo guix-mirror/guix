@@ -511,7 +511,7 @@ School of Functional Programming', 1995.  See
 (define-public ghc-utf8-string
   (package
     (name "ghc-utf8-string")
-    (version "0.3.8")
+    (version "1.0.1.1")
     (source
      (origin
        (method url-fetch)
@@ -520,12 +520,12 @@ School of Functional Programming', 1995.  See
              version
              ".tar.gz"))
        (sha256
-        (base32 "1h29dn0scsfkhmkg14ywq9178lw40ah1r36w249zfzqr02y7qxc0"))))
+        (base32 "0h7imvxkahiy8pzr8cpsimifdfvv18lizrb33k6mnq70rcx9w2zv"))))
     (build-system haskell-build-system)
     (home-page "http://github.com/glguy/utf8-string/")
     (synopsis "Support for reading and writing UTF8 Strings")
     (description
-     "A UTF8 layer for Strings. The utf8-string package provides operations
+     "A UTF8 layer for Strings.  The utf8-string package provides operations
 for encoding UTF8 strings to Word8 lists and back, and for reading and writing
 UTF8 without truncation.")
     (license bsd-3)))
