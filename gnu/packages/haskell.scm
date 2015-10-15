@@ -1053,6 +1053,31 @@ of functions that implement regular expression pattern matching using the same
 syntax and semantics as Perl 5.")
     (license bsd-3)))
 
+(define-public ghc-logict
+  (package
+    (name "ghc-logict")
+    (version "0.6.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/logict/logict-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "07hnirv6snnym2r7iijlfz00b60jpy2856zvqxh989q0in7bd0hi"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-mtl" ,ghc-mtl)))
+    (home-page "http://code.haskell.org/~dolio/")
+    (synopsis "Backtracking logic-programming monad")
+    (description "This library provides a continuation-based, backtracking,
+logic programming monad.  An adaptation of the two-continuation implementation
+found in the paper \"Backtracking, Interleaving, and Terminating Monad
+Transformers\" available @uref{http://okmij.org/ftp/papers/LogicT.pdf,
+online}.")
+    (license bsd-3)))
+
 (define-public ghc-exceptions
   (package
     (name "ghc-exceptions")
