@@ -2195,6 +2195,27 @@ available in later versions of base to a wider (older) range of compilers.")
 periodic, on-demand actions in Haskell.")
     (license expat)))
 
+(define-public ghc-tagged
+  (package
+    (name "ghc-tagged")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/tagged/tagged-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1hc2qzhhz5p1xd8k03sklrdnhcflkwhgpl82k6fam8yckww9ipav"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/tagged")
+    (synopsis "Haskell phantom types to avoid passing dummy arguments")
+    (description "This library provides phantom types for Haskell 98, to avoid
+having to unsafely pass dummy arguments.")
+    (license bsd-3)))
+
 (define-public ghc-doctest
   (package
     (name "ghc-doctest")
