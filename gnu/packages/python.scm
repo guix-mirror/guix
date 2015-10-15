@@ -3330,7 +3330,13 @@ atlas_libs = openblas
               (zero? (system* "python" "-c" "import scipy; scipy.test()"))))
           (alist-delete
            'check
-           %standard-phases))))))
+           (alist-cons-after
+            'unpack 'fix-tests
+            (lambda _
+              (substitute* "scipy/integrate/tests/test_quadpack.py"
+                (("libm.so") "libm.so.6"))
+              #t)
+            %standard-phases)))))))
     (home-page "http://www.scipy.org/")
     (synopsis "The Scipy library provides efficient numerical routines")
     (description "The SciPy library is one of the core packages that make up
