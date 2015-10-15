@@ -1375,6 +1375,31 @@ optimized for performance critical use, both in terms of large data quantities
 and high speed.")
     (license bsd-3)))
 
+(define-public ghc-annotated-wl-pprint
+  (package
+    (name "ghc-annotated-wl-pprint")
+    (version "0.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/annotated-wl-pprint"
+             "/annotated-wl-pprint-" version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "061xfz6qany3wf95csl8dcik2pz22cn8iv1qchhm16isw5zjs9hc"))))
+    (build-system haskell-build-system)
+    (home-page
+     "https://github.com/david-christiansen/annotated-wl-pprint")
+    (synopsis
+     "The Wadler/Leijen Pretty Printer, with annotation support")
+    (description "This is a modified version of wl-pprint, which was based on
+Wadler's paper \"A Prettier Printer\".  This version allows the library user
+to annotate the text with semantic information, which can later be rendered in
+a variety of ways.")
+    (license bsd-3)))
+
 (define-public ghc-split
   (package
     (name "ghc-split")
