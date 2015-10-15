@@ -1107,6 +1107,33 @@ removed.  Both IPv4 and IPv6 are supported.")
 regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
     (license bsd-3)))
 
+(define-public ghc-regex-tdfa-rc
+  (package
+    (name "ghc-regex-tdfa-rc")
+    (version "1.1.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/regex-tdfa-rc/regex-tdfa-rc-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1vi11i23gkkjg6193ak90g55akj69bhahy542frkwb68haky4pp3"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-regex-base" ,ghc-regex-base)
+       ("ghc-parsec" ,ghc-parsec)))
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)))
+    (home-page
+     "http://hackage.haskell.org/package/regex-tdfa")
+    (synopsis "Tagged DFA regex engine for Haskell")
+    (description "A new all-Haskell \"tagged\" DFA regex engine, inspired by
+@code{libtre} (fork by Roman Cheplyaka).")
+    (license bsd-3)))
+
 (define-public ghc-appar
   (package
     (name "ghc-appar")
