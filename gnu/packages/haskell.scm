@@ -938,6 +938,30 @@ transformers 0.2 or 0.3 compatibility to run on old versions of the platform,
 but also need those types.")
     (license bsd-3)))
 
+(define-public ghc-regex-base
+  (package
+    (name "ghc-regex-base")
+    (version "0.93.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/regex-base/regex-base-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0y1j4h2pg12c853nzmczs263di7xkkmlnsq5dlp5wgbgl49mgp10"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-mtl" ,ghc-mtl)))
+    (home-page
+     "http://sourceforge.net/projects/lazy-regex")
+    (synopsis "Replaces/Enhances Text.Regex")
+    (description "@code{Text.Regex.Base} provides the interface API for
+regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
+    (license bsd-3)))
+
 (define-public ghc-exceptions
   (package
     (name "ghc-exceptions")
