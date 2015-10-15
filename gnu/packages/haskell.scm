@@ -1375,6 +1375,31 @@ functionality.  A few functions are available in later versions of GHC, but
 this package makes them available back to GHC 7.2.")
     (license bsd-3)))
 
+(define-public ghc-profunctors
+  (package
+    (name "ghc-profunctors")
+    (version "5.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/profunctors/profunctors-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0lw2ipacpnp9yqmi8zsp01pzpn5hwj8af3y0f3079mddrmw48gw7"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-distributive" ,ghc-distributive)))
+    (inputs
+     `(("ghc-comonad" ,ghc-comonad)
+       ("ghc-tagged" ,ghc-tagged)))
+    (home-page "http://github.com/ekmett/profunctors/")
+    (synopsis "Profunctors for Haskell")
+    (description "This library provides profunctors for Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-appar
   (package
     (name "ghc-appar")
