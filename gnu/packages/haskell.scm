@@ -2433,6 +2433,29 @@ unbounded @code{Integer} type.")
 given term should not exist.")
     (license bsd-3)))
 
+(define-public ghc-bifunctors
+  (package
+    (name "ghc-bifunctors")
+    (version "5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/bifunctors/bifunctors-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "13990xdgx0n23qgi18ghhmsywj5zkr0a5bim0g8a4nzi0cx95ps1"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-tagged" ,ghc-tagged)
+       ("ghc-semigroups" ,ghc-semigroups)))
+    (home-page "http://github.com/ekmett/bifunctors/")
+    (synopsis "Bifunctors for Haskell")
+    (description "This package provides bifunctors for Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-semigroups
   (package
     (name "ghc-semigroups")
