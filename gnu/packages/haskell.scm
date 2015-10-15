@@ -2617,6 +2617,32 @@ where every element did not have to have an inverse, thus the name
 semigroup.")
     (license bsd-3)))
 
+(define-public ghc-fast-logger
+  (package
+    (name "ghc-fast-logger")
+    (version "2.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/fast-logger/fast-logger-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0kjk1861qcls8m8y7i55msfpprws5wk6c5mxzi35g2qbl2sih4p5"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-bytestring-builder" ,ghc-bytestring-builder)
+       ("ghc-auto-update" ,ghc-auto-update)))
+    (inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-text" ,ghc-text)))
+    (home-page "https://hackage.haskell.org/package/fast-logger")
+    (synopsis "Fast logging system")
+    (description "This library provides a fast logging system for Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-doctest
   (package
     (name "ghc-doctest")
