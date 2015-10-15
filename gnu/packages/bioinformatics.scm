@@ -1090,6 +1090,51 @@ analysis (from RNA-Seq), transcription factor binding quantification in
 ChIP-Seq, and analysis of metagenomic data.")
     (license license:artistic2.0)))
 
+(define-public express-beta-diversity
+  (package
+   (name "express-beta-diversity")
+   (version "1.0.7")
+   (source (origin
+             (method url-fetch)
+             (uri
+              (string-append
+               "https://github.com/dparks1134/ExpressBetaDiversity/archive/v"
+               version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1djvdlmqvjf6h0zq7w36y8cl5cli6rgj86x65znl48agnwmzxfxr"))))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (delete 'configure)
+        (add-before 'build 'enter-source (lambda _ (chdir "source") #t))
+        (replace 'check
+                 (lambda _ (zero? (system* "../bin/ExpressBetaDiversity"
+                                           "-u"))))
+        (add-after 'check 'exit-source (lambda _ (chdir "..") #t))
+        (replace 'install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((bin (string-append (assoc-ref outputs "out")
+                                             "/bin")))
+                     (mkdir-p bin)
+                     (copy-file "scripts/convertToEBD.py"
+                                (string-append bin "/convertToEBD.py"))
+                     (copy-file "bin/ExpressBetaDiversity"
+                                (string-append bin "/ExpressBetaDiversity"))
+                     #t))))))
+   (inputs
+    `(("python" ,python-2)))
+   (home-page "http://kiwi.cs.dal.ca/Software/ExpressBetaDiversity")
+   (synopsis "Taxon- and phylogenetic-based beta diversity measures")
+   (description
+    "Express Beta Diversity (EBD) calculates ecological beta diversity
+(dissimilarity) measures between biological communities.  EBD implements a
+variety of diversity measures including those that make use of phylogenetic
+similarity of community members.")
+   (license license:gpl3+)))
+
 (define-public fasttree
   (package
    (name "fasttree")
