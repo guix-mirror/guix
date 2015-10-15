@@ -2410,6 +2410,31 @@ or timeout period.  This package provides alternative functions which use the
 unbounded @code{Integer} type.")
     (license bsd-3)))
 
+;; This package builds `clock` without tests, since the tests rely on tasty
+;; and tasty-quickcheck, which in turn require clock to build.  When tasty and
+;; tasty-quickcheck are added, we will add ghc-clock with tests enabled.
+(define ghc-clock-bootstrap
+  (package
+    (name "ghc-clock-bootstrap")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/"
+             "clock/"
+             "clock-" version ".tar.gz"))
+       (sha256
+        (base32 "1ncph7vi2q6ywwc8ysxl1ibw6i5dwfvln88ssfazk8jgpj4iyykw"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ;; Testing suite depends on tasty and
+                               ;; tasty-quickcheck, which need clock to build.
+    (home-page "https://hackage.haskell.org/package/clock")
+    (synopsis "High-resolution clock for Haskell")
+    (description "A package for convenient access to high-resolution clock and
+timer functions of different operating systems via a unified API.")
+    (license bsd-3)))
+
 (define-public ghc-charset
   (package
     (name "ghc-charset")
