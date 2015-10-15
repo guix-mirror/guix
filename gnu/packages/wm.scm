@@ -256,3 +256,45 @@ tiled on several screens.")
      "Third party tiling algorithms, configurations, and scripts to Xmonad, a
 tiling window manager for X.")
     (license bsd-3)))
+
+(define-public evilwm
+  (package
+    (name "evilwm")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.6809.org.uk/evilwm/evilwm-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0ak0yajzk3v4dg5wmaghv6acf7v02a4iw8qxmq5yw5ard8lrqn3r"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxrandr" ,libxrandr)))
+    (arguments
+     `(#:modules ((srfi srfi-26)
+                  (guix build utils)
+                  (guix build gnu-build-system))
+       #:make-flags (let ((inputs (map (cut assoc-ref %build-inputs <>)
+                                       '("libx11" "libxext" "libxrandr")))
+                          (join (lambda (proc strs)
+                                  (string-join (map proc strs) " ")))
+                          (dash-I (cut string-append "-I" <> "/include"))
+                          (dash-L (cut string-append "-L" <> "/lib")))
+                      `("desktopfilesdir=$(prefix)/share/xsessions"
+                        ,(string-append "prefix=" (assoc-ref %outputs "out"))
+                        ,(string-append "CPPFLAGS=" (join dash-I inputs))
+                        ,(string-append "LDFLAGS=" (join dash-L inputs))))
+       #:tests? #f                      ;no tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)))) ;no configure script
+    (home-page "http://www.6809.org.uk/evilwm/")
+    (synopsis "Minimalist window manager for the X Window System")
+    (description
+     "evilwm is a minimalist window manager based on aewm, extended to feature
+many keyboard controls with repositioning and maximize toggles, solid window
+drags, snap-to-border support, and virtual desktops.")
+    (license (x11-style "file:///README"))))
