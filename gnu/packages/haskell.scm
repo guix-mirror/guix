@@ -1895,4 +1895,28 @@ simple general-purpose data structure\".")
 command line options in Haskell.")
     (license bsd-3)))
 
+(define-public ghc-base-orphans
+  (package
+    (name "ghc-base-orphans")
+    (version "0.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/base-orphans/base-orphans-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0hhgpwjvx7jhvlhsygmmf0q5hv2ymijzz4bjilicw99bmv13qcpl"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://hackage.haskell.org/package/base-orphans")
+    (synopsis "Orphan instances for backwards compatibility")
+    (description "This package defines orphan instances that mimic instances
+available in later versions of base to a wider (older) range of compilers.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
