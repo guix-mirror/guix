@@ -1400,6 +1400,30 @@ to annotate the text with semantic information, which can later be rendered in
 a variety of ways.")
     (license bsd-3)))
 
+(define-public ghc-ansi-wl-pprint
+  (package
+    (name "ghc-ansi-wl-pprint")
+    (version "0.6.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/ansi-wl-pprint/ansi-wl-pprint-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "025pyphsjf0dnbrmj5nscbi6gzyigwgp3ifxb3psn7kji6mfr29p"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)))
+    (home-page "http://github.com/ekmett/ansi-wl-pprint")
+    (synopsis "Wadler/Leijen Pretty Printer for colored ANSI terminal output")
+    (description "This is a pretty printing library based on Wadler's paper
+\"A Prettier Printer\".  It has been enhanced with support for ANSI terminal
+colored output using the ansi-terminal package.")
+    (license bsd-3)))
+
 (define-public ghc-split
   (package
     (name "ghc-split")
