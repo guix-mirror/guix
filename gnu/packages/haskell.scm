@@ -1378,6 +1378,32 @@ properties for all test cases up to some depth.  The test cases are generated
 automatically by SmallCheck.")
     (license bsd-3)))
 
+(define-public ghc-tasty-smallcheck
+  (package
+    (name "ghc-tasty-smallcheck")
+    (version "0.8.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/tasty-smallcheck/tasty-smallcheck-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0yckfbz8na8ccyw2911i3a4hd3fdncclk3ng5343hs5cylw6y4sm"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-smallcheck" ,ghc-smallcheck)
+       ("ghc-async" ,ghc-async)
+       ("ghc-tagged" ,ghc-tagged)))
+    (home-page "http://documentup.com/feuerbach/tasty")
+    (synopsis "SmallCheck support for the Tasty test framework")
+    (description "This package provides SmallCheck support for the Tasty
+Haskell test framework.")
+    (license bsd-3)))
+
 (define-public ghc-silently
   (package
     (name "ghc-silently")
