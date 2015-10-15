@@ -3497,6 +3497,43 @@ strict and lazy bytestrings.  For now, CRC32 and Adler32 are supported; they
 are implemented as FFI bindings to efficient code from zlib.")
     (license bsd-3)))
 
+(define-public ghc-cheapskate
+  (package
+    (name "ghc-cheapskate")
+    (version "0.1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/cheapskate/cheapskate-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0drx1hlqvdcrij4097q6bxhbfcqm73jsqv1wwhd3hsnjdmr46ch2"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-xss-sanitize" ,ghc-xss-sanitize)
+       ("ghc-data-default" ,ghc-data-default)))
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-text" ,ghc-text)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-syb" ,ghc-syb)
+       ("ghc-uniplate" ,ghc-uniplate)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-wai-extra" ,ghc-wai-extra)
+       ("ghc-wai" ,ghc-wai)
+       ("ghc-http-types" ,ghc-http-types)))
+    (home-page "http://github.com/jgm/cheapskate")
+    (synopsis "Experimental markdown processor")
+    (description "Cheapskate is an experimental Markdown processor in pure
+Haskell.  It aims to process Markdown efficiently and in the most forgiving
+possible way.  It is designed to deal with any input, including garbage, with
+linear performance.  Output is sanitized by default for protection against XSS
+attacks.")
+    (license bsd-3)))
+
 (define-public ghc-bifunctors
   (package
     (name "ghc-bifunctors")
