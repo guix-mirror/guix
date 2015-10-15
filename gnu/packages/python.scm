@@ -3272,6 +3272,7 @@ functions.")
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-sphinx" ,python-sphinx)
+       ("python-numpydoc" ,python-numpydoc)
        ("gfortran" ,gfortran)
        ("texlive" ,texlive)
        ("perl" ,perl)))
