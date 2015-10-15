@@ -1321,6 +1321,36 @@ with CSS and mouseover annotations, XHTML 1.0 with inline CSS styling, LaTeX,
 and mIRC chat codes.")
     (license bsd-3)))
 
+(define-public ghc-polyparse
+  (package
+    (name "ghc-polyparse")
+    (version "1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/polyparse/polyparse-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1z417f80b0jm4dgv25fk408p3d9mmcd1dlbya3ry0zdx4md09vrh"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-text" ,ghc-text)))
+    (home-page
+     "http://code.haskell.org/~malcolm/polyparse/")
+    (synopsis
+     "Alternative parser combinator libraries")
+    (description
+     "This package provides a variety of alternative parser combinator
+libraries, including the original HuttonMeijer set.  The Poly sets have
+features like good error reporting, arbitrary token type, running state, lazy
+parsing, and so on.  Finally, Text.Parse is a proposed replacement for the
+standard Read class, for better deserialisation of Haskell values from
+Strings.")
+    (license lgpl2.1)))
+
 (define-public ghc-appar
   (package
     (name "ghc-appar")
