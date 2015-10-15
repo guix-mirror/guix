@@ -2433,6 +2433,29 @@ unbounded @code{Integer} type.")
 given term should not exist.")
     (license bsd-3)))
 
+(define-public ghc-statevar
+  (package
+    (name "ghc-statevar")
+    (version "1.1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/StateVar/StateVar-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1ap51cvwq61xckx5hw44l82ihbxvsq3263xr5hqg42c5qp67kbhf"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-stm" ,ghc-stm)))
+    (home-page "http://hackage.haskell.org/package/StateVar")
+    (synopsis "State variables for Haskell")
+    (description "This package provides state variables, which are references
+in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
+    (license bsd-3)))
+
 (define-public ghc-bifunctors
   (package
     (name "ghc-bifunctors")
