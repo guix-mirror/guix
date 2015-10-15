@@ -1078,6 +1078,28 @@ Transformers\" available @uref{http://okmij.org/ftp/papers/LogicT.pdf,
 online}.")
     (license bsd-3)))
 
+(define-public ghc-xml
+  (package
+    (name "ghc-xml")
+    (version "1.3.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/xml/xml-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0g814lj7vaxvib2g3r734221k80k7ap9czv9hinifn8syals3l9j"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-text" ,ghc-text)))
+    (home-page "http://code.galois.com")
+    (synopsis "Simple XML library for Haskell")
+    (description "This package provides a simple XML library for Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-exceptions
   (package
     (name "ghc-exceptions")
