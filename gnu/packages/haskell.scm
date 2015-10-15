@@ -2912,6 +2912,41 @@ occurrences of a substring (the first in case of overlaps) with another.")
 Haskell test framework.")
     (license expat)))
 
+(define-public ghc-tasty-golden
+  (package
+    (name "ghc-tasty-golden")
+    (version "2.3.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/tasty-golden/tasty-golden-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0n7nll1sx75n3lffwhgnjrxdn0jz1g0921z9mj193fxqw0wz8axh"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-temporary" ,ghc-temporary)))
+    (inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-async" ,ghc-async)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-temporary-rc" ,ghc-temporary-rc)))
+    (home-page
+     "https://github.com/feuerbach/tasty-golden")
+    (synopsis "Golden tests support for tasty")
+    (description
+     "This package provides support for 'golden testing'.  A golden test is an
+IO action that writes its result to a file.  To pass the test, this output
+file should be identical to the corresponding 'golden' file, which contains
+the correct result for the test.")
+    (license expat)))
+
 (define-public ghc-tasty
   (package
     (name "ghc-tasty")
