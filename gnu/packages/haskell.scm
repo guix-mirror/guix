@@ -926,6 +926,34 @@ utility library.  It is basically a 1:1 mapping of GLU's C API, intended as a
 basis for a nicer interface.")
     (license bsd-3)))
 
+(define-public ghc-opengl
+  (package
+    (name "ghc-opengl")
+    (version "2.12.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/OpenGL/OpenGL-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1mcfb167jl75qc2hgylh83vf2jqizvyvkvhhb72adi2crc3zqz4b"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-objectname" ,ghc-objectname)
+       ("ghc-gluraw" ,ghc-gluraw)
+       ("ghc-statevar" ,ghc-statevar)
+       ("ghc-openglraw" ,ghc-openglraw)))
+    (home-page "http://www.haskell.org/haskellwiki/Opengl")
+    (synopsis "Haskell bindings for the OpenGL graphics system")
+    (description "This package provides Haskell bindings for the OpenGL
+graphics system (GL, version 4.5) and its accompanying utility library (GLU,
+version 1.3).")
+    (license bsd-3)))
+
 (define-public ghc-streaming-commons
   (package
     (name "ghc-streaming-commons")
