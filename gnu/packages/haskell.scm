@@ -494,6 +494,30 @@ are no options for manipulating the reflected expressions beyond showing
 them.")
     (license bsd-3)))
 
+(define-public ghc-multipart
+  (package
+    (name "ghc-multipart")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/multipart/multipart-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0g04jhyw1ib1s7c9bcldyyn4n90qd9x7dmvic4vgq57bgcqgnhz5"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-parsec" ,ghc-parsec)))
+    (home-page
+     "http://www.github.com/silkapp/multipart")
+    (synopsis
+     "HTTP multipart library")
+    (description
+     "HTTP multipart split out of the cgi package, for Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-alex
   (package
     (name "ghc-alex")
