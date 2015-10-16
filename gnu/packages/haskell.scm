@@ -825,6 +825,27 @@ HTML through @code{Text.HTML.SanitizeXSS.sanitizeXSS} to prevent XSS
 attacks.")
     (license bsd-3)))
 
+(define-public ghc-half
+  (package
+    (name "ghc-half")
+    (version "0.2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/half/half-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0zhwc6ps5w4ccnxl8sy623z4rjsafmnry69jpkw4hrbq11l402f1"))))
+    (build-system haskell-build-system)
+    (home-page "http://github.com/ekmett/half")
+    (synopsis "Half-precision floating-point computations")
+    (description "This library provides a half-precision floating-point
+computation library for Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-streaming-commons
   (package
     (name "ghc-streaming-commons")
