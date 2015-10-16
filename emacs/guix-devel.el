@@ -178,9 +178,52 @@ to find 'modify-phases' keywords."
       (ignore-errors (forward-sexp))
       (save-excursion (up-list) (point)))))
 
+(defconst guix-devel-keywords
+  '("call-with-compressed-output-port"
+    "call-with-container"
+    "call-with-decompressed-port"
+    "call-with-derivation-narinfo"
+    "call-with-derivation-substitute"
+    "call-with-error-handling"
+    "call-with-temporary-directory"
+    "call-with-temporary-output-file"
+    "define-enumerate-type"
+    "define-gexp-compiler"
+    "define-lift"
+    "define-monad"
+    "define-operation"
+    "define-record-type*"
+    "emacs-substitute-sexps"
+    "emacs-substitute-variables"
+    "mbegin"
+    "mlet"
+    "mlet*"
+    "munless"
+    "mwhen"
+    "run-with-state"
+    "run-with-store"
+    "signature-case"
+    "substitute*"
+    "substitute-keyword-arguments"
+    "test-assertm"
+    "use-package-modules"
+    "use-service-modules"
+    "use-system-modules"
+    "with-atomic-file-output"
+    "with-atomic-file-replacement"
+    "with-derivation-narinfo"
+    "with-derivation-substitute"
+    "with-directory-excursion"
+    "with-error-handling"
+    "with-monad"
+    "with-mutex"
+    "with-store"))
+
 (defvar guix-devel-font-lock-keywords
   `((,(rx (or "#~" "#$" "#$@" "#+" "#+@")) .
      'guix-devel-gexp-symbol)
+    (,(guix-guile-keyword-regexp (regexp-opt guix-devel-keywords))
+     (1 'font-lock-keyword-face))
     (,(guix-guile-keyword-regexp "modify-phases")
      (1 'font-lock-keyword-face)
      (guix-devel-modify-phases-font-lock-matcher
