@@ -26,7 +26,7 @@
   "User profile.")
 
 (defvar guix-default-profile
-  (concat guix-state-directory
+  (concat guix-config-state-directory
           "/profiles/per-user/"
           (getenv "USER")
           "/guix-profile")
