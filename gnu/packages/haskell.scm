@@ -441,6 +441,32 @@ the ‘haddock’ package.")
 documentation-generation tool for Haskell libraries.")
     (license bsd-3)))
 
+(define-public ghc-haddock
+  (package
+    (name "ghc-haddock")
+    (version "2.16.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/haddock/haddock-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1mnnvc5jqp6n6rj7xw8wdm0z2xp9fndkz11c8p3vbljsrcqd3v26"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: Tests break with GHC 7.10.2, fixed
+                               ; upstream.  See
+                               ; <https://github.com/haskell/haddock/issues/427>
+    (inputs `(("ghc-haddock-api" ,ghc-haddock-api)))
+    (home-page "http://www.haskell.org/haddock/")
+    (synopsis
+     "Documentation-generation tool for Haskell libraries")
+    (description
+     "Haddock is a documentation-generation tool for Haskell libraries.")
+    (license bsd-3)))
+
 (define-public ghc-simple-reflect
   (package
     (name "ghc-simple-reflect")
