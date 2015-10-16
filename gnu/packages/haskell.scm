@@ -494,6 +494,35 @@ are no options for manipulating the reflected expressions beyond showing
 them.")
     (license bsd-3)))
 
+(define-public ghc-alex
+  (package
+    (name "ghc-alex")
+    (version "3.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/alex/alex-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "17x13nbbr79xgdlzywjqw19vcl6iygjnssjnxnajgijkv764wknn"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: Tests broken for GHC 7.10.  Fixed
+                               ; upstream, see
+                               ; <https://github.com/simonmar/alex/issues/62>
+    (inputs `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "http://www.haskell.org/alex/")
+    (synopsis
+     "Tool for generating lexical analysers in Haskell")
+    (description
+     "Alex is a tool for generating lexical analysers in Haskell.  It takes a
+description of tokens based on regular expressions and generates a Haskell
+module containing code for scanning text efficiently.  It is similar to the
+tool lex or flex for C/C++.")
+    (license bsd-3)))
+
 (define-public ghc-cmdargs
   (package
     (name "ghc-cmdargs")
