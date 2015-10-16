@@ -1,6 +1,7 @@
 ;;; guix-config.el --- Compile-time configuration of Guix.
 
 ;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
+;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -34,6 +35,9 @@ strings of the form:
   (NAME . ARGS)
 
 Where ARGS is a list of arguments to the guile program.")
+
+(defconst guix-config-dot-program "@DOT_USER_PROGRAM@"
+  "Name of the 'dot' executable defined at configure time.")
 
 (provide 'guix-config)
 

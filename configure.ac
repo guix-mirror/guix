@@ -206,6 +206,7 @@ AC_CONFIG_FILES([pre-inst-env], [chmod +x pre-inst-env])
 AC_CONFIG_FILES([test-env],     [chmod +x test-env])
 
 dnl Emacs interface.
+AC_PATH_PROG([DOT_USER_PROGRAM], [dot], [dot])
 AM_PATH_LISPDIR
 AM_CONDITIONAL([HAVE_EMACS], [test "x$EMACS" != "xno"])
 
