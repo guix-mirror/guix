@@ -923,6 +923,44 @@ plus a single channel of music, mixed by the popular MikMod MOD, Timidity
 MIDI, Ogg Vorbis, and SMPEG MP3 libraries.")
     (license bsd-3)))
 
+(define-public ghc-sdl-image
+  (package
+    (name "ghc-sdl-image")
+    (version "0.6.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/SDL-image/SDL-image-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1m02q2426qp8m8pzz2jkk4srk2vb3j3ickiaga5jx9rkkhz732zq"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags
+       (let* ((sdl-image (assoc-ref %build-inputs "sdl-image"))
+              (sdl-image-include (string-append sdl-image "/include/SDL")))
+         (list (string-append "--extra-include-dirs=" sdl-image-include)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'fix-/bin/sh
+          (lambda _
+            ;; Use `sh', not `/bin/sh'.
+            (setenv "CONFIG_SHELL" "sh"))))))
+    (propagated-inputs
+     `(("ghc-sdl" ,ghc-sdl)))
+    (inputs
+     `(("sdl-image" ,sdl-image)))
+    (home-page "http://hackage.haskell.org/package/SDL-image")
+    (synopsis "Haskell bindings to libSDL_image")
+    (description "SDL_image is an image file loading library.  It loads images
+as SDL surfaces, and supports the following formats: BMP, GIF, JPEG, LBM, PCX,
+PNG, PNM, TGA, TIFF, XCF, XPM, XV.")
+    (license bsd-3)))
+
 (define-public ghc-half
   (package
     (name "ghc-half")
