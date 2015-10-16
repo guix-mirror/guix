@@ -52,6 +52,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libunwind)
+  #:use-module (gnu packages haskell)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
@@ -81,6 +82,7 @@
   #:use-module (gnu packages fribidi)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system haskell)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial))
 
@@ -1138,6 +1140,39 @@ mouse and keyboard.  The child uses the mouse to draw colored dots and lines
 on the screen and keyboard to display letters.")
     ;; Most files under gpl2+ or gpl3+, but eat.wav under gpl3
     (license license:gpl3)))
+
+(define-public raincat
+  (package
+    (name "raincat")
+    (version "1.1.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/Raincat/Raincat-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1aalh68h6799mv4vyg30zpskl5jkn6x2j1jza7p4lrflyifxzar8"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-random" ,ghc-random)
+       ("ghc-glut" ,ghc-glut)
+       ("ghc-opengl" ,ghc-opengl)
+       ("ghc-sdl" ,ghc-sdl)
+       ("ghc-sdl-image" ,ghc-sdl-image)
+       ("ghc-sdl-mixer" ,ghc-sdl-mixer)))
+    (home-page "http://raincat.bysusanlin.com/")
+    (synopsis "Puzzle game with a cat in lead role")
+    (description "Project Raincat is a game developed by Carnegie Mellon
+students through GCS during the Fall 2008 semester.  Raincat features game
+play inspired from classics Lemmings and The Incredible Machine.  The project
+proved to be an excellent learning experience for the programmers.  Everything
+is programmed in Haskell.")
+    (license license:bsd-3)))
 
 (define-public manaplus
   (package
