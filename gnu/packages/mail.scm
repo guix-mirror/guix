@@ -171,21 +171,15 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.5.23")
+    (version "1.5.24")
     (source (origin
              (method url-fetch)
-             (uri (list ;; Temporarily put bitbucket first, because
-                        ;; ftp.mutt.org has been down for a while.
-                        (string-append "https://bitbucket.org/mutt/mutt/downloads/mutt-"
-                                       version ".tar.gz")
-                        (string-append "ftp://ftp.mutt.org/mutt/devel/mutt-"
-                                       version ".tar.gz")))
+             (uri (string-append "ftp://ftp.mutt.org/pub/mutt/mutt-"
+                                 version ".tar.gz"))
              (sha256
               (base32
-               "0dzx4qk50pjfsb6cs5jahng96a52k12f7pm0sc78iqdrawg71w1s"))
-             (patches (map search-patch
-                           '("mutt-CVE-2014-9116.patch"
-                             "mutt-store-references.patch")))))
+               "0012njrgxf1barjksqkx7ccid2l0xyikhna9mjs9vcfpbrvcm4m2"))
+             (patches (list (search-patch "mutt-store-references.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)

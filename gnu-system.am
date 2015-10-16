@@ -567,7 +567,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/module-init-tools-moduledir.patch	\
   gnu/packages/patches/mumps-build-parallelism.patch		\
   gnu/packages/patches/mupdf-buildsystem-fix.patch		\
-  gnu/packages/patches/mutt-CVE-2014-9116.patch			\
   gnu/packages/patches/mutt-store-references.patch		\
   gnu/packages/patches/net-tools-bitrot.patch			\
   gnu/packages/patches/ngircd-handle-zombies.patch		\
