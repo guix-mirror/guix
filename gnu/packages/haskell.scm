@@ -387,6 +387,36 @@ package.")
 package.")
     (license bsd-3)))
 
+(define-public ghc-haddock-library
+  (package
+    (name "ghc-haddock-library")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/haddock-library/haddock-library-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0mhh2ppfhrvvi9485ipwbkv2fbgj35jvz3la02y3jlvg5ffs1c8g"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "http://www.haskell.org/haddock/")
+    (synopsis
+     "Library exposing some functionality of Haddock")
+    (description
+     "Haddock is a documentation-generation tool for Haskell libraries.  These
+modules expose some functionality of it without pulling in the GHC dependency.
+Please note that the API is likely to change so specify upper bounds in your
+project if you can't release often.  For interacting with Haddock itself, see
+the ‘haddock’ package.")
+    (license bsd-3)))
+
 (define-public ghc-simple-reflect
   (package
     (name "ghc-simple-reflect")
