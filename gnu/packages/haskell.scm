@@ -547,6 +547,37 @@ module containing code for scanning text efficiently.  It is similar to the
 tool lex or flex for C/C++.")
     (license bsd-3)))
 
+(define-public ghc-cgi
+  (package
+    (name "ghc-cgi")
+    (version "3001.2.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/cgi/cgi-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0q1pxpa8gi42c0hsidcdkhk5xr5anfrvhqsn3iksr9c0rllhz193"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-parsec" ,ghc-parsec)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-old-time" ,ghc-old-time)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-multipart" ,ghc-multipart)
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-network" ,ghc-network)
+       ("ghc-mtl" ,ghc-mtl)))
+    (home-page
+     "https://github.com/cheecheeo/haskell-cgi")
+    (synopsis "Library for writing CGI programs")
+    (description
+     "This is a Haskell library for writing CGI programs.")
+    (license bsd-3)))
+
 (define-public ghc-cmdargs
   (package
     (name "ghc-cmdargs")
