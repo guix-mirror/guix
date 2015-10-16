@@ -1677,6 +1677,30 @@ regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
 Haskell library @code{regex-base}.")
     (license bsd-3)))
 
+(define-public ghc-regex-compat
+  (package
+    (name "ghc-regex-compat")
+    (version "0.95.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/regex-compat/regex-compat-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0fwmima3f04p9y4h3c23493n1xj629ia2dxaisqm6rynljjv2z6m"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-regex-base" ,ghc-regex-base)
+       ("ghc-regex-posix" ,ghc-regex-posix)))
+    (home-page "http://sourceforge.net/projects/lazy-regex")
+    (synopsis "Replaces/Enhances Text.Regex")
+    (description "This library provides one module layer over
+@code{regex-posix} to replace @code{Text.Regex}.")
+    (license bsd-3)))
+
 (define-public ghc-regex-tdfa-rc
   (package
     (name "ghc-regex-tdfa-rc")
