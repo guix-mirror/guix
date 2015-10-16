@@ -541,6 +541,28 @@ them.")
 documents.")
     (license bsd-3)))
 
+(define-public ghc-xhtml
+  (package
+    (name "ghc-xhtml")
+    (version "3000.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/xhtml/xhtml-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1n6wgzxbj8xf0wf1il827qidphnffb5vzhwzqlxhh70c2y10f0ik"))))
+    (build-system haskell-build-system)
+    (home-page "https://github.com/haskell/xhtml")
+    (synopsis "XHTML combinator library")
+    (description
+     "This package provides combinators for producing XHTML 1.0, including the
+Strict, Transitional and Frameset variants.")
+    (license bsd-3)))
+
 (define-public ghc-haskell-src
   (package
     (name "ghc-haskell-src")
