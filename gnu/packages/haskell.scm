@@ -31,6 +31,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages zip)
   #:use-module (gnu packages gcc)
@@ -847,6 +848,40 @@ attacks.")
 corresponds to the general notion of explicitly handled identifiers for API
 objects, e.g. a texture object name in OpenGL or a buffer object name in
 OpenAL.")
+    (license bsd-3)))
+
+(define-public ghc-sdl
+  (package
+    (name "ghc-sdl")
+    (version "0.6.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/SDL/SDL-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1sa3zx3vrs1gbinxx33zwq0x2bsf3i964bff7419p7vzidn36k46"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'fix-/bin/sh
+          (lambda _
+            ;; Use `sh', not `/bin/sh'.
+            (setenv "CONFIG_SHELL" "sh"))))))
+    (inputs
+     `(("sdl" ,sdl)))
+    (home-page "https://hackage.haskell.org/package/SDL")
+    (synopsis "LibSDL for Haskell")
+    (description "Simple DirectMedia Layer (libSDL) is a cross-platform
+multimedia library designed to provide low level access to audio, keyboard,
+mouse, joystick, 3D hardware via OpenGL, and 2D video framebuffer.  It is used
+by MPEG playback software, emulators, and many popular games, including the
+award winning Linux port of \"Civilization: Call To Power.\"")
     (license bsd-3)))
 
 (define-public ghc-half
