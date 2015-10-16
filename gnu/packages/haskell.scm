@@ -417,6 +417,30 @@ project if you can't release often.  For interacting with Haddock itself, see
 the ‘haddock’ package.")
     (license bsd-3)))
 
+(define-public ghc-haddock-api
+  (package
+    (name "ghc-haddock-api")
+    (version "2.16.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/haddock-api/haddock-api-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1spd5axg1pdjv4dkdb5gcwjsc8gg37qi4mr2k2db6ayywdkis1p2"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-paths" ,ghc-paths)
+       ("ghc-haddock-library" ,ghc-haddock-library)))
+    (home-page "http://www.haskell.org/haddock/")
+    (synopsis "API for documentation-generation tool Haddock")
+    (description "This package provides an API to Haddock, the
+documentation-generation tool for Haskell libraries.")
+    (license bsd-3)))
+
 (define-public ghc-simple-reflect
   (package
     (name "ghc-simple-reflect")
