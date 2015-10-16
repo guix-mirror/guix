@@ -518,6 +518,29 @@ them.")
      "HTTP multipart split out of the cgi package, for Haskell.")
     (license bsd-3)))
 
+(define-public ghc-html
+  (package
+    (name "ghc-html")
+    (version "1.0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/html/html-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0q9hmfii62kc82ijlg238fxrzxhsivn42x5wd6ffcr9xldg4jd8c"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://hackage.haskell.org/package/html")
+    (synopsis "HTML combinator library")
+    (description
+     "This package contains a combinator library for constructing HTML
+documents.")
+    (license bsd-3)))
+
 (define-public ghc-alex
   (package
     (name "ghc-alex")
