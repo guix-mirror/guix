@@ -30,6 +30,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages zip)
   #:use-module (gnu packages gcc)
@@ -844,6 +845,38 @@ attacks.")
     (synopsis "Half-precision floating-point computations")
     (description "This library provides a half-precision floating-point
 computation library for Haskell.")
+    (license bsd-3)))
+
+(define-public ghc-openglraw
+  (package
+    (name "ghc-openglraw")
+    (version "2.5.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/OpenGLRaw/OpenGLRaw-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1kfq24mxg922ml3kkmym2qfpc56jbmrfbiix4rc2cxlwv05i191k"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-half" ,ghc-half)
+       ("glu" ,glu)
+       ("ghc-text" ,ghc-text)))
+    (home-page "http://www.haskell.org/haskellwiki/Opengl")
+    (synopsis "Raw Haskell bindings for the OpenGL graphics system")
+    (description "OpenGLRaw is a raw Haskell binding for the OpenGL 4.5
+graphics system and lots of OpenGL extensions.  It is basically a 1:1 mapping
+of OpenGL's C API, intended as a basis for a nicer interface.  OpenGLRaw
+offers access to all necessary functions, tokens and types plus a general
+facility for loading extension entries.  The module hierarchy closely mirrors
+the naming structure of the OpenGL extensions, making it easy to find the
+right module to import.  All API entries are loaded dynamically, so no special
+C header files are needed for building this package.  If an API entry is not
+found at runtime, a userError is thrown.")
     (license bsd-3)))
 
 (define-public ghc-streaming-commons
