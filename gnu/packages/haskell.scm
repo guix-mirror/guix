@@ -541,6 +541,35 @@ them.")
 documents.")
     (license bsd-3)))
 
+(define-public ghc-haskell-src
+  (package
+    (name "ghc-haskell-src")
+    (version "1.0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/haskell-src/haskell-src-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "19lilhpwnjb7cks9fq1ipnc8f7dwxy0ri3dgjkdxs3i355byw99a"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-happy" ,ghc-happy)
+       ("ghc-syb" ,ghc-syb)))
+    (home-page
+     "http://hackage.haskell.org/package/haskell-src")
+    (synopsis
+     "Support for manipulating Haskell source code")
+    (description
+     "The 'haskell-src' package provides support for manipulating Haskell
+source code.  The package provides a lexer, parser and pretty-printer, and a
+definition of a Haskell abstract syntax tree (AST).  Common uses of this
+package are to parse or generate Haskell 98 code.")
+    (license bsd-3)))
+
 (define-public ghc-alex
   (package
     (name "ghc-alex")
