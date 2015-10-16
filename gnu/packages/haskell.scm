@@ -879,6 +879,30 @@ C header files are needed for building this package.  If an API entry is not
 found at runtime, a userError is thrown.")
     (license bsd-3)))
 
+(define-public ghc-gluraw
+  (package
+    (name "ghc-gluraw")
+    (version "1.5.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/GLURaw/GLURaw-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0gscd9lhp9mb10q8s716nx26m8qng9xbb4h6b3f48zzgkc1sy96x"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-openglraw" ,ghc-openglraw)))
+    (home-page "http://www.haskell.org/haskellwiki/Opengl")
+    (synopsis "Raw Haskell bindings GLU")
+    (description "GLURaw is a raw Haskell binding for the GLU 1.3 OpenGL
+utility library.  It is basically a 1:1 mapping of GLU's C API, intended as a
+basis for a nicer interface.")
+    (license bsd-3)))
+
 (define-public ghc-streaming-commons
   (package
     (name "ghc-streaming-commons")
