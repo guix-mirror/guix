@@ -402,6 +402,8 @@ in the GNOME project.")
         (replace 'check
                  ;; Run test-suite under a dbus session.
                  (lambda _
+                   ;; Don't fail on missing  '/etc/machine-id'.
+                   (setenv "DBUS_FATAL_WARNINGS" "0")
                    (zero? (system* "dbus-launch" "make" "check")))))))
    (propagated-inputs
     ;; atspi-2.pc refers to all these.
