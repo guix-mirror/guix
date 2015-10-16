@@ -884,6 +884,45 @@ by MPEG playback software, emulators, and many popular games, including the
 award winning Linux port of \"Civilization: Call To Power.\"")
     (license bsd-3)))
 
+(define-public ghc-sdl-mixer
+  (package
+    (name "ghc-sdl-mixer")
+    (version "0.6.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/SDL-mixer/SDL-mixer-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0md3238hx79mxb9a7l43kg3b3d28x4mqvj0hjsbsh15ajnvy9x2z"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags
+       (let* ((sdl-mixer (assoc-ref %build-inputs "sdl-mixer"))
+              (sdl-mixer-include (string-append sdl-mixer "/include/SDL")))
+         (list (string-append "--extra-include-dirs=" sdl-mixer-include)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'fix-/bin/sh
+          (lambda _
+            ;; Use `sh', not `/bin/sh'.
+            (setenv "CONFIG_SHELL" "sh"))))))
+    (propagated-inputs
+     `(("ghc-sdl" ,ghc-sdl)))
+    (inputs
+     `(("sdl-mixer" ,sdl-mixer)))
+    (home-page "http://hackage.haskell.org/package/SDL-mixer")
+    (synopsis "Haskell bindings to libSDL_mixer")
+    (description "SDL_mixer is a sample multi-channel audio mixer library.  It
+supports any number of simultaneously playing channels of 16 bit stereo audio,
+plus a single channel of music, mixed by the popular MikMod MOD, Timidity
+MIDI, Ogg Vorbis, and SMPEG MP3 libraries.")
+    (license bsd-3)))
+
 (define-public ghc-half
   (package
     (name "ghc-half")
