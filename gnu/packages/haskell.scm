@@ -826,6 +826,29 @@ HTML through @code{Text.HTML.SanitizeXSS.sanitizeXSS} to prevent XSS
 attacks.")
     (license bsd-3)))
 
+(define-public ghc-objectname
+  (package
+    (name "ghc-objectname")
+    (version "1.1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/ObjectName/ObjectName-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0kh5fb9ykag6rfsm3f0bx3w323s18w2cyry34w5xgli5ncqimadg"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/ObjectName")
+    (synopsis "Helper library for Haskell OpenGL")
+    (description "This tiny package contains the class ObjectName, which
+corresponds to the general notion of explicitly handled identifiers for API
+objects, e.g. a texture object name in OpenGL or a buffer object name in
+OpenAL.")
+    (license bsd-3)))
+
 (define-public ghc-half
   (package
     (name "ghc-half")
