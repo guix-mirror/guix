@@ -1655,6 +1655,28 @@ removed.  Both IPv4 and IPv6 are supported.")
 regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
     (license bsd-3)))
 
+(define-public ghc-regex-posix
+  (package
+    (name "ghc-regex-posix")
+    (version "0.95.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/regex-posix/regex-posix-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0gkhzhj8nvfn1ija31c7xnl6p0gadwii9ihyp219ck2arlhrj0an"))))
+    (build-system haskell-build-system)
+    (inputs `(("ghc-regex-base" ,ghc-regex-base)))
+    (home-page "http://sourceforge.net/projects/lazy-regex")
+    (synopsis "POSIX regular expressions for Haskell")
+    (description "This library provides the POSIX regex backend used by the
+Haskell library @code{regex-base}.")
+    (license bsd-3)))
+
 (define-public ghc-regex-tdfa-rc
   (package
     (name "ghc-regex-tdfa-rc")
