@@ -902,6 +902,34 @@ C header files are needed for building this package.  If an API entry is not
 found at runtime, a userError is thrown.")
     (license bsd-3)))
 
+(define-public ghc-glut
+  (package
+    (name "ghc-glut")
+    (version "2.7.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/GLUT/GLUT-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1qfilpc10jm47anan44c20y8mh76f2dv09m5d22gk0f7am7hg4k2"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-statevar" ,ghc-statevar)
+       ("ghc-openglraw" ,ghc-openglraw)))
+    (inputs
+     `(("ghc-opengl" ,ghc-opengl)
+       ("freeglut" ,freeglut)))
+    (home-page "http://www.haskell.org/haskellwiki/Opengl")
+    (synopsis "Haskell bindings for the OpenGL Utility Toolkit")
+    (description "This library provides Haskell bindings for the OpenGL
+Utility Toolkit, a window system-independent toolkit for writing OpenGL
+programs.")
+    (license bsd-3)))
+
 (define-public ghc-gluraw
   (package
     (name "ghc-gluraw")
