@@ -852,6 +852,8 @@ extensive documentation, including API reference and a tutorial.")
              (sha256
               (base32
                "1vpmjqv0aqb1ds0xi6nigxnhlr0c74090xzi15b92amlzkrjyfj4"))))
+    (arguments
+     '(#:configure-flags '("CPPFLAGS=-std=c++11"))) ; required by libsigc++
     (propagated-inputs
      `(("pangomm" ,pangomm)
        ("cairomm" ,cairomm)
