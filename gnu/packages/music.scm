@@ -274,7 +274,13 @@ Guile.")
       (build-system waf-build-system)
       (arguments
        `(#:tests? #f ;no "check" target
-         #:configure-flags '("--project=sequencer")
+         #:configure-flags
+         (list "--project=sequencer"
+               ;; Disable the use of SSE unless on x86_64.
+               ,@(if (not (string-prefix? "x86_64" (or (%current-target-system)
+                                                       (%current-system))))
+                     '("--disable-sse")
+                     '()))
          #:python ,python-2))
       (inputs
        `(("jack" ,jack-1)
