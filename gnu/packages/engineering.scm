@@ -265,8 +265,18 @@ optimizer; and it can produce photorealistic and design review images.")
                          (("\\\\special\\{psfile=([^,]*),.*scale=([#0-9.]*).*\\}"
                            all file scale)
                           (string-append "\\includegraphics[scale=" scale "]{"
-                                         file "}")))
-                       (substitute* '("doc/mtt.tex" "doc/tcad.tex")
+                                         file "}"))
+                         (("\\\\psfig\\{figure=([^,]*),.*width=([#0-9.]*in).*\\}"
+                           all file width)
+                          (string-append "\\includegraphics[width=" width "]{"
+                                         file "}"))
+                         (("\\\\psfig\\{figure=([^,]*),.*height=([#0-9.]*in).*\\}"
+                           all file height)
+                          (string-append "\\includegraphics[height=" height "]{"
+                                         file "}"))
+                         (("\\\\psfig\\{figure=([^,]*)\\}" all file)
+                          (string-append "\\includegraphics{" file "}")))
+                       (substitute* '("doc/mtt.tex" "doc/tcad.tex" "doc/ug.tex")
                          (("^\\\\documentstyle\\[(.*)\\]\\{(.*)\\}"
                            all options class)
                           (string-append "\\documentclass[" options "]{"
