@@ -1957,7 +1957,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.50.0")
+    (version "2.52.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -1965,18 +1965,14 @@ libxml to ease remote use of the RESTful API.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0yv61y5vfar1rfksa6f53zhfw9wcb39zjix8gqc1ff5gqid3c08y"))))
+                "0j6cnnpqqgnb9nj2r0j8j6898np4z503hrnpis7b4l5d8yhbq68f"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
-                            "/share/gtk-doc/html")
-             ;; To find GIO modules from glib-networking.
-             (string-append "GIO_EXTRA_MODULES="
-                            (assoc-ref %build-inputs "glib-networking")
-                            "/lib/gio/modules"))
+                            "/share/gtk-doc/html"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'disable-unconnected-socket-test
@@ -1994,13 +1990,22 @@ libxml to ease remote use of the RESTful API.")
                        ;; The ca-certificates.crt is not available in the build
                        ;; environment.
                        (setenv "SSL_CERT_FILE" "/dev/null")
-                       #t)))))
+                       #t))
+         (replace 'install
+                  (lambda _
+                    (zero?
+                     (system* "make"
+                              ;; Install vala bindings into $out.
+                              (string-append "vapidir=" %output
+                                             "/share/vala/vapi")
+                              "install")))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
+       ("vala" ,vala)
        ;; These are needed for the tests.
        ;; FIXME: Add PHP once available.
        ("curl" ,curl)
