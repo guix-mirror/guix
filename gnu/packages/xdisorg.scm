@@ -197,7 +197,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.58")
+    (version "2.4.65")
     (source
       (origin
         (method url-fetch)
@@ -207,7 +207,7 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1pb5lfb3kh36p9axq620daclq68rqb3mhzxpz0pb18y9p7kglmdi"))))
+            "1i4n7mz49l0j4kr0dg9n1j3hlc786ncqgj0v5fci1mz7pp40m5ki"))))
     (build-system gnu-build-system)
     (inputs
       `(("libpciaccess" ,libpciaccess)
