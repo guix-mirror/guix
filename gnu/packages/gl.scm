@@ -185,7 +185,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "10.5.4")
+    (version "11.0.3")
     (source
       (origin
         (method url-fetch)
@@ -193,7 +193,7 @@ also known as DXTn or DXTC) for Mesa.")
                             version "/mesa-" version ".tar.xz"))
         (sha256
          (base32
-          "00v89jna7m6r2w1yrnx09isc97r2bd1hkn4jib445n1078zp47mm"))))
+          "1mikw0biw0wxq0fn3cp18bm6kjrkd66fy84774yc5b91rvp94adb"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("glproto" ,glproto)
@@ -257,9 +257,6 @@ also known as DXTn or DXTC) for Mesa.")
                             "src/mesa/main/texcompress_s3tc.c")
                         (("\"libtxc_dxtn\\.so")
                          (string-append "\"" s2tc "/lib/libtxc_dxtn.so")))
-                      (substitute* "src/gallium/targets/egl-static/egl_st.c"
-                        (("\"libglapi\"")
-                         (string-append "\"" out "/lib/libglapi\"")))
                       (substitute* "src/loader/loader.c"
                         (("dlopen\\(\"libudev\\.so")
                          (string-append "dlopen(\"" udev "/lib/libudev.so")))
