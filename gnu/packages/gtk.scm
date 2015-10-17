@@ -442,6 +442,7 @@ is part of the GNOME accessibility project.")
         (replace 'check
                  ;; Run test-suite under a dbus session.
                  (lambda _
+                   (setenv "DBUS_FATAL_WARNINGS" "0")
                    (zero? (system* "dbus-launch" "make" "check")))))))
    (propagated-inputs
     `(("at-spi2-core" ,at-spi2-core))) ; required by atk-bridge-2.0.pc
