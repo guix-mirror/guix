@@ -527,6 +527,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/libmad-armv7-thumb-pt2.patch		\
   gnu/packages/patches/libmad-frame-length.patch		\
   gnu/packages/patches/libmad-mips-newgcc.patch			\
+  gnu/packages/patches/librsvg-tests.patch			\
   gnu/packages/patches/libtheora-config-guess.patch		\
   gnu/packages/patches/libtool-skip-tests2.patch		\
   gnu/packages/patches/libssh-CVE-2014-0017.patch		\

@@ -829,7 +829,9 @@ dealing with different structured file formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "00ifd9wjjjsw0ybk5j6qs4yyh66jj34hjmggy6dhrgfy8ksw06k1"))))
+                "00ifd9wjjjsw0ybk5j6qs4yyh66jj34hjmggy6dhrgfy8ksw06k1"))
+              (patches
+               (list (search-patch "librsvg-tests.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
