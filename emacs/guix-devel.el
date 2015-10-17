@@ -254,6 +254,20 @@ Each rule should have a form (SYMBOL VALUE).  See `put' for details."
                   0)))
     (lisp-indent-specform count state indent-point normal-indent)))
 
+(defun guix-devel-indent-modify-phases-keyword (count)
+  "Return indentation function for 'modify-phases' keywords."
+  (lambda (state indent-point normal-indent)
+    (when (ignore-errors
+            (goto-char (nth 1 state))   ; start of keyword sexp
+            (backward-up-list)
+            (looking-at "(modify-phases\\>"))
+      (lisp-indent-specform count state indent-point normal-indent))))
+
+(defalias 'guix-devel-indent-modify-phases-keyword-1
+  (guix-devel-indent-modify-phases-keyword 1))
+(defalias 'guix-devel-indent-modify-phases-keyword-2
+  (guix-devel-indent-modify-phases-keyword 2))
+
 (guix-devel-scheme-indent
   (bag 0)
   (build-system 0)
@@ -293,7 +307,12 @@ Each rule should have a form (SYMBOL VALUE).  See `put' for details."
   (with-monad 1)
   (with-mutex 1)
   (with-store 1)
-  (wrap-program 1))
+  (wrap-program 1)
+
+  ;; 'modify-phases' keywords:
+  (replace    'guix-devel-indent-modify-phases-keyword-1)
+  (add-after  'guix-devel-indent-modify-phases-keyword-2)
+  (add-before 'guix-devel-indent-modify-phases-keyword-2))
 
 
 (defvar guix-devel-keys-map
