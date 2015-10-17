@@ -161,7 +161,10 @@ to fetch the list of GNU packages over HTTP."
                                 "doc-url"
                                 "download-url")
                           '("doc-url" "language"))))
-       (read-records (fetch %package-list-url #:text? #t))))
+       (let* ((port (fetch %package-list-url #:text? #t))
+              (lst  (read-records port)))
+         (close-port port)
+         lst)))
 
 (define (find-packages regexp)
   "Find GNU packages which satisfy REGEXP."
