@@ -23,7 +23,8 @@ DOT_FILES =					\
   doc/images/bootstrap-graph.dot		\
   doc/images/coreutils-graph.dot		\
   doc/images/coreutils-bag-graph.dot		\
-  doc/images/service-graph.dot
+  doc/images/service-graph.dot			\
+  doc/images/dmd-graph.dot
 
 DOT_VECTOR_GRAPHICS =				\
   $(DOT_FILES:%.dot=%.eps)			\

@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 xd1le <elisp.vim@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,6 +64,39 @@ or other sections), as well as some other features (such as
 single/double-quoted strings, environment variable expansion, functions and
 nested include statements).")
     (license isc)))
+
+(define-public bspwm
+  (package
+    (name "bspwm")
+    (version "0.9")
+    (source
+     (origin
+       (file-name (string-append name "-" version ".tar.gz"))
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/baskerville/bspwm/archive/"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1pig0h2jk8wipyz90j69c4bk37bfyq60asnn0v0bqld2p2vjvyqy"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libxcb" ,libxcb)
+       ("libxinerama" ,libxinerama)
+       ("sxhkd" ,sxhkd)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-keysyms" ,xcb-util-keysyms)
+       ("xcb-util-wm" ,xcb-util-wm)))
+    (arguments
+     '(#:phases (alist-delete 'configure %standard-phases)
+       #:tests? #f  ; no check target
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))))
+    (home-page "https://github.com/baskerville/bspwm")
+    (synopsis "Tiling window manager based on binary space partitioning")
+    (description "bspwm is a tiling window manager that represents windows as
+the leaves of a full binary tree.")
+    (license bsd-2)))
 
 (define-public i3status
   (package

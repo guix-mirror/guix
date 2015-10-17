@@ -204,7 +204,7 @@ runs `make distcheck' and whose result is one or more source tarballs."
        (let ((ref (lambda (module var)
                     (module-ref (resolve-interface module) var))))
          `(,@(package-native-inputs p)
-           ("autoconf" ,(ref '(gnu packages autotools) 'autoconf))
+           ("autoconf" ,((ref '(gnu packages autotools) 'autoconf-wrapper)))
            ("automake" ,(ref '(gnu packages autotools) 'automake))
            ("libtool"  ,(ref '(gnu packages autotools) 'libtool))
            ("gettext"  ,(ref '(gnu packages gettext) 'gnu-gettext))

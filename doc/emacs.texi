@@ -531,6 +531,49 @@ GNU Emacs Manual}).
 
 @end itemize
 
+Several commands (@command{guix graph}, @command{guix system dmd-graph}
+and @command{guix system extension-graph}) also have a ``View graph''
+action, which allows you to view a generated graph using @command{dot}
+command (specified by @code{guix-dot-program} variable).  By default a
+PNG file will be saved in @file{/tmp} directory and will be opened
+directly in Emacs.  This behavior may be changed with the following
+variables:
+
+@table @code
+
+@item guix-find-file-function
+Function used to open a generated graph.  If you want to open a graph in
+an external program, you can do it by modifying this variable---for
+example, you can use a functionality provided by the Org Mode
+(@pxref{Top,,, org, The Org Manual}):
+
+@example
+(setq guix-find-file-function 'org-open-file)
+(add-to-list 'org-file-apps '("\\.png\\'" . "sxiv %s"))
+@end example
+
+@item guix-dot-default-arguments
+Command line arguments to run @command{dot} command.  If you change an
+output format (for example, into @code{-Tpdf}), you also need to change
+the next variable.
+
+@item guix-dot-file-name-function
+Function used to define a name of the generated graph file.  Default
+name is @file{/tmp/guix-emacs-graph-XXXXXX.png}.
+
+@end table
+
+So, for example, if you want to generate and open a PDF file in your
+Emacs, you may change the settings like this:
+
+@example
+(defun my-guix-pdf-graph ()
+  "/tmp/my-current-guix-graph.pdf")
+
+(setq guix-dot-default-arguments '("-Tpdf")
+      guix-dot-file-name-function 'my-guix-pdf-graph)
+@end example
+
 
 @node Emacs Prettify
 @section Guix Prettify Mode

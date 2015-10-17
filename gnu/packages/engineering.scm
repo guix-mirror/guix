@@ -237,6 +237,9 @@ optimizer; and it can produce photorealistic and design review images.")
               (sha256
                (base32
                 "0x37vfp6k0d2z3gnig0hbicvi0jp8v267xjnn3z8jdllpiaa6p3k"))
+              (snippet
+               ;; Remove a non-free file.
+               '(delete-file "doc/psfig.sty"))
               (modules '((guix build utils)
                          (guix build download)
                          (guix ftp-client)))
@@ -265,8 +268,18 @@ optimizer; and it can produce photorealistic and design review images.")
                          (("\\\\special\\{psfile=([^,]*),.*scale=([#0-9.]*).*\\}"
                            all file scale)
                           (string-append "\\includegraphics[scale=" scale "]{"
-                                         file "}")))
-                       (substitute* '("doc/mtt.tex" "doc/tcad.tex")
+                                         file "}"))
+                         (("\\\\psfig\\{figure=([^,]*),.*width=([#0-9.]*in).*\\}"
+                           all file width)
+                          (string-append "\\includegraphics[width=" width "]{"
+                                         file "}"))
+                         (("\\\\psfig\\{figure=([^,]*),.*height=([#0-9.]*in).*\\}"
+                           all file height)
+                          (string-append "\\includegraphics[height=" height "]{"
+                                         file "}"))
+                         (("\\\\psfig\\{figure=([^,]*)\\}" all file)
+                          (string-append "\\includegraphics{" file "}")))
+                       (substitute* '("doc/mtt.tex" "doc/tcad.tex" "doc/ug.tex")
                          (("^\\\\documentstyle\\[(.*)\\]\\{(.*)\\}"
                            all options class)
                           (string-append "\\documentclass[" options "]{"

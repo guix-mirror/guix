@@ -23,6 +23,8 @@
   #:use-module ((web client) #:hide (open-socket-for-uri))
   #:use-module (web response)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-19)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
@@ -30,6 +32,8 @@
   #:use-module (rnrs bytevectors)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module ((guix build utils)
+                #:select (mkdir-p dump-port))
   #:use-module ((guix build download)
                 #:select (open-socket-for-uri resolve-uri-reference))
   #:re-export (open-socket-for-uri)
@@ -39,7 +43,10 @@
             http-get-error-code
             http-get-error-reason
 
-            http-fetch))
+            http-fetch
+
+            %http-cache-ttl
+            http-fetch/cached))
 
 ;;; Commentary:
 ;;;
@@ -228,5 +235,52 @@ Raise an '&http-get-error' condition if downloading fails."
                               (reason (response-reason-phrase resp)))
                              (&message
                               (message "download failed"))))))))))
+
+
+;;;
+;;; Caching.
+;;;
+
+(define (%http-cache-ttl)
+  ;; Time-to-live in seconds of the HTTP cache of in ~/.cache/guix.
+  (make-parameter
+   (* 3600 (or (and=> (getenv "GUIX_HTTP_CACHE_TTL")
+                      string->number*)
+               36))))
+
+(define* (http-fetch/cached uri #:key (ttl (%http-cache-ttl)) text?)
+  "Like 'http-fetch', return an input port, but cache its contents in
+~/.cache/guix.  The cache remains valid for TTL seconds."
+  (let* ((directory (string-append (cache-directory) "/http/"
+                                   (uri-host uri)))
+         (file      (string-append directory "/"
+                                   (basename (uri-path uri)))))
+    (define (update-cache)
+      ;; Update the cache and return an input port.
+      (let ((port (http-fetch uri #:text? text?)))
+        (mkdir-p directory)
+        (call-with-output-file file
+          (cut dump-port port <>))
+        (close-port port)
+        (open-input-file file)))
+
+    (define (old? port)
+      ;; Return true if PORT has passed TTL.
+      (let* ((s   (stat port))
+             (now (current-time time-utc)))
+        (< (+ (stat:mtime s) ttl) (time-second now))))
+
+    (catch 'system-error
+      (lambda ()
+        (let ((port (open-input-file file)))
+          (if (old? port)
+              (begin
+                (close-port port)
+                (update-cache))
+              port)))
+      (lambda args
+        (if (= ENOENT (system-error-errno args))
+            (update-cache)
+            (apply throw args))))))
 
 ;;; http-client.scm ends here

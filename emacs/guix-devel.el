@@ -24,6 +24,7 @@
 
 ;;; Code:
 
+(require 'lisp-mode)
 (require 'guix-guile)
 (require 'guix-geiser)
 (require 'guix-utils)
@@ -177,9 +178,52 @@ to find 'modify-phases' keywords."
       (ignore-errors (forward-sexp))
       (save-excursion (up-list) (point)))))
 
+(defconst guix-devel-keywords
+  '("call-with-compressed-output-port"
+    "call-with-container"
+    "call-with-decompressed-port"
+    "call-with-derivation-narinfo"
+    "call-with-derivation-substitute"
+    "call-with-error-handling"
+    "call-with-temporary-directory"
+    "call-with-temporary-output-file"
+    "define-enumerate-type"
+    "define-gexp-compiler"
+    "define-lift"
+    "define-monad"
+    "define-operation"
+    "define-record-type*"
+    "emacs-substitute-sexps"
+    "emacs-substitute-variables"
+    "mbegin"
+    "mlet"
+    "mlet*"
+    "munless"
+    "mwhen"
+    "run-with-state"
+    "run-with-store"
+    "signature-case"
+    "substitute*"
+    "substitute-keyword-arguments"
+    "test-assertm"
+    "use-package-modules"
+    "use-service-modules"
+    "use-system-modules"
+    "with-atomic-file-output"
+    "with-atomic-file-replacement"
+    "with-derivation-narinfo"
+    "with-derivation-substitute"
+    "with-directory-excursion"
+    "with-error-handling"
+    "with-monad"
+    "with-mutex"
+    "with-store"))
+
 (defvar guix-devel-font-lock-keywords
   `((,(rx (or "#~" "#$" "#$@" "#+" "#+@")) .
      'guix-devel-gexp-symbol)
+    (,(guix-guile-keyword-regexp (regexp-opt guix-devel-keywords))
+     (1 'font-lock-keyword-face))
     (,(guix-guile-keyword-regexp "modify-phases")
      (1 'font-lock-keyword-face)
      (guix-devel-modify-phases-font-lock-matcher
@@ -187,6 +231,69 @@ to find 'modify-phases' keywords."
       nil
       (0 'guix-devel-modify-phases-keyword nil t))))
   "A list of `font-lock-keywords' for `guix-devel-mode'.")
+
+
+;;; Indentation
+
+(defmacro guix-devel-scheme-indent (&rest rules)
+  "Set `scheme-indent-function' according to RULES.
+Each rule should have a form (SYMBOL VALUE).  See `put' for details."
+  (declare (indent 0))
+  `(progn
+     ,@(mapcar (lambda (rule)
+                 `(put ',(car rule) 'scheme-indent-function ,(cadr rule)))
+               rules)))
+
+(defun guix-devel-indent-package (state indent-point normal-indent)
+  "Indentation rule for 'package' form."
+  (let* ((package-eol (line-end-position))
+         (count (if (and (ignore-errors (down-list) t)
+                         (< (point) package-eol)
+                         (looking-at "inherit\\>"))
+                    1
+                  0)))
+    (lisp-indent-specform count state indent-point normal-indent)))
+
+(guix-devel-scheme-indent
+  (bag 0)
+  (build-system 0)
+  (call-with-compressed-output-port 2)
+  (call-with-container 1)
+  (call-with-decompressed-port 2)
+  (call-with-error-handling 0)
+  (container-excursion 1)
+  (emacs-batch-edit-file 1)
+  (emacs-batch-eval 0)
+  (emacs-substitute-sexps 1)
+  (emacs-substitute-variables 1)
+  (file-system 0)
+  (graft 0)
+  (manifest-entry 0)
+  (manifest-pattern 0)
+  (mbegin 1)
+  (mlet 2)
+  (mlet* 2)
+  (modify-phases 1)
+  (munless 1)
+  (mwhen 1)
+  (operating-system 0)
+  (origin 0)
+  (package 'guix-devel-indent-package)
+  (run-with-state 1)
+  (run-with-store 1)
+  (signature-case 1)
+  (substitute* 1)
+  (substitute-keyword-arguments 1)
+  (test-assertm 1)
+  (with-atomic-file-output 1)
+  (with-derivation-narinfo 1)
+  (with-derivation-substitute 2)
+  (with-directory-excursion 1)
+  (with-error-handling 0)
+  (with-monad 1)
+  (with-mutex 1)
+  (with-store 1)
+  (wrap-program 1))
 
 
 (defvar guix-devel-keys-map

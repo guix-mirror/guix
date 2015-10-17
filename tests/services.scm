@@ -18,12 +18,32 @@
 
 (define-module (test-services)
   #:use-module (gnu services)
+  #:use-module (gnu services dmd)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64))
 
 (test-begin "services")
+
+(test-assert "service-back-edges"
+  (let* ((t1 (service-type (name 't1) (extensions '())
+                           (compose +) (extend *)))
+         (t2 (service-type (name 't2)
+                           (extensions
+                            (list (service-extension t1 (const '()))))
+                           (compose +) (extend *)))
+         (t3 (service-type (name 't3)
+                           (extensions
+                            (list (service-extension t2 identity)
+                                  (service-extension t1 list)))))
+         (s1 (service t1 #t))
+         (s2 (service t2 #t))
+         (s3 (service t3 #t))
+         (e  (service-back-edges (list s1 s2 s3))))
+    (and (lset= eq? (e s1) (list s2 s3))
+         (lset= eq? (e s2) (list s3))
+         (null? (e s3)))))
 
 (test-equal "fold-services"
   ;; Make sure 'fold-services' returns the right result.  The numbers come
@@ -84,6 +104,15 @@
                          s))))
       (fold-services (list s) #:target-type t1)
       #f)))
+
+(test-assert "dmd-service-back-edges"
+  (let* ((s1 (dmd-service (provision '(s1)) (start #f)))
+         (s2 (dmd-service (provision '(s2)) (requirement '(s1)) (start #f)))
+         (s3 (dmd-service (provision '(s3)) (requirement '(s1 s2)) (start #f)))
+         (e  (dmd-service-back-edges (list s1 s2 s3))))
+    (and (lset= eq? (e s1) (list s2 s3))
+         (lset= eq? (e s2) (list s3))
+         (null? (e s3)))))
 
 (test-end)
 

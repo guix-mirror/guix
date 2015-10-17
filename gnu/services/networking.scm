@@ -94,6 +94,7 @@ fe80::1%lo0 apps.facebook.com\n")
 
 (define static-networking-service-type
   (dmd-service-type
+   'static-networking
    (match-lambda
      (($ <static-networking> interface ip gateway provision
                              name-servers net-tools)
@@ -166,6 +167,7 @@ gateway."
 
 (define dhcp-client-service-type
   (dmd-service-type
+   'dhcp-client
    (lambda (dhcp)
      (define dhclient
        #~(string-append #$dhcp "/sbin/dhclient"))

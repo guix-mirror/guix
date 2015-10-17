@@ -64,7 +64,7 @@ If ARGS is nil, use `guix-dot-default-arguments'."
   "Return '.png' file name in the `temporary-file-directory'."
   (concat (make-temp-name
            (concat (file-name-as-directory temporary-file-directory)
-                   "graph-"))
+                   "guix-emacs-graph-"))
           ".png"))
 
 (provide 'guix-external)

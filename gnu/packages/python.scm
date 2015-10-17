@@ -36,6 +36,7 @@
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages attr)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
@@ -72,6 +73,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1))
@@ -3272,6 +3274,7 @@ functions.")
     (native-inputs
      `(("python-nose" ,python-nose)
        ("python-sphinx" ,python-sphinx)
+       ("python-numpydoc" ,python-numpydoc)
        ("gfortran" ,gfortran)
        ("texlive" ,texlive)
        ("perl" ,perl)))
@@ -3329,7 +3332,13 @@ atlas_libs = openblas
               (zero? (system* "python" "-c" "import scipy; scipy.test()"))))
           (alist-delete
            'check
-           %standard-phases))))))
+           (alist-cons-after
+            'unpack 'fix-tests
+            (lambda _
+              (substitute* "scipy/integrate/tests/test_quadpack.py"
+                (("libm.so") "libm.so.6"))
+              #t)
+            %standard-phases)))))))
     (home-page "http://www.scipy.org/")
     (synopsis "The Scipy library provides efficient numerical routines")
     (description "The SciPy library is one of the core packages that make up
@@ -5610,3 +5619,97 @@ Python Package Index (PyPI).")
 
 (define-public python2-pip
   (package-with-python2 python-pip))
+
+(define-public python-tlsh
+  (package
+    (name "python-tlsh")
+    (version "3.4.1")                             ;according to CMakeLists.txt
+    (home-page "https://github.com/trendmicro/tlsh")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    ;; This is a commit right after 3.4.1; see
+                    ;; <https://github.com/trendmicro/tlsh/issues/9>.
+                    (commit "3ae3f1f")))
+              (sha256
+               (base32
+                "12cvnr5ndm5cg6i7lch93id90kgwgrigjgrj8f186nh3h4bf9chj"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:out-of-source? #f
+       #:phases (modify-phases %standard-phases
+                  (replace
+                   'install
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     ;; Build and install the Python bindings.  The underlying
+                     ;; C++ library is apparently not meant to be installed.
+                     (let ((out (assoc-ref outputs "out")))
+                       (with-directory-excursion "py_ext"
+                         (and (system* "python" "setup.py" "build")
+                              (system* "python" "setup.py" "install"
+                                       (string-append "--prefix=" out))))))))))
+    (inputs `(("python" ,python-wrapper)))        ;for the bindings
+    (synopsis "Fuzzy matching library for Python")
+    (description
+     "Trend Micro Locality Sensitive Hash (TLSH) is a fuzzy matching library.
+Given a byte stream with a minimum length of 256 bytes, TLSH generates a hash
+value which can be used for similarity comparisons.  Similar objects have
+similar hash values, which allows for the detection of similar objects by
+comparing their hash values.  The byte stream should have a sufficient amount
+of complexity; for example, a byte stream of identical bytes will not generate
+a hash value.")
+    (license asl2.0)))
+
+(define-public python2-tlsh
+  (package
+    (inherit python-tlsh)
+    (name "python2-tlsh")
+    (inputs `(("python" ,python-2)))))
+
+(define-public python-libarchive-c
+  (package
+    (name "python-libarchive-c")
+    (version "2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/l/libarchive-c/libarchive-c-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "089lrz6xyrfnk55v35vis6jyqyyl77w093057djyspnd2744wi2n"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before
+                   'build 'reference-libarchive
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     ;; Retain the absolute file name of libarchive.so.
+                     (let ((libarchive (assoc-ref inputs "libarchive")))
+                       (substitute* "libarchive/ffi.py"
+                         (("find_library\\('archive'\\)")
+                          (string-append "'" libarchive
+                                         "/lib/libarchive.so'"))))
+
+                     ;; Do not make a compressed egg (see
+                     ;; <http://bugs.gnu.org/20765>).
+                     (let ((port (open-file "setup.cfg" "a")))
+                       (display "\n[easy_install]\nzip_ok = 0\n"
+                                port)
+                       (close-port port)
+                       #t))))))
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("libarchive" ,libarchive)))
+    (home-page "https://github.com/Changaco/python-libarchive-c")
+    (synopsis "Python interface to libarchive")
+    (description
+     "This package provides Python bindings to libarchive, a C library to
+access possibly compressed archives in many different formats.  It uses
+Python's @code{ctypes} foreign function interface (FFI).")
+    (license lgpl2.0+)))
+
+(define-public python2-libarchive-c
+  (package-with-python2 python-libarchive-c))

@@ -27,7 +27,9 @@
   #:use-module (gnu services)
   #:use-module (gnu packages admin)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:export (dmd-root-service-type
@@ -42,7 +44,9 @@
             dmd-service-respawn?
             dmd-service-start
             dmd-service-stop
-            dmd-service-auto-start?))
+            dmd-service-auto-start?
+
+            dmd-service-back-edges))
 
 ;;; Commentary:
 ;;;
@@ -86,11 +90,11 @@
   ;; <dmd-service> objects.
   (service dmd-root-service-type '()))
 
-(define-syntax-rule (dmd-service-type proc)
+(define-syntax-rule (dmd-service-type service-name proc)
   "Return a <service-type> denoting a simple dmd service--i.e., the type for a
 service that extends DMD-ROOT-SERVICE-TYPE and nothing else."
   (service-type
-   (name 'some-dmd-service)
+   (name service-name)
    (extensions
     (list (service-extension dmd-root-service-type
                              (compose list proc))))))
@@ -98,17 +102,17 @@ service that extends DMD-ROOT-SERVICE-TYPE and nothing else."
 (define-record-type* <dmd-service>
   dmd-service make-dmd-service
   dmd-service?
-  (documentation service-documentation            ; string
+  (documentation dmd-service-documentation        ;string
                  (default "[No documentation.]"))
-  (provision     service-provision)               ; list of symbols
-  (requirement   service-requirement              ; list of symbols
+  (provision     dmd-service-provision)           ;list of symbols
+  (requirement   dmd-service-requirement          ;list of symbols
                  (default '()))
-  (respawn?      service-respawn?                 ; Boolean
+  (respawn?      dmd-service-respawn?             ;Boolean
                  (default #t))
-  (start         service-start)                   ; g-expression (procedure)
-  (stop          service-stop                     ; g-expression (procedure)
+  (start         dmd-service-start)               ;g-expression (procedure)
+  (stop          dmd-service-stop                 ;g-expression (procedure)
                  (default #~(const #f)))
-  (auto-start?   service-auto-start?              ; Boolean
+  (auto-start?   dmd-service-auto-start?          ;Boolean
                  (default #t)))
 
 
@@ -127,8 +131,8 @@ failure."
                         (format #f (_ "service '~a' provided more than once")
                                 symbol)))))))
 
-          (for-each assert-unique (service-provision service))
-          (fold set-insert set (service-provision service)))
+          (for-each assert-unique (dmd-service-provision service))
+          (fold set-insert set (dmd-service-provision service)))
         (setq)
         services))
 
@@ -160,12 +164,12 @@ failure."
           (register-services
            #$@(map (lambda (service)
                      #~(make <service>
-                         #:docstring '#$(service-documentation service)
-                         #:provides '#$(service-provision service)
-                         #:requires '#$(service-requirement service)
-                         #:respawn? '#$(service-respawn? service)
-                         #:start #$(service-start service)
-                         #:stop #$(service-stop service)))
+                         #:docstring '#$(dmd-service-documentation service)
+                         #:provides '#$(dmd-service-provision service)
+                         #:requires '#$(dmd-service-requirement service)
+                         #:respawn? '#$(dmd-service-respawn? service)
+                         #:start #$(dmd-service-start service)
+                         #:stop #$(dmd-service-stop service)))
                    services))
 
           ;; guix-daemon 0.6 aborts if 'PATH' is undefined, so work around it.
@@ -173,9 +177,38 @@ failure."
 
           (format #t "starting services...~%")
           (for-each start
-                    '#$(append-map service-provision
-                                   (filter service-auto-start? services)))))
+                    '#$(append-map dmd-service-provision
+                                   (filter dmd-service-auto-start?
+                                           services)))))
 
     (gexp->file "dmd.conf" config)))
+
+(define (dmd-service-back-edges services)
+  "Return a procedure that, when given a <dmd-service> from SERVICES, returns
+the list of <dmd-service> that depend on it."
+  (define provision->service
+    (let ((services (fold (lambda (service result)
+                            (fold (cut vhash-consq <> service <>)
+                                  result
+                                  (dmd-service-provision service)))
+                          vlist-null
+                          services)))
+      (lambda (name)
+        (match (vhash-assq name services)
+          ((_ . service) service)
+          (#f            #f)))))
+
+  (define edges
+    (fold (lambda (service edges)
+            (fold (lambda (requirement edges)
+                    (vhash-consq (provision->service requirement) service
+                                 edges))
+                  edges
+                  (dmd-service-requirement service)))
+          vlist-null
+          services))
+
+  (lambda (service)
+    (vhash-foldq* cons '() service edges)))
 
 ;;; dmd.scm ends here

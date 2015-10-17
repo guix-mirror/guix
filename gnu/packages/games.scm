@@ -163,17 +163,10 @@ scriptable with Guile.")
                   (guix build utils))
        #:phases (modify-phases %standard-phases
                   (add-after 'set-paths 'set-sdl-paths
-                    (lambda* (#:key inputs outputs (search-paths '())
-                              #:allow-other-keys)
-                      (define input-directories
-                        (match inputs
-                          (((_ . dir) ...)
-                           dir)))
-                      ;; This package does not use pkg-config, so modify CPATH
-                      ;; variable to point to include/SDL for SDL header files.
-                      (set-path-environment-variable "CPATH"
-                                                     '("include/SDL")
-                                                     input-directories)))
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (setenv "CPATH"
+                              (string-append (assoc-ref inputs "sdl-union")
+                                             "/include/SDL"))))
                   (add-after 'patch-source-shebangs 'patch-makefile
                     (lambda* (#:key outputs #:allow-other-keys)
                       ;; Replace /usr with package output directory.
@@ -192,11 +185,7 @@ scriptable with Guile.")
                   (delete 'configure))
        #:tests? #f)) ;; No check target.
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (inputs `(("sdl" ,sdl)
-              ("sdl-gfx" ,sdl-gfx)
-              ("sdl-image" ,sdl-image)
-              ("sdl-mixer" ,sdl-mixer)
-              ("sdl-ttf" ,sdl-ttf)))
+    (inputs `(("sdl-union" ,(sdl-union))))
     (home-page "http://code.google.com/p/abbaye-for-linux/")
     (synopsis "GNU/Linux port of the indie game \"l'Abbaye des Morts\"")
     (description "L'Abbaye des Morts is a 2D platform game set in 13th century
@@ -309,7 +298,7 @@ asynchronously and at a user-defined speed.")
 (define-public chess
   (package
     (name "chess")
-    (version "6.1.1")
+    (version "6.2.2")
     (source
      (origin
        (method url-fetch)
@@ -317,7 +306,7 @@ asynchronously and at a user-defined speed.")
                            ".tar.gz"))
        (sha256
         (base32
-         "1jckpg1qi1vjr3pqs0dnip3rmn0mgklx63xflrpqiv3cx2qlz8kn"))))
+         "1a41ag03q66pwy3pjrmbxxjpzi9fcaiiaiywd7m9v25mxqac2xkp"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/chess")
     (synopsis "Full chess implementation")

@@ -116,8 +116,10 @@
   (doc-urls         gnu-package-doc-urls)         ; list of strings
   (download-url     gnu-package-download-url))
 
-(define (official-gnu-packages)
-  "Return a list of records, which are GNU packages."
+(define* (official-gnu-packages
+          #:optional (fetch http-fetch/cached))
+  "Return a list of records, which are GNU packages.  Use FETCH,
+to fetch the list of GNU packages over HTTP."
   (define (read-records port)
     ;; Return a list of alists.  Each alist contains fields of a GNU
     ;; package.
@@ -129,8 +131,7 @@
                 (cons alist result)))))
 
   (define official-description
-    (let ((db (read-records (http-fetch %package-description-url
-                                        #:text? #t))))
+    (let ((db (read-records (fetch %package-description-url #:text? #t))))
       (lambda (name)
         ;; Return the description found upstream for package NAME, or #f.
         (and=> (find (lambda (alist)
@@ -160,7 +161,10 @@
                                 "doc-url"
                                 "download-url")
                           '("doc-url" "language"))))
-       (read-records (http-fetch %package-list-url #:text? #t))))
+       (let* ((port (fetch %package-list-url #:text? #t))
+              (lst  (read-records port)))
+         (close-port port)
+         lst)))
 
 (define (find-packages regexp)
   "Find GNU packages which satisfy REGEXP."

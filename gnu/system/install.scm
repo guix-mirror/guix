@@ -76,9 +76,12 @@ under /root/.guix-profile where GUIX is installed."
           (with-directory-excursion %root
             (zero? (system* "tar" "--xz" "--format=gnu"
 
-                            ;; avoid non-determinism in the archive
+                            ;; Avoid non-determinism in the archive.  Use
+                            ;; mtime = 1, not zero, because that is what the
+                            ;; daemon does for files in the store (see the
+                            ;; 'mtimeStore' constant in local-store.cc.)
                             "--sort=name"
-                            "--mtime=@0"          ;for files in /var/guix
+                            "--mtime=@1"          ;for files in /var/guix
                             "--owner=root:0"
                             "--group=root:0"
 
@@ -162,6 +165,7 @@ current store is on a RAM disk."
 
 (define cow-store-service-type
   (dmd-service-type
+   'cow-store
    (lambda _
      (dmd-service
       (requirement '(root-file-system user-processes))

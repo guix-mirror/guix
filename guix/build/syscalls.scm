@@ -315,10 +315,16 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
 (define CLONE_NEWNET         #x40000000)
 
 ;; The libc interface to sys_clone is not useful for Scheme programs, so the
-;; low-level system call is wrapped instead.
+;; low-level system call is wrapped instead.  The 'syscall' function is
+;; declared in <unistd.h> as a variadic function; in practice, it expects 6
+;; pointer-sized arguments, as shown in, e.g., x86_64/syscall.S.
 (define clone
   (let* ((ptr        (dynamic-func "syscall" (dynamic-link)))
-         (proc       (pointer->procedure int ptr (list int int '*)))
+         (proc       (pointer->procedure long ptr
+                                         (list long                   ;sysno
+                                               unsigned-long          ;flags
+                                               '* '* '*
+                                               '*)))
          ;; TODO: Don't do this.
          (syscall-id (match (utsname:machine (uname))
                        ("i686"   120)
@@ -329,7 +335,10 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
       "Create a new child process by duplicating the current parent process.
 Unlike the fork system call, clone accepts FLAGS that specify which resources
 are shared between the parent and child processes."
-      (let ((ret (proc syscall-id flags %null-pointer))
+      (let ((ret (proc syscall-id flags
+                       %null-pointer               ;child stack
+                       %null-pointer %null-pointer ;ptid & ctid
+                       %null-pointer))             ;unused
             (err (errno)))
         (if (= ret -1)
             (throw 'system-error "clone" "~d: ~A"

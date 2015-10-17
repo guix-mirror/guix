@@ -348,7 +348,7 @@ run a file system check."
        ;; in the case of a bind mount, a regular file may be needed.
        (if (and (= MS_BIND (logand flags MS_BIND))
                 (regular-file? source))
-           (begin
+           (unless (file-exists? mount-point)
              (mkdir-p (dirname mount-point))
              (call-with-output-file mount-point (const #t)))
            (mkdir-p mount-point))

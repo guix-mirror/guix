@@ -970,6 +970,9 @@ translated DNA query sequences against a protein reference database (BLASTP
 and BLASTX alignment mode).  The speedup over BLAST is up to 20,000 on short
 reads at a typical sensitivity of 90-99% relative to BLAST depending on the
 data and settings.")
+    ;; diamond fails to build on other platforms
+    ;; https://github.com/bbuchfink/diamond/issues/18
+    (supported-systems '("x86_64-linux"))
     (license (license:non-copyleft "file://src/COPYING"
                                    "See src/COPYING in the distribution."))))
 
@@ -2179,6 +2182,10 @@ viewer.")
          (lambda _ (chdir "ngs-sdk") #t)
          %standard-phases))))
     (native-inputs `(("perl" ,perl)))
+    ;; According to the test
+    ;;   unless ($MARCH =~ /x86_64/i || $MARCH =~ /i?86/i)
+    ;; in ngs-sdk/setup/konfigure.perl
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (home-page "https://github.com/ncbi/ngs")
     (synopsis "API for accessing Next Generation Sequencing data")
     (description

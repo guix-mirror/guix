@@ -48,6 +48,7 @@
              (gnu packages version-control)
              (gnu packages package-management)
              (gnu packages graphviz)
+             (gnu packages man)
              (srfi srfi-1)
              (srfi srfi-26)
              (ice-9 match))
@@ -71,7 +72,12 @@
 (define (tarball-package checkout)
   "Return a package that does `make distcheck' from CHECKOUT, a directory
 containing a Git checkout of Guix."
-  (dist-package guix checkout))
+  (dist-package (package
+                  (inherit guix)
+                  (native-inputs `(("graphviz" ,graphviz)
+                                   ("help2man" ,help2man)
+                                   ,@(package-native-inputs guix))))
+                checkout))
 
 (define (hydra-jobs store arguments)
   "Return Hydra jobs."

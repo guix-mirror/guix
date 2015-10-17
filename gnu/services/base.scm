@@ -125,7 +125,8 @@
    (respawn? #f)))
 
 (define root-file-system-service-type
-  (dmd-service-type (const %root-file-system-dmd-service)))
+  (dmd-service-type 'root-file-system
+                    (const %root-file-system-dmd-service)))
 
 (define (root-file-system-service)
   "Return a service whose sole purpose is to re-mount read-only the root file
@@ -145,6 +146,7 @@ FILE-SYSTEM."
   ;; TODO(?): Make this an extensible service that takes <file-system> objects
   ;; and returns a list of <dmd-service>.
   (dmd-service-type
+   'file-system
    (lambda (file-system)
      (let ((target  (file-system-mount-point file-system))
            (device  (file-system-device file-system))
@@ -205,10 +207,11 @@ object."
 
 (define user-unmount-service-type
   (dmd-service-type
+   'user-file-systems
    (lambda (known-mount-points)
      (dmd-service
       (documentation "Unmount manually-mounted file systems.")
-      (provision '(user-unmount))
+      (provision '(user-file-systems))
       (start #~(const #t))
       (stop #~(lambda args
                 (define (known? mount-point)
@@ -242,14 +245,15 @@ in KNOWN-MOUNT-POINTS when it is stopped."
 
 (define user-processes-service-type
   (dmd-service-type
+   'user-processes
    (match-lambda
      ((requirements grace-delay)
       (dmd-service
        (documentation "When stopped, terminate all user processes.")
        (provision '(user-processes))
-       (requirement (cons 'root-file-system
-                          (map file-system->dmd-service-name
-                               requirements)))
+       (requirement (cons* 'root-file-system 'user-file-systems
+                           (map file-system->dmd-service-name
+                                requirements)))
        (start #~(const #t))
        (stop #~(lambda _
                  (define (kill-except omit signal)
@@ -337,6 +341,7 @@ stopped before 'kill' is called."
 
 (define host-name-service-type
   (dmd-service-type
+   'host-name
    (lambda (name)
      (dmd-service
       (documentation "Initialize the machine's host name.")
@@ -369,6 +374,7 @@ stopped before 'kill' is called."
 
 (define console-keymap-service-type
   (dmd-service-type
+   'console-keymap
    (lambda (file)
      (dmd-service
       (documentation (string-append "Load console keymap (loadkeys)."))
@@ -384,6 +390,7 @@ stopped before 'kill' is called."
 
 (define console-font-service-type
   (dmd-service-type
+   'console-font
    (match-lambda
      ((tty font)
       (let ((device (string-append "/dev/" tty)))
@@ -644,6 +651,7 @@ Service Switch}, for an example."
 
 (define syslog-service-type
   (dmd-service-type
+   'syslog
    (lambda (config-file)
      (dmd-service
       (documentation "Run the syslog daemon (syslogd).")
@@ -982,6 +990,7 @@ extra rules from the packages listed in @var{rules}."
 
 (define device-mapping-service-type
   (dmd-service-type
+   'device-mapping
    (match-lambda
      ((target open close)
       (dmd-service
@@ -1001,6 +1010,7 @@ gexp, to open it, and evaluate @var{close} to close it."
 
 (define swap-service-type
   (dmd-service-type
+   'swap
    (lambda (device)
      (define requirement
        (if (string-prefix? "/dev/mapper/" device)

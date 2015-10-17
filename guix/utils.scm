@@ -81,6 +81,7 @@
             fold-tree
             fold-tree-leaves
             split
+            cache-directory
 
             filtered-port
             compressed-port
@@ -702,6 +703,12 @@ elements after E."
        (values (reverse acc) tail))
       ((head . tail)
        (loop tail (cons head acc))))))
+
+(define (cache-directory)
+  "Return the cache directory for Guix, by default ~/.cache/guix."
+  (or (getenv "XDG_CONFIG_HOME")
+      (and=> (getenv "HOME")
+             (cut string-append <> "/.cache/guix"))))
 
 
 ;;;

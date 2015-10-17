@@ -4,6 +4,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -258,6 +259,17 @@ groups.")
     (home-page "https://github.com/rspec/rspec-core")
     (license license:expat)))
 
+(define-public ruby-rspec-core-2
+  (package (inherit ruby-rspec-core)
+    (version "2.14.8")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rspec-core" version))
+              (sha256
+               (base32
+                "0psjy5kdlz3ph39br0m01w65i1ikagnqlg39f8p65jh5q7dz8hwc"))))
+    (propagated-inputs `())))
+
 (define-public ruby-diff-lcs
   (package
     (name "ruby-diff-lcs")
@@ -301,6 +313,18 @@ outcomes of a code example.")
     (home-page "https://github.com/rspec/rspec-expectations")
     (license license:expat)))
 
+(define-public ruby-rspec-expectations-2
+  (package (inherit ruby-rspec-expectations)
+    (version "2.14.5")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rspec-expectations" version))
+              (sha256
+               (base32
+                "1ni8kw8kjv76jvwjzi4jba00k3qzj9f8wd94vm6inz0jz3gwjqf9"))))
+    (propagated-inputs
+     `(("ruby-diff-lcs" ,ruby-diff-lcs)))))
+
 (define-public ruby-rspec-mocks
   (package
     (name "ruby-rspec-mocks")
@@ -322,6 +346,18 @@ outcomes of a code example.")
 support for stubbing and mocking.")
     (home-page "https://github.com/rspec/rspec-mocks")
     (license license:expat)))
+
+(define-public ruby-rspec-mocks-2
+  (package (inherit ruby-rspec-mocks)
+    (version "2.14.6")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rspec-mocks" version))
+              (sha256
+               (base32
+                "1fwsmijd6w6cmqyh4ky2nq89jrpzh56hzmndx9wgkmdgfhfakv30"))))
+    (propagated-inputs
+     `(("ruby-diff-lcs" ,ruby-diff-lcs)))))
 
 (define-public ruby-rspec
   (package
@@ -346,6 +382,20 @@ Ruby.  This meta-package includes the RSpec test runner, along with the
 expectations and mocks frameworks.")
     (home-page "http://rspec.info/")
     (license license:expat)))
+
+(define-public ruby-rspec-2
+  (package (inherit ruby-rspec)
+    (version "2.14.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rspec" version))
+              (sha256
+               (base32
+                "134y4wzk1prninb5a0bhxgm30kqfzl8dg06af4js5ylnhv2wd7sg"))))
+    (propagated-inputs
+     `(("ruby-rspec-core" ,ruby-rspec-core-2)
+       ("ruby-rspec-mocks" ,ruby-rspec-mocks-2)
+       ("ruby-rspec-expectations" ,ruby-rspec-expectations-2)))))
 
 ;; Bundler is yet another source of circular dependencies, so we must disable
 ;; its test suite as well.
@@ -1414,4 +1464,35 @@ and trust on your team.")
     (description "Bio-logger is a wrapper around Log4r adding extra logging
 features such as filtering and fine grained logging.")
     (home-page "https://github.com/pjotrp/bioruby-logger-plugin")
+    (license license:expat)))
+
+(define-public ruby-yard
+  (package
+    (name "ruby-yard")
+    (version "0.8.7.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "yard" version))
+       (sha256
+        (base32
+         "1dj6ibc0qqvmb5a5r5kk0vhr04mnrz9b26gnfrs5p8jgp620i89x"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "specs"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-HOME
+          ;; $HOME needs to be set to somewhere writeable for tests to run
+          (lambda _ (setenv "HOME" "/tmp") #t)))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec-2)
+       ("ruby-rack" ,ruby-rack)))
+    (synopsis "Documentation generation tool for Ruby")
+    (description
+     "YARD is a documentation generation tool for the Ruby programming
+language.  It enables the user to generate consistent, usable documentation
+that can be exported to a number of formats very easily, and also supports
+extending for custom Ruby constructs such as custom class level definitions.")
+    (home-page "http://yardoc.org")
     (license license:expat)))
