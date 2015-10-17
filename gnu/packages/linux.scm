@@ -1392,7 +1392,7 @@ file system is as easy as logging into the server with an SSH client.")
 (define-public numactl
   (package
     (name "numactl")
-    (version "2.0.9")
+    (version "2.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1401,35 +1401,23 @@ file system is as easy as logging into the server with an SSH client.")
                     ".tar.gz"))
               (sha256
                (base32
-                "073myxlyyhgxh1w3r757ajixb7s2k69czc3r0g12c3scq7k3784w"))))
+                "0qfv2ks6d3gm0mw5sj4cbhsd7cbsb7qm58xvchl2wfzifkzcinnv"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; There's no 'configure' script, just a raw makefile.
-                   (substitute* "Makefile"
-                     (("^prefix := .*$")
-                      (string-append "prefix := " (assoc-ref outputs "out")
-                                     "\n"))
-                     (("^libdir := .*$")
-                      ;; By default the thing tries to install under
-                      ;; $prefix/lib64 when on a 64-bit platform.
-                      (string-append "libdir := $(prefix)/lib\n"))))
-                 %standard-phases)
-
-       #:make-flags (list
-                     ;; By default the thing tries to use 'cc'.
-                     "CC=gcc"
-
-                     ;; Make sure programs have an RPATH so they can find
-                     ;; libnuma.so.
-                     (string-append "LDLIBS=-Wl,-rpath="
-                                    (assoc-ref %outputs "out") "/lib"))
-
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'autogen
+          (lambda _
+            (zero? (system* "sh" "autogen.sh")))))
        ;; There's a 'test' target, but it requires NUMA support in the kernel
        ;; to run, which we can't assume to have.
        #:tests? #f))
+
     (home-page "http://oss.sgi.com/projects/libnuma/")
     (synopsis "Tools for non-uniform memory access (NUMA) machines")
     (description
