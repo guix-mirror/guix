@@ -26,6 +26,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages autotools)
@@ -74,14 +75,15 @@ as ASCII text.")
 (define-public freeglut
   (package
     (name "freeglut")
-    (version "2.8.1")
+    (version "3.0.0")
     (source (origin
 	     (method url-fetch)
 	     (uri (string-append "mirror://sourceforge/project/freeglut/freeglut/"
 				  version "/freeglut-" version ".tar.gz"))
 	     (sha256
-	      (base32 "16lrxxxd9ps9l69y3zsw6iy0drwjsp6m26d1937xj71alqk6dr6x"))))
-    (build-system gnu-build-system)
+	      (base32 "18knkyczzwbmyg8hr4zh8a1i5ga01np2jzd1rwmsh7mh2n2vwhra"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f)) ; no test target
     (inputs `(("mesa" ,mesa)
 	      ("libx11" ,libx11)
 	      ("libxi" ,libxi)
