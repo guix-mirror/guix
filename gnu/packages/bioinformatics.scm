@@ -2182,6 +2182,10 @@ viewer.")
          (lambda _ (chdir "ngs-sdk") #t)
          %standard-phases))))
     (native-inputs `(("perl" ,perl)))
+    ;; According to the test
+    ;;   unless ($MARCH =~ /x86_64/i || $MARCH =~ /i?86/i)
+    ;; in ngs-sdk/setup/konfigure.perl
+    (supported-systems '("i686-linux" "x86_64-linux"))))
     (home-page "https://github.com/ncbi/ngs")
     (synopsis "API for accessing Next Generation Sequencing data")
     (description
