@@ -1627,7 +1627,7 @@ passwords in the GNOME keyring.")
 (define-public vala
   (package
     (name "vala")
-    (version "0.28.0")
+    (version "0.30.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1635,14 +1635,16 @@ passwords in the GNOME keyring.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0zwpzhkhfk3piya14m7p2hl2vaabahprphppfm46ci91z39kp7hd"))))
+                "1pyyhfw3zzbhxfscbn8xz70dg6vx0kh8gshzikpxczhg01xk7w31"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'set-cc
+         (add-before 'check 'pre-check
                      (lambda _
                        (setenv "CC" "gcc")
+                       ;; For missing '/etc/machine-id'.
+                       (setenv "DBUS_FATAL_WARNINGS" "0")
                        #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
