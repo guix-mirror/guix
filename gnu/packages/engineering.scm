@@ -237,6 +237,9 @@ optimizer; and it can produce photorealistic and design review images.")
               (sha256
                (base32
                 "0x37vfp6k0d2z3gnig0hbicvi0jp8v267xjnn3z8jdllpiaa6p3k"))
+              (snippet
+               ;; Remove a non-free file.
+               '(delete-file "doc/psfig.sty"))
               (modules '((guix build utils)
                          (guix build download)
                          (guix ftp-client)))
