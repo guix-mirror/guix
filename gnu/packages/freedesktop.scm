@@ -156,7 +156,10 @@ the freedesktop.org XDG Base Directory specification.")
                             (assoc-ref %build-inputs "libcap"))
              (string-append "--with-udevrulesdir="
                             (assoc-ref %outputs "out")
-                            "/lib/udev/rules.d"))
+                            "/lib/udev/rules.d")
+             ;; XXX: fail with:
+             ;;  src/shared/clean-ipc.c:315: undefined reference to `mq_unlink'
+             "LDFLAGS=-lrt")
        #:make-flags '("PKTTYAGENT=/run/current-system/profile/bin/pkttyagent")))
     (native-inputs
      `(("intltool" ,intltool)
