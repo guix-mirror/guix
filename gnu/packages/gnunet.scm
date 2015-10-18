@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
@@ -143,13 +143,13 @@ and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.37.0")
+   (version "7.44.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://gnunet.org/sites/default/files/gnurl-"
-                                version ".tar.gz"))
+                                version ".tar.bz2"))
             (sha256
-             (base32 "1l2q9ih63vkm65zn886kmhqsx906pzx3qjvsxymlmf18kiv18pfd"))))
+             (base32 "14hrplyzy923593k2zwk662sfvaa0if032aaw52rs52cpsm0y3yh"))))
    (build-system gnu-build-system)
    (inputs `(("gnutls" ,gnutls)
              ("libidn" ,libidn)
