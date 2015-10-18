@@ -531,6 +531,7 @@ application suites.")
       ("atk" ,atk)
       ("gdk-pixbuf" ,gdk-pixbuf)
       ("libepoxy" ,libepoxy)
+      ("libxcursor" ,libxcursor)
       ("libxi" ,libxi)
       ("libxinerama" ,libxinerama)
       ("libxdamage" ,libxdamage)
@@ -538,7 +539,10 @@ application suites.")
    (inputs
     `(("librsvg" ,librsvg)                        ;for gtk-encode-symbolic-svg
       ("libxml2" ,libxml2)
-      ("cups" ,cups)))                            ;for printing support
+      ("colord" ,colord)
+      ("cups" ,cups)                            ;for printing support
+      ("rest" ,rest)
+      ("json-glib" ,json-glib)))
    (native-inputs
     `(("perl" ,perl)
       ("glib" ,glib "bin")
