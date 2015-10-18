@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,9 +42,9 @@
   (services  dbus-configuration-services          ;list of <package>
              (default '())))
 
-(define (dbus-configuration-directory dbus services)
-  "Return a configuration directory for @var{dbus} that includes the
-@code{etc/dbus-1/system.d} directories of each package listed in
+(define (dbus-configuration-directory services)
+  "Return a directory contains the @code{system-local.conf} file for DBUS that
+includes the @code{etc/dbus-1/system.d} directories of each package listed in
 @var{services}."
   (define build
     #~(begin
@@ -65,13 +66,6 @@
                           services)))
 
         (mkdir #$output)
-        (copy-file (string-append #$dbus "/etc/dbus-1/system.conf")
-                   (string-append #$output "/system.conf"))
-
-        ;; The default 'system.conf' has an <includedir> clause for
-        ;; 'system.d', so create it.
-        (mkdir (string-append #$output "/system.d"))
-
         ;; 'system-local.conf' is automatically included by the default
         ;; 'system.conf', so this is where we stuff our own things.
         (call-with-output-file (string-append #$output "/system-local.conf")
@@ -80,6 +74,12 @@
                        port)))))
 
   (computed-file "dbus-configuration" build))
+
+(define (dbus-etc-files config)
+  "Return a list of FILES for @var{etc-service-type} to build the
+@code{/etc/dbus-1} directory."
+  (list `("dbus-1" ,(dbus-configuration-directory
+                     (dbus-configuration-services config)))))
 
 (define %dbus-accounts
   ;; Accounts used by the system bus.
@@ -118,20 +118,15 @@
                     (execl prog)))
                 (waitpid pid)))))))
 
-(define dbus-dmd-service
-  (match-lambda
-    (($ <dbus-configuration> dbus services)
-     (let ((conf (dbus-configuration-directory dbus services)))
-       (list (dmd-service
-              (documentation "Run the D-Bus system daemon.")
-              (provision '(dbus-system))
-              (requirement '(user-processes))
-              (start #~(make-forkexec-constructor
-                        (list (string-append #$dbus "/bin/dbus-daemon")
-                              "--nofork"
-                              (string-append "--config-file=" #$conf
-                                             "/system.conf"))))
-              (stop #~(make-kill-destructor))))))))
+(define (dbus-dmd-service config)
+  (list (dmd-service
+         (documentation "Run the D-Bus system daemon.")
+         (provision '(dbus-system))
+         (requirement '(user-processes))
+         (start #~(make-forkexec-constructor
+                   (list (string-append #$dbus "/bin/dbus-daemon")
+                         "--nofork" "--system")))
+         (stop #~(make-kill-destructor)))))
 
 (define dbus-root-service-type
   (service-type (name 'dbus)
@@ -140,6 +135,8 @@
                                           dbus-dmd-service)
                        (service-extension activation-service-type
                                           dbus-activation)
+                       (service-extension etc-service-type
+                                          dbus-etc-files)
                        (service-extension account-service-type
                                           (const %dbus-accounts))))
 
