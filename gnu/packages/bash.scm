@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -143,10 +144,17 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
              ;; guile-bash expect.
              (let ((include (string-append (assoc-ref outputs "include")
                                             "/include/bash"))
+                   (includes "^\\./include/[^/]+\\.h$")
                    (headers "^\\./(builtins/|lib/glob/|lib/tilde/|)[^/]+\\.h$"))
                (mkdir-p include)
                (for-each (lambda (file)
-                           (when ((@ (ice-9 regex) string-match) headers file)
+                           (when (string-match includes file)
+                             (let ((directory (string-append include)))
+                               (mkdir-p directory)
+                               (copy-file file
+                                          (string-append directory "/"
+                                                         (basename file)))))
+                           (when (string-match headers file)
                              (let ((directory (string-append include "/"
                                                              (dirname file))))
                                (mkdir-p directory)
@@ -154,6 +162,7 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
                                           (string-append directory "/"
                                                          (basename file))))))
                          (find-files "." "\\.h$"))
+               (delete-file (string-append include "/" "y.tab.h"))
                #t)))
          (version "4.3"))
     (package
@@ -198,6 +207,10 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
         ;; XXX: The tests have a lot of hard-coded paths, so disable them
         ;; for now.
         #:tests? #f
+
+        #:modules ((ice-9 regex)
+                   (guix build utils)
+                   (guix build gnu-build-system))
 
         #:phases (modify-phases %standard-phases
                    (add-after 'install 'post-install ,post-install-phase)
