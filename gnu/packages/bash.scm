@@ -149,18 +149,11 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
                (mkdir-p include)
                (for-each (lambda (file)
                            (when (string-match includes file)
-                             (let ((directory (string-append include)))
-                               (mkdir-p directory)
-                               (copy-file file
-                                          (string-append directory "/"
-                                                         (basename file)))))
+                             (install-file file include))
                            (when (string-match headers file)
-                             (let ((directory (string-append include "/"
-                                                             (dirname file))))
-                               (mkdir-p directory)
-                               (copy-file file
-                                          (string-append directory "/"
-                                                         (basename file))))))
+                             (install-file file
+                                           (string-append include "/"
+                                                          (dirname file)))))
                          (find-files "." "\\.h$"))
                (delete-file (string-append include "/" "y.tab.h"))
                #t)))
