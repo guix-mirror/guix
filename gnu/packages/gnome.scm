@@ -1775,7 +1775,7 @@ configuration storage systems.")
 (define-public json-glib
   (package
     (name "json-glib")
-    (version "1.0.2")
+    (version "1.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1783,7 +1783,14 @@ configuration storage systems.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "02k66lpc4cmgygj66n8zcy59bggy7yzm3v4hni9xqplgva9d2yw8"))))
+                "1k85vvb2prmk8aa8hmr2rp9rnbhffjgnmr18b13g24xxnqy5kww0"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Don't duplicate test names.
+               ;; <https://bugzilla.gnome.org/show_bug.cgi?id=755977>.
+               '(substitute* "json-glib/tests/builder.c"
+                  (("\"/builder/complex\", test_builder_empty")
+                   "\"/builder/empty\", test_builder_empty")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib" ,glib "bin")              ;for glib-mkenums and glib-genmarshal
