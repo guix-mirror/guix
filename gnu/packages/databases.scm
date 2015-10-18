@@ -6,6 +6,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
 
 (define-module (gnu packages databases)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages language)
   #:use-module (gnu packages linux)
@@ -286,16 +288,18 @@ pictures, sounds, or video.")
 
     ;; Running tests in parallel leads to test failures and crashes in
     ;; torture/utils.
-    (arguments '(#:parallel-tests? #f))
+    (arguments '(#:parallel-tests? #f
+                 #:configure-flags
+                 (list (string-append "--with-bash-headers="
+                                      (assoc-ref %build-inputs "bash:include")
+                                      "/include/bash"))))
 
     (native-inputs `(("emacs" ,emacs-no-x)
                      ("bc" ,bc)
+                     ("bash:include" ,bash "include")
                      ("libuuid", util-linux)))
 
     ;; TODO: Add more optional inputs.
-    ;; FIXME: Our Bash doesn't have development headers (need for the 'readrec'
-    ;; built-in command), but it's not clear how to get them installed.
-    ;; See <https://lists.gnu.org/archive/html/bug-bash/2014-03/msg00125.html>.
     (inputs `(("curl" ,curl)
               ("libgcrypt" ,libgcrypt)
               ("check" ,check)))
