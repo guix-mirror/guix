@@ -2226,6 +2226,7 @@ keyboard shortcuts.")
        ("lcms" ,lcms)))
     (inputs
      `(("dbus-glib" ,dbus-glib)
+       ("libgudev" ,libgudev)
        ("libusb" ,libusb)
        ("sqlite" ,sqlite)
        ("polkit" ,polkit)
