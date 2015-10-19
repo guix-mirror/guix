@@ -260,8 +260,9 @@ also known as DXTn or DXTC) for Mesa.")
                         (("\"libtxc_dxtn\\.so")
                          (string-append "\"" s2tc "/lib/libtxc_dxtn.so")))
                       (substitute* "src/loader/loader.c"
-                        (("dlopen\\(\"libudev\\.so")
-                         (string-append "dlopen(\"" udev "/lib/libudev.so")))
+                        (("udev_handle = dlopen\\(name")
+                         (string-append "udev_handle = dlopen(\""
+                                        udev "/lib/libudev.so\"")))
                       (substitute* "src/glx/dri_common.c"
                         (("dlopen\\(\"libGL\\.so")
                          (string-append "dlopen(\"" out "/lib/libGL.so")))
