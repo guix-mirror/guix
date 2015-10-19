@@ -1931,6 +1931,31 @@ The list of authorized keys is kept in the human-editable file
 s-expressions''} and is structured as an access-control list in the
 @url{http://theworld.com/~cme/spki.txt, Simple Public-Key Infrastructure
 (SPKI)}.
+
+@item --extract=@var{directory}
+@itemx -x @var{directory}
+Read a single-item archive as served by substitute servers
+(@pxref{Substitutes}) and extract it to @var{directory}.  This is a
+low-level operation needed in only very narrow use cases; see below.
+
+For example, the following command extracts the substitute for Emacs
+served by @code{hydra.gnu.org} to @file{/tmp/emacs}:
+
+@example
+$ wget -O - \
+  http://hydra.gnu.org/nar/@dots{}-emacs-24.5 \
+  | bunzip2 | guix archive -x /tmp/emacs
+@end example
+
+Single-item archives are different from multiple-item archives produced
+by @command{guix archive --export}; they contain a single store item,
+and they do @emph{not} embed a signature.  Thus this operation does
+@emph{no} signature verification and its output should be considered
+unsafe.
+
+The primary purpose of this operation is to facilitate inspection of
+archive contents coming from possibly untrusted substitute servers.
+
 @end table
 
 To export store files as an archive to the standard output, run:

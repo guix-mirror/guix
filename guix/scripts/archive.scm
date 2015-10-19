@@ -20,6 +20,7 @@
   #:use-module (guix config)
   #:use-module (guix utils)
   #:use-module ((guix build utils) #:select (mkdir-p))
+  #:use-module ((guix serialization) #:select (restore-file))
   #:use-module (guix store)
   #:use-module (guix packages)
   #:use-module (guix derivations)
@@ -63,6 +64,8 @@ Export/import one or more packages from/to the store.\n"))
       --import           import from the archive passed on stdin"))
   (display (_ "
       --missing          print the files from stdin that are missing"))
+  (display (_ "
+  -x, --extract=DIR      extract the archive on stdin to DIR"))
   (newline)
   (display (_ "
       --generate-key[=PARAMETERS]
@@ -119,6 +122,9 @@ Export/import one or more packages from/to the store.\n"))
          (option '("missing") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'missing #t result)))
+         (option '("extract" #\x) #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'extract arg result)))
          (option '("generate-key") #f #t
                  (lambda (opt name arg result)
                    (catch 'gcry-error
@@ -328,6 +334,10 @@ the input port."
                                (missing (remove (cut valid-path? store <>)
                                                 files)))
                           (format #t "~{~a~%~}" missing)))
+                       ((assoc-ref opts 'extract)
+                        =>
+                        (lambda (target)
+                          (restore-file (current-input-port) target)))
                        (else
                         (leave
                          (_ "either '--export' or '--import' \
