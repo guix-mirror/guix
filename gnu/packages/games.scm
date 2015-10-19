@@ -12,6 +12,7 @@
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +35,9 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix svn-download)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
@@ -1046,6 +1049,47 @@ Battle for control on a range of maps, using variety of units which have
 advantages and disadvantages against different types of attacks.  Units gain
 experience and advance levels, and are carried over from one scenario to the
 next campaign.")
+    (license license:gpl2+)))
+
+(define-public dosbox
+  (package
+    (name "dosbox")
+    (version "0.74.svn3947")
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url "http://svn.code.sf.net/p/dosbox/code-0/dosbox/trunk/")
+                    (revision 3947)))
+              ;; Use SVN head, since the last release (2010) is incompatible
+              ;; with GCC 4.8+ (see
+              ;; <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=624976>).
+              (sha256
+               (base32
+                "1p918j6090d1nkvgq7ifvmn506zrdmyi32y7p3ms40d5ssqjg8fj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before
+                   'configure 'autogen.sh
+                   (lambda _
+                     (zero? (system* "sh" "autogen.sh")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("sdl" ,sdl)
+       ("libpng" ,libpng)
+       ("zlib" ,zlib)
+       ("alsa-lib" ,alsa-lib)
+       ("glu" ,glu)
+       ("mesa" ,mesa)))
+    (home-page "http://www.dosbox.com")
+    (synopsis "x86 emulator with CGA/EGA/VGA/etc. graphics and sound")
+    (description "DOSBox is a DOS-emulator that uses the SDL library.  DOSBox
+also emulates CPU:286/386 realmode/protected mode, Directory
+FileSystem/XMS/EMS, Tandy/Hercules/CGA/EGA/VGA/VESA graphics, a
+SoundBlaster/Gravis Ultra Sound card for excellent sound compatibility with
+older games.")
     (license license:gpl2+)))
 
 (define-public gamine
