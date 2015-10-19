@@ -539,7 +539,9 @@ application suites.")
    (inputs
     `(("librsvg" ,librsvg)                        ;for gtk-encode-symbolic-svg
       ("libxml2" ,libxml2)
-      ("colord" ,colord)
+      ;; XXX: colord depends on mozjs (through polkit), which fails on
+      ;;      on non-intel systems now.
+      ;;("colord" ,colord)
       ("cups" ,cups)                            ;for printing support
       ("rest" ,rest)
       ("json-glib" ,json-glib)))
