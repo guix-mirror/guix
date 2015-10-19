@@ -89,6 +89,10 @@ EndSection"))
 
   (apply mixed-text-file "xserver.conf" "
 Section \"Files\"
+  FontPath \"" font-alias "/share/fonts/X11/75dpi\"
+  FontPath \"" font-alias "/share/fonts/X11/100dpi\"
+  FontPath \"" font-alias "/share/fonts/X11/misc\"
+  FontPath \"" font-alias "/share/fonts/X11/cyrillic\"
   FontPath \"" font-adobe75dpi "/share/fonts/X11/75dpi\"
   ModulePath \"" xf86-video-vesa "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-video-fbdev "/lib/xorg/modules/drivers\"
