@@ -4,6 +4,7 @@
 ;;; Copyright © 2013 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +47,7 @@
             libkate
             vorbis-tools
             opus
+            opusfile
             opus-tools))
 
 (define libogg
@@ -338,6 +340,34 @@ incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
     (description "Opus is a royalty-free, highly versatile audio codec.
 Opus-tools provide command line utilities for creating, inspecting and
 decoding .opus files.")
+    (license license:bsd-3)
+    (home-page "http://www.opus-codec.org")))
+
+(define opusfile
+  (package
+    (name "opusfile")
+    (version "0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.xiph.org/releases/opus/opusfile-" version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "19iys2kld75k0210b807i4illrdmj3cmmnrgxlc9y4vf6mxp2a14"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("opus" ,opus)))
+    `(native-inputs
+      ("pkg-config" ,pkg-config))
+    (inputs
+     `(("libogg" ,libogg)
+       ("openssl" ,openssl)))
+    (synopsis "Versatile audio codec")
+    (description
+     "The opusfile library provides seeking, decode, and playback of Opus
+streams in the Ogg container (.opus files) including over http(s) on posix and
+windows systems.")
     (license license:bsd-3)
     (home-page "http://www.opus-codec.org")))
 
