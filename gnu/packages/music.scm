@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (gnu packages base) ;libbdf
   #:use-module (gnu packages boost)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages cdrom)
   #:use-module (gnu packages code)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
@@ -55,6 +57,7 @@
   #:use-module (gnu packages linux) ; for alsa-utils
   #:use-module (gnu packages man)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages netpbm)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
@@ -67,12 +70,73 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages zip)
   #:use-module ((srfi srfi-1) #:select (last)))
+
+(define-public cmus
+  (package
+    (name "cmus")
+    (version "2.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/" name "/" name "/archive/v"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0raixgjavkm7hxppzsc5zqbfbh2bhjcmbiplhnsxsmyj8flafyc1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; cmus does not include tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace
+          'configure
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+
+              ;; It's an idiosyncratic configure script that doesn't
+              ;; understand --prefix=..; it wants prefix=.. instead.
+              (zero?
+               (system* "./configure"
+                        (string-append "prefix=" out)))))))))
+    ;; TODO: cmus optionally supports the following formats, which haven't yet
+    ;; been added to Guix:
+    ;;
+    ;; - Roar, libroar
+    ;;
+    ;; - DISCID_LIBS, apparently different from cd-discid which is included in
+    ;;   Guix.  See <http://sourceforge.net/projects/discid/>
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("ao" ,ao)
+       ("ffmpeg" ,ffmpeg)
+       ("flac" ,flac)
+       ("jack" ,jack-1)
+       ("libcddb" ,libcddb)
+       ("libcdio-paranoia" ,libcdio-paranoia)
+       ("libcue" ,libcue)
+       ("libmad" ,libmad)
+       ("libmodplug" ,libmodplug)
+       ("libmpcdec" ,libmpcdec)
+       ("libsamplerate" ,libsamplerate)
+       ("libvorbis" ,libvorbis)
+       ("ncurses" ,ncurses)
+       ("opusfile" ,opusfile)
+       ("pulseaudio" ,pulseaudio)
+       ("wavpack" ,wavpack)))
+     (home-page "https://cmus.github.io/")
+     (synopsis "Small console music player")
+     (description "Cmus is a small and fast console music player.  It supports
+many input formats and provides a customisable Vi-style user interface.")
+     (license license:gpl2+)))
 
 (define-public hydrogen
   (package
