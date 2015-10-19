@@ -413,6 +413,23 @@ provided.")
             "16ic8wfwwr3jicaml7b5a0sk6plcgc1kg84w02881yhwmqm3nicb"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after
+                   'install 'install-fonts-dir
+                   ;; The X font server will not add directories to the font
+                   ;; path unless they contain a "fonts.dir" file, so add some
+                   ;; dummy files.
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let ((out (assoc-ref outputs "out")))
+                       (for-each (lambda (d)
+                                   (call-with-output-file
+                                       (string-append out "/share/fonts/X11"
+                                                      "/" d "/fonts.dir")
+                                     (lambda (p)
+                                       (format p "0~%"))))
+                                 '("75dpi" "100dpi" "misc" "cyrillic"))
+                       #t))))))
     (home-page "http://www.x.org/wiki/")
     (synopsis "Xorg font aliases")
     (description
