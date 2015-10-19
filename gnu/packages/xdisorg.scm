@@ -209,7 +209,8 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1i4n7mz49l0j4kr0dg9n1j3hlc786ncqgj0v5fci1mz7pp40m5ki"))))
+            "1i4n7mz49l0j4kr0dg9n1j3hlc786ncqgj0v5fci1mz7pp40m5ki"))
+        (patches (list (search-patch "libdrm-symbol-check.patch")))))
     (build-system gnu-build-system)
     (inputs
       `(("libpciaccess" ,libpciaccess)
