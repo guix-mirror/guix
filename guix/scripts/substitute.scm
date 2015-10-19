@@ -53,6 +53,25 @@
   #:use-module (web response)
   #:use-module (guix http-client)
   #:export (narinfo-signature->canonical-sexp
+
+            narinfo?
+            narinfo-path
+            narinfo-uri
+            narinfo-uri-base
+            narinfo-compression
+            narinfo-file-hash
+            narinfo-file-size
+            narinfo-hash
+            narinfo-size
+            narinfo-references
+            narinfo-deriver
+            narinfo-system
+            narinfo-signature
+
+            narinfo-hash->sha256
+            assert-valid-narinfo
+
+            lookup-narinfos
             read-narinfo
             write-narinfo
             guix-substitute))
@@ -230,6 +249,12 @@ object on success, or #f on failure."
   ;; See <https://lists.gnu.org/archive/html/guix-devel/2014-02/msg00340.html>
   ;; for more information.
   (contents     narinfo-contents))
+
+(define (narinfo-hash->sha256 hash)
+  "If the string HASH denotes a sha256 hash, return it as a bytevector.
+Otherwise return #f."
+  (and (string-prefix? "sha256:" hash)
+       (nix-base32-string->bytevector (string-drop hash 7))))
 
 (define (narinfo-signature->canonical-sexp str)
   "Return the value of a narinfo's 'Signature' field as a canonical sexp."
@@ -429,10 +454,17 @@ may be #f, in which case it indicates that PATH is unavailable at CACHE-URL."
               (value ,(and=> narinfo narinfo->string))))
 
   (let ((file (narinfo-cache-file cache-url path)))
-    (mkdir-p (dirname file))
-    (with-atomic-file-output file
-      (lambda (out)
-        (write (cache-entry cache-url narinfo) out))))
+    (catch 'system-error
+      (lambda ()
+        (mkdir-p (dirname file))
+        (with-atomic-file-output file
+          (lambda (out)
+            (write (cache-entry cache-url narinfo) out))))
+      (lambda args
+        ;; We may not have write access to the local cache when called from an
+        ;; unprivileged process such as 'guix challenge'.
+        (unless (= EACCES (system-error-errno args))
+          (apply throw args)))))
 
   narinfo)
 
