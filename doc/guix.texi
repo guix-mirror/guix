@@ -143,6 +143,7 @@ Utilities
 * Invoking guix graph::         Visualizing the graph of packages.
 * Invoking guix environment::   Setting up development environments.
 * Invoking guix publish::       Sharing substitutes.
+* Invoking guix challenge::     Challenging substitute servers.
 
 GNU Distribution
 
@@ -1600,7 +1601,10 @@ Guix has the foundations to maximize build reproducibility
 (@pxref{Features}).  In most cases, independent builds of a given
 package or derivation should yield bit-identical results.  Thus, through
 a diverse set of independent package builds, we can strengthen the
-integrity of our systems.
+integrity of our systems.  The @command{guix challenge} command aims to
+help users assess substitute servers, and to assist developers in
+finding out about non-deterministic package builds (@pxref{Invoking guix
+challenge}).
 
 In the future, we want Guix to have support to publish and retrieve
 binaries to/from other users, in a peer-to-peer fashion.  If you would
@@ -3577,6 +3581,7 @@ programming interface of Guix in a convenient way.
 * Invoking guix graph::         Visualizing the graph of packages.
 * Invoking guix environment::   Setting up development environments.
 * Invoking guix publish::       Sharing substitutes.
+* Invoking guix challenge::     Challenging substitute servers.
 @end menu
 
 @node Invoking guix build
@@ -4775,6 +4780,128 @@ Spawn a Guile REPL server (@pxref{REPL Servers,,, guile, GNU Guile
 Reference Manual}) on @var{port} (37146 by default).  This is used
 primarily for debugging a running @command{guix publish} server.
 @end table
+
+
+@node Invoking guix challenge
+@section Invoking @command{guix challenge}
+
+@cindex reproducible builds
+@cindex verifiable builds
+
+Do the binaries provided by this server really correspond to the source
+code it claims to build?  Is this package's build process deterministic?
+These are the questions the @command{guix challenge} command attempts to
+answer.
+
+The former is obviously an important question: Before using a substitute
+server (@pxref{Substitutes}), you'd rather @emph{verify} that it
+provides the right binaries, and thus @emph{challenge} it.  The latter
+is what enables the former: If package builds are deterministic, then
+independent builds of the package should yield the exact same result,
+bit for bit; if a server provides a binary different from the one
+obtained locally, it may be either corrupt or malicious.
+
+We know that the hash that shows up in @file{/gnu/store} file names is
+the hash of all the inputs of the process that built the file or
+directory---compilers, libraries, build scripts,
+etc. (@pxref{Introduction}).  Assuming deterministic build processes,
+one store file name should map to exactly one build output.
+@command{guix challenge} checks whether there is, indeed, a single
+mapping by comparing the build outputs of several independent builds of
+any given store item.
+
+The command's output looks like this:
+
+@smallexample
+$ guix challenge --substitute-urls="http://hydra.gnu.org http://guix.example.org"
+updating list of substitutes from 'http://hydra.gnu.org'... 100.0%
+updating list of substitutes from 'http://guix.example.org'... 100.0%
+/gnu/store/@dots{}-openssl-1.0.2d contents differ:
+  local hash: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
+  http://hydra.gnu.org/nar/@dots{}-openssl-1.0.2d: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
+  http://guix.example.org/nar/@dots{}-openssl-1.0.2d: 1zy4fmaaqcnjrzzajkdn3f5gmjk754b43qkq47llbyak9z0qjyim
+/gnu/store/@dots{}-git-2.5.0 contents differ:
+  local hash: 00p3bmryhjxrhpn2gxs2fy0a15lnip05l97205pgbk5ra395hyha
+  http://hydra.gnu.org/nar/@dots{}-git-2.5.0: 069nb85bv4d4a6slrwjdy8v1cn4cwspm3kdbmyb81d6zckj3nq9f
+  http://guix.example.org/nar/@dots{}-git-2.5.0: 0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73
+/gnu/store/@dots{}-pius-2.1.1 contents differ:
+  local hash: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
+  http://hydra.gnu.org/nar/@dots{}-pius-2.1.1: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
+  http://guix.example.org/nar/@dots{}-pius-2.1.1: 1cy25x1a4fzq5rk0pmvc8xhwyffnqz95h2bpvqsz2mpvlbccy0gs
+@end smallexample
+
+@noindent
+In this example, @command{guix challenge} first scans the store to
+determine the set of locally-built derivations---as opposed to store
+items that were downloaded from a substitute server---and then queries
+all the substitute servers.  It then reports those store items for which
+the servers obtained a result different from the local build.
+
+@cindex non-determinism, in package builds
+As an example, @code{guix.example.org} always gets a different answer.
+Conversely, @code{hydra.gnu.org} agrees with local builds, except in the
+case of Git.  This might indicate that the build process of Git is
+non-deterministic, meaning that its output varies as a function of
+various things that Guix does not fully control, in spite of building
+packages in isolated environments (@pxref{Features}).  Most common
+sources of non-determinism include the addition of timestamps in build
+results, the inclusion of random numbers, and directory listings sorted
+by inode number.  See @uref{http://reproducible.debian.net/howto/}, for
+more information.
+
+To find out what's wrong with this Git binary, we can do something along
+these lines (@pxref{Invoking guix archive}):
+
+@example
+$ wget -q -O - http://hydra.gnu.org/nar/@dots{}-git-2.5.0 \
+   | guix archive -x /tmp/git
+$ diff -ur /gnu/store/@dots{}-git.2.5.0 /tmp/git
+@end example
+
+This command shows the difference between the files resulting from the
+local build, and the files resulting from the build on
+@code{hydra.gnu.org} (@pxref{Overview, Comparing and Merging Files,,
+diffutils, Comparing and Merging Files}).  The @command{diff} command
+works great for text files.  When binary files differ, a better option
+is @uref{http://diffoscope.org/, Diffoscope}, a tool that helps
+visualize differences for all kinds of files.
+
+Once you've done that work, you can tell whether the differences are due
+to a non-deterministic build process or to a malicious server.  We try
+hard to remove sources of non-determinism in packages to make it easier
+to verify substitutes, but of course, this is a process, one that
+involves not just Guix but a large part of the free software community.
+In the meantime, @command{guix challenge} is one tool to help address
+the problem.
+
+If you are writing packages for Guix, you are encouraged to check
+whether @code{hydra.gnu.org} and other substitute servers obtain the
+same build result as you did with:
+
+@example
+$ guix challenge @var{package}
+@end example
+
+@noindent
+... where @var{package} is a package specification such as
+@code{guile-2.0} or @code{glibc:debug}.
+
+The general syntax is:
+
+@example
+guix challenge @var{options} [@var{packages}@dots{}]
+@end example
+
+The one option that matters is:
+
+@table @code
+
+@item --substitute-urls=@var{urls}
+Consider @var{urls} the whitespace-separated list of substitute source
+URLs to compare to.
+
+@end table
+
 
 @c *********************************************************************
 @node GNU Distribution

@@ -116,6 +116,7 @@ MODULES =					\
   guix/scripts/refresh.scm			\
   guix/scripts/system.scm			\
   guix/scripts/lint.scm				\
+  guix/scripts/challenge.scm			\
   guix/scripts/import/cran.scm			\
   guix/scripts/import/gnu.scm			\
   guix/scripts/import/nix.scm			\
@@ -218,6 +219,7 @@ SCM_TESTS =					\
   tests/scripts.scm				\
   tests/size.scm				\
   tests/graph.scm				\
+  tests/challenge.scm				\
   tests/file-systems.scm			\
   tests/services.scm				\
   tests/containers.scm
