@@ -143,13 +143,13 @@ and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.44.0")
+   (version "7.45.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://gnunet.org/sites/default/files/gnurl-"
                                 version ".tar.bz2"))
             (sha256
-             (base32 "14hrplyzy923593k2zwk662sfvaa0if032aaw52rs52cpsm0y3yh"))))
+             (base32 "0hd8w4wyjwagd4k6vm6srphqbmysz08rcwf8z7f4b2d6d2yrn3mm"))))
    (build-system gnu-build-system)
    (inputs `(("gnutls" ,gnutls)
              ("libidn" ,libidn)
