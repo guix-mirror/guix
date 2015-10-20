@@ -364,8 +364,9 @@ to be modified."
                      :name "-- " :char ?= :option? t args)))
     (let ((command (car commands)))
       (cond
-       ((member command '("archive" "build" "graph" "edit"
-                          "environment" "lint" "refresh"))
+       ((member command
+                '("archive" "build" "challenge" "edit" "environment"
+                  "graph" "lint" "refresh"))
         (argument :doc "Packages" :fun 'guix-read-package-names-string))
        ((string= command "download")
         (argument :doc "URL"))
