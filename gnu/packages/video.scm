@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -584,7 +585,7 @@ treaming protocols.")
 (define-public mplayer
   (package
     (name "mplayer")
-    (version "1.1.1")
+    (version "1.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -592,7 +593,7 @@ treaming protocols.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "0xlcg7rszrwmw29wqr0plsw5d1rq0hb7vjsq7bmmfsly2z1wg3yf"))))
+               "1dp2lbxyhgjr8sn91kf6xw3w6d7dsgq08v4dgrq20afz1bqzdrzz"))))
     (build-system gnu-build-system)
     ;; FIXME: Add additional inputs once available.
     (native-inputs
@@ -601,8 +602,11 @@ treaming protocols.")
      `(("alsa-lib" ,alsa-lib)
        ("cdparanoia" ,cdparanoia)
        ("fontconfig" ,fontconfig)
+       ("ffmpeg", ffmpeg)
        ("freetype" ,freetype)
        ("lame" ,lame)
+       ("libdvdcss", libdvdcss)
+       ("libdvdnav", libdvdnav)
        ("libmpg123" ,mpg123)                      ; audio codec for MP3
 ;;        ("giflib" ,giflib) ; uses QuantizeBuffer, requires version >= 5
        ("libjpeg" ,libjpeg)
@@ -639,7 +643,7 @@ treaming protocols.")
                       "./configure"
                       (string-append "--extra-cflags=-I"
                                      libx11 "/include") ; to detect libx11
-                      "--disable-tremor-internal" ; forces external libvorbis
+		       "--disable-ffmpeg_a" ; disables bundled ffmpeg
                       (string-append "--prefix=" out)
                       ;; Enable runtime cpu detection where supported,
                       ;; and choose a suitable target.
