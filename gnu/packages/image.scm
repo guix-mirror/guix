@@ -337,14 +337,14 @@ error-resilience, a Java-viewer for j2k-images, ...")
 (define-public giflib
   (package
     (name "giflib")
-    (version "5.1.1")
+    (version "4.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/giflib/giflib-"
                                   (first (string-split version #\.))
                                   ".x/giflib-" version ".tar.bz2"))
               (sha256
-               (base32 "1z1gzq16sdya8xnl5qjc07634kkwj5m0n3bvvj4v9j11xfn1841r"))))
+               (base32 "0rmp7ipzk42r841bggd7bfqk4p8qsssbp4wcck4qnz7p4rkxbj0a"))))
     (build-system gnu-build-system)
     (outputs '("bin"                    ; utility programs
                "out"))                  ; library
