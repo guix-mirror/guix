@@ -22,6 +22,7 @@ guix/scripts/publish.scm
 guix/scripts/edit.scm
 guix/scripts/size.scm
 guix/scripts/graph.scm
+guix/scripts/challenge.scm
 guix/gnu-maintenance.scm
 guix/ui.scm
 guix/http-client.scm

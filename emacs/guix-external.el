@@ -23,11 +23,27 @@
 
 ;;; Code:
 
+(require 'guix-config)
+
 (defgroup guix-external nil
   "Settings for external programs."
   :group 'guix)
 
-(defcustom guix-dot-program (executable-find "dot")
+(defcustom guix-guile-program guix-config-guile-program
+  "Name of the 'guile' executable used for Guix REPL.
+May be either a string (the name of the executable) or a list of
+strings of the form:
+
+  (NAME . ARGS)
+
+Where ARGS is a list of arguments to the guile program."
+  :type 'string
+  :group 'guix-external)
+
+(defcustom guix-dot-program
+  (if (file-name-absolute-p guix-config-dot-program)
+      guix-config-dot-program
+    (executable-find "dot"))
   "Name of the 'dot' executable."
   :type 'string
   :group 'guix-external)

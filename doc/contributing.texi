@@ -234,6 +234,17 @@ For important changes, check that dependent package (if applicable) are
 not affected by the change; @code{guix refresh --list-dependent
 @var{package}} will help you do that (@pxref{Invoking guix refresh}).
 
+@item
+Check whether the package's build process is deterministic.  This
+typically means checking whether an independent build of the package
+yields the exact same result that you obtained, bit for bit.
+
+A simple way to do that is with @command{guix challenge}
+(@pxref{Invoking guix challenge}).  You may run it once the package has
+been committed and built by @code{hydra.gnu.org} to check whether it
+obtains the same result as you did.  Better yet: Find another machine
+that can build it and run @command{guix publish}.
+
 @end enumerate
 
 When posting a patch to the mailing list, use @samp{[PATCH] @dots{}} as a

@@ -46,6 +46,7 @@
   #:use-module (gnu packages doxygen)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages polkit))
 
 (define-public xdg-utils
@@ -175,6 +176,8 @@ the freedesktop.org XDG Base Directory specification.")
      `(("linux-pam" ,linux-pam)
        ("linux-libre-headers" ,linux-libre-headers)
        ("libcap" ,libcap)
+       ("dmd" ,dmd)                          ;for 'halt' and 'reboot', invoked
+                                             ;when pressing the power button
        ("dbus" ,dbus)
        ("eudev" ,eudev)))
     (home-page "https://github.com/andywingo/elogind")

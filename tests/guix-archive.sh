@@ -24,9 +24,11 @@ guix archive --version
 
 archive="t-archive-$$"
 archive_alt="t-archive-alt-$$"
+tmpdir="t-archive-dir-$$"
 rm -f "$archive" "$archive_alt"
+rm -rf "$tmpdir"
 
-trap 'rm -f "$archive" "$archive_alt"' EXIT
+trap 'rm -f "$archive" "$archive_alt"; rm -rf "$tmpdir"' EXIT
 
 guix archive --export guile-bootstrap > "$archive"
 guix archive --export guile-bootstrap:out > "$archive_alt"
@@ -39,7 +41,7 @@ cmp "$archive" "$archive_alt"
 guix archive --export `guix build guile-bootstrap` > "$archive_alt"
 cmp "$archive" "$archive_alt"
 
-# Check the exit value and stderr upon import.
+# Check the exit value upon import.
 guix archive --import < "$archive"
 
 if guix archive something-that-does-not-exist
@@ -62,6 +64,15 @@ cmp "$archive" "$archive_alt"
 echo something invalid > "$archive"
 if guix archive --missing < "$archive"
 then false; else true; fi
+
+# Check '--extract'.
+guile -c "(use-modules (guix serialization))
+  (call-with-output-file \"$archive\"
+    (lambda (port)
+      (write-file \"$(guix build guile-bootstrap)\" port)))"
+guix archive -x "$tmpdir" < "$archive"
+test -x "$tmpdir/bin/guile"
+test -d "$tmpdir/lib/guile"
 
 if echo foo | guix archive --authorize
 then false; else true; fi
