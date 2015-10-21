@@ -28,6 +28,7 @@
   #:use-module (guix upstream)
   #:use-module ((guix gnu-maintenance) #:select (%gnu-updater))
   #:use-module (guix import elpa)
+  #:use-module (guix import cran)
   #:use-module (guix gnupg)
   #:use-module (gnu packages)
   #:use-module ((gnu packages commencement) #:select (%final-inputs))
@@ -139,7 +140,8 @@ specified with `--select'.\n"))
 (define %updaters
   ;; List of "updaters" used by default.  They are consulted in this order.
   (list %gnu-updater
-        %elpa-updater))
+        %elpa-updater
+        %cran-updater))
 
 (define (lookup-updater name)
   "Return the updater called NAME."

@@ -20,6 +20,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (sxml simple)
   #:use-module (sxml match)
   #:use-module (sxml xpath)
@@ -29,7 +30,10 @@
   #:use-module (guix base32)
   #:use-module ((guix download) #:select (download-to-store))
   #:use-module (guix import utils)
-  #:export (cran->guix-package))
+  #:use-module (guix upstream)
+  #:use-module (guix packages)
+  #:export (cran->guix-package
+            %cran-updater))
 
 ;;; Commentary:
 ;;;
@@ -108,12 +112,25 @@ or #f on failure.  NAME is case-sensitive."
                              name)
                      (symbol->string name))))))))
 
+(define (downloads->url downloads)
+  "Extract from DOWNLOADS, the downloads item of the CRAN sxml tree, the
+download URL."
+  (string-append "mirror://cran/"
+                 ;; Remove double dots, because we want an
+                 ;; absolute path.
+                 (regexp-substitute/global
+                  #f "\\.\\./"
+                  (string-join ((sxpath '((xhtml:a 1) @ href *text*))
+                                (table-datum downloads " Package source: ")))
+                  'pre 'post)))
+
+(define (nodes->text nodeset)
+  "Return the concatenation of the text nodes among NODESET."
+  (string-join ((sxpath '(// *text*)) nodeset) " "))
+
 (define (cran-sxml->sexp sxml)
   "Return the `package' s-expression for a CRAN package from the SXML
 representation of the package page."
-  (define (nodes->text nodeset)
-    (string-join ((sxpath '(// *text*)) nodeset) " "))
-
   (define (guix-name name)
     (if (string-prefix? "r-" name)
         (string-downcase name)
@@ -136,16 +153,7 @@ representation of the package page."
                        (table-datum summary "License:")))
           (home-page  (nodes->text ((sxpath '((xhtml:a 1)))
                                     (table-datum summary "URL:"))))
-          (source-url (string-append "mirror://cran/"
-                                     ;; Remove double dots, because we want an
-                                     ;; absolute path.
-                                     (regexp-substitute/global
-                                      #f "\\.\\./"
-                                      (string-join
-                                       ((sxpath '((xhtml:a 1) @ href *text*))
-                                        (table-datum downloads
-                                                     " Package source: ")))
-                                      'pre 'post)))
+          (source-url (downloads->url downloads))
           (tarball    (with-store store (download-to-store store source-url)))
           (sysdepends (map match:substring
                            (list-matches
@@ -186,3 +194,49 @@ representation of the package page."
 `package' s-expression corresponding to that package, or #f on failure."
   (let ((module-meta (cran-fetch package-name)))
     (and=> module-meta cran-sxml->sexp)))
+
+
+;;;
+;;; Updater.
+;;;
+
+(define (latest-release package)
+  "Return an <upstream-source> for the latest release of PACKAGE."
+  (define name
+    (if (string-prefix? "r-" package)
+        (string-drop package 2)
+        package))
+
+  (define sxml
+    (cran-fetch name))
+
+  (and sxml
+       (sxml-match-let*
+        (((*TOP* (xhtml:html
+                  ,head
+                  (xhtml:body
+                   (xhtml:h2 ,name-and-synopsis)
+                   (xhtml:p ,description)
+                   ,summary
+                   (xhtml:h4 "Downloads:") ,downloads
+                   . ,rest)))
+          sxml))
+        (let ((version (nodes->text (table-datum summary "Version:")))
+              (url     (downloads->url downloads)))
+          ;; CRAN does not provide signatures.
+          (upstream-source
+           (package package)
+           (version version)
+           (urls (list url)))))))
+
+(define (cran-package? package)
+  "Return true if PACKAGE is an R package from CRAN."
+  ;; Assume all R packages are available on CRAN.
+  (string-prefix? "r-" (package-name package)))
+
+(define %cran-updater
+  (upstream-updater 'cran
+                    cran-package?
+                    latest-release))
+
+;;; cran.scm ends here

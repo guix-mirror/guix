@@ -4270,14 +4270,17 @@ may be one of:
 @item gnu
 the updater for GNU packages;
 @item elpa
-the updater for @uref{http://elpa.gnu.org/, ELPA} packages.
+the updater for @uref{http://elpa.gnu.org/, ELPA} packages;
+@item cran
+the updater fro @uref{http://cran.r-project.org/, CRAN} packages.
 @end table
 
 For instance, the following commands only checks for updates of Emacs
-packages hosted at @code{elpa.gnu.org}:
+packages hosted at @code{elpa.gnu.org} and updates of CRAN packages:
 
 @example
-$ guix refresh -t elpa
+$ guix refresh -t elpa -t cran
+gnu/packages/statistics.scm:819:13: r-testthat would be upgraded from 0.10.0 to 0.11.0
 gnu/packages/emacs.scm:856:13: emacs-auctex would be upgraded from 11.88.6 to 11.88.9
 @end example
 
