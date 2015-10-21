@@ -153,12 +153,8 @@ specified with `--select'.\n"))
 KEY-DOWNLOAD specifies a download policy for missing OpenPGP keys; allowed
 values: 'interactive' (default), 'always', and 'never'."
   (let-values (((version tarball)
-                (catch #t
-                  (lambda ()
-                    (package-update store package updaters
-                                    #:key-download key-download))
-                  (lambda _
-                    (values #f #f))))
+                (package-update store package updaters
+                                #:key-download key-download))
                ((loc)
                 (or (package-field-location package 'version)
                     (package-location package))))
