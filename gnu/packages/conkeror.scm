@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,46 +28,42 @@
 (define-public conkeror
   (package
     (name "conkeror")
-    (version "1.0pre1")
+    (version "1.0pre1.20150730")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "http://repo.or.cz/w/conkeror.git/snapshot/"
-                              "8a26fff5896a3360549e2adfbf06b1d57e909266"
-                              ".tar.gz")) ; tag: debian-1.0--pre-1+git140616-1
+                              "a1f7e879b129df5cf14ea4ce80a9c1407380ed58"
+                              ".tar.gz")) ; tag: debian-1.0--pre-1+git150730-1
               (sha256
                (base32
-                "1cgjzi7g3g22zcx6bpfnid4i12sb45w6icmxdzjn8d3c0m8qsyp1"))))
+                "1q45hc30733gz3ca2ixvw0rzzcbi7rlay7gx7kvzjv17a030nyk0"))))
     (build-system gnu-build-system)
     (inputs `(("icecat" ,icecat)))
     (arguments
      `(#:tests? #f                      ;no tests
-       #:make-flags '("CC=gcc")
+       #:make-flags `("CC=gcc"
+                      ,(string-append "PREFIX=" (assoc-ref %outputs "out")))
        #:phases
-       (alist-delete
-        'configure
-        (alist-replace
-         'install
-         (lambda _
-           (begin
-             (use-modules (guix build utils))
-             (let* ((datadir  (string-append %output "/share/conkeror"))
-                    (bindir   (string-append %output "/bin"))
-                    (launcher (string-append bindir  "/conkeror"))
-                    (spawn    (string-append bindir  "/conkeror-spawn-helper")))
-               (copy-recursively "." datadir)
-               (mkdir-p bindir)
-               (copy-file "conkeror-spawn-helper" spawn)
-               (call-with-output-file launcher
-                 (lambda (p)
-                   (format p "#!~a/bin/bash
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after
+          'install 'install-app-launcher
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            ;; This overwrites the installed launcher, which execs xulrunner,
+            ;; with one that execs 'icecat --app'
+            (let* ((out      (assoc-ref outputs "out"))
+                   (datadir  (string-append out "/share/conkeror"))
+                   (launcher (string-append out "/bin/conkeror")))
+              (call-with-output-file launcher
+                (lambda (p)
+                  (format p "#!~a/bin/bash
 exec ~a/bin/icecat --app ~a \"$@\"~%"
-                           (assoc-ref %build-inputs "bash") ;implicit input
-                           (assoc-ref %build-inputs "icecat")
-                           (string-append datadir
-                                          "/application.ini"))))
-               (chmod launcher #o555))))
-         %standard-phases))))
+                          (assoc-ref inputs "bash") ;implicit input
+                          (assoc-ref inputs "icecat")
+                          (string-append datadir
+                                         "/application.ini"))))
+              (chmod launcher #o555)))))))
     (synopsis "Keyboard focused web browser with Emacs look and feel")
     (description "Conkeror is a highly-programmable web browser based on
 Mozilla XULRunner which is the base of all Mozilla products including Firefox.
