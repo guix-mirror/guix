@@ -59,6 +59,7 @@
     (name "dbus")
     (version "1.10.0")
     (source (origin
+              ;; TODO: Apply patch from DBUS/ACTIVATION below.
               (method url-fetch)
               (uri (string-append
                     "http://dbus.freedesktop.org/releases/dbus/dbus-"
@@ -122,6 +123,17 @@ daemon).  Currently the communicating applications are on one computer,
 or through unencrypted TCP/IP suitable for use behind a firewall with
 shared NFS home directories.")
     (license license:gpl2+)))                     ; or Academic Free License 2.1
+
+(define-public dbus/activation
+  ;; D-Bus with a patch to fix service activation.
+  ;; TODO: Merge with DBUS above.
+  (package
+    (inherit dbus)
+    (version (string-append (package-version dbus) ".a"))
+    (source (origin
+              (inherit (package-source dbus))
+              (patches
+               (list (search-patch "dbus-helper-search-path.patch")))))))
 
 (define glib
   (package

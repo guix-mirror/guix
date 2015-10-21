@@ -1,0 +1,18 @@
+The setuid helper of D-Bus is responsible for "service activation".
+It looks for '.service' files in fixed locations, but the default locations
+make no sense (see below), so replace them with /etc/dbus-1/system-services.
+
+--- dbus-1.10.0/dbus/dbus-sysdeps-util-unix.c	2015-10-22 00:07:03.829251854 +0200
++++ dbus-1.10.0/dbus/dbus-sysdeps-util-unix.c	2015-10-22 00:07:14.893445175 +0200
+@@ -1410,10 +1410,7 @@ _dbus_get_standard_system_servicedirs (D
+    * be available.
+    */
+   static const char standard_search_path[] =
+-    "/usr/local/share:"
+-    "/usr/share:"
+-    DBUS_DATADIR ":"
+-    "/lib";
++    "/etc";
+   DBusString servicedir_path;
+ 
+   _dbus_string_init_const (&servicedir_path, standard_search_path);
