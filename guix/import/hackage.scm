@@ -32,37 +32,35 @@
   #:export (hackage->guix-package))
 
 (define ghc-standard-libraries
-  ;; List of libraries distributed with ghc (7.8.4). We include GHC itself as
+  ;; List of libraries distributed with ghc (7.10.2). We include GHC itself as
   ;; some packages list it.
-  '("ghc"
-    "haskell98"
-    "hoopl"
+  '("array"
     "base"
-    "transformers"
-    "deepseq"
-    "array"
+    "bin-package-db"
     "binary"
     "bytestring"
+    "cabal" ;; in the output of `ghc-pkg list` Cabal is uppercased, but
+            ;; hackage-name->package-name takes this into account.
     "containers"
-    "time"
-    "cabal"
-    "bin-package-db"
-    "ghc-prim"
-    "integer-gmp"
-    "integer-simple"
-    "win32"
-    "template-haskell"
-    "process"
-    "haskeline"
-    "terminfo"
+    "deepseq"
     "directory"
     "filepath"
-    "old-locale"
-    "unix"
-    "old-time"
+    "ghc"
+    "ghc-prim"
+    "haskeline"
+    "hoopl"
+    "hpc"
+    "integer-gmp"
     "pretty"
-    "xhtml"
-    "hpc"))
+    "process"
+    "rts"
+    "template-haskell"
+    "terminfo"
+    "time"
+    "transformers"
+    "unix"
+    "win32"
+    "xhtml"))
 
 (define package-name-prefix "ghc-")
 
