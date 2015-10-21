@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,9 +33,12 @@
   #:use-module (guix ui)
   #:use-module (guix hash)
   #:use-module (guix base32)
+  #:use-module (guix upstream)
+  #:use-module (guix packages)
   #:use-module ((guix utils) #:select (call-with-temporary-output-file
                                        memoize))
-  #:export (elpa->guix-package))
+  #:export (elpa->guix-package
+            %elpa-updater))
 
 (define (elpa-dependencies->names deps)
   "Convert DEPS, a list of symbol/version pairs à la ELPA, to a list of
@@ -228,5 +232,48 @@ type '<elpa-package>'."
   "Fetch the package NAME from REPO and produce a Guix package S-expression."
   (let ((pkg (fetch-elpa-package name repo)))
     (and=> pkg elpa-package->sexp)))
+
+
+;;;
+;;; Updates.
+;;;
+
+(define (latest-release package)
+  "Return an <upstream-release> for the latest release of PACKAGE.  PACKAGE
+may be a Guix package name such as \"emacs-debbugs\" or an upstream name such
+as \"debbugs\"."
+  (define name
+    (if (string-prefix? "emacs-" package)
+        (string-drop package 6)
+        package))
+
+  (let* ((repo    'gnu)
+         (info    (elpa-package-info name repo))
+         (version (match info
+                    ((name raw-version . _)
+                     (elpa-version->string raw-version))))
+         (url     (match info
+                    ((_ raw-version reqs synopsis kind . rest)
+                     (package-source-url kind name version repo)))))
+    (upstream-source
+     (package package)
+     (version version)
+     (urls (list url))
+     (signature-urls (list (string-append url ".sig"))))))
+
+(define (package-from-gnu.org? package)
+  "Return true if PACKAGE is from elpa.gnu.org."
+  (match (and=> (package-source package) origin-uri)
+    ((? string? uri)
+     (let ((uri (string->uri uri)))
+       (and uri (string=? (uri-host uri) "elpa.gnu.org"))))
+    (_ #f)))
+
+(define %elpa-updater
+  ;; The ELPA updater.  We restrict it to packages hosted on elpa.gnu.org
+  ;; because for other repositories, we typically grab the source elsewhere.
+  (upstream-updater 'elpa
+                    package-from-gnu.org?
+                    latest-release))
 
 ;;; elpa.scm ends here

@@ -27,6 +27,7 @@
   #:use-module (guix packages)
   #:use-module (guix upstream)
   #:use-module ((guix gnu-maintenance) #:select (%gnu-updater))
+  #:use-module (guix import elpa)
   #:use-module (guix gnupg)
   #:use-module (gnu packages)
   #:use-module ((gnu packages commencement) #:select (%final-inputs))
@@ -131,8 +132,9 @@ specified with `--select'.\n"))
 ;;;
 
 (define %updaters
-  ;; List of "updaters" used by default.
-  (list %gnu-updater))
+  ;; List of "updaters" used by default.  They are consulted in this order.
+  (list %gnu-updater
+        %elpa-updater))
 
 (define* (update-package store package #:key (key-download 'interactive))
   "Update the source file that defines PACKAGE with the new version.
