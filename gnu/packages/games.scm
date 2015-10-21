@@ -6,7 +6,7 @@
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
@@ -1069,8 +1069,8 @@ next campaign.")
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
-                  (add-before
-                   'configure 'autogen.sh
+                  (add-after
+                   'unpack 'autogen.sh
                    (lambda _
                      (zero? (system* "sh" "autogen.sh")))))))
     (native-inputs
