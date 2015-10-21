@@ -29,16 +29,10 @@
   #:use-module (system foreign)
   #:use-module (guix http-client)
   #:use-module (guix ftp-client)
-  #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (guix records)
+  #:use-module (guix upstream)
   #:use-module (guix packages)
-  #:use-module ((guix download) #:select (download-to-store))
-  #:use-module (guix gnupg)
-  #:use-module (rnrs io ports)
-  #:use-module (guix base32)
-  #:use-module ((guix build utils)
-                #:select (substitute))
   #:export (gnu-package-name
             gnu-package-mundane-name
             gnu-package-copyright-holder
@@ -56,21 +50,12 @@
             find-packages
             gnu-package?
 
-            gnu-release?
-            gnu-release-package
-            gnu-release-version
-            gnu-release-directory
-            gnu-release-files
-
             releases
             latest-release
             gnu-release-archive-types
             gnu-package-name->name+version
 
-            download-tarball
-            package-update-path
-            package-update
-            update-package-source))
+            %gnu-updater))
 
 ;;; Commentary:
 ;;;
@@ -218,13 +203,6 @@ network to check in GNU's database."
 ;;; Latest release.
 ;;;
 
-(define-record-type* <gnu-release> gnu-release make-gnu-release
-  gnu-release?
-  (package    gnu-release-package)
-  (version    gnu-release-version)
-  (directory  gnu-release-directory)
-  (files      gnu-release-files))
-
 (define (ftp-server/directory project)
   "Return the FTP server and directory where PROJECT's tarball are
 stored."
@@ -284,29 +262,6 @@ true."
                 (gnu-package-name->name+version (sans-extension tarball))))
     version))
 
-(define (coalesce-releases releases)
-  "Coalesce the elements of RELEASES that correspond to the same version."
-  (define (same-version? r1 r2)
-    (string=? (gnu-release-version r1) (gnu-release-version r2)))
-
-  (define (release>? r1 r2)
-    (version>? (gnu-release-version r1) (gnu-release-version r2)))
-
-  (fold (lambda (release result)
-          (match result
-            ((head . tail)
-             (if (same-version? release head)
-                 (cons (gnu-release
-                        (inherit release)
-                        (files (append (gnu-release-files release)
-                                       (gnu-release-files head))))
-                       tail)
-                 (cons release result)))
-            (()
-             (list release))))
-        '()
-        (sort releases release>?)))
-
 (define (releases project)
   "Return the list of releases of PROJECT as a list of release name/directory
 pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). "
@@ -319,13 +274,24 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
       (match directories
         (()
          (ftp-close conn)
-         (coalesce-releases result))
+         (coalesce-sources result))
         ((directory rest ...)
          (let* ((files   (ftp-list conn directory))
                 (subdirs (filter-map (match-lambda
-                                      ((name 'directory . _) name)
-                                      (_ #f))
+                                       ((name 'directory . _) name)
+                                       (_ #f))
                                      files)))
+           (define (file->url file)
+             (string-append "ftp://" server directory "/" file))
+
+           (define (file->source file)
+             (let ((url (file->url file)))
+               (upstream-source
+                (package project)
+                (version (tarball->version file))
+                (urls (list url))
+                (signature-urls (list (string-append url ".sig"))))))
+
            (loop (append (map (cut string-append directory "/" <>)
                               subdirs)
                          rest)
@@ -335,15 +301,10 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
                   ;; in /gnu/guile, filter out guile-oops and
                   ;; guile-www; in mit-scheme, filter out binaries.
                   (filter-map (match-lambda
-                               ((file 'file . _)
-                                (if (release-file? project file)
-                                    (gnu-release
-                                     (package project)
-                                     (version (tarball->version file))
-                                     (directory directory)
-                                     (files (list file)))
-                                    #f))
-                               (_ #f))
+                                ((file 'file . _)
+                                 (and (release-file? project file)
+                                      (file->source file)))
+                                (_ #f))
                               files)
                   result))))))))
 
@@ -355,7 +316,7 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
     (if (version>? a b) a b))
 
   (define (latest-release a b)
-    (if (version>? (gnu-release-version a) (gnu-release-version b))
+    (if (version>? (upstream-source-version a) (upstream-source-version b))
         a b))
 
   (define contains-digit?
@@ -368,6 +329,17 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
   (let-values (((server directory) (ftp-server/directory project)))
     (define conn (ftp-open server))
 
+    (define (file->url file)
+      (string-append "ftp://" server directory "/" file))
+
+    (define (file->source file)
+      (let ((url (file->url file)))
+        (upstream-source
+         (package project)
+         (version (tarball->version file))
+         (urls (list url))
+         (signature-urls (list (string-append url ".sig"))))))
+
     (let loop ((directory directory)
                (result    #f))
       (let* ((entries (ftp-list conn directory))
@@ -375,12 +347,12 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
              ;; Filter out sub-directories that do not contain digits---e.g.,
              ;; /gnuzilla/lang and /gnupg/patches.
              (subdirs (filter-map (match-lambda
-                                   (((? patch-directory-name? dir)
-                                     'directory . _)
-                                    #f)
-                                   (((? contains-digit? dir) 'directory . _)
-                                    dir)
-                                   (_ #f))
+                                    (((? patch-directory-name? dir)
+                                      'directory . _)
+                                     #f)
+                                    (((? contains-digit? dir) 'directory . _)
+                                     dir)
+                                    (_ #f))
                                   entries))
 
              ;; Whether or not SUBDIRS is empty, compute the latest releases
@@ -390,19 +362,14 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
              (releases (filter-map (match-lambda
                                      ((file 'file . _)
                                       (and (release-file? project file)
-                                           (gnu-release
-                                            (package project)
-                                            (version
-                                             (tarball->version file))
-                                            (directory directory)
-                                            (files (list file)))))
+                                           (file->source file)))
                                      (_ #f))
                                    entries)))
 
         ;; Assume that SUBDIRS correspond to versions, and jump into the
         ;; one with the highest version number.
         (let* ((release  (reduce latest-release #f
-                                 (coalesce-releases releases)))
+                                 (coalesce-sources releases)))
                (result   (if (and result release)
                              (latest-release release result)
                              (or release result)))
@@ -414,10 +381,18 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
                 (ftp-close conn)
                 result)))))))
 
-(define (gnu-release-archive-types release)
-  "Return the available types of archives for RELEASE---a list of strings such
-as \"gz\" or \"xz\"."
-  (map file-extension (gnu-release-files release)))
+(define (latest-release* package)
+  "Like 'latest-release', but ignore FTP errors that might occur when PACKAGE
+is not actually a GNU package, or not hosted on ftp.gnu.org, or not under that
+name (this is the case for \"emacs-auctex\", for instance.)"
+  (catch 'ftp-error
+    (lambda ()
+      (latest-release package))
+    (lambda (key port . rest)
+      (if (ftp-connection? port)
+          (ftp-close port)
+          (close-port port))
+      #f)))
 
 (define %package-name-rx
   ;; Regexp for a package name, e.g., "foo-X.Y".  Since TeXmacs uses
@@ -431,121 +406,15 @@ as \"gz\" or \"xz\"."
         (values name+version #f)
         (values (match:substring match 1) (match:substring match 2)))))
 
-
-;;;
-;;; Auto-update.
-;;;
+(define (non-emacs-gnu-package? package)
+  "Return true if PACKAGE is a non-Emacs GNU package.  This excludes AucTeX,
+for instance, whose releases are now uploaded to elpa.gnu.org."
+  (and (not (string-prefix? "emacs-" (package-name package)))
+       (gnu-package? package)))
 
-(define (package-update-path package)
-  "Return an update path for PACKAGE, or #f if no update is needed."
-  (and (gnu-package? package)
-       (match (latest-release (package-name package))
-         (($ <gnu-release> name version directory)
-          (and (version>? version (package-version package))
-               `(,version . ,directory)))
-         (_ #f))))
-
-(define* (download-tarball store project directory version
-                           #:key (archive-type "gz")
-                                 (key-download 'interactive))
-  "Download PROJECT's tarball over FTP and check its OpenPGP signature.  On
-success, return the tarball file name.  KEY-DOWNLOAD specifies a download
-policy for missing OpenPGP keys; allowed values: 'interactive' (default),
-'always', and 'never'."
-  (let* ((server  (ftp-server/directory project))
-         (base    (string-append project "-" version ".tar." archive-type))
-         (url     (string-append "ftp://" server "/" directory "/" base))
-         (sig-url (string-append url ".sig"))
-         (tarball (download-to-store store url))
-         (sig     (download-to-store store sig-url)))
-    (let ((ret (gnupg-verify* sig tarball #:key-download key-download)))
-      (if ret
-          tarball
-          (begin
-            (warning (_ "signature verification failed for `~a'~%")
-                     base)
-            (warning (_ "(could be because the public key is not in your keyring)~%"))
-            #f)))))
-
-(define* (package-update store package #:key (key-download 'interactive))
-  "Return the new version and the file name of the new version tarball for
-PACKAGE, or #f and #f when PACKAGE is up-to-date.  KEY-DOWNLOAD specifies a
-download policy for missing OpenPGP keys; allowed values: 'always', 'never',
-and 'interactive' (default)."
-  (match (package-update-path package)
-    ((version . directory)
-     (let-values (((name)
-                   (package-name package))
-                  ((archive-type)
-                   (let ((source (package-source package)))
-                     (or (and (origin? source)
-                              (file-extension (origin-uri source)))
-                         "gz"))))
-       (let ((tarball (download-tarball store name directory version
-                                        #:archive-type archive-type
-                                        #:key-download key-download)))
-         (values version tarball))))
-    (_
-     (values #f #f))))
-
-(define (update-package-source package version hash)
-  "Modify the source file that defines PACKAGE to refer to VERSION,
-whose tarball has SHA256 HASH (a bytevector).  Return the new version string
-if an update was made, and #f otherwise."
-  (define (new-line line matches replacement)
-    ;; Iterate over MATCHES and return the modified line based on LINE.
-    ;; Replace each match with REPLACEMENT.
-    (let loop ((m* matches)                       ; matches
-               (o  0)                             ; offset in L
-               (r  '()))                          ; result
-      (match m*
-        (()
-         (let ((r (cons (substring line o) r)))
-           (string-concatenate-reverse r)))
-        ((m . rest)
-         (loop rest
-               (match:end m)
-               (cons* replacement
-                      (substring line o (match:start m))
-                      r))))))
-
-  (define (update-source file old-version version
-                         old-hash hash)
-    ;; Update source file FILE, replacing occurrences OLD-VERSION by VERSION
-    ;; and occurrences of OLD-HASH by HASH (base32 representation thereof).
-
-    ;; TODO: Currently this is a bit of a sledgehammer: if VERSION occurs in
-    ;; different unrelated places, we may modify it more than needed, for
-    ;; instance.  We should try to make changes only within the sexp that
-    ;; corresponds to the definition of PACKAGE.
-    (let ((old-hash (bytevector->nix-base32-string old-hash))
-          (hash     (bytevector->nix-base32-string hash)))
-      (substitute file
-                  `((,(regexp-quote old-version)
-                     . ,(cut new-line <> <> version))
-                    (,(regexp-quote old-hash)
-                     . ,(cut new-line <> <> hash))))
-      version))
-
-  (let ((name (package-name package))
-        (loc  (package-field-location package 'version)))
-    (if loc
-        (let ((old-version (package-version package))
-              (old-hash    (origin-sha256 (package-source package)))
-              (file        (and=> (location-file loc)
-                                  (cut search-path %load-path <>))))
-          (if file
-              (update-source file
-                             old-version version
-                             old-hash hash)
-              (begin
-                (warning (_ "~a: could not locate source file")
-                         (location-file loc))
-                #f)))
-        (begin
-          (format (current-error-port)
-                  (_ "~a: ~a: no `version' field in source; skipping~%")
-                  (location->string (package-location package))
-                  name)))))
+(define %gnu-updater
+  (upstream-updater 'gnu
+                    non-emacs-gnu-package?
+                    latest-release*))
 
 ;;; gnu-maintenance.scm ends here

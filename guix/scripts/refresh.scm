@@ -25,7 +25,8 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix packages)
-  #:use-module (guix gnu-maintenance)
+  #:use-module (guix upstream)
+  #:use-module ((guix gnu-maintenance) #:select (%gnu-updater))
   #:use-module (guix gnupg)
   #:use-module (gnu packages)
   #:use-module ((gnu packages commencement) #:select (%final-inputs))
@@ -124,6 +125,15 @@ specified with `--select'.\n"))
   (newline)
   (show-bug-report-information))
 
+
+;;;
+;;; Updates.
+;;;
+
+(define %updaters
+  ;; List of "updaters" used by default.
+  (list %gnu-updater))
+
 (define* (update-package store package #:key (key-download 'interactive))
   "Update the source file that defines PACKAGE with the new version.
 KEY-DOWNLOAD specifies a download policy for missing OpenPGP keys; allowed
@@ -131,12 +141,12 @@ values: 'interactive' (default), 'always', and 'never'."
   (let-values (((version tarball)
                 (catch #t
                   (lambda ()
-                    (package-update store package #:key-download key-download))
+                    (package-update store package %updaters
+                                    #:key-download key-download))
                   (lambda _
                     (values #f #f))))
                ((loc)
-                (or (package-field-location package
-                                            'version)
+                (or (package-field-location package 'version)
                     (package-location package))))
     (when version
       (if (and=> tarball file-exists?)
@@ -152,7 +162,6 @@ values: 'interactive' (default), 'always', and 'never'."
           (warning (_ "~a: version ~a could not be \
 downloaded and authenticated; not updating~%")
                    (package-name package) version)))))
-
 
 
 ;;;
@@ -262,14 +271,14 @@ dependent packages are rebuilt: ~{~a~^ ~}~%"
              packages))))
        (else
         (for-each (lambda (package)
-                    (match (false-if-exception (package-update-path package))
-                      ((new-version . directory)
+                    (match (package-update-path package %updaters)
+                      ((? upstream-source? source)
                        (let ((loc (or (package-field-location package 'version)
                                       (package-location package))))
                          (format (current-error-port)
                                  (_ "~a: ~a would be upgraded from ~a to ~a~%")
                                  (location->string loc)
                                  (package-name package) (package-version package)
-                                 new-version)))
-                      (_ #f)))
+                                 (upstream-source-version source))))
+                      (#f #f)))
                   packages))))))
