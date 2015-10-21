@@ -118,15 +118,17 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
                     (execl prog)))
                 (waitpid pid)))))))
 
-(define (dbus-dmd-service config)
-  (list (dmd-service
-         (documentation "Run the D-Bus system daemon.")
-         (provision '(dbus-system))
-         (requirement '(user-processes))
-         (start #~(make-forkexec-constructor
-                   (list (string-append #$dbus "/bin/dbus-daemon")
-                         "--nofork" "--system")))
-         (stop #~(make-kill-destructor)))))
+(define dbus-dmd-service
+  (match-lambda
+    (($ <dbus-configuration> dbus)
+     (list (dmd-service
+            (documentation "Run the D-Bus system daemon.")
+            (provision '(dbus-system))
+            (requirement '(user-processes))
+            (start #~(make-forkexec-constructor
+                      (list (string-append #$dbus "/bin/dbus-daemon")
+                            "--nofork" "--system")))
+            (stop #~(make-kill-destructor)))))))
 
 (define dbus-root-service-type
   (service-type (name 'dbus)
