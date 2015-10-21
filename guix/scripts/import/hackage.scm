@@ -55,7 +55,7 @@ version.\n"))
   (display (_ "
   -s, --stdin                  read from standard input"))
   (display (_ "
-  -t, --no-test-dependencies   don't include test only dependencies"))
+  -t, --no-test-dependencies   don't include test-only dependencies"))
   (display (_ "
   -V, --version                display version information and exit"))
   (newline)
