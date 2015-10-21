@@ -21,7 +21,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
   #:use-module (gnu system shadow)
-  #:use-module (gnu packages glib)
+  #:use-module ((gnu packages glib) #:select (dbus/activation))
   #:use-module (gnu packages admin)
   #:use-module (guix gexp)
   #:use-module (guix records)
@@ -38,9 +38,34 @@
   dbus-configuration make-dbus-configuration
   dbus-configuration?
   (dbus      dbus-configuration-dbus              ;<package>
-             (default dbus))
+             (default dbus/activation))
   (services  dbus-configuration-services          ;list of <package>
              (default '())))
+
+(define (system-service-directory services)
+  "Return the system service directory, containing @code{.service} files for
+all the services that may be activated by the daemon."
+  (computed-file "dbus-system-services"
+                 #~(begin
+                     (use-modules (guix build utils)
+                                  (srfi srfi-1))
+
+                     (define files
+                       (append-map (lambda (service)
+                                     (find-files (string-append
+                                                  service
+                                                  "/share/dbus-1/system-services")
+                                                 "\\.service$"))
+                                   (list #$@services)))
+
+                     (mkdir #$output)
+                     (for-each (lambda (file)
+                                 (symlink file
+                                          (string-append #$output "/"
+                                                         (basename file))))
+                               files)
+                     #t)
+                 #:modules '((guix build utils))))
 
 (define (dbus-configuration-directory services)
   "Return a directory contains the @code{system-local.conf} file for DBUS that
@@ -54,18 +79,28 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
         (define (services->sxml services)
           ;; Return the SXML 'includedir' clauses for DIRS.
           `(busconfig
+            (servicehelper "/run/setuid-programs/dbus-daemon-launch-helper")
+
+            ;; First, the '.service' files of services subject to activation.
+            ;; We use a fixed location under /etc because the setuid helper
+            ;; looks for them in that location and nowhere else.  See
+            ;; <https://bugs.freedesktop.org/show_bug.cgi?id=92458>.
+            (servicedir "/etc/dbus-1/system-services")
+
             ,@(append-map (lambda (dir)
                             `((includedir
                                ,(string-append dir "/etc/dbus-1/system.d"))
-                              (servicedir         ;for '.service' files
-                               ,(string-append dir "/share/dbus-1/services"))
-                              (servicedir       ;likewise, for auto-activation
-                               ,(string-append
-                                 dir
-                                 "/share/dbus-1/system-services"))))
+                              (servicedir       ;for '.service' files
+                               ,(string-append dir "/share/dbus-1/services"))))
                           services)))
 
         (mkdir #$output)
+
+        ;; Provide /etc/dbus-1/system-services, which is where the setuid
+        ;; helper looks for system service files.
+        (symlink #$(system-service-directory services)
+                 (string-append #$output "/system-services"))
+
         ;; 'system-local.conf' is automatically included by the default
         ;; 'system.conf', so this is where we stuff our own things.
         (call-with-output-file (string-append #$output "/system-local.conf")
@@ -91,6 +126,12 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
          (comment "D-Bus system bus user")
          (home-directory "/var/run/dbus")
          (shell #~(string-append #$shadow "/sbin/nologin")))))
+
+(define dbus-setuid-programs
+  ;; Return the file name of the setuid program that we need.
+  (match-lambda
+    (($ <dbus-configuration> dbus services)
+     (list #~(string-append #$dbus "/libexec/dbus-daemon-launch-helper")))))
 
 (define (dbus-activation config)
   "Return an activation gexp for D-Bus using @var{config}."
@@ -140,13 +181,12 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
                        (service-extension etc-service-type
                                           dbus-etc-files)
                        (service-extension account-service-type
-                                          (const %dbus-accounts))))
+                                          (const %dbus-accounts))
+                       (service-extension setuid-program-service-type
+                                          dbus-setuid-programs)))
 
                 ;; Extensions consist of lists of packages (representing D-Bus
                 ;; services) that we just concatenate.
-                ;;
-                ;; FIXME: We need 'dbus-daemon-launch-helper' to be
-                ;; setuid-root for auto-activation to work.
                 (compose concatenate)
 
                 ;; The service's parameters field is extended by augmenting
@@ -158,7 +198,7 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
                             (append (dbus-configuration-services config)
                                     services)))))))
 
-(define* (dbus-service #:key (dbus dbus) (services '()))
+(define* (dbus-service #:key (dbus dbus/activation) (services '()))
   "Return a service that runs the \"system bus\", using @var{dbus}, with
 support for @var{services}.
 
