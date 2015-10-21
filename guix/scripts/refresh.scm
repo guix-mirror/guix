@@ -65,6 +65,9 @@
                     (x
                      (leave (_ "~a: invalid selection; expected `core' or `non-core'~%")
                             arg)))))
+        (option '(#\t "type") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'updater (string->symbol arg) result)))
         (option '(#\l "list-dependent") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'list-dependent? #t result)))
@@ -106,6 +109,8 @@ specified with `--select'.\n"))
   -s, --select=SUBSET    select all the packages in SUBSET, one of
                          `core' or `non-core'"))
   (display (_ "
+  -t, --type=UPDATER     restrict to updates from UPDATER--e.g., 'gnu'"))
+  (display (_ "
   -l, --list-dependent   list top-level dependent packages that would need to
                          be rebuilt as a result of upgrading PACKAGE..."))
   (newline)
@@ -136,14 +141,21 @@ specified with `--select'.\n"))
   (list %gnu-updater
         %elpa-updater))
 
-(define* (update-package store package #:key (key-download 'interactive))
+(define (lookup-updater name)
+  "Return the updater called NAME."
+  (find (lambda (updater)
+          (eq? name (upstream-updater-name updater)))
+        %updaters))
+
+(define* (update-package store package updaters
+                         #:key (key-download 'interactive))
   "Update the source file that defines PACKAGE with the new version.
 KEY-DOWNLOAD specifies a download policy for missing OpenPGP keys; allowed
 values: 'interactive' (default), 'always', and 'never'."
   (let-values (((version tarball)
                 (catch #t
                   (lambda ()
-                    (package-update store package %updaters
+                    (package-update store package updaters
                                     #:key-download key-download))
                   (lambda _
                     (values #f #f))))
@@ -180,6 +192,19 @@ downloaded and authenticated; not updating~%")
                   (alist-cons 'argument arg result))
                 %default-options))
 
+  (define (options->updaters opts)
+    ;; Return the list of updaters to use.
+    (match (filter-map (match-lambda
+                         (('updater . name)
+                          (lookup-updater name))
+                         (_ #f))
+                       opts)
+      (()
+       ;; Use the default updaters.
+       %updaters)
+      (lst
+       lst)))
+
   (define (keep-newest package lst)
     ;; If a newer version of PACKAGE is already in LST, return LST; otherwise
     ;; return LST minus the other version of PACKAGE in it, plus PACKAGE.
@@ -196,8 +221,8 @@ downloaded and authenticated; not updating~%")
 
   (define core-package?
     (let* ((input->package (match-lambda
-                            ((name (? package? package) _ ...) package)
-                            (_ #f)))
+                             ((name (? package? package) _ ...) package)
+                             (_ #f)))
            (final-inputs   (map input->package %final-inputs))
            (core           (append final-inputs
                                    (append-map (compose (cut filter-map input->package <>)
@@ -216,6 +241,7 @@ update would trigger a complete rebuild."
 
   (let* ((opts            (parse-options))
          (update?         (assoc-ref opts 'update?))
+         (updaters        (options->updaters opts))
          (list-dependent? (assoc-ref opts 'list-dependent?))
          (key-download    (assoc-ref opts 'key-download))
          (packages
@@ -226,18 +252,18 @@ update would trigger a complete rebuild."
                                 (specification->package spec))
                                (_ #f))
                              opts)
-                 (()                          ; default to all packages
-                  (let ((select? (match (assoc-ref opts 'select)
-                                        ('core core-package?)
-                                        ('non-core (negate core-package?))
-                                        (_ (const #t)))))
-                    (fold-packages (lambda (package result)
-                                     (if (select? package)
-                                         (keep-newest package result)
-                                         result))
-                                   '())))
-                 (some                        ; user-specified packages
-                  some))))
+            (()                                   ; default to all packages
+             (let ((select? (match (assoc-ref opts 'select)
+                              ('core core-package?)
+                              ('non-core (negate core-package?))
+                              (_ (const #t)))))
+               (fold-packages (lambda (package result)
+                                (if (select? package)
+                                    (keep-newest package result)
+                                    result))
+                              '())))
+            (some                                 ; user-specified packages
+             some))))
     (with-error-handling
       (cond
        (list-dependent?
@@ -269,11 +295,12 @@ dependent packages are rebuilt: ~{~a~^ ~}~%"
                           (or (assoc-ref opts 'gpg-command)
                               (%gpg-command))))
             (for-each
-             (cut update-package store <> #:key-download key-download)
+             (cut update-package store <> updaters
+                  #:key-download key-download)
              packages))))
        (else
         (for-each (lambda (package)
-                    (match (package-update-path package %updaters)
+                    (match (package-update-path package updaters)
                       ((? upstream-source? source)
                        (let ((loc (or (package-field-location package 'version)
                                       (package-location package))))
