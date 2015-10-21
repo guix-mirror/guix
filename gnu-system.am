@@ -437,6 +437,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/duplicity-test_selection-tmp.patch	\
   gnu/packages/patches/elfutils-tests-ptrace.patch		\
   gnu/packages/patches/emacs-exec-path.patch			\
+  gnu/packages/patches/emacs-source-date-epoch.patch		\
   gnu/packages/patches/eudev-rules-directory.patch		\
   gnu/packages/patches/expat-CVE-2015-1283.patch		\
   gnu/packages/patches/fastcap-mulGlobal.patch			\

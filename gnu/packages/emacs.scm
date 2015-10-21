@@ -70,7 +70,8 @@
              (sha256
               (base32
                "0kn3rzm91qiswi0cql89kbv6mqn27rwsyjfb8xmwy9m5s8fxfiyx"))
-             (patches (list (search-patch "emacs-exec-path.patch")))))
+             (patches (list (search-patch "emacs-exec-path.patch")
+                            (search-patch "emacs-source-date-epoch.patch")))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases (alist-cons-before
