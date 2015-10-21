@@ -93,7 +93,7 @@ first cell of a table row is considered a label cell."
   "Return an sxml representation of the CRAN page for the R package NAME,
 or #f on failure.  NAME is case-sensitive."
   ;; This API always returns the latest release of the module.
-  (let ((cran-url (string-append %cran-url name)))
+  (let ((cran-url (string-append %cran-url name "/")))
     (false-if-exception
      (xml->sxml (http-fetch cran-url)
                 #:trim-whitespace? #t
