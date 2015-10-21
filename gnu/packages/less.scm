@@ -26,7 +26,7 @@
 (define-public less
   (package
     (name "less")
-    (version "451")
+    (version "481")
     (source
      (origin
       (method url-fetch)
@@ -34,7 +34,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0mszdd9m1dsbg59pav62swg9f87xmjpfspcw2jsazzksciy2is4z"))))
+        "19fxj0h10y5bhr3a1xa7kqvnwl44db3sdypz8jxl1q79yln8z8rz"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://www.gnu.org/software/less/")
