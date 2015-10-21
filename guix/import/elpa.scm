@@ -19,6 +19,7 @@
 (define-module (guix import elpa)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
+  #:use-module (web uri)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
@@ -26,6 +27,7 @@
   #:use-module (srfi srfi-26)
   #:use-module ((guix download) #:select (download-to-store))
   #:use-module (guix import utils)
+  #:use-module (guix http-client)
   #:use-module (guix store)
   #:use-module (guix ui)
   #:use-module (guix hash)
@@ -74,20 +76,16 @@ NAMES (strings)."
   (let ((url (and=> (elpa-url repo)
                     (cut string-append <> "/archive-contents"))))
     (if url
-        (call-with-downloaded-file url read)
+        ;; Use a relatively small TTL for the archive itself.
+        (parameterize ((%http-cache-ttl (* 6 3600)))
+          (call-with-downloaded-file url read))
         (leave (_ "~A: currently not supported~%") repo))))
 
 (define* (call-with-downloaded-file url proc #:optional (error-thunk #f))
   "Fetch URL, store the content in a temporary file and call PROC with that
 file.  Returns the value returned by PROC.  On error call ERROR-THUNK and
 return its value or leave if it's false."
-  (call-with-temporary-output-file
-   (lambda (temp port)
-     (or (and (url-fetch url temp)
-              (call-with-input-file temp proc))
-         (if error-thunk
-             (error-thunk)
-             (leave (_ "~A: download failed~%") url))))))
+  (proc (http-fetch/cached (string->uri url))))
 
 (define (is-elpa-package? name elpa-pkg-spec)
   "Return true if the string NAME corresponds to the name of the package
