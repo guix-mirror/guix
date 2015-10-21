@@ -241,7 +241,7 @@ Raise an '&http-get-error' condition if downloading fails."
 ;;; Caching.
 ;;;
 
-(define (%http-cache-ttl)
+(define %http-cache-ttl
   ;; Time-to-live in seconds of the HTTP cache of in ~/.cache/guix.
   (make-parameter
    (* 3600 (or (and=> (getenv "GUIX_HTTP_CACHE_TTL")
