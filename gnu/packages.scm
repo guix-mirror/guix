@@ -24,6 +24,7 @@
   #:use-module (guix utils)
   #:use-module ((guix ftp-client) #:select (ftp-open))
   #:use-module (guix gnu-maintenance)
+  #:use-module (guix upstream)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
@@ -377,14 +378,18 @@ it."
       (when (false-if-exception (gnu-package? package))
         (let ((name      (package-name package))
               (full-name (package-full-name package)))
+          ;; XXX: This could work with non-GNU packages as well.  However,
+          ;; GNU's FTP-based updater would be too slow if it weren't memoized,
+          ;; and the generic interface in (guix upstream) doesn't support
+          ;; that.
           (match (waiting (latest-release name
                                           #:ftp-open ftp-open*
                                           #:ftp-close (const #f))
                           (_ "looking for the latest release of GNU ~a...") name)
-            ((? gnu-release? release)
+            ((? upstream-source? source)
              (let ((latest-version
-                    (string-append (gnu-release-package release) "-"
-                                   (gnu-release-version release))))
+                    (string-append (upstream-source-package source) "-"
+                                   (upstream-source-version source))))
               (when (version>? latest-version full-name)
                 (format (current-error-port)
                         (_ "~a: note: using ~a \
