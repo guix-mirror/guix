@@ -413,6 +413,28 @@ are no options for manipulating the reflected expressions beyond showing
 them.")
     (license bsd-3)))
 
+(define-public ghc-cmdargs
+  (package
+    (name "ghc-cmdargs")
+    (version "0.10.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/cmdargs/cmdargs-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0vmz7f0ssrqlp6wzmc0mjqj4qczfgk58g0lr0yz7jamamlgpq4b6"))))
+    (build-system haskell-build-system)
+    (home-page
+     "http://community.haskell.org/~ndm/cmdargs/")
+    (synopsis "Command line argument processing")
+    (description
+     "This library provides an easy way to define command line parsers.")
+    (license bsd-3)))
+
 (define-public cpphs
   (package
     (name "cpphs")
