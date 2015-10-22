@@ -2831,6 +2831,35 @@ functions for breaking or splitting on substrings and replacing all
 occurrences of a substring (the first in case of overlaps) with another.")
     (license bsd-3)))
 
+(define-public ghc-tasty-quickcheck
+  (package
+    (name "ghc-tasty-quickcheck")
+    (version "0.8.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/tasty-quickcheck/"
+             "tasty-quickcheck-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15rjxib5jmjq0hzj47x15kgp3awc73va4cy1pmpf7k3hvfv4qprn"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)))
+    (inputs
+     `(("ghc-tagged" ,ghc-tagged)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-random" ,ghc-random)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-pcre-light" ,ghc-pcre-light)))
+    (home-page "http://documentup.com/feuerbach/tasty")
+    (synopsis "QuickCheck support for the Tasty test framework")
+    (description "This package provides QuickCheck support for the Tasty
+Haskell test framework.")
+    (license expat)))
+
 (define-public ghc-tasty
   (package
     (name "ghc-tasty")
