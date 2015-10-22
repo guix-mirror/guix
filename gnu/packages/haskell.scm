@@ -2730,4 +2730,35 @@ It is modeled after doctest for Python, see
 @uref{http://docs.python.org/library/doctest.html, the Doctest website}.")
     (license expat)))
 
+(define-public ghc-lifted-base
+  (package
+    (name "ghc-lifted-base")
+    (version "0.2.3.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/lifted-base/lifted-base-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1yz14a1rsgknwyl08n4kxrlc26hfwmb95a3c2drbnsgmhdyq7iap"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ; FIXME: Missing testing libraries.
+    (propagated-inputs
+     `(("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-monad-control" ,ghc-monad-control)))
+    (inputs
+     `(("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/basvandijk/lifted-base")
+    (synopsis "Lifted IO operations from the base library")
+    (description "Lifted-base exports IO operations from the @code{base}
+library lifted to any instance of @code{MonadBase} or @code{MonadBaseControl}.
+Note that not all modules from @code{base} are converted yet.  The package
+includes a copy of the @code{monad-peel} test suite written by Anders
+Kaseorg.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
