@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -224,6 +225,38 @@ decompression.")
       (license (license:non-copyleft "file://LICENSE"
                                   "See LICENSE in the distribution."))
       (home-page "http://www.bzip.org/"))))
+
+(define-public pbzip2
+  (package
+    (name "pbzip2")
+    (version "1.1.12")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://launchpad.net/pbzip2/1.1/" version
+                                "/+download/" name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1vk6065dv3a47p86vmp8hv3n1ygd9hraz0gq89gvzlx7lmcb6fsp"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("bzip2", bzip2)))
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure
+                           (lambda* (#:key outputs #:allow-other-keys)
+                                    (substitute* "Makefile"
+                                    (("/usr") (assoc-ref outputs "out")))
+                                    #t)))))
+    (home-page "http://compression.ca/pbzip2/")
+    (synopsis "Parallel bzip2 implementation")
+    (description
+     "Pbzip2 is a parallel implementation of the bzip2 block-sorting file
+compressor that uses pthreads and achieves near-linear speedup on SMP machines.
+The output of this version is fully compatible with bzip2 v1.0.2 (ie: anything
+compressed with pbzip2 can be decompressed with bzip2).")
+    (license (license:non-copyleft "file://COPYING"
+                                "See COPYING in the distribution."))))
 
 (define-public xz
   (package
