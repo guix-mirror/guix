@@ -461,6 +461,39 @@ specification in BNF, Happy generates Haskell code to parse the grammar.
 Happy works in a similar way to the yacc tool for C.")
     (license bsd-3)))
 
+(define-public ghc-haskell-src-exts
+  (package
+    (name "ghc-haskell-src-exts")
+    (version "1.16.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/haskell-src-exts/haskell-src-exts-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1h8gjw5g92rvvzadqzpscg73x7ajvs1wlphrh27afim3scdd8frz"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("cpphs" ,cpphs)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-smallcheck" ,ghc-smallcheck)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-happy" ,ghc-happy)
+       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)
+       ("ghc-tasty-golden" ,ghc-tasty-golden)
+       ("ghc-syb" ,ghc-syb)))
+    (home-page "https://github.com/haskell-suite/haskell-src-exts")
+    (synopsis "Library for manipulating Haskell source")
+    (description "Haskell-Source with Extensions (HSE, haskell-src-exts) is an
+extension of the standard @code{haskell-src} package, and handles most
+registered syntactic extensions to Haskell.  All extensions implemented in GHC
+are supported.  Apart from these standard extensions, it also handles regular
+patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
+    (license bsd-3)))
+
 (define-public cpphs
   (package
     (name "cpphs")
