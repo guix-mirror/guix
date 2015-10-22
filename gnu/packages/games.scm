@@ -1060,6 +1060,7 @@ next campaign.")
               (uri (svn-reference
                     (url "http://svn.code.sf.net/p/dosbox/code-0/dosbox/trunk/")
                     (revision 3947)))
+              (file-name (string-append name "-" version "-checkout"))
               ;; Use SVN head, since the last release (2010) is incompatible
               ;; with GCC 4.8+ (see
               ;; <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=624976>).
