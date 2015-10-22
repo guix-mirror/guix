@@ -4305,6 +4305,10 @@ be used when passing @command{guix refresh} one or more package names:
 
 @table @code
 
+@item --list-updaters
+@itemx -L
+List available updaters and exit (see @option{--type} above.)
+
 @item --list-dependent
 @itemx -l
 List top-level dependent packages that would need to be rebuilt as a
