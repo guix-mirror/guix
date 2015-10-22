@@ -494,6 +494,35 @@ are supported.  Apart from these standard extensions, it also handles regular
 patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
     (license bsd-3)))
 
+(define-public hlint
+  (package
+    (name "hlint")
+    (version "1.9.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/" name
+             "/" name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14v3rdjjlml9nimdk7d5dvir2bw78ai49yylvms9lnzmw29s3546"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("cpphs" ,cpphs)
+       ("ghc-cmdargs" ,ghc-cmdargs)
+       ("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
+       ("ghc-uniplate" ,ghc-uniplate)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-extra" ,ghc-extra)
+       ("hscolour" ,hscolour)))
+    (home-page "http://community.haskell.org/~ndm/hlint/")
+    (synopsis "Suggest improvements for Haskell source code")
+    (description "HLint reads Haskell programs and suggests changes that
+hopefully make them easier to read.  HLint also makes it easy to disable
+unwanted suggestions, and to add your own custom suggestions.")
+    (license bsd-3)))
+
 (define-public cpphs
   (package
     (name "cpphs")
