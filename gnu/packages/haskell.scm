@@ -3834,6 +3834,37 @@ and any other types of tests into a single test suite.")
 test framework.")
     (license expat)))
 
+(define-public ghc-cookie
+  (package
+    (name "ghc-cookie")
+    (version "0.4.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/cookie/cookie-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0b6ym6fn29p5az4dwydy036lxj131kagrmgb93w4bbkqfkds8b9s"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-old-locale" ,ghc-old-locale)))
+    (inputs
+     `(("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-text" ,ghc-text)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (home-page "http://github.com/snoyberg/cookie")
+    (synopsis "HTTP cookie parsing and rendering")
+    (description "HTTP cookie parsing and rendering library for Haskell.")
+    (license bsd-3)))
+
 (define-public ghc-scientific
   (package
     (name "ghc-scientific")
