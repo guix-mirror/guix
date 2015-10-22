@@ -2435,6 +2435,29 @@ unbounded @code{Integer} type.")
 timer functions of different operating systems via a unified API.")
     (license bsd-3)))
 
+(define-public ghc-clock
+  (package
+    (name "ghc-clock")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/"
+             "clock/"
+             "clock-" version ".tar.gz"))
+       (sha256
+        (base32 "1ncph7vi2q6ywwc8ysxl1ibw6i5dwfvln88ssfazk8jgpj4iyykw"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (home-page "https://hackage.haskell.org/package/clock")
+    (synopsis "High-resolution clock for Haskell")
+    (description "A package for convenient access to high-resolution clock and
+timer functions of different operating systems via a unified API.")
+    (license bsd-3)))
+
 (define-public ghc-charset
   (package
     (name "ghc-charset")
