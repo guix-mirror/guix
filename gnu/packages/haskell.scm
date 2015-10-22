@@ -554,6 +554,39 @@ unwanted suggestions, and to add your own custom suggestions.")
 code where you can safely allocate resources.")
     (license bsd-3)))
 
+(define-public ghc-streaming-commons
+  (package
+    (name "ghc-streaming-commons")
+    (version "0.1.14.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/streaming-commons/streaming-commons-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "12nw9bwvy6zrabkgvbp371klca3ds6qjlfncg1b8pbwx1y7m8c8h"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-random" ,ghc-random)))
+    (inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-async" ,ghc-async)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-stm" ,ghc-stm)
+       ("ghc-text" ,ghc-text)
+       ("ghc-network" ,ghc-network)
+       ("ghc-zlib" ,ghc-zlib)))
+    (home-page "https://hackage.haskell.org/package/streaming-commons")
+    (synopsis "Conduit and pipes needed by some streaming data libraries")
+    (description "Provides low-dependency functionality commonly needed by
+various Haskell streaming data libraries, such as @code{conduit} and
+@code{pipe}s.")
+    (license bsd-3)))
+
 (define-public cpphs
   (package
     (name "cpphs")
