@@ -2761,4 +2761,26 @@ includes a copy of the @code{monad-peel} test suite written by Anders
 Kaseorg.")
     (license bsd-3)))
 
+(define-public ghc-word8
+  (package
+    (name "ghc-word8")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/word8/word8-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1pbn8ra3qhwvw07p375cdmp7jzlg07hgdcr4cpscz3h7b9sy7fiw"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hspec" ,ghc-hspec)))
+    (home-page "http://hackage.haskell.org/package/word8")
+    (synopsis "Word8 library for Haskell")
+    (description "Word8 library to be used with @code{Data.ByteString}.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
