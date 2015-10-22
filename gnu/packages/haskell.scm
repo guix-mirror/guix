@@ -523,6 +523,37 @@ hopefully make them easier to read.  HLint also makes it easy to disable
 unwanted suggestions, and to add your own custom suggestions.")
     (license bsd-3)))
 
+(define-public ghc-resourcet
+  (package
+    (name "ghc-resourcet")
+    (version "1.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/resourcet/resourcet-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0zhsaaa4n8ry76vjih519a8npm2hrzk10d5asrgllcwpzmifl41y"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-transformers-compat" ,ghc-transformers-compat)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-mmorph" ,ghc-mmorph)
+       ("ghc-exceptions" ,ghc-exceptions)))
+    (inputs
+     `(("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-hspec" ,ghc-hspec)))
+    (home-page "http://github.com/snoyberg/conduit")
+    (synopsis "Deterministic allocation and freeing of scarce resources")
+    (description "ResourceT is a monad transformer which creates a region of
+code where you can safely allocate resources.")
+    (license bsd-3)))
+
 (define-public cpphs
   (package
     (name "cpphs")
