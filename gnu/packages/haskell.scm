@@ -2831,4 +2831,36 @@ functions for breaking or splitting on substrings and replacing all
 occurrences of a substring (the first in case of overlaps) with another.")
     (license bsd-3)))
 
+(define-public ghc-tasty
+  (package
+    (name "ghc-tasty")
+    (version "0.11.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/tasty/tasty-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1chapivmmwsb1ghwagvdm80bfj3hdk75m94z4p212ng2i4ghpjkx"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-stm" ,ghc-stm)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-tagged" ,ghc-tagged)
+       ("ghc-regex-tdfa-rc" ,ghc-regex-tdfa-rc)
+       ("ghc-optparse-applicative" ,ghc-optparse-applicative)
+       ("ghc-unbounded-delays" ,ghc-unbounded-delays)
+       ("ghc-async" ,ghc-async)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-clock-bootstrap" ,ghc-clock-bootstrap)))
+    (home-page "http://documentup.com/feuerbach/tasty")
+    (synopsis "Modern and extensible testing framework")
+    (description "Tasty is a modern testing framework for Haskell.  It lets
+you combine your unit tests, golden tests, QuickCheck/SmallCheck properties,
+and any other types of tests into a single test suite.")
+    (license expat)))
+
 ;;; haskell.scm ends here
