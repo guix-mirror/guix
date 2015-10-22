@@ -435,6 +435,32 @@ them.")
      "This library provides an easy way to define command line parsers.")
     (license bsd-3)))
 
+(define-public ghc-happy
+  (package
+    (name "ghc-happy")
+    (version "1.19.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/happy/happy-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1nj353q4z1g186fpjzf0dnsg71qhxqpamx8jy89rjjvv3p0kmw32"))))
+    (build-system haskell-build-system)
+    (arguments `(#:tests? #f)) ;; cannot satisfy -package mtl.  Possible Cabal
+                               ;; issue.
+    (propagated-inputs
+     `(("ghc-mtl" ,ghc-mtl)))
+    (home-page "https://hackage.haskell.org/package/happy")
+    (synopsis "Parser generator for Haskell")
+    (description "Happy is a parser generator for Haskell.  Given a grammar
+specification in BNF, Happy generates Haskell code to parse the grammar.
+Happy works in a similar way to the yacc tool for C.")
+    (license bsd-3)))
+
 (define-public cpphs
   (package
     (name "cpphs")
