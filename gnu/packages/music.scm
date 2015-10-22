@@ -87,6 +87,7 @@
               (uri (string-append
                     "https://github.com/" name "/" name "/archive/v"
                     version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
                 "0raixgjavkm7hxppzsc5zqbfbh2bhjcmbiplhnsxsmyj8flafyc1"))))
