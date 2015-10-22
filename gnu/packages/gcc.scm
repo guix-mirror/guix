@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -27,6 +27,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages doxygen)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages docbook)
@@ -460,6 +461,9 @@ using compilers other than GCC."
        ("javac.in" ,javac.in)
        ("ecj-bootstrap" ,ecj-bootstrap)
        ,@(package-inputs gcc)))
+    (native-inputs
+     `(("dejagnu" ,dejagnu)
+       ,@(package-native-inputs gcc)))
     ;; Suppress the separate "lib" output, because otherwise the
     ;; "lib" and "out" outputs would refer to each other, creating
     ;; a cyclic dependency.  <http://debbugs.gnu.org/18101>
@@ -471,7 +475,9 @@ using compilers other than GCC."
                                                 (ice-9 regex)
                                                 (srfi srfi-1)
                                                 (srfi srfi-26))
-                                               ,@(package-arguments gcc))
+                                     #:test-target "check-target-libjava"
+                                     ,@(package-arguments gcc))
+       ((#:tests? _) #t)
        ((#:configure-flags flags)
         `(let ((ecj (assoc-ref %build-inputs "ecj-bootstrap")))
            `("--enable-java-home"
