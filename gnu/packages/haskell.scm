@@ -3088,4 +3088,40 @@ and any other types of tests into a single test suite.")
 test framework.")
     (license expat)))
 
+(define-public ghc-scientific
+  (package
+    (name "ghc-scientific")
+    (version "0.3.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/scientific/scientific-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0mimdkva0cgzaychr6whv9if29z0r5wwhkss9bmd4rz8kq1kgngn"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-hashable" ,ghc-hashable)
+       ("ghc-vector" ,ghc-vector)))
+    (inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-ant-xml" ,ghc-tasty-ant-xml)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-smallcheck" ,ghc-smallcheck)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/basvandijk/scientific")
+    (synopsis "Numbers represented using scientific notation")
+    (description "This package provides @code{Data.Scientific}, which provides
+the number type @code{Scientific}.  Scientific numbers are arbitrary precision
+and space efficient.  They are represented using
+@uref{http://en.wikipedia.org/wiki/Scientific_notation, scientific
+notation}.")
+    (license bsd-3)))
+
 ;;; haskell.scm ends here
