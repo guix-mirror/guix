@@ -26,6 +26,7 @@
 ;;; Code:
 
 (require 'guix-base)
+(require 'guix-entry)
 (require 'guix-utils)
 
 (defgroup guix-info nil
@@ -241,7 +242,7 @@ Use `guix-info-insert-ENTRY-TYPE-function' or
   "Insert title and value of a PARAM at point.
 ENTRY is alist with parameters and their values.
 ENTRY-TYPE is a type of ENTRY."
-  (let ((val (guix-assq-value entry param)))
+  (let ((val (guix-entry-value entry param)))
     (unless (and guix-info-ignore-empty-vals (null val))
       (let* ((title          (guix-get-param-title entry-type param))
              (insert-methods (guix-info-get-insert-methods entry-type param))
@@ -500,12 +501,12 @@ filling them to fit the window."
 (defun guix-package-info-insert-heading (entry)
   "Insert the heading for package ENTRY.
 Show package name, version, and `guix-package-info-heading-params'."
-  (guix-format-insert (concat (guix-assq-value entry 'name) " "
-                              (guix-assq-value entry 'version))
+  (guix-format-insert (concat (guix-entry-value entry 'name) " "
+                              (guix-entry-value entry 'version))
                       'guix-package-info-heading)
   (insert "\n\n")
   (mapc (lambda (param)
-          (let ((val  (guix-assq-value entry param))
+          (let ((val  (guix-entry-value entry param))
                 (face (guix-get-symbol (symbol-name param)
                                        'info 'package)))
             (when val
@@ -595,10 +596,10 @@ If nil, insert installed info in a default way.")
 
 (defun guix-package-info-insert-outputs (outputs entry)
   "Insert OUTPUTS from package ENTRY at point."
-  (and (guix-assq-value entry 'obsolete)
+  (and (guix-entry-value entry 'obsolete)
        (guix-package-info-insert-obsolete-text))
-  (and (guix-assq-value entry 'non-unique)
-       (guix-assq-value entry 'installed)
+  (and (guix-entry-value entry 'non-unique)
+       (guix-entry-value entry 'installed)
        (guix-package-info-insert-non-unique-text
         (guix-get-full-name entry)))
   (insert "\n")
@@ -625,11 +626,11 @@ If nil, insert installed info in a default way.")
 Make some fancy text with buttons and additional stuff if the
 current OUTPUT is installed (if there is such output in
 `installed' parameter of a package ENTRY)."
-  (let* ((installed (guix-assq-value entry 'installed))
-         (obsolete  (guix-assq-value entry 'obsolete))
+  (let* ((installed (guix-entry-value entry 'installed))
+         (obsolete  (guix-entry-value entry 'obsolete))
          (installed-entry (cl-find-if
                            (lambda (entry)
-                             (string= (guix-assq-value entry 'output)
+                             (string= (guix-entry-value entry 'output)
                                       output))
                            installed))
          (action-type (if installed-entry 'delete 'install)))
@@ -663,8 +664,8 @@ ENTRY is an alist with package info."
         (current-buffer)))
      (concat type-str " '" full-name "'")
      'action-type type
-     'id (or (guix-assq-value entry 'package-id)
-             (guix-assq-value entry 'id))
+     'id (or (guix-entry-value entry 'package-id)
+             (guix-entry-id entry))
      'output output)))
 
 (defun guix-package-info-insert-output-path (path &optional _)
@@ -719,19 +720,13 @@ prompt depending on `guix-operation-confirm' variable)."
 Find the file if needed (see `guix-package-info-auto-find-source').
 ENTRY-ID is an ID of the current entry (package or output).
 PACKAGE-ID is an ID of the package which source to show."
-  (let* ((entry (guix-get-entry-by-id entry-id guix-entries))
+  (let* ((entry (guix-entry-by-id entry-id guix-entries))
          (file  (guix-package-source-path package-id)))
     (or file
         (error "Couldn't define file path of the package source"))
     (let* ((new-entry (cons (cons 'source-file file)
                             entry))
-           (entries (cl-substitute-if
-                     new-entry
-                     (lambda (entry)
-                       (equal (guix-assq-value entry 'id)
-                              entry-id))
-                     guix-entries
-                     :count 1)))
+           (entries (guix-replace-entry entry-id new-entry guix-entries)))
       (guix-redisplay-buffer :entries entries)
       (if (file-exists-p file)
           (if guix-package-info-auto-find-source
@@ -754,9 +749,9 @@ SOURCE is a list of URLs."
   (guix-info-insert-indent)
   (if (null source)
       (guix-format-insert nil)
-    (let* ((source-file (guix-assq-value entry 'source-file))
-           (entry-id    (guix-assq-value entry 'id))
-           (package-id  (or (guix-assq-value entry 'package-id)
+    (let* ((source-file (guix-entry-value entry 'source-file))
+           (entry-id    (guix-entry-id entry))
+           (package-id  (or (guix-entry-value entry 'package-id)
                             entry-id)))
       (if (null source-file)
           (guix-info-insert-action-button
@@ -806,13 +801,13 @@ If nil, insert output in a default way.")
   "Insert output VERSION and obsolete text if needed at point."
   (guix-info-insert-val-default version
                                 'guix-package-info-version)
-  (and (guix-assq-value entry 'obsolete)
+  (and (guix-entry-value entry 'obsolete)
        (guix-package-info-insert-obsolete-text)))
 
 (defun guix-output-info-insert-output (output entry)
   "Insert OUTPUT and action buttons at point."
-  (let* ((installed (guix-assq-value entry 'installed))
-         (obsolete  (guix-assq-value entry 'obsolete))
+  (let* ((installed (guix-entry-value entry 'installed))
+         (obsolete  (guix-entry-value entry 'obsolete))
          (action-type (if installed 'delete 'install)))
     (guix-info-insert-val-default
      output
@@ -882,7 +877,7 @@ If nil, insert generation in a default way.")
        (guix-switch-to-generation guix-profile (button-get btn 'number)
                                   (current-buffer)))
      "Switch to this generation (make it the current one)"
-     'number (guix-assq-value entry 'number))))
+     'number (guix-entry-value entry 'number))))
 
 (provide 'guix-info)
 

@@ -28,6 +28,7 @@
 (require 'tabulated-list)
 (require 'guix-info)
 (require 'guix-base)
+(require 'guix-entry)
 (require 'guix-utils)
 
 (defgroup guix-list nil
@@ -180,7 +181,7 @@ ENTRIES should have a form of `guix-entries'."
 Values are taken from ENTRIES which should have the form of
 `guix-entries'."
   (mapcar (lambda (entry)
-            (list (guix-assq-value entry 'id)
+            (list (guix-entry-id entry)
                   (guix-list-get-tabulated-entry entry entry-type)))
           entries))
 
@@ -190,7 +191,7 @@ Parameters are taken from ENTRY of ENTRY-TYPE."
   (guix-list-make-tabulated-vector
    entry-type
    (lambda (param _)
-     (let ((val (guix-assq-value entry param))
+     (let ((val (guix-entry-value entry param))
            (fun (guix-assq-value guix-list-column-value-methods
                                  entry-type param)))
        (if fun
@@ -224,7 +225,7 @@ VAL may be nil."
 
 (defun guix-list-current-entry ()
   "Return alist of the current entry info."
-  (guix-get-entry-by-id (guix-list-current-id) guix-entries))
+  (guix-entry-by-id (guix-list-current-id) guix-entries))
 
 (defun guix-list-current-package-id ()
   "Return ID of the current package."
@@ -232,7 +233,7 @@ VAL may be nil."
     (guix-package-list-mode
      (guix-list-current-id))
     (guix-output-list-mode
-     (guix-assq-value (guix-list-current-entry) 'package-id))))
+     (guix-entry-value (guix-list-current-entry) 'package-id))))
 
 (defun guix-list-for-each-line (fun &rest args)
   "Call FUN with ARGS for each entry line."
@@ -535,16 +536,16 @@ likely)."
 Colorize it with `guix-package-list-installed' or
 `guix-package-list-obsolete' if needed."
   (guix-get-string name
-                   (cond ((guix-assq-value entry 'obsolete)
+                   (cond ((guix-entry-value entry 'obsolete)
                           'guix-package-list-obsolete)
-                         ((guix-assq-value entry 'installed)
+                         ((guix-entry-value entry 'installed)
                           'guix-package-list-installed))))
 
 (defun guix-package-list-get-installed-outputs (installed &optional _)
   "Return string with outputs from INSTALLED entries."
   (guix-get-string
    (mapcar (lambda (entry)
-             (guix-assq-value entry 'output))
+             (guix-entry-value entry 'output))
            installed)))
 
 (defun guix-package-list-marking-check ()
@@ -573,7 +574,7 @@ be separated with \",\")."
   (interactive "P")
   (guix-package-list-marking-check)
   (let* ((entry     (guix-list-current-entry))
-         (all       (guix-assq-value entry 'outputs))
+         (all       (guix-entry-value entry 'outputs))
          (installed (guix-get-installed-outputs entry))
          (available (cl-set-difference all installed :test #'string=)))
     (or available
@@ -608,7 +609,7 @@ be separated with \",\")."
          (installed (guix-get-installed-outputs entry)))
     (or installed
         (user-error "This package is not installed"))
-    (when (or (guix-assq-value entry 'obsolete)
+    (when (or (guix-entry-value entry 'obsolete)
               (y-or-n-p "This package is not obsolete.  Try to upgrade it anyway? "))
       (guix-package-list-mark-outputs
        'upgrade installed
@@ -622,14 +623,14 @@ accept an entry as argument."
   (guix-package-list-marking-check)
   (let ((obsolete (cl-remove-if-not
                    (lambda (entry)
-                     (guix-assq-value entry 'obsolete))
+                     (guix-entry-value entry 'obsolete))
                    guix-entries)))
     (guix-list-for-each-line
      (lambda ()
        (let* ((id (guix-list-current-id))
               (entry (cl-find-if
                       (lambda (entry)
-                        (equal id (guix-assq-value entry 'id)))
+                        (equal id (guix-entry-id entry)))
                       obsolete)))
          (when entry
            (funcall fun entry)))))))
@@ -693,7 +694,7 @@ The specification is suitable for `guix-process-package-actions'."
   (interactive)
   (guix-package-list-marking-check)
   (let* ((entry     (guix-list-current-entry))
-         (installed (guix-assq-value entry 'installed)))
+         (installed (guix-entry-value entry 'installed)))
     (if installed
         (user-error "This output is already installed")
       (guix-list--mark 'install t))))
@@ -703,7 +704,7 @@ The specification is suitable for `guix-process-package-actions'."
   (interactive)
   (guix-package-list-marking-check)
   (let* ((entry     (guix-list-current-entry))
-         (installed (guix-assq-value entry 'installed)))
+         (installed (guix-entry-value entry 'installed)))
     (if installed
         (guix-list--mark 'delete t)
       (user-error "This output is not installed"))))
@@ -713,10 +714,10 @@ The specification is suitable for `guix-process-package-actions'."
   (interactive)
   (guix-package-list-marking-check)
   (let* ((entry     (guix-list-current-entry))
-         (installed (guix-assq-value entry 'installed)))
+         (installed (guix-entry-value entry 'installed)))
     (or installed
         (user-error "This output is not installed"))
-    (when (or (guix-assq-value entry 'obsolete)
+    (when (or (guix-entry-value entry 'obsolete)
               (y-or-n-p "This output is not obsolete.  Try to upgrade it anyway? "))
       (guix-list--mark 'upgrade t))))
 
@@ -788,8 +789,8 @@ VAL is a boolean value."
   "Switch current profile to the generation at point."
   (interactive)
   (let* ((entry   (guix-list-current-entry))
-         (current (guix-assq-value entry 'current))
-         (number  (guix-assq-value entry 'number)))
+         (current (guix-entry-value entry 'current))
+         (number  (guix-entry-value entry 'number)))
     (if current
         (user-error "This generation is already the current one")
       (guix-switch-to-generation guix-profile number (current-buffer)))))

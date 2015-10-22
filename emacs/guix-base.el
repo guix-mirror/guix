@@ -30,6 +30,7 @@
 (require 'cl-lib)
 (require 'guix-profiles)
 (require 'guix-backend)
+(require 'guix-entry)
 (require 'guix-guile)
 (require 'guix-utils)
 (require 'guix-history)
@@ -103,15 +104,15 @@ Each element of the list has a form:
 
 (defun guix-get-full-name (entry &optional output)
   "Return name specification of the package ENTRY and OUTPUT."
-  (guix-get-name-spec (guix-assq-value entry 'name)
-                      (guix-assq-value entry 'version)
+  (guix-get-name-spec (guix-entry-value entry 'name)
+                      (guix-entry-value entry 'version)
                       output))
 
 (defun guix-entry-to-specification (entry)
   "Return name specification by the package or output ENTRY."
-  (guix-get-name-spec (guix-assq-value entry 'name)
-                      (guix-assq-value entry 'version)
-                      (guix-assq-value entry 'output)))
+  (guix-get-name-spec (guix-entry-value entry 'name)
+                      (guix-entry-value entry 'version)
+                      (guix-entry-value entry 'output)))
 
 (defun guix-entries-to-specifications (entries)
   "Return name specifications by the package or output ENTRIES."
@@ -121,14 +122,8 @@ Each element of the list has a form:
 (defun guix-get-installed-outputs (entry)
   "Return list of installed outputs for the package ENTRY."
   (mapcar (lambda (installed-entry)
-            (guix-assq-value installed-entry 'output))
-          (guix-assq-value entry 'installed)))
-
-(defun guix-get-entry-by-id (id entries)
-  "Return entry from ENTRIES by entry ID."
-  (cl-find-if (lambda (entry)
-                (equal id (guix-assq-value entry 'id)))
-              entries))
+            (guix-entry-value installed-entry 'output))
+          (guix-entry-value entry 'installed)))
 
 (defun guix-get-package-id-and-output-by-output-id (oid)
   "Return list (PACKAGE-ID OUTPUT) by output id OID."
@@ -940,9 +935,9 @@ ENTRIES is a list of package entries to get info about packages."
          (lambda (spec)
            (let* ((id (car spec))
                   (outputs (cdr spec))
-                  (entry (guix-get-entry-by-id id entries)))
+                  (entry (guix-entry-by-id id entries)))
              (when entry
-               (let ((location (guix-assq-value entry 'location)))
+               (let ((location (guix-entry-value entry 'location)))
                  (concat (guix-get-full-name entry)
                          (when outputs
                            (concat ":"
