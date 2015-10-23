@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,6 +97,14 @@ and parameters ~s~%"
                              '("--enable-tests")
                              '())
                          configure-flags)))
+    ;; For packages where the Cabal build-type is set to "Configure",
+    ;; ./configure will be executed.  In these cases, the following
+    ;; environment variable is needed to be able to find the shell executable.
+    ;; For other package types, the configure script isn't present.  For more
+    ;; information, see the Build Information section of
+    ;; <https://www.haskell.org/cabal/users-guide/developing-packages.html>.
+    (when (file-exists? "configure")
+      (setenv "CONFIG_SHELL" "sh"))
     (run-setuphs "configure" params)))
 
 (define* (build #:rest empty)
