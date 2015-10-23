@@ -2704,7 +2704,24 @@ sequences.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
-       #:make-flags '("-f" "Makefile.Linux")
+      ;; The CC and CCFLAGS variables are set to contain a lot of x86_64
+      ;; optimizations by default, so we override these flags such that x86_64
+      ;; flags are only added when the build target is an x86_64 system.
+       #:make-flags
+       (list (let ((system ,(or (%current-target-system)
+                                (%current-system)))
+                   (flags '("-ggdb" "-fomit-frame-pointer"
+                            "-ffast-math" "-funroll-loops"
+                            "-fmessage-length=0"
+                            "-O9" "-Wall" "-DMAKE_FOR_EXON"
+                            "-DMAKE_STANDALONE"
+                            "-DSUBREAD_VERSION=\\\"${SUBREAD_VERSION}\\\""))
+                   (flags64 '("-mmmx" "-msse" "-msse2" "-msse3")))
+               (if (string-prefix? "x86_64" system)
+                   (string-append "CCFLAGS=" (string-join (append flags flags64)))
+                   (string-append "CCFLAGS=" (string-join flags))))
+             "-f" "Makefile.Linux"
+             "CC=gcc ${CCFLAGS}")
        #:phases
        (alist-cons-after
         'unpack 'enter-dir
