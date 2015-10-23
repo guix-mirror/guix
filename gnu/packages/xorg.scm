@@ -4,6 +4,7 @@
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
+;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5439,3 +5440,44 @@ perl programs to display windows and graphics on X11 servers.")
     ;; of the extension modules in the directory Protocol/Ext: see those files
     ;; for details)."
     (license (package-license perl))))
+
+(define-public xcompmgr
+  (package
+    (name "xcompmgr")
+    (version "1.1.7")
+    (source
+     (origin
+       ;; there's no current tarball
+       (method git-fetch)
+       (uri (git-reference
+             (url "http://anongit.freedesktop.org/git/xorg/app/xcompmgr.git")
+             (commit (string-append name "-" version))))
+       (sha256
+        (base32
+         "04swkrm3gk689wrjc418bd3n25w8r20kg1xfbn5j8d7mx1r5gf16"))
+       (file-name (string-append name "-" version))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'autogen
+                              (lambda _
+                                (setenv "NOCONFIGURE" "t")
+                                (zero? (system* "sh" "autogen.sh")))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("libX11" ,libx11)
+       ("libXext" ,libxext)
+       ("libXcomposite" ,libxcomposite)
+       ("libXfixes" ,libxfixes)
+       ("libXdamage" ,libxdamage)
+       ("libXrender" ,libxrender)))
+    (synopsis "X Compositing manager using RENDER")
+    (description "xcompmgr is a sample compositing manager for X servers
+supporting the XFIXES, DAMAGE, RENDER, and COMPOSITE extensions.  It enables
+basic eye-candy effects.")
+    (home-page "http://cgit.freedesktop.org/xorg/app/xcompmgr/")
+    (license (license:x11-style
+              "http://cgit.freedesktop.org/xorg/app/xcompmgr/tree/COPYING"))))
