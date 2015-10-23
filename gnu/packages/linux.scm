@@ -2315,7 +2315,7 @@ applications.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.30")
+    (version "5.35")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2323,7 +2323,9 @@ applications.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0b1qbnq1xzcdw5rajg9yyg31bf21jnff0n6gnf1snz89bbdllfhy"))))
+                "1qphz25hganfnd5ipfscbj7s70anv5favmwqmi9ig2saciaf1zhs"))
+              (patches
+               (list (search-patch "bluez-tests.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
