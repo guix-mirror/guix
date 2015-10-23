@@ -3645,7 +3645,7 @@ library for Haskell.")
     (home-page "https://github.com/simonmar/async")
     (synopsis "Library to run IO operations asynchronously")
     (description "Async provides a library to run IO operations
-asynchronously, and wait for their results. It is a higher-level interface
+asynchronously, and wait for their results.  It is a higher-level interface
 over threads in Haskell, in which @code{Async a} is a concurrent thread that
 will eventually deliver a value of type @code{a}.")
     (license bsd-3)))
