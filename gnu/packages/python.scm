@@ -3604,7 +3604,7 @@ services for your Python modules and applications.")
 (define-public python-pillow
   (package
     (name "python-pillow")
-    (version "2.8.1")
+    (version "3.0.0")
     (source
      (origin
        (method url-fetch)
@@ -3612,7 +3612,7 @@ services for your Python modules and applications.")
                            "Pillow/Pillow-" version ".tar.gz"))
        (sha256
         (base32
-         "15n92axxph2s3kvg68bki9gv3nzwgq7130kp7wbblpi1l0cc2q47"))))
+         "1fsl6sywd4f4axvbpy5h5h26l6w8592j0f1wcnj1hmgy83svwl5d"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)
