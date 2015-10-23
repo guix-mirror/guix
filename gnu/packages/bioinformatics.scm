@@ -2315,6 +2315,7 @@ viewer.")
       (inputs
        `(("perl" ,perl)
          ("zlib" ,zlib)))
+      (supported-systems '("x86_64-linux"))
       (home-page "https://code.google.com/p/mosaik-aligner/")
       (synopsis "Map nucleotide sequence reads to reference genomes")
       (description
