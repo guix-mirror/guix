@@ -1206,6 +1206,8 @@ creating interactive structured graphics.")
                (base32
                 "0679hcnpam2gkag2i63sm0wdm35gwvzafnz1354mg6j5gzwpfrcr"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("CXXFLAGS=-std=c++11"))) ; required by gtkmm
     (propagated-inputs `(("libgnomecanvas" ,libgnomecanvas)))
     (native-inputs
      `(("gtkmm-2" ,gtkmm-2)
