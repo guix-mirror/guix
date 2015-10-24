@@ -543,7 +543,8 @@ application suites.")
       ;;      on non-intel systems now.
       ;;("colord" ,colord)
       ("cups" ,cups)                            ;for printing support
-      ("rest" ,rest)
+      ;; XXX: rest depends on p11-kit, which fails on mips64el now.
+      ;;("rest" ,rest)
       ("json-glib" ,json-glib)))
    (native-inputs
     `(("perl" ,perl)
