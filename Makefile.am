@@ -48,6 +48,7 @@ MODULES =					\
   guix/nar.scm					\
   guix/derivations.scm				\
   guix/gnu-maintenance.scm			\
+  guix/upstream.scm				\
   guix/licenses.scm				\
   guix/build-system.scm				\
   guix/build-system/cmake.scm			\

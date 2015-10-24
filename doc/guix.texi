@@ -4211,8 +4211,12 @@ gnu/packages/glib.scm:77:12: glib would be upgraded from 2.34.3 to 2.37.0
 @end example
 
 It does so by browsing each package's FTP directory and determining the
-highest version number of the source tarballs
-therein@footnote{Currently, this only works for GNU packages.}.
+highest version number of the source tarballs therein.  The command
+knows how to update specific types of packages: GNU packages, ELPA
+packages, etc.---see the documentation for @option{--type} below.  The
+are many packages, though, for which it lacks a method to determine
+whether a new upstream release is available.  However, the mechanism is
+extensible, so feel free to get in touch with us to add a new method!
 
 When passed @code{--update}, it modifies distribution source files to
 update the version numbers and source tarball hashes of those packages'
@@ -4256,6 +4260,29 @@ terms of build time or bandwidth used to achieve the upgrade.
 The @code{non-core} subset refers to the remaining packages.  It is
 typically useful in cases where an update of the core packages would be
 inconvenient.
+
+@item --type=@var{updater}
+@itemx -t @var{updater}
+Select only packages handled by @var{updater}.  Currently, @var{updater}
+may be one of:
+
+@table @code
+@item gnu
+the updater for GNU packages;
+@item elpa
+the updater for @uref{http://elpa.gnu.org/, ELPA} packages;
+@item cran
+the updater fro @uref{http://cran.r-project.org/, CRAN} packages.
+@end table
+
+For instance, the following commands only checks for updates of Emacs
+packages hosted at @code{elpa.gnu.org} and updates of CRAN packages:
+
+@example
+$ guix refresh -t elpa -t cran
+gnu/packages/statistics.scm:819:13: r-testthat would be upgraded from 0.10.0 to 0.11.0
+gnu/packages/emacs.scm:856:13: emacs-auctex would be upgraded from 11.88.6 to 11.88.9
+@end example
 
 @end table
 

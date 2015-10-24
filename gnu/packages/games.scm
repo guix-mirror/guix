@@ -6,12 +6,13 @@
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +35,9 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix svn-download)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
@@ -49,6 +52,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libunwind)
+  #:use-module (gnu packages haskell)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
@@ -78,6 +82,7 @@
   #:use-module (gnu packages fribidi)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system haskell)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial))
 
@@ -1048,6 +1053,48 @@ experience and advance levels, and are carried over from one scenario to the
 next campaign.")
     (license license:gpl2+)))
 
+(define-public dosbox
+  (package
+    (name "dosbox")
+    (version "0.74.svn3947")
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url "http://svn.code.sf.net/p/dosbox/code-0/dosbox/trunk/")
+                    (revision 3947)))
+              (file-name (string-append name "-" version "-checkout"))
+              ;; Use SVN head, since the last release (2010) is incompatible
+              ;; with GCC 4.8+ (see
+              ;; <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=624976>).
+              (sha256
+               (base32
+                "1p918j6090d1nkvgq7ifvmn506zrdmyi32y7p3ms40d5ssqjg8fj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after
+                   'unpack 'autogen.sh
+                   (lambda _
+                     (zero? (system* "sh" "autogen.sh")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("sdl" ,sdl)
+       ("libpng" ,libpng)
+       ("zlib" ,zlib)
+       ("alsa-lib" ,alsa-lib)
+       ("glu" ,glu)
+       ("mesa" ,mesa)))
+    (home-page "http://www.dosbox.com")
+    (synopsis "x86 emulator with CGA/EGA/VGA/etc. graphics and sound")
+    (description "DOSBox is a DOS-emulator that uses the SDL library.  DOSBox
+also emulates CPU:286/386 realmode/protected mode, Directory
+FileSystem/XMS/EMS, Tandy/Hercules/CGA/EGA/VGA/VESA graphics, a
+SoundBlaster/Gravis Ultra Sound card for excellent sound compatibility with
+older games.")
+    (license license:gpl2+)))
+
 (define-public gamine
   (package
     (name "gamine")
@@ -1093,6 +1140,39 @@ mouse and keyboard.  The child uses the mouse to draw colored dots and lines
 on the screen and keyboard to display letters.")
     ;; Most files under gpl2+ or gpl3+, but eat.wav under gpl3
     (license license:gpl3)))
+
+(define-public raincat
+  (package
+    (name "raincat")
+    (version "1.1.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/Raincat/Raincat-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1aalh68h6799mv4vyg30zpskl5jkn6x2j1jza7p4lrflyifxzar8"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-random" ,ghc-random)
+       ("ghc-glut" ,ghc-glut)
+       ("ghc-opengl" ,ghc-opengl)
+       ("ghc-sdl" ,ghc-sdl)
+       ("ghc-sdl-image" ,ghc-sdl-image)
+       ("ghc-sdl-mixer" ,ghc-sdl-mixer)))
+    (home-page "http://raincat.bysusanlin.com/")
+    (synopsis "Puzzle game with a cat in lead role")
+    (description "Project Raincat is a game developed by Carnegie Mellon
+students through GCS during the Fall 2008 semester.  Raincat features game
+play inspired from classics Lemmings and The Incredible Machine.  The project
+proved to be an excellent learning experience for the programmers.  Everything
+is programmed in Haskell.")
+    (license license:bsd-3)))
 
 (define-public manaplus
   (package

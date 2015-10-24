@@ -24,6 +24,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
@@ -35,11 +36,14 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages zip)
+  #:use-module (srfi srfi-1))
 
 (define-public r
   (package
@@ -933,3 +937,119 @@ times.")
 large data (e.g. 100GB in RAM), fast ordered joins, fast add/modify/delete of
 columns by group, column listing and fast file reading.")
     (license license:gpl2+)))
+
+(define-public python-patsy
+  (package
+    (name "python-patsy")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://pypi.python.org/packages/source/"
+                                  "p/patsy/patsy-" version ".zip"))
+              (sha256
+               (base32
+                "1kbs996xc2haxalmhd19rr1wh5fa4gbbxf81czkf5w4kam7h7wz4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check (lambda _ (zero? (system* "nosetests" "-v"))))
+         (add-after 'unpack 'prevent-generation-of-egg-archive
+          (lambda _
+            (substitute* "setup.py"
+              (("from setuptools import setup")
+               "from distutils.core import setup"))
+            #t)))))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("unzip" ,unzip)))
+    (home-page "https://github.com/pydata/patsy")
+    (synopsis "Describe statistical models and build design matrices")
+    (description
+     "Patsy is a Python package for describing statistical models and for
+building design matrices.")
+    ;; The majority of the code is distributed under BSD-2.  The module
+    ;; patsy.compat contains code derived from the Python standard library,
+    ;; and is covered by the PSFL.
+    (license (list license:bsd-2 license:psfl))))
+
+(define-public python2-patsy
+  (let ((patsy (package-with-python2 python-patsy)))
+    (package (inherit patsy)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs patsy)))
+      (propagated-inputs
+       `(("python2-numpy" ,python2-numpy)
+         ("python2-scipy" ,python2-scipy)
+         ,@(alist-delete "python-numpy"
+                         (alist-delete "python-scipy"
+                                       (package-propagated-inputs patsy))))))))
+
+(define-public python-statsmodels
+  (package
+    (name "python-statsmodels")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/"
+                           "s/statsmodels/statsmodels-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xn67sqr0cc1lmlhzm71352hrb4hw7g318p5ff5q97pc98vl8kmy"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; tests must be run after installation
+         (delete 'check)
+         (add-after 'unpack 'set-matplotlib-backend-to-agg
+          (lambda _
+            ;; Set the matplotlib backend to Agg to avoid problems using the
+            ;; GTK backend without a display.
+            (substitute* (find-files "statsmodels/graphics/tests" "\\.py")
+              (("import matplotlib\\.pyplot as plt" line)
+               (string-append "import matplotlib;matplotlib.use('Agg');"
+                              line)))
+            #t))
+         (add-after 'install 'check
+          (lambda _
+            (with-directory-excursion "/tmp"
+              (zero? (system* "nosetests"
+                              "--stop"
+                              "-v" "statsmodels"))))))))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-pandas" ,python-pandas)
+       ("python-patsy" ,python-patsy)
+       ("python-matplotlib" ,python-matplotlib)))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "http://statsmodels.sourceforge.net/")
+    (synopsis "Statistical modeling and econometrics in Python")
+    (description
+     "Statsmodels is a Python package that provides a complement to scipy for
+statistical computations including descriptive statistics and estimation and
+inference for statistical models.")
+    (license license:bsd-3)))
+
+(define-public python2-statsmodels
+  (let ((stats (package-with-python2 python-statsmodels)))
+    (package (inherit stats)
+      (propagated-inputs
+       `(("python2-numpy" ,python2-numpy)
+         ("python2-scipy" ,python2-scipy)
+         ("python2-pandas" ,python2-pandas)
+         ("python2-patsy" ,python2-patsy)
+         ("python2-matplotlib" ,python2-matplotlib)))
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs stats))))))

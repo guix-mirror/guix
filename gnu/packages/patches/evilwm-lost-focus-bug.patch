@@ -1,0 +1,18 @@
+evilwm may sometimes lose focus after closing a window.  This means that
+evilwm stops responding to keyboard shortcuts, and if no other window is open
+which the mouse can be moved over to regain focus evilwm becomes unusable and
+has to be restarted.
+
+Patch derived from discussion at
+https://wiki.archlinux.org/index.php/Evilwm#Lost_focus_bug_fix
+
+--- evilwm-1.1.1/client.c
++++ evilwm-1.1.1/client.c
+@@ -172,6 +172,7 @@
+ 	 *  _NET_WM_STATE) */
+ 	if (c->remove) {
+ 		LOG_DEBUG("setting WithdrawnState\n");
++		XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
+ 		set_wm_state(c, WithdrawnState);
+ 		ewmh_withdraw_client(c);
+ 	} else {

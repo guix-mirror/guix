@@ -3060,6 +3060,43 @@ that client code uses to construct the grammar directly in Python code.")
 (define-public python2-numpydoc
   (package-with-python2 python-numpydoc))
 
+(define-public python-numexpr
+  (package
+    (name "python-numexpr")
+    (version "2.4.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/"
+                           "n/numexpr/numexpr-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0nsnff5312fm38w6dm34bw7ghfqqy8vl9gig0al963h4mz8zm8nz"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))          ; no tests included
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)))
+    (home-page "https://github.com/pydata/numexpr")
+    (synopsis "Fast numerical expression evaluator for NumPy")
+    (description
+     "Numexpr is a fast numerical expression evaluator for NumPy.  With it,
+expressions that operate on arrays are accelerated and use less memory than
+doing the same calculation in Python.  In addition, its multi-threaded
+capabilities can make use of all your cores, which may accelerate
+computations, most specially if they are not memory-bounded (e.g. those using
+transcendental functions).")
+    (license license:expat)))
+
+(define-public python2-numexpr
+  (let ((numexpr (package-with-python2 python-numexpr)))
+    (package (inherit numexpr)
+      ;; Make sure to use special packages for Python 2 instead
+      ;; of those automatically rewritten by package-with-python2.
+      (propagated-inputs
+       `(("python2-numpy" ,python2-numpy)
+         ,@(alist-delete "python-numpy"
+                         (package-propagated-inputs numexpr)))))))
+
 (define-public python-matplotlib
   (package
     (name "python-matplotlib")

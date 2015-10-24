@@ -25,7 +25,10 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix packages)
-  #:use-module (guix gnu-maintenance)
+  #:use-module (guix upstream)
+  #:use-module ((guix gnu-maintenance) #:select (%gnu-updater))
+  #:use-module (guix import elpa)
+  #:use-module (guix import cran)
   #:use-module (guix gnupg)
   #:use-module (gnu packages)
   #:use-module ((gnu packages commencement) #:select (%final-inputs))
@@ -63,6 +66,9 @@
                     (x
                      (leave (_ "~a: invalid selection; expected `core' or `non-core'~%")
                             arg)))))
+        (option '(#\t "type") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'updater (string->symbol arg) result)))
         (option '(#\l "list-dependent") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'list-dependent? #t result)))
@@ -104,6 +110,8 @@ specified with `--select'.\n"))
   -s, --select=SUBSET    select all the packages in SUBSET, one of
                          `core' or `non-core'"))
   (display (_ "
+  -t, --type=UPDATER     restrict to updates from UPDATER--e.g., 'gnu'"))
+  (display (_ "
   -l, --list-dependent   list top-level dependent packages that would need to
                          be rebuilt as a result of upgrading PACKAGE..."))
   (newline)
@@ -124,19 +132,33 @@ specified with `--select'.\n"))
   (newline)
   (show-bug-report-information))
 
-(define* (update-package store package #:key (key-download 'interactive))
+
+;;;
+;;; Updates.
+;;;
+
+(define %updaters
+  ;; List of "updaters" used by default.  They are consulted in this order.
+  (list %gnu-updater
+        %elpa-updater
+        %cran-updater))
+
+(define (lookup-updater name)
+  "Return the updater called NAME."
+  (find (lambda (updater)
+          (eq? name (upstream-updater-name updater)))
+        %updaters))
+
+(define* (update-package store package updaters
+                         #:key (key-download 'interactive))
   "Update the source file that defines PACKAGE with the new version.
 KEY-DOWNLOAD specifies a download policy for missing OpenPGP keys; allowed
 values: 'interactive' (default), 'always', and 'never'."
   (let-values (((version tarball)
-                (catch #t
-                  (lambda ()
-                    (package-update store package #:key-download key-download))
-                  (lambda _
-                    (values #f #f))))
+                (package-update store package updaters
+                                #:key-download key-download))
                ((loc)
-                (or (package-field-location package
-                                            'version)
+                (or (package-field-location package 'version)
                     (package-location package))))
     (when version
       (if (and=> tarball file-exists?)
@@ -153,7 +175,6 @@ values: 'interactive' (default), 'always', and 'never'."
 downloaded and authenticated; not updating~%")
                    (package-name package) version)))))
 
-
 
 ;;;
 ;;; Entry point.
@@ -168,6 +189,19 @@ downloaded and authenticated; not updating~%")
                 (lambda (arg result)
                   (alist-cons 'argument arg result))
                 %default-options))
+
+  (define (options->updaters opts)
+    ;; Return the list of updaters to use.
+    (match (filter-map (match-lambda
+                         (('updater . name)
+                          (lookup-updater name))
+                         (_ #f))
+                       opts)
+      (()
+       ;; Use the default updaters.
+       %updaters)
+      (lst
+       lst)))
 
   (define (keep-newest package lst)
     ;; If a newer version of PACKAGE is already in LST, return LST; otherwise
@@ -185,8 +219,8 @@ downloaded and authenticated; not updating~%")
 
   (define core-package?
     (let* ((input->package (match-lambda
-                            ((name (? package? package) _ ...) package)
-                            (_ #f)))
+                             ((name (? package? package) _ ...) package)
+                             (_ #f)))
            (final-inputs   (map input->package %final-inputs))
            (core           (append final-inputs
                                    (append-map (compose (cut filter-map input->package <>)
@@ -205,6 +239,7 @@ update would trigger a complete rebuild."
 
   (let* ((opts            (parse-options))
          (update?         (assoc-ref opts 'update?))
+         (updaters        (options->updaters opts))
          (list-dependent? (assoc-ref opts 'list-dependent?))
          (key-download    (assoc-ref opts 'key-download))
          (packages
@@ -215,18 +250,18 @@ update would trigger a complete rebuild."
                                 (specification->package spec))
                                (_ #f))
                              opts)
-                 (()                          ; default to all packages
-                  (let ((select? (match (assoc-ref opts 'select)
-                                        ('core core-package?)
-                                        ('non-core (negate core-package?))
-                                        (_ (const #t)))))
-                    (fold-packages (lambda (package result)
-                                     (if (select? package)
-                                         (keep-newest package result)
-                                         result))
-                                   '())))
-                 (some                        ; user-specified packages
-                  some))))
+            (()                                   ; default to all packages
+             (let ((select? (match (assoc-ref opts 'select)
+                              ('core core-package?)
+                              ('non-core (negate core-package?))
+                              (_ (const #t)))))
+               (fold-packages (lambda (package result)
+                                (if (select? package)
+                                    (keep-newest package result)
+                                    result))
+                              '())))
+            (some                                 ; user-specified packages
+             some))))
     (with-error-handling
       (cond
        (list-dependent?
@@ -258,18 +293,19 @@ dependent packages are rebuilt: ~{~a~^ ~}~%"
                           (or (assoc-ref opts 'gpg-command)
                               (%gpg-command))))
             (for-each
-             (cut update-package store <> #:key-download key-download)
+             (cut update-package store <> updaters
+                  #:key-download key-download)
              packages))))
        (else
         (for-each (lambda (package)
-                    (match (false-if-exception (package-update-path package))
-                      ((new-version . directory)
+                    (match (package-update-path package updaters)
+                      ((? upstream-source? source)
                        (let ((loc (or (package-field-location package 'version)
                                       (package-location package))))
                          (format (current-error-port)
                                  (_ "~a: ~a would be upgraded from ~a to ~a~%")
                                  (location->string loc)
                                  (package-name package) (package-version package)
-                                 new-version)))
-                      (_ #f)))
+                                 (upstream-source-version source))))
+                      (#f #f)))
                   packages))))))

@@ -439,6 +439,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/elfutils-tests-ptrace.patch		\
   gnu/packages/patches/emacs-exec-path.patch			\
   gnu/packages/patches/eudev-rules-directory.patch		\
+  gnu/packages/patches/evilwm-lost-focus-bug.patch		\
   gnu/packages/patches/expat-CVE-2015-1283.patch		\
   gnu/packages/patches/fastcap-mulGlobal.patch			\
   gnu/packages/patches/fastcap-mulSetup.patch			\
