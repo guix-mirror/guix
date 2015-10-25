@@ -178,7 +178,8 @@ namespace ARDOUR { const char* revision = \"3.5-403-gec2cb31\" ; }"))))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("--cxx11") ; required by gtkmm
+       #:phases
        (modify-phases %standard-phases
          (add-after
           'unpack 'set-rpath-in-LDFLAGS
