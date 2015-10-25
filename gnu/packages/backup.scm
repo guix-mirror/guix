@@ -147,6 +147,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
               (search-patch "libarchive-fix-lzo-test-case.patch")
               (search-patch "libarchive-CVE-2013-0211.patch")))))
     (build-system gnu-build-system)
+    ;; TODO: Add -L/path/to/nettle in libarchive.pc.
     (inputs
      `(("zlib" ,zlib)
        ("nettle" ,nettle)
