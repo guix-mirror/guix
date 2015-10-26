@@ -550,6 +550,55 @@ Build the operating system declared in FILE according to ACTION.\n"))
 ;;; Entry point.
 ;;;
 
+(define (process-action action args opts)
+  "Process ACTION, a sub-command, whose arguments are listed in ARGS.  OPTS is
+the raw alist of options resulting from command-line parsing."
+  (let* ((file     (match args
+                     (() #f)
+                     ((x . _) x)))
+         (system   (assoc-ref opts 'system))
+         (os       (if file
+                       (load* file %user-module
+                              #:on-error (assoc-ref opts 'on-error))
+                       (leave (_ "no configuration file specified~%"))))
+
+         (dry?     (assoc-ref opts 'dry-run?))
+         (grub?    (assoc-ref opts 'install-grub?))
+         (target   (match args
+                     ((first second) second)
+                     (_ #f)))
+         (device   (and grub?
+                        (grub-configuration-device
+                         (operating-system-bootloader os)))))
+
+    (with-store store
+      (set-build-options-from-command-line store opts)
+
+      (run-with-store store
+        (mbegin %store-monad
+          (set-guile-for-build (default-guile))
+          (case action
+            ((extension-graph)
+             (export-extension-graph os (current-output-port)))
+            ((dmd-graph)
+             (export-dmd-graph os (current-output-port)))
+            (else
+             (perform-action action os
+                             #:dry-run? dry?
+                             #:derivations-only? (assoc-ref opts
+                                                            'derivations-only?)
+                             #:use-substitutes? (assoc-ref opts 'substitutes?)
+                             #:image-size (assoc-ref opts 'image-size)
+                             #:full-boot? (assoc-ref opts 'full-boot?)
+                             #:mappings (filter-map (match-lambda
+                                                      (('file-system-mapping . m)
+                                                       m)
+                                                      (_ #f))
+                                                    opts)
+                             #:grub? grub?
+                             #:target target #:device device))))
+        #:system system))))
+
 (define (guix-system . args)
   (define (parse-sub-command arg result)
     ;; Parse sub-command ARG and augment RESULT accordingly.
@@ -600,49 +649,7 @@ Build the operating system declared in FILE according to ACTION.\n"))
                                          #:argument-handler
                                          parse-sub-command))
            (args     (option-arguments opts))
-           (file     (first args))
-           (action   (assoc-ref opts 'action))
-           (system   (assoc-ref opts 'system))
-           (os       (if file
-                         (load* file %user-module
-                                #:on-error (assoc-ref opts 'on-error))
-                         (leave (_ "no configuration file specified~%"))))
-
-           (dry?     (assoc-ref opts 'dry-run?))
-           (grub?    (assoc-ref opts 'install-grub?))
-           (target   (match args
-                       ((first second) second)
-                       (_ #f)))
-           (device   (and grub?
-                          (grub-configuration-device
-                           (operating-system-bootloader os))))
-
-           (store    (open-connection)))
-      (set-build-options-from-command-line store opts)
-
-      (run-with-store store
-        (mbegin %store-monad
-          (set-guile-for-build (default-guile))
-          (case action
-            ((extension-graph)
-             (export-extension-graph os (current-output-port)))
-            ((dmd-graph)
-             (export-dmd-graph os (current-output-port)))
-            (else
-             (perform-action action os
-                             #:dry-run? dry?
-                             #:derivations-only? (assoc-ref opts
-                                                            'derivations-only?)
-                             #:use-substitutes? (assoc-ref opts 'substitutes?)
-                             #:image-size (assoc-ref opts 'image-size)
-                             #:full-boot? (assoc-ref opts 'full-boot?)
-                             #:mappings (filter-map (match-lambda
-                                                      (('file-system-mapping . m)
-                                                       m)
-                                                      (_ #f))
-                                                    opts)
-                             #:grub? grub?
-                             #:target target #:device device))))
-        #:system system))))
+           (command  (assoc-ref opts 'action)))
+      (process-action command args opts))))
 
 ;;; system.scm ends here
