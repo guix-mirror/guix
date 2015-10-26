@@ -3615,6 +3615,19 @@ The @var{options} may be zero or more of the following:
 
 @table @code
 
+@item --file=@var{file}
+@itemx -f @var{file}
+
+Build the package or derivation that the code within @var{file}
+evaluates to.
+
+As an example, @var{file} might contain a package definition like this
+(@pxref{Defining Packages}):
+
+@example
+@verbatiminclude package-hello.scm
+@end example
+
 @item --expression=@var{expr}
 @itemx -e @var{expr}
 Build the package or derivation @var{expr} evaluates to.

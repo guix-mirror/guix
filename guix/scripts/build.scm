@@ -290,6 +290,9 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   (display (_ "
   -e, --expression=EXPR  build the package or derivation EXPR evaluates to"))
   (display (_ "
+  -f, --file=FILE        build the package or derivation that the code within
+                         FILE evaluates to"))
+  (display (_ "
   -S, --source           build the packages' source derivations"))
   (display (_ "
       --sources[=TYPE]   build source derivations; TYPE may optionally be one
@@ -359,6 +362,9 @@ must be one of 'package', 'all', or 'transitive'~%")
          (option '(#\e "expression") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'expression arg result)))
+         (option '(#\f "file") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'file arg result)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t result)))
@@ -422,29 +428,34 @@ packages."
   (define system
     (or (assoc-ref opts 'system) (%current-system)))
 
+  (define (object->argument obj)
+    (match obj
+      ((? package? p)
+       `(argument . ,p))
+      ((? procedure? proc)
+       (let ((drv (run-with-store store
+                    (mbegin %store-monad
+                      (set-guile-for-build (default-guile))
+                      (proc))
+                    #:system system)))
+         `(argument . ,drv)))
+      ((? gexp? gexp)
+       (let ((drv (run-with-store store
+                    (mbegin %store-monad
+                      (set-guile-for-build (default-guile))
+                      (gexp->derivation "gexp" gexp
+                                        #:system system)))))
+         `(argument . ,drv)))))
+
   (map (match-lambda
         (('argument . (? string? spec))
          (if (store-path? spec)
              `(argument . ,spec)
              `(argument . ,(specification->package spec))))
+        (('file . file)
+         (object->argument (load* file (make-user-module '()))))
         (('expression . str)
-         (match (read/eval str)
-           ((? package? p)
-            `(argument . ,p))
-           ((? procedure? proc)
-            (let ((drv (run-with-store store
-                         (mbegin %store-monad
-                           (set-guile-for-build (default-guile))
-                           (proc))
-                         #:system system)))
-              `(argument . ,drv)))
-           ((? gexp? gexp)
-            (let ((drv (run-with-store store
-                         (mbegin %store-monad
-                           (set-guile-for-build (default-guile))
-                           (gexp->derivation "gexp" gexp
-                                             #:system system)))))
-              `(argument . ,drv)))))
+         (object->argument (read/eval str)))
         (opt opt))
        opts))
 
