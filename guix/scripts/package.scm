@@ -612,34 +612,6 @@ doesn't need it."
 
   (add-indirect-root store absolute))
 
-(define (readlink* file)
-  "Call 'readlink' until the result is not a symlink."
-  (define %max-symlink-depth 50)
-
-  (let loop ((file  file)
-             (depth 0))
-    (define (absolute target)
-      (if (absolute-file-name? target)
-          target
-          (string-append (dirname file) "/" target)))
-
-    (if (>= depth %max-symlink-depth)
-        file
-        (call-with-values
-            (lambda ()
-              (catch 'system-error
-                (lambda ()
-                  (values #t (readlink file)))
-                (lambda args
-                  (let ((errno (system-error-errno args)))
-                    (if (or (= errno EINVAL))
-                        (values #f file)
-                        (apply throw args))))))
-          (lambda (success? target)
-            (if success?
-                (loop (absolute target) (+ depth 1))
-                file))))))
-
 
 ;;;
 ;;; Entry point.
