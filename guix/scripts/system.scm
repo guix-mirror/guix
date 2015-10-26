@@ -42,6 +42,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:export (guix-system
@@ -353,6 +355,48 @@ list of services."
 
 
 ;;;
+;;; Generations.
+;;;
+
+(define* (display-system-generation number
+                                    #:optional (profile %system-profile))
+  "Display a summary of system generation NUMBER in a human-readable format."
+  (unless (zero? number)
+    (let* ((generation (generation-file-name profile number))
+           (param-file (string-append generation "/parameters"))
+           (params     (call-with-input-file param-file read-boot-parameters)))
+      (display-generation profile number)
+      (format #t (_ "  file name: ~a~%") generation)
+      (format #t (_ "  canonical file name: ~a~%") (readlink* generation))
+      (match params
+        (($ <boot-parameters> label root kernel)
+         ;; TRANSLATORS: Please preserve the two-space indentation.
+         (format #t (_ "  label: ~a~%") label)
+         (format #t (_ "  root device: ~a~%") root)
+         (format #t (_ "  kernel: ~a~%") kernel))
+        (_
+         #f)))))
+
+(define* (list-generations pattern #:optional (profile %system-profile))
+  "Display in a human-readable format all the system generations matching
+PATTERN, a string.  When PATTERN is #f, display all the system generations."
+  (cond ((not (file-exists? profile))             ; XXX: race condition
+         (raise (condition (&profile-not-found-error
+                            (profile profile)))))
+        ((string-null? pattern)
+         (for-each display-system-generation (profile-generations profile)))
+        ((matching-generations pattern profile)
+         =>
+         (lambda (numbers)
+           (if (null-list? numbers)
+               (exit 1)
+               (leave-on-EPIPE
+                (for-each display-system-generation numbers)))))
+        (else
+         (leave (_ "invalid syntax: ~a~%") pattern))))
+
+
+;;;
 ;;; Action.
 ;;;
 
@@ -468,13 +512,15 @@ building anything."
 ;;;
 
 (define (show-help)
-  (display (_ "Usage: guix system [OPTION] ACTION FILE
+  (display (_ "Usage: guix system [OPTION] ACTION [FILE]
 Build the operating system declared in FILE according to ACTION.\n"))
   (newline)
   (display (_ "The valid values for ACTION are:\n"))
   (newline)
   (display (_ "\
    reconfigure      switch to a new operating system configuration\n"))
+  (display (_ "\
+   list-generations list the system generations\n"))
   (display (_ "\
    build            build the operating system without installing anything\n"))
   (display (_ "\
@@ -577,8 +623,10 @@ Build the operating system declared in FILE according to ACTION.\n"))
 ;;;
 
 (define (process-action action args opts)
-  "Process ACTION, a sub-command, whose arguments are listed in ARGS.  OPTS is
-the raw alist of options resulting from command-line parsing."
+  "Process ACTION, a sub-command, with the arguments are listed in ARGS.
+ACTION must be one of the sub-commands that takes an operating system
+declaration as an argument (a file name.)  OPTS is the raw alist of options
+resulting from command-line parsing."
   (let* ((file     (match args
                      (() #f)
                      ((x . _) x)))
@@ -625,6 +673,20 @@ the raw alist of options resulting from command-line parsing."
                              #:target target #:device device))))
         #:system system))))
 
+(define (process-command command args opts)
+  "Process COMMAND, one of the 'guix system' sub-commands.  ARGS is its
+argument list and OPTS is the option alist."
+  (case command
+    ((list-generations)
+     ;; List generations.  No need to connect to the daemon, etc.
+     (let ((pattern (match args
+                      (() "")
+                      ((pattern) pattern)
+                      (x (leave (_ "wrong number of arguments~%"))))))
+       (list-generations pattern)))
+    (else
+     (process-action command args opts))))
+
 (define (guix-system . args)
   (define (parse-sub-command arg result)
     ;; Parse sub-command ARG and augment RESULT accordingly.
@@ -633,7 +695,7 @@ the raw alist of options resulting from command-line parsing."
         (let ((action (string->symbol arg)))
           (case action
             ((build vm vm-image disk-image reconfigure init
-              extension-graph dmd-graph)
+              extension-graph dmd-graph list-generations)
              (alist-cons 'action action result))
             (else (leave (_ "~a: unknown action~%") action))))))
 
@@ -676,6 +738,6 @@ the raw alist of options resulting from command-line parsing."
                                          parse-sub-command))
            (args     (option-arguments opts))
            (command  (assoc-ref opts 'action)))
-      (process-action command args opts))))
+      (process-command command args opts))))
 
 ;;; system.scm ends here

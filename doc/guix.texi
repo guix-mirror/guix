@@ -5369,9 +5369,24 @@ information about the @code{nss-certs} package that is used here.
 Assuming the above snippet is stored in the @file{my-system-config.scm}
 file, the @command{guix system reconfigure my-system-config.scm} command
 instantiates that configuration, and makes it the default GRUB boot
-entry (@pxref{Invoking guix system}).  The normal way to change the
-system's configuration is by updating this file and re-running the
-@command{guix system} command.
+entry (@pxref{Invoking guix system}).
+
+The normal way to change the system's configuration is by updating this
+file and re-running @command{guix system reconfigure}.  One should never
+have to touch files in @command{/etc} or to run commands that modify the
+system state such as @command{useradd} or @command{grub-install}.  In
+fact, you must avoid that since that would not only void your warranty
+but also prevent you from rolling back to previous versions of your
+system, should you ever need to.
+
+@cindex roll-back, of the operating system
+Speaking of roll-back, each time you run @command{guix system
+reconfigure}, a new @dfn{generation} of the system is created---without
+modifying or deleting previous generations.  Old system generations get
+an entry in the GRUB boot menu, allowing you to boot them in case
+something went wrong with the latest generation.  Reassuring, no?  The
+@command{guix system list-generations} command lists the system
+generations available on disk.
 
 At the Scheme level, the bulk of an @code{operating-system} declaration
 is instantiated with the following monadic procedure (@pxref{The Store
@@ -7077,7 +7092,7 @@ supported:
 @item reconfigure
 Build the operating system described in @var{file}, activate it, and
 switch to it@footnote{This action is usable only on systems already
-running GNU.}.
+running GuixSD.}.
 
 This effects all the configuration specified in @var{file}: user
 accounts, system services, global package list, setuid programs, etc.
@@ -7217,6 +7232,30 @@ machine should have hardware virtualization support, the corresponding
 KVM kernel module should be loaded, and the @file{/dev/kvm} device node
 must exist and be readable and writable by the user and by the daemon's
 build users.
+
+Once you have built, configured, re-configured, and re-re-configured
+your GuixSD installation, you may find it useful to list the operating
+system generations available on disk---and that you can choose from the
+GRUB boot menu:
+
+@table @code
+
+@item list-generations
+List a summary of each generation of the operating system available on
+disk, in a human-readable way.  This is similar to the
+@option{--list-generations} option of @command{guix package}
+(@pxref{Invoking guix package}).
+
+Optionally, one can specify a pattern, with the same syntax that is used
+in @command{guix package --list-generations}, to restrict the list of
+generations displayed.  For instance, the following command displays
+generations up to 10-day old:
+
+@example
+$ guix system list-generations 10d
+@end example
+
+@end table
 
 The @command{guix system} command has even more to offer!  The following
 sub-commands allow you to visualize how your system services relate to
