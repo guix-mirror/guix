@@ -85,6 +85,8 @@
             string->generations
             string->duration
             matching-generations
+            display-generation
+            display-profile-content
             run-guix-command
             run-guix
             program-name
@@ -1014,6 +1016,32 @@ DURATION-RELATION with the current time."
          =>
          filter-by-duration)
         (else #f)))
+
+(define (display-generation profile number)
+  "Display a one-line summary of generation NUMBER of PROFILE."
+  (unless (zero? number)
+    (let ((header (format #f (_ "Generation ~a\t~a") number
+                          (date->string
+                           (time-utc->date
+                            (generation-time profile number))
+                           "~b ~d ~Y ~T")))
+          (current (generation-number profile)))
+      (if (= number current)
+          (format #t (_ "~a\t(current)~%") header)
+          (format #t "~a~%" header)))))
+
+(define (display-profile-content profile number)
+  "Display the packages in PROFILE, generation NUMBER, in a human-readable
+way."
+  (for-each (match-lambda
+              (($ <manifest-entry> name version output location _)
+               (format #t "  ~a\t~a\t~a\t~a~%"
+                       name version output location)))
+
+            ;; Show most recently installed packages last.
+            (reverse
+             (manifest-entries
+              (profile-manifest (generation-file-name profile number))))))
 
 (define* (package-specification->name+version+output spec
                                                      #:optional (output "out"))
