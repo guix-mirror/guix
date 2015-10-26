@@ -97,4 +97,18 @@ then
 
     # Make sure the "debug" output is not listed.
     if grep -E "$make_boot0_debug" "$tmpdir/a"; then false; else true; fi
+
+    # Compute the build environment for the initial GNU Make, but add in the
+    # bootstrap Guile as an ad-hoc addition.
+    guix environment -e '(@@ (gnu packages commencement) gnu-make-boot0)' \
+         --ad-hoc guile-bootstrap --no-substitutes --search-paths \
+         --pure > "$tmpdir/a"
+
+    # Make sure the bootstrap binaries are all listed where they belong.
+    cat $tmpdir/a
+    grep -E '^export PATH=.*-bootstrap-binaries-0/bin'      "$tmpdir/a"
+    grep -E '^export PATH=.*-guile-bootstrap-2.0/bin'       "$tmpdir/a"
+    grep -E '^export CPATH=.*-gcc-bootstrap-0/include'      "$tmpdir/a"
+    grep -E '^export CPATH=.*-glibc-bootstrap-0/include'    "$tmpdir/a"
+    grep -E '^export LIBRARY_PATH=.*-glibc-bootstrap-0/lib' "$tmpdir/a"
 fi

@@ -166,6 +166,16 @@ COMMAND or an interactive shell in that environment.\n"))
     (max-silent-time . 3600)
     (verbosity . 0)))
 
+(define (tag-package-arg opts arg)
+  "Return a two-element list with the form (TAG ARG) that tags ARG with either
+'ad-hoc' in OPTS has the 'ad-hoc?' key set to #t, or 'inputs' otherwise."
+  ;; Normally, the transitive inputs to a package are added to an environment,
+  ;; but the ad-hoc? flag changes the meaning of a package argument such that
+  ;; the package itself is added to the environment instead.
+  (if (assoc-ref opts 'ad-hoc?)
+      `(ad-hoc-package ,arg)
+      `(package ,arg)))
+
 (define %options
   ;; Specification of the command-line options.
   (cons* (option '(#\h "help") #f #f
@@ -186,10 +196,14 @@ COMMAND or an interactive shell in that environment.\n"))
                    (alist-cons 'search-paths #t result)))
          (option '(#\l "load") #t #f
                  (lambda (opt name arg result)
-                   (alist-cons 'load arg result)))
+                   (alist-cons 'load
+                               (tag-package-arg result arg)
+                               result)))
          (option '(#\e "expression") #t #f
                  (lambda (opt name arg result)
-                   (alist-cons 'expression arg result)))
+                   (alist-cons 'expression
+                               (tag-package-arg result arg)
+                               result)))
          (option '("ad-hoc") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'ad-hoc? #t result)))
@@ -232,29 +246,34 @@ COMMAND or an interactive shell in that environment.\n"))
             (_ memo)))
         '() alist))
 
+(define (compact lst)
+  "Remove all #f elements from LST."
+  (filter identity lst))
+
 (define (options/resolve-packages opts)
   "Return OPTS with package specification strings replaced by actual
 packages."
-  (append-map (match-lambda
-                (('package . (? string? spec))
-                 (let-values (((package output)
-                               (specification->package+output spec)))
-                   `((package ,package ,output))))
-                (('expression . str)
-                 ;; Add all the outputs of the package STR evaluates to.
-                 (match (read/eval str)
-                   ((? package? package)
+  (compact
+   (append-map (match-lambda
+                 (('package mode (? string? spec))
+                  (let-values (((package output)
+                                (specification->package+output spec)))
+                    (list (list mode package output))))
+                 (('expression mode str)
+                  ;; Add all the outputs of the package STR evaluates to.
+                  (match (read/eval str)
+                    ((? package? package)
+                     (map (lambda (output)
+                            (list mode package output))
+                          (package-outputs package)))))
+                 (('load mode file)
+                  ;; Add all the outputs of the package defined in FILE.
+                  (let ((package (load* file (make-user-module '()))))
                     (map (lambda (output)
-                           `(package ,package ,output))
-                         (package-outputs package)))))
-                (('load . file)
-                 ;; Add all the outputs of the package defined in FILE.
-                 (let ((package (load* file (make-user-module '()))))
-                   (map (lambda (output)
-                          `(package ,package ,output))
-                        (package-outputs package))))
-                (opt (list opt)))
-              opts))
+                           (list mode package output))
+                         (package-outputs package))))
+                 (_ '(#f)))
+               opts)))
 
 (define (build-inputs inputs opts)
   "Build the derivations in INPUTS, a list of (DERIVATION) or (DERIVATION
@@ -402,7 +421,7 @@ Otherwise, return the derivation for the Bash package."
 (define (parse-args args)
   "Parse the list of command line arguments ARGS."
   (define (handle-argument arg result)
-    (alist-cons 'package arg result))
+    (alist-cons 'package (tag-package-arg result arg) result))
 
   ;; The '--' token is used to separate the command to run from the rest of
   ;; the operands.
@@ -420,22 +439,20 @@ Otherwise, return the derivation for the Bash package."
            (pure?      (assoc-ref opts 'pure))
            (container? (assoc-ref opts 'container?))
            (network?   (assoc-ref opts 'network?))
-           (ad-hoc?    (assoc-ref opts 'ad-hoc?))
            (bootstrap? (assoc-ref opts 'bootstrap?))
            (system     (assoc-ref opts 'system))
            (command    (assoc-ref opts 'exec))
-           (packages   (pick-all (options/resolve-packages opts) 'package))
+           (packages   (options/resolve-packages opts))
            (mappings   (pick-all opts 'file-system-mapping))
-           (inputs     (if ad-hoc?
-                           (append-map (match-lambda
-                                        ((package output)
-                                         (package+propagated-inputs package
-                                                                    output)))
-                                       packages)
-                           (append-map (compose bag-transitive-inputs
-                                                package->bag
-                                                first)
-                                       packages)))
+           (inputs     (delete-duplicates
+                        (append-map (match-lambda
+                                      (('ad-hoc-package package output)
+                                       (package+propagated-inputs package
+                                                                  output))
+                                      (('package package output)
+                                       (bag-transitive-inputs
+                                        (package->bag package))))
+                                    packages)))
            (paths      (delete-duplicates
                         (cons $PATH
                               (append-map (match-lambda

@@ -4699,6 +4699,20 @@ NumPy:
 guix environment --ad-hoc python2-numpy python-2.7 -- python
 @end example
 
+Furthermore, one might want the dependencies of a package and also some
+additional packages that are not build-time or runtime dependencies, but
+are useful when developing nonetheless.  Because of this, the
+@code{--ad-hoc} flag is positional.  Packages appearing before
+@code{--ad-hoc} are interpreted as packages whose dependencies will be
+added to the environment.  Packages appearing after are interpreted as
+packages that will be added to the environment directly.  For example,
+the following command creates a Guix development environment that
+additionally includes Git and strace:
+
+@example
+guix environment guix --ad-hoc git strace
+@end example
+
 Sometimes it is desirable to isolate the environment as much as
 possible, for maximal purity and reproducibility.  In particular, when
 using Guix on a host distro that is not GuixSD, it is desirable to
@@ -4758,6 +4772,12 @@ Note that this example implicitly asks for the default output of
 @code{guile} and @code{guile-sdl} but it is possible to ask for a
 specific output---e.g., @code{glib:bin} asks for the @code{bin} output
 of @code{glib} (@pxref{Packages with Multiple Outputs}).
+
+This option may be composed with the default behavior of @command{guix
+environment}.  Packages appearing before @code{--ad-hoc} are interpreted
+as packages whose dependencies will be added to the environment, the
+default behavior.  Packages appearing after are interpreted as packages
+that will be added to the environment directly.
 
 @item --pure
 Unset existing environment variables when building the new environment.
