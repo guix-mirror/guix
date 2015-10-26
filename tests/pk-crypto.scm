@@ -287,6 +287,3 @@
     (canonical-sexp->sexp (sexp->canonical-sexp sexp))))
 
 (test-end)
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

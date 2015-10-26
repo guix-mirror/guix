@@ -258,6 +258,3 @@
      '())))
 
 (test-end "monads")
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

@@ -47,6 +47,3 @@
          (set-contains? s3 b))))
 
 (test-end)
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

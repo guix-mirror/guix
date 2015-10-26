@@ -104,6 +104,3 @@ information about package NAME. (Function 'elpa-package-info'.)"
   (eval-test-with-elpa "auctex"))
 
 (test-end "elpa")
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

@@ -31,6 +31,10 @@ unset CDPATH
 
 if [ -x "@abs_top_builddir@/guix-daemon" ]
 then
+    # Silence the daemon's output, which is often useless, as well as that of
+    # Bash (such as "Terminated" messages when 'guix-daemon' is killed.)
+    exec 2> /dev/null
+
     NIX_STORE_DIR="@GUIX_TEST_ROOT@/store"
 
     # Do that because store.scm calls `canonicalize-path' on it.

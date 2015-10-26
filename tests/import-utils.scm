@@ -34,6 +34,3 @@
   (beautify-description "A function to establish world peace"))
 
 (test-end "import-utils")
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

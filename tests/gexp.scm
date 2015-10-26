@@ -784,9 +784,6 @@
 
 (test-end "gexp")
 
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))
-
 ;; Local Variables:
 ;; eval: (put 'test-assertm 'scheme-indent-function 1)
 ;; End:

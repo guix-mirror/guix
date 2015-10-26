@@ -126,6 +126,3 @@ In Guile <= 2.0.9, CBIPs were always fully buffered, so the
       (list hello hash world))))
 
 (test-end)
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

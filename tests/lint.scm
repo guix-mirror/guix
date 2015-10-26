@@ -581,9 +581,6 @@ requests."
 
 (test-end "lint")
 
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))
-
 ;; Local Variables:
 ;; eval: (put 'with-http-server 'scheme-indent-function 1)
 ;; eval: (put 'with-warnings 'scheme-indent-function 0)

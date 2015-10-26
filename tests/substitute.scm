@@ -275,9 +275,6 @@ a file for NARINFO."
 
 (test-end "substitute")
 
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))
-
 ;;; Local Variables:
 ;;; eval: (put 'with-narinfo 'scheme-indent-function 1)
 ;;; eval: (put 'test-quit 'scheme-indent-function 2)

@@ -305,6 +305,3 @@ Description: 1st line,
                  '("a")))
 
 (test-end)
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

@@ -293,10 +293,11 @@ endif BUILD_DAEMON
 
 TESTS = $(SCM_TESTS) $(SH_TESTS)
 
-AM_TESTS_ENVIRONMENT = abs_top_srcdir="$(abs_top_srcdir)"
+AM_TESTS_ENVIRONMENT = abs_top_srcdir="$(abs_top_srcdir)" GUILE_AUTO_COMPILE=0
 
-SCM_LOG_COMPILER = $(top_builddir)/test-env $(GUILE)
-AM_SCM_LOG_FLAGS = --no-auto-compile -L "$(top_srcdir)"
+SCM_LOG_DRIVER = $(top_builddir)/test-env $(GUILE) --no-auto-compile \
+                   -e main $(top_srcdir)/build-aux/test-driver.scm
+AM_SCM_LOG_DRIVER_FLAGS = --brief=yes
 
 SH_LOG_COMPILER = $(top_builddir)/test-env $(SHELL)
 AM_SH_LOG_FLAGS = -x -e

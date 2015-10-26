@@ -160,6 +160,3 @@ library
     (x (pk 'fail x #f))))
 
 (test-end "hackage")
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

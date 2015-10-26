@@ -596,12 +596,18 @@ It is also possible to run a subset of the tests by defining the
 make check TESTS="tests/store.scm tests/cpio.scm"
 @end example
 
+By default, tests results are displayed at a file level.  In order to
+see the details of every individual test cases, it is possible to define
+the @code{SCM_LOG_DRIVER_FLAGS} makefile variable as in this example:
+
+@example
+make check TESTS="tests/base64.scm" SCM_LOG_DRIVER_FLAGS="--brief=no"
+@end example
+
 Upon failure, please email @email{bug-guix@@gnu.org} and attach the
-@file{test-suite.log} file.  When @file{tests/@var{something}.scm}
-fails, please also attach the @file{@var{something}.log} file available
-in the top-level build directory.  Please specify the Guix version being
-used as well as version numbers of the dependencies
-(@pxref{Requirements}) in your message.
+@file{test-suite.log} file.  Please specify the Guix version being used
+as well as version numbers of the dependencies (@pxref{Requirements}) in
+your message.
 
 @node Setting Up the Daemon
 @section Setting Up the Daemon

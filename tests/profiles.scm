@@ -320,9 +320,6 @@
 
 (test-end "profiles")
 
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))
-
 ;;; Local Variables:
 ;;; eval: (put 'dummy-package 'scheme-indent-function 1)
 ;;; End:

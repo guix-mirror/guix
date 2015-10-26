@@ -26,14 +26,14 @@
 (define (assert-exit x)
   (primitive-exit (if x 0 1)))
 
+(test-begin "containers")
+
 ;; Skip these tests unless user namespaces are available and the setgroups
 ;; file (introduced in Linux 3.19 to address a security issue) exists.
 (unless (and (user-namespace-supported?)
              (unprivileged-user-namespace-supported?)
              (setgroups-supported?))
-  (exit 77))
-
-(test-begin "containers")
+  (test-skip 7))
 
 (test-assert "call-with-container, exit with 0 when there is no error"
   (zero?
@@ -142,6 +142,3 @@
           (zero? result)))))))
 
 (test-end)
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

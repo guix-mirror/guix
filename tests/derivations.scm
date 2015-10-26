@@ -1008,6 +1008,3 @@
          (call-with-input-file out get-string-all))))
 
 (test-end)
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))
