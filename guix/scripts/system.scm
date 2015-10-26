@@ -25,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix monads)
+  #:use-module (guix records)
   #:use-module (guix profiles)
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
@@ -186,6 +187,39 @@ the ownership of '~a' may be incorrect!~%")
 
 
 ;;;
+;;; Boot parameters
+;;;
+
+(define-record-type* <boot-parameters>
+  boot-parameters make-boot-parameters boot-parameters?
+  (label            boot-parameters-label)
+  (root-device      boot-parameters-root-device)
+  (kernel           boot-parameters-kernel)
+  (kernel-arguments boot-parameters-kernel-arguments))
+
+(define (read-boot-parameters port)
+  "Read boot parameters from PORT and return the corresponding
+<boot-parameters> object or #f if the format is unrecognized."
+  (match (read port)
+    (('boot-parameters ('version 0)
+                       ('label label) ('root-device root)
+                       ('kernel linux)
+                       rest ...)
+     (boot-parameters
+      (label label)
+      (root-device root)
+      (kernel linux)
+      (kernel-arguments
+       (match (assq 'kernel-arguments rest)
+         ((_ args) args)
+         (#f       '())))))                       ;the old format
+    (x                                            ;unsupported format
+     (warning (_ "unrecognized boot parameters for '~a'~%")
+              system)
+     #f)))
+
+
+;;;
 ;;; Reconfiguration.
 ;;;
 
@@ -247,30 +281,22 @@ it atomically, and then run OS's activation script."
   "Return a list of 'menu-entry' for the generations of PROFILE."
   (define (system->grub-entry system number time)
     (unless-file-not-found
-     (call-with-input-file (string-append system "/parameters")
-       (lambda (port)
-         (match (read port)
-           (('boot-parameters ('version 0)
-                              ('label label) ('root-device root)
-                              ('kernel linux)
-                              rest ...)
-            (menu-entry
-             (label (string-append label " (#"
-                                   (number->string number) ", "
-                                   (seconds->string time) ")"))
-             (linux linux)
-             (linux-arguments
-              (cons* (string-append "--root=" root)
-                     #~(string-append "--system=" #$system)
-                     #~(string-append "--load=" #$system "/boot")
-                     (match (assq 'kernel-arguments rest)
-                       ((_ args) args)
-                       (#f       '()))))          ;old format
-             (initrd #~(string-append #$system "/initrd"))))
-           (_                                     ;unsupported format
-            (warning (_ "unrecognized boot parameters for '~a'~%")
-                     system)
-            #f))))))
+     (let ((file (string-append system "/parameters")))
+       (match (call-with-input-file file read-boot-parameters)
+         (($ <boot-parameters> label root kernel kernel-arguments)
+          (menu-entry
+           (label (string-append label " (#"
+                                 (number->string number) ", "
+                                 (seconds->string time) ")"))
+           (linux kernel)
+           (linux-arguments
+            (cons* (string-append "--root=" root)
+                   #~(string-append "--system=" #$system)
+                   #~(string-append "--load=" #$system "/boot")
+                   kernel-arguments))
+           (initrd #~(string-append #$system "/initrd"))))
+         (#f                                      ;invalid format
+          #f)))))
 
   (let* ((numbers (generation-numbers profile))
          (systems (map (cut generation-file-name profile <>)
