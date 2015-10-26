@@ -74,6 +74,7 @@
             arguments-from-environment-variable
             file-extension
             file-sans-extension
+            switch-symlinks
             call-with-temporary-output-file
             call-with-temporary-directory
             with-atomic-file-output
@@ -556,6 +557,13 @@ minor version numbers from version-string."
     (if dot
         (substring file 0 dot)
         file)))
+
+(define (switch-symlinks link target)
+  "Atomically switch LINK, a symbolic link, to point to TARGET.  Works
+both when LINK already exists and when it does not."
+  (let ((pivot (string-append link ".new")))
+    (symlink target pivot)
+    (rename-file pivot link)))
 
 (define* (string-replace-substring str substr replacement
                                    #:optional

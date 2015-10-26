@@ -73,7 +73,6 @@
             read/eval
             read/eval-package-expression
             location->string
-            switch-symlinks
             config-directory
             fill-paragraph
             texi->plain-text
@@ -714,13 +713,6 @@ replacement if PORT is not Unicode-capable."
     (#f (_ "<unknown location>"))
     (($ <location> file line column)
      (format #f "~a:~a:~a" file line column))))
-
-(define (switch-symlinks link target)
-  "Atomically switch LINK, a symbolic link, to point to TARGET.  Works
-both when LINK already exists and when it does not."
-  (let ((pivot (string-append link ".new")))
-    (symlink target pivot)
-    (rename-file pivot link)))
 
 (define (config-directory)
   "Return the name of the configuration directory, after making sure that it
