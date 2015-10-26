@@ -86,6 +86,9 @@
             matching-generations
             display-generation
             display-profile-content
+            roll-back*
+            switch-to-generation*
+            delete-generation*
             run-guix-command
             run-guix
             program-name
@@ -1034,6 +1037,27 @@ way."
             (reverse
              (manifest-entries
               (profile-manifest (generation-file-name profile number))))))
+
+(define (display-generation-change previous current)
+  (format #t (_ "switched from generation ~a to ~a~%") previous current))
+
+(define (roll-back* store profile)
+  "Like 'roll-back', but display what is happening."
+  (call-with-values
+      (lambda ()
+        (roll-back store profile))
+    display-generation-change))
+
+(define (switch-to-generation* profile number)
+  "Like 'switch-generation', but display what is happening."
+  (let ((previous (switch-to-generation profile number)))
+    (display-generation-change previous number)))
+
+(define (delete-generation* store profile generation)
+  "Like 'delete-generation', but display what is going on."
+  (format #t (_ "deleting ~a~%")
+          (generation-file-name profile generation))
+  (delete-generation store profile generation))
 
 (define* (package-specification->name+version+output spec
                                                      #:optional (output "out"))

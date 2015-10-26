@@ -48,11 +48,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages bootstrap) #:select (%bootstrap-guile))
-  #:export (switch-to-generation
-            switch-to-previous-generation
-            roll-back
-            delete-generation
-            delete-generations
+  #:export (delete-generations
             display-search-paths
             guix-package))
 
@@ -100,81 +96,10 @@ indirectly, or PROFILE."
       %user-profile-directory
       profile))
 
-(define (link-to-empty-profile store generation)
-  "Link GENERATION, a string, to the empty profile."
-  (let* ((drv  (run-with-store store
-                 (profile-derivation (manifest '()))))
-         (prof (derivation->output-path drv "out")))
-    (when (not (build-derivations store (list drv)))
-          (leave (_ "failed to build the empty profile~%")))
-
-    (switch-symlinks generation prof)))
-
-(define (switch-to-generation profile number)
-  "Atomically switch PROFILE to the generation NUMBER."
-  (let ((current    (generation-number profile))
-        (generation (generation-file-name profile number)))
-    (cond ((not (file-exists? profile))
-           (raise (condition (&profile-not-found-error
-                              (profile profile)))))
-          ((not (file-exists? generation))
-           (raise (condition (&missing-generation-error
-                              (profile profile)
-                              (generation number)))))
-          (else
-           (format #t (_ "switching from generation ~a to ~a~%")
-                   current number)
-           (switch-symlinks profile generation)))))
-
-(define (switch-to-previous-generation profile)
-  "Atomically switch PROFILE to the previous generation."
-  (switch-to-generation profile
-                        (previous-generation-number profile)))
-
-(define (roll-back store profile)
-  "Roll back to the previous generation of PROFILE."
-  (let* ((number              (generation-number profile))
-         (previous-number     (previous-generation-number profile number))
-         (previous-generation (generation-file-name profile previous-number)))
-    (cond ((not (file-exists? profile))                 ; invalid profile
-           (raise (condition (&profile-not-found-error
-                              (profile profile)))))
-          ((zero? number)                               ; empty profile
-           (format (current-error-port)
-                   (_ "nothing to do: already at the empty profile~%")))
-          ((or (zero? previous-number)                  ; going to emptiness
-               (not (file-exists? previous-generation)))
-           (link-to-empty-profile store previous-generation)
-           (switch-to-previous-generation profile))
-          (else
-           (switch-to-previous-generation profile)))))  ; anything else
-
-(define (delete-generation store profile number)
-  "Delete generation with NUMBER from PROFILE."
-  (define (display-and-delete)
-    (let ((generation (generation-file-name profile number)))
-      (format #t (_ "deleting ~a~%") generation)
-      (delete-file generation)))
-
-  (let* ((current-number      (generation-number profile))
-         (previous-number     (previous-generation-number profile number))
-         (previous-generation (generation-file-name profile previous-number)))
-    (cond ((zero? number))              ; do not delete generation 0
-          ((and (= number current-number)
-                (not (file-exists? previous-generation)))
-           (link-to-empty-profile store previous-generation)
-           (switch-to-previous-generation profile)
-           (display-and-delete))
-          ((= number current-number)
-           (roll-back store profile)
-           (display-and-delete))
-          (else
-           (display-and-delete)))))
-
 (define (delete-generations store profile generations)
   "Delete GENERATIONS from PROFILE.
 GENERATIONS is a list of generation numbers."
-  (for-each (cut delete-generation store profile <>)
+  (for-each (cut delete-generation* store profile <>)
             generations))
 
 (define (delete-matching-generations store profile pattern)
@@ -725,7 +650,7 @@ more information.~%"))
     ;; First roll back if asked to.
     (cond ((and (assoc-ref opts 'roll-back?)
                 (not dry-run?))
-           (roll-back (%store) profile)
+           (roll-back* (%store) profile)
            (process-actions (alist-delete 'roll-back? opts)))
           ((and (assoc-ref opts 'switch-generation)
                 (not dry-run?))
@@ -739,7 +664,7 @@ more information.~%"))
                                       (relative-generation profile number))
                                      (else number)))))
                  (if number
-                     (switch-to-generation profile number)
+                     (switch-to-generation* profile number)
                      (leave (_ "cannot switch to generation '~a'~%")
                             pattern)))
                (process-actions (alist-delete 'switch-generation opts)))
