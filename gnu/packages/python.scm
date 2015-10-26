@@ -39,6 +39,7 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gdbm)
   #:use-module (gnu packages gcc)
@@ -5750,3 +5751,29 @@ Python's @code{ctypes} foreign function interface (FFI).")
 
 (define-public python2-libarchive-c
   (package-with-python2 python-libarchive-c))
+
+(define-public python-file
+  (package
+    (inherit file)
+    (name "python-file")
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f                                ;no tests
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'change-directory
+                    (lambda _
+                      (chdir "python")
+                      #t))
+                  (add-before 'build 'set-library-file-name
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((file (assoc-ref inputs "file")))
+                        (substitute* "magic.py"
+                          (("find_library\\('magic'\\)")
+                           (string-append "'" file "/lib/libmagic.so'")))
+                        #t))))))
+    (inputs `(("file" ,file)))
+    (self-native-input? #f)
+    (synopsis "Python bindings to the libmagic file type guesser")))
+
+(define-public python2-file
+  (package-with-python2 python-file))
