@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
             upstream-updater
             upstream-updater?
             upstream-updater-name
+            upstream-updater-description
             upstream-updater-predicate
             upstream-updater-latest
 
@@ -109,18 +111,19 @@ correspond to the same version."
 ;;; Auto-update.
 ;;;
 
-(define-record-type <upstream-updater>
-  (upstream-updater name pred latest)
+(define-record-type* <upstream-updater>
+  upstream-updater make-upstream-updater
   upstream-updater?
-  (name      upstream-updater-name)
-  (pred      upstream-updater-predicate)
-  (latest    upstream-updater-latest))
+  (name        upstream-updater-name)
+  (description upstream-updater-description)
+  (pred        upstream-updater-predicate)
+  (latest      upstream-updater-latest))
 
 (define (lookup-updater package updaters)
   "Return an updater among UPDATERS that matches PACKAGE, or #f if none of
 them matches."
   (any (match-lambda
-         (($ <upstream-updater> _ pred latest)
+         (($ <upstream-updater> _ _ pred latest)
           (and (pred package) latest)))
        updaters))
 

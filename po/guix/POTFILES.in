@@ -12,6 +12,7 @@ guix/scripts/package.scm
 guix/scripts/gc.scm
 guix/scripts/hash.scm
 guix/scripts/import.scm
+guix/scripts/import/cran.scm
 guix/scripts/import/elpa.scm
 guix/scripts/pull.scm
 guix/scripts/substitute.scm
@@ -23,6 +24,7 @@ guix/scripts/edit.scm
 guix/scripts/size.scm
 guix/scripts/graph.scm
 guix/scripts/challenge.scm
+guix/gnu-maintenance.scm
 guix/upstream.scm
 guix/ui.scm
 guix/http-client.scm

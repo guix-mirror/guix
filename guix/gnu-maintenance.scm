@@ -413,8 +413,10 @@ for instance, whose releases are now uploaded to elpa.gnu.org."
        (gnu-package? package)))
 
 (define %gnu-updater
-  (upstream-updater 'gnu
-                    non-emacs-gnu-package?
-                    latest-release*))
+  (upstream-updater
+   (name 'gnu)
+   (description "Updater for GNU packages")
+   (pred non-emacs-gnu-package?)
+   (latest latest-release*)))
 
 ;;; gnu-maintenance.scm ends here

@@ -236,8 +236,10 @@ representation of the package page."
   (string-prefix? "r-" (package-name package)))
 
 (define %cran-updater
-  (upstream-updater 'cran
-                    cran-package?
-                    latest-release))
+  (upstream-updater
+   (name 'cran)
+   (description "Updater for CRAN packages")
+   (pred cran-package?)
+   (latest latest-release)))
 
 ;;; cran.scm ends here
