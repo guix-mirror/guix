@@ -84,6 +84,7 @@
             specification->file-system-mapping
             string->generations
             string->duration
+            matching-generations
             run-guix-command
             run-guix
             program-name
@@ -946,6 +947,72 @@ following patterns: \"1d\", \"1w\", \"1m\"."
          =>
          (lambda (match)
            (hours->duration (* 24 30) match)))
+        (else #f)))
+
+(define* (matching-generations str profile
+                               #:key (duration-relation <=))
+  "Return the list of available generations matching a pattern in STR.  See
+'string->generations' and 'string->duration' for the list of valid patterns.
+When STR is a duration pattern, return all the generations whose ctime has
+DURATION-RELATION with the current time."
+  (define (valid-generations lst)
+    (define (valid-generation? n)
+      (any (cut = n <>) (generation-numbers profile)))
+
+    (fold-right (lambda (x acc)
+                  (if (valid-generation? x)
+                      (cons x acc)
+                      acc))
+                '()
+                lst))
+
+  (define (filter-generations generations)
+    (match generations
+      (() '())
+      (('>= n)
+       (drop-while (cut > n <>)
+                   (generation-numbers profile)))
+      (('<= n)
+       (valid-generations (iota n 1)))
+      ((lst ..1)
+       (valid-generations lst))
+      (_ #f)))
+
+  (define (filter-by-duration duration)
+    (define (time-at-midnight time)
+      ;; Return TIME at midnight by setting nanoseconds, seconds, minutes, and
+      ;; hours to zeros.
+      (let ((d (time-utc->date time)))
+         (date->time-utc
+          (make-date 0 0 0 0
+                     (date-day d) (date-month d)
+                     (date-year d) (date-zone-offset d)))))
+
+    (define generation-ctime-alist
+      (map (lambda (number)
+             (cons number
+                   (time-second
+                    (time-at-midnight
+                     (generation-time profile number)))))
+           (generation-numbers profile)))
+
+    (match duration
+      (#f #f)
+      (res
+       (let ((s (time-second
+                 (subtract-duration (time-at-midnight (current-time))
+                                    duration))))
+         (delete #f (map (lambda (x)
+                           (and (duration-relation s (cdr x))
+                                (first x)))
+                         generation-ctime-alist))))))
+
+  (cond ((string->generations str)
+         =>
+         filter-generations)
+        ((string->duration str)
+         =>
+         filter-by-duration)
         (else #f)))
 
 (define* (package-specification->name+version+output spec
