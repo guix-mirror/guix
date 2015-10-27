@@ -5817,3 +5817,30 @@ Debian-related files, such as:
 
 (define-public python2-debian
   (package-with-python2 python-debian))
+
+(define-public python-chardet
+  (package
+    (name "python-chardet")
+    (version "2.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/c/chardet/chardet-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1ak87ikcw34fivcgiz2xvi938dmclh078az65l9x3rmgljrkhgp5"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/chardet/chardet")
+    (synopsis "Universal encoding detector for Python 2 and 3")
+    (description
+     "This package provides @code{chardet}, a Python module that can
+automatically detect a wide range of file encodings.")
+    (license lgpl2.1+)))
+
+(define-public python2-chardet
+  (package-with-python2 python-chardet))
