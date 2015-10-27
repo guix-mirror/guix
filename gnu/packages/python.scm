@@ -5777,3 +5777,43 @@ Python's @code{ctypes} foreign function interface (FFI).")
 
 (define-public python2-file
   (package-with-python2 python-file))
+
+(define-public python-debian
+  (package
+    (name "python-debian")
+    (version "0.1.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/python-debian/python-debian-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "193faznwnjc3n5991wyzim6h9gyq1zxifmfrnpm3avgkh7ahyynh"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-six" ,python-six)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://packages.debian.org/sid/python-debian")
+    (synopsis "Debian package related modules")
+    (description
+     "This package provides Python modules that abstract many formats of
+Debian-related files, such as:
+
+@itemize
+@item Debtags information;
+@item @file{debian/changelog} files;
+@item packages files, pdiffs;
+@item control files of single or multiple RFC822-style paragraphs---e.g.
+   @file{debian/control}, @file{.changes}, @file{.dsc};
+@item Raw @file{.deb} and @file{.ar} files, with (read-only) access to
+   contained files and meta-information.
+@end itemize\n")
+
+    ;; Modules are either GPLv2+ or GPLv3+.
+    (license gpl3+)))
+
+(define-public python2-debian
+  (package-with-python2 python-debian))
