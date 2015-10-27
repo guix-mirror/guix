@@ -39,6 +39,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)               ;for libgudev
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages linux)
@@ -606,6 +607,7 @@ Escape key when Left Control is pressed and released on its own.")
     (inputs
      `(("glib" ,glib)
        ("gtk+" ,gtk+)
+       ("libgudev" ,libgudev)
        ("eudev" ,eudev)
        ("libxml2" ,libxml2)))
     (home-page "http://linuxwacom.sourceforge.net/")
