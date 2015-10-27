@@ -805,15 +805,16 @@ time.")
 (define-public crossmap
   (package
     (name "crossmap")
-    (version "0.1.6")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/crossmap/CrossMap-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "163hi5gjgij6cndxlvbkp5jjwr0k4wbm9im6d2210278q7k9kpnp"))
-              ;; patch has been sent upstream already
+                "07y179f63d7qnzdvkqcziwk9bs3k4zhp81q392fp1hwszjdvy22f"))
+              ;; This patch has been sent upstream already and is available
+              ;; for download from Sourceforge, but it has not been merged.
               (patches (list
                         (search-patch "crossmap-allow-system-pysam.patch")))
               (modules '((guix build utils)))
