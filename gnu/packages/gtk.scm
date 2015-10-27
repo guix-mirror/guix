@@ -829,7 +829,8 @@ toolkit.")
               (base32
                "0sxq700invkjpksn790gbnl8px8751kvgwn39663jx7dv89s37w2"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("glib" ,glib "bin")))      ;for 'glib-compile-resources'
     (propagated-inputs
      `(("pangomm" ,pangomm)
        ("cairomm" ,cairomm)
@@ -862,6 +863,7 @@ extensive documentation, including API reference and a tutorial.")
                "1vpmjqv0aqb1ds0xi6nigxnhlr0c74090xzi15b92amlzkrjyfj4"))))
     (arguments
      '(#:configure-flags '("CPPFLAGS=-std=c++11"))) ; required by libsigc++
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("pangomm" ,pangomm)
        ("cairomm" ,cairomm)
