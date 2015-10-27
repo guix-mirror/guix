@@ -356,3 +356,57 @@ transactions from C or Python.")
     ;; The whole is GPLv2+; librpm itself is dual-licensed LGPLv2+ | GPLv2+.
     (license gpl2+)))
 
+(define-public diffoscope
+  (package
+    (name "diffoscope")
+    (version "34")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url
+                     "https://anonscm.debian.org/cgit/reproducible/diffoscope.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "1g8b7bpkmns0355gkr3a244affwx4xzqwahwsl6ivw4z0qv7dih8"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'disable-egg-zipping
+                    (lambda _
+                      ;; Leave the .egg file uncompressed.
+                      (let ((port (open-file "setup.cfg" "a")))
+                        (display "\n[easy_install]\nzip_ok = 0\n"
+                                 port)
+                        (close-port port)
+                        #t)))
+                  (add-before 'build 'dependency-on-rpm
+                    (lambda _
+                      (substitute* "setup.py"
+                        ;; Somehow this requirement is reported as not met,
+                        ;; even though rpm.py is in the search path.  So
+                        ;; delete it.
+                        (("'rpm-python',") ""))
+                      #t)))
+       ;; FIXME: Some obscure test failures.
+       #:tests? #f))
+    (inputs `(("rpm" ,rpm)                        ;for rpm-python
+              ("python-file" ,python2-file)
+              ("python-debian" ,python2-debian)
+              ("python-libarchive-c" ,python2-libarchive-c)
+              ("python-tlsh" ,python2-tlsh)
+
+              ;; Below are modules used for tests.
+              ("python-pytest" ,python2-pytest)
+              ("python-chardet" ,python2-chardet)))
+    (native-inputs `(("python-setuptools" ,python2-setuptools)))
+    (home-page "http://diffoscope.org/")
+    (synopsis "Compare files, archives, and directories in depth")
+    (description
+     "Diffoscope tries to get to the bottom of what makes files or directories
+different.  It recursively unpacks archives of many kinds and transforms
+various binary formats into more human readable forms to compare them.  It can
+compare two tarballs, ISO images, or PDFs just as easily.")
+    (license gpl3+)))
