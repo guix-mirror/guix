@@ -253,8 +253,10 @@ functions which were removed.")
     (build-system waf-build-system)
     (arguments
      `(#:phases (alist-cons-before
-                 'configure 'set-ldflags
+                 'configure 'set-flags
                  (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Compile with C++11, required by gtkmm.
+                   (setenv "CXXFLAGS" "-std=c++11")
                    ;; Allow 'bin/ganv_bench' to find libganv-1.so.
                    (setenv "LDFLAGS"
                            (string-append "-Wl,-rpath="

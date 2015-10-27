@@ -746,7 +746,16 @@ synchronous execution of all clients, and low latency operation.")
                (base32
                 "1f1hcq74n3ziw8bk97mn5a1vgw028dxikv3fchaxd430pbbhqgl9"))))
     (build-system waf-build-system)
-    (arguments `(#:tests? #f)) ; no check target
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-flags
+          (lambda _
+            ;; Compile with C++11, required by gtkmm.
+            (setenv "CXXFLAGS" "-std=c++11")
+            #t)))))
     (inputs
      `(("lv2" ,lv2)
        ("lilv" ,lilv)
