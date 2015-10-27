@@ -184,14 +184,14 @@ the W3C's XML-based Scaleable Vector Graphic (SVG) format.")
 (define-public leptonica
   (package
     (name "leptonica")
-    (version "1.71")
+    (version "1.72")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://www.leptonica.com/source/leptonica-"
                            version ".tar.gz"))
        (sha256
-        (base32 "0j5qgrff6im5n9waflbi7w643q1p6mahyf2z35gb4vj9h5p76pfc"))
+        (base32 "0mhzvqs0im04y1cpcc1yma70hgdac1frf33h73m9z3356bfymmbr"))
        (modules '((guix build utils)))
        ;; zlib and openjpg should be under Libs, not Libs.private.  See:
        ;; https://code.google.com/p/tesseract-ocr/issues/detail?id=1436
@@ -228,7 +228,8 @@ the W3C's XML-based Scaleable Vector Graphic (SVG) format.")
           (lambda _
             (substitute* "prog/reg_wrapper.sh"
               ((" /bin/sh ")
-               (string-append " " (which "sh") " "))))))))
+               (string-append " " (which "sh") " "))
+              (("which gnuplot") (which "gnuplot"))))))))
     (home-page "http://www.leptonica.com/")
     (synopsis "Library and tools for image processing and analysis")
     (description
