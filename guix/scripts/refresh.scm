@@ -69,10 +69,13 @@
                             arg)))))
         (option '(#\t "type") #t #f
                 (lambda (opt name arg result)
-                  (alist-cons 'updater (string->symbol arg) result)))
+                  (let* ((not-comma (char-set-complement (char-set #\,)))
+                         (names (map string->symbol
+                                     (string-tokenize arg not-comma))))
+                    (alist-cons 'updaters names result))))
         (option '(#\L "list-updaters") #f #f
                 (lambda args
-                   (list-updaters-and-exit)))
+                  (list-updaters-and-exit)))
         (option '(#\l "list-dependent") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'list-dependent? #t result)))
@@ -114,7 +117,8 @@ specified with `--select'.\n"))
   -s, --select=SUBSET    select all the packages in SUBSET, one of
                          `core' or `non-core'"))
   (display (_ "
-  -t, --type=UPDATER     restrict to updates from UPDATER--e.g., 'gnu'"))
+  -t, --type=UPDATER,... restrict to updates from the specified updaters
+                         (e.g., 'gnu')"))
   (display (_ "
   -L, --list-updaters    list available updaters and exit"))
   (display (_ "
@@ -209,15 +213,15 @@ downloaded and authenticated; not updating~%")
   (define (options->updaters opts)
     ;; Return the list of updaters to use.
     (match (filter-map (match-lambda
-                         (('updater . name)
-                          (lookup-updater name))
+                         (('updaters . names)
+                          (map lookup-updater names))
                          (_ #f))
                        opts)
       (()
        ;; Use the default updaters.
        %updaters)
-      (lst
-       lst)))
+      (lists
+       (concatenate lists))))
 
   (define (keep-newest package lst)
     ;; If a newer version of PACKAGE is already in LST, return LST; otherwise

@@ -4276,8 +4276,8 @@ inconvenient.
 
 @item --type=@var{updater}
 @itemx -t @var{updater}
-Select only packages handled by @var{updater}.  Currently, @var{updater}
-may be one of:
+Select only packages handled by @var{updater} (may be a comma-separated
+list of updaters).  Currently, @var{updater} may be one of:
 
 @table @code
 @item gnu
@@ -4292,7 +4292,7 @@ For instance, the following commands only checks for updates of Emacs
 packages hosted at @code{elpa.gnu.org} and updates of CRAN packages:
 
 @example
-$ guix refresh -t elpa -t cran
+$ guix refresh --type=elpa,cran
 gnu/packages/statistics.scm:819:13: r-testthat would be upgraded from 0.10.0 to 0.11.0
 gnu/packages/emacs.scm:856:13: emacs-auctex would be upgraded from 11.88.6 to 11.88.9
 @end example
