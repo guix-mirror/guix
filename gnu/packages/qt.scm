@@ -95,7 +95,7 @@ X11 (yet).")
 (define-public qt
   (package
     (name "qt")
-    (version "5.5.0")
+    (version "5.5.1")
     (source (origin
              (method url-fetch)
              (uri
@@ -107,7 +107,7 @@ X11 (yet).")
                  version ".tar.xz"))
              (sha256
                (base32
-                 "1by2l8wxbqwvs7anb5ggmqhn2cfmhyw3a23bp1yyd240rdpa38ky"))
+                 "0615cn4n3n78v48lnmapqz2jizm2pzrjwvsjlnsf4awrsiiqw0kg"))
              (modules '((guix build utils)))
              (snippet
               '(begin
