@@ -474,12 +474,13 @@ may be #f, in which case it indicates that PATH is unavailable at CACHE-URL."
                             ".narinfo")))
     (build-request (string->uri url) #:method 'GET)))
 
-(define (http-multiple-get base-url requests proc)
+(define (http-multiple-get base-url proc seed requests)
   "Send all of REQUESTS to the server at BASE-URL.  Call PROC for each
-response, passing it the request object, the response, and a port from which
-to read the response body.  Return the list of results."
+response, passing it the request object, the response, a port from which to
+read the response body, and the previous result, starting with SEED, à la
+'fold'.  Return the final result."
   (let connect ((requests requests)
-                (result   '()))
+                (result   seed))
     ;; (format (current-error-port) "connecting (~a requests left)..."
     ;;         (length requests))
     (let ((p (open-socket-for-uri base-url)))
@@ -497,7 +498,7 @@ to read the response body.  Return the list of results."
           ((head tail ...)
            (let* ((resp   (read-response p))
                   (body   (response-body-port resp))
-                  (result (cons (proc head resp body) result)))
+                  (result (proc head resp body result)))
              ;; The server can choose to stop responding at any time, in which
              ;; case we have to try again.  Check whether that is the case.
              ;; Note that even upon "Connection: close", we can read from BODY.
@@ -536,7 +537,7 @@ if file doesn't exist, and the narinfo otherwise."
                 url (* 100. (/ done (length paths))))
         (set! done (+ 1 done)))))
 
-  (define (handle-narinfo-response request response port)
+  (define (handle-narinfo-response request response port result)
     (let ((len (response-content-length response)))
       ;; Make sure to read no more than LEN bytes since subsequent bytes may
       ;; belong to the next response.
@@ -545,7 +546,7 @@ if file doesn't exist, and the narinfo otherwise."
          (let ((narinfo (read-narinfo port url #:size len)))
            (cache-narinfo! url (narinfo-path narinfo) narinfo)
            (update-progress!)
-           narinfo))
+           (cons narinfo result)))
         ((404)                                     ; failure
          (let* ((path      (uri-path (request-uri request)))
                 (hash-part (string-drop-right path 8))) ; drop ".narinfo"
@@ -555,13 +556,13 @@ if file doesn't exist, and the narinfo otherwise."
            (cache-narinfo! url
                            (find (cut string-contains <> hash-part) paths)
                            #f)
-           (update-progress!))
-         #f)
+           (update-progress!)
+           result))
         (else                                      ; transient failure
          (if len
              (get-bytevector-n port len)
              (read-to-eof port))
-         #f))))
+         result))))
 
   (define cache-info
     (download-cache-info url))
@@ -574,8 +575,9 @@ if file doesn't exist, and the narinfo otherwise."
            ((http)
             (let ((requests (map (cut narinfo-request url <>) paths)))
               (update-progress!)
-              (let ((result (http-multiple-get url requests
-                                               handle-narinfo-response)))
+              (let ((result (http-multiple-get url
+                                               handle-narinfo-response '()
+                                               requests)))
                 (newline (current-error-port))
                 result)))
            ((file #f)
