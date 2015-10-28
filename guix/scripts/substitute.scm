@@ -598,7 +598,9 @@ information is available locally."
                          (let-values (((valid? value)
                                        (cached-narinfo cache path)))
                            (if valid?
-                               (values (cons value cached) missing)
+                               (if value
+                                   (values (cons value cached) missing)
+                                   (values cached missing))
                                (values cached (cons path missing)))))
                        '()
                        '()
