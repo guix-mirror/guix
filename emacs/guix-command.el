@@ -241,6 +241,7 @@ to be modified."
 (guix-command-define-argument-improver
     guix-command-improve-refresh-argument
   '(("--select"     :fun guix-read-refresh-subset)
+    ("--type"       :fun guix-read-refresh-updater-names-string)
     ("--key-server" :char ?S)))
 
 (guix-command-define-argument-improver

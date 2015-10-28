@@ -42,7 +42,8 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (rnrs io ports)
-  #:export (guix-refresh))
+  #:export (guix-refresh
+            %updaters))
 
 
 ;;;

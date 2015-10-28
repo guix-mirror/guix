@@ -186,6 +186,10 @@ For the meaning of location, see `guix-find-location'."
   "Return a list of names of available graph node types."
   (guix-eval-read (guix-make-guile-expression 'graph-type-names)))
 
+(guix-memoized-defun guix-refresh-updater-names ()
+  "Return a list of names of available refresh updater types."
+  (guix-eval-read (guix-make-guile-expression 'refresh-updater-names)))
+
 (guix-memoized-defun guix-lint-checker-names ()
   "Return a list of names of available lint checkers."
   (guix-eval-read (guix-make-guile-expression 'lint-checker-names)))

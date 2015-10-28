@@ -991,6 +991,11 @@ Return #t if the shell command was executed successfully."
   "Return a list of names of available graph node types."
   (map node-type-name %node-types))
 
+(define (refresh-updater-names)
+  "Return a list of names of available refresh updater types."
+  (map (@ (guix upstream) upstream-updater-name)
+       (@ (guix scripts refresh) %updaters)))
+
 (define (lint-checker-names)
   "Return a list of names of available lint checkers."
   (map (lambda (checker)
