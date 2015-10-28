@@ -435,14 +435,14 @@ return the new list of manifest entries."
   (define upgrade-regexps
     (filter-map (match-lambda
                  (('upgrade . regexp)
-                  (make-regexp (or regexp "")))
+                  (make-regexp* (or regexp "")))
                  (_ #f))
                 opts))
 
   (define do-not-upgrade-regexps
     (filter-map (match-lambda
                  (('do-not-upgrade . regexp)
-                  (make-regexp regexp))
+                  (make-regexp* regexp))
                  (_ #f))
                 opts))
 
@@ -736,7 +736,7 @@ more information.~%"))
          #t)
 
         (('list-installed regexp)
-         (let* ((regexp    (and regexp (make-regexp regexp)))
+         (let* ((regexp    (and regexp (make-regexp* regexp)))
                 (manifest  (profile-manifest profile))
                 (installed (manifest-entries manifest)))
            (leave-on-EPIPE
@@ -752,7 +752,7 @@ more information.~%"))
            #t))
 
         (('list-available regexp)
-         (let* ((regexp    (and regexp (make-regexp regexp)))
+         (let* ((regexp    (and regexp (make-regexp* regexp)))
                 (available (fold-packages
                             (lambda (p r)
                               (let ((n (package-name p)))
@@ -778,7 +778,7 @@ more information.~%"))
            #t))
 
         (('search regexp)
-         (let ((regexp (make-regexp regexp regexp/icase)))
+         (let ((regexp (make-regexp* regexp regexp/icase)))
            (leave-on-EPIPE
             (for-each (cute package->recutils <> (current-output-port))
                       (find-packages-by-description regexp)))

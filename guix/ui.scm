@@ -61,6 +61,7 @@
             warn-about-load-error
             show-version-and-exit
             show-bug-report-information
+            make-regexp*
             string->number*
             size->number
             show-derivation-outputs
@@ -349,6 +350,16 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
           (apply throw key proc "~A: ~S"
                  (list (strerror (car errno)) target)
                  (list errno)))))))
+
+(define (make-regexp* regexp . flags)
+  "Like 'make-regexp' but error out if REGEXP is invalid, reporting the error
+nicely."
+  (catch 'regular-expression-syntax
+    (lambda ()
+      (apply make-regexp regexp flags))
+    (lambda (key proc message . rest)
+      (leave (_ "'~a' is not a valid regular expression: ~a~%")
+             regexp message))))
 
 (define (string->number* str)
   "Like `string->number', but error out with an error message on failure."
