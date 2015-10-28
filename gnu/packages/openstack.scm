@@ -588,10 +588,10 @@ from the OpenStack project.")
     (propagated-inputs
       `(("python-fixtures" ,python-fixtures)
         ("python-mock" ,python-mock)
+        ("python-mox3" ,python-mox3)
         ("python-six" ,python-six)))
     (inputs
       `(("python-pbr" ,python-pbr)
-        ("python-mox3" ,python-mox3)
         ("python-os-client-config" ,python-os-client-config)
         ("python-setuptools" ,python-setuptools)
         ("python-subunit" ,python-subunit)
