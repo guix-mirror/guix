@@ -66,6 +66,7 @@ mount_test_code="
 guix environment --container --ad-hoc --bootstrap guile-bootstrap \
      -- guile -c "$mount_test_code" > $tmpdir/mounts
 
+cat "$tmpdir/mounts"
 test `wc -l < $tmpdir/mounts` -eq 3
 
 grep -e "$PWD$" $tmpdir/mounts # current directory
