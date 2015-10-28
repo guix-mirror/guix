@@ -6217,6 +6217,9 @@ Whether to authorize the substitute key for @code{hydra.gnu.org}
 @item @code{use-substitutes?} (default: @code{#t})
 Whether to use substitutes.
 
+@item @code{substitute-urls} (default: @var{%default-substitute-urls})
+The list of URLs where to look for substitutes by default.
+
 @item @code{extra-options} (default: @code{'()})
 List of extra command-line options for @command{guix-daemon}.
 

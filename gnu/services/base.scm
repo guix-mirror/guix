@@ -751,6 +751,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                     (default #t))
   (use-substitutes? guix-configuration-use-substitutes? ;Boolean
                     (default #t))
+  (substitute-urls  guix-configuration-substitute-urls ;list of strings
+                    (default %default-substitute-urls))
   (extra-options    guix-configuration-extra-options ;list of strings
                     (default '()))
   (lsof             guix-configuration-lsof       ;<package>
@@ -765,7 +767,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
   "Return a <dmd-service> for the Guix daemon service with CONFIG."
   (match config
     (($ <guix-configuration> guix build-group build-accounts authorize-key?
-                             use-substitutes? extra-options lsof lsh)
+                             use-substitutes? substitute-urls extra-options
+                             lsof lsh)
      (list (dmd-service
             (documentation "Run the Guix daemon.")
             (provision '(guix-daemon))
@@ -777,6 +780,7 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                       #$@(if use-substitutes?
                              '()
                              '("--no-substitutes"))
+                      "--substitute-urls" #$(string-join substitute-urls)
                       #$@extra-options)
 
                 ;; Add 'lsof' (for the GC) and 'lsh' (for offloading) to the
