@@ -185,8 +185,7 @@ options handled by 'set-build-options-from-command-line', and listed in
                      #:max-build-jobs (or (assoc-ref opts 'max-jobs) 1)
                      #:fallback? (assoc-ref opts 'fallback?)
                      #:use-substitutes? (assoc-ref opts 'substitutes?)
-                     #:substitute-urls (or (assoc-ref opts 'substitute-urls)
-                                           %default-substitute-urls)
+                     #:substitute-urls (assoc-ref opts 'substitute-urls)
                      #:use-build-hook? (assoc-ref opts 'build-hook?)
                      #:max-silent-time (assoc-ref opts 'max-silent-time)
                      #:timeout (assoc-ref opts 'timeout)
@@ -512,6 +511,8 @@ arguments with packages that use the specified source."
              (urls  (map (cut string-append <> "/log")
                          (if (assoc-ref opts 'substitutes?)
                              (or (assoc-ref opts 'substitute-urls)
+                                 ;; XXX: This does not necessarily match the
+                                 ;; daemon's substitute URLs.
                                  %default-substitute-urls)
                              '())))
              (roots (filter-map (match-lambda

@@ -501,11 +501,11 @@ encoding conversion errors."
                             (build-cores (current-processor-count))
                             (use-substitutes? #t)
 
-                            ;; Client-provided substitute URLs.  For
-                            ;; unprivileged clients, these are considered
-                            ;; "untrusted"; for "trusted" users, they override
-                            ;; the daemon's settings.
-                            (substitute-urls %default-substitute-urls))
+                            ;; Client-provided substitute URLs.  If it is #f,
+                            ;; the daemon's settings are used.  Otherwise, it
+                            ;; overrides the daemons settings; see 'guix
+                            ;; substitute'.
+                            (substitute-urls #f))
   ;; Must be called after `open-connection'.
 
   (define socket
@@ -533,7 +533,10 @@ encoding conversion errors."
       (let ((pairs `(,@(if timeout
                            `(("build-timeout" . ,(number->string timeout)))
                            '())
-                     ("substitute-urls" . ,(string-join substitute-urls)))))
+                     ,@(if substitute-urls
+                           `(("substitute-urls"
+                              . ,(string-join substitute-urls)))
+                           '()))))
         (send (string-pairs pairs))))
     (let loop ((done? (process-stderr server)))
       (or done? (process-stderr server)))))
