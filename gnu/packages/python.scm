@@ -5799,10 +5799,12 @@ Python's @code{ctypes} foreign function interface (FFI).")
     (home-page "http://packages.debian.org/sid/python-debian")
     (synopsis "Debian package related modules")
     (description
+     ;; XXX: Use @enumerate instead of @itemize to work around
+     ;; <http://bugs.gnu.org/21772>.
      "This package provides Python modules that abstract many formats of
 Debian-related files, such as:
 
-@itemize
+@enumerate
 @item Debtags information;
 @item @file{debian/changelog} files;
 @item packages files, pdiffs;
@@ -5810,7 +5812,7 @@ Debian-related files, such as:
    @file{debian/control}, @file{.changes}, @file{.dsc};
 @item Raw @file{.deb} and @file{.ar} files, with (read-only) access to
    contained files and meta-information.
-@end itemize\n")
+@end enumerate\n")
 
     ;; Modules are either GPLv2+ or GPLv3+.
     (license gpl3+)))
