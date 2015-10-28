@@ -1839,19 +1839,25 @@ the phenotype as it models the data.")
     (license license:asl2.0)))
 
 (define-public pbtranscript-tofu
-  (let ((commit "c7bbd5472"))
+  (let ((commit "8f5467fe6"))
     (package
       (name "pbtranscript-tofu")
-      (version (string-append "0.4.1." commit))
+      (version (string-append "2.2.3." commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/PacificBiosciences/cDNA_primer.git")
                       (commit commit)))
-                (file-name (string-append name "-" version ".tar.gz"))
+                (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "148xkzi689c49g6fdhckp6mnmj2qhjdf1j4wifm6ja7ij95d7fxx"))))
+                  "1lgnpi35ihay42qx0b6yl3kkgra723i413j33kvs0kvs61h82w0f"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; remove bundled Cython sources
+                    (delete-file "pbtranscript-tofu/pbtranscript/Cython-0.20.1.tar.gz")
+                    #t))))
       (build-system python-build-system)
       (arguments
        `(#:python ,python-2
@@ -1861,34 +1867,29 @@ the phenotype as it models the data.")
          #:configure-flags '("--single-version-externally-managed"
                              "--record=pbtranscript-tofu.txt")
          #:phases
-         (alist-cons-after
-          'unpack 'enter-directory-and-clean-up
-          (lambda _
-            (chdir "pbtranscript-tofu/pbtranscript/")
-            ;; Delete clutter
-            (delete-file-recursively "dist/")
-            (delete-file-recursively "build/")
-            (delete-file-recursively "setuptools_cython-0.2.1-py2.6.egg/")
-            (delete-file-recursively "pbtools.pbtranscript.egg-info")
-            (delete-file "Cython-0.20.1.tar.gz")
-            (delete-file "setuptools_cython-0.2.1-py2.7.egg")
-            (delete-file "setuptools_cython-0.2.1.tar.gz")
-            (delete-file "setup.cfg")
-            (for-each delete-file
-                      (find-files "." "\\.so$"))
-            ;; files should be writable for install phase
-            (for-each (lambda (f) (chmod f #o755))
-                      (find-files "." "\\.py$")))
-          %standard-phases)))
+         (modify-phases %standard-phases
+           (add-after 'unpack 'enter-directory
+            (lambda _
+              (chdir "pbtranscript-tofu/pbtranscript/")
+              #t))
+           ;; With setuptools version 18.0 and later this setup.py hack causes
+           ;; a build error, so we disable it.
+           (add-after 'enter-directory 'patch-setuppy
+            (lambda _
+              (substitute* "setup.py"
+                (("if 'setuptools.extension' in sys.modules:")
+                 "if False:"))
+              #t)))))
       (inputs
-       `(("python-cython" ,python2-cython)
-         ("python-numpy" ,python2-numpy)
+       `(("python-numpy" ,python2-numpy)
          ("python-bx-python" ,python2-bx-python)
          ("python-networkx" ,python2-networkx)
          ("python-scipy" ,python2-scipy)
-         ("python-pbcore" ,python2-pbcore)))
+         ("python-pbcore" ,python2-pbcore)
+         ("python-h5py" ,python2-h5py)))
       (native-inputs
-       `(("python-nose" ,python2-nose)
+       `(("python-cython" ,python2-cython)
+         ("python-nose" ,python2-nose)
          ("python-setuptools" ,python2-setuptools)))
       (home-page "https://github.com/PacificBiosciences/cDNA_primer")
       (synopsis "Analyze transcriptome data generated with the Iso-Seq protocol")
