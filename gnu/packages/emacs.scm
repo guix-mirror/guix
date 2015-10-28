@@ -372,7 +372,7 @@ operations.")
 (define-public magit-svn
   (package
     (name "magit-svn")
-    (version "2.1.0")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -381,7 +381,7 @@ operations.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "09sz93g7x7g9q75jsw8bdh7yr4jr1igfb4fpg5i302a7l2ahxfr8"))))
+                "04y88j7q9h8xjbx5dbick6n5nr1522sn9i1znp0qwk3vjb4b5mzz"))))
     (build-system trivial-build-system)
     (native-inputs `(("emacs" ,emacs-no-x)
                      ("tar" ,tar)
