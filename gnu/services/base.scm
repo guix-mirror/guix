@@ -57,6 +57,7 @@
             mingetty-configuration
             mingetty-configuration?
             mingetty-service
+            mingetty-service-type
 
             %nscd-default-caches
             %nscd-default-configuration
@@ -74,6 +75,7 @@
             guix-configuration
             guix-configuration?
             guix-service
+            guix-service-type
 
             %base-services))
 

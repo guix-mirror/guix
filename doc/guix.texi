@@ -5363,16 +5363,40 @@ The @code{services} field lists @dfn{system services} to be made
 available when the system starts (@pxref{Services}).
 The @code{operating-system} declaration above specifies that, in
 addition to the basic services, we want the @command{lshd} secure shell
-daemon listening on port 2222, and allowing remote @code{root} logins
-(@pxref{Invoking lshd,,, lsh, GNU lsh Manual}).  Under the hood,
+daemon listening on port 2222 (@pxref{Networking Services,
+@code{lsh-service}}).  Under the hood,
 @code{lsh-service} arranges so that @code{lshd} is started with the
 right command-line options, possibly with supporting configuration files
-generated as needed (@pxref{Defining Services}).  @xref{operating-system
-Reference}, for details about the available @code{operating-system}
-fields.
+generated as needed (@pxref{Defining Services}).
+
+@cindex customization, of services
+@findex modify-services
+Occasionally, instead of using the base services as is, you will want to
+customize them.  For instance, to change the configuration of
+@code{guix-daemon} and Mingetty (the console log-in), you may write the
+following instead of @var{%base-services}:
+
+@lisp
+(modify-services %base-services
+  (guix-service-type config =>
+                     (guix-configuration
+                      (inherit config)
+                      (use-substitutes? #f)
+                      (extra-options '("--gc-keep-outputs"))))
+  (mingetty-service-type config =>
+                         (mingetty-configuration
+                          (inherit config)
+                          (motd (plain-file "motd" "Hi there!")))))
+@end lisp
+
+@noindent
+The effect here is to change the options passed to @command{guix-daemon}
+when it is started, as well as the ``message of the day'' that appears
+when logging in at the console.  @xref{Service Reference,
+@code{modify-services}}, for more on that.
 
 The configuration for a typical ``desktop'' usage, with the X11 display
-server, a desktop environment, network management, an SSH server, and
+server, a desktop environment, network management, power management, and
 more, would look like this:
 
 @lisp
@@ -5382,6 +5406,8 @@ more, would look like this:
 @xref{Desktop Services}, for the exact list of services provided by
 @var{%desktop-services}.  @xref{X.509 Certificates}, for background
 information about the @code{nss-certs} package that is used here.
+@xref{operating-system Reference}, for details about all the available
+@code{operating-system} fields.
 
 Assuming the above snippet is stored in the @file{my-system-config.scm}
 file, the @command{guix system reconfigure my-system-config.scm} command
@@ -7538,6 +7564,41 @@ Here is an example of how a service is created and manipulated:
 (eq? (service-kind s) nginx-service-type)
 @result{} #t
 @end example
+
+The @code{modify-services} form provides a handy way to change the
+parameters of some of the services of a list such as
+@var{%base-services} (@pxref{Base Services, @code{%base-services}}).  Of
+course, you could always use standard list combinators such as
+@code{map} and @code{fold} to do that (@pxref{SRFI-1, List Library,,
+guile, GNU Guile Reference Manual}); @code{modify-services} simply
+provides a more concise form for this common pattern.
+
+@deffn {Scheme Syntax} modify-services @var{services} @
+  (@var{type} @var{variable} => @var{body}) @dots{}
+
+Modify the services listed in @var{services} according to the given
+clauses.  Each clause has the form:
+
+@example
+(@var{type} @var{variable} => @var{body})
+@end example
+
+where @var{type} is a service type, such as @var{guix-service-type}, and
+@var{variable} is an identifier that is bound within @var{body} to the
+value of the service of that @var{type}.  @xref{Using the Configuration
+System}, for an example.
+
+This is a shorthand for:
+
+@example
+(map (lambda (service) @dots{}) @var{services})
+@end example
+@end deffn
+
+Next comes the programming interface for service types.  This is
+something you want to know when writing new service definitions, but not
+necessarily when simply looking for ways to customize your
+@code{operating-system} declaration.
 
 @deftp {Data Type} service-type
 @cindex service type

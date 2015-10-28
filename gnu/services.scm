@@ -48,6 +48,7 @@
             service-kind
             service-parameters
 
+            modify-services
             service-back-edges
             fold-services
 
@@ -133,6 +134,47 @@
   (parameters service-parameters))
 
 
+(define-syntax %modify-service
+  (syntax-rules (=>)
+    ((_ service)
+     service)
+    ((_ svc (kind param => exp ...) clauses ...)
+     (if (eq? (service-kind svc) kind)
+         (let ((param (service-parameters svc)))
+           (service (service-kind svc)
+                    (begin exp ...)))
+         (%modify-service svc clauses ...)))))
+
+(define-syntax modify-services
+  (syntax-rules ()
+    "Modify the services listed in SERVICES according to CLAUSES.  Each clause
+must have the form:
+
+  (TYPE VARIABLE => BODY)
+
+where TYPE is a service type, such as 'guix-service-type', and VARIABLE is an
+identifier that is bound within BODY to the value of the service of that
+TYPE.  Consider this example:
+
+  (modify-services %base-services
+    (guix-service-type config =>
+                       (guix-configuration
+                        (inherit config)
+                        (use-substitutes? #f)
+                        (extra-options '(\"--gc-keep-derivations\"))))
+    (mingetty-service-type config =>
+                           (mingetty-configuration
+                            (inherit config)
+                            (motd (plain-file \"motd\" \"Hi there!\")))))
+
+It changes the configuration of the GUIX-SERVICE-TYPE instance, and that of
+all the MINGETTY-SERVICE-TYPE instances.
+
+This is a shorthand for (map (lambda (svc) ...) %base-services)."
+    ((_ services clauses ...)
+     (map (lambda (service)
+            (%modify-service service clauses ...))
+          services))))
 
 
 ;;;
