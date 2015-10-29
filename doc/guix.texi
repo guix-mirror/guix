@@ -5376,7 +5376,7 @@ addition to the per-user profiles (@pxref{Invoking guix package}).  The
 for basic user and administrator tasks---including the GNU Core
 Utilities, the GNU Networking Utilities, the GNU Zile lightweight text
 editor, @command{find}, @command{grep}, etc.  The example above adds
-Emacs to those, taken from the @code{(gnu packages emacs)} module
+tcpdump to those, taken from the @code{(gnu packages admin)} module
 (@pxref{Package Modules}).
 
 @vindex %base-services
