@@ -233,7 +233,8 @@ software packages, etc.
 
 @cindex functional package management
 The term @dfn{functional} refers to a specific package management
-discipline.  In Guix, the package build and installation process is seen
+discipline pioneered by Nix (@pxref{Acknowledgments}).
+In Guix, the package build and installation process is seen
 as a function, in the mathematical sense.  That function takes inputs,
 such as build scripts, a compiler, and libraries, and
 returns an installed package.  As a pure function, its result depends
@@ -8421,7 +8422,8 @@ reason.
 @node Acknowledgments
 @chapter Acknowledgments
 
-Guix is based on the Nix package manager, which was designed and
+Guix is based on the @uref{http://nixos.org/nix/, Nix package manager},
+which was designed and
 implemented by Eelco Dolstra, with contributions from other people (see
 the @file{nix/AUTHORS} file in Guix.)  Nix pioneered functional package
 management, and promoted unprecedented features, such as transactional
