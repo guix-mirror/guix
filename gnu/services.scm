@@ -63,6 +63,7 @@
             boot-service-type
             activation-service-type
             activation-service->script
+            %linux-bare-metal-service
             etc-service-type
             etc-directory
             setuid-program-service-type
@@ -244,20 +245,6 @@ file."
                         (union-build #$output '#$things))
                     #:modules '((guix build union))))))
 
-(define (modprobe-wrapper)
-  "Return a wrapper for the 'modprobe' command that knows where modules live.
-
-This wrapper is typically invoked by the Linux kernel ('call_modprobe', in
-kernel/kmod.c), a situation where the 'LINUX_MODULE_DIRECTORY' environment
-variable is not set---hence the need for this wrapper."
-  (let ((modprobe "/run/current-system/profile/bin/modprobe"))
-    (gexp->script "modprobe"
-                  #~(begin
-                      (setenv "LINUX_MODULE_DIRECTORY"
-                              "/run/booted-system/kernel/lib/modules")
-                      (apply execl #$modprobe
-                             (cons #$modprobe (cdr (command-line))))))))
-
 (define* (activation-service->script service)
   "Return as a monadic value the activation script for SERVICE, a service of
 ACTIVATION-SCRIPT-TYPE."
@@ -282,8 +269,7 @@ ACTIVATION-SCRIPT-TYPE."
 
   (mlet* %store-monad ((actions  (service-activations))
                        (modules  (imported-modules %modules))
-                       (compiled (compiled-modules %modules))
-                       (modprobe (modprobe-wrapper)))
+                       (compiled (compiled-modules %modules)))
     (gexp->file "activate"
                 #~(begin
                     (eval-when (expand load eval)
@@ -297,12 +283,6 @@ ACTIVATION-SCRIPT-TYPE."
                     ;; Make sure /bin/sh is valid and current.
                     (activate-/bin/sh
                      (string-append #$(canonical-package bash) "/bin/sh"))
-
-                    ;; Tell the kernel to use our 'modprobe' command.
-                    (activate-modprobe #$modprobe)
-
-                    ;; Let users debug their own processes!
-                    (activate-ptrace-attach)
 
                     ;; Run the services' activation snippets.
                     ;; TODO: Use 'load-compiled'.
@@ -328,6 +308,41 @@ ACTIVATION-SCRIPT-TYPE."
   ;; The activation service produces the activation script from the gexps it
   ;; receives.
   (service activation-service-type #t))
+
+(define %modprobe-wrapper
+  ;; Wrapper for the 'modprobe' command that knows where modules live.
+  ;;
+  ;; This wrapper is typically invoked by the Linux kernel ('call_modprobe',
+  ;; in kernel/kmod.c), a situation where the 'LINUX_MODULE_DIRECTORY'
+  ;; environment variable is not set---hence the need for this wrapper.
+  (let ((modprobe "/run/current-system/profile/bin/modprobe"))
+    (program-file "modprobe"
+                  #~(begin
+                      (setenv "LINUX_MODULE_DIRECTORY"
+                              "/run/booted-system/kernel/lib/modules")
+                      (apply execl #$modprobe
+                             (cons #$modprobe (cdr (command-line))))))))
+
+(define %linux-kernel-activation
+  ;; Activation of the Linux kernel running on the bare metal (as opposed to
+  ;; running in a container.)
+  #~(begin
+      ;; Tell the kernel to use our 'modprobe' command.
+      (activate-modprobe #$%modprobe-wrapper)
+
+      ;; Let users debug their own processes!
+      (activate-ptrace-attach)))
+
+(define linux-bare-metal-service-type
+  (service-type (name 'linux-bare-metal)
+                (extensions
+                 (list (service-extension activation-service-type
+                                          (const %linux-kernel-activation))))))
+
+(define %linux-bare-metal-service
+  ;; The service that does things that are needed on the "bare metal", but not
+  ;; necessary or impossible in a container.
+  (service linux-bare-metal-service-type #f))
 
 (define (etc-directory service)
   "Return the directory for SERVICE, a service of type ETC-SERVICE-TYPE."

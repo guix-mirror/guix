@@ -287,7 +287,8 @@ a container or that of a \"bare metal\" system."
                    ;; container.
                    (if container?
                        '()
-                       (list (service firmware-service-type
+                       (list %linux-bare-metal-service
+                             (service firmware-service-type
                                       (operating-system-firmware os))))))))
 
 (define* (operating-system-services os #:key container?)
