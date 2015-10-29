@@ -102,10 +102,7 @@
   "Face for the number of seconds for a phase."
   :group 'guix-build-log-faces)
 
-(defcustom guix-build-log-mode-hook
-  ;; Not using `compilation-minor-mode' because it rebinds some standard
-  ;; keys, including M-n/M-p.
-  '(compilation-shell-minor-mode view-mode)
+(defcustom guix-build-log-mode-hook '()
   "Hook run after `guix-build-log-mode' is entered."
   :type 'hook
   :group 'guix-build-log)
@@ -196,6 +193,8 @@ For `guix-build-log-minor-mode' this map is prefixed with 'C-c'.")
     (set-keymap-parent
      map (make-composed-keymap (list guix-build-log-common-map)
                                special-mode-map))
+    (define-key map (kbd "c") 'compilation-shell-minor-mode)
+    (define-key map (kbd "v") 'view-mode)
     map)
   "Keymap for `guix-build-log-mode' buffers.")
 
