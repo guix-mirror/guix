@@ -216,7 +216,8 @@ the W3C's XML-based Scaleable Vector Graphic (SVG) format.")
      `(("openjpeg" ,openjpeg)
        ("zlib" ,zlib)))
     (arguments
-     '(#:phases
+     '(#:parallel-tests? #f ; XXX: cause fpix1_reg to fail
+       #:phases
        (modify-phases %standard-phases
          ;; Prevent make from trying to regenerate config.h.in.
          (add-after
