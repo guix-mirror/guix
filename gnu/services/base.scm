@@ -144,6 +144,18 @@ FILE-SYSTEM."
   (symbol-append 'file-system-
                  (string->symbol (file-system-mount-point file-system))))
 
+(define (mapped-device->dmd-service-name md)
+  "Return the symbol that denotes the dmd service of MD, a <mapped-device>."
+  (symbol-append 'device-mapping-
+                 (string->symbol (mapped-device-target md))))
+
+(define dependency->dmd-service-name
+  (match-lambda
+    ((? mapped-device? md)
+     (mapped-device->dmd-service-name md))
+    ((? file-system? fs)
+     (file-system->dmd-service-name fs))))
+
 (define file-system-service-type
   ;; TODO(?): Make this an extensible service that takes <file-system> objects
   ;; and returns a list of <dmd-service>.
@@ -160,7 +172,7 @@ FILE-SYSTEM."
        (dmd-service
         (provision (list (file-system->dmd-service-name file-system)))
         (requirement `(root-file-system
-                       ,@(map file-system->dmd-service-name dependencies)))
+                       ,@(map dependency->dmd-service-name dependencies)))
         (documentation "Check, mount, and unmount the given file system.")
         (start #~(lambda args
                    ;; FIXME: Use or factorize with 'mount-file-system'.

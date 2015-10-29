@@ -195,19 +195,16 @@ as 'needed-for-boot'."
                         (file-system-device fs)))
             (operating-system-mapped-devices os)))
 
-  (define (requirements fs)
-    ;; XXX: Fiddling with dmd service names is not nice.
-    (append (map (lambda (fs)
-                   (symbol-append 'file-system-
-                                  (string->symbol
-                                   (file-system-mount-point fs))))
-                 (file-system-dependencies fs))
-            (map (lambda (md)
-                   (symbol-append 'device-mapping-
-                                  (string->symbol (mapped-device-target md))))
-                 (device-mappings fs))))
+  (define (add-dependencies fs)
+    ;; Add the dependencies due to device mappings to FS.
+    (file-system
+      (inherit fs)
+      (dependencies
+       (delete-duplicates (append (device-mappings fs)
+                                  (file-system-dependencies fs))
+                          eq?))))
 
-  (map file-system-service file-systems))
+  (map (compose file-system-service add-dependencies) file-systems))
 
 (define (mapped-device-user device file-systems)
   "Return a file system among FILE-SYSTEMS that uses DEVICE, or #f."
