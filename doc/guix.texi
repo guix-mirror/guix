@@ -6496,6 +6496,19 @@ Last, @var{extra-config} is a list of strings or objects appended to the
 verbatim to the configuration file.
 @end deffn
 
+@deffn {Scheme Procedure} screen-locker-service @var{package} [@var{name}]
+Add @var{package}, a package for a screen-locker or screen-saver whose
+command is @var{program}, to the set of setuid programs and add a PAM entry
+for it.  For example:
+
+@lisp
+(screen-locker-service xlockmore "xlock")
+@end lisp
+
+makes the good ol' XlockMore usable.
+@end deffn
+
+
 @node Desktop Services
 @subsubsection Desktop Services
 
@@ -6513,7 +6526,8 @@ This is a list of services that builds upon @var{%base-services} and
 adds or adjust services for a typical ``desktop'' setup.
 
 In particular, it adds a graphical login manager (@pxref{X Window,
-@code{slim-service}}), a network management tool (@pxref{Networking
+@code{slim-service}}), screen lockers,
+a network management tool (@pxref{Networking
 Services, @code{wicd-service}}), energy and color management services,
 the @code{elogind} login and seat manager, the Polkit privilege service,
 the GeoClue location service, an NTP client (@pxref{Networking

@@ -34,6 +34,8 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages polkit)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages suckless)
   #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module (guix store)
@@ -642,6 +644,10 @@ when they log out."
 (define %desktop-services
   ;; List of services typically useful for a "desktop" use case.
   (cons* (slim-service)
+
+         ;; Screen lockers are a pretty useful thing and these are small.
+         (screen-locker-service slock)
+         (screen-locker-service xlockmore "xlock")
 
          ;; The D-Bus clique.
          (avahi-service)
