@@ -20,6 +20,7 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages doxygen)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages python)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -45,7 +46,8 @@
     (native-inputs
      `(("doxygen" ,doxygen)))
     (inputs
-     `(("ncurses" ,ncurses)))
+     `(("ncurses" ,ncurses)
+       ("python" ,python-wrapper)))   ;for fish_config and manpage completions
     (arguments
      '(#:tests? #f ; no check target
        #:configure-flags '("--sysconfdir=/etc")))
