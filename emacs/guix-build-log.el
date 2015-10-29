@@ -346,6 +346,13 @@ programmatically using hooks:
   (when font-lock-mode
     (font-lock-fontify-buffer)))
 
+;;;###autoload
+(add-to-list 'auto-mode-alist
+             ;; Regexp for log files (usually placed in /var/log/guix/...)
+             (cons (rx "/guix/drvs/" (= 2 alnum) "/" (= 30 alnum)
+                       "-" (+ (any alnum "-+.")) ".drv" string-end)
+                   'guix-build-log-mode))
+
 (provide 'guix-build-log)
 
 ;;; guix-build-log.el ends here
