@@ -35,6 +35,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/aidc.scm				\
   gnu/packages/apl.scm				\
   gnu/packages/apr.scm				\
+  gnu/packages/aria2.scm			\
   gnu/packages/asciidoc.scm			\
   gnu/packages/aspell.scm			\
   gnu/packages/attr.scm				\
