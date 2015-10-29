@@ -646,12 +646,13 @@ Toggle (show/hide) the bodies of all build phases.
 @end table
 
 There is also @kbd{M-x guix-build-log-minor-mode} which also provides
-the same highlighting (but not key bindings).  And as it is a minor
-mode, it can be enabled in any buffer.  For example, if you are building
-some package in a shell buffer (@pxref{Interactive Shell,,, emacs, The
-GNU Emacs Manual}), you may enable @command{guix-build-log-minor-mode}
-to make it more colorful.  Guix build output is rather specific, so this
-new highlighting shouldn't conflict with the existing one.
+the same highlighting.  And as it is a minor mode, it can be enabled in
+any buffer.  For example, if you are building some package in a shell
+buffer (@pxref{Interactive Shell,,, emacs, The GNU Emacs Manual}), you
+may enable @command{guix-build-log-minor-mode} to make it more colorful.
+Guix build output is rather specific, so this new highlighting shouldn't
+conflict with the existing one.  This mode also provides the same key
+bindings as the major mode, but prefixed with @kbd{C-c}.
 
 
 @node Emacs Completions
