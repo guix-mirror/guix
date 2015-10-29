@@ -121,7 +121,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/gcc.scm				\
   gnu/packages/gd.scm				\
   gnu/packages/gdb.scm				\
-  gnu/packages/gdbm.scm				\
   gnu/packages/geeqie.scm			\
   gnu/packages/gettext.scm			\
   gnu/packages/ghostscript.scm			\

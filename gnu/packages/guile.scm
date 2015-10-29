@@ -38,7 +38,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages gettext)
-  #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages python)
   #:use-module (guix packages)
   #:use-module (guix download)

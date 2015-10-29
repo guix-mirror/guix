@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -19,7 +19,7 @@
 
 (define-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages)
-  #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages mit-krb5)
   #:use-module (gnu packages tls)
   #:use-module ((guix licenses) #:prefix license:)
