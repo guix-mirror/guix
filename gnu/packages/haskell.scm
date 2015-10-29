@@ -1009,10 +1009,10 @@ found at runtime, a userError is thrown.")
     (build-system haskell-build-system)
     (propagated-inputs
      `(("ghc-statevar" ,ghc-statevar)
-       ("ghc-openglraw" ,ghc-openglraw)))
-    (inputs
-     `(("ghc-opengl" ,ghc-opengl)
+       ("ghc-openglraw" ,ghc-openglraw)
        ("freeglut" ,freeglut)))
+    (inputs
+     `(("ghc-opengl" ,ghc-opengl)))
     (home-page "http://www.haskell.org/haskellwiki/Opengl")
     (synopsis "Haskell bindings for the OpenGL Utility Toolkit")
     (description "This library provides Haskell bindings for the OpenGL
