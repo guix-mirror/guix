@@ -25,6 +25,7 @@
   #:use-module (guix derivations)
   #:use-module (guix monads)
   #:use-module (gnu build linux-container)
+  #:use-module (gnu services)
   #:use-module (gnu system)
   #:use-module (gnu system file-systems)
   #:export (mapping->file-system
@@ -50,14 +51,15 @@
   "Return a derivation that builds OS as a Linux container."
   (mlet* %store-monad
       ((profile (operating-system-profile os))
-       (etc     (operating-system-etc-directory os))
+       (etc  -> (operating-system-etc-directory os))
        (boot    (operating-system-boot-script os #:container? #t))
        (locale  (operating-system-locale-directory os)))
-    (file-union "system-container"
-                `(("boot" ,#~#$boot)
-                  ("profile" ,#~#$profile)
-                  ("locale" ,#~#$locale)
-                  ("etc" ,#~#$etc)))))
+    (lower-object
+     (file-union "system-container"
+                 `(("boot" ,#~#$boot)
+                   ("profile" ,#~#$profile)
+                   ("locale" ,#~#$locale)
+                   ("etc" ,#~#$etc))))))
 
 (define (containerized-operating-system os mappings)
   "Return an operating system based on OS for use in a Linux container
