@@ -163,7 +163,7 @@ all that."
     ;; to be switched.
     (if (string-match "^(x86_64|i[3-6]86)-" system)
         "
-  set gfxmode=640x480
+  # Leave 'gfxmode' to 'auto'.
   insmod vbe
   insmod vga
   insmod video_bochs
