@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,40 @@
                           "--enable-unicode-properties"
                           "--enable-pcre16"
                           "--enable-pcre32"
+                          "--enable-jit")))
+   (synopsis "Perl Compatible Regular Expressions")
+   (description
+    "The PCRE library is a set of functions that implement regular expression
+pattern matching using the same syntax and semantics as Perl 5.  PCRE has its
+own native API, as well as a set of wrapper functions that correspond to the
+POSIX regular expression API.")
+   (license license:bsd-3)
+   (home-page "http://www.pcre.org/")))
+
+(define-public pcre2
+  (package
+    (name "pcre2")
+    (version "10.20")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/pcre/pcre2/"
+                                  version "/pcre2-" version ".tar.bz2"))
+
+              (sha256
+               (base32
+                "0yj8mm9ll9zj3v47rvmmqmr1ybxk72rr2lym3rymdsf905qjhbik"))))
+   (build-system gnu-build-system)
+   (inputs `(("bzip2" ,bzip2)
+             ("readline" ,readline)
+             ("zlib" ,zlib)))
+   (arguments
+    `(#:configure-flags '("--enable-unicode"
+                          "--enable-pcregrep-libz"
+                          "--enable-pcregrep-libbz2"
+                          "--enable-pcretest-libreadline"
+                          "--enable-unicode-properties"
+                          "--enable-pcre2-16"
+                          "--enable-pcre2-32"
                           "--enable-jit")))
    (synopsis "Perl Compatible Regular Expressions")
    (description
