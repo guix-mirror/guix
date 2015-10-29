@@ -1474,13 +1474,14 @@ constant parts of it.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ;no "check" target
-       ;; DYNAMIC_ARCH is only supported on x86.  When it is disabled,
-       ;; OpenBLAS will tune itself to the build host, so we need to disable
-       ;; substitutions.
+       ;; DYNAMIC_ARCH is only supported on x86.  When it is disabled and no
+       ;; TARGET is specified, OpenBLAS will tune itself to the build host, so
+       ;; we need to disable substitutions.
        #:substitutable?
         ,(let ((system (or (%current-target-system) (%current-system))))
            (or (string-prefix? "x86_64" system)
-               (string-prefix? "i686" system)))
+               (string-prefix? "i686" system)
+               (string-prefix? "mips" system)))
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "SHELL=bash"
