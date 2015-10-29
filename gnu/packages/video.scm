@@ -384,6 +384,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
+       ("gnutls" ,gnutls)
        ("opus" ,opus)
        ("ladspa" ,ladspa)
        ("lame" ,lame)
@@ -467,7 +468,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
          "--enable-gpl" ; enable optional gpl licensed parts
          "--enable-shared"
          "--enable-fontconfig"
-         ;; "--enable-gnutls" ; causes test failures
+         "--enable-gnutls"
          "--enable-ladspa"
          "--enable-libass"
          "--enable-libbluray"
