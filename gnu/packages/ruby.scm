@@ -649,6 +649,36 @@ and inspect the environment.")
     (home-page "https://github.com/e2/nenv")
     (license license:expat)))
 
+(define-public ruby-permutation
+  (package
+    (name "ruby-permutation")
+    (version "0.1.8")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "permutation" version))
+              (sha256
+               (base32
+                "13crwk2vfbzv99czva7881027dbcnidihmvx2jc58z2vm3bp9sl8"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-rakefile
+          (lambda _
+            (substitute* "Rakefile"
+              (("require 'rake/gempackagetask'")
+               "require 'rubygems/package_task'")
+              (("include Config") ""))
+            #t))
+         (replace 'check
+          (lambda _
+            (zero? (system* "ruby" "-Ilib" "test/test.rb")))))))
+    (synopsis "Library to perform operations with sequence permutations")
+    (description "This package provides a Ruby library to perform different
+operations with permutations of sequences, such as strings and arrays.")
+    (home-page "http://flori.github.io/permutation")
+    (license license:gpl2))) ; GPL 2 only
+
 (define-public ruby-shellany
   (package
     (name "ruby-shellany")
