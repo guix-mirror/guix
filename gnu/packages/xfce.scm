@@ -421,7 +421,10 @@ your system in categories, so you can quickly find and launch them.")
                                   "/src/" name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "01kvbd09c06j20n155hracsgrq06rlmfgdywffjsvlwpn19m9j38"))))
+                "01kvbd09c06j20n155hracsgrq06rlmfgdywffjsvlwpn19m9j38"))
+              (patches
+               ;; See: https://bugzilla.xfce.org/show_bug.cgi?id=12282
+               (list (search-patch "xfce4-session-fix-xflock4.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
