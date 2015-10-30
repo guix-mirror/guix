@@ -1279,6 +1279,39 @@ aware transformations between times in different time zones.")
     (home-page "http://tzinfo.github.io")
     (license license:expat)))
 
+(define-public ruby-rb-inotify
+  (package
+    (name "ruby-rb-inotify")
+    (version "0.9.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rb-inotify" version))
+       (sha256
+        (base32
+         "0kddx2ia0qylw3r52nhg83irkaclvrncgy2m1ywpbhlhsz1rymb9"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         ;; Building the gemspec with rake is not working here since it is
+         ;; generated with Jeweler.  It is also unnecessary because the
+         ;; existing gemspec does not use any development tools to generate a
+         ;; list of files.
+         (replace 'build
+          (lambda _
+            (zero? (system* "gem" "build" "rb-inotify.gemspec")))))))
+    (propagated-inputs
+     `(("ruby-ffi" ,ruby-ffi)))
+    (native-inputs
+     `(("ruby-yard" ,ruby-yard)))
+    (synopsis "Ruby wrapper for Linux's inotify")
+    (description "rb-inotify is a simple wrapper over the @code{inotify} Linux
+kernel subsystem for monitoring changes to files and directories.")
+    (home-page "https://github.com/nex3/rb-inotify")
+    (license license:expat)))
+
 (define-public ruby-json
   (package
     (name "ruby-json")
