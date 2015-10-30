@@ -99,9 +99,8 @@
                     (default #t))
   (create-mount-point? file-system-create-mount-point? ; Boolean
                        (default #f))
-  (dependencies     file-system-dependencies      ; list of strings (mount
-                                                  ; points depended on)
-                    (default '())))
+  (dependencies     file-system-dependencies      ; list of <file-system>
+                    (default '())))               ; or <mapped-device>
 
 (define-inlinable (file-system-needed-for-boot? fs)
   "Return true if FS has the 'needed-for-boot?' flag set, or if it's the root

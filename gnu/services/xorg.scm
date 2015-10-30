@@ -32,16 +32,21 @@
   #:use-module (gnu packages bash)
   #:use-module (guix gexp)
   #:use-module (guix store)
+  #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix records)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (xorg-configuration-file
             xorg-start-command
             %default-slim-theme
             %default-slim-theme-name
-            slim-service))
+            slim-service
+
+            screen-locker-service-type
+            screen-locker-service))
 
 ;;; Commentary:
 ;;;
@@ -349,5 +354,53 @@ theme."
             (xauth xauth) (dmd dmd) (bash bash)
             (auto-login-session auto-login-session)
             (startx startx))))
+
+
+;;;
+;;; Screen lockers & co.
+;;;
+
+(define-record-type <screen-locker>
+  (screen-locker name program empty?)
+  screen-locker?
+  (name    screen-locker-name)                     ;string
+  (program screen-locker-program)                  ;gexp
+  (empty?  screen-locker-allows-empty-passwords?)) ;Boolean
+
+(define screen-locker-pam-services
+  (match-lambda
+    (($ <screen-locker> name _ empty?)
+     (list (unix-pam-service name
+                             #:allow-empty-passwords? empty?)))))
+
+(define screen-locker-setuid-programs
+  (compose list screen-locker-program))
+
+(define screen-locker-service-type
+  (service-type (name 'screen-locker)
+                (extensions
+                 (list (service-extension pam-root-service-type
+                                          screen-locker-pam-services)
+                       (service-extension setuid-program-service-type
+                                          screen-locker-setuid-programs)))))
+
+(define* (screen-locker-service package
+                                #:optional
+                                (program (package-name package))
+                                #:key allow-empty-passwords?)
+  "Add @var{package}, a package for a screen-locker or screen-saver whose
+command is @var{program}, to the set of setuid programs and add a PAM entry
+for it.  For example:
+
+@lisp
+(screen-locker-service xlockmore \"xlock\")
+@end lisp
+
+makes the good ol' XlockMore usable."
+  (service screen-locker-service-type
+           (screen-locker program
+                          #~(string-append #$package
+                                           #$(string-append "/bin/" program))
+                          allow-empty-passwords?)))
 
 ;;; xorg.scm ends here

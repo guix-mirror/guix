@@ -233,7 +233,8 @@ software packages, etc.
 
 @cindex functional package management
 The term @dfn{functional} refers to a specific package management
-discipline.  In Guix, the package build and installation process is seen
+discipline pioneered by Nix (@pxref{Acknowledgments}).
+In Guix, the package build and installation process is seen
 as a function, in the mathematical sense.  That function takes inputs,
 such as build scripts, a compiler, and libraries, and
 returns an installed package.  As a pure function, its result depends
@@ -3615,6 +3616,19 @@ The @var{options} may be zero or more of the following:
 
 @table @code
 
+@item --file=@var{file}
+@itemx -f @var{file}
+
+Build the package or derivation that the code within @var{file}
+evaluates to.
+
+As an example, @var{file} might contain a package definition like this
+(@pxref{Defining Packages}):
+
+@example
+@verbatiminclude package-hello.scm
+@end example
+
 @item --expression=@var{expr}
 @itemx -e @var{expr}
 Build the package or derivation @var{expr} evaluates to.
@@ -4263,8 +4277,8 @@ inconvenient.
 
 @item --type=@var{updater}
 @itemx -t @var{updater}
-Select only packages handled by @var{updater}.  Currently, @var{updater}
-may be one of:
+Select only packages handled by @var{updater} (may be a comma-separated
+list of updaters).  Currently, @var{updater} may be one of:
 
 @table @code
 @item gnu
@@ -4279,7 +4293,7 @@ For instance, the following commands only checks for updates of Emacs
 packages hosted at @code{elpa.gnu.org} and updates of CRAN packages:
 
 @example
-$ guix refresh -t elpa -t cran
+$ guix refresh --type=elpa,cran
 gnu/packages/statistics.scm:819:13: r-testthat would be upgraded from 0.10.0 to 0.11.0
 gnu/packages/emacs.scm:856:13: emacs-auctex would be upgraded from 11.88.6 to 11.88.9
 @end example
@@ -4304,6 +4318,10 @@ should be checked for compatibility.  For this the following option may
 be used when passing @command{guix refresh} one or more package names:
 
 @table @code
+
+@item --list-updaters
+@itemx -L
+List available updaters and exit (see @option{--type} above.)
 
 @item --list-dependent
 @itemx -l
@@ -4681,6 +4699,32 @@ NumPy:
 guix environment --ad-hoc python2-numpy python-2.7 -- python
 @end example
 
+Furthermore, one might want the dependencies of a package and also some
+additional packages that are not build-time or runtime dependencies, but
+are useful when developing nonetheless.  Because of this, the
+@code{--ad-hoc} flag is positional.  Packages appearing before
+@code{--ad-hoc} are interpreted as packages whose dependencies will be
+added to the environment.  Packages appearing after are interpreted as
+packages that will be added to the environment directly.  For example,
+the following command creates a Guix development environment that
+additionally includes Git and strace:
+
+@example
+guix environment guix --ad-hoc git strace
+@end example
+
+Sometimes it is desirable to isolate the environment as much as
+possible, for maximal purity and reproducibility.  In particular, when
+using Guix on a host distro that is not GuixSD, it is desirable to
+prevent access to @file{/usr/bin} and other system-wide resources from
+the development environment.  For example, the following command spawns
+a Guile REPL in a ``container'' where only the store and the current
+working directory are mounted:
+
+@example
+guix environment --ad-hoc --container guile -- guile
+@end example
+
 The available options are summarized below.
 
 @table @code
@@ -4729,6 +4773,12 @@ Note that this example implicitly asks for the default output of
 specific output---e.g., @code{glib:bin} asks for the @code{bin} output
 of @code{glib} (@pxref{Packages with Multiple Outputs}).
 
+This option may be composed with the default behavior of @command{guix
+environment}.  Packages appearing before @code{--ad-hoc} are interpreted
+as packages whose dependencies will be added to the environment, the
+default behavior.  Packages appearing after are interpreted as packages
+that will be added to the environment directly.
+
 @item --pure
 Unset existing environment variables when building the new environment.
 This has the effect of creating an environment in which search paths
@@ -4741,6 +4791,49 @@ environment.
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system}---e.g., @code{i686-linux}.
+
+@item --container
+@itemx -C
+@cindex container
+Run @var{command} within an isolated container.  The current working
+directory outside the container is mapped to @file{/env} inside the
+container.  Additionally, the spawned process runs as the current user
+outside the container, but has root privileges in the context of the
+container.
+
+@item --network
+@itemx -N
+For containers, share the network namespace with the host system.
+Containers created without this flag only have access to the loopback
+device.
+
+@item --expose=@var{source}[=@var{target}]
+For containers, expose the file system @var{source} from the host system
+as the read-only file system @var{target} within the container.  If
+@var{target} is not specified, @var{source} is used as the target mount
+point in the container.
+
+The example below spawns a Guile REPL in a container in which the user's
+home directory is accessible read-only via the @file{/exchange}
+directory:
+
+@example
+guix environment --container --expose=$HOME=/exchange guile -- guile
+@end example
+
+@item --share
+For containers, share the file system @var{source} from the host system
+as the writable file system @var{target} within the container.  If
+@var{target} is not specified, @var{source} is used as the target mount
+point in the container.
+
+The example below spawns a Guile REPL in a container in which the user's
+home directory is accessible for both reading and writing via the
+@file{/exchange} directory:
+
+@example
+guix environment --container --share=$HOME=/exchange guile -- guile
+@end example
 @end table
 
 It also supports all of the common build options that @command{guix
@@ -5283,7 +5376,7 @@ addition to the per-user profiles (@pxref{Invoking guix package}).  The
 for basic user and administrator tasks---including the GNU Core
 Utilities, the GNU Networking Utilities, the GNU Zile lightweight text
 editor, @command{find}, @command{grep}, etc.  The example above adds
-Emacs to those, taken from the @code{(gnu packages emacs)} module
+tcpdump to those, taken from the @code{(gnu packages admin)} module
 (@pxref{Package Modules}).
 
 @vindex %base-services
@@ -5291,16 +5384,40 @@ The @code{services} field lists @dfn{system services} to be made
 available when the system starts (@pxref{Services}).
 The @code{operating-system} declaration above specifies that, in
 addition to the basic services, we want the @command{lshd} secure shell
-daemon listening on port 2222, and allowing remote @code{root} logins
-(@pxref{Invoking lshd,,, lsh, GNU lsh Manual}).  Under the hood,
+daemon listening on port 2222 (@pxref{Networking Services,
+@code{lsh-service}}).  Under the hood,
 @code{lsh-service} arranges so that @code{lshd} is started with the
 right command-line options, possibly with supporting configuration files
-generated as needed (@pxref{Defining Services}).  @xref{operating-system
-Reference}, for details about the available @code{operating-system}
-fields.
+generated as needed (@pxref{Defining Services}).
+
+@cindex customization, of services
+@findex modify-services
+Occasionally, instead of using the base services as is, you will want to
+customize them.  For instance, to change the configuration of
+@code{guix-daemon} and Mingetty (the console log-in), you may write the
+following instead of @var{%base-services}:
+
+@lisp
+(modify-services %base-services
+  (guix-service-type config =>
+                     (guix-configuration
+                      (inherit config)
+                      (use-substitutes? #f)
+                      (extra-options '("--gc-keep-outputs"))))
+  (mingetty-service-type config =>
+                         (mingetty-configuration
+                          (inherit config)
+                          (motd (plain-file "motd" "Hi there!")))))
+@end lisp
+
+@noindent
+The effect here is to change the options passed to @command{guix-daemon}
+when it is started, as well as the ``message of the day'' that appears
+when logging in at the console.  @xref{Service Reference,
+@code{modify-services}}, for more on that.
 
 The configuration for a typical ``desktop'' usage, with the X11 display
-server, a desktop environment, network management, an SSH server, and
+server, a desktop environment, network management, power management, and
 more, would look like this:
 
 @lisp
@@ -5310,13 +5427,30 @@ more, would look like this:
 @xref{Desktop Services}, for the exact list of services provided by
 @var{%desktop-services}.  @xref{X.509 Certificates}, for background
 information about the @code{nss-certs} package that is used here.
+@xref{operating-system Reference}, for details about all the available
+@code{operating-system} fields.
 
 Assuming the above snippet is stored in the @file{my-system-config.scm}
 file, the @command{guix system reconfigure my-system-config.scm} command
 instantiates that configuration, and makes it the default GRUB boot
-entry (@pxref{Invoking guix system}).  The normal way to change the
-system's configuration is by updating this file and re-running the
-@command{guix system} command.
+entry (@pxref{Invoking guix system}).
+
+The normal way to change the system's configuration is by updating this
+file and re-running @command{guix system reconfigure}.  One should never
+have to touch files in @command{/etc} or to run commands that modify the
+system state such as @command{useradd} or @command{grub-install}.  In
+fact, you must avoid that since that would not only void your warranty
+but also prevent you from rolling back to previous versions of your
+system, should you ever need to.
+
+@cindex roll-back, of the operating system
+Speaking of roll-back, each time you run @command{guix system
+reconfigure}, a new @dfn{generation} of the system is created---without
+modifying or deleting previous generations.  Old system generations get
+an entry in the GRUB boot menu, allowing you to boot them in case
+something went wrong with the latest generation.  Reassuring, no?  The
+@command{guix system list-generations} command lists the system
+generations available on disk.
 
 At the Scheme level, the bulk of an @code{operating-system} declaration
 is instantiated with the following monadic procedure (@pxref{The Store
@@ -6130,6 +6264,9 @@ Whether to authorize the substitute key for @code{hydra.gnu.org}
 @item @code{use-substitutes?} (default: @code{#t})
 Whether to use substitutes.
 
+@item @code{substitute-urls} (default: @var{%default-substitute-urls})
+The list of URLs where to look for substitutes by default.
+
 @item @code{extra-options} (default: @code{'()})
 List of extra command-line options for @command{guix-daemon}.
 
@@ -6379,6 +6516,19 @@ Last, @var{extra-config} is a list of strings or objects appended to the
 verbatim to the configuration file.
 @end deffn
 
+@deffn {Scheme Procedure} screen-locker-service @var{package} [@var{name}]
+Add @var{package}, a package for a screen-locker or screen-saver whose
+command is @var{program}, to the set of setuid programs and add a PAM entry
+for it.  For example:
+
+@lisp
+(screen-locker-service xlockmore "xlock")
+@end lisp
+
+makes the good ol' XlockMore usable.
+@end deffn
+
+
 @node Desktop Services
 @subsubsection Desktop Services
 
@@ -6396,7 +6546,8 @@ This is a list of services that builds upon @var{%base-services} and
 adds or adjust services for a typical ``desktop'' setup.
 
 In particular, it adds a graphical login manager (@pxref{X Window,
-@code{slim-service}}), a network management tool (@pxref{Networking
+@code{slim-service}}), screen lockers,
+a network management tool (@pxref{Networking
 Services, @code{wicd-service}}), energy and color management services,
 the @code{elogind} login and seat manager, the Polkit privilege service,
 the GeoClue location service, an NTP client (@pxref{Networking
@@ -7022,7 +7173,7 @@ supported:
 @item reconfigure
 Build the operating system described in @var{file}, activate it, and
 switch to it@footnote{This action is usable only on systems already
-running GNU.}.
+running GuixSD.}.
 
 This effects all the configuration specified in @var{file}: user
 accounts, system services, global package list, setuid programs, etc.
@@ -7064,6 +7215,7 @@ This command also installs GRUB on the device specified in
 @item vm
 @cindex virtual machine
 @cindex VM
+@anchor{guix system vm}
 Build a virtual machine that contain the operating system declared in
 @var{file}, and return a script to run that virtual machine (VM).
 Arguments given to the script are passed as is to QEMU.
@@ -7161,6 +7313,30 @@ machine should have hardware virtualization support, the corresponding
 KVM kernel module should be loaded, and the @file{/dev/kvm} device node
 must exist and be readable and writable by the user and by the daemon's
 build users.
+
+Once you have built, configured, re-configured, and re-re-configured
+your GuixSD installation, you may find it useful to list the operating
+system generations available on disk---and that you can choose from the
+GRUB boot menu:
+
+@table @code
+
+@item list-generations
+List a summary of each generation of the operating system available on
+disk, in a human-readable way.  This is similar to the
+@option{--list-generations} option of @command{guix package}
+(@pxref{Invoking guix package}).
+
+Optionally, one can specify a pattern, with the same syntax that is used
+in @command{guix package --list-generations}, to restrict the list of
+generations displayed.  For instance, the following command displays
+generations up to 10-day old:
+
+@example
+$ guix system list-generations 10d
+@end example
+
+@end table
 
 The @command{guix system} command has even more to offer!  The following
 sub-commands allow you to visualize how your system services relate to
@@ -7423,6 +7599,41 @@ Here is an example of how a service is created and manipulated:
 (eq? (service-kind s) nginx-service-type)
 @result{} #t
 @end example
+
+The @code{modify-services} form provides a handy way to change the
+parameters of some of the services of a list such as
+@var{%base-services} (@pxref{Base Services, @code{%base-services}}).  Of
+course, you could always use standard list combinators such as
+@code{map} and @code{fold} to do that (@pxref{SRFI-1, List Library,,
+guile, GNU Guile Reference Manual}); @code{modify-services} simply
+provides a more concise form for this common pattern.
+
+@deffn {Scheme Syntax} modify-services @var{services} @
+  (@var{type} @var{variable} => @var{body}) @dots{}
+
+Modify the services listed in @var{services} according to the given
+clauses.  Each clause has the form:
+
+@example
+(@var{type} @var{variable} => @var{body})
+@end example
+
+where @var{type} is a service type, such as @var{guix-service-type}, and
+@var{variable} is an identifier that is bound within @var{body} to the
+value of the service of that @var{type}.  @xref{Using the Configuration
+System}, for an example.
+
+This is a shorthand for:
+
+@example
+(map (lambda (service) @dots{}) @var{services})
+@end example
+@end deffn
+
+Next comes the programming interface for service types.  This is
+something you want to know when writing new service definitions, but not
+necessarily when simply looking for ways to customize your
+@code{operating-system} declaration.
 
 @deftp {Data Type} service-type
 @cindex service type
@@ -8245,7 +8456,8 @@ reason.
 @node Acknowledgments
 @chapter Acknowledgments
 
-Guix is based on the Nix package manager, which was designed and
+Guix is based on the @uref{http://nixos.org/nix/, Nix package manager},
+which was designed and
 implemented by Eelco Dolstra, with contributions from other people (see
 the @file{nix/AUTHORS} file in Guix.)  Nix pioneered functional package
 management, and promoted unprecedented features, such as transactional

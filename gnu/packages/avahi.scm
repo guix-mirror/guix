@@ -23,7 +23,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
-  #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages libdaemon)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)

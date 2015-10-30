@@ -167,8 +167,8 @@ a file for NARINFO."
   (call-with-narinfo narinfo (lambda () body ...)))
 
 ;; Transmit these options to 'guix substitute'.
-(set! (@@ (guix scripts substitute) %cache-url)
-      (getenv "GUIX_BINARY_SUBSTITUTE_URL"))
+(set! (@@ (guix scripts substitute) %cache-urls)
+  (list (getenv "GUIX_BINARY_SUBSTITUTE_URL")))
 
 (test-equal "query narinfo without signature"
   ""                                              ; not substitutable

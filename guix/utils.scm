@@ -74,6 +74,7 @@
             arguments-from-environment-variable
             file-extension
             file-sans-extension
+            switch-symlinks
             call-with-temporary-output-file
             call-with-temporary-directory
             with-atomic-file-output
@@ -82,6 +83,7 @@
             fold-tree-leaves
             split
             cache-directory
+            readlink*
 
             filtered-port
             compressed-port
@@ -556,6 +558,13 @@ minor version numbers from version-string."
         (substring file 0 dot)
         file)))
 
+(define (switch-symlinks link target)
+  "Atomically switch LINK, a symbolic link, to point to TARGET.  Works
+both when LINK already exists and when it does not."
+  (let ((pivot (string-append link ".new")))
+    (symlink target pivot)
+    (rename-file pivot link)))
+
 (define* (string-replace-substring str substr replacement
                                    #:optional
                                    (start 0)
@@ -710,6 +719,33 @@ elements after E."
       (and=> (getenv "HOME")
              (cut string-append <> "/.cache/guix"))))
 
+(define (readlink* file)
+  "Call 'readlink' until the result is not a symlink."
+  (define %max-symlink-depth 50)
+
+  (let loop ((file  file)
+             (depth 0))
+    (define (absolute target)
+      (if (absolute-file-name? target)
+          target
+          (string-append (dirname file) "/" target)))
+
+    (if (>= depth %max-symlink-depth)
+        file
+        (call-with-values
+            (lambda ()
+              (catch 'system-error
+                (lambda ()
+                  (values #t (readlink file)))
+                (lambda args
+                  (let ((errno (system-error-errno args)))
+                    (if (or (= errno EINVAL))
+                        (values #f file)
+                        (apply throw args))))))
+          (lambda (success? target)
+            (if success?
+                (loop (absolute target) (+ depth 1))
+                file))))))
 
 ;;;
 ;;; Source location.

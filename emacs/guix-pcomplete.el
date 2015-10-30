@@ -209,8 +209,8 @@ group - the argument.")
   "Complete argument for guix COMMAND."
   (cond
    ((member command
-            '("archive" "build" "graph" "edit" "environment"
-              "lint" "refresh" "size"))
+            '("archive" "build" "challenge" "edit" "environment"
+              "graph" "lint" "refresh" "size"))
     (while t
       (pcomplete-here (guix-pcomplete-all-packages))))
    (t (pcomplete-here* (pcomplete-entries)))))

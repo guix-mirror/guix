@@ -210,7 +210,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "4.2.4")
+  (let* ((version "4.2.5")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -220,6 +220,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (let ((arch (car (string-split system #\-))))
                (setenv "ARCH"
                        (cond ((string=? arch "i686") "i386")
+                             ((string=? arch "mips64el") "mips")
                              (else arch)))
                (format #t "`ARCH' set to `~a'~%" (getenv "ARCH")))
 
@@ -266,7 +267,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
                (for-each (lambda (file)
                            (copy-file file
                                       (string-append out "/" (basename file))))
-                         (find-files "." "^(bzImage|System\\.map)$"))
+                         (find-files "." "^(bzImage|vmlinuz|System\\.map)$"))
                (copy-file ".config" (string-append out "/config"))
                (zero? (system* "make"
                                (string-append "DEPMOD=" mit "/sbin/depmod")
@@ -283,8 +284,9 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "11r9yhi4c2zwfb8i21zk014gcm1kvnabq410wjy6g6a015d5v37w"))))
+               "13ar9sghm2g5w2km9x2d07q3lh81rz286d6slklv56qanm24chzx"))))
     (build-system gnu-build-system)
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
                      ("module-init-tools" ,module-init-tools)

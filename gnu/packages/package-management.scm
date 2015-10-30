@@ -23,9 +23,12 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
-  #:use-module ((guix licenses) #:select (gpl2+ gpl3+ lgpl2.1+))
+  #:use-module (guix build-system python)
+  #:use-module ((guix licenses) #:select (gpl2+ gpl3+ lgpl2.1+ asl2.0))
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages file)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages databases)
@@ -34,12 +37,17 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages nettle)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages web)
   #:use-module (gnu packages man)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages bdw-gc)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages popt)
+  #:use-module (gnu packages gnuzilla)
+  #:use-module (gnu packages cpio)
   #:use-module (gnu packages tls))
 
 (define (boot-guile-uri arch)
@@ -275,3 +283,130 @@ typically used for managing software packages installed from source, by
 letting you install them apart in distinct directories and then create
 symlinks to the files in a common directory such as /usr/local.")
     (license gpl2+)))
+
+(define-public rpm
+  (package
+    (name "rpm")
+    (version "4.12.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://rpm.org/releases/rpm-4.12.x/rpm-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "18hk47hc755nslvb7xkq4jb095z7va0nlcyxdpxayc4lmb8mq3bp"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--with-external-db"   ;use the system's bdb
+                           "--enable-python"
+                           "--without-lua")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-nspr-search-path
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      ;; nspr.pc contains the right -I flag pointing to
+                      ;; 'include/nspr', but unfortunately 'configure' doesn't
+                      ;; use 'pkg-config'.  Thus, augment CPATH.
+                      ;; Likewise for NSS.
+                      (let ((nspr (assoc-ref inputs "nspr"))
+                            (nss  (assoc-ref inputs "nss")))
+                        (setenv "CPATH"
+                                (string-append (getenv "CPATH") ":"
+                                               nspr "/include/nspr:"
+                                               nss "/include/nss"))
+                        (setenv "LIBRARY_PATH"
+                                (string-append (getenv "LIBRARY_PATH") ":"
+                                               nss "/lib/nss"))
+                        #t)))
+                  (add-after 'install 'fix-rpm-symlinks
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; 'make install' gets these symlinks wrong.  Fix them.
+                      (let* ((out (assoc-ref outputs "out"))
+                             (bin (string-append out "/bin")))
+                        (with-directory-excursion bin
+                          (for-each (lambda (file)
+                                      (delete-file file)
+                                      (symlink "rpm" file))
+                                    '("rpmquery" "rpmverify"))
+                          #t)))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python" ,python-2)
+       ("xz" ,xz)
+       ("bdb" ,bdb)
+       ("popt" ,popt)
+       ("nss" ,nss)
+       ("nspr" ,nspr)
+       ("libarchive" ,libarchive)
+       ("nettle" ,nettle)            ;XXX: actually a dependency of libarchive
+       ("file" ,file)
+       ("bzip2" ,bzip2)
+       ("zlib" ,zlib)
+       ("cpio" ,cpio)))
+    (home-page "http://www.rpm.org/")
+    (synopsis "The RPM Package Manager")
+    (description
+     "The RPM Package Manager (RPM) is a command-line driven package
+management system capable of installing, uninstalling, verifying, querying,
+and updating computer software packages.  Each software package consists of an
+archive of files along with information about the package like its version, a
+description.  There is also a library permitting developers to manage such
+transactions from C or Python.")
+
+    ;; The whole is GPLv2+; librpm itself is dual-licensed LGPLv2+ | GPLv2+.
+    (license gpl2+)))
+
+(define-public diffoscope
+  (package
+    (name "diffoscope")
+    (version "34")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url
+                     "https://anonscm.debian.org/cgit/reproducible/diffoscope.git")
+                    (commit version)))
+              (sha256
+               (base32
+                "1g8b7bpkmns0355gkr3a244affwx4xzqwahwsl6ivw4z0qv7dih8"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'disable-egg-zipping
+                    (lambda _
+                      ;; Leave the .egg file uncompressed.
+                      (let ((port (open-file "setup.cfg" "a")))
+                        (display "\n[easy_install]\nzip_ok = 0\n"
+                                 port)
+                        (close-port port)
+                        #t)))
+                  (add-before 'build 'dependency-on-rpm
+                    (lambda _
+                      (substitute* "setup.py"
+                        ;; Somehow this requirement is reported as not met,
+                        ;; even though rpm.py is in the search path.  So
+                        ;; delete it.
+                        (("'rpm-python',") ""))
+                      #t)))
+       ;; FIXME: Some obscure test failures.
+       #:tests? #f))
+    (inputs `(("rpm" ,rpm)                        ;for rpm-python
+              ("python-file" ,python2-file)
+              ("python-debian" ,python2-debian)
+              ("python-libarchive-c" ,python2-libarchive-c)
+              ("python-tlsh" ,python2-tlsh)
+
+              ;; Below are modules used for tests.
+              ("python-pytest" ,python2-pytest)
+              ("python-chardet" ,python2-chardet)))
+    (native-inputs `(("python-setuptools" ,python2-setuptools)))
+    (home-page "http://diffoscope.org/")
+    (synopsis "Compare files, archives, and directories in depth")
+    (description
+     "Diffoscope tries to get to the bottom of what makes files or directories
+different.  It recursively unpacks archives of many kinds and transforms
+various binary formats into more human readable forms to compare them.  It can
+compare two tarballs, ISO images, or PDFs just as easily.")
+    (license gpl3+)))

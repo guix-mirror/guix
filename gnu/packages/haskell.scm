@@ -865,14 +865,6 @@ OpenAL.")
         (base32
          "1sa3zx3vrs1gbinxx33zwq0x2bsf3i964bff7419p7vzidn36k46"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after
-          'unpack 'fix-/bin/sh
-          (lambda _
-            ;; Use `sh', not `/bin/sh'.
-            (setenv "CONFIG_SHELL" "sh"))))))
     (inputs
      `(("sdl" ,sdl)))
     (home-page "https://hackage.haskell.org/package/SDL")
@@ -903,14 +895,7 @@ award winning Linux port of \"Civilization: Call To Power.\"")
      `(#:configure-flags
        (let* ((sdl-mixer (assoc-ref %build-inputs "sdl-mixer"))
               (sdl-mixer-include (string-append sdl-mixer "/include/SDL")))
-         (list (string-append "--extra-include-dirs=" sdl-mixer-include)))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after
-          'unpack 'fix-/bin/sh
-          (lambda _
-            ;; Use `sh', not `/bin/sh'.
-            (setenv "CONFIG_SHELL" "sh"))))))
+         (list (string-append "--extra-include-dirs=" sdl-mixer-include)))))
     (propagated-inputs
      `(("ghc-sdl" ,ghc-sdl)))
     (inputs
@@ -942,14 +927,7 @@ MIDI, Ogg Vorbis, and SMPEG MP3 libraries.")
      `(#:configure-flags
        (let* ((sdl-image (assoc-ref %build-inputs "sdl-image"))
               (sdl-image-include (string-append sdl-image "/include/SDL")))
-         (list (string-append "--extra-include-dirs=" sdl-image-include)))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after
-          'unpack 'fix-/bin/sh
-          (lambda _
-            ;; Use `sh', not `/bin/sh'.
-            (setenv "CONFIG_SHELL" "sh"))))))
+         (list (string-append "--extra-include-dirs=" sdl-image-include)))))
     (propagated-inputs
      `(("ghc-sdl" ,ghc-sdl)))
     (inputs
@@ -1031,10 +1009,10 @@ found at runtime, a userError is thrown.")
     (build-system haskell-build-system)
     (propagated-inputs
      `(("ghc-statevar" ,ghc-statevar)
-       ("ghc-openglraw" ,ghc-openglraw)))
-    (inputs
-     `(("ghc-opengl" ,ghc-opengl)
+       ("ghc-openglraw" ,ghc-openglraw)
        ("freeglut" ,freeglut)))
+    (inputs
+     `(("ghc-opengl" ,ghc-opengl)))
     (home-page "http://www.haskell.org/haskellwiki/Opengl")
     (synopsis "Haskell bindings for the OpenGL Utility Toolkit")
     (description "This library provides Haskell bindings for the OpenGL
@@ -1216,12 +1194,6 @@ date and time formats.")
         (base32
          "1h9b26s3kfh2k0ih4383w90ibji6n0iwamxp6rfp2lbq1y5ibjqw"))))
     (build-system haskell-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-/bin/sh
-                    (lambda _
-                      (setenv "CONFIG_SHELL" "sh"))))))
     (propagated-inputs
      `(("ghc-old-locale" ,ghc-old-locale)))
     (home-page "http://hackage.haskell.org/package/old-time")
@@ -1433,12 +1405,6 @@ environment variables.")
                            "X11-" version ".tar.gz"))
        (sha256
         (base32 "1kzjcynm3rr83ihqx2y2d852jc49da4p18gv6jzm7g87z22x85jj"))))
-    (arguments
-     `(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'set-sh
-                              (lambda _
-                                (setenv "CONFIG_SHELL" "sh")
-                                #t)))))
     (build-system haskell-build-system)
     (inputs
      `(("libx11" ,libx11)
@@ -1801,13 +1767,8 @@ but also need those types.")
          "0dyvyxwaffb94bgri1wc4b9wqaasy32pyjn0lww3dqblxv8fn5ax"))))
     (build-system haskell-build-system)
     (arguments
-     `(#:tests? #f ; FIXME: Test fails with "System.Time not found".  This is
-                   ; weird, that should be provided by GHC 7.10.2.
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-/bin/sh
-                    (lambda _
-                      (setenv "CONFIG_SHELL" "sh"))))))
+     `(#:tests? #f)) ; FIXME: Test fails with "System.Time not found".  This
+                     ; is weird, that should be provided by GHC 7.10.2.
     (propagated-inputs
      `(("ghc-old-time" ,ghc-old-time)
        ("ghc-old-locale" ,ghc-old-locale)))
@@ -3162,11 +3123,7 @@ boxed and storable vectors.")
     (inputs
      `(("ghc-hunit" ,ghc-hunit)))
     (arguments
-     `(#:tests? #f  ; FIXME: currently missing libraries used for tests.
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'configure 'set-sh
-                     (lambda _ (setenv "CONFIG_SHELL" "sh"))))))
+     `(#:tests? #f))      ; FIXME: currently missing libraries used for tests.
     (home-page "https://github.com/haskell/network")
     (synopsis "Low-level networking interface")
     (description
@@ -3645,7 +3602,7 @@ library for Haskell.")
     (home-page "https://github.com/simonmar/async")
     (synopsis "Library to run IO operations asynchronously")
     (description "Async provides a library to run IO operations
-asynchronously, and wait for their results. It is a higher-level interface
+asynchronously, and wait for their results.  It is a higher-level interface
 over threads in Haskell, in which @code{Async a} is a concurrent thread that
 will eventually deliver a value of type @code{a}.")
     (license bsd-3)))

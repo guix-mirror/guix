@@ -27,6 +27,7 @@ the installation instructions (@pxref{Requirements}).
 @item @url{http://gnu.org/software/autoconf/, GNU Autoconf};
 @item @url{http://gnu.org/software/automake/, GNU Automake};
 @item @url{http://gnu.org/software/gettext/, GNU Gettext};
+@item @url{http://gnu.org/software/texinfo/, GNU Texinfo};
 @item @url{http://www.graphviz.org/, Graphviz};
 @item @url{http://www.gnu.org/software/help2man/, GNU Help2man (optional)}.
 @end itemize
@@ -86,6 +87,30 @@ Similarly, for a Guile session using the Guix modules:
 
 @example
 $ ./pre-inst-env guile -c '(use-modules (guix utils)) (pk (%current-system))'
+
+;;; ("x86_64-linux")
+@end example
+
+@noindent
+@cindex REPL
+@cindex read-eval-print loop
+@dots{} and for a REPL (@pxref{Using Guile Interactively,,, guile, Guile
+Reference Manual}):
+
+@example
+$ ./pre-inst-env guile
+scheme@@(guile-user)> ,use(guix)
+scheme@@(guile-user)> ,use(gnu)
+scheme@@(guile-user)> (define snakes
+                       (fold-packages
+                         (lambda (package lst)
+                           (if (string-prefix? "python"
+                                               (package-name package))
+                               (cons package lst)
+                               lst))
+                         '()))
+scheme@@(guile-user)> (length snakes)
+$1 = 361
 @end example
 
 The @command{pre-inst-env} script sets up all the environment variables

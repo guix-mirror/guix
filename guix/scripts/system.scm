@@ -25,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix monads)
+  #:use-module (guix records)
   #:use-module (guix profiles)
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
@@ -41,6 +42,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:export (guix-system
@@ -186,6 +189,39 @@ the ownership of '~a' may be incorrect!~%")
 
 
 ;;;
+;;; Boot parameters
+;;;
+
+(define-record-type* <boot-parameters>
+  boot-parameters make-boot-parameters boot-parameters?
+  (label            boot-parameters-label)
+  (root-device      boot-parameters-root-device)
+  (kernel           boot-parameters-kernel)
+  (kernel-arguments boot-parameters-kernel-arguments))
+
+(define (read-boot-parameters port)
+  "Read boot parameters from PORT and return the corresponding
+<boot-parameters> object or #f if the format is unrecognized."
+  (match (read port)
+    (('boot-parameters ('version 0)
+                       ('label label) ('root-device root)
+                       ('kernel linux)
+                       rest ...)
+     (boot-parameters
+      (label label)
+      (root-device root)
+      (kernel linux)
+      (kernel-arguments
+       (match (assq 'kernel-arguments rest)
+         ((_ args) args)
+         (#f       '())))))                       ;the old format
+    (x                                            ;unsupported format
+     (warning (_ "unrecognized boot parameters for '~a'~%")
+              system)
+     #f)))
+
+
+;;;
 ;;; Reconfiguration.
 ;;;
 
@@ -247,30 +283,22 @@ it atomically, and then run OS's activation script."
   "Return a list of 'menu-entry' for the generations of PROFILE."
   (define (system->grub-entry system number time)
     (unless-file-not-found
-     (call-with-input-file (string-append system "/parameters")
-       (lambda (port)
-         (match (read port)
-           (('boot-parameters ('version 0)
-                              ('label label) ('root-device root)
-                              ('kernel linux)
-                              rest ...)
-            (menu-entry
-             (label (string-append label " (#"
-                                   (number->string number) ", "
-                                   (seconds->string time) ")"))
-             (linux linux)
-             (linux-arguments
-              (cons* (string-append "--root=" root)
-                     #~(string-append "--system=" #$system)
-                     #~(string-append "--load=" #$system "/boot")
-                     (match (assq 'kernel-arguments rest)
-                       ((_ args) args)
-                       (#f       '()))))          ;old format
-             (initrd #~(string-append #$system "/initrd"))))
-           (_                                     ;unsupported format
-            (warning (_ "unrecognized boot parameters for '~a'~%")
-                     system)
-            #f))))))
+     (let ((file (string-append system "/parameters")))
+       (match (call-with-input-file file read-boot-parameters)
+         (($ <boot-parameters> label root kernel kernel-arguments)
+          (menu-entry
+           (label (string-append label " (#"
+                                 (number->string number) ", "
+                                 (seconds->string time) ")"))
+           (linux kernel)
+           (linux-arguments
+            (cons* (string-append "--root=" root)
+                   #~(string-append "--system=" #$system)
+                   #~(string-append "--load=" #$system "/boot")
+                   kernel-arguments))
+           (initrd #~(string-append #$system "/initrd"))))
+         (#f                                      ;invalid format
+          #f)))))
 
   (let* ((numbers (generation-numbers profile))
          (systems (map (cut generation-file-name profile <>)
@@ -324,6 +352,48 @@ list of services."
    (identifier (lift1 dmd-service-node-label %store-monad))
    (label dmd-service-node-label)
    (edges (lift1 (dmd-service-back-edges services) %store-monad))))
+
+
+;;;
+;;; Generations.
+;;;
+
+(define* (display-system-generation number
+                                    #:optional (profile %system-profile))
+  "Display a summary of system generation NUMBER in a human-readable format."
+  (unless (zero? number)
+    (let* ((generation (generation-file-name profile number))
+           (param-file (string-append generation "/parameters"))
+           (params     (call-with-input-file param-file read-boot-parameters)))
+      (display-generation profile number)
+      (format #t (_ "  file name: ~a~%") generation)
+      (format #t (_ "  canonical file name: ~a~%") (readlink* generation))
+      (match params
+        (($ <boot-parameters> label root kernel)
+         ;; TRANSLATORS: Please preserve the two-space indentation.
+         (format #t (_ "  label: ~a~%") label)
+         (format #t (_ "  root device: ~a~%") root)
+         (format #t (_ "  kernel: ~a~%") kernel))
+        (_
+         #f)))))
+
+(define* (list-generations pattern #:optional (profile %system-profile))
+  "Display in a human-readable format all the system generations matching
+PATTERN, a string.  When PATTERN is #f, display all the system generations."
+  (cond ((not (file-exists? profile))             ; XXX: race condition
+         (raise (condition (&profile-not-found-error
+                            (profile profile)))))
+        ((string-null? pattern)
+         (for-each display-system-generation (profile-generations profile)))
+        ((matching-generations pattern profile)
+         =>
+         (lambda (numbers)
+           (if (null-list? numbers)
+               (exit 1)
+               (leave-on-EPIPE
+                (for-each display-system-generation numbers)))))
+        (else
+         (leave (_ "invalid syntax: ~a~%") pattern))))
 
 
 ;;;
@@ -442,13 +512,15 @@ building anything."
 ;;;
 
 (define (show-help)
-  (display (_ "Usage: guix system [OPTION] ACTION FILE
+  (display (_ "Usage: guix system [OPTION] ACTION [FILE]
 Build the operating system declared in FILE according to ACTION.\n"))
   (newline)
   (display (_ "The valid values for ACTION are:\n"))
   (newline)
   (display (_ "\
    reconfigure      switch to a new operating system configuration\n"))
+  (display (_ "\
+   list-generations list the system generations\n"))
   (display (_ "\
    build            build the operating system without installing anything\n"))
   (display (_ "\
@@ -487,19 +559,6 @@ Build the operating system declared in FILE according to ACTION.\n"))
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
-
-(define (specification->file-system-mapping spec writable?)
-  "Read the SPEC and return the corresponding <file-system-mapping>."
-  (let ((index (string-index spec #\=)))
-    (if index
-        (file-system-mapping
-         (source (substring spec 0 index))
-         (target (substring spec (+ 1 index)))
-         (writable? writable?))
-        (file-system-mapping
-         (source spec)
-         (target spec)
-         (writable? writable?)))))
 
 (define %options
   ;; Specifications of the command-line options.
@@ -563,6 +622,71 @@ Build the operating system declared in FILE according to ACTION.\n"))
 ;;; Entry point.
 ;;;
 
+(define (process-action action args opts)
+  "Process ACTION, a sub-command, with the arguments are listed in ARGS.
+ACTION must be one of the sub-commands that takes an operating system
+declaration as an argument (a file name.)  OPTS is the raw alist of options
+resulting from command-line parsing."
+  (let* ((file     (match args
+                     (() #f)
+                     ((x . _) x)))
+         (system   (assoc-ref opts 'system))
+         (os       (if file
+                       (load* file %user-module
+                              #:on-error (assoc-ref opts 'on-error))
+                       (leave (_ "no configuration file specified~%"))))
+
+         (dry?     (assoc-ref opts 'dry-run?))
+         (grub?    (assoc-ref opts 'install-grub?))
+         (target   (match args
+                     ((first second) second)
+                     (_ #f)))
+         (device   (and grub?
+                        (grub-configuration-device
+                         (operating-system-bootloader os)))))
+
+    (with-store store
+      (set-build-options-from-command-line store opts)
+
+      (run-with-store store
+        (mbegin %store-monad
+          (set-guile-for-build (default-guile))
+          (case action
+            ((extension-graph)
+             (export-extension-graph os (current-output-port)))
+            ((dmd-graph)
+             (export-dmd-graph os (current-output-port)))
+            (else
+             (perform-action action os
+                             #:dry-run? dry?
+                             #:derivations-only? (assoc-ref opts
+                                                            'derivations-only?)
+                             #:use-substitutes? (assoc-ref opts 'substitutes?)
+                             #:image-size (assoc-ref opts 'image-size)
+                             #:full-boot? (assoc-ref opts 'full-boot?)
+                             #:mappings (filter-map (match-lambda
+                                                      (('file-system-mapping . m)
+                                                       m)
+                                                      (_ #f))
+                                                    opts)
+                             #:grub? grub?
+                             #:target target #:device device))))
+        #:system system))))
+
+(define (process-command command args opts)
+  "Process COMMAND, one of the 'guix system' sub-commands.  ARGS is its
+argument list and OPTS is the option alist."
+  (case command
+    ((list-generations)
+     ;; List generations.  No need to connect to the daemon, etc.
+     (let ((pattern (match args
+                      (() "")
+                      ((pattern) pattern)
+                      (x (leave (_ "wrong number of arguments~%"))))))
+       (list-generations pattern)))
+    (else
+     (process-action command args opts))))
+
 (define (guix-system . args)
   (define (parse-sub-command arg result)
     ;; Parse sub-command ARG and augment RESULT accordingly.
@@ -571,7 +695,7 @@ Build the operating system declared in FILE according to ACTION.\n"))
         (let ((action (string->symbol arg)))
           (case action
             ((build vm vm-image disk-image reconfigure init
-              extension-graph dmd-graph)
+              extension-graph dmd-graph list-generations)
              (alist-cons 'action action result))
             (else (leave (_ "~a: unknown action~%") action))))))
 
@@ -613,49 +737,7 @@ Build the operating system declared in FILE according to ACTION.\n"))
                                          #:argument-handler
                                          parse-sub-command))
            (args     (option-arguments opts))
-           (file     (first args))
-           (action   (assoc-ref opts 'action))
-           (system   (assoc-ref opts 'system))
-           (os       (if file
-                         (load* file %user-module
-                                #:on-error (assoc-ref opts 'on-error))
-                         (leave (_ "no configuration file specified~%"))))
-
-           (dry?     (assoc-ref opts 'dry-run?))
-           (grub?    (assoc-ref opts 'install-grub?))
-           (target   (match args
-                       ((first second) second)
-                       (_ #f)))
-           (device   (and grub?
-                          (grub-configuration-device
-                           (operating-system-bootloader os))))
-
-           (store    (open-connection)))
-      (set-build-options-from-command-line store opts)
-
-      (run-with-store store
-        (mbegin %store-monad
-          (set-guile-for-build (default-guile))
-          (case action
-            ((extension-graph)
-             (export-extension-graph os (current-output-port)))
-            ((dmd-graph)
-             (export-dmd-graph os (current-output-port)))
-            (else
-             (perform-action action os
-                             #:dry-run? dry?
-                             #:derivations-only? (assoc-ref opts
-                                                            'derivations-only?)
-                             #:use-substitutes? (assoc-ref opts 'substitutes?)
-                             #:image-size (assoc-ref opts 'image-size)
-                             #:full-boot? (assoc-ref opts 'full-boot?)
-                             #:mappings (filter-map (match-lambda
-                                                      (('file-system-mapping . m)
-                                                       m)
-                                                      (_ #f))
-                                                    opts)
-                             #:grub? grub?
-                             #:target target #:device device))))
-        #:system system))))
+           (command  (assoc-ref opts 'action)))
+      (process-command command args opts))))
 
 ;;; system.scm ends here

@@ -1035,7 +1035,7 @@ Each element from GENERATIONS is a generation number."
                               profile generation)))
     (guix-eval-in-repl
      (guix-make-guile-expression
-      'switch-to-generation profile generation)
+      'switch-to-generation* profile generation)
      operation-buffer)))
 
 (defun guix-package-source-path (package-id)

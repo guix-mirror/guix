@@ -39,8 +39,8 @@
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages gdbm)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
@@ -5761,3 +5761,98 @@ Python's @code{ctypes} foreign function interface (FFI).")
 
 (define-public python2-libarchive-c
   (package-with-python2 python-libarchive-c))
+
+(define-public python-file
+  (package
+    (inherit file)
+    (name "python-file")
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f                                ;no tests
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'change-directory
+                    (lambda _
+                      (chdir "python")
+                      #t))
+                  (add-before 'build 'set-library-file-name
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((file (assoc-ref inputs "file")))
+                        (substitute* "magic.py"
+                          (("find_library\\('magic'\\)")
+                           (string-append "'" file "/lib/libmagic.so'")))
+                        #t))))))
+    (inputs `(("file" ,file)))
+    (self-native-input? #f)
+    (synopsis "Python bindings to the libmagic file type guesser")))
+
+(define-public python2-file
+  (package-with-python2 python-file))
+
+(define-public python-debian
+  (package
+    (name "python-debian")
+    (version "0.1.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/python-debian/python-debian-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "193faznwnjc3n5991wyzim6h9gyq1zxifmfrnpm3avgkh7ahyynh"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-six" ,python-six)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://packages.debian.org/sid/python-debian")
+    (synopsis "Debian package related modules")
+    (description
+     ;; XXX: Use @enumerate instead of @itemize to work around
+     ;; <http://bugs.gnu.org/21772>.
+     "This package provides Python modules that abstract many formats of
+Debian-related files, such as:
+
+@enumerate
+@item Debtags information;
+@item @file{debian/changelog} files;
+@item packages files, pdiffs;
+@item control files of single or multiple RFC822-style paragraphs---e.g.
+   @file{debian/control}, @file{.changes}, @file{.dsc};
+@item Raw @file{.deb} and @file{.ar} files, with (read-only) access to
+   contained files and meta-information.
+@end enumerate\n")
+
+    ;; Modules are either GPLv2+ or GPLv3+.
+    (license gpl3+)))
+
+(define-public python2-debian
+  (package-with-python2 python-debian))
+
+(define-public python-chardet
+  (package
+    (name "python-chardet")
+    (version "2.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/c/chardet/chardet-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1ak87ikcw34fivcgiz2xvi938dmclh078az65l9x3rmgljrkhgp5"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/chardet/chardet")
+    (synopsis "Universal encoding detector for Python 2 and 3")
+    (description
+     "This package provides @code{chardet}, a Python module that can
+automatically detect a wide range of file encodings.")
+    (license lgpl2.1+)))
+
+(define-public python2-chardet
+  (package-with-python2 python-chardet))

@@ -252,8 +252,7 @@ Report the size of PACKAGE and its dependencies.\n"))
                   (show-version-and-exit "guix size")))))
 
 (define %default-options
-  `((system . ,(%current-system))
-    (substitute-urls . ,%default-substitute-urls)))
+  `((system . ,(%current-system))))
 
 
 ;;;

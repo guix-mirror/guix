@@ -1461,7 +1461,7 @@ constant parts of it.")
 (define-public openblas
   (package
     (name "openblas")
-    (version "0.2.14")
+    (version "0.2.15")
     (source
      (origin
        (method url-fetch)
@@ -1470,7 +1470,7 @@ constant parts of it.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0av3pd96j8rx5i65f652xv9wqfkaqn0w4ma1gvbyz73i6j2hi9db"))))
+         "1k5f6vjlk54qlplk5m7xkbaw6g2y7dl50lwwdv6xsbcsgsbxfcpy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ;no "check" target

@@ -38,7 +38,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages gettext)
-  #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages python)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -189,15 +189,15 @@ without requiring the source code to be rewritten.")
 (define-public guile-next
   (package (inherit guile-2.0)
     (name "guile-next")
-    (version "20150815.00884bb")
+    (version "20151025.e5bccb6")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "git://git.sv.gnu.org/guile.git")
-                    (commit "00884bb79fff41fdf5f22f24a74e366a94a14c9b")))
+                    (commit "e5bccb6e5df3485152bc6501e1f36275e09c6352")))
               (sha256
                (base32
-                "0qk8m9aq3i7pzw6npim58xmsvjqfz5kl1pkyb6b43awn2vydydi5"))))
+                "0z7ywryfcargrpz8hdrz6sfs06c2h2y9baqin3mbjvvg96a5bx47"))))
 
     (arguments
      (substitute-keyword-arguments `(;; Tests aren't passing for now.

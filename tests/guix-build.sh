@@ -167,6 +167,33 @@ guix build -e "(begin
 guix build -e '#~(mkdir #$output)' -d
 guix build -e '#~(mkdir #$output)' -d | grep 'gexp\.drv'
 
+# Building from a package file.
+cat > "$module_dir/package.scm"<<EOF
+(use-modules (gnu))
+(use-package-modules bootstrap)
+
+%bootstrap-guile
+EOF
+guix build --file="$module_dir/package.scm"
+
+# Building from a monadic procedure file.
+cat > "$module_dir/proc.scm"<<EOF
+(use-modules (guix gexp))
+(lambda ()
+  (gexp->derivation "test"
+                    (gexp (mkdir (ungexp output)))))
+EOF
+guix build --file="$module_dir/proc.scm" --dry-run
+
+# Building from a gexp file.
+cat > "$module_dir/gexp.scm"<<EOF
+(use-modules (guix gexp))
+
+(gexp (mkdir (ungexp output)))
+EOF
+guix build --file="$module_dir/gexp.scm" -d
+guix build --file="$module_dir/gexp.scm" -d | grep 'gexp\.drv'
+
 # Using 'GUIX_BUILD_OPTIONS'.
 GUIX_BUILD_OPTIONS="--dry-run"
 export GUIX_BUILD_OPTIONS

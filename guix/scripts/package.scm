@@ -48,11 +48,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages bootstrap) #:select (%bootstrap-guile))
-  #:export (switch-to-generation
-            switch-to-previous-generation
-            roll-back
-            delete-generation
-            delete-generations
+  #:export (delete-generations
             display-search-paths
             guix-package))
 
@@ -100,148 +96,11 @@ indirectly, or PROFILE."
       %user-profile-directory
       profile))
 
-(define (link-to-empty-profile store generation)
-  "Link GENERATION, a string, to the empty profile."
-  (let* ((drv  (run-with-store store
-                 (profile-derivation (manifest '()))))
-         (prof (derivation->output-path drv "out")))
-    (when (not (build-derivations store (list drv)))
-          (leave (_ "failed to build the empty profile~%")))
-
-    (switch-symlinks generation prof)))
-
-(define (switch-to-generation profile number)
-  "Atomically switch PROFILE to the generation NUMBER."
-  (let ((current    (generation-number profile))
-        (generation (generation-file-name profile number)))
-    (cond ((not (file-exists? profile))
-           (raise (condition (&profile-not-found-error
-                              (profile profile)))))
-          ((not (file-exists? generation))
-           (raise (condition (&missing-generation-error
-                              (profile profile)
-                              (generation number)))))
-          (else
-           (format #t (_ "switching from generation ~a to ~a~%")
-                   current number)
-           (switch-symlinks profile generation)))))
-
-(define (switch-to-previous-generation profile)
-  "Atomically switch PROFILE to the previous generation."
-  (switch-to-generation profile
-                        (previous-generation-number profile)))
-
-(define (roll-back store profile)
-  "Roll back to the previous generation of PROFILE."
-  (let* ((number              (generation-number profile))
-         (previous-number     (previous-generation-number profile number))
-         (previous-generation (generation-file-name profile previous-number)))
-    (cond ((not (file-exists? profile))                 ; invalid profile
-           (raise (condition (&profile-not-found-error
-                              (profile profile)))))
-          ((zero? number)                               ; empty profile
-           (format (current-error-port)
-                   (_ "nothing to do: already at the empty profile~%")))
-          ((or (zero? previous-number)                  ; going to emptiness
-               (not (file-exists? previous-generation)))
-           (link-to-empty-profile store previous-generation)
-           (switch-to-previous-generation profile))
-          (else
-           (switch-to-previous-generation profile)))))  ; anything else
-
-(define (delete-generation store profile number)
-  "Delete generation with NUMBER from PROFILE."
-  (define (display-and-delete)
-    (let ((generation (generation-file-name profile number)))
-      (format #t (_ "deleting ~a~%") generation)
-      (delete-file generation)))
-
-  (let* ((current-number      (generation-number profile))
-         (previous-number     (previous-generation-number profile number))
-         (previous-generation (generation-file-name profile previous-number)))
-    (cond ((zero? number))              ; do not delete generation 0
-          ((and (= number current-number)
-                (not (file-exists? previous-generation)))
-           (link-to-empty-profile store previous-generation)
-           (switch-to-previous-generation profile)
-           (display-and-delete))
-          ((= number current-number)
-           (roll-back store profile)
-           (display-and-delete))
-          (else
-           (display-and-delete)))))
-
 (define (delete-generations store profile generations)
   "Delete GENERATIONS from PROFILE.
 GENERATIONS is a list of generation numbers."
-  (for-each (cut delete-generation store profile <>)
+  (for-each (cut delete-generation* store profile <>)
             generations))
-
-(define* (matching-generations str #:optional (profile %current-profile)
-                               #:key (duration-relation <=))
-  "Return the list of available generations matching a pattern in STR.  See
-'string->generations' and 'string->duration' for the list of valid patterns.
-When STR is a duration pattern, return all the generations whose ctime has
-DURATION-RELATION with the current time."
-  (define (valid-generations lst)
-    (define (valid-generation? n)
-      (any (cut = n <>) (generation-numbers profile)))
-
-    (fold-right (lambda (x acc)
-                  (if (valid-generation? x)
-                      (cons x acc)
-                      acc))
-                '()
-                lst))
-
-  (define (filter-generations generations)
-    (match generations
-      (() '())
-      (('>= n)
-       (drop-while (cut > n <>)
-                   (generation-numbers profile)))
-      (('<= n)
-       (valid-generations (iota n 1)))
-      ((lst ..1)
-       (valid-generations lst))
-      (_ #f)))
-
-  (define (filter-by-duration duration)
-    (define (time-at-midnight time)
-      ;; Return TIME at midnight by setting nanoseconds, seconds, minutes, and
-      ;; hours to zeros.
-      (let ((d (time-utc->date time)))
-         (date->time-utc
-          (make-date 0 0 0 0
-                     (date-day d) (date-month d)
-                     (date-year d) (date-zone-offset d)))))
-
-    (define generation-ctime-alist
-      (map (lambda (number)
-             (cons number
-                   (time-second
-                    (time-at-midnight
-                     (generation-time profile number)))))
-           (generation-numbers profile)))
-
-    (match duration
-      (#f #f)
-      (res
-       (let ((s (time-second
-                 (subtract-duration (time-at-midnight (current-time))
-                                    duration))))
-         (delete #f (map (lambda (x)
-                           (and (duration-relation s (cdr x))
-                                (first x)))
-                         generation-ctime-alist))))))
-
-  (cond ((string->generations str)
-         =>
-         filter-generations)
-        ((string->duration str)
-         =>
-         filter-by-duration)
-        (else #f)))
 
 (define (delete-matching-generations store profile pattern)
   "Delete from PROFILE all the generations matching PATTERN.  PATTERN must be
@@ -576,14 +435,14 @@ return the new list of manifest entries."
   (define upgrade-regexps
     (filter-map (match-lambda
                  (('upgrade . regexp)
-                  (make-regexp (or regexp "")))
+                  (make-regexp* (or regexp "")))
                  (_ #f))
                 opts))
 
   (define do-not-upgrade-regexps
     (filter-map (match-lambda
                  (('do-not-upgrade . regexp)
-                  (make-regexp regexp))
+                  (make-regexp* regexp))
                  (_ #f))
                 opts))
 
@@ -677,34 +536,6 @@ doesn't need it."
         (string-append (getcwd) "/" profile)))
 
   (add-indirect-root store absolute))
-
-(define (readlink* file)
-  "Call 'readlink' until the result is not a symlink."
-  (define %max-symlink-depth 50)
-
-  (let loop ((file  file)
-             (depth 0))
-    (define (absolute target)
-      (if (absolute-file-name? target)
-          target
-          (string-append (dirname file) "/" target)))
-
-    (if (>= depth %max-symlink-depth)
-        file
-        (call-with-values
-            (lambda ()
-              (catch 'system-error
-                (lambda ()
-                  (values #t (readlink file)))
-                (lambda args
-                  (let ((errno (system-error-errno args)))
-                    (if (or (= errno EINVAL))
-                        (values #f file)
-                        (apply throw args))))))
-          (lambda (success? target)
-            (if success?
-                (loop (absolute target) (+ depth 1))
-                file))))))
 
 
 ;;;
@@ -819,7 +650,7 @@ more information.~%"))
     ;; First roll back if asked to.
     (cond ((and (assoc-ref opts 'roll-back?)
                 (not dry-run?))
-           (roll-back (%store) profile)
+           (roll-back* (%store) profile)
            (process-actions (alist-delete 'roll-back? opts)))
           ((and (assoc-ref opts 'switch-generation)
                 (not dry-run?))
@@ -833,7 +664,7 @@ more information.~%"))
                                       (relative-generation profile number))
                                      (else number)))))
                  (if number
-                     (switch-to-generation profile number)
+                     (switch-to-generation* profile number)
                      (leave (_ "cannot switch to generation '~a'~%")
                             pattern)))
                (process-actions (alist-delete 'switch-generation opts)))
@@ -883,25 +714,8 @@ more information.~%"))
         (('list-generations pattern)
          (define (list-generation number)
            (unless (zero? number)
-             (let ((header (format #f (_ "Generation ~a\t~a") number
-                                   (date->string
-                                    (time-utc->date
-                                     (generation-time profile number))
-                                    "~b ~d ~Y ~T")))
-                   (current (generation-number profile)))
-               (if (= number current)
-                   (format #t (_ "~a\t(current)~%") header)
-                   (format #t "~a~%" header)))
-             (for-each (match-lambda
-                        (($ <manifest-entry> name version output location _)
-                         (format #t "  ~a\t~a\t~a\t~a~%"
-                                 name version output location)))
-
-                       ;; Show most recently installed packages last.
-                       (reverse
-                        (manifest-entries
-                         (profile-manifest
-                          (generation-file-name profile number)))))
+             (display-generation profile number)
+             (display-profile-content profile number)
              (newline)))
 
          (cond ((not (file-exists? profile)) ; XXX: race condition
@@ -922,7 +736,7 @@ more information.~%"))
          #t)
 
         (('list-installed regexp)
-         (let* ((regexp    (and regexp (make-regexp regexp)))
+         (let* ((regexp    (and regexp (make-regexp* regexp)))
                 (manifest  (profile-manifest profile))
                 (installed (manifest-entries manifest)))
            (leave-on-EPIPE
@@ -938,7 +752,7 @@ more information.~%"))
            #t))
 
         (('list-available regexp)
-         (let* ((regexp    (and regexp (make-regexp regexp)))
+         (let* ((regexp    (and regexp (make-regexp* regexp)))
                 (available (fold-packages
                             (lambda (p r)
                               (let ((n (package-name p)))
@@ -964,7 +778,7 @@ more information.~%"))
            #t))
 
         (('search regexp)
-         (let ((regexp (make-regexp regexp regexp/icase)))
+         (let ((regexp (make-regexp* regexp regexp/icase)))
            (leave-on-EPIPE
             (for-each (cute package->recutils <> (current-output-port))
                       (find-packages-by-description regexp)))

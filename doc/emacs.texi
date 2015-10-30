@@ -227,6 +227,8 @@ prefix argument is used.  This has the same meaning as @code{--manifest}
 option (@pxref{Invoking guix package}).
 
 @item C-c C-z
+@cindex REPL
+@cindex read-eval-print loop
 Go to the Guix REPL (@pxref{The REPL,,, geiser, Geiser User Manual}).
 
 @item h
