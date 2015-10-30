@@ -574,7 +574,18 @@ useful for C++.")
          "telepathy-glib-" version ".tar.gz"))
        (sha256
         (base32
-         "1symyzbjmxvksn2ifdkk50lafjm2llf2sbmky062gq2pz3cg23cy"))))
+         "1symyzbjmxvksn2ifdkk50lafjm2llf2sbmky062gq2pz3cg23cy"))
+       (patches
+        (list
+         ;; Don't use the same test name for multiple tests.
+         ;; <https://bugs.freedesktop.org/show_bug.cgi?id=92245>
+         (origin
+           (method url-fetch)
+           (uri "https://bugs.freedesktop.org/attachment.cgi?id=118608")
+           (file-name (string-append "telepathy-glib-duplicate-tests.patch"))
+           (sha256
+            (base32
+             "0z261fwrszxb28ccg3hsg9rizig4s84zvwmx6y31a4pyv7bvs5w3")))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib" ,glib "bin") ; uses glib-mkenums
