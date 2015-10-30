@@ -5562,6 +5562,11 @@ Library Reference Manual}).  @xref{Locales}, for more information.
 The list of locale definitions to be compiled and that may be used at
 run time.  @xref{Locales}.
 
+@item @code{locale-libcs} (default: @code{(list @var{glibc})})
+The list of GNU@tie{}libc packages whose locale data and tools are used
+to build the locale definitions.  @xref{Locales}, for compatibility
+considerations that justify this option.
+
 @item @code{name-service-switch} (default: @var{%default-nss})
 Configuration of libc's name service switch (NSS)---a
 @code{<name-service-switch>} object.  @xref{Name Service Switch}, for
@@ -6019,6 +6024,57 @@ normalized codeset,, libc, The GNU C Library Reference Manual}).  So for
 instance it has @code{uk_UA.utf8} but @emph{not}, say,
 @code{uk_UA.UTF-8}.
 @end defvr
+
+@subsubsection Locale Data Compatibility Considerations
+
+@cindex incompatibility, of locale data
+@code{operating-system} declarations provide a @code{locale-libcs} field
+to specify the GNU@tie{}libc packages that are used to compile locale
+declarations (@pxref{operating-system Reference}).  ``Why would I
+care?'', you may ask.  Well, it turns out that the binary format of
+locale data is occasionally incompatible from one libc version to
+another.
+
+@c See <https://sourceware.org/ml/libc-alpha/2015-09/msg00575.html>
+@c and <https://lists.gnu.org/archive/html/guix-devel/2015-08/msg00737.html>.
+For instance, a program linked against libc version 2.21 is unable to
+read locale data produced with libc 2.22; worse, that program
+@emph{aborts} instead of simply ignoring the incompatible locale
+data@footnote{Versions 2.23 and later of GNU@tie{}libc will simply skip
+the incompatible locale data, which is already an improvement.}.
+Similarly, a program linked against libc 2.22 can read most, but not
+all, the locale data from libc 2.21 (specifically, @code{LC_COLLATE}
+data is incompatible); thus calls to @code{setlocale} may fail, but
+programs will not abort.
+
+The ``problem'' in GuixSD is that users have a lot of freedom: They can
+choose whether and when to upgrade software in their profiles, and might
+be using a libc version different from the one the system administrator
+used to build the system-wide locale data.
+
+Fortunately, unprivileged users can also install their own locale data
+and define @var{GUIX_LOCPATH} accordingly (@pxref{locales-and-locpath,
+@code{GUIX_LOCPATH} and locale packages}).
+
+Still, it is best if the system-wide locale data at
+@file{/run/current-system/locale} is built for all the libc versions
+actually in use on the system, so that all the programs can access
+it---this is especially crucial on a multi-user system.  To do that, the
+administrator can specify several libc packages in the
+@code{locale-libcs} field of @code{operating-system}:
+
+@example
+(use-package-modules base)
+
+(operating-system
+  ;; @dots{}
+  (locale-libcs (list glibc-2.21 (canonical-package glibc))))
+@end example
+
+This example would lead to a system containing locale definitions for
+both libc 2.21 and the current version of libc in
+@file{/run/current-system/locale}.
+
 
 @node Services
 @subsection Services

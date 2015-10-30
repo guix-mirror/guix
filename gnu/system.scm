@@ -76,6 +76,7 @@
             operating-system-timezone
             operating-system-locale
             operating-system-locale-definitions
+            operating-system-locale-libcs
             operating-system-mapped-devices
             operating-system-file-systems
             operating-system-activation-script
@@ -144,6 +145,8 @@
             (default "en_US.utf8"))
   (locale-definitions operating-system-locale-definitions ; list of <locale-definition>
                       (default %default-locale-definitions))
+  (locale-libcs operating-system-locale-libcs     ; list of <packages>
+                (default %default-locale-libcs))
   (name-service-switch operating-system-name-service-switch ; <name-service-switch>
                        (default %default-nss))
 
@@ -643,7 +646,8 @@ listed in OS.  The C library expects to find it under
     (raise (condition
             (&message (message "system locale lacks a definition")))))
 
-  (locale-directory (operating-system-locale-definitions os)))
+  (locale-directory (operating-system-locale-definitions os)
+                    #:libcs (operating-system-locale-libcs os)))
 
 (define (kernel->grub-label kernel)
   "Return a label for the GRUB menu entry that boots KERNEL."

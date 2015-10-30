@@ -18,11 +18,15 @@
 
 (define-module (gnu system locale)
   #:use-module (guix gexp)
+  #:use-module (guix store)
+  #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (srfi srfi-26)
+  #:use-module (ice-9 match)
   #:export (locale-definition
             locale-definition?
             locale-definition-name
@@ -31,6 +35,7 @@
 
             locale-directory
 
+            %default-locale-libcs
             %default-locale-definitions))
 
 ;;; Commentary:
@@ -50,6 +55,15 @@
 (define* (localedef-command locale
                             #:key (libc (canonical-package glibc)))
   "Return a gexp that runs 'localedef' from LIBC to build LOCALE."
+  (define (maybe-version-directory)
+    ;; XXX: For libc prior to 2.22, GuixSD did not store locale data in a
+    ;; version-specific sub-directory.  Check whether this is the case.
+    ;; TODO: Remove this hack once libc 2.21 is buried.
+    (let ((version (package-version libc)))
+      (if (version>=? version "2.22")
+          (list version "/")
+          '())))
+
   #~(begin
       (format #t "building locale '~a'...~%"
               #$(locale-definition-name locale))
@@ -58,20 +72,29 @@
                       "-i" #$(locale-definition-source locale)
                       "-f" #$(locale-definition-charset locale)
                       (string-append #$output "/"
-                                     #$(package-version libc) "/"
+                                     #$@(maybe-version-directory)
                                      #$(locale-definition-name locale))))))
 
-(define* (locale-directory locales
-                           #:key (libc (canonical-package glibc)))
+(define* (single-locale-directory locales
+                                  #:key (libc (canonical-package glibc)))
   "Return a directory containing all of LOCALES for LIBC compiled.
 
 Because locale data formats are incompatible when switching from one libc to
 another, locale data is put in a sub-directory named after the 'version' field
 of LIBC."
+  (define version
+    (package-version libc))
+
   (define build
     #~(begin
         (mkdir #$output)
-        (mkdir (string-append #$output "/" #$(package-version libc)))
+
+        ;; XXX: For libcs < 2.22, locale data is stored in the top-level
+        ;; directory.
+        ;; TODO: Remove this hack once libc 2.21 is buried.
+        #$(if (version>=? version "2.22")
+              #~(mkdir (string-append #$output "/" #$version))
+              #~(symlink "." (string-append #$output "/" #$version)))
 
         ;; 'localedef' executes 'gzip' to access compressed locale sources.
         (setenv "PATH" (string-append #$gzip "/bin"))
@@ -80,8 +103,37 @@ of LIBC."
          (and #$@(map (cut localedef-command <> #:libc libc)
                       locales)))))
 
-  (gexp->derivation "locale" build
+  (gexp->derivation (string-append "locale-" version) build
                     #:local-build? #t))
+
+(define* (locale-directory locales
+                           #:key (libcs %default-locale-libcs))
+  "Return a locale directory containing all of LOCALES for each libc package
+listed in LIBCS.
+
+It is useful to list more than one libc when willing to support
+already-installed packages built against a different libc since the locale
+data format changes between libc versions."
+  (match libcs
+    ((libc)
+     (single-locale-directory locales #:libc libc))
+    ((libcs ..1)
+     (mlet %store-monad ((dirs (mapm %store-monad
+                                     (lambda (libc)
+                                       (single-locale-directory locales
+                                                                #:libc libc))
+                                     libcs)))
+       (gexp->derivation "locale-multiple-versions"
+                         #~(begin
+                             (use-modules (guix build union))
+                             (union-build #$output (list #$@dirs)))
+                         #:modules '((guix build union))
+                         #:local-build? #t
+                         #:substitutable? #f)))))
+
+(define %default-locale-libcs
+  ;; The libcs for which we build locales by default.
+  (list (canonical-package glibc)))
 
 (define %default-locale-definitions
   ;; Arbitrary set of locales that are built by default.  They are here mostly
