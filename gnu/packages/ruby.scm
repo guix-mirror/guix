@@ -1331,6 +1331,28 @@ a native C extension.")
     (home-page "http://json-jruby.rubyforge.org/")
     (license (list license:ruby license:gpl2)))) ; GPL2 only
 
+(define-public ruby-listen
+  (package
+    (name "ruby-listen")
+    (version "3.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "listen" version))
+       (sha256
+        (base32
+         "10lhshjklxlrkw7999j0xl6sdxd4x32kiy8rp88jwr68kis5vq2b"))))
+    (build-system ruby-build-system)
+    (arguments '(#:tests? #f)) ; no tests
+    (propagated-inputs
+     ;; FIXME: omitting "ruby-rb-fsevent" which is only for MacOS.
+     `(("ruby-rb-inotify" ,ruby-rb-inotify)))
+    (synopsis "Listen to file modifications")
+    (description "The Listen gem listens to file modifications and notifies
+you about the changes.")
+    (home-page "https://github.com/guard/listen")
+    (license license:expat)))
+
 (define-public ruby-activesupport
   (package
     (name "ruby-activesupport")
