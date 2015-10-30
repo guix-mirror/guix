@@ -37,7 +37,7 @@
 (define-public gnucash
   (package
     (name "gnucash")
-    (version "2.6.6")
+    (version "2.6.9")
     (source
      (origin
       (method url-fetch)
@@ -45,7 +45,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "103ir5qg6k8m2mmg9b99c3gn8myxh1gsqyr0mfhmrhqya68wfdr3"))
+        "0iw25l1kv60cg6fd2vg11mcvzmjqnc5p9lp3rjy06ghkjfrn3and"))
       (patches (list (search-patch "gnucash-price-quotes-perl.patch")))))
     (build-system gnu-build-system)
     (inputs
