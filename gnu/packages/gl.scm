@@ -327,7 +327,12 @@ emulation to complete hardware acceleration for modern GPUs.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     '(#:phases
+     '(;; XXX: fails to build against latest mesa:
+       ;;   eglut.c: error: 'EGL_SCREEN_BIT_MESA' undeclared
+       ;;
+       ;; <https://bugs.freedesktop.org/show_bug.cgi?id=91643>
+       #:configure-flags '("--disable-egl")
+       #:phases
        (modify-phases %standard-phases
          (replace
           'install
