@@ -337,6 +337,10 @@ AM_V_GUILEC = $(AM_V_GUILEC_$(V))
 AM_V_GUILEC_ = $(AM_V_GUILEC_$(AM_DEFAULT_VERBOSITY))
 AM_V_GUILEC_0 = @echo "  GUILEC" $@;
 
+# Flags passed to 'guild compile'.
+GUILD_COMPILE_FLAGS =				\
+  -Wformat -Wunbound-variable -Warity-mismatch
+
 # Unset 'GUILE_LOAD_COMPILED_PATH' altogether while compiling.  Otherwise, if
 # $GUILE_LOAD_COMPILED_PATH contains $(moduledir), we may find .go files in
 # there that are newer than the local .scm files (for instance because the
@@ -352,8 +356,7 @@ AM_V_GUILEC_0 = @echo "  GUILEC" $@;
 	LC_ALL=C							\
 	$(top_builddir)/pre-inst-env					\
 	$(GUILD) compile -L "$(top_builddir)" -L "$(top_srcdir)"	\
-	  -Wformat -Wunbound-variable -Warity-mismatch			\
-	  --target="$(host)"						\
+	  $(GUILD_COMPILE_FLAGS) --target="$(host)"			\
 	  -o "$@" "$<"
 
 SUFFIXES = .go
