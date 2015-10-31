@@ -529,7 +529,7 @@ Build the operating system declared in FILE according to ACTION.\n"))
   (display (_ "\
    build            build the operating system without installing anything\n"))
   (display (_ "\
-  container         build a container that shares the host's store\n"))
+   container        build a container that shares the host's store\n"))
   (display (_ "\
    vm               build a virtual machine image that shares the host's store\n"))
   (display (_ "\
