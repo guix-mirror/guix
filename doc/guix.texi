@@ -4984,7 +4984,7 @@ these lines (@pxref{Invoking guix archive}):
 @example
 $ wget -q -O - http://hydra.gnu.org/nar/@dots{}-git-2.5.0 \
    | guix archive -x /tmp/git
-$ diff -ur /gnu/store/@dots{}-git.2.5.0 /tmp/git
+$ diff -ur --no-dereference /gnu/store/@dots{}-git.2.5.0 /tmp/git
 @end example
 
 This command shows the difference between the files resulting from the
