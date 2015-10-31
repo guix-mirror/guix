@@ -4730,7 +4730,8 @@ The available options are summarized below.
 @table @code
 @item --expression=@var{expr}
 @itemx -e @var{expr}
-Create an environment for the package that @var{expr} evaluates to.
+Create an environment for the package or list of packages that
+@var{expr} evaluates to.
 
 For example, running:
 
@@ -4741,10 +4742,18 @@ guix environment -e '(@@ (gnu packages maths) petsc-openmpi)'
 starts a shell with the environment for this specific variant of the
 PETSc package.
 
+Running:
+
+@example
+guix environment --ad-hoc -e '(@ (gnu) %base-packages)'
+@end example
+
+starts a shell with all the GuixSD base packages available.
+
 @item --load=@var{file}
 @itemx -l @var{file}
-Create an environment for the package that the code within @var{file}
-evaluates to.
+Create an environment for the package or list of packages that the code
+within @var{file} evaluates to.
 
 As an example, @var{file} might contain a definition like this
 (@pxref{Defining Packages}):

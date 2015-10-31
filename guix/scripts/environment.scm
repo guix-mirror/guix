@@ -253,6 +253,18 @@ COMMAND or an interactive shell in that environment.\n"))
 (define (options/resolve-packages opts)
   "Return OPTS with package specification strings replaced by actual
 packages."
+  (define (package->outputs package mode)
+    (map (lambda (output)
+           (list mode package output))
+         (package-outputs package)))
+
+  (define (packages->outputs packages mode)
+    (match packages
+      ((? package? package)
+       (package->outputs package mode))
+      (((? package? packages) ...)
+       (append-map (cut package->outputs <> mode) packages))))
+
   (compact
    (append-map (match-lambda
                  (('package mode (? string? spec))
@@ -261,17 +273,11 @@ packages."
                     (list (list mode package output))))
                  (('expression mode str)
                   ;; Add all the outputs of the package STR evaluates to.
-                  (match (read/eval str)
-                    ((? package? package)
-                     (map (lambda (output)
-                            (list mode package output))
-                          (package-outputs package)))))
+                  (packages->outputs (read/eval str) mode))
                  (('load mode file)
                   ;; Add all the outputs of the package defined in FILE.
-                  (let ((package (load* file (make-user-module '()))))
-                    (map (lambda (output)
-                           (list mode package output))
-                         (package-outputs package))))
+                  (let ((module (make-user-module '())))
+                    (packages->outputs (load* file module) mode)))
                  (_ '(#f)))
                opts)))
 

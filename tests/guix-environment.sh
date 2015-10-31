@@ -111,4 +111,15 @@ then
     grep -E '^export CPATH=.*-gcc-bootstrap-0/include'      "$tmpdir/a"
     grep -E '^export CPATH=.*-glibc-bootstrap-0/include'    "$tmpdir/a"
     grep -E '^export LIBRARY_PATH=.*-glibc-bootstrap-0/lib' "$tmpdir/a"
+
+    # Make sure a package list can be used with -e.
+    expr_list_test_code="
+(list (@@ (gnu packages commencement) gnu-make-boot0)
+      (@ (gnu packages bootstrap) %bootstrap-guile))"
+
+    guix environment --ad-hoc --no-substitutes --search-paths --pure \
+         -e "$expr_list_test_code" > "$tmpdir/a"
+
+    grep -E '^export PATH=.*-make-boot0-4.1/bin'      "$tmpdir/a"
+    grep -E '^export PATH=.*-guile-bootstrap-2.0/bin' "$tmpdir/a"
 fi
