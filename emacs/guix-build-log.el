@@ -102,6 +102,12 @@
   "Face for the number of seconds for a phase."
   :group 'guix-build-log-faces)
 
+(defcustom guix-build-log-minor-mode-activate t
+  "If non-nil, then `guix-build-log-minor-mode' is automatically
+activated in `shell-mode' buffers."
+  :type 'boolean
+  :group 'guix-build-log)
+
 (defcustom guix-build-log-mode-hook '()
   "Hook run after `guix-build-log-mode' is entered."
   :type 'hook
@@ -345,6 +351,13 @@ programmatically using hooks:
     (font-lock-remove-keywords nil guix-build-log-font-lock-keywords))
   (when font-lock-mode
     (font-lock-fontify-buffer)))
+
+;;;###autoload
+(defun guix-build-log-minor-mode-activate-maybe ()
+  "Activate `guix-build-log-minor-mode' depending on
+`guix-build-log-minor-mode-activate' variable."
+  (when guix-build-log-minor-mode-activate
+    (guix-build-log-minor-mode)))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist
