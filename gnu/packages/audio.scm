@@ -152,13 +152,11 @@ streams from live audio.")
                          libdir "/vamp" "\"]"))))
      #t))
 
-(define-public ardour-3
+(define-public ardour
   (package
     (name "ardour")
-    (version "3.5.403")
+    (version "4.2")
     (source (origin
-              ;; The project only provides tarballs upon individual request
-              ;; (or after payment) so we take the code from git.
               (method git-fetch)
               (uri (git-reference
                     (url "git://git.ardour.org/ardour/ardour.git")
@@ -171,14 +169,15 @@ streams from live audio.")
                     "libs/ardour/revision.cc"
                   (lambda (port)
                     (format port "#include \"ardour/revision.h\"
-namespace ARDOUR { const char* revision = \"3.5-403-gec2cb31\" ; }"))))
+namespace ARDOUR { const char* revision = \"4.2\" ; }"))))
               (sha256
                (base32
-                "01b0wxh0wlxjfz5j8gcwwqhxc6q2kn4njz2fcmzv9fr3xaya5dbp"))
+                "1j8zw0bvh16qwyy8qrqynpak9nghl9j3qhjjcdl7wh9raafjqc00"))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("--cxx11") ; required by gtkmm
+       #:phases
        (modify-phases %standard-phases
          (add-after
           'unpack 'set-rpath-in-LDFLAGS
@@ -229,35 +228,6 @@ namespace ARDOUR { const char* revision = \"3.5-403-gec2cb31\" ; }"))))
 record, edit, mix and master audio and MIDI projects.  It is targeted at audio
 engineers, musicians, soundtrack editors and composers.")
     (license license:gpl2+)))
-
-(define-public ardour
-  (package (inherit ardour-3)
-    (name "ardour")
-    (version "4.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "git://git.ardour.org/ardour/ardour.git")
-                    (commit version)))
-              (snippet
-               ;; Ardour expects this file to exist at build time.  It can be
-               ;; created from a git checkout with:
-               ;;   ./waf create_stored_revision
-               '(call-with-output-file
-                    "libs/ardour/revision.cc"
-                  (lambda (port)
-                    (format port "#include \"ardour/revision.h\"
-namespace ARDOUR { const char* revision = \"4.2\" ; }"))))
-              (sha256
-               (base32
-                "1j8zw0bvh16qwyy8qrqynpak9nghl9j3qhjjcdl7wh9raafjqc00"))
-              (file-name (string-append name "-" version))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments ardour-3)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'set-rpath-in-LDFLAGS
-                    ,(ardour-rpath-phase (version-prefix version 1)))))))))
 
 (define-public azr3
   (package
@@ -566,7 +536,8 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "1w6dg2n0alfjsx1iy6s53783invygwxk11p1i65cc3nq3zlidcgx"))))
+               "1w6dg2n0alfjsx1iy6s53783invygwxk11p1i65cc3nq3zlidcgx"))
+             (patches (list (search-patch "guitarix-c++11.patch")))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -574,7 +545,8 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
        #:configure-flags
        (list
         ;; Add the output lib directory to the RUNPATH.
-        (string-append "--ldflags=-Wl,-rpath=" %output "/lib"))))
+        (string-append "--ldflags=-Wl,-rpath=" %output "/lib")
+        "--cxxflags=-std=c++11")))
     (inputs
      `(("libsndfile" ,libsndfile)
        ("boost" ,boost)
@@ -745,7 +717,16 @@ synchronous execution of all clients, and low latency operation.")
                (base32
                 "1f1hcq74n3ziw8bk97mn5a1vgw028dxikv3fchaxd430pbbhqgl9"))))
     (build-system waf-build-system)
-    (arguments `(#:tests? #f)) ; no check target
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-flags
+          (lambda _
+            ;; Compile with C++11, required by gtkmm.
+            (setenv "CXXFLAGS" "-std=c++11")
+            #t)))))
     (inputs
      `(("lv2" ,lv2)
        ("lilv" ,lilv)

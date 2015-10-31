@@ -60,7 +60,7 @@
 (define-public atk
   (package
    (name "atk")
-   (version "2.16.0")
+   (version "2.18.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -68,7 +68,7 @@
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0qp5i91kfk6rhrlam3s8ha0cz88lkyp89vsyn4pb5856c1h9hpq9"))))
+              "0ay9s137x49f0akx658p7kznz0rdapfrd8ym54q0hlgrggblhv6f"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (arguments
@@ -144,7 +144,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "1.0.3")
+   (version "1.0.5")
    (source (origin
              (method url-fetch)
              (uri (string-append "http://www.freedesktop.org/software/"
@@ -152,7 +152,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1xrxlrvgyr6mm9qjxmkif2kvcah082y94gf1vqi0f0bdl1g8gp7b"))))
+               "0h2l362qzkck5dnnj7zlz593hf1ni3k25dfaii9mbjwflp3d56ad"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -182,7 +182,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public pango
   (package
    (name "pango")
-   (version "1.36.8")
+   (version "1.38.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/pango/"
@@ -190,7 +190,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "01rdzjh68w8l5zn0648yibyarj8p6g7yfn59nw5awaz1i8dvbnqq"))))
+              "1dsf45m51i4rcyvh5wlxxrjfhvn5b67d5ckjc6vdcxbddjgmc80k"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("cairo" ,cairo)
@@ -253,8 +253,10 @@ functions which were removed.")
     (build-system waf-build-system)
     (arguments
      `(#:phases (alist-cons-before
-                 'configure 'set-ldflags
+                 'configure 'set-flags
                  (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Compile with C++11, required by gtkmm.
+                   (setenv "CXXFLAGS" "-std=c++11")
                    ;; Allow 'bin/ganv_bench' to find libganv-1.so.
                    (setenv "LDFLAGS"
                            (string-append "-Wl,-rpath="
@@ -381,7 +383,7 @@ in the GNOME project.")
 (define-public at-spi2-core
   (package
    (name "at-spi2-core")
-   (version "2.16.0")
+   (version "2.18.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -389,7 +391,7 @@ in the GNOME project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1l3l39mw23zyjlcqidvkyqlr4gwbhplzw2hcv3qvn6p8ikxpf2qw"))))
+              "1kq17w4fm51d49vzmglkxqdm6s0yvjvrpgw78r2hajf69jz5bmap"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (arguments
@@ -402,6 +404,8 @@ in the GNOME project.")
         (replace 'check
                  ;; Run test-suite under a dbus session.
                  (lambda _
+                   ;; Don't fail on missing  '/etc/machine-id'.
+                   (setenv "DBUS_FATAL_WARNINGS" "0")
                    (zero? (system* "dbus-launch" "make" "check")))))))
    (propagated-inputs
     ;; atspi-2.pc refers to all these.
@@ -424,7 +428,7 @@ is part of the GNOME accessibility project.")
 (define-public at-spi2-atk
   (package
    (name "at-spi2-atk")
-   (version "2.16.0")
+   (version "2.18.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -432,7 +436,7 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1y9gfz1iz3wpja7s000f0bmyyvc6im5fcdl6bxwbz0v3qdgc9vvq"))))
+              "0bf1g5cj84rmx7p1q547vwbc0hlpcs2wrxnmv96lckfkhs9mzcf4"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -440,6 +444,7 @@ is part of the GNOME accessibility project.")
         (replace 'check
                  ;; Run test-suite under a dbus session.
                  (lambda _
+                   (setenv "DBUS_FATAL_WARNINGS" "0")
                    (zero? (system* "dbus-launch" "make" "check")))))))
    (propagated-inputs
     `(("at-spi2-core" ,at-spi2-core))) ; required by atk-bridge-2.0.pc
@@ -514,7 +519,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.16.6")
+   (version "3.18.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -522,12 +527,13 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1gpzlnfrifc17yfk0zki6b2vmsfpf5cmrbh232s6iaan11np44jd"))))
+              "0lp1hn0qydxx03bianzzr0a4maqzsvylrkzr7c3p0050qihwbgjx"))))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
       ("gdk-pixbuf" ,gdk-pixbuf)
       ("libepoxy" ,libepoxy)
+      ("libxcursor" ,libxcursor)
       ("libxi" ,libxi)
       ("libxinerama" ,libxinerama)
       ("libxdamage" ,libxdamage)
@@ -535,7 +541,13 @@ application suites.")
    (inputs
     `(("librsvg" ,librsvg)                        ;for gtk-encode-symbolic-svg
       ("libxml2" ,libxml2)
-      ("cups" ,cups)))                            ;for printing support
+      ;; XXX: colord depends on mozjs (through polkit), which fails on
+      ;;      on non-intel systems now.
+      ;;("colord" ,colord)
+      ("cups" ,cups)                            ;for printing support
+      ;; XXX: rest depends on p11-kit, which fails on mips64el now.
+      ;;("rest" ,rest)
+      ("json-glib" ,json-glib)))
    (native-inputs
     `(("perl" ,perl)
       ("glib" ,glib "bin")
@@ -731,14 +743,15 @@ documents.")
 (define-public cairomm
   (package
     (name "cairomm")
-    (version "1.11.2")
+    (version "1.12.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "http://cairographics.org/releases/cairomm-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "138052ybc58q5yl92m2p0br0k0a9g1pi9gfhmn4y220yih4pgxnc"))))
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/cairomm/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1rmgs6zjj2vaxh9hsa0944m23fdn1psycqh7bi984qd8jj1xljm5"))))
     (build-system gnu-build-system)
     (arguments
      ;; The examples lack -lcairo.
@@ -759,7 +772,7 @@ library.")
 (define-public pangomm
   (package
     (name "pangomm")
-    (version "2.36.0")
+    (version "2.38.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -767,7 +780,7 @@ library.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1w11d05nkxglzg67rfa81vqghm75xhy6j396xmmp5mq8qx96knd8"))))
+               "12xwjvqfxhqblcv7641k0l6r8n3qifnrx8w9571izn1nbd81iyzg"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
@@ -785,7 +798,7 @@ library.")
 (define-public atkmm
   (package
     (name "atkmm")
-    (version "2.22.7")
+    (version "2.24.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -793,7 +806,7 @@ library.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "06zrf2ymml2dzp53sss0d4ch4dk9v09jm8rglnrmwk4v81mq9gxz"))))
+               "08zd6s5c1q90wm8310mdrb5f2lj8v63wxihrybwyw13xlf6ivi16"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
@@ -808,7 +821,7 @@ toolkit.")
 (define-public gtkmm
   (package
     (name "gtkmm")
-    (version "3.16.0")
+    (version "3.18.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -816,9 +829,10 @@ toolkit.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "036xn22jkaf3akpid7w23b8vkqa3xxqz93mwacmyar5vw7slm3cv"))))
+               "0sxq700invkjpksn790gbnl8px8751kvgwn39663jx7dv89s37w2"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("glib" ,glib "bin")))      ;for 'glib-compile-resources'
     (propagated-inputs
      `(("pangomm" ,pangomm)
        ("cairomm" ,cairomm)
@@ -849,6 +863,9 @@ extensive documentation, including API reference and a tutorial.")
              (sha256
               (base32
                "1vpmjqv0aqb1ds0xi6nigxnhlr0c74090xzi15b92amlzkrjyfj4"))))
+    (arguments
+     '(#:configure-flags '("CPPFLAGS=-std=c++11"))) ; required by libsigc++
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("pangomm" ,pangomm)
        ("cairomm" ,cairomm)

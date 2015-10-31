@@ -247,17 +247,6 @@ levels, with the given configuration settings.  It implements the
          (home-directory "/var/empty")
          (shell #~(string-append #$shadow "/sbin/nologin")))))
 
-(define (colord-dmd-service colord)
-  "Return a dmd service for COLORD."
-  ;; TODO: Remove when D-Bus activation works.
-  (list (dmd-service
-         (documentation "Run the colord color management service.")
-         (provision '(colord-daemon))
-         (requirement '(dbus-system udev))
-         (start #~(make-forkexec-constructor
-                   (list (string-append #$colord "/libexec/colord"))))
-         (stop #~(make-kill-destructor)))))
-
 (define colord-service-type
   (service-type (name 'colord)
                 (extensions
@@ -265,8 +254,6 @@ levels, with the given configuration settings.  It implements the
                                           (const %colord-accounts))
                        (service-extension activation-service-type
                                           (const %colord-activation))
-                       (service-extension dmd-root-service-type
-                                          colord-dmd-service)
 
                        ;; Colord is a D-Bus service that dbus-daemon can
                        ;; activate.
@@ -345,23 +332,6 @@ users are allowed."
                               "GEOCLUE_CONFIG_FILE"
                               (geoclue-configuration-file config))))
 
-(define (geoclue-dmd-service config)
-  "Return a GeoClue dmd service for CONFIG."
-  ;; TODO: Remove when D-Bus activation works.
-  (let ((geoclue (geoclue-configuration-geoclue config))
-        (config  (geoclue-configuration-file config)))
-    (list (dmd-service
-           (documentation "Run the GeoClue location service.")
-           (provision '(geoclue-daemon))
-           (requirement '(dbus-system))
-
-           (start #~(make-forkexec-constructor
-                     (list (string-append #$geoclue "/libexec/geoclue"))
-                     #:user "geoclue"
-                     #:environment-variables
-                     (list (string-append "GEOCLUE_CONFIG_FILE=" #$config))))
-           (stop #~(make-kill-destructor))))))
-
 (define %geoclue-accounts
   (list (user-group (name "geoclue") (system? #t))
         (user-account
@@ -377,8 +347,6 @@ users are allowed."
                 (extensions
                  (list (service-extension dbus-root-service-type
                                           geoclue-dbus-service)
-                       (service-extension dmd-root-service-type
-                                          geoclue-dmd-service)
                        (service-extension account-service-type
                                           (const %geoclue-accounts))))))
 
@@ -428,18 +396,6 @@ site} for more information."
 (define %polkit-pam-services
   (list (unix-pam-service "polkitd")))
 
-(define (polkit-dmd-service polkit)
-  "Return the <dmd-service> for POLKIT."
-  ;; TODO: Remove when D-Bus activation works.
-  (list (dmd-service
-         (documentation "Run the polkit privilege management service.")
-         (provision '(polkit-daemon))
-         (requirement '(dbus-system))
-
-         (start #~(make-forkexec-constructor
-                   (list (string-append #$polkit "/lib/polkit-1/polkitd"))))
-         (stop #~(make-kill-destructor)))))
-
 (define polkit-service-type
   ;; TODO: Make it extensible so it can collect policy files from other
   ;; services.
@@ -450,9 +406,7 @@ site} for more information."
                        (service-extension pam-root-service-type
                                           (const %polkit-pam-services))
                        (service-extension dbus-root-service-type
-                                          list)
-                       (service-extension dmd-root-service-type
-                                          polkit-dmd-service)))))
+                                          list)))))
 
 (define* (polkit-service #:key (polkit polkit))
   "Return a service that runs the @command{polkit} privilege management
@@ -603,6 +557,8 @@ the system if the user is logged in locally."
 
 (define (elogind-dmd-service config)
   "Return a dmd service for elogind, using @var{config}."
+  ;; TODO: We could probably rely on service activation but the '.service'
+  ;; file currently contains an erroneous 'Exec' line.
   (let ((config-file (elogind-configuration-file config))
         (elogind     (elogind-package config)))
     (list (dmd-service

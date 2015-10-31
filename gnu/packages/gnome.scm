@@ -446,7 +446,7 @@ on the GNOME Desktop with a single simple application.")
 (define-public gsettings-desktop-schemas
   (package
     (name "gsettings-desktop-schemas")
-    (version "3.16.0")
+    (version "3.18.0")
     (source
      (origin
       (method url-fetch)
@@ -455,7 +455,7 @@ on the GNOME Desktop with a single simple application.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "02dp1hl38k16m9abydfca1n236mdazqdz0p3n92s7haf9mdqsf16"))))
+        "1szc857f46spdhrbnq9ci3kwfqg5vwpikbf0hprq6vd94rr369xs"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)))
@@ -821,7 +821,7 @@ dealing with different structured file formats.")
 (define-public librsvg
   (package
     (name "librsvg")
-    (version "2.40.10")
+    (version "2.40.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -829,7 +829,9 @@ dealing with different structured file formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0y9lvnb9ij9mjg8cyp7xysi0c5ms5v4q1zrhx42b546f71s80p4n"))))
+                "00ifd9wjjjsw0ybk5j6qs4yyh66jj34hjmggy6dhrgfy8ksw06k1"))
+              (patches
+               (list (search-patch "librsvg-tests.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -1204,6 +1206,8 @@ creating interactive structured graphics.")
                (base32
                 "0679hcnpam2gkag2i63sm0wdm35gwvzafnz1354mg6j5gzwpfrcr"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("CXXFLAGS=-std=c++11"))) ; required by gtkmm
     (propagated-inputs `(("libgnomecanvas" ,libgnomecanvas)))
     (native-inputs
      `(("gtkmm-2" ,gtkmm-2)
@@ -1625,7 +1629,7 @@ passwords in the GNOME keyring.")
 (define-public vala
   (package
     (name "vala")
-    (version "0.28.0")
+    (version "0.30.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1633,14 +1637,16 @@ passwords in the GNOME keyring.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0zwpzhkhfk3piya14m7p2hl2vaabahprphppfm46ci91z39kp7hd"))))
+                "1pyyhfw3zzbhxfscbn8xz70dg6vx0kh8gshzikpxczhg01xk7w31"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'set-cc
+         (add-before 'check 'pre-check
                      (lambda _
                        (setenv "CC" "gcc")
+                       ;; For missing '/etc/machine-id'.
+                       (setenv "DBUS_FATAL_WARNINGS" "0")
                        #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1771,7 +1777,7 @@ configuration storage systems.")
 (define-public json-glib
   (package
     (name "json-glib")
-    (version "1.0.2")
+    (version "1.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1779,7 +1785,14 @@ configuration storage systems.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "02k66lpc4cmgygj66n8zcy59bggy7yzm3v4hni9xqplgva9d2yw8"))))
+                "1k85vvb2prmk8aa8hmr2rp9rnbhffjgnmr18b13g24xxnqy5kww0"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Don't duplicate test names.
+               ;; <https://bugzilla.gnome.org/show_bug.cgi?id=755977>.
+               '(substitute* "json-glib/tests/builder.c"
+                  (("\"/builder/complex\", test_builder_empty")
+                   "\"/builder/empty\", test_builder_empty")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib" ,glib "bin")              ;for glib-mkenums and glib-genmarshal
@@ -1871,7 +1884,7 @@ library.")
 (define-public glib-networking
   (package
     (name "glib-networking")
-    (version "2.44.0")
+    (version "2.46.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/glib-networking/"
@@ -1879,7 +1892,7 @@ library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ij33bhvn7y5gagx4sbrw906dsjjjs9dllxn73pzv6x97c6k92lg"))
+                "1cchmi08jpjypgmm9i7xzh5qfg2q5k61kry9ns8mhw3z44a440ym"))
               (patches
                (list (search-patch "glib-networking-ssl-cert-file.patch")))))
     (build-system gnu-build-system)
@@ -1953,7 +1966,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.50.0")
+    (version "2.52.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -1961,18 +1974,14 @@ libxml to ease remote use of the RESTful API.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0yv61y5vfar1rfksa6f53zhfw9wcb39zjix8gqc1ff5gqid3c08y"))))
+                "0j6cnnpqqgnb9nj2r0j8j6898np4z503hrnpis7b4l5d8yhbq68f"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
-                            "/share/gtk-doc/html")
-             ;; To find GIO modules from glib-networking.
-             (string-append "GIO_EXTRA_MODULES="
-                            (assoc-ref %build-inputs "glib-networking")
-                            "/lib/gio/modules"))
+                            "/share/gtk-doc/html"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'disable-unconnected-socket-test
@@ -1990,13 +1999,22 @@ libxml to ease remote use of the RESTful API.")
                        ;; The ca-certificates.crt is not available in the build
                        ;; environment.
                        (setenv "SSL_CERT_FILE" "/dev/null")
-                       #t)))))
+                       #t))
+         (replace 'install
+                  (lambda _
+                    (zero?
+                     (system* "make"
+                              ;; Install vala bindings into $out.
+                              (string-append "vapidir=" %output
+                                             "/share/vala/vapi")
+                              "install")))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
+       ("vala" ,vala)
        ;; These are needed for the tests.
        ;; FIXME: Add PHP once available.
        ("curl" ,curl)
@@ -2210,6 +2228,7 @@ keyboard shortcuts.")
        ("lcms" ,lcms)))
     (inputs
      `(("dbus-glib" ,dbus-glib)
+       ("libgudev" ,libgudev)
        ("libusb" ,libusb)
        ("sqlite" ,sqlite)
        ("polkit" ,polkit)

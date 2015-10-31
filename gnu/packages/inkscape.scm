@@ -74,7 +74,11 @@
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (arguments
-     `(#:phases (alist-cons-after
+     `(;; Add '-std=c++11', required by recent versions of GLibmm & co.
+       ;; Use '-g0' to reduce disk usage during the build.
+       #:configure-flags '("CXXFLAGS=-g0 -O2 -fopenmp -std=c++11")
+
+       #:phases (alist-cons-after
                  'unpack 'fix-test-includes
                  (lambda _
                    (substitute* "src/cxxtests.cpp"

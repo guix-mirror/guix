@@ -410,6 +410,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
   gnu/packages/patches/binutils-loongson-workaround.patch	\
   gnu/packages/patches/bitlbee-configure-doc-fix.patch		\
+  gnu/packages/patches/bluez-tests.patch			\
   gnu/packages/patches/boost-mips-avoid-m32.patch		\
   gnu/packages/patches/calibre-drop-unrar.patch			\
   gnu/packages/patches/calibre-no-updates-dialog.patch		\
@@ -426,7 +427,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/cssc-missing-include.patch               \
   gnu/packages/patches/clucene-contribs-lib.patch               \
   gnu/packages/patches/cursynth-wave-rand.patch			\
-  gnu/packages/patches/dbus-localstatedir.patch			\
+  gnu/packages/patches/dbus-helper-search-path.patch		\
   gnu/packages/patches/dealii-p4est-interface.patch		\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
   gnu/packages/patches/dfu-programmer-fix-libusb.patch		\
@@ -494,6 +495,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/guile-present-coding.patch		\
   gnu/packages/patches/guile-relocatable.patch			\
   gnu/packages/patches/guile-rsvg-pkgconfig.patch		\
+  gnu/packages/patches/guitarix-c++11.patch			\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
   gnu/packages/patches/hop-linker-flags.patch			\
@@ -520,6 +522,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/libarchive-mtree-filename-length-fix.patch \
   gnu/packages/patches/libbonobo-activation-test-race.patch	\
   gnu/packages/patches/libcanberra-sound-theme-freedesktop.patch \
+  gnu/packages/patches/libdrm-symbol-check.patch		\
   gnu/packages/patches/libevent-dns-tests.patch			\
   gnu/packages/patches/libmtp-devices.patch			\
   gnu/packages/patches/liboop-mips64-deplibs-fix.patch		\
@@ -528,6 +531,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/libmad-armv7-thumb-pt2.patch		\
   gnu/packages/patches/libmad-frame-length.patch		\
   gnu/packages/patches/libmad-mips-newgcc.patch			\
+  gnu/packages/patches/librsvg-tests.patch			\
   gnu/packages/patches/libtheora-config-guess.patch		\
   gnu/packages/patches/libtool-skip-tests2.patch		\
   gnu/packages/patches/libssh-CVE-2014-0017.patch		\
@@ -647,9 +651,11 @@ dist_patch_DATA =						\
   gnu/packages/patches/unzip-CVE-2014-8140.patch		\
   gnu/packages/patches/unzip-CVE-2014-8141.patch		\
   gnu/packages/patches/unzip-CVE-2014-9636.patch		\
+  gnu/packages/patches/unzip-CVE-2015-7696.patch		\
+  gnu/packages/patches/unzip-CVE-2015-7697.patch		\
   gnu/packages/patches/unzip-allow-greater-hostver-values.patch	\
   gnu/packages/patches/unzip-attribs-overflow.patch		\
-  gnu/packages/patches/unzip-fix-overflows-and-infloop.patch	\
+  gnu/packages/patches/unzip-overflow-on-invalid-input.patch	\
   gnu/packages/patches/unzip-format-secure.patch		\
   gnu/packages/patches/unzip-initialize-symlink-flag.patch	\
   gnu/packages/patches/unzip-overflow-long-fsize.patch		\

@@ -460,6 +460,11 @@ provers.")
        ("librsvg" ,librsvg)))
     (arguments
      `(#:tests? #f ; no check target
+
+       ;; Occasionally we would get "Error: Unbound module GtkThread" when
+       ;; compiling 'gtkThInit.ml', with 'make -j'.  So build sequentially.
+       #:parallel-build? #f
+
        #:phases
          (modify-phases %standard-phases
            (replace 'install

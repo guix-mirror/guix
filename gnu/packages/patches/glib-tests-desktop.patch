@@ -56,11 +56,12 @@ database, the `update-desktop-database' program, which we don't provide.
 
 -----------------------------
 The hunk below removes tests that depend on `gdbus-testserver.py',
-because that script depends on python-gobject.
+because that script depends on python-gobject.  The second hunk
+disables a test that expects /etc/machine-id in the build environment.
  
---- glib-2.39.1/gio/tests/Makefile.in	2014-01-20 00:18:16.000000000 +0100
-+++ glib-2.39.1/gio/tests/Makefile.in	2014-01-20 00:18:47.000000000 +0100
-@@ -171,20 +171,13 @@ check_PROGRAMS = $(am__EXEEXT_14)
+--- glib-2.46.0/gio/tests/Makefile.in	2015-10-14 14:11:00.928809504 +0200
++++ glib-2.46.0/gio/tests/Makefile.in	2015-10-14 14:12:13.157291092 +0200
+@@ -186,20 +186,13 @@ check_PROGRAMS = $(am__EXEEXT_16)
  @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-auth				\
  @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-bz627724				\
  @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-close-pending			\
@@ -79,7 +80,16 @@ because that script depends on python-gobject.
  @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-test-codegen-old			\
 -@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-threading				\
  @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gmenumodel				\
+ @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gnotification				\
  @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	$(NULL)
+@@ -321,8 +314,7 @@ libresourceplugin_la_LINK = $(LIBTOOL) $
+ am__EXEEXT_1 =
+ @OS_UNIX_TRUE@am__EXEEXT_2 = contenttype$(EXEEXT) file$(EXEEXT) \
+ @OS_UNIX_TRUE@	gdbus-peer-object-manager$(EXEEXT) \
+-@OS_UNIX_TRUE@	gdbus-unix-addresses$(EXEEXT) \
+ @OS_UNIX_TRUE@	live-g-file$(EXEEXT) socket-address$(EXEEXT) \
+ @OS_UNIX_TRUE@	stream-rw_all$(EXEEXT) unix-fd$(EXEEXT) \
+ @OS_UNIX_TRUE@	unix-streams$(EXEEXT) $(am__EXEEXT_1) \
   
 
 The test below depends on the availability /etc/passwd to dbus-daemon.

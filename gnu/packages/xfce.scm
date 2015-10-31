@@ -111,6 +111,8 @@ Xfce Desktop Environment.")
           ;; Run test-suite under a dbus session.
           (setenv "XDG_DATA_DIRS" ; for finding org.xfce.Xfconf.service
                   (string-append %output "/share"))
+          ;; For the missing '/etc/machine-id'.
+          (setenv "DBUS_FATAL_WARNINGS" "0");
           (zero? (system* "dbus-launch" "make" "check")))
         (alist-delete 'check %standard-phases))))
     (native-inputs

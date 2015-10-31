@@ -1,0 +1,25 @@
+From 484ad8c9263bb524051a999ce19a994960e69572 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E5=AE=8B=E6=96=87=E6=AD=A6?= <iyzsong@gmail.com>
+Date: Fri, 23 Oct 2015 20:48:57 +0800
+Subject: [PATCH] unit/test-gobex-header: Fix duplicate test names
+
+---
+ unit/test-gobex-header.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/unit/test-gobex-header.c b/unit/test-gobex-header.c
+index 6f49312..8705892 100644
+--- a/unit/test-gobex-header.c
++++ b/unit/test-gobex-header.c
+@@ -554,7 +554,7 @@ int main(int argc, char *argv[])
+ 					test_header_encode_name_umlaut);
+ 	g_test_add_func("/gobex/test_header_encode_body",
+ 						test_header_encode_body);
+-	g_test_add_func("/gobex/test_header_encode_connid",
++	g_test_add_func("/gobex/test_header_encode_actionid",
+ 						test_header_encode_actionid);
+ 	g_test_add_func("/gobex/test_header_encode_apparam",
+ 						test_header_encode_apparam);
+-- 
+2.5.0
+

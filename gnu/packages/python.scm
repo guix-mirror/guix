@@ -4248,6 +4248,17 @@ features useful for text console applications.")
        (sha256
         (base32 "1py62qir966lvdkngg0v8k1khsqxwk5m4s8nflpk1agk5f5nqb71"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before
+          'check 'pre-check
+          (lambda _
+            ;; XXX: For the missing '/etc/machine-id'.
+            (substitute* "test/run-test.sh"
+              (("DBUS_FATAL_WARNINGS=1")
+               "DBUS_FATAL_WARNINGS=0"))
+            #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

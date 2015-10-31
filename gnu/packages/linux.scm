@@ -1570,7 +1570,7 @@ from the module-init-tools project.")
   ;; The post-systemd fork, maintained by Gentoo.
   (package
     (name "eudev")
-    (version "2.1.1")
+    (version "3.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1578,55 +1578,15 @@ from the module-init-tools project.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0shf5vqiz9fdxl95aa1a8vh0xjxwim3psc39wr2xr8lnahf11vva"))
-              (patches (list (search-patch "eudev-rules-directory.patch")))
-              (modules '((guix build utils)))
-              (snippet
-               ;; 'configure' checks uses <linux/btrfs.h> as an indication of
-               ;; whether Linux headers are available, but it doesn't actually
-               ;; use it, and our 'linux-libre-headers' package doesn't
-               ;; provide it.  So just remove that.
-               '(substitute* "configure"
-                  (("linux/btrfs\\.h")
-                   "")))))
+                "0akg9gcc3c2p56xbhlvbybqavcprly5q0bvk655zwl6d62j8an7p"))
+              (patches (list (search-patch "eudev-rules-directory.patch")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("gperf" ,gperf)
-       ("glib" ,glib "bin")                       ; glib-genmarshal, etc.
-       ("perl" ,perl)                             ; for the tests
-       ("python" ,python-2)))                     ; ditto
+       ("perl" ,perl)
+       ("gperf" ,gperf)))
     (inputs
-     `(("kmod" ,kmod)
-       ("pciutils" ,pciutils)
-       ("usbutils" ,usbutils)
-       ("util-linux" ,util-linux)
-       ("glib" ,glib)
-       ("gobject-introspection" ,gobject-introspection)))
-    (arguments
-     `(#:configure-flags (list "--enable-libkmod"
-
-                               (string-append
-                                "--with-pci-ids-path="
-                                (assoc-ref %build-inputs "pciutils")
-                                "/share/pci.ids.gz")
-
-                               "--with-firmware-path=/no/firmware"
-
-                               ;; Work around undefined reference to
-                               ;; 'mq_getattr' in sc-daemon.c.
-                               "LDFLAGS=-lrt")
-       #:phases
-       (alist-cons-before
-        'build 'pre-build
-        ;; The program 'g-ir-scanner' (part of the package
-        ;; 'gobject-introspection'), to generate .gir files, makes some
-        ;; library pre-processing.  During that phase it looks for the C
-        ;; compiler as either 'cc' or as defined by the environment variable
-        ;; 'CC' (with code in 'giscanner/dumper.py').
-        (lambda* _
-          (setenv "CC" "gcc"))
-        %standard-phases)))
+     `(("kmod" ,kmod)))
     (home-page "http://www.gentoo.org/proj/en/eudev/")
     (synopsis "Userspace device management")
     (description "Udev is a daemon which dynamically creates and removes
@@ -2365,7 +2325,9 @@ applications.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1qphz25hganfnd5ipfscbj7s70anv5favmwqmi9ig2saciaf1zhs"))))
+                "1qphz25hganfnd5ipfscbj7s70anv5favmwqmi9ig2saciaf1zhs"))
+              (patches
+               (list (search-patch "bluez-tests.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

@@ -57,36 +57,44 @@
 (define dbus
   (package
     (name "dbus")
-    (version "1.8.16")
+    (version "1.10.0")
     (source (origin
-             (method url-fetch)
-             (uri
-              (string-append "http://dbus.freedesktop.org/releases/dbus/dbus-"
-                             version ".tar.gz"))
-             (sha256
-              (base32
-               "01rba8mp8kqvmy6ibdmi806kjr3m14swnskqk02gyhykxxl54ybz"))
-             (patches (list (search-patch "dbus-localstatedir.patch")))))
+              ;; TODO: Apply patch from DBUS/ACTIVATION below.
+              (method url-fetch)
+              (uri (string-append
+                    "http://dbus.freedesktop.org/releases/dbus/dbus-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0jwj7wlrhq5y0fwfh8k2d9rgdpfax06lj8698g6iqbwrzd2rgyqx"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags (list ;; Install the system bus socket under /var.
-                               "--localstatedir=/var"
+     '(#:configure-flags
+       (list
+        ;; Install the system bus socket under /var.
+        "--localstatedir=/var"
 
-                               ;; XXX: Fix the following to allow system-wide
-                               ;; config.
-                               ;; "--sysconfdir=/etc"
+        ;; Install the session bus socket under /tmp.
+        "--with-session-socket-dir=/tmp"
 
-                               "--with-session-socket-dir=/tmp")
-       #:phases (alist-cons-after
-                 'install 'post-install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; 'dbus-launch' bails out if the 'session.d' directory
-                   ;; below is missing, so create it along with its companion.
-                   (let ((out (assoc-ref outputs "out")))
-                     (mkdir (string-append out "/etc/dbus-1/session.d"))
-                     (mkdir (string-append out "/etc/dbus-1/system.d"))
-                     #t))
-                 %standard-phases)))
+        ;; Use /etc/dbus-1 for system-wide config.
+        ;; Look for configuration file under
+        ;; /etc/dbus-1.  This is notably required by
+        ;; 'dbus-daemon-launch-helper', which looks for
+        ;; the 'system.conf' file in that place,
+        ;; regardless of what '--config-file' was
+        ;; passed to 'dbus-daemon' on the command line;
+        ;; see <https://bugs.freedesktop.org/show_bug.cgi?id=92458>.
+        "--sysconfdir=/etc")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+                  (lambda _
+                    ;; Don't try to create /var and /etc.
+                    (system* "make"
+                             "localstatedir=/tmp/dummy"
+                             "sysconfdir=/tmp/dummy"
+                             "install"))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -116,10 +124,21 @@ or through unencrypted TCP/IP suitable for use behind a firewall with
 shared NFS home directories.")
     (license license:gpl2+)))                     ; or Academic Free License 2.1
 
+(define-public dbus/activation
+  ;; D-Bus with a patch to fix service activation.
+  ;; TODO: Merge with DBUS above.
+  (package
+    (inherit dbus)
+    (version (string-append (package-version dbus) ".a"))
+    (source (origin
+              (inherit (package-source dbus))
+              (patches
+               (list (search-patch "dbus-helper-search-path.patch")))))))
+
 (define glib
   (package
    (name "glib")
-   (version "2.44.1")
+   (version "2.46.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -127,7 +146,7 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "01yabrfp64i11mrks3p1gcks99lw0zm7f5vhkc53sl4amyndw4c8"))
+              "1yzxr1ip3l0m9ydk5nq32piq70c9f17p5f0jyvlsghzbaawh67ss"))
             (patches (list (search-patch "glib-tests-homedir.patch")
                            (search-patch "glib-tests-desktop.patch")
                            (search-patch "glib-tests-prlimit.patch")
@@ -207,14 +226,18 @@ dynamic loading, and an object system.")
 (define gobject-introspection
   (package
     (name "gobject-introspection")
-    (version "1.44.0")
+    (version "1.46.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/"
                    "gobject-introspection/" (version-major+minor version)
                    "/gobject-introspection-" version ".tar.xz"))
              (sha256
-              (base32 "1b972qg2yb51sdavfvb6kc19akwc15c1bwnbg81vadxamql2q33g"))
+              (base32 "0cs27r18fga44ypp8icy62fwx6nh70r1bvhi4lzfn4w85cybsn36"))
+             (modules '((guix build utils)))
+             (snippet
+              '(substitute* "tools/g-ir-tool-template.in"
+                 (("#!/usr/bin/env @PYTHON@") "#!@PYTHON@")))
              (patches (list
                        (search-patch "gobject-introspection-cc.patch")
                        (search-patch
@@ -258,7 +281,7 @@ bindings to call into the C library.")
 (define intltool
   (package
     (name "intltool")
-    (version "0.50.2")
+    (version "0.51.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://launchpad.net/intltool/trunk/"
@@ -266,7 +289,7 @@ bindings to call into the C library.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "01j4yd7i84n9nk4ccs6yifg84pp68nr9by57jdbhj7dpdxf5rwk7"))))
+               "1karx4sb7bnm2j67q0q74hspkfn6lqprpy5r99vkn5bb36a4viv7"))))
     (build-system gnu-build-system)
     (inputs
      `(("file" ,file)))
@@ -382,7 +405,7 @@ by GDBus included in Glib.")
 (define libsigc++
   (package
     (name "libsigc++")
-    (version "2.4.1")
+    (version "2.6.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/libsigc++/"
@@ -390,7 +413,7 @@ by GDBus included in Glib.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1v0rvkzglzmf67y9nkcppwjwi68j1cy5yhldvcq7xrv8594l612l"))))
+               "06xyvxaaxh3nbpjg86gcq5zcc2qnpx354wcfrqlhbndkq5kj2vqq"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("m4" ,m4)))
@@ -409,7 +432,7 @@ has an ease of use unmatched by other C++ callback libraries.")
 (define glibmm
   (package
     (name "glibmm")
-    (version "2.44.0")
+    (version "2.46.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/glibmm/"
@@ -417,7 +440,7 @@ has an ease of use unmatched by other C++ callback libraries.")
                                  "/glibmm-" version ".tar.xz"))
              (sha256
               (base32
-               "1a1fczy7hcpn24fglyn4i79f4yjc8s50is70q03mb294bm1c02hv"))))
+               "1an4v1yk06svlmcyp1psk2a3bsn29s1a4gdx0ai2w788q6bfaiwn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-cons-before
@@ -491,7 +514,7 @@ useful for C++.")
 (define-public python-pygobject
   (package
     (name "python-pygobject")
-    (version "3.16.1")
+    (version "3.18.0")
     (source
      (origin
        (method url-fetch)
@@ -500,7 +523,7 @@ useful for C++.")
                            "/pygobject-" version ".tar.xz"))
        (sha256
         (base32
-         "1hqyma73w0lnjcgx68kawhnq84aq92xlkdqphrlc2ppia38dm5kx"))))
+         "1jbd2m39vcjh5h3m33l0317ziq8dxfzi40r6hrfcs4rp5l8s2fqw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)
@@ -551,7 +574,18 @@ useful for C++.")
          "telepathy-glib-" version ".tar.gz"))
        (sha256
         (base32
-         "1symyzbjmxvksn2ifdkk50lafjm2llf2sbmky062gq2pz3cg23cy"))))
+         "1symyzbjmxvksn2ifdkk50lafjm2llf2sbmky062gq2pz3cg23cy"))
+       (patches
+        (list
+         ;; Don't use the same test name for multiple tests.
+         ;; <https://bugs.freedesktop.org/show_bug.cgi?id=92245>
+         (origin
+           (method url-fetch)
+           (uri "https://bugs.freedesktop.org/attachment.cgi?id=118608")
+           (file-name (string-append "telepathy-glib-duplicate-tests.patch"))
+           (sha256
+            (base32
+             "0z261fwrszxb28ccg3hsg9rizig4s84zvwmx6y31a4pyv7bvs5w3")))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib" ,glib "bin") ; uses glib-mkenums
