@@ -6393,11 +6393,13 @@ keep the system clock synchronized with that of @var{servers}.
 List of host names used as the default NTP servers.
 @end defvr
 
-@deffn {Scheme Procedure} tor-service [#:tor tor]
-Return a service to run the @uref{https://torproject.org,Tor} daemon.
+@deffn {Scheme Procedure} tor-service [@var{config-file}] [#:tor @var{tor}]
+Return a service to run the @uref{https://torproject.org, Tor} anonymous
+networking daemon.
 
-The daemon runs with the default settings (in particular the default exit
-policy) as the @code{tor} unprivileged user.
+The daemon runs as the @code{tor} unprivileged user.  It is passed
+@var{config-file}, a file-like object, with an additional @code{User tor}
+line.  Run @command{man tor} for information about the configuration file.
 @end deffn
 
 @deffn {Scheme Procedure} bitlbee-service [#:bitlbee bitlbee] @

@@ -316,20 +316,33 @@ keep the system clock synchronized with that of @var{servers}."
          (home-directory "/var/empty")
          (shell #~(string-append #$shadow "/sbin/nologin")))))
 
-(define (tor-dmd-service tor)
+(define (tor-dmd-service config)
   "Return a <dmd-service> running TOR."
-  (let ((torrc (plain-file "torrc" "User tor\n")))
-    (list (dmd-service
-           (provision '(tor))
+  (match config
+    ((tor config-file)
+     (let ((torrc (computed-file "torrc"
+                                 #~(begin
+                                     (use-modules (guix build utils))
+                                     (call-with-output-file #$output
+                                       (lambda (port)
+                                         (display "\
+User tor  # automatically added\n" port)
+                                         (call-with-input-file #$config-file
+                                           (lambda (input)
+                                             (dump-port input port)))
+                                         #t)))
+                                 #:modules '((guix build utils)))))
+       (list (dmd-service
+              (provision '(tor))
 
-           ;; Tor needs at least one network interface to be up, hence the
-           ;; dependency on 'loopback'.
-           (requirement '(user-processes loopback))
+              ;; Tor needs at least one network interface to be up, hence the
+              ;; dependency on 'loopback'.
+              (requirement '(user-processes loopback))
 
-           (start #~(make-forkexec-constructor
-                     (list (string-append #$tor "/bin/tor") "-f" #$torrc)))
-           (stop #~(make-kill-destructor))
-           (documentation "Run the Tor anonymous network overlay.")))))
+              (start #~(make-forkexec-constructor
+                        (list (string-append #$tor "/bin/tor") "-f" #$torrc)))
+              (stop #~(make-kill-destructor))
+              (documentation "Run the Tor anonymous network overlay.")))))))
 
 (define tor-service-type
   (service-type (name 'tor)
@@ -339,12 +352,16 @@ keep the system clock synchronized with that of @var{servers}."
                        (service-extension account-service-type
                                           (const %tor-accounts))))))
 
-(define* (tor-service #:key (tor tor))
-  "Return a service to run the @uref{https://torproject.org,Tor} daemon.
+(define* (tor-service #:optional
+                      (config-file (plain-file "empty" ""))
+                      #:key (tor tor))
+  "Return a service to run the @uref{https://torproject.org, Tor} anonymous
+networking daemon.
 
-The daemon runs with the default settings (in particular the default exit
-policy) as the @code{tor} unprivileged user."
-  (service tor-service-type tor))
+The daemon runs as the @code{tor} unprivileged user.  It is passed
+@var{config-file}, a file-like object, with an additional @code{User tor}
+line.  Run @command{man tor} for information about the configuration file."
+  (service tor-service-type (list tor config-file)))
 
 
 ;;;
