@@ -495,6 +495,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/guile-present-coding.patch		\
   gnu/packages/patches/guile-relocatable.patch			\
   gnu/packages/patches/guile-rsvg-pkgconfig.patch		\
+  gnu/packages/patches/guitarix-c++11.patch			\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
   gnu/packages/patches/hop-linker-flags.patch			\

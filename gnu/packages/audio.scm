@@ -536,7 +536,8 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "1w6dg2n0alfjsx1iy6s53783invygwxk11p1i65cc3nq3zlidcgx"))))
+               "1w6dg2n0alfjsx1iy6s53783invygwxk11p1i65cc3nq3zlidcgx"))
+             (patches (list (search-patch "guitarix-c++11.patch")))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -544,7 +545,8 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
        #:configure-flags
        (list
         ;; Add the output lib directory to the RUNPATH.
-        (string-append "--ldflags=-Wl,-rpath=" %output "/lib"))))
+        (string-append "--ldflags=-Wl,-rpath=" %output "/lib")
+        "--cxxflags=-std=c++11")))
     (inputs
      `(("libsndfile" ,libsndfile)
        ("boost" ,boost)
