@@ -343,7 +343,8 @@ Analysis and Reporting Technology) functionality.")
      `(("acl" ,acl)
        ("libatasmart" ,libatasmart)
        ("libgudev" ,libgudev)
-       ("polkit" ,polkit)))
+       ("polkit" ,polkit)
+       ("util-linux" ,util-linux)))
     (arguments
      `(#:tests? #f ; requiring system message dbus
        #:configure-flags
@@ -360,7 +361,18 @@ Analysis and Reporting Technology) functionality.")
               (("girdir = .*")
                "girdir = $(datadir)/gir-1.0\n")
               (("typelibsdir = .*")
-               "typelibsdir = $(libdir)/girepository-1.0\n")))))))
+               "typelibsdir = $(libdir)/girepository-1.0\n"))))
+         (add-after 'install 'set-mount-file-name
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             ;; Tell 'udisksd' where to find the 'mount' command.
+             (let ((out   (assoc-ref outputs "out"))
+                   (utils (assoc-ref inputs "util-linux")))
+               (wrap-program (string-append out "/libexec/udisks2/udisksd")
+                 `("PATH" ":" prefix
+                   (,(string-append utils "/bin") ;for 'mount'
+                    "/run/current-system/profile/bin"
+                    "/run/current-system/profile/sbin")))
+               #t))))))
     (home-page "http://www.freedesktop.org/wiki/Software/udisks/")
     (synopsis "Disk manager service")
     (description
