@@ -1394,6 +1394,48 @@ which is capable of accurately playing many games.  This package contains the
 high-level emulation (HLE) RSP processor plugin.")
     (license license:gpl2+)))
 
+(define-public mupen64plus-rsp-z64
+  (package
+    (name "mupen64plus-rsp-z64")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mupen64plus/mupen64plus-rsp-z64/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "10jz1w2dhx5slhyk4m8mdqlpsd6cshchslr1fckb2ayzb1ls3ghi"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("mupen64plus-core" ,mupen64plus-core)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The mupen64plus build system has no configure phase.
+         (delete 'configure)
+         ;; Makefile is in a subdirectory.
+         (add-before
+          'build 'cd-to-project-dir
+          (lambda _
+            (chdir "projects/unix"))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (m64p (assoc-ref %build-inputs "mupen64plus-core")))
+         (list "all"
+               (string-append "PREFIX=" out)
+               (string-append "APIDIR=" m64p "/include/mupen64plus")))
+       ;; There are no tests.
+       #:tests? #f))
+    (home-page "http://www.mupen64plus.org/")
+    (synopsis "Mupen64Plus SDL input plugin")
+    (description
+     "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
+which is capable of accurately playing many games.  This package contains the
+Z64 RSP processor plugin.")
+    (license license:gpl2+)))
+
 (define-public nestopia-ue
   (package
     (name "nestopia-ue")
