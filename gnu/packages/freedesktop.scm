@@ -345,12 +345,17 @@ Analysis and Reporting Technology) functionality.")
        ("libgudev" ,libgudev)
        ("polkit" ,polkit)
        ("util-linux" ,util-linux)))
+    (outputs '("out"
+               "doc"))                            ;5 MiB of gtk-doc HTML
     (arguments
      `(#:tests? #f ; requiring system message dbus
        #:configure-flags
        (list "--disable-man"
              "--localstatedir=/var"
              "--enable-fhs-media"     ;mount devices in /media, not /run/media
+             (string-append "--with-html-dir="
+                            (assoc-ref %outputs "doc")
+                            "/share/doc/udisks/html")
              (string-append "--with-udevdir=" %output "/lib/udev"))
        #:phases
        (modify-phases %standard-phases
