@@ -1688,6 +1688,72 @@ which is capable of accurately playing many games.  This package contains the
 Z64 video plugin.")
     (license license:gpl2+)))
 
+(define-public mupen64plus-ui-console
+  (package
+    (name "mupen64plus-ui-console")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mupen64plus/mupen64plus-ui-console/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "04qkpd8ic7xsgnqz7spl00wxdygf79m7d1k8rabbygjk5lg6p8z2"))
+       (patches
+        (list (search-patch "mupen64plus-ui-console-notice.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("sdl2" ,sdl2)))
+    ;; Mupen64Plus supports a single data directory and a single plugin
+    ;; directory in its configuration, yet we need data and plugin files from
+    ;; a variety of packages.  The best way to deal with this is to install
+    ;; all packages from which data and plugin files are needed into one's
+    ;; profile, and point the configuration there.  Hence, propagate the most
+    ;; important packages here to save the user from the bother.  The patch
+    ;; mupen64plus-ui-console-notice also gives users instructions on what
+    ;; they need to do in order to point the configuration to their profile.
+    (propagated-inputs
+     `(("mupen64plus-core" ,mupen64plus-core)
+       ("mupen64plus-audio-sdl" ,mupen64plus-audio-sdl)
+       ("mupen64plus-input-sdl" ,mupen64plus-input-sdl)
+       ("mupen64plus-rsp-hle" ,mupen64plus-rsp-hle)
+       ("mupen64plus-video-glide64" ,mupen64plus-video-glide64)
+       ("mupen64plus-video-glide64mk2" ,mupen64plus-video-glide64mk2)
+       ("mupen64plus-video-rice" ,mupen64plus-video-rice)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The mupen64plus build system has no configure phase.
+         (delete 'configure)
+         ;; Makefile is in a subdirectory.
+         (add-before
+          'build 'cd-to-project-dir
+          (lambda _
+            (chdir "projects/unix"))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (m64p (assoc-ref %build-inputs "mupen64plus-core")))
+         (list "all"
+               (string-append "PREFIX=" out)
+               (string-append "APIDIR=" m64p "/include/mupen64plus")
+               ;; Trailing slash matters here.
+               (string-append "COREDIR=" m64p "/lib/")))
+       ;; There are no tests.
+       #:tests? #f))
+    (home-page "http://www.mupen64plus.org/")
+    (synopsis "Mupen64Plus SDL input plugin")
+    (description
+     "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
+which is capable of accurately playing many games.  This package contains the
+command line user interface.  Installing this package is the easiest way
+towards a working Mupen64Plus for casual users.")
+    (license license:gpl2+)))
+
 (define-public nestopia-ue
   (package
     (name "nestopia-ue")
