@@ -357,7 +357,7 @@ site} for more information."
          (shell "/run/current-system/profile/sbin/nologin"))))
 
 (define %polkit-pam-services
-  (list (unix-pam-service "polkitd")))
+  (list (unix-pam-service "polkit-1")))
 
 (define (polkit-directory packages)
   "Return a directory containing an @file{actions} and possibly a
