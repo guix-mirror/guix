@@ -815,7 +815,7 @@ projects while introducing many more.")
     (version "2015.11.01")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://youtube-dl.org/downloads/"
+              (uri (string-append "http://youtube-dl.org/downloads/"
                                   version "/youtube-dl-"
                                   version ".tar.gz"))
               (sha256
@@ -826,7 +826,7 @@ projects while introducing many more.")
     (home-page "http://youtube-dl.org")
     (synopsis "Download videos from YouTube.com and other sites")
     (description
-     "youtube-dl is a small command-line program to download videos from
+     "Youtube-dl is a small command-line program to download videos from
 YouTube.com and a few more sites.")
     (license license:public-domain)))
 
