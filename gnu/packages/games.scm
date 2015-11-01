@@ -13,6 +13,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1213,6 +1214,52 @@ world}, @uref{http://evolonline.org, Evol Online} and
     ;; "data/themes/{golden-delicious,jewelry}/*" are under CC-BY-SA.
     ;; The rest is under GPL2+.
     (license (list license:gpl2+ license:zlib license:cc-by-sa4.0))))
+
+(define-public mupen64plus-core
+  (package
+    (name "mupen64plus-core")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mupen64plus/mupen64plus-core/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dg2hksm5qni2hcha93k7n4fqr92888p946f7phb0ndschzfh9kk"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("glu" ,glu)
+       ("libpng" ,libpng)
+       ("mesa" ,mesa)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The mupen64plus build system has no configure phase.
+         (delete 'configure)
+         ;; Makefile is in a subdirectory.
+         (add-before
+          'build 'cd-to-project-dir
+          (lambda _
+            (chdir "projects/unix"))))
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list "all" (string-append "PREFIX=" out)))
+       ;; There are no tests.
+       #:tests? #f))
+    (home-page "http://www.mupen64plus.org/")
+    (synopsis "Nintendo 64 emulator core library")
+    (description
+     "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
+which is capable of accurately playing many games.  This package contains the
+core library.")
+    (license license:gpl2+)))
 
 (define-public nestopia-ue
   (package
