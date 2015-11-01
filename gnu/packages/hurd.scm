@@ -32,7 +32,7 @@
 (define-public gnumach-headers
   (package
     (name "gnumach-headers")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
       (method url-fetch)
@@ -40,7 +40,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0wsf57q4h6xl2jn28d423qx7zplmhpnf9ssm4f1c0sf8513xm81j"))))
+        "1m7xwsrv6x6gk9xi5phs104rdn9q3lr63p348vyv0dzd6r3zyncb"))))
     (build-system gnu-build-system)
     (arguments
     `(#:phases (alist-replace
