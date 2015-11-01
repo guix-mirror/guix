@@ -6716,12 +6716,13 @@ their default values are:
 
 @deffn {Scheme Procedure} polkit-service @
                          [#:polkit @var{polkit}]
-Return a service that runs the Polkit privilege manager.
-@uref{http://www.freedesktop.org/wiki/Software/polkit/, Polkit} allows
-system administrators to grant access to privileged operations in a
-structured way.  For example, polkit rules can allow a logged-in user
-whose session is active to shut down the machine, if there are no other
-users active.
+Return a service that runs the
+@uref{http://www.freedesktop.org/wiki/Software/polkit/, Polkit privilege
+management service}, which allows system administrators to grant access to
+privileged operations in a structured way.  By querying the Polkit service, a
+privileged system component can know when it should grant additional
+capabilities to ordinary users.  For example, an ordinary user can be granted
+the capability to suspend the system if the user is logged in locally.
 @end deffn
 
 @deffn {Scheme Procedure} upower-service [#:upower @var{upower}] @

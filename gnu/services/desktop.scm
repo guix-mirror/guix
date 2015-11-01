@@ -226,52 +226,6 @@ levels, with the given configuration settings.  It implements the
 
 
 ;;;
-;;; Colord D-Bus service.
-;;;
-
-(define %colord-activation
-  #~(begin
-      (use-modules (guix build utils))
-      (mkdir-p "/var/lib/colord")
-      (let ((user (getpwnam "colord")))
-        (chown "/var/lib/colord"
-               (passwd:uid user) (passwd:gid user)))))
-
-(define %colord-accounts
-  (list (user-group (name "colord") (system? #t))
-        (user-account
-         (name "colord")
-         (group "colord")
-         (system? #t)
-         (comment "colord daemon user")
-         (home-directory "/var/empty")
-         (shell #~(string-append #$shadow "/sbin/nologin")))))
-
-(define colord-service-type
-  (service-type (name 'colord)
-                (extensions
-                 (list (service-extension account-service-type
-                                          (const %colord-accounts))
-                       (service-extension activation-service-type
-                                          (const %colord-activation))
-
-                       ;; Colord is a D-Bus service that dbus-daemon can
-                       ;; activate.
-                       (service-extension dbus-root-service-type list)
-
-                       ;; Colord provides "color device" rules for udev.
-                       (service-extension udev-service-type list)))))
-
-(define* (colord-service #:key (colord colord))
-  "Return a service that runs @command{colord}, a system service with a D-Bus
-interface to manage the color profiles of input and output devices such as
-screens and scanners.  It is notably used by the GNOME Color Manager graphical
-tool.  See @uref{http://www.freedesktop.org/software/colord/, the colord web
-site} for more information."
-  (service colord-service-type colord))
-
-
-;;;
 ;;; GeoClue D-Bus service.
 ;;;
 
@@ -383,6 +337,14 @@ site} for more information."
 ;;; Polkit privilege management service.
 ;;;
 
+(define-record-type* <polkit-configuration>
+  polkit-configuration make-polkit-configuration
+  polkit-configuration?
+  (polkit   polkit-configuration-polkit           ;<package>
+            (default polkit))
+  (actions  polkit-configuration-actions          ;list of <package>
+            (default '())))
+
 (define %polkit-accounts
   (list (user-group (name "polkitd") (system? #t))
         (user-account
@@ -396,9 +358,31 @@ site} for more information."
 (define %polkit-pam-services
   (list (unix-pam-service "polkitd")))
 
+(define (polkit-directory packages)
+  "Return a directory containing an @file{actions} and possibly a
+@file{rules.d} sub-directory, for use as @file{/etc/polkit-1}."
+  (computed-file "etc-polkit-1"
+                 #~(begin
+                     (use-modules (guix build union) (srfi srfi-26))
+
+                     (union-build #$output
+                                  (map (cut string-append <>
+                                            "/share/polkit-1")
+                                       (list #$@packages))))
+                 #:modules '((guix build union))))
+
+(define polkit-etc-files
+  (match-lambda
+    (($ <polkit-configuration> polkit packages)
+     `(("polkit-1" ,(polkit-directory packages))))))
+
+(define polkit-setuid-programs
+  (match-lambda
+    (($ <polkit-configuration> polkit)
+     (list #~(string-append #$polkit
+                            "/lib/polkit-1/polkit-agent-helper-1")))))
+
 (define polkit-service-type
-  ;; TODO: Make it extensible so it can collect policy files from other
-  ;; services.
   (service-type (name 'polkit)
                 (extensions
                  (list (service-extension account-service-type
@@ -406,15 +390,83 @@ site} for more information."
                        (service-extension pam-root-service-type
                                           (const %polkit-pam-services))
                        (service-extension dbus-root-service-type
-                                          list)))))
+                                          (compose
+                                           list
+                                           polkit-configuration-polkit))
+                       (service-extension etc-service-type
+                                          polkit-etc-files)
+                       (service-extension setuid-program-service-type
+                                          polkit-setuid-programs)))
+
+                ;; Extensions are lists of packages that provide polkit rules
+                ;; or actions under share/polkit-1/{actions,rules.d}.
+                (compose concatenate)
+                (extend (lambda (config actions)
+                          (polkit-configuration
+                           (inherit config)
+                           (actions
+                            (append (polkit-configuration-actions config)
+                                    actions)))))))
 
 (define* (polkit-service #:key (polkit polkit))
-  "Return a service that runs the @command{polkit} privilege management
-service.  By querying the @command{polkit} service, a privileged system
-component can know when it should grant additional capabilities to ordinary
-users.  For example, an ordinary user can be granted the capability to suspend
-the system if the user is logged in locally."
-  (service polkit-service-type polkit))
+  "Return a service that runs the
+@uref{http://www.freedesktop.org/wiki/Software/polkit/, Polkit privilege
+management service}, which allows system administrators to grant access to
+privileged operations in a structured way.  By querying the Polkit service, a
+privileged system component can know when it should grant additional
+capabilities to ordinary users.  For example, an ordinary user can be granted
+the capability to suspend the system if the user is logged in locally."
+  (service polkit-service-type
+           (polkit-configuration (polkit polkit))))
+
+
+;;;
+;;; Colord D-Bus service.
+;;;
+
+(define %colord-activation
+  #~(begin
+      (use-modules (guix build utils))
+      (mkdir-p "/var/lib/colord")
+      (let ((user (getpwnam "colord")))
+        (chown "/var/lib/colord"
+               (passwd:uid user) (passwd:gid user)))))
+
+(define %colord-accounts
+  (list (user-group (name "colord") (system? #t))
+        (user-account
+         (name "colord")
+         (group "colord")
+         (system? #t)
+         (comment "colord daemon user")
+         (home-directory "/var/empty")
+         (shell #~(string-append #$shadow "/sbin/nologin")))))
+
+(define colord-service-type
+  (service-type (name 'colord)
+                (extensions
+                 (list (service-extension account-service-type
+                                          (const %colord-accounts))
+                       (service-extension activation-service-type
+                                          (const %colord-activation))
+
+                       ;; Colord is a D-Bus service that dbus-daemon can
+                       ;; activate.
+                       (service-extension dbus-root-service-type list)
+
+                       ;; Colord provides "color device" rules for udev.
+                       (service-extension udev-service-type list)
+
+                       ;; It provides polkit "actions".
+                       (service-extension polkit-service-type list)))))
+
+(define* (colord-service #:key (colord colord))
+  "Return a service that runs @command{colord}, a system service with a D-Bus
+interface to manage the color profiles of input and output devices such as
+screens and scanners.  It is notably used by the GNOME Color Manager graphical
+tool.  See @uref{http://www.freedesktop.org/software/colord/, the colord web
+site} for more information."
+  (service colord-service-type colord))
 
 
 ;;;
@@ -581,7 +633,9 @@ the system if the user is logged in locally."
                                           (compose list elogind-package))
                        (service-extension udev-service-type
                                           (compose list elogind-package))
-                       ;; TODO: Extend polkit(?) and PAM.
+                       (service-extension polkit-service-type
+                                          (compose list elogind-package))
+                       ;; TODO: Extend PAM with pam_elogind.so.
                        ))))
 
 (define* (elogind-service #:key (config (elogind-configuration)))
