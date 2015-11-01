@@ -350,6 +350,7 @@ Analysis and Reporting Technology) functionality.")
        #:configure-flags
        (list "--disable-man"
              "--localstatedir=/var"
+             "--enable-fhs-media"     ;mount devices in /media, not /run/media
              (string-append "--with-udevdir=" %output "/lib/udev"))
        #:phases
        (modify-phases %standard-phases
