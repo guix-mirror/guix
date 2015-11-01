@@ -6744,6 +6744,13 @@ levels, with the given configuration settings.  It implements the
 GNOME.
 @end deffn
 
+@deffn {Scheme Procedure} udisks-service [#:udisks @var{udisks}]
+Return a service for @uref{http://udisks.freedesktop.org/docs/latest/,
+UDisks}, a @dfn{disk management} daemon that provides user interfaces with
+notifications and ways to mount/unmount disks.  Programs that talk to UDisks
+include the @command{udisksctl} command, part of UDisks, and GNOME Disks.
+@end deffn
+
 @deffn {Scheme Procedure} colord-service [#:colord @var{colord}]
 Return a service that runs @command{colord}, a system service with a D-Bus
 interface to manage the color profiles of input and output devices such as

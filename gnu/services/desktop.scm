@@ -43,6 +43,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:export (upower-service
+            udisks-service
             colord-service
             geoclue-application
             %standard-geoclue-applications
@@ -470,6 +471,37 @@ site} for more information."
 
 
 ;;;
+;;; UDisks.
+;;;
+
+(define-record-type* <udisks-configuration>
+  udisks-configuration make-udisks-configuration
+  udisks-configuration?
+  (udisks   udisks-configuration-udisks
+            (default udisks)))
+
+(define udisks-service-type
+  (let ((udisks-package (lambda (config)
+                          (list (udisks-configuration-udisks config)))))
+    (service-type (name 'udisks)
+                  (extensions
+                   (list (service-extension polkit-service-type
+                                            udisks-package)
+                         (service-extension dbus-root-service-type
+                                            udisks-package)
+                         (service-extension udev-service-type
+                                            udisks-package))))))
+
+(define* (udisks-service #:key (udisks udisks))
+  "Return a service for @uref{http://udisks.freedesktop.org/docs/latest/,
+UDisks}, a @dfn{disk management} daemon that provides user interfaces with
+notifications and ways to mount/unmount disks.  Programs that talk to UDisks
+include the @command{udisksctl} command, part of UDisks, and GNOME Disks."
+  (service udisks-service-type
+           (udisks-configuration (udisks udisks))))
+
+
+;;;
 ;;; Elogind login and seat management service.
 ;;;
 
@@ -662,6 +694,7 @@ when they log out."
          ;; The D-Bus clique.
          (avahi-service)
          (wicd-service)
+         (udisks-service)
          (upower-service)
          (colord-service)
          (geoclue-service)
