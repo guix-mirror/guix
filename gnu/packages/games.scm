@@ -38,6 +38,7 @@
   #:use-module (guix svn-download)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
@@ -1212,3 +1213,62 @@ world}, @uref{http://evolonline.org, Evol Online} and
     ;; "data/themes/{golden-delicious,jewelry}/*" are under CC-BY-SA.
     ;; The rest is under GPL2+.
     (license (list license:gpl2+ license:zlib license:cc-by-sa4.0))))
+
+(define-public nestopia-ue
+  (package
+    (name "nestopia-ue")
+    (version "1.46.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rdanbrook/nestopia/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07h49xwvg61dx20rk5p4r3ax2ar5y0ppvm60cqwqljyi9rdfbh7p"))
+              (modules '((guix build utils)))
+              ;; We don't need libretro for the GNU/Linux build.
+              (snippet
+               '(delete-file-recursively "libretro"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ao" ,ao)
+       ("glu" ,glu)
+       ("gtk+" ,gtk+)
+       ("libarchive" ,libarchive)
+       ("mesa" ,mesa)
+       ("sdl2" ,sdl2)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The Nestopia build system consists solely of a Makefile.
+         (delete 'configure)
+         ;; XXX Should be unnecessary with the next release.
+         (add-before
+          'build 'patch-makefile
+          (lambda _
+            (substitute* "Makefile"
+              (("@mkdir \\$@") "@mkdir -p $@")
+              (("CC =") "CC ?=")
+              (("CXX =") "CXX ?=")
+              (("PREFIX =") "PREFIX ?=")
+              (("^install:\n$") "install:\n\tmkdir -p $(BINDIR)\n"))))
+         (add-before
+          'build 'remove-xdg-desktop-menu-call
+          (lambda _
+            (substitute* "Makefile"
+              (("xdg-desktop-menu install .*") "")))))
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list "CC=gcc" "CXX=g++" (string-append "PREFIX=" out)))
+       ;; There are no tests.
+       #:tests? #f))
+    (home-page "http://0ldsk00l.ca/nestopia/")
+    (synopsis "Nintendo Entertainment System (NES/Famicom) emulator")
+    (description
+     "Nestopia UE (Undead Edition) is a fork of the Nintendo Entertainment
+System (NES/Famicom) emulator Nestopia, with enhancements from members of the
+emulation community.  It provides highly accurate emulation.")
+    (license license:gpl2+)))
