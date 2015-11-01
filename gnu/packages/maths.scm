@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -160,19 +161,7 @@ semiconductors.")
         "0bfahlsgil0695104a44c3c8vjkyvxmg3s92371fddcrj6qz0qg3"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:parallel-tests? #f
-       #:phases
-        (alist-replace
-         'configure
-         (lambda* (#:key target system outputs #:allow-other-keys #:rest args)
-           (let ((configure (assoc-ref %standard-phases 'configure)))
-             ;; disable numerically unstable test on i686, see thread at
-             ;; http://lists.gnu.org/archive/html/bug-gsl/2011-11/msg00019.html
-             (if (string=? (or target system) "i686-linux")
-                 (substitute* "ode-initval2/Makefile.in"
-                   (("TESTS = \\$\\(check_PROGRAMS\\)") "TESTS =")))
-             (apply configure args)))
-         %standard-phases)))
+     `(#:parallel-tests? #f))
     (home-page "http://www.gnu.org/software/gsl/")
     (synopsis "Numerical library for C and C++")
     (description
