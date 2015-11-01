@@ -140,7 +140,7 @@
                          (system* (string-append #$imagemagick "/bin/convert")
                                   "-resize" #$size #$image #$output)))))
 
-(define* (grub-background-image config #:key (width 640) (height 480))
+(define* (grub-background-image config #:key (width 1024) (height 768))
   "Return the GRUB background image defined in CONFIG with a ratio of
 WIDTH/HEIGHT, or #f if none was found."
   (let* ((ratio (/ width height))
