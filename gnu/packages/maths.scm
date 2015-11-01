@@ -149,7 +149,7 @@ semiconductors.")
 (define-public gsl
   (package
     (name "gsl")
-    (version "1.16")
+    (version "2.0")
     (source
      (origin
       (method url-fetch)
@@ -157,9 +157,7 @@ semiconductors.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0lrgipi0z6559jqh82yx8n4xgnxkhzj46v96dl77hahdp58jzg3k"))
-      (patches (map search-patch '("gsl-poly-test-fix-pt1.patch"
-                                   "gsl-poly-test-fix-pt2.patch")))))
+        "0bfahlsgil0695104a44c3c8vjkyvxmg3s92371fddcrj6qz0qg3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-tests? #f
