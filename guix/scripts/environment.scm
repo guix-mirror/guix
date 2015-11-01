@@ -160,8 +160,7 @@ COMMAND or an interactive shell in that environment.\n"))
 
 (define %default-options
   ;; Default to opening a new shell.
-  `((exec . (,%default-shell))
-    (system . ,(%current-system))
+  `((system . ,(%current-system))
     (substitutes? . #t)
     (max-silent-time . 3600)
     (verbosity . 0)))
@@ -447,7 +446,14 @@ Otherwise, return the derivation for the Bash package."
            (network?   (assoc-ref opts 'network?))
            (bootstrap? (assoc-ref opts 'bootstrap?))
            (system     (assoc-ref opts 'system))
-           (command    (assoc-ref opts 'exec))
+           (command    (or (assoc-ref opts 'exec)
+                           ;; Spawn a shell if the user didn't specify
+                           ;; anything in particular.
+                           (if container?
+                               ;; The user's shell is likely not available
+                               ;; within the container.
+                               '("/bin/sh")
+                               (list %default-shell))))
            (packages   (options/resolve-packages opts))
            (mappings   (pick-all opts 'file-system-mapping))
            (inputs     (delete-duplicates
