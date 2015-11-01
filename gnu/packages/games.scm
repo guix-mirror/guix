@@ -1536,6 +1536,56 @@ which is capable of accurately playing many games.  This package contains the
 Glide64 video plugin.")
     (license license:gpl2+)))
 
+(define-public mupen64plus-video-glide64mk2
+  (package
+    (name "mupen64plus-video-glide64mk2")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mupen64plus/mupen64plus-video-glide64mk2/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ihl4q293d6svba26b4mhapjcdg12p90gibz79b4mx423jlcxxj9"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("boost" ,boost)
+       ("libpng" ,libpng)
+       ("mesa" ,mesa)
+       ("mupen64plus-core" ,mupen64plus-core)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The mupen64plus build system has no configure phase.
+         (delete 'configure)
+         ;; Makefile is in a subdirectory.
+         (add-before
+          'build 'cd-to-project-dir
+          (lambda _
+            (chdir "projects/unix"))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (m64p (assoc-ref %build-inputs "mupen64plus-core")))
+         (list "all"
+               (string-append "PREFIX=" out)
+               (string-append "APIDIR=" m64p "/include/mupen64plus")))
+       ;; There are no tests.
+       #:tests? #f))
+    (home-page "http://www.mupen64plus.org/")
+    (synopsis "Mupen64Plus Rice Video plugin")
+    (description
+     "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
+which is capable of accurately playing many games.  This package contains the
+Glide64MK2 video plugin.")
+    (license license:gpl2+)))
+
 (define-public nestopia-ue
   (package
     (name "nestopia-ue")
