@@ -97,14 +97,14 @@ communication.")
 (define-public hurd-headers
   (package
     (name "hurd-headers")
-    (version "0.6")
+    (version "0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/hurd/hurd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "059lbspbpcjpcq5jf98f47jw9sm0ngs3x6phxax53m3rwca1fk7y"))))
+                "1q2pyc16vb5plqi8hlwnnc9jk8zlifm91cavz6x7vhbwy0nh2yvh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; Autoconf shouldn't be necessary but there seems to be a bug in the
