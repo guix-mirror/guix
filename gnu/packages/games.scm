@@ -1261,6 +1261,52 @@ which is capable of accurately playing many games.  This package contains the
 core library.")
     (license license:gpl2+)))
 
+(define-public mupen64plus-audio-sdl
+  (package
+    (name "mupen64plus-audio-sdl")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mupen64plus/mupen64plus-audio-sdl/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0ss6w92n2rpfnazhg9lbq0nvs3fqx93nliz3k3wjxdlx4dpi7h3a"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("mupen64plus-core" ,mupen64plus-core)
+       ("sdl2" ,sdl2)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The mupen64plus build system has no configure phase.
+         (delete 'configure)
+         ;; Makefile is in a subdirectory.
+         (add-before
+          'build 'cd-to-project-dir
+          (lambda _
+            (chdir "projects/unix"))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (m64p (assoc-ref %build-inputs "mupen64plus-core")))
+         (list "all"
+               (string-append "PREFIX=" out)
+               (string-append "APIDIR=" m64p "/include/mupen64plus")))
+       ;; There are no tests.
+       #:tests? #f))
+    (home-page "http://www.mupen64plus.org/")
+    (synopsis "Mupen64Plus SDL input plugin")
+    (description
+     "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
+which is capable of accurately playing many games.  This package contains the
+SDL audio plugin.")
+    (license license:gpl2+)))
+
 (define-public nestopia-ue
   (package
     (name "nestopia-ue")
