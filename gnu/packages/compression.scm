@@ -263,8 +263,10 @@ compressed with pbzip2 can be decompressed with bzip2).")
    (version "5.0.4")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://tukaani.org/xz/xz-" version
-                                ".tar.gz"))
+            (uri (list (string-append "http://tukaani.org/xz/xz-" version
+                                      ".tar.gz")
+                       (string-append "http://multiprecision.org/guix/xz-"
+                                      version ".tar.gz")))
             (sha256
              (base32
               "1dl35ca8fdss9z2d6y234gxh24ixq904xksizrjmjr5dimwhax6n"))))
