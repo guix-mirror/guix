@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
 (define-module (gnu packages slang)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages readline)
@@ -28,7 +30,8 @@
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages pcre))
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages python))
 
 (define-public slang
   (package
@@ -85,15 +88,22 @@ slsh, which is part of the S-Lang distribution.")
                (base32
                 "07n9f2mqsjfj35wx5ldhvl9sqcjqpcl0g4fdd9mawmny9rihw6vp"))))
     (build-system gnu-build-system)
+    (outputs '("out" "python"))
     (inputs
      `(("slang" ,slang)
        ("popt" ,popt)
+       ("python" ,python)
        ("fribidi" ,fribidi)))
     (arguments
      `(#:tests? #f    ; no test suite
        #:configure-flags
        ;; Set the correct RUNPATH in binaries.
        (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+       #:make-flags
+       ;; configure does not allow us to override this variable from the
+       ;; command-line.  Fortunately, the Makefile does, so provide it here.
+       (list (string-append "PYTHONVERS=python"
+                            ,(version-major+minor (package-version python))))
        #:phases
        (modify-phases %standard-phases
          (add-after
@@ -101,7 +111,17 @@ slsh, which is part of the S-Lang distribution.")
           (lambda _
             (substitute* "po/Makefile"
               (("/usr/bin/install") "install"))
-            #t)))))
+            #t))
+         (add-after
+          'install 'move-python
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out  (assoc-ref outputs "out"))
+                  (py   (assoc-ref outputs "python"))
+                  (ver ,(version-major+minor (package-version python))))
+              (mkdir-p (string-append py "/lib"))
+              (rename-file (string-append out "/lib/python" ver)
+                           (string-append py  "/lib/python" ver))
+              #t))))))
     (home-page "https://fedorahosted.org/newt/")
     (synopsis "Not Erik's Windowing Toolkit - text mode windowing with slang")
     (description
