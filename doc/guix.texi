@@ -4751,7 +4751,7 @@ PETSc package.
 Running:
 
 @example
-guix environment --ad-hoc -e '(@ (gnu) %base-packages)'
+guix environment --ad-hoc -e '(@@ (gnu) %base-packages)'
 @end example
 
 starts a shell with all the GuixSD base packages available.
@@ -4836,7 +4836,7 @@ directory:
 guix environment --container --expose=$HOME=/exchange guile -- guile
 @end example
 
-@item --share
+@item --share=@var{source}[=@var{target}]
 For containers, share the file system @var{source} from the host system
 as the writable file system @var{target} within the container.  If
 @var{target} is not specified, @var{source} is used as the target mount
