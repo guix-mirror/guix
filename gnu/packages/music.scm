@@ -784,6 +784,19 @@ browser.")
                (base32
                 "01c4v5lbzard6y00cjq3b6a50cafqwfwibzng9gdsajczhnbkqz2"))))
     (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Move SSE compiler optimization flags from generic target to
+         ;; athlon64 and core2 targets, because otherwise the build would fail
+         ;; on non-Intel machines.
+         (add-after 'unpack 'remove-sse-flags-from-generic-target
+          (lambda _
+            (substitute* "src/CMakeLists.txt"
+              (("-msse -msse2 -mfpmath=sse") "")
+              (("-march=(athlon64|core2)" flag)
+               (string-append flag " -msse -msse2 -mfpmath=sse")))
+            #t)))))
     (inputs
      `(("liblo" ,liblo)
        ("ntk" ,ntk)
