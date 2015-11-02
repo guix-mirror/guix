@@ -241,6 +241,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/openstack.scm			\
   gnu/packages/orpheus.scm			\
   gnu/packages/ots.scm				\
+  gnu/packages/owncloud.scm			\
   gnu/packages/package-management.scm		\
   gnu/packages/parallel.scm			\
   gnu/packages/password-utils.scm		\
