@@ -37,7 +37,8 @@
                                  version ".tar.gz"))
              (sha256
               (base32 "0b8034v1s82n4dg5rzcn12067ha3nxaylp2vdp8gg08kjsbzphhk"))
-             (patches (list (search-patch "lua-pkgconfig.patch")))))
+             (patches (list (search-patch "lua-pkgconfig.patch")
+                            (search-patch "lua52-liblua-so.patch")))))
     (build-system gnu-build-system)
     (inputs `(("readline", readline)))
     (arguments
