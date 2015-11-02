@@ -6571,7 +6571,9 @@ mDNS/DNS-SD responder that allows for service discovery and
 "zero-configuration" host name lookups (see @uref{http://avahi.org/}), and
 extends the name service cache daemon (nscd) so that it can resolve
 @code{.local} host names using
-@uref{http://0pointer.de/lennart/projects/nss-mdns/, nss-mdns}.
+@uref{http://0pointer.de/lennart/projects/nss-mdns/, nss-mdns}.  Additionally,
+add the @var{avahi} package to the system profile so that commands such as
+@command{avahi-browse} are directly usable.
 
 If @var{host-name} is different from @code{#f}, use that as the host name to
 publish for this machine; otherwise, use the machine's actual host name.
