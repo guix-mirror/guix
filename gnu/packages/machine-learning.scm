@@ -278,6 +278,9 @@ sample proximities between pairs of cases.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
+    ;; Non-portable SSE instructions are used so building fails on platforms
+    ;; other than x86_64.
+    (supported-systems '("x86_64-linux"))
     (home-page "http://shogun-toolbox.org/")
     (synopsis "Machine learning toolbox")
     (description
