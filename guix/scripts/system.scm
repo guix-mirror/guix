@@ -447,8 +447,14 @@ building anything."
                                                  (if (eq? 'init action)
                                                      '()
                                                      (previous-grub-entries)))))
-       (drvs   -> (if (and grub? (memq action '(init reconfigure)))
-                      (list sys grub grub.cfg)
+
+       ;; For 'init' and 'reconfigure', always build GRUB.CFG, even if
+       ;; --no-grub is passed, because GRUB.CFG because we then use it as a GC
+       ;; root.  See <http://bugs.gnu.org/21068>.
+       (drvs   -> (if (memq action '(init reconfigure))
+                      (if grub?
+                          (list sys grub.cfg grub)
+                          (list sys grub.cfg))
                       (list sys)))
        (%         (if derivations-only?
                       (return (for-each (compose println derivation-file-name)
