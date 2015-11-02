@@ -513,14 +513,14 @@ MailCore 2.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.11.1")
+    (version "3.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://sourceforge/claws-mail/claws-mail-" version
+                    "http://www.claws-mail.org/releases/" name "-" version
                     ".tar.xz"))
               (sha256
-               (base32 "0cyixz1jgfpi8abh9fbb8ylx9mcvw4jqj81cms666wpqr6v828yp"))))
+               (base32 "0fpr9gdgrs5yggm61a6135ca06x0cflddsh8dwfqmpb3dj07cl1n"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)
