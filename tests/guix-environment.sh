@@ -29,6 +29,10 @@ trap 'rm -r "$tmpdir"' EXIT
 
 mkdir "$tmpdir"
 
+# 'guix environment' launches /bin/sh if 'SHELL' is unset, so export 'SHELL'
+# since we know it's valid (build environments lack /bin/sh.)
+export SHELL
+
 # Check the environment variables for the bootstrap Guile.
 guix environment --ad-hoc guile-bootstrap --pure --search-paths > "$tmpdir/a"
 guix environment --ad-hoc guile-bootstrap:out --pure --search-paths > "$tmpdir/b"
