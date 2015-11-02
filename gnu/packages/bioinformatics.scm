@@ -1374,6 +1374,9 @@ estimates transcript expression.")
      `(("perl" ,perl)
        ("python" ,python)
        ("zlib" ,zlib)))
+    ;; Non-portable SSE instructions are used so building fails on platforms
+    ;; other than x86_64.
+    (supported-systems '("x86_64-linux"))
     (home-page "http://ccb.jhu.edu/software/hisat/index.shtml")
     (synopsis "Hierarchical indexing for spliced alignment of transcripts")
     (description
