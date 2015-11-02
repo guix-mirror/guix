@@ -5049,7 +5049,7 @@ is subject to radical change in the future.
 
 The purpose of @command{guix container} is to manipulate processes
 running within an isolated environment, commonly known as a
-``container,'' typically created by the @command{guix environment}
+``container'', typically created by the @command{guix environment}
 (@pxref{Invoking guix environment}) and @command{guix system container}
 (@pxref{Invoking guix system}) commands.
 
