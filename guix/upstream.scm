@@ -40,6 +40,7 @@
             upstream-source-version
             upstream-source-urls
             upstream-source-signature-urls
+            upstream-source-archive-types
 
             coalesce-sources
 

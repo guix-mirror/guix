@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,11 +23,13 @@
   #:use-module (guix store)
   #:use-module (guix hash)
   #:use-module (guix base32)
+  #:use-module (guix upstream)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (web uri)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:export (gnu->guix-package))
@@ -47,7 +49,7 @@
 
 (define (preferred-archive-type release)
   "Return the preferred type of archive for downloading RELEASE."
-  (find (cute member <> (gnu-release-archive-types release))
+  (find (cute member <> (upstream-source-archive-types release))
         '("xz" "lz" "bz2" "tbz2" "gz" "tgz" "Z")))
 
 (define* (gnu-package->sexp package release
@@ -60,21 +62,29 @@
 
   (define url-base
     ;; XXX: We assume that RELEASE's directory starts with "/gnu".
-    (string-append "mirror:/" (gnu-release-directory release)
+    (string-append "mirror:/"
+                   (match (upstream-source-urls release)
+                     ((url rest ...)
+                      (dirname (uri-path (string->uri url)))))
                    "/" name "-"))
 
   (define archive-type
     (preferred-archive-type release))
 
+  (define url
+    (find (cut string-suffix? archive-type <>)
+          (upstream-source-urls release)))
+
+  (define sig-url
+    (find (cute string-suffix? (string-append archive-type ".sig") <>)
+          (upstream-source-signature-urls release)))
+
   (let ((tarball (with-store store
-                   (download-tarball store name
-                                     (gnu-release-directory release)
-                                     (gnu-release-version release)
-                                     #:archive-type archive-type
+                   (download-tarball store url sig-url
                                      #:key-download key-download))))
     `(package
        (name ,name)
-       (version ,(gnu-release-version release))
+       (version ,(upstream-source-version release))
        (source (origin
                  (method url-fetch)
                  (uri (string-append ,url-base version
@@ -95,8 +105,8 @@
 KEY-DOWNLOAD as the OpenPGP key download policy (see 'download-tarball' for
 details.)"
   (match (latest-release name)
-    ((? gnu-release? release)
-     (let ((version (gnu-release-version release)))
+    ((? upstream-source? release)
+     (let ((version (upstream-source-version release)))
        (match (find-packages (regexp-quote name))
          ((info . _)
           (gnu-package->sexp info release #:key-download key-download))
