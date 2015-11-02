@@ -309,7 +309,12 @@ reboot_cmd " dmd "/sbin/reboot\n"
                  (list (service-extension dmd-root-service-type
                                           slim-dmd-service)
                        (service-extension pam-root-service-type
-                                          slim-pam-service)))))
+                                          slim-pam-service)
+
+                       ;; Unconditionally add xterm to the system profile, to
+                       ;; avoid bad surprises.
+                       (service-extension profile-service-type
+                                          (const (list xterm)))))))
 
 (define* (slim-service #:key (slim slim)
                        (allow-empty-passwords? #t) auto-login?
