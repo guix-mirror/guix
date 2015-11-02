@@ -483,11 +483,19 @@ configuration file."
                        (service-extension dbus-root-service-type
                                           list)
                        (service-extension activation-service-type
-                                          (const %wicd-activation))))))
+                                          (const %wicd-activation))
+
+                       ;; Add Wicd to the global profile.
+                       (service-extension profile-service-type list)))))
 
 (define* (wicd-service #:key (wicd wicd))
   "Return a service that runs @url{https://launchpad.net/wicd,Wicd}, a network
-manager that aims to simplify wired and wireless networking."
+management daemon that aims to simplify wired and wireless networking.
+
+This service adds the @var{wicd} package to the global profile, providing
+several commands to interact with the daemon and configure networking:
+@command{wicd-client}, a graphical user interface, and the @command{wicd-cli}
+and @command{wicd-curses} user interfaces."
   (service wicd-service-type wicd))
 
 ;;; networking.scm ends here

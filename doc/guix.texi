@@ -6447,9 +6447,15 @@ gateway.
 @end deffn
 
 @cindex wicd
+@cindex network management
 @deffn {Scheme Procedure} wicd-service [#:wicd @var{wicd}]
-Return a service that runs @url{https://launchpad.net/wicd,Wicd}, a
-network manager that aims to simplify wired and wireless networking.
+Return a service that runs @url{https://launchpad.net/wicd,Wicd}, a network
+management daemon that aims to simplify wired and wireless networking.
+
+This service adds the @var{wicd} package to the global profile, providing
+several commands to interact with the daemon and configure networking:
+@command{wicd-client}, a graphical user interface, and the @command{wicd-cli}
+and @command{wicd-curses} user interfaces.
 @end deffn
 
 @deffn {Scheme Procedure} ntp-service [#:ntp @var{ntp}] @
