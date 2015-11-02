@@ -116,6 +116,11 @@ $1 = 361
 The @command{pre-inst-env} script sets up all the environment variables
 necessary to support this, including @env{PATH} and @env{GUILE_LOAD_PATH}.
 
+Note that @command{./pre-inst-env guix pull} does @emph{not} upgrade the
+local source tree; it simply updates the @file{~/.config/guix/latest}
+symlink (@pxref{Invoking guix pull}).  Run @command{git pull} instead if
+you want to upgrade your local source tree.
+
 
 @node The Perfect Setup
 @section The Perfect Setup
