@@ -47,20 +47,6 @@
        (check? #f)
        (create-mount-point? #t)))))
 
-(define (system-container os)
-  "Return a derivation that builds OS as a Linux container."
-  (mlet* %store-monad
-      ((profile (operating-system-profile os))
-       (etc  -> (operating-system-etc-directory os))
-       (boot    (operating-system-boot-script os #:container? #t))
-       (locale  (operating-system-locale-directory os)))
-    (lower-object
-     (file-union "system-container"
-                 `(("boot" ,#~#$boot)
-                   ("profile" ,#~#$profile)
-                   ("locale" ,#~#$locale)
-                   ("etc" ,#~#$etc))))))
-
 (define (containerized-operating-system os mappings)
   "Return an operating system based on OS for use in a Linux container
 environment.  MAPPINGS is a list of <file-system-mapping> to realize in the
@@ -95,7 +81,9 @@ that will be shared with the host system."
                                (operating-system-file-systems os)))
          (specs        (map file-system->spec file-systems)))
 
-    (mlet* %store-monad ((os-drv (system-container os)))
+    (mlet* %store-monad ((os-drv (operating-system-derivation
+                                  os
+                                  #:container? #t)))
 
       (define script
         #~(begin

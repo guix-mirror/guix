@@ -7589,8 +7589,11 @@ as arrows, a typical system might provide something like this:
 
 @image{images/service-graph,,5in,Typical service extension graph.}
 
-At the bottom, we see the @dfn{boot service}, which produces the boot
-script that is executed at boot time from the initial RAM disk.
+@cindex system service
+At the bottom, we see the @dfn{system service}, which produces the
+directory containing everything to run and boot the system, as returned
+by the @command{guix system build} command.  @xref{Service Reference},
+to learn about the other service types shown here.
 @xref{system-extension-graph, the @command{guix system extension-graph}
 command}, for information on how to generate this representation for a
 particular operating system definition.
@@ -7853,12 +7856,14 @@ Return true if @var{obj} is a service extension.
 
 At the core of the service abstraction lies the @code{fold-services}
 procedure, which is responsible for ``compiling'' a list of services
-down to a single boot script.  In essence, it propagates service
-extensions down the service graph, updating each node parameters on the
-way, until it reaches the root node.
+down to a single directory that contains everything needed to boot and
+run the system---the directory shown by the @command{guix system build}
+command (@pxref{Invoking guix system}).  In essence, it propagates
+service extensions down the service graph, updating each node parameters
+on the way, until it reaches the root node.
 
 @deffn {Scheme Procedure} fold-services @var{services} @
-                            [#:target-type @var{boot-service-type}]
+                            [#:target-type @var{system-service-type}]
 Fold @var{services} by propagating their extensions down to the root of
 type @var{target-type}; return the root service adjusted accordingly.
 @end deffn
@@ -7866,9 +7871,14 @@ type @var{target-type}; return the root service adjusted accordingly.
 Lastly, the @code{(gnu services)} module also defines several essential
 service types, some of which are listed below.
 
+@defvr {Scheme Variable} system-service-type
+This is the root of the service graph.  It produces the system directory
+as returned by the @command{guix system build} command.
+@end defvr
+
 @defvr {Scheme Variable} boot-service-type
-The type of the ``boot service'', which is the root of the service
-graph.
+The type of the ``boot service'', which produces the @dfn{boot script}.
+The boot script is what the initial RAM disk runs when booting.
 @end defvr
 
 @defvr {Scheme Variable} etc-service-type

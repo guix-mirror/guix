@@ -4,7 +4,8 @@ digraph "Service Type Dependencies" {
   etc [shape = box, fontname = Helvetica];
   accounts [shape = box, fontname = Helvetica];
   activation [shape = box, fontname = Helvetica];
-  boot [shape = house, fontname = Helvetica];
+  boot [shape = box, fontname = Helvetica];
+  system [shape = house, fontname = Helvetica];
   lshd -> dmd;
   lshd -> pam;
   udev -> dmd;
@@ -32,4 +33,6 @@ digraph "Service Type Dependencies" {
   guix -> dmd;
   guix -> activation;
   guix -> accounts;
+  boot -> system;
+  etc -> system;
 }

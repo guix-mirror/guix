@@ -60,6 +60,7 @@
             ambiguous-target-service-error-service
             ambiguous-target-service-error-target-type
 
+            system-service-type
             boot-service-type
             activation-service-type
             activation-service->script
@@ -89,9 +90,10 @@
 ;;; by providing one procedure to compose extensions, and one procedure to
 ;;; extend itself.
 ;;;
-;;; A notable service type is BOOT-SERVICE-TYPE, which has a single instance,
-;;; %BOOT-SERVICE.  %BOOT-SERVICE constitutes the root of the service DAG.  It
-;;; produces the boot script that the initrd loads.
+;;; A notable service type is SYSTEM-SERVICE-TYPE, which has a single
+;;; instance, which is the root of the service DAG.  Its value is the
+;;; derivation that produces the 'system' directory as returned by
+;;; 'operating-system-derivation'.
 ;;;
 ;;; The 'fold-services' procedure can be passed a list of procedures, which it
 ;;; "folds" by propagating extensions down the graph; it returns the root
@@ -182,6 +184,25 @@ This is a shorthand for (map (lambda (svc) ...) %base-services)."
 ;;; Core services.
 ;;;
 
+(define (system-derivation mentries mextensions)
+  "Return as a monadic value the derivation of the 'system' directory
+containing the given entries."
+  (mlet %store-monad ((entries    mentries)
+                      (extensions (sequence %store-monad mextensions)))
+    (lower-object
+     (file-union "system"
+                 (append entries (concatenate extensions))))))
+
+(define system-service-type
+  ;; This is the ultimate service type, the root of the service DAG.  The
+  ;; service of this type is extended by monadic name/item pairs.  These items
+  ;; end up in the "system directory" as returned by
+  ;; 'operating-system-derivation'.
+  (service-type (name 'system)
+                (extensions '())
+                (compose identity)
+                (extend system-derivation)))
+
 (define (compute-boot-script _ mexps)
   (mlet %store-monad ((gexps (sequence %store-monad mexps)))
     (gexp->file "boot"
@@ -203,17 +224,25 @@ This is a shorthand for (map (lambda (svc) ...) %base-services)."
                     ;; Activate the system and spawn dmd.
                     #$@gexps))))
 
+(define (boot-script-entry mboot)
+  "Return, as a monadic value, an entry for the boot script in the system
+directory."
+  (mlet %store-monad ((boot mboot))
+    (return `(("boot" ,boot)))))
+
 (define boot-service-type
   ;; The service of this type is extended by being passed gexps as monadic
   ;; values.  It aggregates them in a single script, as a monadic value, which
   ;; becomes its 'parameters'.  It is the only service that extends nothing.
   (service-type (name 'boot)
-                (extensions '())
+                (extensions
+                 (list (service-extension system-service-type
+                                          boot-script-entry)))
                 (compose append)
                 (extend compute-boot-script)))
 
 (define %boot-service
-  ;; This is the ultimate service, the root of the service DAG.
+  ;; The service that produces the boot script.
   (service boot-service-type #t))
 
 (define* (file-union name files)                  ;FIXME: Factorize.
@@ -351,6 +380,12 @@ ACTIVATION-SCRIPT-TYPE."
 (define (files->etc-directory files)
   (file-union "etc" files))
 
+(define (etc-entry files)
+  "Return an entry for the /etc directory consisting of FILES in the system
+directory."
+  (with-monad %store-monad
+    (return `(("etc" ,(files->etc-directory files))))))
+
 (define etc-service-type
   (service-type (name 'etc)
                 (extensions
@@ -359,7 +394,8 @@ ACTIVATION-SCRIPT-TYPE."
                                      (lambda (files)
                                        (let ((etc
                                               (files->etc-directory files)))
-                                         #~(activate-etc #$etc))))))
+                                         #~(activate-etc #$etc))))
+                  (service-extension system-service-type etc-entry)))
                 (compose concatenate)
                 (extend append)))
 
@@ -450,7 +486,8 @@ kernel."
     (lambda (node)
       (reverse (vhash-foldq* cons '() node edges)))))
 
-(define* (fold-services services #:key (target-type boot-service-type))
+(define* (fold-services services
+                        #:key (target-type system-service-type))
   "Fold SERVICES by propagating their extensions down to the root of type
 TARGET-TYPE; return the root service adjusted accordingly."
   (define dependents

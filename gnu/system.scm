@@ -254,6 +254,24 @@ from the initrd."
   "Return the list of swap services for OS."
   (map swap-service (operating-system-swap-devices os)))
 
+(define* (operating-system-directory-base-entries os #:key container?)
+  "Return the basic entries of the 'system' directory of OS for use as the
+value of the SYSTEM-SERVICE-TYPE service."
+  (mlet* %store-monad ((profile (operating-system-profile os))
+                       (locale  (operating-system-locale-directory os)))
+    (if container?
+        (return `(("profile" ,profile)
+                  ("locale" ,locale)))
+        (mlet %store-monad
+            ((kernel  ->  (operating-system-kernel os))
+             (initrd      (operating-system-initrd-file os))
+             (params      (operating-system-parameters-file os)))
+          (return `(("kernel" ,kernel)
+                    ("parameters" ,params)
+                    ("initrd" ,initrd)
+                    ("profile" ,profile)
+                    ("locale" ,locale)))))))      ;used by libc
+
 (define* (essential-services os #:key container?)
   "Return the list of essential services for OS.  These are special services
 that implement part of what's declared in OS are responsible for low-level
@@ -269,8 +287,11 @@ a container or that of a \"bare metal\" system."
          (swaps     (swap-services os))
          (procs     (user-processes-service
                      (map service-parameters other-fs)))
-         (host-name (host-name-service (operating-system-host-name os))))
-    (cons* %boot-service
+         (host-name (host-name-service (operating-system-host-name os)))
+         (entries   (operating-system-directory-base-entries
+                     os #:container? container?)))
+    (cons* (service system-service-type entries)
+           %boot-service
 
            ;; %DMD-ROOT-SERVICE must come first so that the gexp that execs
            ;; dmd comes last in the boot script (XXX).
@@ -607,9 +628,16 @@ etc."
 we're running in the final root.  When CONTAINER? is true, skip all
 hardware-related operations as necessary when booting a Linux container."
   (let* ((services (operating-system-services os #:container? container?))
-         (boot     (fold-services services)))
+         (boot     (fold-services services #:target-type boot-service-type)))
     ;; BOOT is the script as a monadic value.
     (service-parameters boot)))
+
+(define* (operating-system-derivation os #:key container?)
+  "Return a derivation that builds OS."
+  (let* ((services (operating-system-services os #:container? container?))
+         (system   (fold-services services)))
+    ;; SYSTEM contains the derivation as a monadic value.
+    (service-parameters system)))
 
 (define (operating-system-root-file-system os)
   "Return the root file system of OS."
@@ -692,25 +720,5 @@ this file is the reconstruction of GRUB menu entries for old configurations."
                                    (kernel-arguments
                                     #$(operating-system-kernel-arguments os))
                                    (initrd #$initrd)))))
-
-(define (operating-system-derivation os)
-  "Return a derivation that builds OS."
-  (mlet* %store-monad
-      ((profile     (operating-system-profile os))
-       (etc ->      (operating-system-etc-directory os))
-       (boot        (operating-system-boot-script os))
-       (kernel  ->  (operating-system-kernel os))
-       (initrd      (operating-system-initrd-file os))
-       (locale      (operating-system-locale-directory os))
-       (params      (operating-system-parameters-file os)))
-    (lower-object
-     (file-union "system"
-                 `(("boot" ,#~#$boot)
-                   ("kernel" ,#~#$kernel)
-                   ("parameters" ,#~#$params)
-                   ("initrd" ,initrd)
-                   ("profile" ,#~#$profile)
-                   ("locale" ,#~#$locale)         ;used by libc
-                   ("etc" ,#~#$etc))))))
 
 ;;; system.scm ends here

@@ -491,10 +491,10 @@ building anything."
 (define (export-extension-graph os port)
   "Export the service extension graph of OS to PORT."
   (let* ((services (operating-system-services os))
-         (boot     (find (lambda (service)
-                           (eq? (service-kind service) boot-service-type))
+         (system   (find (lambda (service)
+                           (eq? (service-kind service) system-service-type))
                          services)))
-    (export-graph (list boot) (current-output-port)
+    (export-graph (list system) (current-output-port)
                   #:node-type (service-node-type services)
                   #:reverse-edges? #t)))
 
