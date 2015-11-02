@@ -182,7 +182,7 @@ This is a shorthand for (map (lambda (svc) ...) %base-services)."
 ;;; Core services.
 ;;;
 
-(define (compute-boot-script mexps)
+(define (compute-boot-script _ mexps)
   (mlet %store-monad ((gexps (sequence %store-monad mexps)))
     (gexp->file "boot"
                 #~(begin
@@ -203,16 +203,14 @@ This is a shorthand for (map (lambda (svc) ...) %base-services)."
                     ;; Activate the system and spawn dmd.
                     #$@gexps))))
 
-(define (second-argument a b) b)
-
 (define boot-service-type
   ;; The service of this type is extended by being passed gexps as monadic
   ;; values.  It aggregates them in a single script, as a monadic value, which
   ;; becomes its 'parameters'.  It is the only service that extends nothing.
   (service-type (name 'boot)
                 (extensions '())
-                (compose compute-boot-script)
-                (extend second-argument)))
+                (compose append)
+                (extend compute-boot-script)))
 
 (define %boot-service
   ;; This is the ultimate service, the root of the service DAG.
@@ -295,6 +293,8 @@ ACTIVATION-SCRIPT-TYPE."
   "Return a gexp that runs the activation script containing GEXPS."
   (mlet %store-monad ((script (activation-script gexps)))
     (return #~(primitive-load #$script))))
+
+(define (second-argument a b) b)
 
 (define activation-service-type
   (service-type (name 'activate)
