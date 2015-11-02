@@ -7899,6 +7899,12 @@ executable file names, passed as gexps, and adds them to the set of
 setuid-root programs on the system (@pxref{Setuid Programs}).
 @end defvr
 
+@defvr {Scheme Variable} profile-service-type
+Type of the service that populates the @dfn{system profile}---i.e., the
+programs under @file{/run/current-system/profile}.  Other services can
+extend it by passing it lists of packages to add to the system profile.
+@end defvr
+
 
 @node dmd Services
 @subsubsection dmd Services

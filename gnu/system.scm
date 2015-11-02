@@ -257,11 +257,9 @@ from the initrd."
 (define* (operating-system-directory-base-entries os #:key container?)
   "Return the basic entries of the 'system' directory of OS for use as the
 value of the SYSTEM-SERVICE-TYPE service."
-  (mlet* %store-monad ((profile (operating-system-profile os))
-                       (locale  (operating-system-locale-directory os)))
+  (mlet %store-monad ((locale (operating-system-locale-directory os)))
     (if container?
-        (return `(("profile" ,profile)
-                  ("locale" ,locale)))
+        (return `(("locale" ,locale)))
         (mlet %store-monad
             ((kernel  ->  (operating-system-kernel os))
              (initrd      (operating-system-initrd-file os))
@@ -269,7 +267,6 @@ value of the SYSTEM-SERVICE-TYPE service."
           (return `(("kernel" ,kernel)
                     ("parameters" ,params)
                     ("initrd" ,initrd)
-                    ("profile" ,profile)
                     ("locale" ,locale)))))))      ;used by libc
 
 (define* (essential-services os #:key container?)
@@ -305,6 +302,8 @@ a container or that of a \"bare metal\" system."
            host-name procs root-fs unmount
            (service setuid-program-service-type
                     (operating-system-setuid-programs os))
+           (service profile-service-type
+                    (operating-system-packages os))
            (append other-fs mappings swaps
 
                    ;; Add the firmware service, unless we are building for a
@@ -534,11 +533,6 @@ fi\n")))
                                       #$(operating-system-timezone os)))
        ("sudoers" ,(operating-system-sudoers-file os))))))
 
-(define (operating-system-profile os)
-  "Return a derivation that builds the system profile of OS."
-  (profile-derivation (manifest (map package->manifest-entry
-                                     (operating-system-packages os)))))
-
 (define %root-account
   ;; Default root account.
   (user-account
@@ -638,6 +632,16 @@ hardware-related operations as necessary when booting a Linux container."
          (system   (fold-services services)))
     ;; SYSTEM contains the derivation as a monadic value.
     (service-parameters system)))
+
+(define* (operating-system-profile os #:key container?)
+  "Return a derivation that builds the system profile of OS."
+  (mlet* %store-monad
+      ((services -> (operating-system-services os #:container? container?))
+       (profile (fold-services services
+                               #:target-type profile-service-type)))
+    (match profile
+      (("profile" profile)
+       (return profile)))))
 
 (define (operating-system-root-file-system os)
   "Return the root file system of OS."

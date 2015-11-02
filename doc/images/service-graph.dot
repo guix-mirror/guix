@@ -2,6 +2,7 @@ digraph "Service Type Dependencies" {
   dmd [shape = box, fontname = Helvetica];
   pam [shape = box, fontname = Helvetica];
   etc [shape = box, fontname = Helvetica];
+  profile [shape = box, fontname = Helvetica];
   accounts [shape = box, fontname = Helvetica];
   activation [shape = box, fontname = Helvetica];
   boot [shape = box, fontname = Helvetica];
@@ -35,4 +36,5 @@ digraph "Service Type Dependencies" {
   guix -> accounts;
   boot -> system;
   etc -> system;
+  profile -> system;
 }

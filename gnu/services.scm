@@ -21,6 +21,7 @@
   #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix records)
+  #:use-module (guix profiles)
   #:use-module (guix sets)
   #:use-module (guix ui)
   #:use-module (gnu packages base)
@@ -68,6 +69,7 @@
             etc-service-type
             etc-directory
             setuid-program-service-type
+            profile-service-type
             firmware-service-type
 
             %boot-service
@@ -411,6 +413,23 @@ FILES must be a list of name/file-like object pairs."
                                           (lambda (programs)
                                             #~(activate-setuid-programs
                                                (list #$@programs))))))
+                (compose concatenate)
+                (extend append)))
+
+(define (packages->profile-entry packages)
+  "Return a system entry for the profile containing PACKAGES."
+  (mlet %store-monad ((profile (profile-derivation
+                                (manifest (map package->manifest-entry
+                                               (delete-duplicates packages eq?))))))
+    (return `(("profile" ,profile)))))
+
+(define profile-service-type
+  ;; The service that populates the system's profile---i.e.,
+  ;; /run/current-system/profile.  It is extended by package lists.
+  (service-type (name 'profile)
+                (extensions
+                 (list (service-extension system-service-type
+                                          packages->profile-entry)))
                 (compose concatenate)
                 (extend append)))
 
