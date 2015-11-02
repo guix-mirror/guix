@@ -490,6 +490,10 @@ site} for more information."
                          (service-extension dbus-root-service-type
                                             udisks-package)
                          (service-extension udev-service-type
+                                            udisks-package)
+
+                         ;; Profile 'udisksctl' & co. in the system profile.
+                         (service-extension profile-service-type
                                             udisks-package))))))
 
 (define* (udisks-service #:key (udisks udisks))
