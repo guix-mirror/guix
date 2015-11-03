@@ -30,6 +30,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
@@ -43,6 +44,7 @@
   #:use-module (gnu packages gsasl)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
@@ -68,6 +70,7 @@
                           (expat . license:expat)))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
@@ -962,5 +965,43 @@ It may be used as part of a Mail User Agent (MUA) or other program that must
 be able to post electronic mail where mail functionality may not be that
 program's primary purpose.")
     (license (list lgpl2.1+ gpl2+))))
+
+(define-public esmtp
+  (package
+    (name "esmtp")
+    (version "1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/andywingo/esmtp.git")
+             (commit "01bf9fc")))
+       (sha256
+        (base32
+         "1ay282rrl92h0m0m8z5zzjnwiiagi7c78aq2qvhia5mw7prwfyw2"))
+       (file-name (string-append name "-" version "-checkout"))))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before
+                   'configure 'autoconf
+                   (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `("libesmtp" ,libesmtp))
+    (home-page "http://sourceforge.net/projects/esmtp/")
+    (synopsis "Relay-only mail transfer agent (MTA)")
+    (description "Esmtp is a simple relay-only mail transfer agent built using
+libESMTP.  It sends e-mail via a remote SMTP server using credentials from the
+user's @file{$HOME/.esmtprc} configuration file; see the @command{esmtprc} man
+page for more on configuration.  This package also provides minimal
+compatibility shims for the @command{sendmail}, @command{mailq}, and
+@command{newaliases} commands.")
+    (license gpl2+)))
 
 ;;; mail.scm ends here
