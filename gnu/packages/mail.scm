@@ -939,4 +939,28 @@ Email::Send library.")
 format and headers.")
     (license (package-license perl))))
 
+(define-public libesmtp
+  (package
+    (name "libesmtp")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.stafford.uklinux.net/libesmtp/libesmtp-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "02zbniyz7qys1jmx3ghx21kxmns1wc3hmv80gp7ag7yra9f1m9nh"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("openssl" ,openssl)))
+    (home-page "http://www.stafford.uklinux.net/libesmtp/")
+    (synopsis "Library for sending mail via remote hosts using SMTP")
+    (description "libESMTP is an SMTP client which manages posting (or
+submission of) electronic mail via a preconfigured Mail Transport Agent (MTA).
+It may be used as part of a Mail User Agent (MUA) or other program that must
+be able to post electronic mail where mail functionality may not be that
+program's primary purpose.")
+    (license (list lgpl2.1+ gpl2+))))
+
 ;;; mail.scm ends here
