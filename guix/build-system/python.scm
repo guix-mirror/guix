@@ -92,6 +92,7 @@ NEW-PREFIX; otherwise, NEW-PREFIX is prepended to the name."
          (if (eq? (package-build-system p) python-build-system)
              (package
                (inherit p)
+               (location (package-location p))
                (name (let ((name (package-name p)))
                        (string-append new-prefix
                                       (if (string-prefix? old-prefix name)
