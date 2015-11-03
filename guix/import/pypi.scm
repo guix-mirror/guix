@@ -45,7 +45,14 @@
 (define (pypi-fetch name)
   "Return an alist representation of the PyPI metadata for the package NAME,
 or #f on failure."
-  (json-fetch (string-append "https://pypi.python.org/pypi/" name "/json")))
+  ;; XXX: We want to silence the download progress report, which is especially
+  ;; annoying for 'guix refresh', but we have to use a file port.
+  (call-with-output-file "/dev/null"
+    (lambda (null)
+      (with-error-to-port null
+        (lambda ()
+          (json-fetch (string-append "https://pypi.python.org/pypi/"
+                                     name "/json")))))))
 
 (define (latest-source-release pypi-package)
   "Return the latest source release for PYPI-PACKAGE."
