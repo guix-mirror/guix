@@ -4730,7 +4730,7 @@ guix environment --ad-hoc --container guile -- guile
 @end example
 
 @quotation Note
-The @code{--container} option requires Linux-libre 3.10 or newer.
+The @code{--container} option requires Linux-libre 3.19 or newer.
 @end quotation
 
 The available options are summarized below.
@@ -7441,7 +7441,7 @@ guix system container my-config.scm \
 @end example
 
 @quotation Note
-This option requires Linux-libre 3.10 or newer.
+This option requires Linux-libre 3.19 or newer.
 @end quotation
 
 @end table
