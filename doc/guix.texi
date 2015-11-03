@@ -4877,6 +4877,10 @@ their authenticity and integrity (@pxref{Substitutes}).  Because
 readable by the system administrator, it must be started as root; the
 @code{--user} option makes it drop root privileges early on.
 
+The signing key pair must be generated before @command{guix publish} is
+launched, using @command{guix archive --generate-key} (@pxref{Invoking
+guix archive}).
+
 The general syntax is:
 
 @example
