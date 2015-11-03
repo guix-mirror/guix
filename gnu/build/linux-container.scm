@@ -19,15 +19,35 @@
 (define-module (gnu build linux-container)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 rdelim)
   #:use-module (srfi srfi-98)
   #:use-module (guix utils)
   #:use-module (guix build utils)
   #:use-module (guix build syscalls)
   #:use-module ((gnu build file-systems) #:select (mount-file-system))
-  #:export (%namespaces
+  #:export (user-namespace-supported?
+            unprivileged-user-namespace-supported?
+            setgroups-supported?
+            %namespaces
             run-container
             call-with-container
             container-excursion))
+
+(define (user-namespace-supported?)
+  "Return #t if user namespaces are supported on this system."
+  (file-exists? "/proc/self/ns/user"))
+
+(define (unprivileged-user-namespace-supported?)
+  "Return #t if user namespaces can be created by unprivileged users."
+  (let ((userns-file "/proc/sys/kernel/unprivileged_userns_clone"))
+    (if (file-exists? userns-file)
+        (string=? "1" (call-with-input-file userns-file read-string))
+        #t)))
+
+(define (setgroups-supported?)
+  "Return #t if the setgroups proc file, introduced in Linux-libre 3.19,
+exists."
+  (file-exists? "/proc/self/setgroups"))
 
 (define %namespaces
   '(mnt pid ipc uts user net))
