@@ -209,6 +209,11 @@ the Nix package manager.")
                 (file-name (string-append "guix-" version "-checkout"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.8.3)
+         ((#:configure-flags flags)
+          ;; Set 'DOT_USER_PROGRAM' to the empty string so we don't keep a
+          ;; reference to Graphviz, whose closure is pretty big (too big for
+          ;; the GuixSD installation image.)
+          `(cons "ac_cv_path_DOT_USER_PROGRAM=dot" ,flags))
          ((#:phases phases)
           `(modify-phases ,phases
              (add-after
