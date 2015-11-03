@@ -4290,9 +4290,9 @@ the updater for GNU packages;
 @item elpa
 the updater for @uref{http://elpa.gnu.org/, ELPA} packages;
 @item cran
-the updater fro @uref{http://cran.r-project.org/, CRAN} packages.
+the updater for @uref{http://cran.r-project.org/, CRAN} packages;
 @item pypi
-the updater fro @uref{https://pypi.python.org, PyPI} packages.
+the updater for @uref{https://pypi.python.org, PyPI} packages.
 @end table
 
 For instance, the following commands only checks for updates of Emacs
