@@ -83,7 +83,7 @@ arrays of data.")
 (define-public gstreamer
   (package
     (name "gstreamer")
-    (version "1.4.5")
+    (version "1.6.1")
     (source
      (origin
       (method url-fetch)
@@ -91,12 +91,11 @@ arrays of data.")
                           version ".tar.xz"))
       (sha256
        (base32
-        "1bmhbhak6i5wmmb6w86jyyv8lax4gdq983la4lk4a0krz6kim020"))))
+        "172w1bpnkn6mm1wi37n03apdbb6cdkykhzjf1vfxchcd7hhkyflp"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
-     `(#:make-flags '("CC=gcc") ; for g-ir-scanner.
-       #:configure-flags
+     `(#:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
                             "/share/gtk-doc/html"))))
