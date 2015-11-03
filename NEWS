@@ -10,6 +10,79 @@ Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 
 Please send Guix bug reports to bug-guix@gnu.org.
 
+* Changes in 0.9.0 (since 0.8.3)
+
+** Package management
+
+*** New ‘guix graph’ command, to draw package graphs
+*** New ‘guix challenge’ command, to challenge the authenticity of binaries
+*** ‘guix environment’ has a new ‘--container’ option
+*** ‘guix substitute’ now honors all the specified substitute URLs
+*** New ‘guix import cran’ command, to import R packages from CRAN
+*** Package descriptions can now include Texinfo markup rendered on the fly
+*** ‘guix package’ has a new ‘--install-from-file’ option
+*** ‘guix package --search’ shows package outputs
+*** ‘guix refresh’ can refresh selected non-GNU package definitions
+*** The ‘--ad-hoc’ option of ‘guix environment’ is now positional
+*** The ‘--exec’ option of ‘guix environment’ is deprecated; use ‘--’ instead
+*** ‘guix build’ has a new ‘--file’ option
+*** ‘guix build --log-file’ can now return URLs
+*** ‘guix size’ now has a ‘--substitute-urls’ option and is much faster
+*** New ‘guix lint’ checkers: ‘formatting’, ‘license’, ‘source-file-name’
+*** Download progress report has been improved
+*** Emacs shell-mode completions for ‘guix’ commands updated
+*** Emacs: New ‘M-x guix’ popup interface
+
+** Distribution
+
+*** New extensible service composition API
+
+The operating system service API in (gnu services) has been completely
+rewritten, significantly improving extensibility and modularity, while
+providing a framework that makes it easy to reason about service composition.
+Consequently, several sources of redundancy and confusion in
+‘operating-system’ declarations have been eliminated.  See “Service
+Composition” in the manual.
+
+*** New ‘extension-graph’ and ‘dmd-graph’ sub-commands for ‘guix system’
+*** New ‘container’ sub-command for ‘guix system’
+*** New ‘guix container’ command, to deal with GuixSD containers
+*** New ‘list-generations’ sub-command for ‘guix system’
+*** ‘operating-system’ has a new ‘locale-libcs’ field
+*** New services: ‘nginx-service’, ‘udisks-service’, ‘guix-publish-service’
+*** ‘dbus-daemon’ now has proper support for lazy service activation
+*** ‘wicd-service’ automatically adds Wicd to the system profile
+*** ‘slim-service’ automatically adds xterm to the system profile
+*** hydra.gnu.org now provides substitutes for ‘armhf-linux’
+*** /run/systemd is mounted as tmpfs by default, for use by elogind
+*** ‘glibc’ package no longer contains Bash in its bin/ directory
+*** libc now looks for locale data in a versioned sub-directory
+*** libc honors the new ‘GUIX_LOCPATH’ environment variable
+*** Xfce now defaults to the GNOME icon theme
+
+** Programming interfaces
+
+*** Rewritten (gnu services) module; (gnu services …) modules adjusted
+*** New Emacs development tools, see “Development” in the manual
+*** (guix gexp) provides the declarative ‘computed-file’, ‘program-file’, etc.
+*** New (guix upstream) module, for generalized upstream release tracking
+
+** Noteworthy bug fixes
+
+*** Passwords in /etc/shadow are SHA512-hashed (http://bugs.gnu.org/21318)
+*** daemon: Require a signature for imports made by root
+    (http://bugs.gnu.org/21354)
+*** emacs: Fix guix-guile-program default value (http://bugs.gnu.org/21127)
+*** Compressed initrds no longer include timestamps
+*** Fix handling of encrypted root partitions (http://bugs.gnu.org/19190)
+*** Python now includes tkinter (http://bugs.gnu.org/20889)
+*** Memoize the results of ‘package-with-python2’ (http://bugs.gnu.org/21675)
+*** Use the daemon's substitute URLs by default (http://bugs.gnu.org/20217)
+
+** Native language support
+
+*** Updated translations: da
+
 * Changes in 0.8.3 (since 0.8.2)
 
 ** Package management
