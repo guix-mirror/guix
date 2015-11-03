@@ -30,6 +30,7 @@
   #:use-module ((guix gnu-maintenance) #:select (%gnu-updater))
   #:use-module (guix import elpa)
   #:use-module (guix import cran)
+  #:use-module (guix import pypi)
   #:use-module (guix gnupg)
   #:use-module (gnu packages)
   #:use-module ((gnu packages commencement) #:select (%final-inputs))
@@ -152,7 +153,8 @@ specified with `--select'.\n"))
   ;; List of "updaters" used by default.  They are consulted in this order.
   (list %gnu-updater
         %elpa-updater
-        %cran-updater))
+        %cran-updater
+        %pypi-updater))
 
 (define (lookup-updater name)
   "Return the updater called NAME."

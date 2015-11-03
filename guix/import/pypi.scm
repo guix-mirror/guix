@@ -30,12 +30,16 @@
   #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (guix import utils)
+  #:use-module ((guix download) #:prefix download:)
   #:use-module (guix import json)
   #:use-module (guix packages)
+  #:use-module (guix upstream)
   #:use-module (guix licenses)
   #:use-module (guix build-system python)
+  #:use-module (gnu packages)
   #:use-module (gnu packages python)
-  #:export (pypi->guix-package))
+  #:export (pypi->guix-package
+            %pypi-updater))
 
 (define (pypi-fetch name)
   "Return an alist representation of the PyPI metadata for the package NAME,
@@ -59,6 +63,16 @@ package."
   (if (string-prefix? "python-" name)
       (snake-case name)
       (string-append "python-" (snake-case name))))
+
+(define (guix-package->pypi-name package)
+  "Given a Python PACKAGE built from pypi.python.org, return the name of the
+package on PyPI."
+  (let ((source-url (and=> (package-source package) origin-uri)))
+    ;; The URL has the form:
+    ;; 'https://pypi.python.org/packages/source/' +
+    ;; first letter of the package name +
+    ;; '/' + package name + '/' + ...
+    (substring source-url 42 (string-rindex source-url #\/))))
 
 (define (maybe-inputs package-inputs)
   "Given a list of PACKAGE-INPUTS, tries to generate the 'inputs' field of a
@@ -190,3 +204,37 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
                (license (string->license (assoc-ref* package "info" "license"))))
            (make-pypi-sexp name version release home-page synopsis
                            description license)))))
+
+(define (pypi-package? package)
+  "Return true if PACKAGE is a Python package from PyPI."
+
+  (define (pypi-url? url)
+    (string-prefix? "https://pypi.python.org/" url))
+
+  (let ((source-url (and=> (package-source package) origin-uri))
+        (fetch-method (and=> (package-source package) origin-method)))
+    (and (eq? fetch-method download:url-fetch)
+         (match source-url
+           ((? string?)
+            (pypi-url? source-url))
+           ((source-url ...)
+            (any pypi-url? source-url))))))
+
+(define (latest-release guix-package)
+  "Return an <upstream-source> for the latest release of GUIX-PACKAGE."
+  (let* ((pypi-name (guix-package->pypi-name
+                     (specification->package guix-package)))
+         (metadata (pypi-fetch pypi-name))
+         (version (assoc-ref* metadata "info" "version"))
+         (url (assoc-ref (latest-source-release metadata) "url")))
+    (upstream-source
+     (package guix-package)
+     (version version)
+     (urls (list url)))))
+
+(define %pypi-updater
+  (upstream-updater
+   (name 'pypi)
+   (description "Updater for PyPI packages")
+   (pred pypi-package?)
+   (latest latest-release)))
