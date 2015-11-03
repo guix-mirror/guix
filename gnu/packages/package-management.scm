@@ -82,6 +82,7 @@
                           (string-append "--with-libgcrypt-prefix="
                                          (assoc-ref %build-inputs
                                                     "libgcrypt")))
+       #:parallel-tests? #f           ;work around <http://bugs.gnu.org/21097>
        #:phases (modify-phases %standard-phases
                   (add-before
                    'configure 'copy-bootstrap-guile
@@ -117,7 +118,17 @@
                      (substitute* "tests/containers.scm"
                        (("^\\(test-assert" all)
                         (string-append "(test-skip 1)\n" all)))
+                     (when (file-exists? "tests/guix-environment-container.sh")
+                       (substitute* "tests/guix-environment-container.sh"
+                         (("guix environment --version")
+                          "exit 77\n")))
                      #t))
+                  (add-before 'check 'set-SHELL
+                    (lambda _
+                      ;; 'guix environment' tests rely on 'SHELL' having a
+                      ;; correct value, so set it.
+                      (setenv "SHELL" (which "sh"))
+                      #t))
                   (add-after
                    'install 'wrap-program
                    (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -184,7 +195,7 @@ the Nix package manager.")
   ;;
   ;; Note: use a short commit id; when using the long one, the limit on socket
   ;; file names is exceeded while running the tests.
-  (let ((commit "abbe2c6"))
+  (let ((commit "b485f75"))
     (package (inherit guix-0.8.3)
       (version (string-append "0.8.3." commit))
       (source (origin
@@ -194,7 +205,7 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1zgjj5knpz3qbbqdjm4yh436bzfgasc6p0k3xnx58hfjd88mdsga"))
+                  "1frn74y5c3n91qxs5b3sxbr8ai43s6svlb2djfnp7nqbr1ax3mph"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.8.3)
