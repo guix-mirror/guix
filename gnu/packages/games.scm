@@ -1228,9 +1228,14 @@ world}, @uref{http://evolonline.org, Evol Online} and
                (base32
                 "07h49xwvg61dx20rk5p4r3ax2ar5y0ppvm60cqwqljyi9rdfbh7p"))
               (modules '((guix build utils)))
-              ;; We don't need libretro for the GNU/Linux build.
               (snippet
-               '(delete-file-recursively "libretro"))))
+               '(begin
+                  ;; We don't need libretro for the GNU/Linux build.
+                  (delete-file-recursively "libretro")
+                  ;; Use system zlib.
+                  (delete-file-recursively "source/zlib")
+                  (substitute* "source/core/NstZlib.cpp"
+                    (("#include \"../zlib/zlib.h\"") "#include <zlib.h>"))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1240,7 +1245,8 @@ world}, @uref{http://evolonline.org, Evol Online} and
        ("gtk+" ,gtk+)
        ("libarchive" ,libarchive)
        ("mesa" ,mesa)
-       ("sdl2" ,sdl2)))
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
