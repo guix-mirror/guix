@@ -296,6 +296,10 @@ many readers as needed).")
                                (string-append "--with-guilesitedir="
                                               (assoc-ref %outputs "out")
                                               "/share/guile/site/2.0"))
+
+       ;; Work around <http://bugs.gnu.org/21677>.
+       #:make-flags '("XFAIL_TESTS=curses_034_util.test")
+
        #:phases (alist-cons-after
                  'install 'post-install
                  (lambda* (#:key outputs #:allow-other-keys)
