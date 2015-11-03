@@ -437,6 +437,21 @@ Otherwise, return the derivation for the Bash package."
           opts
           (alist-cons 'exec command opts)))))
 
+(define (assert-container-features)
+  "Check if containers can be created and exit with an informative error
+message if any test fails."
+  (unless (user-namespace-supported?)
+    (report-error (_ "cannot create container: user namespaces unavailable\n"))
+    (leave (_ "is your kernel version < 3.10?\n")))
+
+  (unless (unprivileged-user-namespace-supported?)
+    (report-error (_ "cannot create container: unprivileged user cannot create user namespaces\n"))
+    (leave (_ "please set /proc/sys/kernel/unprivileged_userns_clone to \"1\"\n")))
+
+  (unless (setgroups-supported?)
+    (report-error (_ "cannot create container: /proc/self/setgroups does not exist\n"))
+    (leave (_ "is your kernel version < 3.19?\n"))))
+
 ;; Entry point.
 (define (guix-environment . args)
   (with-error-handling
@@ -474,6 +489,9 @@ Otherwise, return the derivation for the Bash package."
                                             '()))
                                           inputs))
                         eq?)))
+
+      (when container? (assert-container-features))
+
       (with-store store
         (run-with-store store
           (mlet* %store-monad ((inputs (lower-inputs
