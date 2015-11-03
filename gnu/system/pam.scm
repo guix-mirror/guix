@@ -16,7 +16,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu system linux)
+(define-module (gnu system pam)
   #:use-module (guix records)
   #:use-module (guix derivations)
   #:use-module (guix gexp)
@@ -36,8 +36,7 @@
 
 ;;; Commentary:
 ;;;
-;;; Configuration of Linux-related things, including pluggable authentication
-;;; modules (PAM).
+;;; Configuration of the pluggable authentication modules (PAM).
 ;;;
 ;;; Code:
 

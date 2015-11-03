@@ -43,7 +43,7 @@
   #:use-module (gnu packages admin)
 
   #:use-module (gnu system shadow)
-  #:use-module (gnu system linux)
+  #:use-module (gnu system pam)
   #:use-module (gnu system linux-initrd)
   #:use-module (gnu system grub)
   #:use-module (gnu system file-systems)

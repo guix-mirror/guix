@@ -21,7 +21,7 @@
   #:use-module (guix records)
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
-  #:use-module (gnu system linux)                 ; 'pam-service'
+  #:use-module (gnu system pam)
   #:use-module (gnu packages lsh)
   #:export (lsh-service))
 

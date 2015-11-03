@@ -50,7 +50,7 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu system nss)
   #:use-module (gnu system locale)
-  #:use-module (gnu system linux)
+  #:use-module (gnu system pam)
   #:use-module (gnu system linux-initrd)
   #:use-module (gnu system file-systems)
   #:use-module (ice-9 match)

@@ -27,7 +27,7 @@
   #:use-module (gnu services xorg)
   #:use-module (gnu services networking)
   #:use-module (gnu system shadow)
-  #:use-module (gnu system linux) ; unix-pam-service
+  #:use-module (gnu system pam)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages freedesktop)

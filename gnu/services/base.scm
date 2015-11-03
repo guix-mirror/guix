@@ -23,8 +23,8 @@
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
   #:use-module (gnu services networking)
+  #:use-module (gnu system pam)
   #:use-module (gnu system shadow)                ; 'user-account', etc.
-  #:use-module (gnu system linux)                 ; 'pam-service', etc.
   #:use-module (gnu system file-systems)          ; 'file-system', etc.
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)

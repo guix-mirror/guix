@@ -21,7 +21,7 @@
   #:use-module (gnu artwork)
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
-  #:use-module (gnu system linux)                 ; 'pam-service'
+  #:use-module (gnu system pam)
   #:use-module ((gnu packages base) #:select (canonical-package))
   #:use-module (gnu packages guile)
   #:use-module (gnu packages xorg)

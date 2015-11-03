@@ -22,7 +22,7 @@
   #:use-module (gnu services dmd)
   #:use-module (gnu services dbus)
   #:use-module (gnu system shadow)
-  #:use-module (gnu system linux)                 ;PAM
+  #:use-module (gnu system pam)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages tor)

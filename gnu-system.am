@@ -359,11 +359,11 @@ GNU_SYSTEM_MODULES =				\
   gnu/system/file-systems.scm			\
   gnu/system/grub.scm				\
   gnu/system/install.scm			\
-  gnu/system/linux.scm				\
   gnu/system/linux-container.scm		\
   gnu/system/linux-initrd.scm			\
   gnu/system/locale.scm				\
   gnu/system/nss.scm				\
+  gnu/system/pam.scm				\
   gnu/system/shadow.scm				\
   gnu/system/vm.scm				\
 						\
