@@ -50,10 +50,18 @@ Execute COMMMAND within the container process PID.\n"))
 (define (partition-args args)
   "Split ARGS into two lists; one containing the arguments for this program,
 and the other containing arguments for the command to be executed."
-  (break (lambda (arg)
-           ;; Split after the pid argument.
-           (not (false-if-exception (string->number arg))))
-         args))
+  (define (number-string? str)
+    (false-if-exception (string->number str)))
+
+  (let loop ((a '())
+             (b args))
+    (match b
+      (()
+       (values (reverse a) '()))
+      (((? number-string? head) . tail)
+       (values (reverse (cons head a)) tail))
+      ((head . tail)
+       (loop (cons head a) tail)))))
 
 (define (guix-container-exec . args)
   (define (handle-argument arg result)
