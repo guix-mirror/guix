@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
+;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
