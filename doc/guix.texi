@@ -4918,6 +4918,11 @@ Reference Manual}) on @var{port} (37146 by default).  This is used
 primarily for debugging a running @command{guix publish} server.
 @end table
 
+Enabling @command{guix publish} on a GuixSD system is a one-liner: just
+add a call to @code{guix-publish-service} in the @code{services} field
+of the @code{operating-system} declaration (@pxref{guix-publish-service,
+@code{guix-publish-service}}).
+
 
 @node Invoking guix challenge
 @section Invoking @command{guix challenge}
@@ -6426,6 +6431,17 @@ Run @var{udev}, which populates the @file{/dev} directory dynamically.
 @deffn {Scheme Procedure} console-keymap-service @var{file}
 Return a service to load console keymap from @var{file} using
 @command{loadkeys} command.
+@end deffn
+
+@anchor{guix-publish-service}
+@deffn {Scheme Procedure} guix-publish-service [#:guix @var{guix}] @
+           [#:port 80] [#:host "localhost"]
+Return a service that runs @command{guix publish} listening on @var{host}
+and @var{port} (@pxref{Invoking guix publish}).
+
+This assumes that @file{/etc/guix} already contains a signing key pair as
+created by @command{guix archive --generate-key} (@pxref{Invoking guix
+archive}).  If that is not the case, the service will fail to start.
 @end deffn
 
 

@@ -76,6 +76,10 @@
             guix-configuration?
             guix-service
             guix-service-type
+            guix-publish-configuration
+            guix-publish-configuration?
+            guix-publish-service
+            guix-publish-service-type
 
             %base-services))
 
@@ -705,6 +709,11 @@ If configuration file name @var{config-file} is not specified, use some
 reasonable default settings."
   (service syslog-service-type config-file))
 
+
+;;;
+;;; Guix services.
+;;;
+
 (define* (guix-build-accounts count #:key
                               (group "guixbuild")
                               (first-uid 30001)
@@ -841,6 +850,58 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
   "Return a service that runs the Guix build daemon according to
 @var{config}."
   (service guix-service-type config))
+
+
+(define-record-type* <guix-publish-configuration>
+  guix-publish-configuration make-guix-publish-configuration
+  guix-publish-configuration?
+  (guix    guix-publish-configuration-guix        ;package
+           (default guix))
+  (port    guix-publish-configuration-port        ;number
+           (default 80))
+  (host    guix-publish-configuration-host        ;string
+           (default "localhost")))
+
+(define guix-publish-dmd-service
+  (match-lambda
+    (($ <guix-publish-configuration> guix port host)
+     (list (dmd-service
+            (provision '(guix-publish))
+            (requirement '(guix-daemon))
+            (start #~(make-forkexec-constructor
+                      (list (string-append #$guix "/bin/guix")
+                            "publish" "-u" "guix-publish"
+                            "-p" #$(number->string port)
+                            (string-append "--listen=" #$host))))
+            (stop #~(make-kill-destructor)))))))
+
+(define %guix-publish-accounts
+  (list (user-group (name "guix-publish") (system? #t))
+        (user-account
+         (name "guix-publish")
+         (group "guix-publish")
+         (system? #t)
+         (comment "guix publish user")
+         (home-directory "/var/empty")
+         (shell #~(string-append #$shadow "/sbin/nologin")))))
+
+(define guix-publish-service-type
+  (service-type (name 'guix-publish)
+                (extensions
+                 (list (service-extension dmd-root-service-type
+                                          guix-publish-dmd-service)
+                       (service-extension account-service-type
+                                          (const %guix-publish-accounts))))))
+
+(define* (guix-publish-service #:key (guix guix) (port 80) (host "localhost"))
+  "Return a service that runs @command{guix publish} listening on @var{host}
+and @var{port} (@pxref{Invoking guix publish}).
+
+This assumes that @file{/etc/guix} already contains a signing key pair as
+created by @command{guix archive --generate-key} (@pxref{Invoking guix
+archive}).  If that is not the case, the service will fail to start."
+  (service guix-publish-service-type
+           (guix-publish-configuration (guix guix) (port port) (host host))))
 
 
 ;;;
