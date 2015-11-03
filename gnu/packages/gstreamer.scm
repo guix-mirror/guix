@@ -130,7 +130,7 @@ This package provides the core library and elements.")
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
-    (version "1.4.5")
+    (version "1.6.1")
     (source
      (origin
       (method url-fetch)
@@ -138,7 +138,7 @@ This package provides the core library and elements.")
                           version ".tar.xz"))
       (sha256
        (base32
-        "07ampnfa6p41s0lhia62l9h8bdx3c7vxvdz93pbx64m3wycq3gbp"))))
+        "18sbyjcp281zb3bsqji3pglsdsxi0s6ai7rx90sx8cpflkxdqcwm"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs
@@ -161,7 +161,8 @@ This package provides the core library and elements.")
         ("gobject-introspection" ,gobject-introspection)
         ("python-wrapper" ,python-wrapper)))
     (arguments
-     `(#:configure-flags
+     `(#:parallel-tests? #f ; 'pipelines/tcp' fails in parallel
+       #:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
                             "/share/gtk-doc/html"))
@@ -170,9 +171,7 @@ This package provides the core library and elements.")
         'configure 'patch
         (lambda _
           (substitute* "tests/check/libs/pbutils.c"
-            (("/bin/sh") (which "sh")))
-          ;; for g-ir-scanner.
-          (setenv "CC" "gcc"))
+            (("/bin/sh") (which "sh"))))
         %standard-phases)))
     (home-page "http://gstreamer.freedesktop.org/")
     (synopsis
