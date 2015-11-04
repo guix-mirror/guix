@@ -226,6 +226,17 @@ single argument."
      (while (re-search-forward ,regexp nil t)
        ,@body)))
 
+(defun guix-modify (object modifiers)
+  "Apply MODIFIERS to OBJECT.
+OBJECT is passed as an argument to the first function from
+MODIFIERS list, the returned result is passed to the second
+function from the list and so on.  Return result of the last
+modifier call."
+  (if (null modifiers)
+      object
+    (guix-modify (funcall (car modifiers) object)
+                 (cdr modifiers))))
+
 
 ;;; Alist accessors
 
