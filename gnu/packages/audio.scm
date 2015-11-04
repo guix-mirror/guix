@@ -320,6 +320,12 @@ tools (analyzer, mono/stereo tools, crossovers).")
                (base32
                 "0a1sni6lr7qpwywpggbkp0ia3h9bwwgf9i87gsag8ra2h30v82hd"))))
     (build-system cmake-build-system)
+    (arguments
+     ;; Work around this error on x86_64 with libc 2.22+:
+     ;;    libmvec.so.1: error adding symbols: DSO missing from command line
+     (if (string-prefix? "x86_64" (or (%current-target-system) (%current-system)))
+         '(#:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-lmvec"))
+         '()))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("boost" ,boost)
