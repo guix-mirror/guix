@@ -69,7 +69,8 @@ libutil_headers =				\
   nix/libutil/gcrypt-hash.hh			\
   nix/libutil/md5.h				\
   nix/libutil/sha1.h				\
-  nix/libutil/sha256.h
+  nix/libutil/sha256.h				\
+  nix/libutil/sha512.h
 
 libutil_a_CPPFLAGS =				\
   -I$(top_builddir)/nix				\
