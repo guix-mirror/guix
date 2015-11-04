@@ -69,7 +69,8 @@ guix environment --container --ad-hoc --bootstrap guile-bootstrap \
 cat "$tmpdir/mounts"
 test `wc -l < $tmpdir/mounts` -eq 3
 
-grep -e "$PWD$" $tmpdir/mounts # current directory
+current_dir="`cd $PWD; pwd -P`"
+grep -e "$current_dir$" $tmpdir/mounts # current directory
 grep $(guix build guile-bootstrap) $tmpdir/mounts
 grep -e "$NIX_STORE_DIR/.*-bash" $tmpdir/mounts # bootstrap bash
 
