@@ -239,14 +239,14 @@ Python.")
 (define-public wayland
   (package
     (name "wayland")
-    (version "1.8.1")
+    (version "1.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://wayland.freedesktop.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1j3gfzn8i0xhk3j34mwb2srrscjxfyi279jhyq80mz943j6r6z7i"))))
+                "1yhy62vkbq8j8c9zaa6yzvn75cd99kfa8n2zfdwl80x019r711ww"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
