@@ -131,7 +131,8 @@ to be modified."
 
 (guix-command-define-argument-improver
     guix-command-improve-action-argument
-  '(("graph"       :char ?G)
+  '(("container"   :char ?C)
+    ("graph"       :char ?G)
     ("environment" :char ?E)
     ("publish"     :char ?u)
     ("pull"        :char ?P)
@@ -369,6 +370,8 @@ to be modified."
                 '("archive" "build" "challenge" "edit" "environment"
                   "graph" "lint" "refresh"))
         (argument :doc "Packages" :fun 'guix-read-package-names-string))
+       ((equal commands '("container" "exec"))
+        (argument :doc "PID Command [Args...]"))
        ((string= command "download")
         (argument :doc "URL"))
        ((string= command "gc")
