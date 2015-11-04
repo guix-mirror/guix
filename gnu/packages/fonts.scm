@@ -390,17 +390,17 @@ for long (8 and more hours per day) work with computers.")
 (define-public font-adobe-source-han-sans
   (package
     (name "font-adobe-source-han-sans")
-    (version "1.001R")
+    (version "1.004")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/adobe-fonts/source-han-sans/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append "source-han-sans-" version ".tar.gz"))
+                    version "R.tar.gz"))
+              (file-name (string-append "source-han-sans-" version "R.tar.gz"))
               (sha256
                (base32
-                "0cwz3d8jancl0a7vbjxhnh1vgwsjba62lahfjya9yrjkp1ndxlap"))))
-    (outputs '("out"                 ; OpenType/CFF Collection (OTC), 119 MiB.
+                "1ssx0fw90sy6mj8fv8fv4dgzszpqwbmwpjnlx16g4pvaqzdmybbz"))))
+    (outputs '("out"                 ; OpenType/CFF Collection (OTC), 121 MiB.
                "cn" "jp" "kr" "tw")) ; Region-specific Subset OpenType/CFF.
     (build-system trivial-build-system)
     (arguments
@@ -421,12 +421,13 @@ for long (8 and more hours per day) work with computers.")
                                                    "/share/fonts/opentype")))))
            (setenv "PATH" PATH)
            (system* tar "xvf" (assoc-ref %build-inputs "source"))
-           (chdir (string-append "source-han-sans-" ,version))
+           (chdir (string-append "source-han-sans-" ,version "R"))
            (install-opentype-fonts "OTC" "out")
            (install-opentype-fonts "SubsetOTF/CN" "cn")
            (install-opentype-fonts "SubsetOTF/JP" "jp")
            (install-opentype-fonts "SubsetOTF/KR" "kr")
-           (install-opentype-fonts "SubsetOTF/TW" "tw")))))
+           (install-opentype-fonts "SubsetOTF/TW" "tw")
+           (for-each delete-file (find-files %output "\\.zip$"))))))
     (native-inputs
      `(("gzip" ,gzip)
        ("tar" ,tar)))
@@ -439,7 +440,7 @@ And in several OpenType/CFF-based deployment configurations to accommodate
 various system requirements or limitations.  As the name suggests, Pan-CJK
 fonts are intended to support the characters necessary to render or display
 text in Simplified Chinese, Traditional Chinese, Japanese, and Korean.")
-    (license license:asl2.0)))
+    (license license:silofl1.1)))
 
 (define-public font-wqy-zenhei
   (package
