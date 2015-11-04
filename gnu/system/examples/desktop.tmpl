@@ -13,17 +13,9 @@
   ;; Assuming /dev/sdX is the target hard disk, and "root" is
   ;; the label of the target root file system.
   (bootloader (grub-configuration (device "/dev/sdX")))
-
-  ;; Here we assume that /dev/sdX1 contains a LUKS-encrypted
-  ;; root partition created with 'cryptsetup luksFormat'.
-  (mapped-devices (list (mapped-device
-                          (source "/dev/sdX1")
-                          (target "root-partition")
-                          (type luks-device-mapping))))
-
-  ;; Mount said encrypted partition.
   (file-systems (cons (file-system
-                        (device "/dev/mapper/root-partition")
+                        (device "root")
+                        (title 'label)
                         (mount-point "/")
                         (type "ext4"))
                       %base-file-systems))

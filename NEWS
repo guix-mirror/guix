@@ -74,7 +74,8 @@ Composition” in the manual.
     (http://bugs.gnu.org/21354)
 *** emacs: Fix guix-guile-program default value (http://bugs.gnu.org/21127)
 *** Compressed initrds no longer include timestamps
-*** Fix handling of encrypted root partitions (http://bugs.gnu.org/19190)
+*** Partly fix handling of encrypted root partitions
+    (http://bugs.gnu.org/19190)
 *** Python now includes tkinter (http://bugs.gnu.org/20889)
 *** Memoize the results of ‘package-with-python2’ (http://bugs.gnu.org/21675)
 *** Use the daemon's substitute URLs by default (http://bugs.gnu.org/20217)
