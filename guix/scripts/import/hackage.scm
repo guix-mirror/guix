@@ -134,9 +134,9 @@ from standard input~%")))))
           ((package-name)
            (run-importer package-name opts
                          (lambda ()
-                           (leave
-                            (_ "failed to download cabal file for package '~a'~%"))
-                           package-name)))
+                           (leave (_ "failed to download cabal file \
+for package '~a'~%")
+                                  package-name))))
           (()
            (leave (_ "too few arguments~%")))
           ((many ...)
