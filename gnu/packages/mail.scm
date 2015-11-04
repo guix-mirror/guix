@@ -993,7 +993,7 @@ program's primary purpose.")
        ("automake" ,automake)
        ("libtool" ,libtool)))
     (inputs
-     `("libesmtp" ,libesmtp))
+     `(("libesmtp" ,libesmtp)))
     (home-page "http://sourceforge.net/projects/esmtp/")
     (synopsis "Relay-only mail transfer agent (MTA)")
     (description "Esmtp is a simple relay-only mail transfer agent built using
