@@ -196,7 +196,11 @@ to be modified."
 
 (guix-command-define-argument-improver
     guix-command-improve-environment-argument
-  '(("--exec" :fun read-shell-command)
+  '(("--ad-hoc"
+     :name "--ad-hoc " :fun guix-read-package-names-string
+     :switch? nil :option? t)
+    ("--expose" :char ?E)
+    ("--share" :char ?S)
     ("--load" :fun guix-read-file-name)))
 
 (guix-command-define-argument-improver
@@ -367,13 +371,15 @@ to be modified."
     (let ((command (car commands)))
       (cond
        ((member command
-                '("archive" "build" "challenge" "edit" "environment"
+                '("archive" "build" "challenge" "edit"
                   "graph" "lint" "refresh"))
         (argument :doc "Packages" :fun 'guix-read-package-names-string))
        ((equal commands '("container" "exec"))
         (argument :doc "PID Command [Args...]"))
        ((string= command "download")
         (argument :doc "URL"))
+       ((string= command "environment")
+        (argument :doc "Command [Args...]" :fun 'read-shell-command))
        ((string= command "gc")
         (argument :doc "Paths" :fun 'guix-read-file-name))
        ((member command '("hash" "system"))
@@ -387,10 +393,22 @@ to be modified."
              (string= command "import"))
         (argument :doc "Package name"))))))
 
+(defvar guix-command-additional-arguments
+  `((("environment")
+     ,(guix-command-make-argument
+       :name "++packages " :char ?p :option? t
+       :doc "build inputs of the specified packages"
+       :fun 'guix-read-package-names-string)))
+  "Alist of guix commands and additional arguments for them.
+These are 'fake' arguments that are not presented in 'guix' shell
+commands.")
+
 (defun guix-command-additional-arguments (&optional commands)
   "Return additional arguments for COMMANDS."
   (let ((rest-arg (guix-command-rest-argument commands)))
-    (and rest-arg (list rest-arg))))
+    (append (guix-assoc-value guix-command-additional-arguments
+                              commands)
+            (and rest-arg (list rest-arg)))))
 
 ;; Ideally only `guix-command-arguments' function should exist with the
 ;; contents of `guix-command-all-arguments', but we need to make a
@@ -472,7 +490,11 @@ to be modified."
 ;;; Post processing popup arguments
 
 (defvar guix-command-post-processors
-  '(("hash"
+  '(("environment"
+     guix-command-post-process-environment-packages
+     guix-command-post-process-environment-ad-hoc
+     guix-command-post-process-rest-multiple-leave)
+    ("hash"
      guix-command-post-process-rest-single)
     ("package"
      guix-command-post-process-package-args)
@@ -544,6 +566,21 @@ Leave '--' string as a separate argument."
   "Adjust popup ARGS for 'guix package' command."
   (guix-command-post-process-matching-args
    args (rx string-start (or "--install " "--remove ") (+ any))
+   :split? t))
+
+(defun guix-command-post-process-environment-packages (args)
+  "Adjust popup ARGS for specified packages of 'guix environment'
+command."
+  (guix-command-post-process-matching-args
+   args (rx string-start "++packages " (group (+ any)))
+   :group 1
+   :split? t))
+
+(defun guix-command-post-process-environment-ad-hoc (args)
+  "Adjust popup ARGS for '--ad-hoc' argument of 'guix environment'
+command."
+  (guix-command-post-process-matching-args
+   args (rx string-start "--ad-hoc " (+ any))
    :split? t))
 
 (defun guix-command-post-process-args (commands args)
