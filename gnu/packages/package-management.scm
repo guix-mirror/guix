@@ -60,17 +60,17 @@
                      arch "-linux"
                      "/20131110/guile-2.0.9.tar.xz")))
 
-(define-public guix-0.8.3
+(define-public guix-0.9.0
   (package
     (name "guix")
-    (version "0.8.3")
+    (version "0.9.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://alpha.gnu.org/gnu/guix/guix-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "14n0nkj0ckhdwhghx1pml99hbjr1xdkn8x145j0xp1357vqlisnz"))))
+               "0h573z2br0bf43sxyzia9xlm03n3y43zg1snds3c2piq2m6kabrn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list
@@ -195,9 +195,9 @@ the Nix package manager.")
   ;;
   ;; Note: use a short commit id; when using the long one, the limit on socket
   ;; file names is exceeded while running the tests.
-  (let ((commit "b485f75"))
-    (package (inherit guix-0.8.3)
-      (version (string-append "0.8.3." commit))
+  (let ((commit "43c082b"))
+    (package (inherit guix-0.9.0)
+      (version (string-append "0.9.0." commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -205,10 +205,10 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1frn74y5c3n91qxs5b3sxbr8ai43s6svlb2djfnp7nqbr1ax3mph"))
+                  "12ffsyrabsisyf5va4p2csvig6r8g4b7w1dxgsy446l4pjdl7ndh"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (arguments
-       (substitute-keyword-arguments (package-arguments guix-0.8.3)
+       (substitute-keyword-arguments (package-arguments guix-0.9.0)
          ((#:configure-flags flags)
           ;; Set 'DOT_USER_PROGRAM' to the empty string so we don't keep a
           ;; reference to Graphviz, whose closure is pretty big (too big for
@@ -232,7 +232,7 @@ the Nix package manager.")
          ("texinfo" ,texinfo)
          ("graphviz" ,graphviz)
          ("help2man" ,help2man)
-         ,@(package-native-inputs guix-0.8.3))))))
+         ,@(package-native-inputs guix-0.9.0))))))
 
 (define-public guix guix-devel)
 
