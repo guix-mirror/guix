@@ -30,14 +30,14 @@
 (define-public irssi
   (package
     (name "irssi")
-    (version "0.8.15")
+    (version "0.8.17")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.irssi.org/files/irssi-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "19m0aah9bhc70dnhh7kpydbsz5n35l0l9knxav1df0sic3xicbf1"))))
+               "01v82q2pfiimx6lh271kdvgp8hl4pahc3srg04fqzxgdsb5015iw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
