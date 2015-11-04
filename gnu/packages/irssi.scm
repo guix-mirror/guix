@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,7 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages irssi)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -25,7 +26,8 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages tls))
 
 (define-public irssi
   (package
@@ -54,7 +56,8 @@
         %standard-phases)))
     (inputs
      `(("glib" ,glib)
-       ("ncurses" ,ncurses)))
+       ("ncurses" ,ncurses)
+       ("openssl" ,openssl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)))
@@ -63,4 +66,4 @@
     (description
      "Irssi is a terminal based IRC client for UNIX systems.  It also supports
 SILC and ICB protocols via plugins.")
-    (license gpl2+)))
+    (license license:gpl2+)))
