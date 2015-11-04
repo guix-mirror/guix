@@ -124,7 +124,7 @@ to recover data more efficiently by only reading the necessary blocks.")
 (define-public dosfstools
   (package
     (name "dosfstools")
-    (version "3.0.27")
+    (version "3.0.28")
     (source
      (origin
        (method url-fetch)
@@ -133,7 +133,7 @@ to recover data more efficiently by only reading the necessary blocks.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1a2qs5g2zqbk1gzaaf4v3fw3yny6jgbzddpgcamkp3fjifn8wxl5"))))
+         "1qkya6lald91c8nsf29jwnk0k5v42wlj24gacfdp3wpc8hq935gf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output)
