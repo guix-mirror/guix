@@ -29,13 +29,14 @@
 (define-public zsh
   (package
     (name "zsh")
-    (version "5.0.7")
+    (version "5.1.1")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "http://www.zsh.org/pub/zsh-" version
-                                 ".tar.gz"))
-             (sha256
-              (base32 "06drwywxa0zm8mizk32wc6ijhpzlyy2mcmskj66bnyggg70s9w23"))))
+              (method url-fetch)
+              (uri (string-append "http://www.zsh.org/pub/zsh-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "11shllzhq53fg8ngy3bgbmpf09fn2czifg7hsb41nxi3410mpvcl"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre")
                  #:phases (alist-cons-before
@@ -53,6 +54,7 @@
                                      "Test/E01options.ztst"
                                      "Test/A05execution.ztst"
                                      "Test/A01grammar.ztst"
+                                     "Test/A06assign.ztst"
                                      "Test/B02typeset.ztst"
                                      "Completion/Unix/Command/_init_d"
                                      "Util/preconfig")
