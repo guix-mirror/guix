@@ -79,5 +79,12 @@ line."
                     (leave (_ "source location of package '~a' is unknown~%")
                            (package-full-name package))))
                 packages)
-      (apply execlp (%editor) (%editor)
-             (append-map package->location-specification packages)))))
+
+      (catch 'system-error
+        (lambda ()
+          (apply execlp (%editor) (%editor)
+                 (append-map package->location-specification packages)))
+        (lambda args
+          (let ((errno (system-error-errno args)))
+            (leave (_ "failed to launch '~a': ~a~%")
+                   (%editor) (strerror errno))))))))
