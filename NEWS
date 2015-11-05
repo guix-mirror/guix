@@ -32,6 +32,7 @@ Please send Guix bug reports to bug-guix@gnu.org.
 *** Download progress report has been improved
 *** Emacs shell-mode completions for ‘guix’ commands updated
 *** Emacs: New ‘M-x guix’ popup interface
+*** Emacs: modes for viewing build logs (‘guix-build-log-mode’)
 
 ** Distribution
 
