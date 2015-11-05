@@ -561,14 +561,14 @@ which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.4.32")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://sourceforge/msmtp/msmtp-" version ".tar.bz2"))
+             "mirror://sourceforge/msmtp/msmtp-" version ".tar.xz"))
        (sha256 (base32
-                "122z38pv4q03w3mbnhrhg4w85a51258sfdg2ips0b6cgwz3wbw1b"))))
+                "12c7ljahb06pgn8yvvw526xvr11vnr6d4nr0apylixddpxycsvig"))))
     (build-system gnu-build-system)
     (inputs
      `(("libidn" ,libidn)
@@ -581,7 +581,7 @@ which can add many functionalities to the base client.")
     (arguments
      `(#:configure-flags (list "--with-libgsasl"
                                "--with-libidn"
-                               "--with-ssl=gnutls")))
+                               "--with-tls=gnutls")))
     (synopsis
      "Simple and easy to use SMTP client with decent sendmail compatibility")
     (description
