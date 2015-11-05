@@ -482,6 +482,85 @@ slightly from miniKanren mainline.
 See http://minikanren.org/ for more on miniKanren generally.")
     (license expat)))
 
+(define-public guile-irregex
+  (package
+    (name "guile-irregex")
+    (version "0.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://synthcode.com/scheme/irregex/irregex-"
+                    version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "1b8jl7bycyl2ssp6sb1j24pp9hvqyxm85ki9bmwd50glyyjs5zay"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match)
+                  (guix build gnu-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (delete 'configure)
+         (delete 'build)
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (begin
+               (use-modules (guix build utils)
+                            (ice-9 match))
+               (let* ((out (assoc-ref outputs "out"))
+                      (module-dir (string-append out "/share/guile/site/2.0"))
+                      (source (assoc-ref inputs "source"))
+                      (doc (string-append out "/share/doc/guile-irregex/"))
+                      (guild (string-append (assoc-ref %build-inputs "guile")
+                                            "/bin/guild")))
+                 ;; Make installation directories.
+                 (mkdir-p (string-append module-dir "/rx/source"))
+                 (mkdir-p doc)
+
+                 ;; Compile .scm files and install.
+                 (setenv "GUILE_AUTO_COMPILE" "0")
+
+                 (for-each (lambda (copy-info)
+                             (match copy-info
+                               ((src-file dest-file-basis)
+                                (let* ((dest-file (string-append
+                                                   module-dir dest-file-basis
+                                                   ".scm"))
+                                       (go-file (string-append
+                                                 module-dir dest-file-basis
+                                                 ".go")))
+                                  ;; Install source module.
+                                  (copy-file src-file
+                                             dest-file)
+                                  ;; Install compiled module.
+                                  (unless (zero? (system* guild "compile"
+                                                          "-L" (getcwd)
+                                                          "-o" go-file
+                                                          src-file))
+                                    (error (format #f "Failed to compile ~s to ~s!"
+                                                   src-file dest-file)))))))
+                           '(("irregex-guile.scm" "/rx/irregex")
+                             ("irregex.scm" "/rx/source/irregex")
+                             ;; Not really reachable via guile's packaging system,
+                             ;; but nice to have around
+                             ("irregex-utils.scm" "/rx/source/irregex-utils")))
+
+                 ;; Also copy over the README.
+                 (install-file "irregex.html" doc)
+                 #t)))))))
+    (inputs
+     `(("guile" ,guile-2.0)))
+    (home-page "http://synthcode.com/scheme/irregex")
+    (synopsis "S-expression based regular expressions")
+    (description
+     "Irregex is an s-expression based alternative to your classic
+string-based regular expressions.  It implements SRFI 115 and is deeply
+inspired by the SCSH regular expression system.")
+    (license bsd-3)))
 
 ;; There are two guile-gdbm packages, one using the FFI and one with
 ;; direct C bindings, hence the verbose name.
