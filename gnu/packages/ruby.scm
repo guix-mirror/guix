@@ -1649,3 +1649,28 @@ that can be exported to a number of formats very easily, and also supports
 extending for custom Ruby constructs such as custom class level definitions.")
     (home-page "http://yardoc.org")
     (license license:expat)))
+
+(define-public ruby-eventmachine
+  (package
+    (name "ruby-eventmachine")
+    (version "1.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "eventmachine" version))
+       (sha256
+        (base32
+         "1frvpk3p73xc64qkn0ymll3flvn4xcycq5yx8a43zd3gyzc1ifjp"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; test suite tries to connect to google.com
+    (native-inputs
+     `(("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (synopsis "Single-threaded network event framework for Ruby")
+    (description
+     "EventMachine implements a single-threaded engine for arbitrary network
+communications.  EventMachine wraps all interactions with sockets, allowing
+programs to concentrate on the implementation of network protocols.  It can be
+used to create both network servers and clients.")
+    (home-page "http://rubyeventmachine.com")
+    (license (list license:ruby license:gpl3)))) ; GPLv3 only AFAICT
