@@ -59,6 +59,15 @@ Start $EDITOR to edit the definitions of PACKAGE...\n"))
              file path))
     absolute-file-name))
 
+(define (package->location-specification package)
+  "Return the location specification for PACKAGE for a typical editor command
+line."
+  (let ((loc (package-location package)))
+    (list (string-append "+"
+                         (number->string
+                          (location-line loc)))
+          (search-path* %load-path (location-file loc)))))
+
 
 (define (guix-edit . args)
   (with-error-handling
@@ -71,10 +80,4 @@ Start $EDITOR to edit the definitions of PACKAGE...\n"))
                            (package-full-name package))))
                 packages)
       (apply execlp (%editor) (%editor)
-             (append-map (lambda (package)
-                           (let ((loc (package-location package)))
-                             (list (string-append "+"
-                                                  (number->string
-                                                   (location-line loc)))
-                                   (search-path* %load-path (location-file loc)))))
-                         packages)))))
+             (append-map package->location-specification packages)))))
