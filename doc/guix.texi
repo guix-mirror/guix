@@ -5293,14 +5293,19 @@ To install the system, you would:
 @enumerate
 
 @item
-Configure the network, by running @command{ifconfig eno1 up && dhclient
-eno1} (to get an automatically assigned IP address from the wired
+Configure the network, by running:
+
+@example
+ifconfig eno1 up && dhclient eno1
+@end example
+
+to get an automatically assigned IP address from the wired
 network interface controller@footnote{
 @c http://cgit.freedesktop.org/systemd/systemd/tree/src/udev/udev-builtin-net_id.c#n20
 The name @code{eno1} is for the first on-board Ethernet controller.  The
 interface name for an Ethernet controller that is in the first slot of
 the first PCI bus, for instance, would be @code{enp1s0}.  Use
-@command{ifconfig -a} to list all the available network interfaces.}),
+@command{ifconfig -a} to list all the available network interfaces.},
 or using the @command{ifconfig} command.
 
 The system automatically loads drivers for your network interface
