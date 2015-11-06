@@ -1962,3 +1962,30 @@ algorithm and optimum parameters depending on the dataset.
 FLANN is written in C++ and contains bindings for C, Octave and Python.")
     (license (license:non-copyleft "file://COPYING"
                                 "See COPYING in the distribution."))))
+
+(define-public wcalc
+  (package
+    (name "wcalc")
+    (version "2.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri
+          (string-append
+            "mirror://sourceforge/w-calc/wcalc-" version ".tar.bz2"))
+        (sha256
+          (base32
+            "1vi8dl6rccqiq1apmpwawyg2ywx6a1ic1d3cvkf2hlwk1z11fb0f"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("mpfr" ,mpfr)
+       ("readline" ,readline)))
+    (home-page "http://w-calc.sourceforge.net/index.php")
+    (synopsis "Flexible command-line scientific calculator")
+    (description "Wcalc is a very capable calculator.  It has standard functions
+(sin, asin, and sinh for example, in either radians or degrees), many
+pre-defined constants (pi, e, c, etc.), support for using variables, \"active\"
+variables, a command history, hex/octal/binary input and output, unit
+conversions, embedded comments, and an expandable expression entry field.  It
+evaluates expressions using the standard order of operations.")
+    (license license:gpl2+)))
