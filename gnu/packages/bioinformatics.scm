@@ -44,6 +44,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages mpi)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -523,6 +524,88 @@ confidence to have in an alignment.")
                    license:boost1.0
                    license:lgpl2.0+
                    license:asl2.0))))
+
+(define-public bless
+  (package
+    (name "bless")
+    (version "1p02")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/bless-ec/bless.v"
+                                  version ".tgz"))
+              (sha256
+               (base32
+		"0rm0gw2s18dqwzzpl3c2x1z05ni2v0xz5dmfk3d33j6g4cgrlrdd"))
+                            (modules '((guix build utils)))
+              (snippet
+               `(begin
+                  ;; Remove bundled boost, pigz, zlib, and .git directory
+                  ;; FIXME: also remove bundled sources for google-sparsehash,
+                  ;; murmurhash3, kmc once packaged.
+                  (delete-file-recursively "boost")
+                  (delete-file-recursively "pigz")
+                  (delete-file-recursively "zlib")
+                  (delete-file-recursively ".git")
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ;no "check" target
+       #:make-flags
+       (list (string-append "ZLIB="
+                            (assoc-ref %build-inputs "zlib")
+                            "/lib/libz.a")
+             (string-append "LDFLAGS="
+                            (string-join '("-lboost_filesystem"
+                                           "-lboost_system"
+                                           "-lboost_iostreams"
+                                           "-lz"
+                                           "-fopenmp"
+                                           "-std=c++11"))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-build-bundled-pigz
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (substitute* "Makefile"
+              (("cd pigz/pigz-2.3.3; make") ""))
+            #t))
+         (add-after 'unpack 'patch-paths-to-executables
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (substitute* "parse_args.cpp"
+              (("kmc_binary = .*")
+               (string-append "kmc_binary = \""
+                              (assoc-ref outputs "out")
+                              "/bin/kmc\";"))
+              (("pigz_binary = .*")
+               (string-append "pigz_binary = \""
+                              (assoc-ref inputs "pigz")
+                              "/bin/pigz\";")))
+            #t))
+         (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+              (for-each (lambda (file)
+                          (install-file file bin))
+                        '("bless" "kmc/bin/kmc"))
+              #t)))
+         (delete 'configure))))
+    (native-inputs
+     `(("perl" ,perl)))
+    (inputs
+     `(("openmpi" ,openmpi)
+       ("boost" ,boost)
+       ("pigz" ,pigz)
+       ("zlib" ,zlib)))
+    (home-page "http://sourceforge.net/projects/bless-ec/wiki/Home/")
+    (synopsis "Bloom-filter-based error correction tool for NGS reads")
+    (description
+     "@dfn{Bloom-filter-based error correction solution for high-throughput
+sequencing reads} (BLESS) uses a single minimum-sized bloom filter is a
+correction tool for genomic reads produced by @dfn{Next-generation
+sequencing} (NGS).  BLESS produces accurate correction results with much less
+memory compared with previous solutions and is also able to tolerate a higher
+false-positive rate.  BLESS can extend reads like DNA assemblers to correct
+errors at the end of reads.")
+    (license license:gpl3+)))
 
 (define-public bowtie
   (package
