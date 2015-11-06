@@ -535,8 +535,8 @@ confidence to have in an alignment.")
                                   version ".tgz"))
               (sha256
                (base32
-		"0rm0gw2s18dqwzzpl3c2x1z05ni2v0xz5dmfk3d33j6g4cgrlrdd"))
-                            (modules '((guix build utils)))
+                "0rm0gw2s18dqwzzpl3c2x1z05ni2v0xz5dmfk3d33j6g4cgrlrdd"))
+              (modules '((guix build utils)))
               (snippet
                `(begin
                   ;; Remove bundled boost, pigz, zlib, and .git directory
@@ -595,7 +595,7 @@ confidence to have in an alignment.")
        ("boost" ,boost)
        ("pigz" ,pigz)
        ("zlib" ,zlib)))
-    (home-page "http://sourceforge.net/projects/bless-ec/wiki/Home/")
+    (home-page "http://sourceforge.net/p/bless-ec/wiki/Home/")
     (synopsis "Bloom-filter-based error correction tool for NGS reads")
     (description
      "@dfn{Bloom-filter-based error correction solution for high-throughput
