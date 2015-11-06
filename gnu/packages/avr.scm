@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +23,9 @@
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
-  #:use-module (gnu packages cross-base))
+  #:use-module (gnu packages cross-base)
+  #:use-module (gnu packages vim)
+  #:use-module (gnu packages zip))
 
 (define-public avr-libc
   (package
@@ -49,3 +52,40 @@
      "AVR Libc is a project whose goal is to provide a high quality C library
 for use with GCC on Atmel AVR microcontrollers.")
     (license (license:non-copyleft "http://www.nongnu.org/avr-libc/LICENSE.txt"))))
+
+(define-public microscheme
+  (package
+    (name "microscheme")
+    (version "0.9.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/ryansuchocki/"
+                                  "microscheme/archive/v" version ".zip"))
+              (sha256
+               (base32
+                "0cmp1c6ilcib4w9ysqghav310g8jsq9gdfpfa9sd23wgl7mlncxf"))
+              (file-name (string-append name "-" version ".zip"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f ; fails to build otherwise
+       #:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))))
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("vim" ,vim))) ; for xxd
+    (home-page "http://microscheme.org/")
+    (synopsis "Scheme subset for Atmel microcontrollers")
+    (description
+     "Microscheme, or @code{(ms)} for short, is a functional programming
+language for the Arduino, and for Atmel 8-bit AVR microcontrollers in general.
+Microscheme is a subset of Scheme, in the sense that every valid @code{(ms)}
+program is also a valid Scheme program (with the exception of Arduino
+hardware-specific primitives).  The @code{(ms)} compiler performs function
+inlining, and features an aggressive tree-shaker, eliminating unused top-level
+definitions.  Microscheme has a robust @dfn{Foreign Function Interface} (FFI)
+meaning that C code may be invoked directly from (ms) programs.")
+    (license license:expat)))
