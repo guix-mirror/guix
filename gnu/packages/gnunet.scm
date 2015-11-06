@@ -29,6 +29,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages image)
@@ -45,6 +46,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu))
 
 (define-public libextractor
@@ -250,3 +252,35 @@ applications.  In particular, GNUnet now includes the GNU Name System, a
 privacy-preserving, decentralized public key infrastructure.")
    (license license:gpl3+)
    (home-page "https://gnunet.org/")))
+
+(define-public guile-gnunet                       ;GSoC 2015!
+  (let ((commit "383eac2"))
+    (package
+      (name "guile-gnunet")
+      (version (string-append "0.0." commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://git.sv.gnu.org/guix/gnunet.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0k6mn28isjlxrnvbnblab3nh2xqx1b7san8k98kc35ap9lq0iz8w"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (add-before 'configure 'bootstrap
+                      (lambda _
+                        (zero? (system* "autoreconf" "-vfi")))))))
+      (native-inputs `(("pkg-config" ,pkg-config)
+                       ("autoconf" ,(autoconf-wrapper))
+                       ("automake" ,automake)))
+      (inputs `(("guile" ,guile-2.0)
+                ("gnunet" ,gnunet)))
+      (synopsis "Guile bindings for GNUnet services")
+      (description
+       "This package provides Guile bindings to the client libraries of various
+GNUnet services, including the @dfn{identity} and @dfn{file sharing}
+services.")
+      (home-page "http://gnu.org/software/guix")
+      (license license:gpl3+))))
