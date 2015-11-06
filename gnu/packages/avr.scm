@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages avr)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
@@ -48,4 +48,4 @@
     (description
      "AVR Libc is a project whose goal is to provide a high quality C library
 for use with GCC on Atmel AVR microcontrollers.")
-    (license (non-copyleft "http://www.nongnu.org/avr-libc/LICENSE.txt"))))
+    (license (license:non-copyleft "http://www.nongnu.org/avr-libc/LICENSE.txt"))))
