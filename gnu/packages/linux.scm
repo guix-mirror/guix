@@ -2410,3 +2410,46 @@ id=0B7CLI-REKbE3VTdaa0EzTkhYdU0")
      "This package provides a FUSE-based file system that provides read and
 write access to exFAT devices.")
     (license gpl2+)))
+
+(define-public gpm
+  (package
+    (name "gpm")
+    (version "1.20.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.nico.schottelius.org/software/gpm/archives/gpm-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "13d426a8h403ckpc8zyf7s2p5rql0lqbg2bv0454x0pvgbfbf4gh"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'bootstrap
+                    (lambda _
+                      ;; The tarball was not generated with 'make dist' so we
+                      ;; need to bootstrap things ourselves.
+                      (and (zero? (system* "./autogen.sh"))
+                           (begin
+                             (patch-makefile-SHELL "Makefile.include.in")
+                             #t)))))
+
+       ;; Make sure programs find libgpm.so.
+       #:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib"))))
+    (native-inputs
+     `(("texinfo" ,texinfo)
+       ("bison" ,bison)
+       ("flex" ,flex)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "http://www.nico.schottelius.org/software/gpm/")
+    (synopsis "Mouse support for the Linux console")
+    (description
+     "The GPM (general-purpose mouse) daemon is a mouse server for
+applications running on the Linux console.  It allows users to select items
+and copy/paste text in the console and in xterm.")
+    (license gpl2+)))
