@@ -73,15 +73,14 @@ command-line arguments, multiple languages, and so on.")
 (define-public grep
   (package
    (name "grep")
-   (version "2.21")
+   (version "2.22")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/grep/grep-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1pp5n15qwxrw1pibwjhhgsibyv5cafhamf8lwzjygs6y00fa2i2j"))
-            (patches (list (search-patch "grep-CVE-2015-1345.patch")))))
+              "1srn321x7whlhs5ks36zlcrrmj4iahll8fxwsh1vbz3v04px54fa"))))
    (build-system gnu-build-system)
    (synopsis "Print lines matching a pattern")
    (description
