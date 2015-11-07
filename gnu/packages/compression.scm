@@ -228,14 +228,14 @@ decompression.")
 (define-public xz
   (package
    (name "xz")
-   (version "5.0.4")
+   (version "5.2.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://tukaani.org/xz/xz-" version
                                 ".tar.gz"))
             (sha256
              (base32
-              "1dl35ca8fdss9z2d6y234gxh24ixq904xksizrjmjr5dimwhax6n"))))
+              "18h2k4jndhzjs8ln3a54qdnfv59y6spxiwh9gpaqniph6iflvpvk"))))
    (build-system gnu-build-system)
    (synopsis "General-purpose data compression")
    (description
