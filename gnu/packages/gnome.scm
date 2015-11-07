@@ -104,7 +104,7 @@
              (sha256
               (base32
                "09vi2hyhl0bz7imv3ky6h7x5m3d546n968wcghydwrkvwm9ylpls"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list
                           (string-append "--with-girdir="
