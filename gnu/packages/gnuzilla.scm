@@ -239,7 +239,26 @@ standards.")
        (base32
         "0vm6f7f1i5vkq2713mgzjdfnm8rpz9l0q8sv4s123vsam0j9gzh8"))
       (patches (map search-patch '("icecat-avoid-bundled-includes.patch"
-                                   "icecat-freetype-2.6.patch")))
+                                   "icecat-freetype-2.6.patch"
+                                   "icecat-CVE-2015-4513-pt01.patch"
+                                   "icecat-CVE-2015-4513-pt02.patch"
+                                   "icecat-CVE-2015-4513-pt03.patch"
+                                   "icecat-CVE-2015-4513-pt04.patch"
+                                   "icecat-CVE-2015-4513-pt05.patch"
+                                   "icecat-CVE-2015-4513-pt06.patch"
+                                   "icecat-CVE-2015-4513-pt07.patch"
+                                   "icecat-CVE-2015-4513-pt08.patch"
+                                   "icecat-CVE-2015-4513-pt09.patch"
+                                   "icecat-CVE-2015-4513-pt10.patch"
+                                   "icecat-CVE-2015-4513-pt11.patch"
+                                   "icecat-CVE-2015-7188.patch"
+                                   "icecat-CVE-2015-7189.patch"
+                                   "icecat-CVE-2015-7193.patch"
+                                   "icecat-CVE-2015-7194.patch"
+                                   "icecat-CVE-2015-7196.patch"
+                                   "icecat-CVE-2015-7197.patch"
+                                   "icecat-CVE-2015-7198.patch"
+                                   "icecat-CVE-2015-7199.patch")))
       (modules '((guix build utils)))
       (snippet
        '(begin

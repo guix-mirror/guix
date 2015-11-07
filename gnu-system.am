@@ -500,6 +500,25 @@ dist_patch_DATA =						\
   gnu/packages/patches/hwloc-gather-topology-lstopo.patch	\
   gnu/packages/patches/hydra-automake-1.15.patch		\
   gnu/packages/patches/hydra-disable-darcs-test.patch		\
+  gnu/packages/patches/icecat-CVE-2015-4513-pt01.patch		\
+  gnu/packages/patches/icecat-CVE-2015-4513-pt02.patch		\
+  gnu/packages/patches/icecat-CVE-2015-4513-pt03.patch		\
+  gnu/packages/patches/icecat-CVE-2015-4513-pt04.patch		\
+  gnu/packages/patches/icecat-CVE-2015-4513-pt05.patch		\
+  gnu/packages/patches/icecat-CVE-2015-4513-pt06.patch		\
+  gnu/packages/patches/icecat-CVE-2015-4513-pt07.patch		\
+  gnu/packages/patches/icecat-CVE-2015-4513-pt08.patch		\
+  gnu/packages/patches/icecat-CVE-2015-4513-pt09.patch		\
+  gnu/packages/patches/icecat-CVE-2015-4513-pt10.patch		\
+  gnu/packages/patches/icecat-CVE-2015-4513-pt11.patch		\
+  gnu/packages/patches/icecat-CVE-2015-7188.patch		\
+  gnu/packages/patches/icecat-CVE-2015-7189.patch		\
+  gnu/packages/patches/icecat-CVE-2015-7193.patch		\
+  gnu/packages/patches/icecat-CVE-2015-7194.patch		\
+  gnu/packages/patches/icecat-CVE-2015-7196.patch		\
+  gnu/packages/patches/icecat-CVE-2015-7197.patch		\
+  gnu/packages/patches/icecat-CVE-2015-7198.patch		\
+  gnu/packages/patches/icecat-CVE-2015-7199.patch		\
   gnu/packages/patches/icecat-avoid-bundled-includes.patch	\
   gnu/packages/patches/icecat-freetype-2.6.patch		\
   gnu/packages/patches/icu4c-CVE-2014-6585.patch		\
