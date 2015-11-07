@@ -5286,7 +5286,9 @@ Once you have successfully booted the image on the USB stick, you should
 end up with a root prompt.  Several console TTYs are configured and can
 be used to run commands as root.  TTY2 shows this documentation,
 browsable using the Info reader commands (@pxref{Help,,, info, Info: An
-Introduction}).
+Introduction}).  The installation system runs the GPM mouse daemon,
+which allows you to select text with the left mouse button and to paste
+it with the middle button.
 
 To install the system, you would:
 
