@@ -6445,6 +6445,16 @@ Return a service to load console keymap from @var{file} using
 @command{loadkeys} command.
 @end deffn
 
+@deffn {Scheme Procedure} gpm-service-type [#:gpm @var{gpm}] @
+          [#:options]
+Run @var{gpm}, the general-purpose mouse daemon, with the given
+command-line @var{options}.  GPM allows users to use the mouse in the console,
+notably to select, copy, and paste text.  The default value of @var{options}
+uses the @code{ps2} protocol, which works for both USB and PS/2 mice.
+
+This service is not part of @var{%base-services}.
+@end deffn
+
 @anchor{guix-publish-service}
 @deffn {Scheme Procedure} guix-publish-service [#:guix @var{guix}] @
            [#:port 80] [#:host "localhost"]

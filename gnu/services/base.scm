@@ -28,7 +28,7 @@
   #:use-module (gnu system file-systems)          ; 'file-system', etc.
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
-                #:select (eudev kbd e2fsprogs lvm2 fuse alsa-utils crda))
+                #:select (eudev kbd e2fsprogs lvm2 fuse alsa-utils crda gpm))
   #:use-module ((gnu packages base)
                 #:select (canonical-package glibc))
   #:use-module (gnu packages package-management)
@@ -80,6 +80,8 @@
             guix-publish-configuration?
             guix-publish-service
             guix-publish-service-type
+            gpm-service-type
+            gpm-service
 
             %base-services))
 
@@ -1113,6 +1115,60 @@ gexp, to open it, and evaluate @var{close} to close it."
   "Return a service that uses @var{device} as a swap device."
   (service swap-service-type device))
 
+
+(define-record-type* <gpm-configuration>
+  gpm-configuration make-gpm-configuration gpm-configuration?
+  (gpm      gpm-configuration-gpm)                ;package
+  (options  gpm-configuration-options))           ;list of strings
+
+(define gpm-dmd-service
+  (match-lambda
+    (($ <gpm-configuration> dmd options)
+     (list (dmd-service
+            (requirement '(udev))
+            (provision '(gpm))
+            (start #~(lambda ()
+                       ;; 'gpm' runs in the background and sets a PID file.
+                       ;; Note that it requires running as "root".
+                       (false-if-exception (delete-file "/var/run/gpm.pid"))
+                       (fork+exec-command (list (string-append #$gpm "/sbin/gpm")
+                                                #$@options))
+
+                       ;; Wait for the PID file to appear; declare failure if
+                       ;; it doesn't show up.
+                       (let loop ((i 3))
+                         (or (file-exists? "/var/run/gpm.pid")
+                             (if (zero? i)
+                                 #f
+                                 (begin
+                                   (sleep 1)
+                                   (loop (1- i))))))))
+
+            (stop #~(lambda (_)
+                      ;; Return #f if successfully stopped.
+                      (not (zero? (system* (string-append #$gpm "/sbin/gpm")
+                                           "-k"))))))))))
+
+(define gpm-service-type
+  (service-type (name 'gpm)
+                (extensions
+                 (list (service-extension dmd-root-service-type
+                                          gpm-dmd-service)))))
+
+(define* (gpm-service #:key (gpm gpm)
+                      (options '("-m" "/dev/input/mice" "-t" "ps2")))
+  "Run @var{gpm}, the general-purpose mouse daemon, with the given
+command-line @var{options}.  GPM allows users to use the mouse in the console,
+notably to select, copy, and paste text.  The default value of @var{options}
+uses the @code{ps2} protocol, which works for both USB and PS/2 mice.
+
+This service is not part of @var{%base-services}."
+  ;; To test in QEMU, use "-usbdevice mouse" and then, in the monitor, use
+  ;; "info mice" and "mouse_set X" to use the right mouse.
+  (service gpm-service-type
+           (gpm-configuration (gpm gpm) (options options))))
+
+
 (define %base-services
   ;; Convenience variable holding the basic services.
   (let ((motd (plain-file "motd" "
