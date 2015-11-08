@@ -6368,3 +6368,31 @@ timestamps.")
 
 (define-public python2-pyrfc3339
   (package-with-python2 python-pyrfc3339))
+
+(define-public python-werkzeug
+  (package
+    (name "python-werkzeug")
+    (version "0.11.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/W/Werkzeug"
+                           "/Werkzeug-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gzwn1lkl90f3l1nzzxr7vjhm21qk8f837i8rvny5a209fcrhkzb"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "http://werkzeug.pocoo.org/")
+    (synopsis "Utilities for WSGI applications")
+    (description "One of the most advanced WSGI utility modules.  It includes a
+powerful debugger, full-featured request and response objects, HTTP utilities to
+handle entity tags, cache control headers, HTTP dates, cookie handling, file
+uploads, a powerful URL routing system and a bunch of community-contributed
+addon modules.")
+    (license x11)))
+
+(define-public python2-werkzeug
+  (package-with-python2 python-werkzeug))
