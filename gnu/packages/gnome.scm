@@ -166,7 +166,7 @@ commonly used macros.")
 (define-public gnome-desktop
   (package
     (name "gnome-desktop")
-    (version "3.16.2")
+    (version "3.18.1")
     (source
      (origin
       (method url-fetch)
@@ -175,18 +175,21 @@ commonly used macros.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "1l3v48i2w90i2cc056j4km9jb23axxgzpf5gl8xvv7gb8rmik3rs"))))
+        "0avpmyhzz5b3pyfpkp8iq5ym5r5w7zs3a396hqkdpdsiym0vrazc"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("itstool" ,itstool)
+     `(("gobject-introspection" ,gobject-introspection)
+       ("itstool" ,itstool)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)))
+    (propagated-inputs
+     ;; Required by gnome-desktop-3.0.pc.
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)))
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)
        ("glib" ,glib)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)
        ("iso-codes" ,iso-codes)
        ("libx11" ,libx11)
        ("libxext" ,libxext)
