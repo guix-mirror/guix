@@ -90,6 +90,7 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages samba)
+  #:use-module (gnu packages readline)
   #:use-module (srfi srfi-1))
 
 (define-public brasero
@@ -3713,4 +3714,51 @@ such as gzip tarballs.")
      "This package contains the GNOME session manager, as well as a
 configuration program to choose applications starting on login.")
     (home-page "https://wiki.gnome.org/Projects/SessionManagement")
+    (license license:gpl2+)))
+
+(define-public gjs
+  (package
+    (name "gjs")
+    (version "1.44.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "106fgpr4y99sj68l72pnfa2za11ps4bn6p9z28fr79j7mpv61jc8"))
+              (modules '((guix build utils)))
+              (snippet '(substitute* "test/run-with-dbus"
+                          (("/bin/rm") "rm")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before
+          'check 'pre-check
+          (lambda _
+            ;; For the missing /etc/machine-id.
+            (setenv "DBUS_FATAL_WARNINGS" "0")
+            #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")       ; for glib-compile-resources
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)
+       ;; For testing
+       ("dbus-launch" ,dbus)
+       ("uuidgen" ,util-linux)
+       ("xvfb" ,xorg-server)))
+    (propagated-inputs
+     ;; These are all in the Requires.private field of gjs-1.0.pc.
+     `(("gobject-introspection" ,gobject-introspection)
+       ("mozjs" ,mozjs-24)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("readline" ,readline)))
+    (synopsis "Javascript bindings for GNOME")
+    (home-page "http://live.gnome.org/Gjs")
+    (description
+     "Gjs is a javascript binding for GNOME.  It's mainly based on spidermonkey
+javascript engine and the GObject introspection framework.")
     (license license:gpl2+)))
