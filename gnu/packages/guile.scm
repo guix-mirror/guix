@@ -29,6 +29,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages libunistring)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
@@ -241,6 +242,56 @@ without requiring the source code to be rewritten.")
 ;;;
 ;;; Extensions.
 ;;;
+
+(define-public artanis
+  (package
+    (name "artanis")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://alpha.gnu.org/gnu/artanis/artanis-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1mc2zy6n9wnn4hzi3zp3jd6b5rlr0lv7fvh800xf4fyrxg0zia4g"))))
+    (build-system gnu-build-system)
+    ;; TODO: Add guile-dbi and guile-dbd optional dependencies.
+    (inputs `(("guile" ,guile-2.0)))
+    (native-inputs `(("bash"       ,bash)         ;for the `source' builtin
+                     ("pkgconfig"  ,pkg-config)
+                     ("util-linux" ,util-linux))) ;for the `script' command
+    (arguments
+     '(#:make-flags
+       ;; TODO: The documentation must be built with the `docs' target.
+       (let* ((out (assoc-ref %outputs "out"))
+              (dir (string-append out "/share/guile/site/2.0")))
+         ;; Don't use (%site-dir) for site paths.
+         (list (string-append "MOD_PATH=" dir)
+               (string-append "MOD_COMPILED_PATH=" dir)))
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'install 'substitute-root-dir
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out  (assoc-ref outputs "out")))
+              (substitute* "Makefile"   ;ignore the execution of bash.bashrc
+                ((" /etc/bash.bashrc") " /dev/null"))
+              (substitute* "Makefile"   ;set the root of config files to OUT
+                ((" /etc") (string-append " " out "/etc")))
+              (mkdir-p (string-append out "/bin")) ;for the `art' executable
+              #t))))))
+    (synopsis "Web application framework written in Guile")
+    (description "GNU Artanis is a web application framework written in Guile
+Scheme.  A web application framework (WAF) is a software framework that is
+designed to support the development of dynamic websites, web applications, web
+services and web resources.  The framework aims to alleviate the overhead
+associated with common activities performed in web development.  Artanis
+provides several tools for web development: database access, templating
+frameworks, session management, URL-remapping for RESTful, page caching, and
+more.")
+    (home-page "https://www.gnu.org/software/artanis/")
+    (license (list gpl3+ lgpl3+))))     ;dual license
 
 (define-public guile-reader
   (package
