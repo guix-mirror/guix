@@ -45,6 +45,7 @@
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages enchant)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
@@ -3761,4 +3762,61 @@ configuration program to choose applications starting on login.")
     (description
      "Gjs is a javascript binding for GNOME.  It's mainly based on spidermonkey
 javascript engine and the GObject introspection framework.")
+    (license license:gpl2+)))
+
+(define-public gedit
+  (package
+    (name "gedit")
+    (version "3.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1kb3hglcppap7fdy7i7w2wk746kfz77jzs2lq6vrna8a3fqaxmas"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'install 'wrap-gedit
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((out               (assoc-ref outputs "out"))
+                  (gtksourceview     (assoc-ref inputs "gtksourceview"))
+                  (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+              (wrap-program (string-append out "/bin/gedit")
+                `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
+                ;; For language-specs.
+                `("XDG_DATA_DIRS" ":" prefix (,(string-append gtksourceview
+                                                              "/share")))))
+            #t)))))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("itstool", itstool)
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("libpeas" ,libpeas)
+       ("libxml2" ,libxml2)
+       ("enchant" ,enchant)
+       ("iso-codes" ,iso-codes)
+       ("python-pygobject" ,python-pygobject)
+       ("python" ,python)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("libx11" ,libx11)
+       ("vala" ,vala)
+       ("adwaita-icon-theme" ,adwaita-icon-theme)
+       ("libsoup" ,libsoup)
+       ("gnome-desktop" ,gnome-desktop)))
+    (home-page "https://wiki.gnome.org/Apps/Gedit")
+    (synopsis "GNOME text editor")
+    (description "While aiming at simplicity and ease of use, gedit is a
+powerful general purpose text editor.")
     (license license:gpl2+)))
