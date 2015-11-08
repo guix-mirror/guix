@@ -175,7 +175,7 @@ numbers.")
 (define-public glpk
   (package
     (name "glpk")
-    (version "4.56")
+    (version "4.57")
     (source
      (origin
       (method url-fetch)
@@ -183,7 +183,7 @@ numbers.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0syzix6qvpn0fzp08c84c8snansf1cam5vd0dk2w91mz2c85d18h"))))
+        "0p17jj1ixd2m9lnsvx8nywmfmnplfk5gvw25r1gy84qzrjkv48vk"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)))
