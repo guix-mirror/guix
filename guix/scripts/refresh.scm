@@ -30,7 +30,6 @@
   #:use-module ((guix gnu-maintenance) #:select (%gnu-updater))
   #:use-module (guix import elpa)
   #:use-module (guix import cran)
-  #:use-module (guix import pypi)
   #:use-module (guix gnupg)
   #:use-module (gnu packages)
   #:use-module ((gnu packages commencement) #:select (%final-inputs))
@@ -149,12 +148,43 @@ specified with `--select'.\n"))
 ;;; Updates.
 ;;;
 
+(define-syntax maybe-updater
+  ;; Helper macro for 'list-udpaters'.
+  (lambda (s)
+    (syntax-case s (=>)
+      ((_ ((module => updater) rest ...) (result ...))
+       (let ((met? (false-if-exception
+                    (resolve-interface (syntax->datum #'module)))))
+         (if met?
+             #'(maybe-updater (rest ...)
+                              (result ... (@ module updater)))
+             #'(maybe-updater (rest ...) (result ...)))))
+      ((_ (updater rest ...) (result ...))
+       #'(maybe-updater (rest ...) (result ... updater)))
+      ((_ () result)
+       #'result))))
+
+(define-syntax-rule (list-updaters updaters ...)
+  "Expand to '(list UPDATERS ...)' but only the subset of UPDATERS that are
+either unconditional, or have their requirement met.
+
+A conditional updater has this form:
+
+  ((SOME MODULE) => UPDATER)
+
+meaning that UPDATER is added to the list if and only if (SOME MODULE) could
+be resolved at macro expansion time.
+
+This is a way to discard at macro expansion time updaters that depend on
+unavailable optional dependencies such as Guile-JSON."
+  (maybe-updater (updaters ...) (list)))
+
 (define %updaters
   ;; List of "updaters" used by default.  They are consulted in this order.
-  (list %gnu-updater
-        %elpa-updater
-        %cran-updater
-        %pypi-updater))
+  (list-updaters %gnu-updater
+                 %elpa-updater
+                 %cran-updater
+                 ((guix import pypi) => %pypi-updater)))
 
 (define (lookup-updater name)
   "Return the updater called NAME."
