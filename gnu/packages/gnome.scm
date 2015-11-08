@@ -3679,3 +3679,38 @@ environment that allows users to view, unpack, and create compressed archives
 such as gzip tarballs.")
     (home-page "http://fileroller.sourceforge.net/")
     (license license:gpl2+)))
+
+(define-public gnome-session
+  (package
+    (name "gnome-session")
+    (version "3.18.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0icajbzqf5llvp5s8nafwkhwz6a6jmwn4hhs81bk0bpzawyq4zdk"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+       ("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("xsltproc" ,libxslt)))
+    (inputs
+     `(("gnome-desktop" ,gnome-desktop)
+       ("gtk+" ,gtk+)
+       ("json-glib" ,json-glib)
+       ("libsm" ,libsm)
+       ("libxcomposite" ,libxcomposite)
+       ("libxtst" ,libxtst)
+       ("mesa" ,mesa)
+       ("upower" ,upower)
+       ("xtrans" ,xtrans)))
+    (synopsis "Session manager for GNOME")
+    (description
+     "This package contains the GNOME session manager, as well as a
+configuration program to choose applications starting on login.")
+    (home-page "https://wiki.gnome.org/Projects/SessionManagement")
+    (license license:gpl2+)))
