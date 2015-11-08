@@ -92,6 +92,44 @@
 in C/C++.")
     (license license:mpl2.0))) ; and others for some files
 
+(define-public mozjs-24
+  (package (inherit mozjs)
+    (name "mozjs")
+    (version "24.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://ftp.mozilla.org/pub/mozilla.org/js/"
+                    name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1n1phk8r3l8icqrrap4czplnylawa0ddc2cc4cgdz46x3lrkybz6"))))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace
+          'configure
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (chdir "js/src")
+              ;; configure fails if it is follwed by SHELL and CONFIG_SHELL
+              (setenv "SHELL" (which "sh"))
+              (setenv "CONFIG_SHELL" (which "sh"))
+              (zero? (system* "./configure"
+                              (string-append "--prefix=" out)
+                              "--with-system-nspr"
+                              "--enable-system-ffi"
+                              "--enable-threadsafe"))))))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)))
+    (propagated-inputs
+     `(("nspr" ,nspr))) ; in the Requires.private field of mozjs-24.pc
+    (inputs
+     `(("libffi" ,libffi)
+       ("zlib" ,zlib)))))
+
 (define-public nspr
   (package
     (name "nspr")
