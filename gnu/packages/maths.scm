@@ -401,7 +401,7 @@ extremely large and complex data collections.")
 (define-public octave
   (package
     (name "octave")
-    (version "3.8.2")
+    (version "4.0.0")
     (source
      (origin
       (method url-fetch)
@@ -409,7 +409,7 @@ extremely large and complex data collections.")
 			  version ".tar.gz"))
       (sha256
        (base32
-	"05slz8yx8k91fqlnfr1f0vni95iq9qmchz41c7nf4isn3b2fjn7j"))))
+	"101jr9yck798586jz4vkjcgk36zksmxf1pxrzvipgn2xgyay0zjc"))))
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
