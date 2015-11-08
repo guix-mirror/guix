@@ -6341,3 +6341,30 @@ facilities for defining, registering and looking up components.")
 
 (define-public python2-zope-component
   (package-with-python2 python-zope-component))
+
+(define-public python-pyrfc3339
+  (package
+    (name "python-pyrfc3339")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/p/"
+                           "pyRFC3339/pyRFC3339-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pp648xsjaw9h1xq2mgwzda5wis2ypjmzxlksc1a8grnrdmzy155"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pytz" ,python-pytz)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/kurtraschke/pyRFC3339")
+    (synopsis "Python timestamp library")
+    (description "Python library for generating and parsing RFC 3339-compliant
+timestamps.")
+    (license license:expat)))
+
+(define-public python2-pyrfc3339
+  (package-with-python2 python-pyrfc3339))
