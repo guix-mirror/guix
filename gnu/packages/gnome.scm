@@ -1554,9 +1554,7 @@ engineering.")
 (define-public gnome-themes-standard
   (package
     (name "gnome-themes-standard")
-    ;; The version of this package should be the same as the version of
-    ;; gnome-desktop.
-    (version (package-version gnome-desktop))
+    (version "3.18.0")
     (source
      (origin
        (method url-fetch)
@@ -1565,7 +1563,7 @@ engineering.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "17sbcpc9df1cnz84g3npvh1na65mkxaygqcdma6wvda4knjpkssr"))))
+         "1jxss8kxszhf66vic9n1sagczm5amm0mgxpzyxyjna15q82fnip6"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+)
