@@ -6396,3 +6396,33 @@ addon modules.")
 
 (define-public python2-werkzeug
   (package-with-python2 python-werkzeug))
+
+(define-public python-configobj
+  (package
+    (name "python-configobj")
+    (version "5.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/c/configobj/"
+                    "configobj-" version ".tar.gz"))
+              (sha256
+               (base32
+                "00h9rcmws03xvdlfni11yb60bz3kxfvsj6dg6nrpzj71f03nbxd2"))
+              ;; Patch setup.py so it looks for python-setuptools, which is
+              ;; required to parse the keyword 'install_requires' in setup.py.
+              (patches (list (search-patch "python-configobj-setuptools.patch")))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)))
+    (synopsis "Config file reading, writing and validation")
+    (description "ConfigObj is a simple but powerful config file reader and
+writer: an ini file round tripper.  Its main feature is that it is very easy to
+use, with a straightforward programmer’s interface and a simple syntax for
+config files.")
+    (home-page "https://github.com/DiffSK/configobj")
+    (license bsd-3)))
+
+(define-public python2-configobj
+  (package-with-python2 python-configobj))
