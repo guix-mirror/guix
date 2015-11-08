@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -453,7 +454,7 @@ provers.")
     ;; and gtk+-quartz-2.0 once available.
     (inputs
      `(("gtk+" ,gtk+-2)
-       ("gtksourceview" ,gtksourceview)
+       ("gtksourceview" ,gtksourceview-2)
        ("libgnomecanvas" ,libgnomecanvas)
        ("libgnomeui" ,libgnomeui)
        ("libglade" ,libglade)

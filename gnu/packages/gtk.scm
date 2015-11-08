@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
+;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -277,7 +278,7 @@ graph-like environments, e.g. modular synths or finite state machine
 diagrams.")
     (license license:gpl3+)))
 
-(define-public gtksourceview
+(define-public gtksourceview-2
   (package
     (name "gtksourceview")
     (version "2.10.5") ; This is the last version which builds against gtk+2
@@ -330,6 +331,54 @@ highlighting, unlimited undo/redo, search and replace, a completion framework,
 printing and other features typical of a source code editor.")
     (license license:lgpl2.0+)
     (home-page "https://developer.gnome.org/gtksourceview/")))
+
+(define-public gtksourceview
+ (package
+   (name "gtksourceview")
+   (version "3.18.1")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnome/sources/" name "/"
+                                 (version-major+minor version) "/"
+                                 name "-" version ".tar.xz"))
+             (sha256
+              (base32
+               "1rpdg8rcjlqv8yk13vsh5148mads0zbfih8cak3hm7wb0spmzsbv"))))
+   (build-system gnu-build-system)
+   (arguments
+    '(#:phases
+      (modify-phases %standard-phases
+        (add-before
+         'check 'pre-check
+         (lambda* (#:key inputs #:allow-other-keys)
+           (let ((xorg-server (assoc-ref inputs "xorg-server")))
+             ;; Tests require a running X server.
+             (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
+             (setenv "DISPLAY" ":1")
+             ;; For the missing /etc/machine-id.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t))))))
+   (native-inputs
+    `(("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
+      ("intltool" ,intltool)
+      ("itstool", itstool)
+      ("gobject-introspection" ,gobject-introspection)
+      ("pkg-config" ,pkg-config)
+      ("vala" ,vala)
+      ;; For testing.
+      ("xorg-server" ,xorg-server)
+      ("shared-mime-info" ,shared-mime-info)))
+   (propagated-inputs
+    ;; gtksourceview-3.0.pc refers to all these.
+    `(("glib" ,glib)
+      ("gtk+" ,gtk+)
+      ("libxml2" ,libxml2)))
+   (home-page "https://wiki.gnome.org/Projects/GtkSourceView")
+   (synopsis "GNOME source code widget")
+   (description "GtkSourceView is a text widget that extends the standard
+GTK+ text widget GtkTextView.  It improves GtkTextView by implementing syntax
+highlighting and other features typical of a source code editor.")
+   (license license:lgpl2.1+)))
 
 (define-public gdk-pixbuf
   (package
