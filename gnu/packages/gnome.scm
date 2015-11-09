@@ -3820,3 +3820,30 @@ javascript engine and the GObject introspection framework.")
     (description "While aiming at simplicity and ease of use, gedit is a
 powerful general purpose text editor.")
     (license license:gpl2+)))
+
+(define-public zenity
+  (package
+    (name "zenity")
+    (version "3.18.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "02m88dfm1rziqk2ywakwib06wl1rxangbzih6cp8wllbyl1plcg6"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libnotify" ,libnotify)
+       ("webkitgtk" ,webkitgtk)))
+    (synopsis "Display graphical dialog boxes from shell scripts")
+    (home-page "http://www.gnome.org")
+    (description
+     "Zenity is a rewrite of gdialog, the GNOME port of dialog which allows you
+to display dialog boxes from the commandline and shell scripts.")
+    (license license:lgpl2.0+)))
