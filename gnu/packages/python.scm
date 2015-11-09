@@ -6226,3 +6226,30 @@ Markup Language.")
 
 (define-public python2-zope-configuration
   (package-with-python2 python-zope-configuration))
+
+(define-public python-zope-proxy
+  (package
+    (name "python-zope-proxy")
+    (version "4.1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/z"
+                           "/zope.proxy/zope.proxy-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0pqwwmvm1prhwv1ziv9lp8iirz7xkwb6n2kyj36p2h0ppyyhjnm4"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-zope-interface" ,python-zope-interface)))
+    (home-page "http://pypi.python.org/pypi/zope.proxy")
+    (synopsis "Generic, transparent proxies")
+    (description "Zope.proxy provides generic, transparent proxies for Python.
+Proxies are special objects which serve as mostly-transparent wrappers around
+another object, intervening in the apparent behavior of the wrapped object
+only when necessary to apply the policy (e.g., access checking, location
+brokering, etc.) for which the proxy is responsible.")
+    (license zpl2.1)))
+
+(define-public python2-zope-proxy
+  (package-with-python2 python-zope-proxy))
