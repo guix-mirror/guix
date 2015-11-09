@@ -6308,3 +6308,36 @@ security policies on Python objects.")
 
 (define-public python2-zope-security
   (package-with-python2 python-zope-security))
+
+(define-public python-zope-component
+  (package
+    (name "python-zope-component")
+    (version "4.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/z"
+                           "/zope.component/zope.component-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06pqr8m5jv12xjyy5b59hh9anl61cxkzhw9mka33r3nxalmi2b18"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Skip tests due to circular dependency with python-zope-security.
+     '(#:tests? #f))
+    (native-inputs
+     `(("python-zope-testing" ,python-zope-testing)))
+    (propagated-inputs
+     `(("python-zope-event" ,python-zope-event)
+       ("python-zope-interface" ,python-zope-interface)
+       ("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
+       ("python-zope-configuration" ,python-zope-configuration)))
+    (home-page "https://github.com/zopefoundation/zope.component")
+    (synopsis "Zope Component Architecture")
+    (description "Zope.component represents the core of the Zope Component
+Architecture.  Together with the zope.interface package, it provides
+facilities for defining, registering and looking up components.")
+    (license zpl2.1)))
+
+(define-public python2-zope-component
+  (package-with-python2 python-zope-component))
