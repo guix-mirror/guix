@@ -6174,3 +6174,30 @@ internationalized messages within program source text.")
 
 (define-public python2-zope-i18nmessageid
   (package-with-python2 python-zope-i18nmessageid))
+
+(define-public python-zope-schema
+  (package
+    (name "python-zope-schema")
+    (version "4.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/z"
+                           "/zope.schema/zope.schema-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p943jdxb587dh7php4vx04qvn7b2877hr4qs5zyckvp5afhhank"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-zope-event" ,python-zope-event)
+       ("python-zope-interface" ,python-zope-interface)))
+    (native-inputs
+     `(("python-zope-testing" ,python-zope-testing)))
+    (home-page "http://pypi.python.org/pypi/zope.schema")
+    (synopsis "Zope data schemas")
+    (description "Zope.scheme provides extensions to zope.interface for
+defining data schemas.")
+    (license zpl2.1)))
+
+(define-public python2-zope-schema
+  (package-with-python2 python-zope-schema))
