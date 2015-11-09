@@ -6148,3 +6148,29 @@ tests.")
        (append (package-native-inputs base)
                `(("python2-subunit" ,python2-subunit)
                  ("python2-mimeparse" ,python2-mimeparse)))))))
+
+(define-public python-zope-i18nmessageid
+  (package
+    (name "python-zope-i18nmessageid")
+    (version "4.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/z"
+             "/zope.i18nmessageid/zope.i18nmessageid-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1rslyph0klk58dmjjy4j0jxy21k03azksixc3x2xhqbkv97cmzml"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://pypi.python.org/pypi/zope.i18nmessageid")
+    (synopsis "Message identifiers for internationalization")
+    (description "Zope.i18nmessageid provides facilities for declaring
+internationalized messages within program source text.")
+    (license zpl2.1)))
+
+(define-public python2-zope-i18nmessageid
+  (package-with-python2 python-zope-i18nmessageid))
