@@ -6201,3 +6201,28 @@ defining data schemas.")
 
 (define-public python2-zope-schema
   (package-with-python2 python-zope-schema))
+
+(define-public python-zope-configuration
+  (package
+    (name "python-zope-configuration")
+    (version "4.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://pypi.python.org/packages/source/z"
+                                  "/zope.configuration/zope.configuration-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1x9dfqypgympnlm25p9m43xh4qv3p7d75vksv9pzqibrb4cggw5n"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
+       ("python-zope-schema" ,python-zope-schema)))
+    (home-page "http://pypi.python.org/pypi/zope.configuration")
+    (synopsis "Zope Configuration Markup Language")
+    (description "Zope.configuration implements ZCML, the Zope Configuration
+Markup Language.")
+    (license zpl2.1)))
+
+(define-public python2-zope-configuration
+  (package-with-python2 python-zope-configuration))
