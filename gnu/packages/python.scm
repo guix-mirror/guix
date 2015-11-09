@@ -6059,3 +6059,30 @@ conforming to a given API or contract.")
 
 (define-public python2-zope-interface
   (package-with-python2 python-zope-interface))
+
+(define-public python-zope-exceptions
+  (package
+    (name "python-zope-exceptions")
+    (version "4.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/z"
+                           "/zope.exceptions/zope.exceptions-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0zwxaaa66sqxg5k7zcrvs0fbg9ym1njnxnr28dfmchzhwjvwnfzl"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; circular dependency with zope.testrunner
+    (propagated-inputs
+     `(("python-zope-interface" ,python-zope-interface)))
+    (home-page "http://cheeseshop.python.org/pypi/zope.exceptions")
+    (synopsis "Zope exceptions")
+    (description "Zope.exceptions provides general-purpose exception types
+that have uses outside of the Zope framework.")
+    (license zpl2.1)))
+
+(define-public python2-zope-exceptions
+  (package-with-python2 python-zope-exceptions))
