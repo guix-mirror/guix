@@ -6489,3 +6489,35 @@ be set via config files and/or environment variables.")
 
 (define-public python2-configargparse
   (package-with-python2 python-configargparse))
+
+(define-public python-ndg-httpsclient
+  (package
+    (name "python-ndg-httpsclient")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/n/ndg-httpsclient/"
+                    "ndg_httpsclient-" version ".tar.gz"))
+              (sha256
+                (base32
+                  "0x32ibixm3vv5m9xfk83xsqm8xcqw4dd0khbh6qbri6rxgymbhg8"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pyopenssl" ,python-pyopenssl)))
+    (synopsis "HTTPS support for Python's httplib and urllib2")
+    (description "This is a HTTPS client implementation for httplib and urllib2
+based on PyOpenSSL.  PyOpenSSL provides a more fully featured SSL implementation
+over the default provided with Python and importantly enables full verification
+of the SSL peer.")
+    (home-page "https://github.com/cedadev/ndg_httpsclient/")
+    (license bsd-3)))
+
+;; python2-openssl requires special care, so package-with-python2 is
+;; insufficient.
+(define-public python2-ndg-httpsclient
+  (package (inherit python-ndg-httpsclient)
+    (name "python2-ndg-httpsclient")
+    (arguments `(#:python ,python-2))
+    (propagated-inputs
+     `(("python2-pyopenssl" ,python2-pyopenssl)))))
