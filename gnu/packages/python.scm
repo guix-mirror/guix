@@ -6253,3 +6253,28 @@ brokering, etc.) for which the proxy is responsible.")
 
 (define-public python2-zope-proxy
   (package-with-python2 python-zope-proxy))
+
+(define-public python-zope-location
+  (package
+    (name "python-zope-location")
+    (version "4.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/z"
+                           "/zope.location/zope.location-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nj9da4ksiyv3h8n2vpzwd0pb03mdsh7zy87hfpx72b6p2zcwg74"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-zope-proxy" ,python-zope-proxy)
+       ("python-zope-schema" ,python-zope-schema)))
+    (home-page "http://pypi.python.org/pypi/zope.location/")
+    (synopsis "Zope location library")
+    (description "Zope.location implements the concept of \"locations\" in
+Zope3, which are are special objects that have a structural location.")
+    (license zpl2.1)))
+
+(define-public python2-zope-location
+  (package-with-python2 python-zope-location))
