@@ -6463,3 +6463,29 @@ config files.")
 
 (define-public python2-configobj
   (package-with-python2 python-configobj))
+
+(define-public python-configargparse
+  (package
+    (name "python-configargparse")
+    (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/C/ConfigArgParse/"
+                    "ConfigArgParse-" version ".tar.gz"))
+              (sha256
+               (base32
+                "19wh919gbdbzxzpagg52q3lm62yicm95ddlcx77dyjc1slyshl1v"))))
+    (build-system python-build-system)
+    (arguments
+     ;; FIXME: Bug in test suite filed upstream:
+     ;; https://github.com/bw2/ConfigArgParse/issues/32
+     '(#:tests? #f))
+    (synopsis "Replacement for argparse")
+    (description "A drop-in replacement for argparse that allows options to also
+be set via config files and/or environment variables.")
+    (home-page "https://github.com/bw2/ConfigArgParse")
+    (license license:expat)))
+
+(define-public python2-configargparse
+  (package-with-python2 python-configargparse))
