@@ -10,6 +10,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
+;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Erik Edrosa <erik.edrosa@gmail.com>
@@ -6006,3 +6007,29 @@ automatically detect a wide range of file encodings.")
 
 (define-public python2-chardet
   (package-with-python2 python-chardet))
+
+(define-public python-zope-event
+  (package
+    (name "python-zope-event")
+    (version "4.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/z"
+                           "/zope.event/zope.event-" version ".tar.gz"))
+       (sha256
+        (base32
+         "11p75zpfz3ffhz21nzx9wb23xs993ck5s6hkjcvhswwizni5jynw"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://pypi.python.org/pypi/zope.event")
+    (synopsis "Event publishing system for Python")
+    (description "Zope.event provides an event publishing API, intended for
+use by applications which are unaware of any subscribers to their events.  It
+is a simple event-dispatching system on which more sophisticated event
+dispatching systems can be built.")
+    (license zpl2.1)))
+
+(define-public python2-zope-event
+  (package-with-python2 python-zope-event))
