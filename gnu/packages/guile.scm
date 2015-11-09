@@ -502,7 +502,6 @@ See http://minikanren.org/ for more on miniKanren generally.")
                   (guix build gnu-build-system))
        #:phases
        (modify-phases %standard-phases
-         (delete 'check)
          (delete 'configure)
          (delete 'build)
          (delete 'check)
