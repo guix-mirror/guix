@@ -29,18 +29,17 @@
 (define-public mit-krb5
   (package
     (name "mit-krb5")
-    (version "1.11.3")
+    (version "1.13.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://web.mit.edu/kerberos/www/dist/krb5/"
                                   (string-copy version 0 (string-rindex version #\.))
                                   "/krb5-" version "-signed.tar"))
               (sha256 (base32
-                       "1daiaxgkxcryqs37w28v4x1vajqmay4l144d1zd9c2d7jjxr9gcs"))))
+                       "1qbdzyrws7d0q4filsibh28z54pd5l987jr0ygv43iq9085w6a75"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("patch/init-fix" ,(search-patch "mit-krb5-init-fix.patch"))
-       ("bison" ,bison)
+     `(("bison" ,bison)
        ("perl" ,perl)))
     (arguments
      '(#:phases
