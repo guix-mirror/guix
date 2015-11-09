@@ -6112,3 +6112,39 @@ forms, HTTP servers, regular expressions, and more.")
 
 (define-public python2-zope-testing
   (package-with-python2 python-zope-testing))
+
+(define-public python-zope-testrunner
+  (package
+    (name "python-zope-testrunner")
+    (version "4.4.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/z"
+                           "/zope.testrunner/zope.testrunner-"
+                           version ".zip"))
+       (sha256
+        (base32
+         "1r7iqknhh55y45f64mz5hghgvzx34h1i11k350s0avx6q8gznja1"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-six" ,python-six)
+       ("python-zope-exceptions" ,python-zope-exceptions)
+       ("python-zope-testing" ,python-zope-testing)
+       ("unzip" ,unzip)))
+    (propagated-inputs
+     `(("python-zope-interface" ,python-zope-interface)))
+    (home-page "http://pypi.python.org/pypi/zope.testrunner")
+    (synopsis "Zope testrunner script")
+    (description "Zope.testrunner provides a script for running Python
+tests.")
+    (license zpl2.1)))
+
+(define-public python2-zope-testrunner
+  (let ((base (package-with-python2 python-zope-testrunner)))
+    (package
+      (inherit base)
+      (native-inputs
+       (append (package-native-inputs base)
+               `(("python2-subunit" ,python2-subunit)
+                 ("python2-mimeparse" ,python2-mimeparse)))))))
