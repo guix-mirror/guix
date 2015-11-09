@@ -586,6 +586,12 @@ dist_patch_DATA =						\
   gnu/packages/patches/mcron-install.patch			\
   gnu/packages/patches/mdadm-gcc-4.9-fix.patch			\
   gnu/packages/patches/mhash-keygen-test-segfault.patch		\
+  gnu/packages/patches/mit-krb5-CVE-2015-2695-pt1.patch		\
+  gnu/packages/patches/mit-krb5-CVE-2015-2695-pt2.patch		\
+  gnu/packages/patches/mit-krb5-CVE-2015-2696.patch		\
+  gnu/packages/patches/mit-krb5-CVE-2015-2697.patch		\
+  gnu/packages/patches/mit-krb5-CVE-2015-2698-pt1.patch		\
+  gnu/packages/patches/mit-krb5-CVE-2015-2698-pt2.patch		\
   gnu/packages/patches/mpc123-initialize-ao.patch		\
   gnu/packages/patches/mplayer2-theora-fix.patch		\
   gnu/packages/patches/module-init-tools-moduledir.patch	\

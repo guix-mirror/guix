@@ -42,7 +42,19 @@
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
-       ("perl" ,perl)))
+       ("perl" ,perl)
+
+       ;; Include the patches as native-inputs.
+       ,@(map (lambda (label)
+                (let ((input-name (string-append "patch/" label))
+                      (file-name  (string-append name "-" label ".patch")))
+                  `(,input-name ,(search-patch file-name))))
+              '("CVE-2015-2695-pt1"
+                "CVE-2015-2695-pt2"
+                "CVE-2015-2696"
+                "CVE-2015-2697"
+                "CVE-2015-2698-pt1"
+                "CVE-2015-2698-pt2"))))
     (arguments
      `(#:modules ((ice-9 ftw)
                   (ice-9 match)
