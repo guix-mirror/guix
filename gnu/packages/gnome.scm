@@ -3847,3 +3847,53 @@ powerful general purpose text editor.")
      "Zenity is a rewrite of gdialog, the GNOME port of dialog which allows you
 to display dialog boxes from the commandline and shell scripts.")
     (license license:lgpl2.0+)))
+
+(define-public mutter
+  (package
+    (name "mutter")
+    (version "3.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1ab959z5fgi4rq0ifxdqvpdbv99a2b1lfgvj327s9crdvk4ygpjg"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       ;; XXX: build fails with [-Werror]:
+       ;;    backends/meta-cursor-renderer.c:112:5: error:
+       ;;      implicit declaration of function ?roundf?
+       '("--enable-compile-warnings=minimum")))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; libmutter.pc refers to all these.
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("clutter" ,clutter)))
+    (inputs
+     `(("gnome-desktop" ,gnome-desktop)
+       ("libcanberra-gtk" ,libcanberra)
+       ("libice" ,libice)
+       ("libsm" ,libsm)
+       ("libxkbcommon" ,libxkbcommon)
+       ("libxkbfile" ,libxkbfile)
+       ("mesa-headers" ,mesa-headers)
+       ("startup-notification" ,startup-notification)
+       ("upower-glib" ,upower)
+       ("xkeyboard-config" ,xkeyboard-config)
+       ("zenity" ,zenity)))
+    (synopsis "Window and compositing manager")
+    (home-page "http://www.gnome.org")
+    (description
+     "Mutter is a window and compositing manager that displays and manages your
+desktop via OpenGL.  Mutter combines a sophisticated display engine using the
+Clutter toolkit with solid window-management logic inherited from the Metacity
+window manager.")
+    (license license:gpl2+)))
