@@ -6033,3 +6033,29 @@ dispatching systems can be built.")
 
 (define-public python2-zope-event
   (package-with-python2 python-zope-event))
+
+(define-public python-zope-interface
+  (package
+    (name "python-zope-interface")
+    (version "4.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/z"
+                           "/zope.interface/zope.interface-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0ks8h73b2g4bkad821qbv0wzjppdrwys33i7ka45ik3wxjg1l8if"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-zope-event" ,python-zope-event)))
+    (home-page "https://github.com/zopefoundation/zope.interface")
+    (synopsis "Python implementation of the \"design by contract\"
+methodology")
+    (description "Zope.interface provides an implementation of \"object
+interfaces\" for Python.  Interfaces are a mechanism for labeling objects as
+conforming to a given API or contract.")
+    (license zpl2.1)))
+
+(define-public python2-zope-interface
+  (package-with-python2 python-zope-interface))
