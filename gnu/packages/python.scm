@@ -6278,3 +6278,33 @@ Zope3, which are are special objects that have a structural location.")
 
 (define-public python2-zope-location
   (package-with-python2 python-zope-location))
+
+(define-public python-zope-security
+  (package
+    (name "python-zope-security")
+    (version "4.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/z"
+                           "/zope.security/zope.security-" version ".tar.gz"))
+       (sha256
+        (base32
+         "14zmf684amc0x32kq05yxnhfqd1cmyhafkw05gn81rn90zjv6ssy"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-zope-i18nmessageid" ,python-zope-i18nmessageid)
+       ("python-zope-component" ,python-zope-component)
+       ("python-zope-location" ,python-zope-location)
+       ("python-zope-proxy" ,python-zope-proxy)
+       ("python-zope-schema" ,python-zope-schema)
+       ("python-zope-testrunner" ,python-zope-testrunner)
+       ("python-zope-testing" ,python-zope-testing)))
+    (home-page "http://pypi.python.org/pypi/zope.security")
+    (synopsis "Zope security framework")
+    (description "Zope.security provides a generic mechanism to implement
+security policies on Python objects.")
+    (license zpl2.1)))
+
+(define-public python2-zope-security
+  (package-with-python2 python-zope-security))
