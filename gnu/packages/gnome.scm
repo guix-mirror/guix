@@ -2643,7 +2643,7 @@ without stepping on each others toes.")
 (define-public clutter
   (package
     (name "clutter")
-    (version "1.22.2")
+    (version "1.24.2")
     (source
      (origin
        (method url-fetch)
@@ -2652,7 +2652,7 @@ without stepping on each others toes.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1b0ikh9q3c3qnny3kbvhqih35449q8ajcbh7zkm8k3kykwfx4scf"))))
+         "0qyd0cw17wi8gl6y9z2j2lh2gwghxskfmsdvw4ayrgxwnj6cjccn"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;9 MiB of gtk-doc HTML pages
