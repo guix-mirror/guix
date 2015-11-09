@@ -6086,3 +6086,29 @@ that have uses outside of the Zope framework.")
 
 (define-public python2-zope-exceptions
   (package-with-python2 python-zope-exceptions))
+
+(define-public python-zope-testing
+  (package
+    (name "python-zope-testing")
+    (version "4.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/z"
+                           "/zope.testing/zope.testing-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1yvglxhzvhl45mndvn9gskx2ph30zz1bz7rrlyfs62fv2pvih90s"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-zope-exceptions" ,python-zope-exceptions)))
+    (propagated-inputs
+     `(("python-zope-interface" ,python-zope-interface)))
+    (home-page "http://pypi.python.org/pypi/zope.testing")
+    (synopsis "Zope testing helpers")
+    (description "Zope.testing provides a number of testing utilities for HTML
+forms, HTTP servers, regular expressions, and more.")
+    (license zpl2.1)))
+
+(define-public python2-zope-testing
+  (package-with-python2 python-zope-testing))
