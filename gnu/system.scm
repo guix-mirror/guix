@@ -403,38 +403,11 @@ settings for 'guix.el' to work out-of-the-box."
                      (chdir #$output)
                      (symlink #$(emacs-site-file) "site-start.el"))))
 
-(define (user-shells os)
-  "Return the list of all the shells used by the accounts of OS.  These may be
-gexps or strings."
-  (map user-account-shell (operating-system-accounts os)))
-
-(define (shells-file shells)
-  "Return a file-like object that builds a shell list for use as /etc/shells
-based on SHELLS.  /etc/shells is used by xterm, polkit, and other programs."
-  (computed-file "shells"
-                 #~(begin
-                     (use-modules (srfi srfi-1))
-
-                     (define shells
-                       (delete-duplicates (list #$@shells)))
-
-                     (call-with-output-file #$output
-                       (lambda (port)
-                         (display "\
-/bin/sh
-/run/current-system/profile/bin/sh
-/run/current-system/profile/bin/bash\n" port)
-                         (for-each (lambda (shell)
-                                     (display shell port)
-                                     (newline port))
-                                   shells))))))
-
 (define* (operating-system-etc-service os)
   "Return a <service> that builds containing the static part of the /etc
 directory."
   (let ((login.defs (plain-file "login.defs" "# Empty for now.\n"))
 
-        (shells     (shells-file (user-shells os)))
         (emacs      (emacs-site-directory))
         (issue      (plain-file "issue" (operating-system-issue os)))
         (nsswitch   (plain-file "nsswitch.conf"
@@ -524,7 +497,6 @@ fi\n")))
        ("login.defs" ,#~#$login.defs)
        ("issue" ,#~#$issue)
        ("nsswitch.conf" ,#~#$nsswitch)
-       ("shells" ,#~#$shells)
        ("profile" ,#~#$profile)
        ("bashrc" ,#~#$bashrc)
        ("hosts" ,#~#$(or (operating-system-hosts-file os)
