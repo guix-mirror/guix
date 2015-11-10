@@ -221,7 +221,7 @@ LP/MIP solver is included in the package.")
        ("pango" ,pango)
        ("readline" ,readline)
        ("gtk" ,gtk+-2)
-       ("gtksourceview" ,gtksourceview)
+       ("gtksourceview" ,gtksourceview-2)
        ("zlib" ,zlib)))
     (native-inputs
      `(("glib" ,glib "bin")             ;for glib-genmarshal
