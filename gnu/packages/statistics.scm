@@ -1119,3 +1119,22 @@ previous R versions and their release dates.")
      "This package provides logicless templating, with a syntax that is not
 limited to R.")
     (license license:gpl3+)))
+
+(define-public r-brew
+  (package
+    (name "r-brew")
+    (version "1.0-6")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "brew" version))
+              (sha256
+               (base32
+                "1vghazbcha8gvkwwcdagjvzx6yl8zm7kgr0i9wxr4jng06d1l3fp"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/brew")
+    (synopsis "Templating framework for report generation")
+    (description
+     "The brew package implements a templating framework for mixing text and R
+code for report generation.  The template syntax is similar to PHP, Ruby's erb
+module, Java Server Pages, and Python's psp module.")
+    (license license:gpl2+)))
