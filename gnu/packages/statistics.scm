@@ -41,6 +41,7 @@
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages zip)
   #:use-module (srfi srfi-1))
@@ -1053,3 +1054,27 @@ inference for statistical models.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs stats))))))
+
+(define-public r-xml2
+  (package
+    (name "r-xml2")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "xml2" version))
+       (sha256
+        (base32
+         "0jjilz36h7vbdbkpvjnja1vgjf6d1imql3z4glqn2m2b74w5qm4c"))))
+    (build-system r-build-system)
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-bh" ,r-bh)))
+    (home-page "https://github.com/hadley/xml2")
+    (synopsis "Parse XML with R")
+    (description
+     "This package provides a simple, consistent interface to working with XML
+files in R.  It is built on top of the libxml2 C library.")
+    (license license:gpl2+)))
