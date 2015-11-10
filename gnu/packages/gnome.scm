@@ -2377,7 +2377,7 @@ service via the system message bus.")
 (define-public libgweather
   (package
     (name "libgweather")
-    (version "3.16.0")
+    (version "3.18.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2385,22 +2385,26 @@ service via the system message bus.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0x1z6wv7hdw2ivlkifcbd940zyrnvqvc4zh2drgvd2r6jmd7bjza"))))
+                "1l3sra84k5dnavbdbjyf1ar84xmjszpnnldih6mf45kniwpjkcll"))))
     (build-system gnu-build-system)
     (arguments
-     `(;; The tests want to write to $HOME/.cache/geocode-glib, which doesn't
-       ;; work for the builder.  Punt.
-       #:tests? #f
-       #:configure-flags
-       `(;; No introspection for now, as it wants to install to
-         ;; gobject-introspection's own directory and I don't know how to easily
-         ;; override this.
-         "--enable-introspection=no"
-         ,(string-append "--with-zoneinfo-dir="
-                            (assoc-ref %build-inputs "tzdata")
-                            "/share/zoneinfo"))))
+     `(#:configure-flags
+       `(,(string-append "--with-zoneinfo-dir="
+                         (assoc-ref %build-inputs "tzdata")
+                         "/share/zoneinfo"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'check 'pre-check
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "data/check-timezones.sh"
+              (("/usr/share/zoneinfo/zone.tab")
+               (string-append (assoc-ref inputs "tzdata")
+                              "/share/zoneinfo/zone.tab")))
+            #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (propagated-inputs
