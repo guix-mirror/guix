@@ -293,7 +293,6 @@ diagrams.")
     (build-system gnu-build-system)
     (inputs
      `(("gtk" ,gtk+-2)
-       ("libxml2" ,libxml2)
        ;; These two are needed only to allow the tests to run successfully.
        ("xorg-server" ,xorg-server)
        ("shared-mime-info" ,shared-mime-info)))
@@ -301,6 +300,9 @@ diagrams.")
      `(("intltool" ,intltool)
        ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; As per the pkg-config file.
+     `(("libxml2" ,libxml2)))
     (arguments
      `(#:phases
        ;; Unfortunately, some of the tests in "make check" are highly dependent
