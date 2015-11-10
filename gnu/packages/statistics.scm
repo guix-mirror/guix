@@ -41,6 +41,7 @@
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages zip)
@@ -1078,3 +1079,25 @@ inference for statistical models.")
      "This package provides a simple, consistent interface to working with XML
 files in R.  It is built on top of the libxml2 C library.")
     (license license:gpl2+)))
+
+(define-public r-rversions
+  (package
+    (name "r-rversions")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "rversions" version))
+              (sha256
+               (base32
+                "0xmi461g1rf5ngb7r1sri798jn6icld1xq25wj9jii2ca8j8xv68"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-xml2" ,r-xml2)))
+    (home-page "https://github.com/metacran/rversions")
+    (synopsis "Query R versions, including 'r-release' and 'r-oldrel'")
+    (description
+     "This package provides functions to query the main R repository to find
+the versions that @code{r-release} and @code{r-oldrel} refer to, and also all
+previous R versions and their release dates.")
+    (license license:expat)))
