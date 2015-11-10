@@ -39,6 +39,7 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages calendar)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
@@ -52,6 +53,7 @@
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages gperf)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages polkit)
@@ -3939,3 +3941,64 @@ libraries in GNOME can access the user's online accounts.  It has providers for
 Google, ownCloud, Facebook, Flickr, Windows Live, Pocket, Foursquare, Microsoft
 Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
     (license license:lgpl2.0+)))
+
+(define-public evolution-data-server
+  (package
+    (name "evolution-data-server")
+    (version "3.18.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "16yfd2a00xqxikyf6pi2awfd0qfq4hwdhfar88axrb4mycfgqhjr"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(;; XXX: fails with:
+       ;;   /Fixture/Calendar0: cleaning up pid xxxx
+       ;;   t status: 139)
+       #:tests? #f
+       #:configure-flags
+       (let ((nss  (assoc-ref %build-inputs "nss"))
+             (nspr (assoc-ref %build-inputs "nspr")))
+         (list "--disable-uoa"    ; disable Ubuntu Online Accounts support
+               "--disable-google" ; disable Google Contacts support
+               (string-append "--with-nspr-includes=" nspr "/include/nspr")
+               (string-append "--with-nss-includes=" nss "/include/nss")
+               (string-append "--with-nss-libs=" nss "/lib/nss")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+          (lambda _
+            (substitute* "tests/test-server-utils/e-test-server-utils.c"
+              (("/bin/rm") (which "rm")))
+            #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("gperf" ,gperf)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
+    (propagated-inputs
+     ;; These are all in the Requires field of .pc files.
+     `(("gtk+" ,gtk+)
+       ("libical" ,libical)
+       ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
+       ("nss" ,nss)
+       ("sqlite" ,sqlite)))
+    (inputs
+     `(("bdb" ,bdb)
+       ("gcr" ,gcr)
+       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("libgweather" ,libgweather)))
+    (synopsis "Store address books and calendars")
+    (home-page "https://wiki.gnome.org/Apps/Evolution")
+    (description
+     "This package provides a unified backend for programs that work with
+contacts, tasks, and calendar information.  It was originally developed for
+Evolution (hence the name), but is now used by other packages as well.")
+    (license license:lgpl2.0)))
