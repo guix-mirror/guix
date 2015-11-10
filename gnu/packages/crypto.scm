@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,3 +43,28 @@
 communication, encryption, decryption, signatures, etc.")
     (license isc)
     (home-page "http://libsodium.org")))
+
+(define-public sparsehash
+  (package
+    (name "sparsehash")
+    (version "2.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/sparsehash/sparsehash/"
+                                  "archive/sparsehash-" version ".tar.gz"))
+              (sha256
+               (base32
+                "133szz0ldwch0kd91l0sa57qsnl020njn622szd9cxrjqyjqds85"))))
+    (build-system gnu-build-system)
+    (synopsis "Memory-efficient hashtable implementations")
+    (description
+     "This library contains several hash-map implementations, similar in API
+to SGI's @code{hash_map} class, but with different performance
+characteristics.  @code{sparse_hash_map} uses very little space overhead, 1-2
+bits per entry.  @code{dense_hash_map} is very fast, particulary on lookup.
+@code{sparse_hash_set} and @code{dense_hash_set} are the set versions of these
+routines.  All these implementation use a hashtable with internal quadratic
+probing.  This method is space-efficient -- there is no pointer overhead --
+and time-efficient for good hash functions.")
+    (home-page "https://github.com/sparsehash/sparsehash")
+    (license bsd-3)))
