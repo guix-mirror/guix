@@ -589,14 +589,15 @@ useful for C++.")
     (build-system gnu-build-system)
     (native-inputs
      `(("glib" ,glib "bin") ; uses glib-mkenums
+       ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2)))
-    (inputs
+       ("python" ,python-2)
+       ("xsltproc" ,libxslt)))
+    (propagated-inputs
+     ;; There are all in the Requires.private field of telepathy-glib.pc.
      `(("dbus" ,dbus)
        ("dbus-glib" ,dbus-glib)
-       ("glib" ,glib)
-       ("gobject-introspection" ,gobject-introspection)
-       ("libxslt" ,libxslt)))
+       ("glib" ,glib)))
     (home-page "http://telepathy.freedesktop.org/wiki/")
     (synopsis "GLib Real-time communications framework over D-Bus")
     (description "Telepathy is a flexible, modular communications framework
