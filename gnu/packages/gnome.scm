@@ -3901,3 +3901,41 @@ desktop via OpenGL.  Mutter combines a sophisticated display engine using the
 Clutter toolkit with solid window-management logic inherited from the Metacity
 window manager.")
     (license license:gpl2+)))
+
+(define-public gnome-online-accounts
+  (package
+    (name "gnome-online-accounts")
+    (version "3.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1hn2fvkr1f4qh4gix03avnvk7pklvv5272ns8ws56v4kcq4nppkc"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("xsltproc" ,libxslt)))
+    (propagated-inputs
+     `(("glib" ,glib)           ; required by goa-1.0.pc
+       ("gtk+" ,gtk+)))         ; required by goa-backend-1.0.pc
+    (inputs
+     `(("docbook-xsl" ,docbook-xsl)
+       ("json-glib" ,json-glib)
+       ("libsecret" ,libsecret)
+       ("rest" ,rest)
+       ("telepathy-glib" ,telepathy-glib)
+       ("webkitgtk" ,webkitgtk)))
+    (synopsis "Single sign-on framework for GNOME")
+    (home-page "https://wiki.gnome.org/Projects/GnomeOnlineAccounts")
+    (description
+     "GNOME Online Accounts provides interfaces so that applications and
+libraries in GNOME can access the user's online accounts.  It has providers for
+Google, ownCloud, Facebook, Flickr, Windows Live, Pocket, Foursquare, Microsoft
+Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
+    (license license:lgpl2.0+)))
