@@ -1138,3 +1138,27 @@ limited to R.")
 code for report generation.  The template syntax is similar to PHP, Ruby's erb
 module, Java Server Pages, and Python's psp module.")
     (license license:gpl2+)))
+
+(define-public r-roxygen2
+  (package
+    (name "r-roxygen2")
+    (version "5.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "roxygen2" version))
+              (sha256
+               (base32
+                "0xjdphjs7l1v71lylmqgp76cbcxzvm9z1a40jgkdwvz072nn08vr"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-brew" ,r-brew)
+       ("r-digest" ,r-digest)
+       ("r-rcpp" ,r-rcpp)
+       ("r-stringi" ,r-stringi)
+       ("r-stringr" ,r-stringr)))
+    (home-page "https://github.com/klutometis/roxygen")
+    (synopsis "In-source documentation system for R")
+    (description
+     "Roxygen2 is a Doxygen-like in-source documentation system for Rd,
+collation, and NAMESPACE files.")
+    (license license:gpl2+)))
