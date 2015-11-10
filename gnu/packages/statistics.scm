@@ -1162,3 +1162,30 @@ module, Java Server Pages, and Python's psp module.")
      "Roxygen2 is a Doxygen-like in-source documentation system for Rd,
 collation, and NAMESPACE files.")
     (license license:gpl2+)))
+
+(define-public r-httr
+  (package
+    (name "r-httr")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "httr" version))
+              (sha256
+               (base32
+                "1yprw8p4g8026jhravgg1hdwj1g51cpdgycyr5a58jwm4i5f79cq"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-digest" ,r-digest)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-mime" ,r-mime)
+       ("r-r6" ,r-r6)
+       ("r-stringr" ,r-stringr)))
+    (home-page "https://github.com/hadley/httr")
+    (synopsis "Tools for working with URLs and HTTP")
+    (description
+     "The aim of httr is to provide a wrapper for RCurl customised to the
+demands of modern web APIs.  It provides useful tools for working with HTTP
+organised by HTTP verbs (@code{GET()}, @code{POST()}, etc).  Configuration
+functions make it easy to control additional request components.")
+    (license license:expat)))
