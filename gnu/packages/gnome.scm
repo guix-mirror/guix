@@ -4002,3 +4002,68 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
 contacts, tasks, and calendar information.  It was originally developed for
 Evolution (hence the name), but is now used by other packages as well.")
     (license license:lgpl2.0)))
+
+(define-public caribou
+  (package
+    (name "caribou")
+    (version "0.4.19")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0i2s2xy9ami3wslam15cajhggpcsj4c70qm7qddcz52z9k0x02rg"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before
+          'build 'pre-build
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              ;; Use absolute shared library path in Caribou-1.0.typelib.
+              (substitute* "libcaribou/Makefile"
+                (("--shared-library=libcaribou.so")
+                 (string-append "--shared-library="
+                                out "/lib/libcaribou.so")))
+              #t)))
+         (add-after 'install 'wrap-programs
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (python-path (getenv "PYTHONPATH"))
+                   (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
+              (for-each
+               (lambda (prog)
+                 (wrap-program prog
+                   `("PYTHONPATH"      ":" prefix (,python-path))
+                   `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+               (list (string-append out "/bin/caribou-preferences")
+                     (string-append out "/libexec/antler-keyboard"))))
+            #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2) ; incompatible with Python 3 (print syntax)
+       ("vala" ,vala)
+       ("xsltproc" ,libxslt)))
+    (propagated-inputs
+     ;; caribou-1.0.pc refers to all these.
+     `(("libgee" ,libgee)
+       ("libxklavier" ,libxklavier)
+       ("libxtst" ,libxtst)
+       ("gtk+" ,gtk+)))
+    (inputs
+     `(("clutter" ,clutter)
+       ("dconf" ,dconf)
+       ("gtk+-2" ,gtk+-2)
+       ("python-pygobject" ,python2-pygobject)))
+    (synopsis "Text entry and UI navigation application")
+    (home-page "https://wiki.gnome.org/Projects/Caribou")
+    (description
+     "Caribou is an input assistive technology intended for switch and pointer
+users.")
+    (license license:lgpl2.1)))
