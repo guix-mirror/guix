@@ -11,6 +11,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1707,6 +1708,27 @@ GTK+, and a minimal sample application (vte) using that.  Vte is mainly used in
 gnome-terminal, but can also be used to embed a console/terminal in games,
 editors, IDEs, etc.")
     (license license:lgpl2.1+)))
+
+;; provides vte 2.90, required for some terminal emulators
+;; tilda bug: https://github.com/lanoxx/tilda/issues/94
+;; pantheon-terminal bug: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=788021
+;; roxterm bug: http://sourceforge.net/p/roxterm/bugs/107/
+;; pantheon-terminal, roxterm are not currently packaged
+(define-public vte-0.36
+  (package (inherit vte)
+    (name "vte")
+    (version "0.36.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1psfnqsmxx4qzc55qwvb8jai824ix4pqcdqhgxk0g2zh82bcxhn2"))))
+    (propagated-inputs
+     `(("gtk" ,gtk+)
+       ("ncurses" ,ncurses)))))
 
 ;; stable version for gtk2, required by xfce4-terminal.
 (define-public vte/gtk+-2
