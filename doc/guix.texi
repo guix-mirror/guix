@@ -1347,6 +1347,20 @@ meaning that the returned environment variable definitions will either
 be exact settings, or prefixes or suffixes of the current value of these
 variables.  When omitted, @var{kind} defaults to @code{exact}.
 
+This option can also be used to compute the @emph{combined} search paths
+of several profiles.  Consider this example:
+
+@example
+$ guix package -p foo -i guile
+$ guix package -p bar -i guile-json
+$ guix package -p foo -p bar --search-paths
+@end example
+
+The last command above reports about the @code{GUILE_LOAD_PATH}
+variable, even though, taken individually, neither @file{foo} nor
+@file{bar} would lead to that recommendation.
+
+
 @item --profile=@var{profile}
 @itemx -p @var{profile}
 Use @var{profile} instead of the user's default profile.

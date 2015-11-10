@@ -186,11 +186,11 @@ an output path different than CURRENT-PATH."
 ;;; Search paths.
 ;;;
 
-(define* (search-path-environment-variables entries profile
+(define* (search-path-environment-variables entries profiles
                                             #:optional (getenv getenv)
                                             #:key (kind 'exact))
   "Return environment variable definitions that may be needed for the use of
-ENTRIES, a list of manifest entries, in PROFILE.  Use GETENV to determine the
+ENTRIES, a list of manifest entries, in PROFILES.  Use GETENV to determine the
 current settings and report only settings not already effective.  KIND
 must be one of 'exact, 'prefix, or 'suffix, depending on the kind of search
 path definition to be returned."
@@ -205,15 +205,15 @@ path definition to be returned."
                      (environment-variable-definition variable value
                                                       #:separator sep
                                                       #:kind kind))))
-                (evaluate-search-paths search-paths (list profile)
+                (evaluate-search-paths search-paths profiles
                                        getenv))))
 
-(define* (display-search-paths entries profile
+(define* (display-search-paths entries profiles
                                #:key (kind 'exact))
   "Display the search path environment variables that may need to be set for
 ENTRIES, a list of manifest entries, in the context of PROFILE."
-  (let* ((profile  (user-friendly-profile profile))
-         (settings (search-path-environment-variables entries profile
+  (let* ((profiles (map user-friendly-profile profiles))
+         (settings (search-path-environment-variables entries profiles
                                                       #:kind kind)))
     (unless (null? settings)
       (format #t (_ "The following environment variable definitions may be needed:~%"))
@@ -226,8 +226,7 @@ ENTRIES, a list of manifest entries, in the context of PROFILE."
 
 (define %default-options
   ;; Alist of default option values.
-  `((profile . ,%current-profile)
-    (max-silent-time . 3600)
+  `((max-silent-time . 3600)
     (verbosity . 0)
     (substitutes? . #t)))
 
@@ -386,7 +385,7 @@ kind of search path~%")
          (option '(#\p "profile") #t #f
                  (lambda (opt name arg result arg-handler)
                    (values (alist-cons 'profile (canonicalize-profile arg)
-                                       (alist-delete 'profile result))
+                                       result)
                            #f)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result arg-handler)
@@ -601,7 +600,7 @@ more information.~%"))
     ;; Process any install/remove/upgrade action from OPTS.
 
     (define dry-run? (assoc-ref opts 'dry-run?))
-    (define profile  (assoc-ref opts 'profile))
+    (define profile  (or (assoc-ref opts 'profile) %current-profile))
 
     (define (build-and-use-profile manifest)
       (let* ((bootstrap?  (assoc-ref opts 'bootstrap?)))
@@ -645,7 +644,7 @@ more information.~%"))
                                     "~a packages in profile~%"
                                     count)
                              count)
-                     (display-search-paths entries profile)))))))))
+                     (display-search-paths entries (list profile))))))))))
 
     ;; First roll back if asked to.
     (cond ((and (assoc-ref opts 'roll-back?)
@@ -674,12 +673,12 @@ more information.~%"))
                 (not dry-run?))
            (for-each
             (match-lambda
-             (('delete-generations . pattern)
-              (delete-matching-generations (%store) profile pattern)
+              (('delete-generations . pattern)
+               (delete-matching-generations (%store) profile pattern)
 
-              (process-actions
-               (alist-delete 'delete-generations opts)))
-             (_ #f))
+               (process-actions
+                (alist-delete 'delete-generations opts)))
+              (_ #f))
             opts))
           ((assoc-ref opts 'manifest)
            (let* ((file-name   (assoc-ref opts 'manifest))
@@ -709,7 +708,14 @@ more information.~%"))
   (define (process-query opts)
     ;; Process any query specified by OPTS.  Return #t when a query was
     ;; actually processed, #f otherwise.
-    (let ((profile  (assoc-ref opts 'profile)))
+    (let* ((profiles (match (filter-map (match-lambda
+                                          (('profile . p) p)
+                                          (_              #f))
+                                        opts)
+                       (() (list %current-profile))
+                       (lst lst)))
+           (profile  (match profiles
+                       ((head tail ...) head))))
       (match (assoc-ref opts 'query)
         (('list-generations pattern)
          (define (list-generation number)
@@ -718,7 +724,7 @@ more information.~%"))
              (display-profile-content profile number)
              (newline)))
 
-         (cond ((not (file-exists? profile)) ; XXX: race condition
+         (cond ((not (file-exists? profile))      ; XXX: race condition
                 (raise (condition (&profile-not-found-error
                                    (profile profile)))))
                ((string-null? pattern)
@@ -741,11 +747,11 @@ more information.~%"))
                 (installed (manifest-entries manifest)))
            (leave-on-EPIPE
             (for-each (match-lambda
-                       (($ <manifest-entry> name version output path _)
-                        (when (or (not regexp)
-                                  (regexp-exec regexp name))
-                          (format #t "~a\t~a\t~a\t~a~%"
-                                  name (or version "?") output path))))
+                        (($ <manifest-entry> name version output path _)
+                         (when (or (not regexp)
+                                   (regexp-exec regexp name))
+                           (format #t "~a\t~a\t~a\t~a~%"
+                                   name (or version "?") output path))))
 
                       ;; Show most recently installed packages last.
                       (reverse installed)))
@@ -793,12 +799,12 @@ more information.~%"))
            #t))
 
         (('search-paths kind)
-         (let* ((manifest (profile-manifest profile))
-                (entries  (manifest-entries manifest))
-                (profile  (user-friendly-profile profile))
-                (settings (search-path-environment-variables entries profile
-                                                             (const #f)
-                                                             #:kind kind)))
+         (let* ((manifests (map profile-manifest profiles))
+                (entries   (append-map manifest-entries manifests))
+                (profiles  (map user-friendly-profile profiles))
+                (settings  (search-path-environment-variables entries profiles
+                                                              (const #f)
+                                                              #:kind kind)))
            (format #t "~{~a~%~}" settings)
            #t))
 
