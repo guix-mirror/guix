@@ -1101,3 +1101,21 @@ files in R.  It is built on top of the libxml2 C library.")
 the versions that @code{r-release} and @code{r-oldrel} refer to, and also all
 previous R versions and their release dates.")
     (license license:expat)))
+
+(define-public r-whisker
+  (package
+    (name "r-whisker")
+    (version "0.3-2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "whisker" version))
+              (sha256
+               (base32
+                "0z4cn115gxcl086d6bnqr8afi67b6a7xqg6ivmk3l4ng1x8kcj28"))))
+    (build-system r-build-system)
+    (home-page "http://github.com/edwindj/whisker")
+    (synopsis "Logicless mustache templating for R")
+    (description
+     "This package provides logicless templating, with a syntax that is not
+limited to R.")
+    (license license:gpl3+)))
