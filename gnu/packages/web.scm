@@ -2978,3 +2978,28 @@ directory.")
 various contexts including the R console, R Markdown documents, and Shiny web
 applications.")
     (license l:expat)))
+
+(define-public r-curl
+  (package
+    (name "r-curl")
+    (version "0.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "curl" version))
+              (sha256
+               (base32
+                "02p9s1jlk8dcbvn71ivn4xnrqh9dwqyhgn4s1fzcfmnmfxhl5gld"))))
+    (build-system r-build-system)
+    (inputs
+     `(("libcurl" ,curl)))
+    (home-page "https://github.com/jeroenooms/curl")
+    (synopsis "HTTP client for R")
+    (description
+     "The @code{curl()} and @code{curl_download()} functions provide highly
+configurable drop-in replacements for base @code{url()} and
+@code{download.file()} with better performance, support for encryption, gzip
+compression, authentication, and other @code{libcurl} goodies.  The core of
+the package implements a framework for performing fully customized requests
+where data can be processed either in memory, on disk, or streaming via the
+callback or connection interfaces.")
+    (license l:expat)))
