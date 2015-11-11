@@ -30,6 +30,7 @@
   #:use-module (srfi srfi-9 gnu)
   #:use-module (system base lalr)
   #:use-module (rnrs enums)
+  #:use-module (guix utils)
   #:export (read-cabal
             eval-cabal
             
@@ -496,7 +497,7 @@ location."
 (define (lex-word port loc)
   "Process tokens which can be recognized by reading the next word form PORT.
 LOC is the current port location."
-  (let* ((w (read-delimited " ()\t\n" port 'peek)))
+  (let* ((w (read-delimited " <>=()\t\n" port 'peek)))
     (cond ((is-if w) (lex-if loc))
           ((is-test w port) (lex-test w loc))
           ((is-true w) (lex-true loc))
@@ -696,11 +697,18 @@ the ordering operation and the version."
                   ((spec-name spec-op spec-ver)
                    (comp-spec-name+op+version haskell)))
       (if (and spec-ver comp-ver)
-          (eval-string
-           (string-append "(string" spec-op " \"" comp-name "\""
-                          " \"" spec-name "-" spec-ver "\")"))
+          (cond
+           ((not (string= spec-name comp-name)) #f)
+           ((string= spec-op "==") (string= spec-ver comp-ver))
+           ((string= spec-op ">=") (version>=? comp-ver spec-ver))
+           ((string= spec-op ">") (version>? comp-ver spec-ver))
+           ((string= spec-op "<=") (not (version>? comp-ver spec-ver)))
+           ((string= spec-op "<") (not (version>=? comp-ver spec-ver)))
+           (else
+            (raise (condition
+                    (&message (message "Failed to evaluate 'impl' test."))))))
           (string-match spec-name comp-name))))
-  
+
   (define (cabal-flags)
     (make-cabal-section cabal-sexp 'flag))
   
