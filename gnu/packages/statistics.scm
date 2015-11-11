@@ -38,8 +38,10 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages base)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
@@ -1189,3 +1191,29 @@ demands of modern web APIs.  It provides useful tools for working with HTTP
 organised by HTTP verbs (@code{GET()}, @code{POST()}, etc).  Configuration
 functions make it easy to control additional request components.")
     (license license:expat)))
+
+(define-public r-git2r
+  (package
+    (name "r-git2r")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "git2r" version))
+              (sha256
+               (base32
+                "1h5ag8sm512jsn2sp4yhiqspc7hjq5y8z0kqz24sdznxa3b7rpn9"))))
+    (build-system r-build-system)
+    ;; This R package contains modified sources of libgit2.  This modified
+    ;; version of libgit2 is built as the package is built.  Hence libgit2 is
+    ;; not among the inputs of this package.
+    (inputs
+     `(("libssh2" ,libssh2)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/ropensci/git2r")
+    (synopsis "Access Git repositories with R")
+    (description
+     "This package provides an R interface to the libgit2 library, which is a
+pure C implementation of the Git core methods.")
+    ;; GPLv2 only with linking exception.
+    (license license:gpl2)))
