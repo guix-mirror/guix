@@ -275,21 +275,22 @@ sub-directory.")
 (define-public stow
   (package
     (name "stow")
-    (version "2.2.0")
+    (version "2.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/stow/stow-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0arw1nsdlcvd7javkbk2bdvnc31d7dmb6fr25xyyi6ng76cxg2cb"))))
+                "1pvky9fayms4r6fhns8jd0vavszd7d979w62vfd5n88v614pdxz2"))))
     (build-system gnu-build-system)
     (inputs
      `(("perl" ,perl)))
     (native-inputs
      `(("perl-test-simple" ,perl-test-simple)
        ("perl-test-output" ,perl-test-output)
-       ("perl-capture-tiny" ,perl-capture-tiny)))
+       ("perl-capture-tiny" ,perl-capture-tiny)
+       ("perl-io-stringy" ,perl-io-stringy)))
     (home-page "https://www.gnu.org/software/stow/")
     (synopsis "Managing installed software packages")
     (description
