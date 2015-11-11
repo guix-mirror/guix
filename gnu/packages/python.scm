@@ -980,6 +980,9 @@ datetime module, available in Python 2.3+.")
      "Parse human-readable date/time text.")
     (license asl2.0)))
 
+(define-public python2-parsedatetime
+  (package-with-python2 python-parsedatetime))
+
 (define-public python-pandas
   (package
     (name "python-pandas")
