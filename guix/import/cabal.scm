@@ -138,7 +138,7 @@ to the stack."
   "Generate a parser for Cabal files."
   (lalr-parser
    ;; --- token definitions
-   (CCURLY VCCURLY OPAREN CPAREN TEST ID VERSION RELATION
+   (CCURLY VCCURLY OPAREN CPAREN TEST ID VERSION RELATION TRUE FALSE
            (right: IF FLAG EXEC TEST-SUITE SOURCE-REPO BENCHMARK LIB OCURLY)
            (left: OR)
            (left: PROPERTY AND)
@@ -206,6 +206,8 @@ to the stack."
    (if-then     (IF tests OCURLY exprs CCURLY) : `(if ,$2 ,$4 ())
                 (IF tests open exprs close)    : `(if ,$2 ,$4 ()))
    (tests       (TEST OPAREN ID CPAREN)        : `(,$1 ,$3)
+                (TRUE)                         : 'true
+                (FALSE)                        : 'false
                 (TEST OPAREN ID RELATION VERSION CPAREN)
                 : `(,$1 ,(string-append $3 " " $4 " " $5))
                 (TEST OPAREN ID RELATION VERSION AND RELATION VERSION CPAREN)
@@ -350,6 +352,10 @@ matching a string against the created regexp."
 
 (define (is-if s) (string-ci=? s "if"))
 
+(define (is-true s) (string-ci=? s "true"))
+
+(define (is-false s) (string-ci=? s "false"))
+
 (define (is-and s) (string=? s "&&"))
 
 (define (is-or s) (string=? s "||"))
@@ -424,6 +430,10 @@ string with the read characters."
 
 (define (lex-if loc) (make-lexical-token 'IF loc #f))
 
+(define (lex-true loc) (make-lexical-token 'TRUE loc #t))
+
+(define (lex-false loc) (make-lexical-token 'FALSE loc #f))
+
 (define (lex-and loc) (make-lexical-token 'AND loc #f))
 
 (define (lex-or loc) (make-lexical-token 'OR loc #f))
@@ -489,6 +499,8 @@ LOC is the current port location."
   (let* ((w (read-delimited " ()\t\n" port 'peek)))
     (cond ((is-if w) (lex-if loc))
           ((is-test w port) (lex-test w loc))
+          ((is-true w) (lex-true loc))
+          ((is-false w) (lex-false loc))
           ((is-and w) (lex-and loc))
           ((is-or w) (lex-or loc))
           ((is-id w) (lex-id w loc))
@@ -714,6 +726,8 @@ the ordering operation and the version."
       (('os name) (os name))
       (('arch name) (arch name))
       (('impl name) (impl name))
+      ('true #t)
+      ('false #f)
       (('not name) (not (eval name)))
       ;; 'and' and 'or' aren't functions, thus we can't use apply
       (('and args ...) (fold (lambda (e s) (and e s)) #t (eval args)))
