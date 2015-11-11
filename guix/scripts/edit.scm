@@ -38,7 +38,7 @@
 
 (define (show-help)
   (display (_ "Usage: guix edit PACKAGE...
-Start $EDITOR to edit the definitions of PACKAGE...\n"))
+Start $VISUAL or $EDITOR to edit the definitions of PACKAGE...\n"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -48,7 +48,8 @@ Start $EDITOR to edit the definitions of PACKAGE...\n"))
   (show-bug-report-information))
 
 (define %editor
-  (make-parameter (or (getenv "EDITOR") "emacsclient")))
+  (make-parameter (or (getenv "VISUAL") (getenv "EDITOR")
+                      "emacsclient")))
 
 (define (search-path* path file)
   "Like 'search-path' but exit if FILE is not found."
