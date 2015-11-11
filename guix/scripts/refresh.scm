@@ -322,21 +322,25 @@ update would trigger a complete rebuild."
                               (package-covering-dependents packages)))
                (total-dependents
                 (length (package-transitive-dependents packages))))
-          (if (= total-dependents 0)
-              (format (current-output-port)
-                      (N_ "No dependents other than itself: ~{~a~}~%"
-                          "No dependents other than themselves: ~{~a~^ ~}~%"
-                          (length packages))
-                      (map package-full-name packages))
-              (format (current-output-port)
-                      (N_ (N_ "A single dependent package: ~2*~{~a~}~%"
-                              "Building the following package would ensure ~d \
-dependent packages are rebuilt; ~*~{~a~^ ~}~%"
-                              total-dependents)
-                          "Building the following ~d packages would ensure ~d \
+          (cond ((= total-dependents 0)
+                 (format (current-output-port)
+                         (N_ "No dependents other than itself: ~{~a~}~%"
+                             "No dependents other than themselves: ~{~a~^ ~}~%"
+                             (length packages))
+                         (map package-full-name packages)))
+
+                ((= total-dependents 1)
+                 (format (current-output-port)
+                         (_ "A single dependent package: ~{~a~}~%")
+                         rebuilds))
+                (else
+                 (format (current-output-port)
+                         (N_ "Building the following package would ensure ~d \
+dependent packages are rebuilt: ~*~{~a~^ ~}~%"
+                             "Building the following ~d packages would ensure ~d \
 dependent packages are rebuilt: ~{~a~^ ~}~%"
                           (length rebuilds))
-                      (length rebuilds) total-dependents rebuilds))))
+                         (length rebuilds) total-dependents rebuilds)))))
        (update?
         (let ((store (open-connection)))
           (parameterize ((%openpgp-key-server
