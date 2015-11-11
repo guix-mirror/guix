@@ -227,19 +227,24 @@ to the stack."
   "This function can be called when the next character on PORT is #\newline
 and returns the indentation of the line starting after the #\newline
 character.  Discard (and consume) empty and comment lines."
-  (let ((initial-newline (string (read-char port))))
-    (let loop ((char (peek-char port))
-               (word ""))
-      (cond ((eqv? char #\newline) (read-char port)
-             (loop (peek-char port) ""))
-            ((or (eqv? char #\space) (eqv? char #\tab))
-             (let ((c (read-char port)))
-               (loop (peek-char port) (string-append word (string c)))))
-            ((comment-line port char) (loop (peek-char port) ""))
-            (else
-             (let ((len (string-length word)))
-               (unread-string (string-append initial-newline word) port)
-               len))))))
+  (if (eof-object? (peek-char port))
+      ;; If the file is missing the #\newline on the last line, add it and act
+      ;; as if it were there. This is needed for proper operation of
+      ;; indentation based block recognition (based on ‘port-column’).
+      (begin (unread-char #\newline port) (read-char port) 0)
+      (let ((initial-newline (string (read-char port))))
+        (let loop ((char (peek-char port))
+                   (word ""))
+          (cond ((eqv? char #\newline) (read-char port)
+                 (loop (peek-char port) ""))
+                ((or (eqv? char #\space) (eqv? char #\tab))
+                 (let ((c (read-char port)))
+                   (loop (peek-char port) (string-append word (string c)))))
+                ((comment-line port char) (loop (peek-char port) ""))
+                (else
+                 (let ((len (string-length word)))
+                   (unread-string (string-append initial-newline word) port)
+                   len)))))))
 
 (define* (read-value port value min-indent #:optional (separator " "))
   "The next character on PORT must be #\newline.  Append to VALUE the
