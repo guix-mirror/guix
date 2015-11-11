@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -24,6 +24,12 @@ guix gc --version
 
 trap "rm -f guix-gc-root" EXIT
 rm -f guix-gc-root
+
+# For some operations, passing extra arguments is an error.
+for option in "" "-C 500M" "--verify" "--optimize"
+do
+    if guix gc $option whatever; then false; else true; fi
+done
 
 # Check the references of a .drv.
 drv="`guix build guile-bootstrap -d`"
