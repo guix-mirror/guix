@@ -1217,3 +1217,21 @@ functions make it easy to control additional request components.")
 pure C implementation of the Git core methods.")
     ;; GPLv2 only with linking exception.
     (license license:gpl2)))
+
+(define-public r-rstudioapi
+  (package
+    (name "r-rstudioapi")
+    (version "0.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "rstudioapi" version))
+              (sha256
+               (base32
+                "0q7671d924nzqsqhs8d9p7l907bcam56wjwm7vvz44xgj0saj8bs"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/rstudioapi")
+    (synopsis "Safely access the RStudio API")
+    (description
+     "This package provides functions to access the RStudio API and provide
+informative error messages when it's not available.")
+    (license license:expat)))
