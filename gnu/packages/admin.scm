@@ -716,7 +716,12 @@ commands and their arguments.")
                     ".tar.gz"))
               (sha256
                (base32
-                "05mkp5bx1c3z7h5biddsv0p49gkrq9ksany3anp4wdiv92p5prfc"))))
+                "05mkp5bx1c3z7h5biddsv0p49gkrq9ksany3anp4wdiv92p5prfc"))
+              (patches
+               (map search-patch '("wpa-supplicant-CVE-2015-5310.patch"
+                                   "wpa-supplicant-CVE-2015-5314.patch"
+                                   "wpa-supplicant-CVE-2015-5315.patch"
+                                   "wpa-supplicant-CVE-2015-5316.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
