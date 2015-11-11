@@ -333,7 +333,7 @@ matching a string against the created regexp."
                 (make-regexp pat))))
     (cut regexp-exec rx <>)))
 
-(define is-property (make-rx-matcher "([a-z0-9-]+):[ \t]*(\\w?.*)$"
+(define is-property (make-rx-matcher "([a-z0-9-]+)[ \t]*:[ \t]*(\\w?.*)$"
                                      regexp/icase))
 
 (define is-flag (make-rx-matcher "^flag +([a-z0-9_-]+)"
@@ -366,17 +366,24 @@ matching a string against the created regexp."
 
 (define (is-or s) (string=? s "||"))
 
-(define (is-id s)
+(define (is-id s port)
   (let ((cabal-reserved-words
          '("if" "else" "library" "flag" "executable" "test-suite"
-           "source-repository" "benchmark")))
+           "source-repository" "benchmark"))
+        (spaces (read-while (cut char-set-contains? char-set:blank <>) port))
+        (c (peek-char port)))
+    (unread-string spaces port)
     (and (every (cut string-ci<> s <>) cabal-reserved-words)
-         (not (char=? (last (string->list s)) #\:)))))
+         (and (not (char=? (last (string->list s)) #\:))
+              (not (char=? #\: c))))))
 
 (define (is-test s port)
   (let ((tests-rx (make-regexp "os|arch|flag|impl"))
+        (spaces (read-while (cut char-set-contains? char-set:blank <>) port))
         (c (peek-char port)))
-    (and (regexp-exec tests-rx s) (char=? #\( c))))
+    (if (and (regexp-exec tests-rx s) (char=? #\( c))
+        #t
+        (begin (unread-string spaces port) #f))))
 
 ;; Lexers for individual tokens.
 
@@ -509,7 +516,7 @@ LOC is the current port location."
           ((is-false w) (lex-false loc))
           ((is-and w) (lex-and loc))
           ((is-or w) (lex-or loc))
-          ((is-id w) (lex-id w loc))
+          ((is-id w port) (lex-id w loc))
           (else (unread-string w port) #f))))
 
 (define (lex-line port loc)
