@@ -348,15 +348,14 @@ provide a coordinated and extensible framework to do computational biology.")
 (define-public python-biopython
   (package
     (name "python-biopython")
-    (version "1.65")
+    (version "1.66")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "http://biopython.org/DIST/biopython-"
-                    version ".tar.gz"))
+              ;; use PyPi rather than biopython.org to ease updating
+              (uri (pypi-uri "biopython" version))
               (sha256
                (base32
-                "13m8s9jkrw40zvdp1rl709n6lmgdh4f52aann7gzr6sfp0fwhg26"))))
+                "1gdv92593klimg22icf5j9by7xiq86jnwzkpz4abaa05ylkdf6hp"))))
     (build-system python-build-system)
     (inputs
      `(("python-numpy" ,python-numpy)))
