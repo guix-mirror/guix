@@ -817,15 +817,20 @@ plugin function as a JACK application.")
   (package
     (name "ladspa")
     (version "1.13")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "http://www.ladspa.org/download/ladspa_sdk_"
-                   version
-                   ".tgz"))
-             (sha256
-              (base32
-               "0srh5n2l63354bc0srcrv58rzjkn4gv8qjqzg8dnq3rs4m7kzvdm"))))
+    (source
+     (origin
+       (method url-fetch)
+       ;; Since the official link is dead,
+       ;; we download the tarball from Debian or Internet Archive.
+       (uri (list (string-append "http://http.debian.net"
+                                 "/debian/pool/main/l/ladspa-sdk/ladspa-sdk_"
+                                 version ".orig.tar.gz")
+                  (string-append "https://web.archive.org/web/20140717172251/"
+                                 "http://www.ladspa.org/download/ladspa_sdk_"
+                                 version ".tgz")))
+       (sha256
+        (base32
+         "0srh5n2l63354bc0srcrv58rzjkn4gv8qjqzg8dnq3rs4m7kzvdm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ; the "test" target is a listening test only
@@ -843,7 +848,9 @@ plugin function as a JACK application.")
               (("^CC.*")            "CC = gcc\n")
               (("^CPP.*")           "CPP = g++\n"))))
         (alist-delete 'build %standard-phases))))
-    (home-page "http://ladspa.org")
+    ;; Since the home page is gone, we provide a link to the archived version.
+    (home-page
+     "https://web.archive.org/web/20140729190945/http://www.ladspa.org/")
     (synopsis "Linux Audio Developer's Simple Plugin API (LADSPA)")
     (description
      "LADSPA is a standard that allows software audio processors and effects
