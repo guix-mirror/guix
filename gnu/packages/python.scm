@@ -961,7 +961,7 @@ datetime module, available in Python 2.3+.")
 (define-public python-parsedatetime
   (package
     (name "python-parsedatetime")
-    (version "1.2")
+    (version "1.5")
     (source
      (origin
       (method url-fetch)
@@ -969,11 +969,10 @@ datetime module, available in Python 2.3+.")
                           "parsedatetime/parsedatetime-" version ".tar.gz"))
       (sha256
        (base32
-        "1zcj0pzxvpl4j2ma9awmpkfxldybi2kjaahjjpmgfbg5cxwcjsqv"))))
+        "1as0mm4ql3z0324nc9bys2s1ngh507i317p16b79rx86wlmvx9ix"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
-    (arguments `(#:tests? #f))          ;no test target
     (home-page "http://github.com/bear/parsedatetime/")
     (synopsis
      "Parse human-readable date/time text")
