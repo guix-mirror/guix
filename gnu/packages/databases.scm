@@ -620,6 +620,30 @@ columns, primary keys, unique constraints and relationships.")
     (description "")
     (license (package-license perl))))
 
+(define-public perl-dbd-mysql
+  (package
+    (name "perl-dbd-mysql")
+    (version "4.033")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CA/CAPTTOFU/"
+                           "DBD-mysql-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0769xakykps0cx368g4vaips4w3bjk383rianiavq7sq6g6bp66c"))))
+    (build-system perl-build-system)
+    ;; Tests require running MySQL server
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("perl-dbi" ,perl-dbi)
+       ("mysql" ,mysql)))
+    (home-page "http://search.cpan.org/dist/DBD-mysql")
+    (synopsis "DBI MySQL interface")
+    (description "This package provides a MySQL driver for the Perl5
+@dfn{Database Interface} (DBI).")
+    (license (package-license perl))))
+
 (define-public perl-dbd-sqlite
   (package
     (name "perl-dbd-sqlite")
