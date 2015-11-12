@@ -251,16 +251,29 @@ the Nix package manager.")
     ;; XXX: Should we pass '--with-store-dir=/gnu/store'?  But then we'd also
     ;; need '--localstatedir=/var'.  But then!  The thing would use /var/nix
     ;; instead of /var/guix.  So in the end, we do nothing special.
+    (arguments
+     '(#:configure-flags
+       ;; Set the prefixes of Perl libraries to avoid propagation.
+       (let ((perl-libdir (lambda (p)
+                            (string-append
+                             (assoc-ref %build-inputs p)
+                             "/lib/perl5/site_perl"))))
+         (list (string-append "--with-dbi="
+                              (perl-libdir "perl-dbi"))
+               (string-append "--with-dbd-sqlite="
+                              (perl-libdir "perl-dbd-sqlite"))
+               (string-append "--with-www-curl="
+                              (perl-libdir "perl-www-curl"))))))
     (native-inputs `(("perl" ,perl)
                      ("pkg-config" ,pkg-config)))
     (inputs `(("curl" ,curl)
               ("openssl" ,openssl)
               ("libgc" ,libgc)
               ("sqlite" ,sqlite)
-              ("bzip2" ,bzip2)))
-    (propagated-inputs `(("perl-www-curl" ,perl-www-curl)
-                         ("perl-dbi" ,perl-dbi)
-                         ("perl-dbd-sqlite" ,perl-dbd-sqlite)))
+              ("bzip2" ,bzip2)
+              ("perl-www-curl" ,perl-www-curl)
+              ("perl-dbi" ,perl-dbi)
+              ("perl-dbd-sqlite" ,perl-dbd-sqlite)))
     (home-page "http://nixos.org/nix/")
     (synopsis "The Nix package manager")
     (description
