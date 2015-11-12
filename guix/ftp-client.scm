@@ -30,6 +30,7 @@
   #:export (ftp-connection?
             ftp-connection-addrinfo
 
+            connect*
             ftp-open
             ftp-close
             ftp-chdir
@@ -82,9 +83,51 @@
         ((331) (%ftp-command (string-append "PASS " pass) 230 port))
         (else  (throw 'ftp-error port command code message))))))
 
-(define* (ftp-open host #:optional (port 21))
+(define-syntax-rule (catch-EINPROGRESS body ...)
+  (catch 'system-error
+    (lambda ()
+      body ...)
+    (lambda args
+      (unless (= (system-error-errno args) EINPROGRESS)
+        (apply throw args)))))
+
+;; XXX: For lack of a better place.
+(define* (connect* s sockaddr #:optional timeout)
+  "When TIMEOUT is omitted or #f, this procedure is equivalent to 'connect'.
+When TIMEOUT is a number, it is the (possibly inexact) maximum number of
+seconds to wait for the connection to succeed."
+  (define (raise-error errno)
+    (throw 'system-error 'connect* "~A"
+           (list (strerror errno))
+           (list errno)))
+
+  (if timeout
+      (let ((flags (fcntl s F_GETFL)))
+        (fcntl s F_SETFL (logior flags O_NONBLOCK))
+        (catch-EINPROGRESS (connect s sockaddr))
+        (match (select '() (list s) (list s) timeout)
+          ((() () ())
+           ;; Time is up!
+           (raise-error ETIMEDOUT))
+          ((() (write) ())
+           ;; Check for ECONNREFUSED and the likes.
+           (fcntl s F_SETFL flags)
+           (let ((errno (getsockopt s SOL_SOCKET SO_ERROR)))
+             (unless (zero? errno)
+               (raise-error errno))))
+          ((() () (except))
+           ;; Seems like this cannot really happen, but who knows.
+           (let ((errno (getsockopt s SOL_SOCKET SO_ERROR)))
+             (raise-error errno)))))
+      (connect s sockaddr)))
+
+(define* (ftp-open host #:optional (port 21) #:key timeout)
   "Open an FTP connection to HOST on PORT (a service-identifying string,
-or a TCP port number), and return it."
+or a TCP port number), and return it.
+
+When TIMEOUT is not #f, it must be a (possibly inexact) number denoting the
+maximum duration in seconds to wait for the connection to complete; passed
+TIMEOUT, an ETIMEDOUT error is raised."
   ;; Use 21 as the default PORT instead of "ftp", to avoid depending on
   ;; libc's NSS, which is not available during bootstrap.
 
@@ -100,7 +143,7 @@ or a TCP port number), and return it."
 
       (catch 'system-error
         (lambda ()
-          (connect s (addrinfo:addr ai))
+          (connect* s (addrinfo:addr ai) timeout)
           (setvbuf s _IOLBF)
           (let-values (((code message) (%ftp-listen s)))
             (if (eqv? code 220)
