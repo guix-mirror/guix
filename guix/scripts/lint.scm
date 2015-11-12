@@ -266,10 +266,13 @@ the synopsis")
      (check-start-with-package-name synopsis)
      (check-synopsis-length synopsis))))
 
-(define (probe-uri uri)
+(define* (probe-uri uri #:key timeout)
   "Probe URI, a URI object, and return two values: a symbol denoting the
 probing status, such as 'http-response' when we managed to get an HTTP
-response from URI, and additional details, such as the actual HTTP response."
+response from URI, and additional details, such as the actual HTTP response.
+
+TIMEOUT is the maximum number of seconds (possibly an inexact number) to wait
+for connections to complete; when TIMEOUT is #f, wait as long as needed."
   (define headers
     '((User-Agent . "GNU Guile")
       (Accept . "*/*")))
@@ -280,7 +283,7 @@ response from URI, and additional details, such as the actual HTTP response."
       ((or 'http 'https)
        (catch #t
          (lambda ()
-           (let ((port    (open-connection-for-uri uri))
+           (let ((port    (open-connection-for-uri uri #:timeout timeout))
                  (request (build-request uri #:headers headers)))
              (define response
                (dynamic-wind
@@ -313,7 +316,7 @@ response from URI, and additional details, such as the actual HTTP response."
       ('ftp
        (catch #t
          (lambda ()
-           (let ((conn (ftp-open (uri-host uri) 21)))
+           (let ((conn (ftp-open (uri-host uri) 21 #:timeout timeout)))
              (define response
                (dynamic-wind
                  (const #f)
@@ -338,7 +341,7 @@ response from URI, and additional details, such as the actual HTTP response."
   "Return #t if the given URI can be reached, otherwise return #f and emit a
 warning for PACKAGE mentionning the FIELD."
   (let-values (((status argument)
-                (probe-uri uri)))
+                (probe-uri uri #:timeout 3)))     ;wait at most 3 seconds
     (case status
       ((http-response)
        (or (= 200 (response-code argument))
