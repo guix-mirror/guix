@@ -570,6 +570,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\
   gnu/packages/patches/lua-pkgconfig.patch                      \
   gnu/packages/patches/lua51-liblua-so.patch                    \
+  gnu/packages/patches/lua52-liblua-so.patch                    \
   gnu/packages/patches/luajit-no_ldconfig.patch			\
   gnu/packages/patches/luajit-symlinks.patch			\
   gnu/packages/patches/luit-posix.patch				\
