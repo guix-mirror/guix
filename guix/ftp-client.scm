@@ -95,7 +95,7 @@ or a TCP port number), and return it."
 
   (let loop ((addresses addresses))
     (let* ((ai (car addresses))
-           (s  (socket (addrinfo:fam ai) (addrinfo:socktype ai)
+           (s  (socket (addrinfo:fam ai) SOCK_STREAM ;TCP only
                        (addrinfo:protocol ai))))
 
       (catch 'system-error
