@@ -647,7 +647,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.10p3")
+    (version "1.8.15")
     (source (origin
               (method url-fetch)
               (uri
@@ -657,22 +657,31 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "002l6h27pnhb77b65frhazbhknsxvrsnkpi43j7i0qw1lrgi7nkf"))))
+                "0263gi6i19fyzzc488n0qw3m518i39f6a7qmrfvahk9j10bkh5j3"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-logpath=/var/log/sudo.log"
-                           "--with-rundir=/run/sudo"
-                           "--with-vardir=/var/db/sudo"
-                           "--with-iologdir=/var/log/sudo-io")
+     `(#:configure-flags
+       (list "--with-logpath=/var/log/sudo.log"
+             "--with-rundir=/run/sudo"
+             "--with-vardir=/var/db/sudo"
+             "--with-iologdir=/var/log/sudo-io"
+
+             ;; 'visudo.c' expects _PATH_MV to be defined, but glibc doesn't
+             ;; provide it.
+             (string-append "CPPFLAGS=-D_PATH_MV='\""
+                            (assoc-ref %build-inputs "coreutils")
+                            "/bin/mv\"'"))
        #:phases (alist-cons-before
                  'configure 'pre-configure
                  (lambda _
-                   (substitute* "configure"
-                     ;; Refer to the right executables.
-                     (("/usr/bin/mv") (which "mv"))
-                     (("/usr/bin/sh") (which "sh")))
+                   (substitute* "src/sudo_usage.h.in"
+                     ;; Do not capture 'configure' arguments since we would
+                     ;; unduly retain references, and also because the
+                     ;; CPPFLAGS above would close the string literal
+                     ;; prematurely.
+                     (("@CONFIGURE_ARGS@") "\"\""))
                    (substitute* (find-files "." "Makefile\\.in")
-                     (("-O [[:graph:]]+ -G [[:graph:]]+")
+                     (("-o [[:graph:]]+ -g [[:graph:]]+")
                       ;; Allow installation as non-root.
                       "")
                      (("^install: (.*)install-sudoers(.*)" _ before after)
