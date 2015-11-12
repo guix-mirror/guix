@@ -140,7 +140,8 @@ X11 GUIs.")
                                  version "/tk" version "-src.tar.gz"))
              (sha256
               (base32
-               "1h96vp15zl5xz0d4qp6wjyrchqmrmdm3q5k22wkw9jaxbvw9vy88"))))
+               "1h96vp15zl5xz0d4qp6wjyrchqmrmdm3q5k22wkw9jaxbvw9vy88"))
+             (patches (list (search-patch "tk-find-library.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
