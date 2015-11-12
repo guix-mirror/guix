@@ -20,6 +20,7 @@
 
 (define-module (guix build download)
   #:use-module (web uri)
+  #:use-module (web http)
   #:use-module ((web client) #:hide (open-socket-for-uri))
   #:use-module (web response)
   #:use-module (guix ftp-client)
@@ -277,26 +278,65 @@ host name without trailing dot."
       (add-weak-reference record port)
       record)))
 
-(define (open-socket-for-uri uri)
-  "Return an open port for URI.  This variant works around
-<http://bugs.gnu.org/15368> which affects Guile's 'open-socket-for-uri' up to
-2.0.11 included."
-  (define rmem-max
-    ;; The maximum size for a receive buffer on Linux, see socket(7).
-    "/proc/sys/net/core/rmem_max")
+(define (ensure-uri uri-or-string)                ;XXX: copied from (web http)
+  (cond
+   ((string? uri-or-string) (string->uri uri-or-string))
+   ((uri? uri-or-string) uri-or-string)
+   (else (error "Invalid URI" uri-or-string))))
 
-  (define buffer-size
-    (if (file-exists? rmem-max)
-        (call-with-input-file rmem-max read)
-        126976))                    ;the default for Linux, per 'rmem_default'
+(define current-http-proxy
+  ;; XXX: Add a dummy definition for Guile < 2.0.10; this is used in
+  ;; 'open-socket-for-uri'.
+  (or (and=> (module-variable (resolve-interface '(web client))
+                              'current-http-proxy)
+             variable-ref)
+      (const #f)))
 
-  (let ((s ((@ (web client) open-socket-for-uri) uri)))
-    ;; Work around <http://bugs.gnu.org/15368> by restoring a decent
-    ;; buffer size.
-    (setsockopt s SOL_SOCKET SO_RCVBUF buffer-size)
-    s))
+(define* (open-socket-for-uri uri-or-string #:key timeout)
+  "Return an open input/output port for a connection to URI.  When TIMEOUT is
+not #f, it must be a (possibly inexact) number denoting the maximum duration
+in seconds to wait for the connection to complete; passed TIMEOUT, an
+ETIMEDOUT error is raised."
+  ;; Includes a fix for <http://bugs.gnu.org/15368> which affects Guile's
+  ;; 'open-socket-for-uri' up to 2.0.11 included, and uses 'connect*' instead
+  ;; of 'connect'.
 
-(define (open-connection-for-uri uri)
+  (define http-proxy (current-http-proxy))
+  (define uri (ensure-uri (or http-proxy uri-or-string)))
+  (define addresses
+    (let ((port (uri-port uri)))
+      (delete-duplicates
+       (getaddrinfo (uri-host uri)
+                    (cond (port => number->string)
+                          (else (symbol->string (uri-scheme uri))))
+                    (if port
+                        AI_NUMERICSERV
+                        0))
+       (lambda (ai1 ai2)
+         (equal? (addrinfo:addr ai1) (addrinfo:addr ai2))))))
+
+  (let loop ((addresses addresses))
+    (let* ((ai (car addresses))
+           (s  (with-fluids ((%default-port-encoding #f))
+                 ;; Restrict ourselves to TCP.
+                 (socket (addrinfo:fam ai) SOCK_STREAM IPPROTO_IP))))
+      (catch 'system-error
+        (lambda ()
+          (connect* s (addrinfo:addr ai) timeout)
+
+          ;; Buffer input and output on this port.
+          (setvbuf s _IOFBF)
+          ;; If we're using a proxy, make a note of that.
+          (when http-proxy (set-http-proxy-port?! s #t))
+          s)
+        (lambda args
+          ;; Connection failed, so try one of the other addresses.
+          (close s)
+          (if (null? (cdr addresses))
+              (apply throw args)
+              (loop (cdr addresses))))))))
+
+(define* (open-connection-for-uri uri #:key timeout)
   "Like 'open-socket-for-uri', but also handle HTTPS connections."
   (define https?
     (eq? 'https (uri-scheme uri)))
@@ -319,7 +359,7 @@ host name without trailing dot."
                            (thunk))
                          (thunk)))))))
     (with-https-proxy
-     (let ((s (open-socket-for-uri uri)))
+     (let ((s (open-socket-for-uri uri #:timeout timeout)))
        ;; Buffer input and output on this port.
        (setvbuf s _IOFBF %http-receive-buffer-size)
 
