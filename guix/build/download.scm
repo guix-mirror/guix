@@ -298,8 +298,8 @@ not #f, it must be a (possibly inexact) number denoting the maximum duration
 in seconds to wait for the connection to complete; passed TIMEOUT, an
 ETIMEDOUT error is raised."
   ;; Includes a fix for <http://bugs.gnu.org/15368> which affects Guile's
-  ;; 'open-socket-for-uri' up to 2.0.11 included, and uses 'connect*' instead
-  ;; of 'connect'.
+  ;; 'open-socket-for-uri' up to 2.0.11 included, uses 'connect*' instead
+  ;; of 'connect', and uses AI_ADDRCONFIG.
 
   (define http-proxy (current-http-proxy))
   (define uri (ensure-uri (or http-proxy uri-or-string)))
@@ -309,9 +309,9 @@ ETIMEDOUT error is raised."
        (getaddrinfo (uri-host uri)
                     (cond (port => number->string)
                           (else (symbol->string (uri-scheme uri))))
-                    (if port
-                        AI_NUMERICSERV
-                        0))
+                    (if (number? port)
+                        (logior AI_ADDRCONFIG AI_NUMERICSERV)
+                        AI_ADDRCONFIG))
        (lambda (ai1 ai2)
          (equal? (addrinfo:addr ai1) (addrinfo:addr ai2))))))
 

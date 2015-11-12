@@ -134,7 +134,9 @@ TIMEOUT, an ETIMEDOUT error is raised."
   (define addresses
     (getaddrinfo host
                  (if (number? port) (number->string port) port)
-                 (if (number? port) AI_NUMERICSERV 0)))
+                 (if (number? port)
+                     (logior AI_ADDRCONFIG AI_NUMERICSERV)
+                     AI_ADDRCONFIG)))
 
   (let loop ((addresses addresses))
     (let* ((ai (car addresses))
