@@ -1253,6 +1253,7 @@ world}, @uref{http://evolonline.org, Evol Online} and
                       (list "all" (string-append "PREFIX=" out)))
        ;; There are no tests.
        #:tests? #f))
+    (supported-systems '("i686-linux" "x86_64-linux"))
     (home-page "http://www.mupen64plus.org/")
     (synopsis "Nintendo 64 emulator core library")
     (description
