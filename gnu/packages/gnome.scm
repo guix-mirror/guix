@@ -2362,7 +2362,8 @@ faster results and to avoid unnecessary server load.")
                        (substitute* "src/linux/integration-test"
                          (("/usr/bin/python3") (which "python3"))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("python" ,python)))
     (inputs
