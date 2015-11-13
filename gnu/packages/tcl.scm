@@ -35,14 +35,14 @@
   (package
     (name "tcl")
     (version "8.6.4")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://sourceforge/tcl/Tcl/"
-                          version "/tcl" version "-src.tar.gz"))
-      (sha256
-       (base32
-        "13cwa4bc85ylf5gfj9vk182lvgy60qni3f7gbxghq78wk16djvly"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/tcl/Tcl/"
+                                  version "/tcl" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "13cwa4bc85ylf5gfj9vk182lvgy60qni3f7gbxghq78wk16djvly"))
+              (patches (list (search-patch "tcl-mkindex-deterministic.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-before
