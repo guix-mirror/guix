@@ -53,7 +53,8 @@ and XMP metadata of images in various formats.")
 
     ;; Files under `xmpsdk' are a copy of Adobe's XMP SDK, licensed under the
     ;; 3-clause BSD license: <http://www.adobe.com/devnet/xmp/sdk/eula.html>.
-    ;; The core is GPLv2+: <https://launchpad.net/ubuntu/precise/+source/exiv2/+copyright>.
+    ;; The core is GPLv2+:
+    ;;   <https://launchpad.net/ubuntu/precise/+source/exiv2/+copyright>.
     (license l:gpl2+)))
 
 (define-public geeqie

@@ -182,6 +182,6 @@ Library and other user programs.")
     (home-page "http://www.gnu.org/software/hurd/hurd.html")
     (synopsis "GNU Hurd libraries")
     (description
-     "This package provides libihash, needed to build the GNU C 
+     "This package provides libihash, needed to build the GNU C
 Library for GNU/Hurd.")
     (license gpl2+)))

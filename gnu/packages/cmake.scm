@@ -66,7 +66,8 @@
                          "Source/cmExecProgramCommand.cxx"
                          "Utilities/cmbzip2/Makefile-libbz2_so"
                          "Utilities/Release/release_cmake.cmake"
-                         "Utilities/cmlibarchive/libarchive/archive_write_set_format_shar.c"
+                         "Utilities/cmlibarchive/libarchive/\
+archive_write_set_format_shar.c"
                          "Tests/CMakeLists.txt"
                          "Tests/RunCMake/File_Generate/RunCMakeTest.cmake")
                      (("/bin/sh") (which "sh"))))

@@ -277,7 +277,7 @@ Libraries with some extra bells and whistles.")
                (string-append "https://download.enlightenment.org/rel/apps/"
                               name "/" name "-" version ".tar.xz"))
               (sha256
-               (base32 
+               (base32
                  "098bdx9qmv1yqqwfydrzs7fvbnhsf3vaib9pmqsyg4ihgqrkrwjm"))))
     (build-system gnu-build-system)
     (native-inputs

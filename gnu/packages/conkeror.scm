@@ -76,7 +76,7 @@ services (Search, Gmail, Maps, Reader, etc.), Del.icio.us, Reddit, Last.fm and
 YouTube.  For easier editing of form fields, it can spawn external editors.")
     (home-page "http://conkeror.org")
     ;; Conkeror is triple licensed.
-    (license (list license:gpl2
-                   license:lgpl2.1
-                   ;; MPL 1.1 -- this license is not GPL compatible
-                   ))))
+    (license (list
+              ;; MPL 1.1 -- this license is not GPL compatible
+              license:gpl2
+              license:lgpl2.1))))

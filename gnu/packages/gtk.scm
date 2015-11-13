@@ -1108,7 +1108,7 @@ information.")
     (home-page "http://www.gtk.org/gtk-doc/")
     (synopsis "Documentation generator from C source code")
     (description
-     "GTK-Doc generates API documentation from comments added to C code. It is
+     "GTK-Doc generates API documentation from comments added to C code.  It is
 typically used to document the public API of GTK+ and GNOME libraries, but it
 can also be used to document application code.")
     (license license:gpl2+)))

@@ -1023,7 +1023,7 @@ and stored in memory.")
                      (lambda _
                        (zero? (system* "./run-tests.sh")))))))
     (home-page "https://github.com/magnars/s.el")
-    (synopsis "Emacs string manipulation library.")
+    (synopsis "Emacs string manipulation library")
     (description "This package provides an Emacs library for manipulating
 strings.")
     (license license:gpl3+)))

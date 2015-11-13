@@ -179,7 +179,7 @@ commands would.")
        ("pkg-config" ,pkg-config)))
     (home-page "http://i3wm.org/")
     (synopsis "Improved tiling window manager")
-    (description "i3 is a tiling window manager, completely written
+    (description "A tiling window manager, completely written
 from scratch.  i3 is primarily targeted at advanced users and
 developers.")
     (license bsd-3)))

@@ -59,15 +59,16 @@
        #:configure-flags '("--enable-ansi") ; required for use by the maxima package
        #:phases (alist-cons-before
                 'configure 'pre-conf
-                (lambda _ 
+                (lambda _
                   ;; Patch bug when building readline support.  This bug was
                   ;; also observed by Debian
                   ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=741819
                   (substitute* "o/gcl_readline.d"
-                    (("rl_attempted_completion_function = \\(CPPFunction \\*\\)rl_completion;")
+                    (("rl_attempted_completion_function = \
+\\(CPPFunction \\*\\)rl_completion;")
                       "rl_attempted_completion_function = rl_completion;"))
-                  (substitute* 
-                      (append 
+                  (substitute*
+                      (append
                        '("pcl/impl/kcl/makefile.akcl"
                          "add-defs"
                          "unixport/makefile.dos"
@@ -115,8 +116,7 @@ interface to the Tk widget system.")
               ("libgc" ,libgc)
               ("libffi" ,libffi)))
     (arguments
-     '(#:tests? #f
-       ;; During 'make check', ECL fails to initialize with "protocol not
+     '(;; During 'make check', ECL fails to initialize with "protocol not
        ;; supported", presumably because /etc/protocols is missing in the
        ;; build environment.  See <http://sourceforge.net/p/ecls/bugs/300/>.
        ;;
@@ -139,7 +139,7 @@ interface to the Tk widget system.")
        ;;         (string-append
        ;;          "ECL=" (assoc-ref outputs "out") "/bin/ecl"))))
        ;;    rearranged-phases))
-       ))
+       #:tests? #f))
     (home-page "http://ecls.sourceforge.net/")
     (synopsis "Embeddable Common Lisp")
     (description "ECL is an implementation of the Common Lisp language as

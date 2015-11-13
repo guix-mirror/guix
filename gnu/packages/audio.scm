@@ -128,7 +128,7 @@ Filter) modules follow the convention of 1V / Octave.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://aubio.org/")
-    (synopsis "A library for audio labelling")
+    (synopsis "Library for audio labelling")
     (description
      "aubio is a tool designed for the extraction of annotations from audio
 signals.  Its features include segmenting a sound file before each of its

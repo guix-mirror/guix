@@ -87,8 +87,9 @@ arrays of data.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-"
-                          version ".tar.xz"))
+      (uri (string-append
+            "http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-"
+            version ".tar.xz"))
       (sha256
        (base32
         "172w1bpnkn6mm1wi37n03apdbb6cdkykhzjf1vfxchcd7hhkyflp"))))
@@ -134,8 +135,8 @@ This package provides the core library and elements.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-"
-                          version ".tar.xz"))
+      (uri (string-append "http://gstreamer.freedesktop.org/src/" name "/"
+                          name "-" version ".tar.xz"))
       (sha256
        (base32
         "18sbyjcp281zb3bsqji3pglsdsxi0s6ai7rx90sx8cpflkxdqcwm"))))

@@ -157,7 +157,8 @@ files.")
     (version "10.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://downloads.xiph.org/releases/cdparanoia/cdparanoia-III-"
+             (uri (string-append "http://downloads.xiph.org/releases/"
+                                 "cdparanoia/cdparanoia-III-"
                                  version ".src.tgz"))
              (sha256
               (base32

@@ -930,23 +930,26 @@ functionality was designed to be as reusable and portable as possible.")
     (source (origin
               (method url-fetch)
               (uri (let ((upstream-name "ORBit2"))
-		     (string-append "mirror://gnome/sources/" upstream-name "/"
+                     (string-append "mirror://gnome/sources/" upstream-name "/"
                                     (version-major+minor version) "/"
                                     upstream-name "-" version ".tar.bz2")))
               (sha256
-               (base32 "0l3mhpyym9m5iz09fz0rgiqxl2ym6kpkwpsp1xrr4aa80nlh1jam"))))
+               (base32
+                "0l3mhpyym9m5iz09fz0rgiqxl2ym6kpkwpsp1xrr4aa80nlh1jam"))))
     (build-system gnu-build-system)
     (arguments
-     ;; The programmer kindly gives us a hook to turn off deprecation warnings ...
-     `(#:configure-flags '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
-                         ;; ... which they then completly ignore !!
-                         #:phases
-                         (alist-cons-before
-                          'configure 'ignore-deprecations
-                          (lambda _
-                            (substitute* "linc2/src/Makefile.in"
-                              (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
-                          %standard-phases)))
+     `(#:configure-flags
+       ;; The programmer kindly gives us a hook to turn off deprecation
+       ;; warnings ...
+       '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
+       ;; ... which they then completly ignore !!
+       #:phases
+       (alist-cons-before
+        'configure 'ignore-deprecations
+        (lambda _
+          (substitute* "linc2/src/Makefile.in"
+            (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
+        %standard-phases)))
     (inputs `(("glib" ,glib)
               ("libidl" ,libidl)))
     (native-inputs
@@ -955,9 +958,9 @@ functionality was designed to be as reusable and portable as possible.")
     (synopsis "CORBA 2.4-compliant Object Request Broker")
     (description  "ORBit2 is a CORBA 2.4-compliant Object Request Broker (orb)
 featuring mature C, C++ and Python bindings.")
-    ;; Licence notice is unclear.  The Web page simply say "GPL" without giving a version.
-    ;; SOME of the code files have licence notices for GPLv2+
-    ;; The tarball contains files of the text of GPLv2 and LGPLv2
+    ;; Licence notice is unclear.  The Web page simply say "GPL" without giving
+    ;; a version.  SOME of the code files have licence notices for GPLv2+.
+    ;; The tarball contains files of the text of GPLv2 and LGPLv2.
     (license license:gpl2+)))
 
 
@@ -1014,9 +1017,9 @@ use in GNOME applications, built on top of CORBA.")
     (version "3.2.6")
     (source (origin
               (method url-fetch)
-	      (uri
-	       (let ((upstream-name "GConf"))
-		 (string-append "mirror://gnome/sources/" upstream-name "/"
+              (uri
+               (let ((upstream-name "GConf"))
+                 (string-append "mirror://gnome/sources/" upstream-name "/"
                                 (version-major+minor version) "/"
                                 upstream-name "-" version ".tar.xz")))
               (sha256
@@ -2308,8 +2311,7 @@ permission from user.")
     (arguments
      `(;; The tests want to write to $HOME/.cache/geocode-glib, which doesn't
        ;; work for the builder.  Punt.
-       #:tests? #f
-       ))
+       #:tests? #f))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
@@ -3293,7 +3295,7 @@ DAV, and others.")
                       (and (zero? (system* "gtkdocize"))
                            (zero? (system* "autoreconf" "-vif"))))))))
     (home-page "https://github/hughsie/libgusb")
-    (synopsis "A GLib binding for libusb1")
+    (synopsis "GLib binding for libusb1")
     (description
      "GUsb is a GObject wrapper for libusb1 that makes it easy to do
 asynchronous control, bulk and interrupt transfers with proper cancellation

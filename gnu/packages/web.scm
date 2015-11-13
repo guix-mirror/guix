@@ -235,8 +235,9 @@ data.")
     (version "0.12")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://s3.amazonaws.com/json-c_releases/releases/json-c-"
-                                 version ".tar.gz"))
+             (uri (string-append
+                   "https://s3.amazonaws.com/json-c_releases/releases/json-c-"
+                   version ".tar.gz"))
              (sha256
               (base32
                "0gwzic3ifg2d0w32ya3agpxh8i083cgvf7kmc51cnbgqnfr02300"))

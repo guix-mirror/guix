@@ -95,8 +95,8 @@
            ;; test 1510...[HTTP GET connection cache limit (CURLOPT_MAXCONNECTS)]
            ;;
            ;;  1510: output (log/stderr1510) FAILED:
-           ;; --- log/check-expected	2015-06-27 07:45:53.166720834 +0000
-           ;; +++ log/check-generated	2015-06-27 07:45:53.166720834 +0000
+           ;; --- log/check-expected    2015-06-27 07:45:53.166720834 +0000
+           ;; +++ log/check-generated   2015-06-27 07:45:53.166720834 +0000
            ;; @@ -1,5 +1,5 @@
            ;;  * Connection #0 to host server1.example.com left intact[LF]
            ;;  * Connection #1 to host server2.example.com left intact[LF]

@@ -35,17 +35,17 @@
        (method url-fetch)
        (uri (string-append
              "http://miller.emu.id.au/pmiller/software/cook/cook-" version
-             ".tar.gz")) 
+             ".tar.gz"))
        (sha256
         (base32
          "104saqnqql1l7zr2pm3f718fdky3ds8j07c6xvwrs1rfkhrw58yw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; There are some nasty racy rules in the Makefile.
-       #:phases 
+       #:phases
        (alist-cons-before
         'configure 'pre-conf
-        (lambda _ 
+        (lambda _
           (substitute* (append '("common/env.c")
                                (find-files "test" "\\.sh"))
             (("/bin/sh") (which "sh")))
@@ -57,7 +57,7 @@
           ;; which plays havoc with this test, for which correct timestamps
           ;; are very important. Adding the U flag undoes the effect of
           ;; --enable-deterministic-archives and allows this test to work
-          ;; again.   
+          ;; again.
           (substitute* "test/00/t0077a.sh"
             (("ar qc") "ar qcU"))
 

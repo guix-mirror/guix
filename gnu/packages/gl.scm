@@ -49,14 +49,15 @@
     (name "glu")
     (version "9.0.0")
     (source (origin
-	     (method url-fetch)
-	     (uri (string-append "ftp://ftp.freedesktop.org/pub/mesa/glu/glu-"
-				  version ".tar.gz"))
-	     (sha256
-	      (base32 "0r72yyhj09x3krn3kn629jqbwyq50ji8w5ri2pn6zwrk35m4g1s3"))))
+              (method url-fetch)
+              (uri (string-append "ftp://ftp.freedesktop.org/pub/mesa/glu/glu-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0r72yyhj09x3krn3kn629jqbwyq50ji8w5ri2pn6zwrk35m4g1s3"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("mesa" ,mesa))) ; according to glu.pc
+     `(("mesa" ,mesa))) ; according to glu.pc
     (home-page "http://www.opengl.org/archives/resources/faq/technical/glu.htm")
     (synopsis "Mesa OpenGL Utility library")
     (description
@@ -77,20 +78,22 @@ as ASCII text.")
     (name "freeglut")
     (version "3.0.0")
     (source (origin
-	     (method url-fetch)
-	     (uri (string-append "mirror://sourceforge/project/freeglut/freeglut/"
-				  version "/freeglut-" version ".tar.gz"))
-	     (sha256
-	      (base32 "18knkyczzwbmyg8hr4zh8a1i5ga01np2jzd1rwmsh7mh2n2vwhra"))))
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/project/freeglut/freeglut/"
+                    version "/freeglut-" version ".tar.gz"))
+              (sha256
+               (base32
+                "18knkyczzwbmyg8hr4zh8a1i5ga01np2jzd1rwmsh7mh2n2vwhra"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f)) ; no test target
     (inputs `(("mesa" ,mesa)
-	      ("libx11" ,libx11)
-	      ("libxi" ,libxi)
-	      ("libxrandr" ,libxrandr)
-	      ("libxxf86vm" ,libxxf86vm)
-	      ("inputproto" ,inputproto)
-	      ("xinput" ,xinput)))
+              ("libx11" ,libx11)
+              ("libxi" ,libxi)
+              ("libxrandr" ,libxrandr)
+              ("libxxf86vm" ,libxxf86vm)
+              ("inputproto" ,inputproto)
+              ("xinput" ,xinput)))
     (propagated-inputs
      ;; Headers from Mesa and GLU are needed.
      `(("glu" ,glu)
@@ -116,17 +119,19 @@ the X-Consortium license.")
     (name "ftgl")
     (version "2.1.3-rc5")
     (source (origin
-	     (method url-fetch)
-	     (uri (string-append "mirror://sourceforge/project/ftgl/FTGL%20Source/2.1.3~rc5/ftgl-"
-				  version ".tar.gz"))
-	     (sha256
-	      (base32 "0nsn4s6vnv5xcgxcw6q031amvh2zfj2smy1r5mbnjj2548hxcn2l"))))
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/project/ftgl/FTGL%20Source/2.1.3~rc5/"
+                    "ftgl-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0nsn4s6vnv5xcgxcw6q031amvh2zfj2smy1r5mbnjj2548hxcn2l"))))
     (build-system gnu-build-system)
     ;; The pkg-config file lists "freetype2" as Requires.private.
     (propagated-inputs `(("freetype" ,freetype)))
     (inputs `(("libx11" ,libx11)
-	      ("mesa" ,mesa)
-	      ("glu" ,glu)))
+              ("mesa" ,mesa)
+              ("glu" ,glu)))
     (home-page "http://ftgl.sourceforge.net")
     (synopsis "Font rendering library for OpenGL applications")
     (description

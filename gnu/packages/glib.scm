@@ -188,7 +188,8 @@ shared NFS home directories.")
 
                   ;; Disable a test that requires dbus.
                   (substitute* "gio/tests/gdbus-serialization.c"
-                    (("g_test_add_func \\(\"/gdbus/message-serialize/double-array\", test_double_array\\);" all)
+                    (("g_test_add_func \
+\\(\"/gdbus/message-serialize/double-array\", test_double_array\\);" all)
                      (string-append "/* " all " */"))))
                 %standard-phases)
 

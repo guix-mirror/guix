@@ -325,7 +325,8 @@ especially over Wi-Fi, cellular, and long-distance links.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://matt.ucc.asn.au/" name "/releases/" name "-" version ".tar.bz2"))
+                    "http://matt.ucc.asn.au/" name "/releases/"
+                    name "-" version ".tar.bz2"))
               (sha256
                (base32 "1bjpbg2vi5f332q4bqxkidkjfxsqmnqvp4g1wyh8d99b8gg94nar"))))
     (build-system gnu-build-system)

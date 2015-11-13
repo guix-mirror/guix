@@ -796,8 +796,8 @@ key-value cache and store.")
     (inputs
      `(("guile" ,guile-2.0)
        ("python" ,python)))
-    (synopsis "wisp is a whitespace to lisp syntax for Guile")
-    (description "wisp is a syntax for Guile which provides a Python-like
+    (synopsis "Whitespace to lisp syntax for Guile")
+    (description "Wisp is a syntax for Guile which provides a Python-like
 whitespace-significant language.  It may be easier on the eyes for some
 users and in some situations.")
     (license gpl3+)))

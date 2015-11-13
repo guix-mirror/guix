@@ -191,7 +191,7 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
 
         ;; Bash is reportedly not parallel-safe.  See, for instance,
         ;; <http://patches.openembedded.org/patch/32745/> and
-        ;; <http://git.buildroot.net/buildroot/commit/?h=79e2d802ae7e376a413c02097790493e1f65c3a4>.
+        ;; <http://git.buildroot.net/buildroot/commit/?h=79e2d802a>.
         #:parallel-build? #f
         #:parallel-tests? #f
 
@@ -290,8 +290,10 @@ without modification.")
                           (completions (string-append out
                                                       "/share/bash-completion"
                                                       "/completions"))
-                          (already     (find-files (string-append util-linux
-                                                                  "/etc/bash_completion.d"))))
+                          (already     (find-files
+                                        (string-append
+                                         util-linux
+                                         "/etc/bash_completion.d"))))
                      (with-directory-excursion completions
                        (for-each (lambda (file)
                                    (when (file-exists? file)

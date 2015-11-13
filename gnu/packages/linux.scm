@@ -572,7 +572,7 @@ slabtop, and skill.")
     (arguments
      '(;; util-linux is not the preferred source for some of the libraries and
        ;; commands, so disable them (see, e.g.,
-       ;; <http://git.buildroot.net/buildroot/commit/?id=e1ffc2f791b336339909c90559b7db40b455f172>.)
+       ;; <http://git.buildroot.net/buildroot/commit/?id=e1ffc2f791b33633>.)
        #:configure-flags '("--disable-libblkid"
                            "--disable-libuuid" "--disable-uuidd"
                            "--disable-fsck"

@@ -363,7 +363,7 @@ plotting engine by third-party applications like Octave.")
     ;;  X11 Style with the additional restriction that derived works may only be
     ;;  distributed as patches to the original.
     (license (license:fsf-free
-	      "http://gnuplot.cvs.sourceforge.net/gnuplot/gnuplot/Copyright"))))
+              "http://gnuplot.cvs.sourceforge.net/gnuplot/gnuplot/Copyright"))))
 
 (define-public hdf5
   (package
@@ -406,10 +406,10 @@ extremely large and complex data collections.")
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/octave/octave-"
-			  version ".tar.gz"))
+                          version ".tar.gz"))
       (sha256
        (base32
-	"101jr9yck798586jz4vkjcgk36zksmxf1pxrzvipgn2xgyay0zjc"))))
+        "101jr9yck798586jz4vkjcgk36zksmxf1pxrzvipgn2xgyay0zjc"))))
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)

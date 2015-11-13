@@ -40,12 +40,12 @@
                 "12v7nri79v8gns3inmz4k24q7pcnwi00hybs0wddfkcy1afh42xf"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases 
+     `(#:phases
        (alist-replace
-        'configure 
+        'configure
         (lambda _ (zero? (system* "make" "defconfig")))
         (alist-replace
-         'check 
+         'check
          (lambda _
            (substitute* '("testsuite/du/du-s-works"
                           "testsuite/du/du-works")
@@ -70,7 +70,7 @@
              ;; So mark it with SKIP_KNOWN_BUGS like the others.
              ;; Presumably it wasn't known at the time of release ...
              ;; (It is strange that they release software which they know to have bugs)
-             (("testing \"grep -w \\^str doesn't match str not at the beginning\"") 
+             (("testing \"grep -w \\^str doesn't match str not at the beginning\"")
               "test x\"$SKIP_KNOWN_BUGS\" = x\"\" && testing \"grep -w ^str doesn't match str not at the beginning\""))
 
            ;; This test cannot possibly pass.
@@ -79,7 +79,7 @@
            (delete-file "testsuite/which/which-uses-default-path")
            (rmdir "testsuite/which")
 
-           (zero? (system* "make" 
+           (zero? (system* "make"
                            ;; "V=1"
                            "SKIP_KNOWN_BUGS=1"
                            "SKIP_INTERNET_TESTS=1"
