@@ -41,6 +41,10 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages sdl)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages image)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -800,6 +804,41 @@ key-value cache and store.")
     (description "Wisp is a syntax for Guile which provides a Python-like
 whitespace-significant language.  It may be easier on the eyes for some
 users and in some situations.")
+    (license gpl3+)))
+
+(define-public guile-sly
+  (package
+    (name "guile-sly")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://files.dthompson.us/sly/sly-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1svzlbz2vripmyq2kjh0rig16bsrnbkwbsm558pjln9l65mcl4qq"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "--with-libfreeimage-prefix="
+                            (assoc-ref %build-inputs "freeimage"))
+             (string-append "--with-libgslcblas-prefix="
+                            (assoc-ref %build-inputs "gsl")))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("guile" ,guile-2.0)
+       ("guile-sdl" ,guile-sdl)
+       ("guile-opengl" ,guile-opengl)))
+    (inputs
+     `(("gsl" ,gsl)
+       ("freeimage" ,freeimage)
+       ("mesa" ,mesa)))
+    (synopsis "2D/3D game engine for GNU Guile")
+    (description "Sly is a 2D/3D game engine written in Guile Scheme.  Sly
+features a functional reactive programming interface and live coding
+capabilities.")
+    (home-page "http://dthompson.us/pages/software/sly.html")
     (license gpl3+)))
 
 ;;; guile.scm ends here
