@@ -4,6 +4,7 @@
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -118,6 +119,29 @@ image files in PBMPLUS PPM/PGM, GIF, BMP, and Targa file formats.")
                    version ".tar.gz"))
             (sha256 (base32
                      "1cz0dy05mgxqdgjf52p54yxpyy95rgl30cnazdrfmw7hfca9n0h0"))))))
+
+(define-public jpegoptim
+  (package
+   (name "jpegoptim")
+   (version "1.4.3")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "http://www.kokkonen.net/tjko/src/jpegoptim-"
+                                version ".tar.gz"))
+            (sha256 (base32
+                     "0k53q7dc8w5ashz8v261x2b5vvz7gdvg8w962rz9gjvkjbh4lg93"))))
+   (build-system gnu-build-system)
+   (inputs `(("libjpeg" ,libjpeg)))
+   (arguments
+    ;; no tests
+    '(#:tests? #f))
+   (synopsis "Optimize JPEG images")
+   (description
+    "jpegoptim provides lossless optimization (based on optimizing
+the Huffman tables) and \"lossy\" optimization based on setting
+maximum quality factor.")
+   (license license:gpl2+)
+   (home-page "http://www.kokkonen.net/tjko/projects.html#jpegoptim")))
 
 (define-public libtiff
   (package
