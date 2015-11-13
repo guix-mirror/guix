@@ -1,0 +1,33 @@
+Honor the 'SOURCE_DATE_EPOCH' environment variable to allow for
+determinitic builds.
+
+--- a/Lib/py_compile.py
++++ b/Lib/py_compile.py
+@@ -105,7 +105,10 @@ def compile(file, cfile=None, dfile=None, doraise=False):
+     """
+     with open(file, 'U') as f:
+         try:
+-            timestamp = long(os.fstat(f.fileno()).st_mtime)
++            if 'SOURCE_DATE_EPOCH' in os.environ:
++                timestamp = long(os.environ['SOURCE_DATE_EPOCH'])
++            else:
++                timestamp = long(os.fstat(f.fileno()).st_mtime)
+         except AttributeError:
+             timestamp = long(os.stat(file).st_mtime)
+         codestring = f.read()
+diff --git a/Python/import.c b/Python/import.c
+index e47ce63..7eecf9c 100644
+--- a/Python/import.c
++++ b/Python/import.c
+@@ -945,6 +945,11 @@ write_compiled_module(PyCodeObject *co, char *cpathname, struct stat *srcstat, t
+     /* Now write the true mtime (as a 32-bit field) */
+     fseek(fp, 4L, 0);
+     assert(mtime <= 0xFFFFFFFF);
++    if (Py_GETENV("SOURCE_DATE_EPOCH") != NULL) {
++	const char *epoch = Py_GETENV("SOURCE_DATE_EPOCH");
++	mtime = atoi(epoch);
++    }
++
+     PyMarshal_WriteLongToFile((long)mtime, fp, Py_MARSHAL_VERSION);
+     fflush(fp);
+     fclose(fp);

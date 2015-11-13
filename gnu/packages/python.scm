@@ -92,7 +92,9 @@
       (sha256
        (base32
         "1h7zbrf9pkj29hlm18b10548ch9757f75m64l47sy75rh43p7lqw"))
-      (patches (list (search-patch "python-2.7-search-paths.patch")))))
+      (patches (map search-patch
+                    '("python-2.7-search-paths.patch"
+                      "python-2.7-source-date-epoch.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -158,6 +160,11 @@
                                     "Lib/distutils/tests/test_spawn.py"
                                     "Lib/test/test_subprocess.py"))
                (("/bin/sh") (which "sh")))
+
+             ;; Use zero as the timestamp in .pyc files so that builds are
+             ;; deterministic.  TODO: Remove it when this variable is set in
+             ;; gnu-build-system.scm.
+             (setenv "SOURCE_DATE_EPOCH" "0")
              #t))
           (add-before
            'check 'pre-check

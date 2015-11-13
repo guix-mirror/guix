@@ -136,11 +136,18 @@ installed with setuptools."
                #t))
     #t))
 
+(define* (set-SOURCE-DATE-EPOCH #:rest _)
+  "Set the 'SOURCE_DATE_EPOCH' environment variable."
+  ;; Use zero as the timestamp in .pyc files so that builds are deterministic.
+  ;; TODO: Remove it when this variable is set in GNU:%STANDARD-PHASES.
+  (setenv "SOURCE_DATE_EPOCH" "0"))
+
 (define %standard-phases
   ;; 'configure' and 'build' phases are not needed.  Everything is done during
   ;; 'install'.
   (modify-phases gnu:%standard-phases
     (add-after 'unpack 'ensure-no-mtimes-pre-1980 ensure-no-mtimes-pre-1980)
+    (add-after 'unpack 'set-SOURCE-DATE-EPOCH set-SOURCE-DATE-EPOCH)
     (delete 'configure)
     (replace 'install install)
     (replace 'check check)
