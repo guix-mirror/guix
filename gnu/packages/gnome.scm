@@ -247,7 +247,7 @@ and keep up to date translations of documentation.")
 (define-public gcr
   (package
     (name "gcr")
-    (version "3.16.0")
+    (version "3.18.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -255,7 +255,7 @@ and keep up to date translations of documentation.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0xfhi0w358lvca1jjx24x2gm67mif33dsnmi9cv5i0f83ks8vzpc"))))
+               "006f6xbd3jppkf9avg83mpqdld5d0z6mr0sm81lql52mmyjnvlfl"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;25 of 598 tests fail because /var/lib/dbus/machine-id does
@@ -274,7 +274,9 @@ and keep up to date translations of documentation.")
      `(("python" ,python-2) ;for tests
        ("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")
-       ("intltool" ,intltool)))
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("xsltproc" ,libxslt)))
     ;; mentioned in gck.pc, gcr.pc and gcr-ui.pc
     (propagated-inputs
      `(("p11-kit" ,p11-kit)
