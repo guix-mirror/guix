@@ -576,6 +576,9 @@ in order.  Return #t if all the PHASES succeeded, #f otherwise."
   ;; Encoding/decoding errors shouldn't be silent.
   (fluid-set! %default-port-conversion-strategy 'error)
 
+  ;; Avoid non-determinism related to generated timestamps.
+  (setenv "SOURCE_DATE_EPOCH" "1")
+
   ;; The trick is to #:allow-other-keys everywhere, so that each procedure in
   ;; PHASES can pick the keyword arguments it's interested in.
   (every (match-lambda
