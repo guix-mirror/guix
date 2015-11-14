@@ -247,10 +247,8 @@ data types.")
     (name "python-minimal")
     (arguments
      (substitute-keyword-arguments (package-arguments python-2)
-       ((#:configure-flags _)
-        `(list "--enable-shared"
-               (string-append "LDFLAGS=-Wl,-rpath="
-                              (assoc-ref %outputs "out") "/lib")))))
+       ((#:configure-flags cf)
+        `(append ,cf '("--without-system-ffi")))))
     (inputs '())))                          ;none of the optional dependencies
 
 (define-public python-minimal
@@ -258,10 +256,8 @@ data types.")
     (name "python-minimal")
     (arguments
      (substitute-keyword-arguments (package-arguments python)
-       ((#:configure-flags _)
-        `(list "--enable-shared"
-               (string-append "LDFLAGS=-Wl,-rpath="
-                              (assoc-ref %outputs "out") "/lib")))))
+       ((#:configure-flags cf)
+        `(append ,cf '("--without-system-ffi")))))
 
     ;; OpenSSL is a mandatory dependency of Python 3.x, for urllib;
     ;; zlib is required by 'zipimport', used by pip.
