@@ -140,7 +140,7 @@ installed with setuptools."
   "Set the 'SOURCE_DATE_EPOCH' environment variable."
   ;; Use zero as the timestamp in .pyc files so that builds are deterministic.
   ;; TODO: Remove it when this variable is set in GNU:%STANDARD-PHASES.
-  (setenv "SOURCE_DATE_EPOCH" "0"))
+  (setenv "SOURCE_DATE_EPOCH" "1"))
 
 (define %standard-phases
   ;; 'configure' and 'build' phases are not needed.  Everything is done during

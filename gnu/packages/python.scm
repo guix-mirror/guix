@@ -164,7 +164,7 @@
              ;; Use zero as the timestamp in .pyc files so that builds are
              ;; deterministic.  TODO: Remove it when this variable is set in
              ;; gnu-build-system.scm.
-             (setenv "SOURCE_DATE_EPOCH" "0")
+             (setenv "SOURCE_DATE_EPOCH" "1")
              #t))
           (add-before
            'check 'pre-check
