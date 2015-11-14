@@ -281,6 +281,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/scanner.scm			\
   gnu/packages/scheme.scm			\
   gnu/packages/screen.scm			\
+  gnu/packages/scribus.scm			\
   gnu/packages/sdl.scm				\
   gnu/packages/search.scm			\
   gnu/packages/serveez.scm			\
@@ -658,6 +659,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/sed-hurd-path-max.patch			\
   gnu/packages/patches/scheme48-tests.patch			\
   gnu/packages/patches/scotch-test-threading.patch		\
+  gnu/packages/patches/scribus-qobject.patch			\
   gnu/packages/patches/sdl-libx11-1.6.patch			\
   gnu/packages/patches/serf-comment-style-fix.patch		\
   gnu/packages/patches/serf-deflate-buckets-test-fix.patch	\
