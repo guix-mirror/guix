@@ -671,6 +671,10 @@ system administrator.")
              (string-append "CPPFLAGS=-D_PATH_MV='\""
                             (assoc-ref %build-inputs "coreutils")
                             "/bin/mv\"'"))
+
+       ;; Avoid non-determinism; see <http://bugs.gnu.org/21918>.
+       #:parallel-build? #f
+
        #:phases (alist-cons-before
                  'configure 'pre-configure
                  (lambda _
