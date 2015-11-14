@@ -22,7 +22,8 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-1)
   #:use-module ((guix download) #:select (download-to-store))
-  #:use-module ((guix utils) #:select (package-name->name+version))
+  #:use-module ((guix utils) #:select (package-name->name+version
+                                       canonical-newline-port))
   #:use-module (guix import utils)
   #:use-module (guix import cabal)
   #:use-module (guix store)
@@ -84,7 +85,8 @@ version."
     (call-with-temporary-output-file
      (lambda (temp port)
        (and (url-fetch url temp)
-            (call-with-input-file temp read-cabal))))))
+            (call-with-input-file temp
+              (compose read-cabal canonical-newline-port)))))))
 
 (define string->license
   ;; List of valid values from
@@ -216,7 +218,7 @@ to the Cabal file format definition.  The default value associated with the
 keys \"os\", \"arch\" and \"impl\" is \"linux\", \"x86_64\" and \"ghc\"
 respectively."
   (let ((cabal-meta (if port
-                        (read-cabal port)
+                        (read-cabal (canonical-newline-port port))
                         (hackage-fetch package-name))))
     (and=> cabal-meta (compose (cut hackage-module->sexp <>
                                     #:include-test-dependencies? 
