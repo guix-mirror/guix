@@ -318,6 +318,12 @@
    (string-append (%store-prefix)
                   "/qvs2rj2ia5vci3wsdb7qvydrmacig4pg-bash-4.2-p24")))
 
+(test-equal "canonical-newline-port"
+  "This is a journey\nInto the sound\nA journey ...\n"
+  (let ((port (open-string-input-port
+               "This is a journey\r\nInto the sound\r\nA journey ...\n")))
+    (get-string-all (canonical-newline-port port))))
+
 (test-end)
 
 (false-if-exception (delete-file temp-file))

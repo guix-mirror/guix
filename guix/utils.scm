@@ -29,7 +29,8 @@
   #:use-module (srfi srfi-39)
   #:use-module (srfi srfi-60)
   #:use-module (rnrs bytevectors)
-  #:use-module ((rnrs io ports) #:select (put-bytevector))
+  #:use-module (rnrs io ports)
+  #:use-module ((rnrs bytevectors) #:select (bytevector-u8-set!))
   #:use-module ((guix build utils)
                 #:select (dump-port package-name->name+version))
   #:use-module ((guix build syscalls) #:select (errno mkdtemp!))
@@ -90,7 +91,8 @@
             decompressed-port
             call-with-decompressed-port
             compressed-output-port
-            call-with-compressed-output-port))
+            call-with-compressed-output-port
+            canonical-newline-port))
 
 
 ;;;
@@ -746,6 +748,34 @@ elements after E."
             (if success?
                 (loop (absolute target) (+ depth 1))
                 file))))))
+
+(define (canonical-newline-port port)
+  "Return an input port that wraps PORT such that all newlines consist
+  of a single carriage return."
+  (define (get-position)
+    (if (port-has-port-position? port) (port-position port) #f))
+  (define (set-position! position)
+    (if (port-has-set-port-position!? port)
+        (set-port-position! position port)
+        #f))
+  (define (close) (close-port port))
+  (define (read! bv start n)
+    (let loop ((count 0)
+               (byte (get-u8 port)))
+      (cond ((eof-object? byte) count)
+            ((= count (- n 1))
+             (bytevector-u8-set! bv (+ start count) byte)
+             n)
+            ;; XXX: consume all LFs even if not followed by CR.
+            ((eqv? byte (char->integer #\return)) (loop count (get-u8 port)))
+            (else
+             (bytevector-u8-set! bv (+ start count) byte)
+             (loop (+ count 1) (get-u8 port))))))
+  (make-custom-binary-input-port "canonical-newline-port"
+                                 read!
+                                 get-position
+                                 set-position!
+                                 close))
 
 ;;;
 ;;; Source location.
