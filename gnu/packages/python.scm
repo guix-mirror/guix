@@ -94,6 +94,7 @@
         "1h7zbrf9pkj29hlm18b10548ch9757f75m64l47sy75rh43p7lqw"))
       (patches (map search-patch
                     '("python-2.7-search-paths.patch"
+                      "python-2-deterministic-build-info.patch"
                       "python-2.7-source-date-epoch.patch")))))
     (build-system gnu-build-system)
     (arguments
@@ -223,6 +224,7 @@ data types.")
                             '("python-fix-tests.patch"
                               ;; XXX Try removing this patch for python > 3.4.3
                               "python-disable-ssl-test.patch"
+                              "python-3-deterministic-build-info.patch"
                               "python-3-search-paths.patch")))
               (patch-flags '("-p0"))
               (sha256
