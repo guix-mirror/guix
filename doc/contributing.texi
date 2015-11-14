@@ -141,7 +141,8 @@ that it finds source files from your checkout:
 
 @lisp
 ;; @r{Assuming the Guix checkout is in ~/src/guix.}
-(add-to-list 'geiser-guile-load-path "~/src/guix")
+(with-eval-after-load 'geiser-guile
+  (add-to-list 'geiser-guile-load-path "~/src/guix"))
 @end lisp
 
 To actually edit the code, Emacs already has a neat Scheme mode.  But in
