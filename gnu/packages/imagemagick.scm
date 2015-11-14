@@ -22,7 +22,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix download)
-  #:use-module ((guix licenses) #:select (fsf-free))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages compression)
@@ -104,7 +104,7 @@ including DPX, EXR, GIF, JPEG, JPEG-2000, PDF, PhotoCD, PNG, Postscript, SVG,
 and TIFF.  Use ImageMagick to resize, flip, mirror, rotate, distort, shear and
 transform images, adjust image colors, apply various special effects, or draw
 text, lines, polygons, ellipses and Bézier curves.")
-    (license (fsf-free "http://www.imagemagick.org/script/license.php"))))
+    (license (license:fsf-free "http://www.imagemagick.org/script/license.php"))))
 
 (define-public perl-image-magick
   (package
