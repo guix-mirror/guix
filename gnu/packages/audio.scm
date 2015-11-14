@@ -271,9 +271,8 @@ plugins are provided.")
     (version "0.0.60")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/calf/calf/"
-                    version "/calf-" version ".tar.gz"))
+              (uri (string-append "http://calf-studio-gear.org/files/calf-"
+                                  version ".tar.gz"))
               (sha256
                (base32
                 "019fwg00jv217a5r767z7szh7vdrarybac0pr2sk26xp81kibrx9"))))
