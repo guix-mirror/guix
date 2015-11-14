@@ -666,3 +666,55 @@ channels.")
     (description
      "Libmng is the MNG (Multiple-image Network Graphics) reference library.")
     (license license:bsd-3)))
+
+(define-public devil
+  (package
+    (name "devil")
+    (version "1.7.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://downloads.sourceforge.net/openil/"
+                                  "DevIL-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1zd850nn7nvkkhasrv7kn17kzgslr5ry933v6db62s4lr0zzlbv8"))
+              ;; Backported from upstream:
+              ;; https://github.com/DentonW/DevIL/commit/724194d7a9a91221a564579f64bdd6f0abd64219.patch
+              (patches (list (search-patch "devil-fix-libpng.patch")))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Fix old lcms include directives and lib flags.
+               '(substitute* '("configure" "src-IL/src/il_profiles.c")
+                  (("-llcms") "-llcms2")
+                  (("lcms/lcms\\.h") "lcms2/lcms2.h")
+                  (("lcms\\.h") "lcms2.h")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--enable-ILUT=yes") ; build utility library
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-tests
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Fix hard-coded /bin/bash reference.
+             (substitute* '("test/Makefile")
+               (("TESTS_ENVIRONMENT = /bin/bash")
+                (string-append "TESTS_ENVIRONMENT = "
+                               (assoc-ref inputs "bash")
+                               "/bin/bash")))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("lcms" ,lcms)
+       ("libjpeg" ,libjpeg)
+       ("libmng" ,libmng)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("openexr" ,openexr)
+       ("zlib" ,zlib)))
+    (synopsis "Library for manipulating many image formats")
+    (description "Developer's Image Library (DevIL) is a library to develop
+applications with support for many types of images.  DevIL can load, save,
+convert, manipulate, filter and display a wide variety of image formats.")
+    (home-page "http://openil.sourceforge.net")
+    (license license:lgpl2.1+)))
