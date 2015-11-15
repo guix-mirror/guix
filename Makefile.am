@@ -109,6 +109,7 @@ MODULES =					\
   guix/import/cran.scm				\
   guix/import/hackage.scm			\
   guix/import/elpa.scm   			\
+  guix/import/github.scm   			\
   guix/scripts.scm				\
   guix/scripts/download.scm			\
   guix/scripts/build.scm			\

@@ -199,7 +199,8 @@ unavailable optional dependencies such as Guile-JSON."
                  %cran-updater
                  %bioconductor-updater
                  ((guix import pypi) => %pypi-updater)
-                 ((guix import gem) => %gem-updater)))
+                 ((guix import gem) => %gem-updater)
+                 ((guix import github) => %github-updater)))
 
 (define (lookup-updater name)
   "Return the updater called NAME."
