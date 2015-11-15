@@ -271,7 +271,7 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.19.12")
+    (version "0.19.13")
     (source (origin
               (method url-fetch)
               (uri
@@ -279,7 +279,7 @@ Libraries with some extra bells and whistles.")
                               name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                 "098bdx9qmv1yqqwfydrzs7fvbnhsf3vaib9pmqsyg4ihgqrkrwjm"))))
+                 "1kl9r3amvgrb283b7d9wn5p4aqz9v9ba9xz25cdyfa28fkmfdayd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
