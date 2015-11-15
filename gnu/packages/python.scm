@@ -146,8 +146,8 @@
              (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib"))
 
-        #:modules ((ice-9 ftw)
-                   ,@%gnu-build-system-modules)
+        #:modules ((ice-9 ftw) (ice-9 match)
+                   (guix build utils) (guix build gnu-build-system))
         #:phases
         (modify-phases %standard-phases
           (add-before
