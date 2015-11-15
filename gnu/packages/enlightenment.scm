@@ -23,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
@@ -41,9 +42,10 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages pdf)
-  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages valgrind)
   #:use-module (gnu packages video)
@@ -306,3 +308,39 @@ file manager, wide range of configuration options, plugin system allowing to
 unload unused functionality, with support for touchscreen and suitable for
 embedded systems.")
     (license license:bsd-2)))
+
+(define-public python-efl
+  (package
+    (name "python-efl")
+    (version "1.16.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-efl" version))
+        (sha256
+         (base32
+          "1ihay90agl2jx12m7jj8j1cspd7vsak1w7q95rhb6r2srkq0ppxk"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+        (add-before 'build 'set-flags
+         (lambda _
+           (setenv "CFLAGS"
+                   (string-append "-I" (assoc-ref %build-inputs "python-dbus")
+                                  "/include/dbus-1.0")))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("efl" ,efl)
+       ("elementary" ,elementary)
+       ("python-dbus" ,python-dbus)))
+    (home-page "https://www.enlightenment.org/")
+    (synopsis "Python bindings for EFL")
+    (description
+     "PYTHON-EFL are the python bindings for the whole Enlightenment Foundation
+Libraries stack (eo, evas, ecore, edje, emotion, ethumb and elementary).")
+    (license license:lgpl3)))
+
+(define-public python2-efl
+  (package-with-python2 python-efl))
