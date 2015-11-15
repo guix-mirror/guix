@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Daniel Pimentel <d4n1@member.fsf.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,7 +52,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.15.2")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -59,7 +60,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "1962wqx7gdnpzvnkbighyn4hj5vw8l4c1d7xl5zilqjlyhcqywyx"))))
+                "08w3hrjyz1yjqjq77px86fljxxi5xz5yfy79qwssypafjvcvpzky"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
