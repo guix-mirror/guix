@@ -167,6 +167,22 @@
              ;; gnu-build-system.scm.
              (setenv "SOURCE_DATE_EPOCH" "1")
              #t))
+          (add-before 'configure 'do-not-record-configure-flags
+            (lambda* (#:key configure-flags #:allow-other-keys)
+              ;; Remove configure flags from the installed '_sysconfigdata.py'
+              ;; and 'Makefile' so we don't end up keeping references to the
+              ;; build tools.
+              ;;
+              ;; Preserve at least '--with-system-ffi' since otherwise the
+              ;; thing tries to build libffi, fails, and we end up with a
+              ;; Python that lacks ctypes.
+              (substitute* "configure"
+                (("^CONFIG_ARGS=.*$")
+                 (format #f "CONFIG_ARGS='~a'\n"
+                         (if (member "--with-system-ffi" configure-flags)
+                             "--with-system-ffi"
+                             ""))))
+              #t))
           (add-before
            'check 'pre-check
            (lambda _
