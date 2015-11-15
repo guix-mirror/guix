@@ -590,6 +590,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/libxml2-id-attrs-in-xmlSetTreeDoc.patch	\
   gnu/packages/patches/libxml2-node-sort-order-pt1.patch	\
   gnu/packages/patches/libxml2-node-sort-order-pt2.patch	\
+  gnu/packages/patches/libxslt-CVE-2015-7995.patch		\
   gnu/packages/patches/lirc-localstatedir.patch			\
   gnu/packages/patches/libpthread-glibc-preparation.patch	\
   gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\
