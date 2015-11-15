@@ -571,6 +571,25 @@ dist_patch_DATA =						\
   gnu/packages/patches/libwmf-CVE-2015-0848+CVE-2015-4588.patch	\
   gnu/packages/patches/libwmf-CVE-2015-4695.patch		\
   gnu/packages/patches/libwmf-CVE-2015-4696.patch		\
+  gnu/packages/patches/libxml2-CVE-2015-1819.patch		\
+  gnu/packages/patches/libxml2-CVE-2015-7941-pt1.patch		\
+  gnu/packages/patches/libxml2-CVE-2015-7941-pt2.patch		\
+  gnu/packages/patches/libxml2-CVE-2015-7942-pt1.patch		\
+  gnu/packages/patches/libxml2-CVE-2015-7942-pt2.patch		\
+  gnu/packages/patches/libxml2-CVE-2015-8035.patch		\
+  gnu/packages/patches/libxml2-bug-737840.patch			\
+  gnu/packages/patches/libxml2-bug-738805.patch			\
+  gnu/packages/patches/libxml2-bug-746048.patch			\
+  gnu/packages/patches/libxml2-bug-747437.patch			\
+  gnu/packages/patches/libxml2-bug-751603.patch			\
+  gnu/packages/patches/libxml2-bug-751631.patch			\
+  gnu/packages/patches/libxml2-bug-754946.patch			\
+  gnu/packages/patches/libxml2-bug-754947.patch			\
+  gnu/packages/patches/libxml2-bug-755857.patch			\
+  gnu/packages/patches/libxml2-fix-catalog-corruption.patch	\
+  gnu/packages/patches/libxml2-id-attrs-in-xmlSetTreeDoc.patch	\
+  gnu/packages/patches/libxml2-node-sort-order-pt1.patch	\
+  gnu/packages/patches/libxml2-node-sort-order-pt2.patch	\
   gnu/packages/patches/lirc-localstatedir.patch			\
   gnu/packages/patches/libpthread-glibc-preparation.patch	\
   gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\
