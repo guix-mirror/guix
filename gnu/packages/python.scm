@@ -96,6 +96,8 @@
                     '("python-2.7-search-paths.patch"
                       "python-2-deterministic-build-info.patch"
                       "python-2.7-source-date-epoch.patch")))))
+    (outputs '("out"
+               "tk"))                     ;tkinter; adds 50 MiB to the closure
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
@@ -200,7 +202,28 @@
                (ftw "." (lambda (file stat flag)
                           (utime file circa-1980 circa-1980)
                           #t))
-               #t))))))
+               #t)))
+          (add-after 'install 'move-tk-inter
+            (lambda* (#:key outputs #:allow-other-keys)
+              ;; When Tkinter support is built move it to a separate output so
+              ;; that the main output doesn't contain a reference to Tcl/Tk.
+              (let ((out (assoc-ref outputs "out"))
+                    (tk  (assoc-ref outputs "tk")))
+                (when tk
+                  (match (find-files out "tkinter.*\\.so")
+                    ((tkinter.so)
+                     ;; The .so is in OUT/lib/pythonX.Y/lib-dynload, but we
+                     ;; want it under TK/lib/pythonX.Y/site-packages.
+                     (let* ((len    (string-length out))
+                            (target (string-append
+                                     tk "/"
+                                     (string-drop
+                                      (dirname (dirname tkinter.so))
+                                      len)
+                                     "/site-packages")))
+                       (install-file tkinter.so target)
+                       (delete-file tkinter.so)))))
+                #t))))))
     (inputs
      `(("bzip2" ,bzip2)
        ("gdbm" ,gdbm)
@@ -261,6 +284,7 @@ data types.")
 (define-public python2-minimal
   (package (inherit python-2)
     (name "python-minimal")
+    (outputs '("out"))
     (arguments
      (substitute-keyword-arguments (package-arguments python-2)
        ((#:configure-flags cf)
@@ -270,6 +294,7 @@ data types.")
 (define-public python-minimal
   (package (inherit python)
     (name "python-minimal")
+    (outputs '("out"))
     (arguments
      (substitute-keyword-arguments (package-arguments python)
        ((#:configure-flags cf)
@@ -285,6 +310,7 @@ data types.")
     (name name)
     (source #f)
     (build-system trivial-build-system)
+    (outputs '("out"))
     (propagated-inputs `(("python" ,python)))
     (arguments
      `(#:modules ((guix build utils))
