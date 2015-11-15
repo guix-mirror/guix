@@ -50,7 +50,7 @@
 (define-public libpng
   (package
    (name "libpng")
-   (version "1.5.21")
+   (version "1.5.24")
    (source (origin
             (method url-fetch)
 
@@ -61,7 +61,7 @@
                         "ftp://ftp.simplesystems.org/pub/libpng/png/src"
                         "/libpng15/libpng-" version ".tar.xz")))
             (sha256
-             (base32 "19yvzw6sf9gf7v25ha9bla8bw1nijh82wj8ag6brjj3hpij1q5dm"))))
+             (base32 "1qhvfk1ypsaf6q6xkspyqqzmghpbahhq54ms8fa5ssqkyds38bmr"))))
    (build-system gnu-build-system)
 
    ;; libpng.la says "-lz", so propagate it.
