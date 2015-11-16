@@ -21,6 +21,7 @@
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 threads)
   #:export (replace-store-references
             rewrite-directory))
 
@@ -117,6 +118,7 @@ file name pairs."
         (else
          (error "unsupported file type" stat)))))
 
-  (for-each rewrite-leaf (find-files directory)))
+  (n-par-for-each (parallel-job-count)
+                  rewrite-leaf (find-files directory)))
 
 ;;; graft.scm ends here
