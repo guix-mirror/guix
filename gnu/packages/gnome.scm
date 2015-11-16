@@ -36,6 +36,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
@@ -45,6 +46,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages djvu)
+  #:use-module (gnu packages dns)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages enchant)
@@ -68,6 +70,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
@@ -4094,3 +4097,95 @@ Evolution (hence the name), but is now used by other packages as well.")
      "Caribou is an input assistive technology intended for switch and pointer
 users.")
     (license license:lgpl2.1)))
+
+(define %network-manager-glib-duplicate-test-patch
+  (origin
+    (method url-fetch)
+    (uri (string-append
+          "http://cgit.freedesktop.org/NetworkManager/NetworkManager/"
+          "patch/libnm-core/tests/test-general.c"
+          "?id=874f455d6d47c5a34ed9861a6710f4b78202e0d6"))
+    (file-name "network-manager-glib-duplicate-test.patch")
+    (sha256
+     (base32
+      "1v0vpxzf0p0b1y5lmq8w7rjndp216gr60nbf2dpdz5rgxx3p3ml6"))))
+
+(define-public network-manager
+  (package
+    (name "network-manager")
+    (version "1.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/NetworkManager/"
+                                  (version-major+minor version) "/"
+                                  "NetworkManager-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1galh9j95yw33iv1jj8zz0h88ahx8gm5mqmam7zq9f730cj01siq"))
+              (patches (list %network-manager-glib-duplicate-test-patch))))
+    (build-system gnu-build-system)
+    (outputs '("out"
+               "doc")) ; 8 MiB of gtk-doc HTML
+    (arguments
+     '(#:configure-flags
+       (let ((out      (assoc-ref %outputs "out"))
+             (doc      (assoc-ref %outputs "doc"))
+             (dhclient (string-append (assoc-ref %build-inputs "isc-dhcp")
+                                      "/sbin/dhclient")))
+         (list "--with-crypto=gnutls"
+               "--disable-config-plugin-ibft"
+               "--sysconfdir=/etc"
+               "--localstatedir=/var"
+               (string-append "--with-udev-dir="
+                              out "/lib/udev")
+               (string-append "--with-dbus-sys-dir="
+                              out "/etc/dbus-1/system.d")
+               (string-append "--with-html-dir="
+                              doc "/share/gtk-doc/html")
+               (string-append "--with-dhclient=" dhclient)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; For the missing /etc/machine-id.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t))
+         (replace 'install
+           (lambda _
+             (zero? (system* "make"
+                             "sysconfdir=/tmp"
+                             "localstatedir=/tmp"
+                             "install")))))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for gdbus-codegen
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ;; For testing.
+       ("python" ,python-wrapper)
+       ("python-dbus" ,python-dbus)
+       ("python-pygobject" ,python-pygobject)))
+    (inputs
+     `(("dbus-glib" ,dbus-glib)
+       ("dnsmasq" ,dnsmasq)
+       ("gnutls" ,gnutls)
+       ("iptables" ,iptables)
+       ("isc-dhcp" ,isc-dhcp)
+       ("libgcrypt" ,libgcrypt)
+       ("libgudev" ,libgudev)
+       ("libndp" ,libndp)
+       ("libnl" ,libnl)
+       ("libsoup" ,libsoup)
+       ("polkit" ,polkit)
+       ("ppp" ,ppp)
+       ("readline" ,readline)
+       ("util-linux" ,util-linux)))
+    (synopsis "Network connection manager")
+    (home-page "http://www.gnome.org/projects/NetworkManager/")
+    (description
+     "NetworkManager is a system network service that manages your network
+devices and connections, attempting to keep active network connectivity when
+available.  It manages ethernet, WiFi, mobile broadband (WWAN), and PPPoE
+devices, and provides VPN integration with a variety of different VPN
+services.")
+    (license license:gpl2+)))
