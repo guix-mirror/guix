@@ -399,7 +399,11 @@ cosine/ sine transforms or DCT/DST).")
                ;; anyway, so just skip them.
                '(substitute* "CMakeLists.txt"
                   (("add_subdirectory\\(unsupported\\)")
-                   "# Do not build the tests for unsupported features.\n")))))
+                   "# Do not build the tests for unsupported features.\n")
+                  ;; Work around
+                  ;; <http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1114>.
+                  (("\"include/eigen3\"")
+                   "\"${CMAKE_INSTALL_PREFIX}/include/eigen3\"")))))
     (build-system cmake-build-system)
     (arguments
      '(;; Turn off debugging symbols to save space.
