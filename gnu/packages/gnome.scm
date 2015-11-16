@@ -4189,3 +4189,38 @@ available.  It manages ethernet, WiFi, mobile broadband (WWAN), and PPPoE
 devices, and provides VPN integration with a variety of different VPN
 services.")
     (license license:gpl2+)))
+
+(define-public network-manager-applet
+  (package
+    (name "network-manager-applet")
+    (version "1.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1yj0m6fb9v12d0di0rfmk3hx1vmygjkiff2c476rf792sbh56kax"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments '(#:configure-flags '("--disable-migration")))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; libnm-gtk.pc refers to all these.
+     `(("dbus-glib" ,dbus-glib)
+       ("gtk+" ,gtk+)
+       ("network-manager" ,network-manager)))
+    (inputs
+     `(("iso-codes" ,iso-codes)
+       ("libgudev" ,libgudev)
+       ("libnotify" ,libnotify)
+       ("libsecret" ,libsecret)))
+    (synopsis "Applet for managing network connections")
+    (home-page "http://www.gnome.org/projects/NetworkManager/")
+    (description
+     "This package contains a systray applet for NetworkManager.  It displays
+the available networks and allows users to easily switch between them.")
+    (license license:gpl2+)))
