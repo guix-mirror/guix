@@ -557,6 +557,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/librsvg-tests.patch			\
   gnu/packages/patches/libtheora-config-guess.patch		\
   gnu/packages/patches/libtool-skip-tests2.patch		\
+  gnu/packages/patches/libsndfile-CVE-2014-9496.patch		\
+  gnu/packages/patches/libsndfile-CVE-2015-7805.patch		\
   gnu/packages/patches/libssh-CVE-2014-0017.patch		\
   gnu/packages/patches/libunwind-CVE-2015-3239.patch		\
   gnu/packages/patches/libwmf-CAN-2004-0941.patch		\

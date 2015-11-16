@@ -50,7 +50,10 @@
                                  version ".tar.gz"))
              (sha256
               (base32
-               "10j8mbb65xkyl0kfy0hpzpmrp0jkr12c7mfycqipxgka6ayns0ar"))))
+               "10j8mbb65xkyl0kfy0hpzpmrp0jkr12c7mfycqipxgka6ayns0ar"))
+             (patches
+              (map search-patch '("libsndfile-CVE-2014-9496.patch"
+                                  "libsndfile-CVE-2015-7805.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("libvorbis" ,libvorbis)
