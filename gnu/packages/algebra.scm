@@ -413,19 +413,18 @@ cosine/ sine transforms or DCT/DST).")
        ;; <http://eigen.tuxfamily.org/index.php?title=Tests>.
        #:test-target "check"
 
-       #:phases (alist-cons-before
-                 'check 'build-tests
-                 (lambda _
-                   ;; First build the tests, in parallel.
-                   ;; See <http://eigen.tuxfamily.org/index.php?title=Tests>.
-                   (let* ((cores  (parallel-job-count))
-                          (dash-j (format #f "-j~a" cores)))
-                     ;; These variables are supposed to be honored.
-                     (setenv "EIGEN_MAKE_ARGS" dash-j)
-                     (setenv "EIGEN_CTEST_ARGS" dash-j)
+       #:phases (modify-phases %standard-phases
+                  (add-before 'check 'build-tests
+                    (lambda _
+                      ;; First build the tests, in parallel.
+                      ;; See <http://eigen.tuxfamily.org/index.php?title=Tests>.
+                      (let* ((cores  (parallel-job-count))
+                             (dash-j (format #f "-j~a" cores)))
+                        ;; These variables are supposed to be honored.
+                        (setenv "EIGEN_MAKE_ARGS" dash-j)
+                        (setenv "EIGEN_CTEST_ARGS" dash-j)
 
-                     (zero? (system* "make" "buildtests" dash-j))))
-                 %standard-phases)))
+                        (zero? (system* "make" "buildtests" dash-j))))))))
     (home-page "http://eigen.tuxfamily.org")
     (synopsis "C++ template library for linear algebra")
     (description
