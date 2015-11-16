@@ -33,6 +33,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/adns.scm				\
   gnu/packages/algebra.scm			\
   gnu/packages/aidc.scm				\
+  gnu/packages/animation.scm			\
   gnu/packages/apl.scm				\
   gnu/packages/apr.scm				\
   gnu/packages/aria2.scm			\
