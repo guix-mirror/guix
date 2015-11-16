@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1196,3 +1197,53 @@ and custom quantization matrices.")
 from various services and pipes them into a video playing application.")
     (home-page "http://livestreamer.io/")
     (license license:bsd-2)))
+
+(define-public mlt
+  (package
+    (name "mlt")
+    (version "0.9.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/mlt/mlt/mlt-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0rmrkj7z9g3nr4099f3ff0r14l3ixcfnlx2cdbkqa6pxin0pv9bz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags '("CC=gcc")
+       #:configure-flags
+       (list "--enable-gpl3"
+             "--enable-gpl")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'configure 'override-LDFLAGS
+          (lambda* (#:key outputs #:allow-other-keys)
+            (substitute* "config.mak"
+              (("LDFLAGS\\+=")
+               (string-append "LDFLAGS+=-Wl,-rpath="
+                              (assoc-ref outputs "out")
+                              "/lib ")))
+            #t)))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("fftw" ,fftw)
+       ("libxml2" ,libxml2)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("libsamplerate" ,libsamplerate)
+       ("sdl" ,sdl)
+       ("sox" ,sox)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.mltframework.org/")
+    (synopsis "Author, manage, and run multitrack audio/video compositions")
+    (description
+     "MLT is a multimedia framework, designed and developed for television
+broadcasting.  It provides a toolkit for broadcasters, video editors, media
+players, transcoders, web streamers and many more types of applications.  The
+functionality of the system is provided via an assortment of ready to use
+tools, XML authoring components, and an extensible plug-in based API.")
+    (license license:lgpl2.1+)))
