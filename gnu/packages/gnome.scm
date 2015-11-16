@@ -4224,3 +4224,30 @@ services.")
      "This package contains a systray applet for NetworkManager.  It displays
 the available networks and allows users to easily switch between them.")
     (license license:gpl2+)))
+
+(define-public libxml++
+  (package
+    (name "libxml++")
+    (version "2.91.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0h4h7hhh9lg8h34py116517m3wqbzhd5v63k1c6pp1p2a43s18fs"))))
+    (build-system gnu-build-system)
+    ;; libxml++-3.0.pc refers to all these.
+    (propagated-inputs
+     `(("libxml2" ,libxml2)
+       ("glibmm" ,glibmm)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://libxmlplusplus.sourceforge.net/")
+    (synopsis "C++ wrapper for XML parser library libxml2")
+    (description
+     "This package provides a C++ wrapper for the XML parser library
+libxml2.")
+    (license license:lgpl2.1+)))
