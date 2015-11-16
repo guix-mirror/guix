@@ -12,6 +12,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2015 Erik Edrosa <erik.edrosa@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2351,6 +2352,29 @@ written in pure Python.")
 
 (define-public python2-jinja2
   (package-with-python2 python-jinja2))
+
+(define-public python-pystache
+  (package
+    (name "python-pystache")
+    (version "0.5.4")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pystache" version))
+              (sha256
+               (base32
+                "0nmqsfmiw4arjxqkmf9z66ml950pcdjk6aq4gin4sywmzdjw5fzp"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://defunkt.io/pystache/")
+    (synopsis "Python logic-less template engine")
+    (description
+     "Pystache is a Python implementation of the framework agnostic,
+logic-free templating system Mustache.")
+    (license license:expat)))
+
+(define-public python2-pystache
+  (package-with-python2 python-pystache))
 
 (define-public python-joblib
   (package
