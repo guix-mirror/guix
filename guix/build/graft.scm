@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +21,6 @@
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 ftw)
   #:export (replace-store-references
             rewrite-directory))
 
@@ -93,38 +92,31 @@ file name pairs."
   (define (destination file)
     (string-append output (string-drop file prefix-len)))
 
-  (define (rewrite-leaf file stat result)
-    (case (stat:type stat)
-      ((symlink)
-       (let ((target (readlink file)))
-         (symlink (call-with-output-string
-                   (lambda (output)
-                     (replace-store-references (open-input-string target)
-                                               output mapping
-                                               store)))
-                  (destination file))))
-      ((regular)
-       (with-fluids ((%default-port-encoding #f))
-         (call-with-input-file file
-           (lambda (input)
-             (call-with-output-file (destination file)
-               (lambda (output)
-                 (replace-store-references input output mapping
-                                           store)
-                 (chmod output (stat:perms stat))))))))
-      (else
-       (error "unsupported file type" stat))))
+  (define (rewrite-leaf file)
+    (let ((stat (lstat file))
+          (dest (destination file)))
+      (mkdir-p (dirname dest))
+      (case (stat:type stat)
+        ((symlink)
+         (let ((target (readlink file)))
+           (symlink (call-with-output-string
+                      (lambda (output)
+                        (replace-store-references (open-input-string target)
+                                                  output mapping
+                                                  store)))
+                    dest)))
+        ((regular)
+         (with-fluids ((%default-port-encoding #f))
+           (call-with-input-file file
+             (lambda (input)
+               (call-with-output-file dest
+                 (lambda (output)
+                   (replace-store-references input output mapping
+                                             store)
+                   (chmod output (stat:perms stat))))))))
+        (else
+         (error "unsupported file type" stat)))))
 
-  (file-system-fold (const #t)
-                    rewrite-leaf
-                    (lambda (directory stat result) ;down
-                      (mkdir (destination directory)))
-                    (const #t)                      ;up
-                    (const #f)                      ;skip
-                    (lambda (file stat errno result) ;error
-                      (error "read error" file stat errno))
-                    #f
-                    directory
-                    lstat))
+  (for-each rewrite-leaf (find-files directory)))
 
 ;;; graft.scm ends here
