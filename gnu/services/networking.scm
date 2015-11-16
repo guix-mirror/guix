@@ -29,6 +29,7 @@
   #:use-module (gnu packages messaging)
   #:use-module (gnu packages ntp)
   #:use-module (gnu packages wicd)
+  #:use-module (gnu packages gnome)
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (srfi srfi-26)
@@ -40,7 +41,8 @@
             ntp-service
             tor-service
             bitlbee-service
-            wicd-service))
+            wicd-service
+            network-manager-service))
 
 ;;; Commentary:
 ;;;
@@ -497,5 +499,44 @@ several commands to interact with the daemon and configure networking:
 @command{wicd-client}, a graphical user interface, and the @command{wicd-cli}
 and @command{wicd-curses} user interfaces."
   (service wicd-service-type wicd))
+
+
+;;;
+;;; NetworkManager
+;;;
+
+(define %network-manager-activation
+  ;; Activation gexp for NetworkManager.
+  #~(begin
+      (use-modules (guix build utils))
+      (mkdir-p "/etc/NetworkManager/system-connections")))
+
+(define (network-manager-dmd-service network-manager)
+  "Return a dmd service for NETWORK-MANAGER."
+  (list (dmd-service
+         (documentation "Run the NetworkManager.")
+         (provision '(networking))
+         (requirement '(user-processes dbus-system loopback))
+         (start #~(make-forkexec-constructor
+                   (list (string-append #$network-manager
+                                        "/sbin/NetworkManager")
+                         "--no-daemon")))
+         (stop #~(make-kill-destructor)))))
+
+(define network-manager-service-type
+  (service-type (name 'network-manager)
+                (extensions
+                 (list (service-extension dmd-root-service-type
+                                          network-manager-dmd-service)
+                       (service-extension dbus-root-service-type list)
+                       (service-extension activation-service-type
+                                          (const %network-manager-activation))
+                       ;; Add network-manager to the system profile.
+                       (service-extension profile-service-type list)))))
+
+(define* (network-manager-service #:key (network-manager network-manager))
+  "Return a service that runs NetworkManager, a network connection manager
+that attempting to keep active network connectivity when available."
+  (service network-manager-service-type network-manager))
 
 ;;; networking.scm ends here
