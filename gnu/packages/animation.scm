@@ -128,3 +128,51 @@ C++ @dfn{Standard Template Library} (STL).")
 capable of producing feature-film quality animation.  It eliminates the need
 for tweening, preventing the need to hand-draw each frame.")
     (license license:gpl3+)))
+
+(define-public synfigstudio
+  (package
+    (name "synfigstudio")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/synfig/releases/"
+                                  version "/source/synfigstudio-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "1xa74dlgkpjn0gzdcs0x25z7wg0806v2wygvvi73f7sn1fm88ig4"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "src/synfigapp/pluginmanager.cpp"
+                    (("xmlpp::Node\\* n =")    "const xmlpp::Node* n =")
+                    (("xmlpp::Node::NodeList") "xmlpp::Node::const_NodeList"))
+                  ;; Some files are ISO-8859-1 encoded.
+                  (with-fluids ((%default-port-encoding #f))
+                    (substitute* (find-files "src/" "\\.(cpp|h)$")
+                      (("#include <sigc\\+\\+/retype\\.h>")
+                       "#include <sigc++/adaptors/retype.h>")
+                      (("#include <sigc\\+\\+/hide\\.h>")
+                       "#include <sigc++/adaptors/hide.h>")
+                      (("#include <sigc\\+\\+/object\\.h>")
+                       "#include <sigc++/trackable.h>")))
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "CXXFLAGS=-std=gnu++11")))
+    (inputs
+     `(("gtkmm" ,gtkmm)
+       ("libsigc++" ,libsigc++)
+       ("synfig" ,synfig)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (home-page "http://www.synfig.org")
+    (synopsis "Vector-based 2D animation package (GUI)")
+    (description
+     "Synfig is a vector-based 2D animation package.  It is designed to
+be capable of producing feature-film quality animation.  It eliminates the
+need for tweening, preventing the need to hand-draw each frame.  This package
+contains the graphical user interface for synfig.")
+    (license license:gpl3+)))
