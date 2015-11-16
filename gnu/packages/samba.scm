@@ -23,6 +23,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages readline)
@@ -196,3 +197,42 @@ Desktops into Active Directory environments using the winbind daemon.")
      "Talloc is a hierarchical, reference counted memory pool system with
 destructors.  It is the core memory allocator used in Samba.")
     (license gpl3+))) ;; The bundled "replace" library uses LGPL3.
+
+(define-public ppp
+  (package
+    (name "ppp")
+    (version "2.4.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.samba.org/ftp/ppp/ppp-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0c7vrjxl52pdwi4ckrvfjr08b31lfpgwf3pp0cqy76a77vfs7q02"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no check target
+       #:make-flags '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-Makefile
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libc    (assoc-ref inputs "libc"))
+                   (libpcap (assoc-ref inputs "libpcap")))
+               (substitute* "pppd/Makefile.linux"
+                 (("/usr/include/crypt\\.h")
+                  (string-append libc "/include/crypt.h"))
+                 (("/usr/include/pcap-bpf.h")
+                  (string-append libpcap "/include/pcap-bpf.h")))))))))
+    (inputs
+     `(("libpcap" ,libpcap)))
+    (synopsis "Implementation of the Point-to-Point Protocol")
+    (home-page "https://ppp.samba.org/")
+    (description
+     "The Point-to-Point Protocol (PPP) provides a standard way to establish
+a network connection over a serial link.  At present, this package supports IP
+and IPV6 and the protocols layered above them, such as TCP and UDP.")
+    ;; pppd, pppstats and pppdump are under BSD-style notices.
+    ;; some of the pppd plugins are GPL'd.
+    ;; chat is public domain.
+    (license (list bsd-3 bsd-4 gpl2+ public-domain))))
