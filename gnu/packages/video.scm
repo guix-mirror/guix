@@ -759,10 +759,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
             (substitute* "wscript"
               ;; XXX Remove this when our Samba package provides a .pc file.
               (("check_pkg_config\\('smbclient'\\)")
-               "check_cc(lib='smbclient')")
-              ;; XXX Remove this when our Lua package provides a .pc file.
-              (("check_lua")
-               "check_cc(lib='lua')")))))
+               "check_cc(lib='smbclient')")))))
        ;; No check function defined.
        #:tests? #f))
     (home-page "http://mpv.io/")
