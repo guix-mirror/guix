@@ -905,7 +905,7 @@ OUTPUTS is a list of package outputs (may be an empty list)."
                                     "~a packages in profile~%"
                                     count)
                              count)
-                     (display-search-paths entries profile))))))))))
+                     (display-search-paths entries (list profile)))))))))))
 
 (define (delete-generations* profile generations)
   "Delete GENERATIONS from PROFILE.
