@@ -422,7 +422,11 @@ cosine/ sine transforms or DCT/DST).")
                              (dash-j (format #f "-j~a" cores)))
                         ;; These variables are supposed to be honored.
                         (setenv "EIGEN_MAKE_ARGS" dash-j)
-                        (setenv "EIGEN_CTEST_ARGS" dash-j)
+
+                        ;; Use '-V' to get more details in case of test
+                        ;; failures.
+                        (setenv "EIGEN_CTEST_ARGS"
+                                (string-append "-V " dash-j))
 
                         (zero? (system* "make" "buildtests" dash-j))))))))
     (home-page "http://eigen.tuxfamily.org")
