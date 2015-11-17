@@ -64,6 +64,17 @@ Use `guix-time-format'."
   "Return one-line string from a multi-line STR."
   (replace-regexp-in-string "\n" " " str))
 
+(defmacro guix-with-indent (indent &rest body)
+  "Evaluate BODY and indent inserted text by INDENT number of spaces."
+  (declare (indent 1) (debug t))
+  (let ((region-beg-var (make-symbol "region-beg"))
+        (indent-var     (make-symbol "indent")))
+    `(let ((,region-beg-var (point))
+           (,indent-var     ,indent))
+       ,@body
+       (unless (zerop ,indent-var)
+         (indent-rigidly ,region-beg-var (point) ,indent-var)))))
+
 (defun guix-format-insert (val &optional face format)
   "Convert VAL into a string and insert it at point.
 If FACE is non-nil, propertize VAL with FACE.
@@ -303,9 +314,13 @@ See `defun' for the meaning of arguments."
      ,(or docstring
           (format "Memoized version of `%S'." definition))))
 
-(defvar guix-memoized-font-lock-keywords
+
+(defvar guix-utils-font-lock-keywords
   (eval-when-compile
-    `((,(rx "("
+    `((,(rx "(" (group "guix-with-indent")
+            symbol-end)
+       . 1)
+      (,(rx "("
             (group "guix-memoized-" (or "defun" "defalias"))
             symbol-end
             (zero-or-more blank)
@@ -314,7 +329,7 @@ See `defun' for the meaning of arguments."
        (1 font-lock-keyword-face)
        (2 font-lock-function-name-face nil t)))))
 
-(font-lock-add-keywords 'emacs-lisp-mode guix-memoized-font-lock-keywords)
+(font-lock-add-keywords 'emacs-lisp-mode guix-utils-font-lock-keywords)
 
 (provide 'guix-utils)
 

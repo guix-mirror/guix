@@ -219,13 +219,11 @@ ENTRIES should have a form of `guix-entries'."
   "Insert ENTRY of ENTRY-TYPE into the current info buffer.
 If INDENT-LEVEL is non-nil, indent displayed information by this
 number of `guix-info-indent' spaces."
-  (let ((region-beg (point)))
+  (guix-with-indent (* (or indent-level 0)
+                       guix-info-indent)
     (mapc (lambda (param)
             (guix-info-insert-param param entry entry-type))
-          (guix-info-get-displayed-params entry-type))
-    (when indent-level
-      (indent-rigidly region-beg (point)
-                      (* indent-level guix-info-indent)))))
+          (guix-info-get-displayed-params entry-type))))
 
 (defun guix-info-insert-entry (entry entry-type &optional indent-level)
   "Insert ENTRY of ENTRY-TYPE into the current info buffer.
