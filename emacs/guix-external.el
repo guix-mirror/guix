@@ -23,6 +23,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'guix-config)
 
 (defgroup guix-external nil
@@ -67,10 +68,9 @@ If ARGS is nil, use `guix-dot-default-arguments'."
   (or guix-dot-program
       (error (concat "Couldn't find 'dot'.\n"
                      "Set guix-dot-program to a proper value")))
-  (apply #'list
-         guix-dot-program
-         (concat "-o" output-file)
-         (or args guix-dot-default-arguments)))
+  (cl-list* guix-dot-program
+            (concat "-o" output-file)
+            (or args guix-dot-default-arguments)))
 
 (defun guix-dot-file-name ()
   "Call `guix-dot-file-name-function'."
