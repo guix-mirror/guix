@@ -172,6 +172,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/kde.scm				\
   gnu/packages/kde-frameworks.scm		\
   gnu/packages/key-mon.scm			\
+  gnu/packages/kodi.scm				\
   gnu/packages/language.scm			\
   gnu/packages/less.scm				\
   gnu/packages/lesstif.scm			\
