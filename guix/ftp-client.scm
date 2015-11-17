@@ -140,8 +140,9 @@ TIMEOUT, an ETIMEDOUT error is raised."
 
   (let loop ((addresses addresses))
     (let* ((ai (car addresses))
-           (s  (socket (addrinfo:fam ai) SOCK_STREAM ;TCP only
-                       (addrinfo:protocol ai))))
+           (s  (socket (addrinfo:fam ai)
+                       ;; TCP/IP only
+                       SOCK_STREAM IPPROTO_IP)))
 
       (catch 'system-error
         (lambda ()
