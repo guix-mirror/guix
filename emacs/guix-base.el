@@ -41,48 +41,14 @@
 
 (defvar guix-param-titles
   '((package
-     (id                . "ID")
-     (name              . "Name")
-     (version           . "Version")
-     (source            . "Source")
-     (license           . "License")
-     (synopsis          . "Synopsis")
-     (description       . "Description")
-     (home-url          . "Home page")
-     (outputs           . "Outputs")
-     (inputs            . "Inputs")
-     (native-inputs     . "Native inputs")
-     (propagated-inputs . "Propagated inputs")
-     (location          . "Location")
-     (installed         . "Installed"))
+     (home-url          . "Home page"))
     (installed
-     (path              . "Installed path")
-     (dependencies      . "Dependencies")
-     (output            . "Output"))
+     (path              . "Installed path"))
     (output
-     (id                . "ID")
-     (name              . "Name")
-     (version           . "Version")
-     (source            . "Source")
-     (license           . "License")
-     (synopsis          . "Synopsis")
-     (description       . "Description")
      (home-url          . "Home page")
-     (output            . "Output")
-     (inputs            . "Inputs")
-     (native-inputs     . "Native inputs")
-     (propagated-inputs . "Propagated inputs")
-     (location          . "Location")
-     (installed         . "Installed")
-     (path              . "Installed path")
-     (dependencies      . "Dependencies"))
+     (path              . "Installed path"))
     (generation
-     (id                . "ID")
-     (number            . "Number")
-     (prev-number       . "Previous number")
-     (current           . "Current")
-     (path              . "Path")
-     (time              . "Time")))
+     (prev-number       . "Previous number")))
   "List for defining titles of entry parameters.
 Titles are used for displaying information about entries.
 Each element of the list has a form:
@@ -93,9 +59,7 @@ Each element of the list has a form:
   "Return title of an ENTRY-TYPE entry parameter PARAM."
   (or (guix-assq-value guix-param-titles
                        entry-type param)
-      (prog1 (symbol-name param)
-        (message "Couldn't find title for '%S %S'."
-                 entry-type param))))
+      (guix-symbol-title param)))
 
 (defun guix-get-name-spec (name version &optional output)
   "Return Guix package specification by its NAME, VERSION and OUTPUT."

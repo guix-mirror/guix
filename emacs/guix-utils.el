@@ -165,6 +165,15 @@ This function is similar to `shell-quote-argument', but less strict."
      (replace-regexp-in-string
       (rx (not (any alnum "-=,./\n"))) "\\\\\\&" argument))))
 
+(defun guix-symbol-title (symbol)
+  "Return SYMBOL's name, a string.
+This is like `symbol-name', but fancier."
+  (if (eq symbol 'id)
+      "ID"
+    (let ((str (replace-regexp-in-string "-" " " (symbol-name symbol))))
+      (concat (capitalize (substring str 0 1))
+              (substring str 1)))))
+
 (defun guix-command-symbol (&optional args)
   "Return symbol by concatenating 'guix' and ARGS (strings)."
   (intern (guix-concat-strings (cons "guix" args) "-")))
