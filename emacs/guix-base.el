@@ -61,35 +61,31 @@ Each element of the list has a form:
                        entry-type param)
       (guix-symbol-title param)))
 
-(defun guix-get-name-spec (name version &optional output)
+(defun guix-package-name-specification (name version &optional output)
   "Return Guix package specification by its NAME, VERSION and OUTPUT."
   (concat name "-" version
           (when output (concat ":" output))))
 
-(defun guix-get-full-name (entry &optional output)
+(defun guix-package-entry->name-specification (entry &optional output)
   "Return name specification of the package ENTRY and OUTPUT."
-  (guix-get-name-spec (guix-entry-value entry 'name)
-                      (guix-entry-value entry 'version)
-                      output))
+  (guix-package-name-specification
+   (guix-entry-value entry 'name)
+   (guix-entry-value entry 'version)
+   (or output (guix-entry-value entry 'output))))
 
-(defun guix-entry-to-specification (entry)
-  "Return name specification by the package or output ENTRY."
-  (guix-get-name-spec (guix-entry-value entry 'name)
-                      (guix-entry-value entry 'version)
-                      (guix-entry-value entry 'output)))
-
-(defun guix-entries-to-specifications (entries)
+(defun guix-package-entries->name-specifications (entries)
   "Return name specifications by the package or output ENTRIES."
-  (cl-remove-duplicates (mapcar #'guix-entry-to-specification entries)
+  (cl-remove-duplicates (mapcar #'guix-package-entry->name-specification
+                                entries)
                         :test #'string=))
 
-(defun guix-get-installed-outputs (entry)
+(defun guix-package-installed-outputs (entry)
   "Return list of installed outputs for the package ENTRY."
   (mapcar (lambda (installed-entry)
             (guix-entry-value installed-entry 'output))
           (guix-entry-value entry 'installed)))
 
-(defun guix-get-package-id-and-output-by-output-id (oid)
+(defun guix-package-id-and-output-by-output-id (oid)
   "Return list (PACKAGE-ID OUTPUT) by output id OID."
   (cl-multiple-value-bind (pid-str output)
       (split-string oid ":")
@@ -567,7 +563,7 @@ If NO-DISPLAY is non-nil, do not switch to the buffer."
          (required (symbol-value required-var)))
     (unless (equal required 'all)
       (cl-union required
-                (funcall (guix-get-symbol "get-displayed-params"
+                (funcall (guix-get-symbol "displayed-params"
                                           buffer-type)
                          entry-type)))))
 
@@ -596,8 +592,9 @@ See `revert-buffer' for the meaning of NOCONFIRM."
                                  (eq guix-entry-type 'output)))
                         (progn
                           (setq search-type 'name
-                                search-vals (guix-entries-to-specifications
-                                             guix-entries))
+                                search-vals
+                                (guix-package-entries->name-specifications
+                                 guix-entries))
                           (guix-get-entries
                            guix-profile guix-entry-type
                            search-type search-vals params))
@@ -902,7 +899,7 @@ ENTRIES is a list of package entries to get info about packages."
                   (entry (guix-entry-by-id id entries)))
              (when entry
                (let ((location (guix-entry-value entry 'location)))
-                 (concat (guix-get-full-name entry)
+                 (concat (guix-package-entry->name-specification entry)
                          (when outputs
                            (concat ":"
                                    (guix-concat-strings outputs ",")))

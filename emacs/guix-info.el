@@ -187,13 +187,13 @@ Each element of the list should have a form:
 
 The order of displayed parameters is the same as in this list.")
 
-(defun guix-info-get-insert-methods (entry-type param)
+(defun guix-info-insert-methods (entry-type param)
   "Return list of insert methods for parameter PARAM of ENTRY-TYPE.
 See `guix-info-insert-methods' for details."
   (guix-assq-value guix-info-insert-methods
                    entry-type param))
 
-(defun guix-info-get-displayed-params (entry-type)
+(defun guix-info-displayed-params (entry-type)
   "Return parameters of ENTRY-TYPE that should be displayed."
   (guix-assq-value guix-info-displayed-params
                    entry-type))
@@ -224,7 +224,7 @@ number of `guix-info-indent' spaces."
                        guix-info-indent)
     (mapc (lambda (param)
             (guix-info-insert-param param entry entry-type))
-          (guix-info-get-displayed-params entry-type))))
+          (guix-info-displayed-params entry-type))))
 
 (defun guix-info-insert-entry (entry entry-type &optional indent-level)
   "Insert ENTRY of ENTRY-TYPE into the current info buffer.
@@ -245,7 +245,7 @@ ENTRY-TYPE is a type of ENTRY."
   (let ((val (guix-entry-value entry param)))
     (unless (and guix-info-ignore-empty-vals (null val))
       (let* ((title          (guix-get-param-title entry-type param))
-             (insert-methods (guix-info-get-insert-methods entry-type param))
+             (insert-methods (guix-info-insert-methods entry-type param))
              (val-method     (car insert-methods))
              (title-method   (cadr insert-methods)))
         (guix-info-method-funcall title title-method
@@ -525,7 +525,7 @@ Show package name, version, and `guix-package-info-heading-params'."
           (unless (or (memq param '(name version))
                       (memq param guix-package-info-heading-params))
             (guix-info-insert-param param entry 'package)))
-        (guix-info-get-displayed-params 'package)))
+        (guix-info-displayed-params 'package)))
 
 (defun guix-package-info-insert-description (desc &optional _)
   "Insert description DESC at point."
@@ -601,7 +601,7 @@ If nil, insert installed info in a default way.")
   (and (guix-entry-value entry 'non-unique)
        (guix-entry-value entry 'installed)
        (guix-package-info-insert-non-unique-text
-        (guix-get-full-name entry)))
+        (guix-package-entry->name-specification entry)))
   (insert "\n")
   (mapc (lambda (output)
           (guix-package-info-insert-output output entry))
@@ -653,7 +653,7 @@ current OUTPUT is installed (if there is such output in
 TYPE is one of the following symbols: `install', `delete', `upgrade'.
 ENTRY is an alist with package info."
   (let ((type-str (capitalize (symbol-name type)))
-        (full-name (guix-get-full-name entry output)))
+        (full-name (guix-package-entry->name-specification entry output)))
     (guix-info-insert-action-button
      type-str
      (lambda (btn)

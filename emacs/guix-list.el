@@ -117,27 +117,19 @@ function is called with 2 arguments: the first one is the value
 of the parameter; the second argument is an entry info (alist of
 parameters and their values).")
 
-(defun guix-list-get-param-title (entry-type param)
-  "Return title of an ENTRY-TYPE entry parameter PARAM."
+(defun guix-list-param-title (entry-type param)
+  "Return column title of an ENTRY-TYPE parameter PARAM."
   (or (guix-assq-value guix-list-column-titles
                        entry-type param)
       (guix-get-param-title entry-type param)))
 
-(defun guix-list-get-column-format (entry-type)
+(defun guix-list-format (entry-type)
   "Return column format for ENTRY-TYPE."
   (guix-assq-value guix-list-column-format entry-type))
 
-(defun guix-list-get-displayed-params (entry-type)
-  "Return list of parameters of ENTRY-TYPE that should be displayed."
-  (mapcar #'car
-          (guix-list-get-column-format entry-type)))
-
-(defun guix-list-get-sort-key (entry-type param &optional invert)
-  "Return suitable sort key for `tabulated-list-sort-key'.
-Define column title by ENTRY-TYPE and PARAM.  If INVERT is
-non-nil, invert the sort."
-  (when (memq param (guix-list-get-displayed-params entry-type))
-    (cons (guix-list-get-param-title entry-type param) invert)))
+(defun guix-list-displayed-params (entry-type)
+  "Return a list of ENTRY-TYPE parameters that should be displayed."
+  (mapcar #'car (guix-list-format entry-type)))
 
 (defun guix-list-sort-numerically (column a b)
   "Compare COLUMN of tabulated entries A and B numerically.
@@ -169,7 +161,14 @@ See `guix-list-define-numerical-sorter' for details."
 
 (guix-list-define-numerical-sorters 9)
 
-(defun guix-list-make-tabulated-vector (entry-type fun)
+(defun guix-list-tabulated-sort-key (entry-type param &optional invert)
+  "Return suitable sort key for `tabulated-list-sort-key'.
+Define column title by ENTRY-TYPE and PARAM.  If INVERT is
+non-nil, invert the sort."
+  (when (memq param (guix-list-displayed-params entry-type))
+    (cons (guix-list-param-title entry-type param) invert)))
+
+(defun guix-list-tabulated-vector (entry-type fun)
   "Call FUN on each column specification for ENTRY-TYPE.
 
 FUN is called with 2 argument: parameter name and column
@@ -179,36 +178,34 @@ Return a vector made of values of FUN calls."
   (apply #'vector
          (mapcar (lambda (col-spec)
                    (funcall fun (car col-spec) (cdr col-spec)))
-                 (guix-list-get-column-format entry-type))))
+                 (guix-list-format entry-type))))
 
-(defun guix-list-get-list-format (entry-type)
+(defun guix-list-tabulated-format (entry-type)
   "Return ENTRY-TYPE list specification for `tabulated-list-format'."
-  (guix-list-make-tabulated-vector
+  (guix-list-tabulated-vector
    entry-type
    (lambda (param spec)
-     (cons (guix-list-get-param-title entry-type param)
+     (cons (guix-list-param-title entry-type param)
            spec))))
 
 (defun guix-list-insert-entries (entries entry-type)
   "Display ENTRIES of ENTRY-TYPE in the current list buffer.
 ENTRIES should have a form of `guix-entries'."
   (setq tabulated-list-entries
-        (guix-list-get-tabulated-entries entries entry-type))
+        (guix-list-tabulated-entries entries entry-type))
   (tabulated-list-print))
 
-(defun guix-list-get-tabulated-entries (entries entry-type)
-  "Return list of values of ENTRY-TYPE for `tabulated-list-entries'.
-Values are taken from ENTRIES which should have the form of
-`guix-entries'."
+(defun guix-list-tabulated-entries (entries entry-type)
+  "Return a list of ENTRY-TYPE values for `tabulated-list-entries'."
   (mapcar (lambda (entry)
             (list (guix-entry-id entry)
-                  (guix-list-get-tabulated-entry entry entry-type)))
+                  (guix-list-tabulated-entry entry entry-type)))
           entries))
 
-(defun guix-list-get-tabulated-entry (entry entry-type)
+(defun guix-list-tabulated-entry (entry entry-type)
   "Return array of values for `tabulated-list-entries'.
-Parameters are taken from ENTRY of ENTRY-TYPE."
-  (guix-list-make-tabulated-vector
+Parameters are taken from ENTRY-TYPE ENTRY."
+  (guix-list-tabulated-vector
    entry-type
    (lambda (param _)
      (let ((val (guix-entry-value entry param))
@@ -472,10 +469,10 @@ This macro defines the following functions:
          ,(concat "Initial settings for `" mode-str "'.")
          ,(when sort-key
             `(setq tabulated-list-sort-key
-                   (guix-list-get-sort-key
+                   (guix-list-tabulated-sort-key
                     ',entry-type ',sort-key ,invert-sort)))
          (setq tabulated-list-format
-               (guix-list-get-list-format ',entry-type))
+               (guix-list-tabulated-format ',entry-type))
          (setq-local guix-list-mark-alist
                      (append guix-list-mark-alist ,marks-var))
          (tabulated-list-init-header)))))
@@ -595,7 +592,7 @@ be separated with \",\")."
   (guix-package-list-marking-check)
   (let* ((entry     (guix-list-current-entry))
          (all       (guix-entry-value entry 'outputs))
-         (installed (guix-get-installed-outputs entry))
+         (installed (guix-package-installed-outputs entry))
          (available (cl-set-difference all installed :test #'string=)))
     (or available
         (user-error "This package is already installed"))
@@ -611,7 +608,7 @@ be separated with \",\")."
   (interactive "P")
   (guix-package-list-marking-check)
   (let* ((entry (guix-list-current-entry))
-         (installed (guix-get-installed-outputs entry)))
+         (installed (guix-package-installed-outputs entry)))
     (or installed
         (user-error "This package is not installed"))
     (guix-package-list-mark-outputs
@@ -626,7 +623,7 @@ be separated with \",\")."
   (interactive "P")
   (guix-package-list-marking-check)
   (let* ((entry (guix-list-current-entry))
-         (installed (guix-get-installed-outputs entry)))
+         (installed (guix-package-installed-outputs entry)))
     (or installed
         (user-error "This package is not installed"))
     (when (or (guix-entry-value entry 'obsolete)
@@ -662,7 +659,7 @@ accept an entry as argument."
    (lambda (entry)
      (apply #'guix-list--mark
             'upgrade nil
-            (guix-get-installed-outputs entry)))))
+            (guix-package-installed-outputs entry)))))
 
 (defun guix-list-execute-package-actions (fun)
   "Perform actions on the marked packages.
@@ -758,7 +755,7 @@ Return nil, if there are no outputs marked with ACTION-TYPE.
 The specification is suitable for `guix-process-output-actions'."
   (let ((ids (guix-list-get-marked-id-list action-type)))
     (and ids (cons action-type
-                   (mapcar #'guix-get-package-id-and-output-by-output-id
+                   (mapcar #'guix-package-id-and-output-by-output-id
                            ids)))))
 
 (defun guix-output-list-describe (&optional arg)
@@ -773,7 +770,7 @@ Also see `guix-package-info-type'."
                             (unless arg '(general)))
                      (list (guix-list-current-id))))
            (pids (mapcar (lambda (oid)
-                           (car (guix-get-package-id-and-output-by-output-id
+                           (car (guix-package-id-and-output-by-output-id
                                  oid)))
                          oids)))
       (guix-list-describe-maybe 'package (cl-remove-duplicates pids)))))
