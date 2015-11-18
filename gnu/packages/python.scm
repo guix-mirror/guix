@@ -4751,7 +4751,7 @@ It is written entirely in Python.")
      `(("python-certifi" ,python-certifi)))
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
-    (home-page "https://pypi.python.org/pypi/tornado/4.1")
+    (home-page "http://www.tornadoweb.org/")
     (synopsis "Python web framework and asynchronous networking library")
     (description
      "Tornado is a Python web framework and asynchronous networking library,
