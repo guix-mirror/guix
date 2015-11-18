@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,7 +83,15 @@
        #:phases (modify-phases %standard-phases
                   (add-before 'configure 'autogen
                     (lambda _
-                      (zero? (system* "./autogen.sh")))))))
+                      (zero? (system* "./autogen.sh"))))
+                  (add-before 'build 'set-python-file-name
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (substitute* "src/plugins/python/weechat-python.c"
+                        (("python2_bin = .*;")
+                         (string-append "python2_bin = \""
+                                        (assoc-ref inputs "python")
+                                        "/bin/python\";\n")))
+                      #t)))))
     (synopsis "Extensible chat client")
     (description "WeeChat (Wee Enhanced Environment for Chat) is an
 Internet Relay Chat client, which is designed to be light and fast.
