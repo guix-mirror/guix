@@ -478,9 +478,8 @@ You can change almost any aspect of ``list'' / ``info'' buffers using
 the following variables:
 
 @table @code
-@item guix-list-column-format
+@item guix-list-format
 @itemx guix-list-column-titles
-@itemx guix-list-column-value-methods
 Specify the columns, their names, what and how is displayed in ``list''
 buffers.
 

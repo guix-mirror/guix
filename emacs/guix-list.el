@@ -58,31 +58,38 @@ entries, he will be prompted for confirmation."
   :type 'integer
   :group 'guix-list)
 
-(defvar guix-list-column-format
+(defvar guix-list-format
   `((package
-     (name 20 t)
-     (version 10 nil)
-     (outputs 13 t)
-     (installed 13 t)
-     (synopsis 30 nil))
+     (name guix-package-list-get-name 20 t)
+     (version nil 10 nil)
+     (outputs nil 13 t)
+     (installed guix-package-list-get-installed-outputs 13 t)
+     (synopsis guix-list-get-one-line 30 nil))
     (output
-     (name 20 t)
-     (version 10 nil)
-     (output 9 t)
-     (installed 12 t)
-     (synopsis 30 nil))
+     (name guix-package-list-get-name 20 t)
+     (version nil 10 nil)
+     (output nil 9 t)
+     (installed nil 12 t)
+     (synopsis guix-list-get-one-line 30 nil))
     (generation
-     (number 5 guix-list-sort-numerically-0 :right-align t)
-     (current 10 t)
-     (time 20 t)
-     (path 30 t)))
-  "Columns displayed in list buffers.
+     (number nil 5 guix-list-sort-numerically-0 :right-align t)
+     (current guix-generation-list-get-current 10 t)
+     (time guix-list-get-time 20 t)
+     (path guix-list-get-file-path 30 t)))
+  "List of format values of the displayed columns.
 Each element of the list has a form:
 
-  (ENTRY-TYPE . ((PARAM WIDTH SORT . PROPS) ...))
+  (ENTRY-TYPE . ((PARAM VALUE-FUN WIDTH SORT . PROPS) ...))
 
-PARAM is the name of an entry parameter of ENTRY-TYPE.  For the
-meaning of WIDTH, SORT and PROPS, see `tabulated-list-format'.")
+PARAM is the name of an entry parameter of ENTRY-TYPE.
+
+VALUE-FUN may be either nil or a function returning a value that
+will be inserted.  The function is called with 2 arguments: the
+first one is the value of the parameter; the second one is an
+entry (alist of parameter names and values).
+
+For the meaning of WIDTH, SORT and PROPS, see
+`tabulated-list-format'.")
 
 (defvar guix-list-column-titles
   '((generation
@@ -90,32 +97,6 @@ meaning of WIDTH, SORT and PROPS, see `tabulated-list-format'.")
   "Column titles for list buffers.
 Has the same structure as `guix-param-titles', but titles from
 this list have a priority.")
-
-(defvar guix-list-column-value-methods
-  '((package
-     (name        . guix-package-list-get-name)
-     (synopsis    . guix-list-get-one-line)
-     (description . guix-list-get-one-line)
-     (installed   . guix-package-list-get-installed-outputs))
-    (output
-     (name        . guix-package-list-get-name)
-     (synopsis    . guix-list-get-one-line)
-     (description . guix-list-get-one-line))
-    (generation
-     (current     . guix-generation-list-get-current)
-     (time        . guix-list-get-time)
-     (path        . guix-list-get-file-path)))
-  "Methods for inserting parameter values in columns.
-Each element of the list has a form:
-
-  (ENTRY-TYPE . ((PARAM . FUN) ...))
-
-PARAM is the name of an entry parameter of ENTRY-TYPE.
-
-FUN is a function returning a value that will be inserted.  The
-function is called with 2 arguments: the first one is the value
-of the parameter; the second argument is an entry info (alist of
-parameters and their values).")
 
 (defun guix-list-param-title (entry-type param)
   "Return column title of an ENTRY-TYPE parameter PARAM."
@@ -125,7 +106,7 @@ parameters and their values).")
 
 (defun guix-list-format (entry-type)
   "Return column format for ENTRY-TYPE."
-  (guix-assq-value guix-list-column-format entry-type))
+  (guix-assq-value guix-list-format entry-type))
 
 (defun guix-list-displayed-params (entry-type)
   "Return a list of ENTRY-TYPE parameters that should be displayed."
@@ -171,22 +152,22 @@ non-nil, invert the sort."
 (defun guix-list-tabulated-vector (entry-type fun)
   "Call FUN on each column specification for ENTRY-TYPE.
 
-FUN is called with 2 argument: parameter name and column
-specification (see `guix-list-column-format').
+FUN is applied to column specification as arguments (see
+`guix-list-format').
 
 Return a vector made of values of FUN calls."
   (apply #'vector
          (mapcar (lambda (col-spec)
-                   (funcall fun (car col-spec) (cdr col-spec)))
+                   (apply fun col-spec))
                  (guix-list-format entry-type))))
 
 (defun guix-list-tabulated-format (entry-type)
   "Return ENTRY-TYPE list specification for `tabulated-list-format'."
   (guix-list-tabulated-vector
    entry-type
-   (lambda (param spec)
+   (lambda (param _ &rest rest-spec)
      (cons (guix-list-param-title entry-type param)
-           spec))))
+           rest-spec))))
 
 (defun guix-list-insert-entries (entries entry-type)
   "Display ENTRIES of ENTRY-TYPE in the current list buffer.
@@ -207,10 +188,8 @@ ENTRIES should have a form of `guix-entries'."
 Parameters are taken from ENTRY-TYPE ENTRY."
   (guix-list-tabulated-vector
    entry-type
-   (lambda (param _)
-     (let ((val (guix-entry-value entry param))
-           (fun (guix-assq-value guix-list-column-value-methods
-                                 entry-type param)))
+   (lambda (param fun &rest _)
+     (let ((val (guix-entry-value entry param)))
        (if fun
            (funcall fun val entry)
          (guix-get-string val))))))
