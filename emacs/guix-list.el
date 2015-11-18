@@ -72,9 +72,7 @@ entries, he will be prompted for confirmation."
      (installed 12 t)
      (synopsis 30 nil))
     (generation
-     (number 5
-             ,(lambda (a b) (guix-list-sort-numerically 0 a b))
-             :right-align t)
+     (number 5 guix-list-sort-numerically-0 :right-align t)
      (current 10 t)
      (time 20 t)
      (path 30 t)))
@@ -143,11 +141,33 @@ non-nil, invert the sort."
 
 (defun guix-list-sort-numerically (column a b)
   "Compare COLUMN of tabulated entries A and B numerically.
-It is a sort predicate for `tabulated-list-format'.
+This function is used for sort predicates for `tabulated-list-format'.
 Return non-nil, if B is bigger than A."
   (cl-flet ((num (entry)
               (string-to-number (aref (cadr entry) column))))
     (> (num b) (num a))))
+
+(defmacro guix-list-define-numerical-sorter (column)
+  "Define numerical sort predicate for COLUMN.
+See `guix-list-sort-numerically' for details."
+  (let ((name (intern (format "guix-list-sort-numerically-%d" column)))
+        (doc  (format "\
+Predicate to sort tabulated list by column %d numerically.
+See `guix-list-sort-numerically' for details."
+                      column)))
+    `(defun ,name (a b)
+       ,doc
+       (guix-list-sort-numerically ,column a b))))
+
+(defmacro guix-list-define-numerical-sorters (n)
+  "Define numerical sort predicates for columns from 0 to N.
+See `guix-list-define-numerical-sorter' for details."
+  `(progn
+     ,@(mapcar (lambda (i)
+                 `(guix-list-define-numerical-sorter ,i))
+               (number-sequence 0 n))))
+
+(guix-list-define-numerical-sorters 9)
 
 (defun guix-list-make-tabulated-vector (entry-type fun)
   "Call FUN on each column specification for ENTRY-TYPE.
