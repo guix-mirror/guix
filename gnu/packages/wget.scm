@@ -1,7 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +32,7 @@
 (define-public wget
   (package
     (name "wget")
-    (version "1.17")
+    (version "1.16.3")
     (source
      (origin
       (method url-fetch)
@@ -41,7 +40,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "11xvs919a8xr595hs6hk323rkk7yshyfdfyfdhlahagkrcxdcsdx"))))
+        "0dzv5xf9qxc2bp4cyifmaghh3h464wbm73xiwcrvckf1ynqbgxv7"))))
     (build-system gnu-build-system)
     (inputs
      `(("gnutls" ,gnutls)
