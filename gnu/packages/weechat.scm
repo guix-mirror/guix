@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright Â© 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
+;;; Copyright Â© 2015 Ludovic CourtÃ¨s <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
