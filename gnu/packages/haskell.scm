@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -245,6 +246,25 @@
     (description
      "The Glasgow Haskell Compiler (GHC) is a state-of-the-art compiler and
 interactive environment for the functional language Haskell.")
+    (license bsd-3)))
+
+(define-public ghc-hostname
+  (package
+    (name "ghc-hostname")
+    (version "1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://hackage.haskell.org/package/hostname/"
+                           "hostname-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0p6gm4328946qxc295zb6vhwhf07l1fma82vd0siylnsnsqxlhwv"))))
+    (build-system haskell-build-system)
+    (home-page "https://hackage.haskell.org/package/hostname")
+    (synopsis "Hostname in Haskell")
+    (description "Network.HostName is a simple package providing a means to
+determine the hostname.")
     (license bsd-3)))
 
 (define-public ghc-prelude-extras
