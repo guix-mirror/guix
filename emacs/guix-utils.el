@@ -257,6 +257,55 @@ modifier call."
     (guix-modify (funcall (car modifiers) object)
                  (cdr modifiers))))
 
+(defmacro guix-keyword-args-let (args varlist &rest body)
+  "Parse ARGS, bind variables from VARLIST and eval BODY.
+
+Find keyword values in ARGS, bind them to variables according to
+VARLIST, then evaluate BODY.
+
+ARGS is a keyword/value property list.
+
+Each element of VARLIST has a form:
+
+  (SYMBOL KEYWORD [DEFAULT-VALUE])
+
+SYMBOL is a varible name.  KEYWORD is a symbol that will be
+searched in ARGS for an according value.  If the value of KEYWORD
+does not exist, bind SYMBOL to DEFAULT-VALUE or nil.
+
+The rest arguments (that present in ARGS but not in VARLIST) will
+be bound to `%foreign-args' variable.
+
+Example:
+
+  (guix-keyword-args-let '(:two 8 :great ! :guix is)
+      ((one :one 1)
+       (two :two 2)
+       (foo :smth))
+    (list one two foo %foreign-args))
+
+  => (1 8 nil (:guix is :great !))"
+  (declare (indent 2))
+  (let ((args-var (make-symbol "args")))
+    `(let (,@(mapcar (lambda (spec)
+                       (pcase-let ((`(,name ,_ ,val) spec))
+                         (list name val)))
+                     varlist)
+           (,args-var ,args)
+           %foreign-args)
+       (while ,args-var
+         (pcase ,args-var
+           (`(,key ,val . ,rest-args)
+            (cl-case key
+              ,@(mapcar (lambda (spec)
+                          (pcase-let ((`(,name ,key ,_) spec))
+                            `(,key (setq ,name val))))
+                        varlist)
+              (t (setq %foreign-args
+                       (cl-list* key val %foreign-args))))
+            (setq ,args-var rest-args))))
+       ,@body)))
+
 
 ;;; Alist accessors
 
@@ -326,7 +375,8 @@ See `defun' for the meaning of arguments."
 
 (defvar guix-utils-font-lock-keywords
   (eval-when-compile
-    `((,(rx "(" (group "guix-with-indent")
+    `((,(rx "(" (group (or "guix-keyword-args-let"
+                           "guix-with-indent"))
             symbol-end)
        . 1)
       (,(rx "("

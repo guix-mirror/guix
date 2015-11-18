@@ -66,26 +66,14 @@ keywords are available:
     `<multiple-reader-name>-string' function returning a string
     of multiple values separated the specified separator will be
     defined."
-  (let (completions-var
-        completions-getter
-        single-reader
-        single-prompt
-        multiple-reader
-        multiple-prompt
-        multiple-separator)
-
-    ;; Process the keyword args.
-    (while (keywordp (car args))
-      (pcase (pop args)
-        (`:completions-var    (setq completions-var    (pop args)))
-        (`:completions-getter (setq completions-getter (pop args)))
-        (`:single-reader      (setq single-reader      (pop args)))
-        (`:single-prompt      (setq single-prompt      (pop args)))
-        (`:multiple-reader    (setq multiple-reader    (pop args)))
-        (`:multiple-prompt    (setq multiple-prompt    (pop args)))
-        (`:multiple-separator (setq multiple-separator (pop args)))
-	(_ (pop args))))
-
+  (guix-keyword-args-let args
+      ((completions-var    :completions-var)
+       (completions-getter :completions-getter)
+       (single-reader      :single-reader)
+       (single-prompt      :single-prompt)
+       (multiple-reader    :multiple-reader)
+       (multiple-prompt    :multiple-prompt)
+       (multiple-separator :multiple-separator))
     (let ((completions
            (cond ((and completions-var completions-getter)
                   `(or ,completions-var

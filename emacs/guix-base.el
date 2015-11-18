@@ -382,63 +382,55 @@ following keywords are available:
          (buf-name-var   (intern (concat prefix "-buffer-name")))
          (revert-var     (intern (concat prefix "-revert-no-confirm")))
          (history-var    (intern (concat prefix "-history-size")))
-         (params-var     (intern (concat prefix "-required-params")))
-         (buf-name-val   (format "*Guix %s %s*" Entry-type-str Buf-type-str))
-         (revert-val     nil)
-         (history-val    20)
-         (params-val     '(id)))
+         (params-var     (intern (concat prefix "-required-params"))))
+    (guix-keyword-args-let args
+        ((params-val :required '(id))
+         (history-val :history-size 20)
+         (revert-val :revert)
+         (buf-name-val :buffer-name
+                       (format "*Guix %s %s*" Entry-type-str Buf-type-str)))
+      `(progn
+         (defgroup ,group nil
+           ,(concat Buf-type-str " buffer with " entry-str ".")
+           :prefix ,(concat prefix "-")
+           :group ',(intern (concat "guix-" buf-type-str)))
 
-    ;; Process the keyword args.
-    (while (keywordp (car args))
-      (pcase (pop args)
-	(`:required     (setq params-val (pop args)))
-	(`:history-size (setq history-val (pop args)))
-	(`:revert       (setq revert-val (pop args)))
-        (`:buffer-name  (setq buf-name-val (pop args)))
-	(_ (pop args))))
+         (defgroup ,faces-group nil
+           ,(concat "Faces for " buf-type-str " buffer with " entry-str ".")
+           :group ',(intern (concat "guix-" buf-type-str "-faces")))
 
-    `(progn
-       (defgroup ,group nil
-         ,(concat Buf-type-str " buffer with " entry-str ".")
-         :prefix ,(concat prefix "-")
-         :group ',(intern (concat "guix-" buf-type-str)))
+         (defcustom ,buf-name-var ,buf-name-val
+           ,(concat "Default name of the " buf-str " for displaying " entry-str ".")
+           :type 'string
+           :group ',group)
 
-       (defgroup ,faces-group nil
-         ,(concat "Faces for " buf-type-str " buffer with " entry-str ".")
-         :group ',(intern (concat "guix-" buf-type-str "-faces")))
+         (defcustom ,history-var ,history-val
+           ,(concat "Maximum number of items saved in the history of the " buf-str ".\n"
+                    "If 0, the history is disabled.")
+           :type 'integer
+           :group ',group)
 
-       (defcustom ,buf-name-var ,buf-name-val
-         ,(concat "Default name of the " buf-str " for displaying " entry-str ".")
-         :type 'string
-         :group ',group)
+         (defcustom ,revert-var ,revert-val
+           ,(concat "If non-nil, do not ask to confirm for reverting the " buf-str ".")
+           :type 'boolean
+           :group ',group)
 
-       (defcustom ,history-var ,history-val
-         ,(concat "Maximum number of items saved in the history of the " buf-str ".\n"
-                  "If 0, the history is disabled.")
-         :type 'integer
-         :group ',group)
+         (defvar ,params-var ',params-val
+           ,(concat "List of required " entry-type-str " parameters.\n\n"
+                    "Displayed parameters and parameters from this list are received\n"
+                    "for each " entry-type-str ".\n\n"
+                    "May be a special value `all', in which case all supported\n"
+                    "parameters are received (this may be very slow for a big number\n"
+                    "of entries).\n\n"
+                    "Do not remove `id' from this list as it is required for\n"
+                    "identifying an entry."))
 
-       (defcustom ,revert-var ,revert-val
-         ,(concat "If non-nil, do not ask to confirm for reverting the " buf-str ".")
-         :type 'boolean
-         :group ',group)
-
-       (defvar ,params-var ',params-val
-         ,(concat "List of required " entry-type-str " parameters.\n\n"
-                  "Displayed parameters and parameters from this list are received\n"
-                  "for each " entry-type-str ".\n\n"
-                  "May be a special value `all', in which case all supported\n"
-                  "parameters are received (this may be very slow for a big number\n"
-                  "of entries).\n\n"
-                  "Do not remove `id' from this list as it is required for\n"
-                  "identifying an entry."))
-
-       (define-derived-mode ,mode ,parent-mode ,(concat "Guix-" Buf-type-str)
-         ,(concat "Major mode for displaying information about " entry-str ".\n\n"
-                  "\\{" mode-map-str "}")
-         (setq-local revert-buffer-function 'guix-revert-buffer)
-         (setq-local guix-history-size ,history-var)
-         (and (fboundp ',mode-init-fun) (,mode-init-fun))))))
+         (define-derived-mode ,mode ,parent-mode ,(concat "Guix-" Buf-type-str)
+           ,(concat "Major mode for displaying information about " entry-str ".\n\n"
+                    "\\{" mode-map-str "}")
+           (setq-local revert-buffer-function 'guix-revert-buffer)
+           (setq-local guix-history-size ,history-var)
+           (and (fboundp ',mode-init-fun) (,mode-init-fun)))))))
 
 (put 'guix-define-buffer-type 'lisp-indent-function 'defun)
 

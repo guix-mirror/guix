@@ -416,45 +416,37 @@ This macro defines the following functions:
          (prefix         (concat "guix-" entry-type-str "-list"))
          (mode-str       (concat prefix "-mode"))
          (init-fun       (intern (concat prefix "-mode-initialize")))
-         (marks-var      (intern (concat prefix "-mark-alist")))
-         (marks-val      nil)
-         (sort-key       nil)
-         (invert-sort    nil))
+         (marks-var      (intern (concat prefix "-mark-alist"))))
+    (guix-keyword-args-let args
+        ((sort-key :sort-key)
+         (invert-sort :invert-sort)
+         (marks-val :marks))
+      `(progn
+         (defvar ,marks-var ',marks-val
+           ,(concat "Alist of additional marks for `" mode-str "'.\n"
+                    "Marks from this list are added to `guix-list-mark-alist'."))
 
-    ;; Process the keyword args.
-    (while (keywordp (car args))
-      (pcase (pop args)
-        (`:sort-key    (setq sort-key (pop args)))
-        (`:invert-sort (setq invert-sort (pop args)))
-	(`:marks       (setq marks-val (pop args)))
-	(_ (pop args))))
+         ,@(mapcar (lambda (mark-spec)
+                     (let* ((mark-name (car mark-spec))
+                            (mark-name-str (symbol-name mark-name)))
+                       `(defun ,(intern (concat prefix "-mark-" mark-name-str "-simple")) ()
+                          ,(concat "Put '" mark-name-str "' mark and move to the next line.\n"
+                                   "Also add the current entry to `guix-list-marked'.")
+                          (interactive)
+                          (guix-list--mark ',mark-name t))))
+                   marks-val)
 
-    `(progn
-       (defvar ,marks-var ',marks-val
-         ,(concat "Alist of additional marks for `" mode-str "'.\n"
-                  "Marks from this list are added to `guix-list-mark-alist'."))
-
-       ,@(mapcar (lambda (mark-spec)
-                   (let* ((mark-name (car mark-spec))
-                          (mark-name-str (symbol-name mark-name)))
-                     `(defun ,(intern (concat prefix "-mark-" mark-name-str "-simple")) ()
-                        ,(concat "Put '" mark-name-str "' mark and move to the next line.\n"
-                                 "Also add the current entry to `guix-list-marked'.")
-                        (interactive)
-                        (guix-list--mark ',mark-name t))))
-                 marks-val)
-
-       (defun ,init-fun ()
-         ,(concat "Initial settings for `" mode-str "'.")
-         ,(when sort-key
-            `(setq tabulated-list-sort-key
-                   (guix-list-tabulated-sort-key
-                    ',entry-type ',sort-key ,invert-sort)))
-         (setq tabulated-list-format
-               (guix-list-tabulated-format ',entry-type))
-         (setq-local guix-list-mark-alist
-                     (append guix-list-mark-alist ,marks-var))
-         (tabulated-list-init-header)))))
+         (defun ,init-fun ()
+           ,(concat "Initial settings for `" mode-str "'.")
+           ,(when sort-key
+              `(setq tabulated-list-sort-key
+                     (guix-list-tabulated-sort-key
+                      ',entry-type ',sort-key ,invert-sort)))
+           (setq tabulated-list-format
+                 (guix-list-tabulated-format ',entry-type))
+           (setq-local guix-list-mark-alist
+                       (append guix-list-mark-alist ,marks-var))
+           (tabulated-list-init-header))))))
 
 (put 'guix-list-define-entry-type 'lisp-indent-function 'defun)
 
