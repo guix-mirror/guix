@@ -57,6 +57,7 @@
             udev-configuration-rules
             udev-service-type
             udev-service
+            udev-rule
 
             mingetty-configuration
             mingetty-configuration?
@@ -949,12 +950,9 @@ item of @var{packages}."
                  #:modules '((guix build union)
                              (guix build utils))))
 
-(define* (kvm-udev-rule)
-  "Return a directory with a udev rule that changes the group of
-@file{/dev/kvm} to \"kvm\" and makes it #o660."
-  ;; Apparently QEMU-KVM used to ship this rule, but now we have to add it by
-  ;; ourselves.
-  (computed-file "kvm-udev-rules"
+(define (udev-rule file-name contents)
+  "Return a directory with a udev rule file FILE-NAME containing CONTENTS."
+  (computed-file file-name
                  #~(begin
                      (use-modules (guix build utils))
 
@@ -963,20 +961,26 @@ item of @var{packages}."
 
                      (mkdir-p rules.d)
                      (call-with-output-file
-                         (string-append rules.d "/90-kvm.rules")
+                         (string-append rules.d "/" #$file-name)
                        (lambda (port)
-                         ;; Build users are part of the "kvm" group, so we
-                         ;; can fearlessly make /dev/kvm 660 (see
-                         ;; <http://bugs.gnu.org/18994>, for background.)
-                         (display "\
-KERNEL==\"kvm\", GROUP=\"kvm\", MODE=\"0660\"\n" port))))
+                         (display #$contents port))))
                  #:modules '((guix build utils))))
+
+(define kvm-udev-rule
+  ;; Return a directory with a udev rule that changes the group of /dev/kvm to
+  ;; "kvm" and makes it #o660.  Apparently QEMU-KVM used to ship this rule,
+  ;; but now we have to add it by ourselves.
+
+  ;; Build users are part of the "kvm" group, so we can fearlessly make
+  ;; /dev/kvm 660 (see <http://bugs.gnu.org/18994>, for background.)
+  (udev-rule "90-kvm.rules"
+             "KERNEL==\"kvm\", GROUP=\"kvm\", MODE=\"0660\"\n"))
 
 (define udev-dmd-service
   ;; Return a <dmd-service> for UDEV with RULES.
   (match-lambda
     (($ <udev-configuration> udev rules)
-     (let* ((rules     (udev-rules-union (cons* udev (kvm-udev-rule) rules)))
+     (let* ((rules     (udev-rules-union (cons* udev kvm-udev-rule rules)))
             (udev.conf (computed-file "udev.conf"
                                       #~(call-with-output-file #$output
                                           (lambda (port)
