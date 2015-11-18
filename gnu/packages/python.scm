@@ -5575,7 +5575,7 @@ responses, rather than doing any computation.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
@@ -5584,7 +5584,7 @@ responses, rather than doing any computation.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1i2chlyhlx4792di82fqzcy9wz0gnnc661bj46zr794ip4629sp4"))))
+         "0dx98kcypmarwwhi6rjwy30ridys2ja6mc6mjf0svd4nllkaljdq"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
