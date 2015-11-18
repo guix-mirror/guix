@@ -307,7 +307,7 @@ Example:
        ,@body)))
 
 
-;;; Alist accessors
+;;; Alist procedures
 
 (defmacro guix-define-alist-accessor (name assoc-fun)
   "Define NAME function to access alist values using ASSOC-FUN."
@@ -324,6 +324,48 @@ accessed with KEYS."
 
 (guix-define-alist-accessor guix-assq-value assq)
 (guix-define-alist-accessor guix-assoc-value assoc)
+
+(defun guix-alist-put (value alist &rest keys)
+  "Put (add or replace if exists) VALUE to ALIST using KEYS.
+Return the new alist.
+
+ALIST is alist of alists of alists ... which can be consecutively
+accessed with KEYS.
+
+Example:
+
+  (guix-alist-put
+   'foo
+   '((one (a . 1) (b . 2))
+     (two (m . 7) (n . 8)))
+   'one 'b)
+
+  => ((one (a . 1) (b . foo))
+      (two (m . 7) (n . 8)))"
+  (or keys (error "Keys should be specified"))
+  (guix-alist-put-1 value alist keys))
+
+(defun guix-alist-put-1 (value alist keys)
+  "Subroutine of `guix-alist-put'."
+  (cond
+   ((null keys)
+    value)
+   ((null alist)
+    (list (cons (car keys)
+                (guix-alist-put-1 value nil (cdr keys)))))
+   ((eq (car keys) (caar alist))
+    (cons (cons (car keys)
+                (guix-alist-put-1 value (cdar alist) (cdr keys)))
+          (cdr alist)))
+   (t
+    (cons (car alist)
+          (guix-alist-put-1 value (cdr alist) keys)))))
+
+(defun guix-alist-put! (value variable &rest keys)
+  "Modify alist VARIABLE (symbol) by putting VALUE using KEYS.
+See `guix-alist-put' for details."
+  (set variable
+       (apply #'guix-alist-put value (symbol-value variable) keys)))
 
 
 ;;; Diff
