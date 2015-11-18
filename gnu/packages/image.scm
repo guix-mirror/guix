@@ -47,27 +47,22 @@
   #:use-module (guix build-system cmake)
   #:use-module (srfi srfi-1))
 
-(define (libpng-urls version)
-  "Return a list of URLs for libpng VERSION."
-  ;; Note: upstream removes older tarballs.
-  (list (string-append "mirror://sourceforge/libpng/libpng15/"
-                       version "/libpng-" version ".tar.xz")
-        (string-append
-         "ftp://ftp.simplesystems.org/pub/libpng/png/src"
-         "/libpng15/libpng-" version ".tar.xz")))
-
 (define-public libpng
   (package
    (name "libpng")
    (version "1.5.21")
    (source (origin
             (method url-fetch)
-            (uri (libpng-urls version))
+
+            ;; Note: upstream removes older tarballs.
+            (uri (list (string-append "mirror://sourceforge/libpng/libpng15/"
+                                      version "/libpng-" version ".tar.xz")
+                       (string-append
+                        "ftp://ftp.simplesystems.org/pub/libpng/png/src"
+                        "/libpng15/libpng-" version ".tar.xz")))
             (sha256
              (base32 "19yvzw6sf9gf7v25ha9bla8bw1nijh82wj8ag6brjj3hpij1q5dm"))))
    (build-system gnu-build-system)
-
-   (replacement libpng-1.5.24)                    ;CVE-2015-8126
 
    ;; libpng.la says "-lz", so propagate it.
    (propagated-inputs `(("zlib" ,zlib)))
@@ -78,16 +73,6 @@
 library.  It supports almost all PNG features and is extensible.")
    (license license:zlib)
    (home-page "http://www.libpng.org/pub/png/libpng.html")))
-
-(define libpng-1.5.24
-  (package
-    (inherit libpng)
-    (source (origin
-              (method url-fetch)
-              (uri (libpng-urls "1.5.24"))
-              (sha256
-               (base32
-                "1qhvfk1ypsaf6q6xkspyqqzmghpbahhq54ms8fa5ssqkyds38bmr"))))))
 
 (define-public libjpeg
   (package
