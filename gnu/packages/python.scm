@@ -5601,7 +5601,7 @@ responses, rather than doing any computation.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "1.0.1")
+    (version "1.0.2")
     (source
      (origin
        (method url-fetch)
@@ -5609,7 +5609,7 @@ responses, rather than doing any computation.")
                            "cryptography/cryptography-" version ".tar.gz"))
        (sha256
         (base32
-         "1lxzvhlyl6h6nm77n34622rcj2cxnx220x9vgjlw76wjd8m0kqyg"))))
+         "1jmcidddbbgdavvnvjjc0pda4b9a5i9idsivchn69pqxx68x8k6n"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
