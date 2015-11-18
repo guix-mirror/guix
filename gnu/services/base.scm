@@ -51,6 +51,10 @@
             host-name-service
             console-keymap-service
             console-font-service
+
+            udev-configuration
+            udev-configuration?
+            udev-configuration-rules
             udev-service-type
             udev-service
 
