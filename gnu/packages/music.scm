@@ -774,7 +774,7 @@ browser.")
 (define-public zynaddsubfx
   (package
     (name "zynaddsubfx")
-    (version "2.5.1")
+    (version "2.5.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -782,7 +782,7 @@ browser.")
                     version "/zynaddsubfx-" version ".tar.gz"))
               (sha256
                (base32
-                "01c4v5lbzard6y00cjq3b6a50cafqwfwibzng9gdsajczhnbkqz2"))))
+                "11yrady7xwfrzszkk2fvq81ymv99mq474h60qnirk27khdygk24m"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
