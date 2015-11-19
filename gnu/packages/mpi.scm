@@ -40,7 +40,7 @@
 (define-public hwloc
   (package
     (name "hwloc")
-    (version "1.10.1")
+    (version "1.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.open-mpi.org/software/hwloc/v"
@@ -48,9 +48,7 @@
                                   "/downloads/hwloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "0jji5rphy05s0lp6bknn8lxwixrq0hy5rjzsqvhjszbkl2li7kim"))
-              (patches (list
-                        (search-patch "hwloc-gather-topology-lstopo.patch")))))
+                "03vcr9f98z45xfkk34x376mfrwyi7ff4ay60gvn4v95sqihl0qa8"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)

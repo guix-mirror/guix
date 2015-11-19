@@ -502,7 +502,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
   gnu/packages/patches/hop-linker-flags.patch			\
-  gnu/packages/patches/hwloc-gather-topology-lstopo.patch	\
   gnu/packages/patches/hydra-automake-1.15.patch		\
   gnu/packages/patches/hydra-disable-darcs-test.patch		\
   gnu/packages/patches/icecat-CVE-2015-4513-pt01.patch		\
