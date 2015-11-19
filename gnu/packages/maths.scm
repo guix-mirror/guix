@@ -500,7 +500,7 @@ ASCII text files using Gmsh's own scripting language.")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.6.0")
+    (version "3.6.2")
     (source
      (origin
       (method url-fetch)
@@ -508,7 +508,7 @@ ASCII text files using Gmsh's own scripting language.")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "0lzhk1flgszks1wlhz2b92rnlx5np7bgad8vqy9fcqziz5b4pr26"))))
+       (base32 "13h0m5f9xsdpps4lsp59iz2m7zkapwavq2zfkfvs3ab6sndla0l9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)
