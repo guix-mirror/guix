@@ -93,7 +93,7 @@ bind processes, and much more.")
 (define-public openmpi
   (package
     (name "openmpi")
-    (version "1.8.5")
+    (version "1.10.1")
     (source
      (origin
       (method url-fetch)
@@ -102,7 +102,7 @@ bind processes, and much more.")
                           "/downloads/openmpi-" version ".tar.bz2"))
       (sha256
        (base32
-        "1i7vjf599kl5lm8n4vnwq9q1d9scn4sdjh42kfq1i9yzxnlhdsjc"))))
+        "14p4px9a3qzjc22lnl6braxrcrmd9rgmy7fh4qpanawn2pgfq6br"))))
     (build-system gnu-build-system)
     (inputs
      `(("hwloc" ,hwloc)
@@ -113,16 +113,12 @@ bind processes, and much more.")
        ("perl" ,perl)))
     (arguments
      `(#:configure-flags `("--enable-static"
-                           "--enable-oshmem"
 
-                           "--enable-event-thread-support"
-                           "--enable-opal-multi-threads"
-                           "--enable-orte-progress-threads"
                            "--enable-mpi-thread-multiple"
+                           "--enable-builtin-atomics"
 
                            "--enable-mpi-ext=all"
                            "--with-devel-headers"
-                           "--enable-debug"
                            "--enable-memchecker"
                            ,(string-append "--with-valgrind="
                                            (assoc-ref %build-inputs "valgrind"))
