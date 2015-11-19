@@ -3051,12 +3051,14 @@ Partial and Infinite Values\"}.")
          "06l1xv7vhpxly75saxdrbc6p2zlgz1az278arfkz4rgawfnphn3f"))))
     (build-system haskell-build-system)
     (inputs
-     `(("ghc-hunit" ,ghc-hunit)
-       ("ghc-quickcheck" ,ghc-quickcheck)))
+     `(("ghc-chasingbottoms" ,ghc-chasingbottoms)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
     ;; these inputs are necessary to use this library
     (propagated-inputs `(("ghc-hashable" ,ghc-hashable)))
-    (arguments
-     `(#:tests? #f)) ; FIXME: currently missing libraries used for tests.
     (home-page
      "https://github.com/tibbe/unordered-containers")
     (synopsis
