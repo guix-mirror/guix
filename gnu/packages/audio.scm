@@ -58,6 +58,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -533,7 +534,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
 (define-public guitarix
   (package
     (name "guitarix")
-    (version "0.33.0")
+    (version "0.34.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -541,8 +542,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "1w6dg2n0alfjsx1iy6s53783invygwxk11p1i65cc3nq3zlidcgx"))
-             (patches (list (search-patch "guitarix-c++11.patch")))))
+               "0pamaq8iybsaglq6y1m1rlmz4wgbs2r6m24bj7x4fwg4grjvzjl8"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -563,6 +563,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
        ("jack" ,jack-1)
        ("gtkmm" ,gtkmm-2)
        ("gtk+" ,gtk+-2)
+       ("webkitgtk/gtk+-2" ,webkitgtk/gtk+-2)
        ("fftwf" ,fftwf)
        ("lrdf" ,lrdf)
        ("zita-resampler" ,zita-resampler)
