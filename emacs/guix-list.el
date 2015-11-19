@@ -136,6 +136,10 @@ This alist is filled by `guix-list-define-entry-type' macro.")
   "Return a list of ENTRY-TYPE parameters that should be displayed."
   (mapcar #'car (guix-list-format entry-type)))
 
+(defun guix-list-sort-key (entry-type)
+  "Return sort key for ENTRY-TYPE."
+  (guix-list-value entry-type 'sort-key))
+
 (defun guix-list-additional-marks (entry-type)
   "Return alist of additional marks for ENTRY-TYPE."
   (guix-list-value entry-type 'marks))
@@ -182,12 +186,12 @@ See `guix-list-define-numerical-sorter' for details."
 
 (guix-list-define-numerical-sorters 9)
 
-(defun guix-list-tabulated-sort-key (entry-type param &optional invert)
-  "Return suitable sort key for `tabulated-list-sort-key'.
-Define column title by ENTRY-TYPE and PARAM.  If INVERT is
-non-nil, invert the sort."
-  (when (memq param (guix-list-displayed-params entry-type))
-    (cons (guix-list-param-title entry-type param) invert)))
+(defun guix-list-tabulated-sort-key (entry-type)
+  "Return ENTRY-TYPE sort key for `tabulated-list-sort-key'."
+  (let ((sort-key (guix-list-sort-key entry-type)))
+    (and sort-key
+         (cons (guix-list-param-title entry-type (car sort-key))
+               (cdr sort-key)))))
 
 (defun guix-list-tabulated-vector (entry-type fun)
   "Call FUN on each column specification for ENTRY-TYPE.
@@ -450,9 +454,8 @@ Same as `tabulated-list-sort', but also restore marks after sorting."
 Remaining argument (ARGS) should have a form [KEYWORD VALUE] ...  The
 following keywords are available:
 
-  - `:sort-key' - default sort key for the tabulated list buffer.
-
-  - `:invert-sort' - if non-nil, invert initial sort.
+  - `:sort-key' - default value of the generated
+    `guix-ENTRY-TYPE-list-sort-key' variable.
 
   - `:describe-function' - default value of the generated
     `guix-ENTRY-TYPE-describe-function' variable.
@@ -468,14 +471,28 @@ following keywords are available:
          (describe-var       (intern (concat prefix "-describe-function")))
          (describe-count-var (intern (concat prefix
                                              "-describe-warning-count")))
+         (sort-key-var       (intern (concat prefix "-sort-key")))
          (marks-var          (intern (concat prefix "-marks"))))
     (guix-keyword-args-let args
         ((describe-val       :describe-function)
          (describe-count-val :describe-count 10)
-         (sort-key           :sort-key)
-         (invert-sort        :invert-sort)
+         (sort-key-val       :sort-key)
          (marks-val          :marks))
       `(progn
+         (defcustom ,sort-key-var ,sort-key-val
+           ,(format "\
+Default sort key for 'list' buffer with '%s' entries.
+Should be nil (no sort) or have a form:
+
+  (PARAM . FLIP)
+
+PARAM is the name of '%s' entry parameter.  For the meaning of
+FLIP, see `tabulated-list-sort-key'."
+                    entry-type-str entry-type-str)
+           :type '(choice (const :tag "No sort" nil)
+                          (cons symbol boolean))
+           :group ',group)
+
          (defvar ,marks-var ,marks-val
            ,(format "\
 Alist of additional marks for 'list' buffer with '%s' entries.
@@ -498,18 +515,17 @@ See also `guix-list-describe'."
 
          (defun ,init-fun ()
            ,(concat "Initial settings for `" mode-str "'.")
-           ,(when sort-key
-              `(setq tabulated-list-sort-key
-                     (guix-list-tabulated-sort-key
-                      ',entry-type ',sort-key ,invert-sort)))
-           (setq tabulated-list-format
-                 (guix-list-tabulated-format ',entry-type))
+           (setq tabulated-list-sort-key (guix-list-tabulated-sort-key
+                                          ',entry-type)
+                 tabulated-list-format (guix-list-tabulated-format
+                                        ',entry-type))
            (setq-local guix-list-marks (guix-list-marks ',entry-type))
            (tabulated-list-init-header))
 
          (guix-alist-put!
           '((describe       . ,describe-var)
             (describe-count . ,describe-count-var)
+            (sort-key       . ,sort-key-var)
             (marks          . ,marks-var))
           'guix-list-data ',entry-type)))))
 
@@ -527,7 +543,7 @@ See also `guix-list-describe'."
 
 (guix-list-define-entry-type package
   :describe-function 'guix-list-describe-ids
-  :sort-key name
+  :sort-key '(name)
   :marks '((install . ?I)
            (upgrade . ?U)
            (delete  . ?D)))
@@ -711,7 +727,7 @@ The specification is suitable for `guix-process-package-actions'."
 
 (guix-list-define-entry-type output
   :describe-function 'guix-output-list-describe
-  :sort-key name
+  :sort-key '(name)
   :marks '((install . ?I)
            (upgrade . ?U)
            (delete  . ?D)))
@@ -797,8 +813,7 @@ See `guix-package-info-type'."
 
 (guix-list-define-entry-type generation
   :describe-function 'guix-list-describe-ids
-  :sort-key number
-  :invert-sort t
+  :sort-key '(number . t)
   :marks '((delete . ?D)))
 
 (let ((map guix-generation-list-mode-map))
