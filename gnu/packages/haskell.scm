@@ -1720,6 +1720,41 @@ library, including the ability to split random number generators.")
      "This package provides various primitive memory-related operations.")
     (license bsd-3)))
 
+(define-public ghc-test-framework
+  (package
+    (name "ghc-test-framework")
+    (version "0.8.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://hackage.haskell.org/package/test-framework/"
+                           "test-framework-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0wxjgdvb1c4ykazw774zlx86550848wbsvgjgcrdzcgbb9m650vq"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-libxml" ,ghc-libxml)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (propagated-inputs
+     `(("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-ansi-wl-pprint" ,ghc-ansi-wl-pprint)
+       ("ghc-hostname" ,ghc-hostname)
+       ("ghc-old-locale" ,ghc-old-locale)
+       ("ghc-random" ,ghc-random)
+       ("ghc-regex-posix" ,ghc-regex-posix)
+       ("ghc-xml" ,ghc-xml)))
+    (home-page "https://batterseapower.github.io/test-framework/")
+    (synopsis "Framework for running and organising tests")
+    (description
+     "This package allows tests such as QuickCheck properties and HUnit test
+cases to be assembled into test groups, run in parallel (but reported in
+deterministic order, to aid diff interpretation) and filtered and controlled
+by command line options.  All of this comes with colored test output, progress
+reporting and test statistics output.")
+    (license bsd-3)))
+
 (define-public ghc-tf-random
   (package
     (name "ghc-tf-random")
