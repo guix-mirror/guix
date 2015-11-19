@@ -484,13 +484,12 @@ the following variables (@dfn{ENTRY-TYPE} means @code{package},
 Specify the columns, their names, what and how is displayed in ``list''
 buffers.
 
-@item guix-info-displayed-params
-@itemx guix-info-insert-methods
-@itemx guix-info-ignore-empty-vals
+@item guix-info-format
+@itemx guix-info-ignore-empty-values
 @itemx guix-info-param-title-format
 @itemx guix-info-multiline-prefix
 @itemx guix-info-indent
-@itemx guix-info-fill-column
+@itemx guix-info-fill
 @itemx guix-info-delimiter
 Various settings for ``info'' buffers.
 

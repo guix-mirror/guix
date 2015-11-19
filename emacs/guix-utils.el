@@ -104,6 +104,28 @@ See `insert-text-button' for the meaning of PROPERTIES."
            :type (or type 'button)
            properties)))
 
+(defun guix-buttonize (value button-type separator &rest properties)
+  "Make BUTTON-TYPE button(s) from VALUE.
+Return a string with button(s).
+
+VALUE should be a string or a list of strings.  If it is a list
+of strings, buttons are separated with SEPARATOR string.
+
+PROPERTIES are passed to `guix-insert-button'."
+  (with-temp-buffer
+    (let ((labels (if (listp value) value (list value))))
+      (guix-mapinsert (lambda (label)
+                        (apply #'guix-insert-button
+                               label button-type properties))
+                      labels
+                      separator))
+    (buffer-substring (point-min) (point-max))))
+
+(defun guix-button-type? (symbol)
+  "Return non-nil, if SYMBOL is a button type."
+  (and symbol
+       (get symbol 'button-category-symbol)))
+
 (defun guix-split-insert (val &optional face col separator)
   "Convert VAL into a string, split it and insert at point.
 
@@ -122,14 +144,11 @@ Separate inserted lines with SEPARATOR."
 
 (defun guix-split-string (str &optional col)
   "Split string STR by lines and return list of result strings.
-If COL is non-nil and STR is a one-line string longer than COL,
-split it into several short lines."
-  (let ((strings (split-string str "\n *")))
-    (if (and col
-             (null (cdr strings))       ; if not multi-line
-             (> (length str) col))
-        (split-string (guix-get-filled-string str col) "\n")
-      strings)))
+If COL is non-nil, fill STR to this column."
+  (let ((str (if col
+                 (guix-get-filled-string str col)
+               str)))
+    (split-string str "\n *" t)))
 
 (defun guix-get-filled-string (str col)
   "Return string by filling STR to column COL."
