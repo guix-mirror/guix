@@ -1779,6 +1779,39 @@ reporting and test statistics output.")
      "This package provides HUnit support for the test-framework package.")
     (license bsd-3)))
 
+(define-public ghc-test-framework-quickcheck2
+  (package
+    (name "ghc-test-framework-quickcheck2")
+    (version "0.3.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://hackage.haskell.org/package/"
+                           "test-framework-quickcheck2/"
+                           "test-framework-quickcheck2-" version ".tar.gz"))
+       (sha256
+        (base32
+         "12p1zwrsz35r3j5gzbvixz9z1h5643rhihf5gqznmc991krwd5nc"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; The Hackage page and the cabal file linked there for this package
+        ;; both list 2.9 as the upper version limit, but the source tarball
+        ;; specifies 2.8.  Assume the Hackage page is correct.
+        '(substitute* "test-framework-quickcheck2.cabal"
+           (("QuickCheck >= 2.4 && < 2.8") "QuickCheck >= 2.4 && < 2.9")))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-random" ,ghc-random)
+       ("ghc-test-framework" ,ghc-test-framework)))
+    (home-page "https://batterseapower.github.io/test-framework/")
+    (synopsis "QuickCheck2 support for test-framework")
+    (description
+     "This packages provides QuickCheck2 support for the test-framework
+package.")
+    (license bsd-3)))
+
 (define-public ghc-tf-random
   (package
     (name "ghc-tf-random")
