@@ -234,14 +234,6 @@ VAL may be nil."
   "Return alist of the current entry info."
   (guix-entry-by-id (guix-list-current-id) guix-entries))
 
-(defun guix-list-current-package-id ()
-  "Return ID of the current package."
-  (cl-ecase major-mode
-    (guix-package-list-mode
-     (guix-list-current-id))
-    (guix-output-list-mode
-     (guix-entry-value (guix-list-current-entry) 'package-id))))
-
 (defun guix-list-for-each-line (fun &rest args)
   "Call FUN with ARGS for each entry line."
   (or (derived-mode-p 'guix-list-mode)
@@ -530,11 +522,6 @@ See also `guix-list-describe'."
 
 (put 'guix-list-define-entry-type 'lisp-indent-function 'defun)
 
-(defun guix-list-edit-package ()
-  "Go to the location of the current package."
-  (interactive)
-  (guix-edit (guix-list-current-package-id)))
-
 
 ;;; Displaying packages
 
@@ -579,7 +566,7 @@ likely)."
   :group 'guix-package-list)
 
 (let ((map guix-package-list-mode-map))
-  (define-key map (kbd "e")   'guix-list-edit-package)
+  (define-key map (kbd "e")   'guix-package-list-edit)
   (define-key map (kbd "x")   'guix-package-list-execute)
   (define-key map (kbd "i")   'guix-package-list-mark-install)
   (define-key map (kbd "d")   'guix-package-list-mark-delete)
@@ -722,6 +709,11 @@ The specification is suitable for `guix-process-package-actions'."
   (let ((specs (guix-list-get-marked-args action-type)))
     (and specs (cons action-type specs))))
 
+(defun guix-package-list-edit ()
+  "Go to the location of the current package."
+  (interactive)
+  (guix-edit (guix-list-current-id)))
+
 
 ;;; Displaying outputs
 
@@ -742,7 +734,7 @@ The specification is suitable for `guix-process-package-actions'."
            (delete  . ?D)))
 
 (let ((map guix-output-list-mode-map))
-  (define-key map (kbd "e")   'guix-list-edit-package)
+  (define-key map (kbd "e")   'guix-output-list-edit)
   (define-key map (kbd "x")   'guix-output-list-execute)
   (define-key map (kbd "i")   'guix-output-list-mark-install)
   (define-key map (kbd "d")   'guix-output-list-mark-delete)
@@ -814,6 +806,12 @@ See `guix-package-info-type'."
       (apply #'guix-get-show-entries
              guix-profile 'info 'package 'id
              (cl-remove-duplicates pids)))))
+
+(defun guix-output-list-edit ()
+  "Go to the location of the current package."
+  (interactive)
+  (guix-edit (guix-entry-value (guix-list-current-entry)
+                               'package-id)))
 
 
 ;;; Displaying generations
