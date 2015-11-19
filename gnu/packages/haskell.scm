@@ -3704,7 +3704,10 @@ library for Haskell.")
         (base32
          "0azx4qk65a9a2gvqsfmz3w89m6shzr2iz0i5lly2zvly4n2d6m6v"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: testing libraries are missing.
+    (inputs
+     `(("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)))
     (propagated-inputs
      `(("ghc-stm" ,ghc-stm)))
     (home-page "https://github.com/simonmar/async")
