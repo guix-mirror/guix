@@ -51,13 +51,6 @@
   "Face used for time stamps."
   :group 'guix-list-faces)
 
-(defcustom guix-list-describe-warning-count 10
-  "The maximum number of entries for describing without a warning.
-If a user wants to describe more than this number of marked
-entries, he will be prompted for confirmation."
-  :type 'integer
-  :group 'guix-list)
-
 (defvar guix-list-format
   `((package
      (name guix-package-list-get-name 20 t)
@@ -98,6 +91,26 @@ For the meaning of WIDTH, SORT and PROPS, see
 Has the same structure as `guix-param-titles', but titles from
 this list have a priority.")
 
+(defun guix-list-describe (&optional mark-names)
+  "Describe entries marked with a general mark.
+'Describe' means display entries in 'info' buffer.
+If no entries are marked, describe the current entry.
+With prefix argument, describe entries marked with any mark."
+  (interactive (list (unless current-prefix-arg '(general))))
+  (let* ((ids        (or (apply #'guix-list-get-marked-id-list mark-names)
+                         (list (guix-list-current-id))))
+         (count      (length ids))
+         (entry-type guix-entry-type))
+    (when (or (<= count (guix-list-describe-warning-count entry-type))
+              (y-or-n-p (format "Do you really want to describe %d entries? "
+                                count)))
+      (guix-list-describe-entries entry-type ids))))
+
+(defun guix-list-describe-ids (ids)
+  "Describe entries with IDS (list of identifiers)."
+  (apply #'guix-get-show-entries
+         guix-profile 'info guix-entry-type 'id ids))
+
 
 ;;; Wrappers for 'list' variables
 
@@ -126,6 +139,15 @@ This alist is filled by `guix-list-define-entry-type' macro.")
 (defun guix-list-additional-marks (entry-type)
   "Return alist of additional marks for ENTRY-TYPE."
   (guix-list-value entry-type 'marks))
+
+(defun guix-list-describe-warning-count (entry-type)
+  "Return the maximum number of ENTRY-TYPE entries to describe."
+  (guix-list-value entry-type 'describe-count))
+
+(defun guix-list-describe-entries (entry-type ids)
+  "Describe ENTRY-TYPE entries with IDS in 'info' buffer"
+  (funcall (guix-list-value entry-type 'describe)
+           ids))
 
 
 ;;; Tabulated list internals
@@ -409,6 +431,7 @@ Same as `tabulated-list-sort', but also restore marks after sorting."
      map (make-composed-keymap guix-root-map
                                tabulated-list-mode-map))
     (define-key map (kbd "RET") 'guix-list-describe)
+    (define-key map (kbd "i")   'guix-list-describe)
     (define-key map (kbd "m")   'guix-list-mark)
     (define-key map (kbd "*")   'guix-list-mark)
     (define-key map (kbd "u")   'guix-list-unmark)
@@ -431,23 +454,46 @@ following keywords are available:
 
   - `:invert-sort' - if non-nil, invert initial sort.
 
+  - `:describe-function' - default value of the generated
+    `guix-ENTRY-TYPE-describe-function' variable.
+
   - `:marks' - default value of the generated
     `guix-ENTRY-TYPE-list-marks' variable.
 "
-  (let* ((entry-type-str (symbol-name entry-type))
-         (prefix         (concat "guix-" entry-type-str "-list"))
-         (mode-str       (concat prefix "-mode"))
-         (init-fun       (intern (concat prefix "-mode-initialize")))
-         (marks-var      (intern (concat prefix "-marks"))))
+  (let* ((entry-type-str     (symbol-name entry-type))
+         (prefix             (concat "guix-" entry-type-str "-list"))
+         (group              (intern prefix))
+         (mode-str           (concat prefix "-mode"))
+         (init-fun           (intern (concat prefix "-mode-initialize")))
+         (describe-var       (intern (concat prefix "-describe-function")))
+         (describe-count-var (intern (concat prefix
+                                             "-describe-warning-count")))
+         (marks-var          (intern (concat prefix "-marks"))))
     (guix-keyword-args-let args
-        ((sort-key :sort-key)
-         (invert-sort :invert-sort)
-         (marks-val :marks))
+        ((describe-val       :describe-function)
+         (describe-count-val :describe-count 10)
+         (sort-key           :sort-key)
+         (invert-sort        :invert-sort)
+         (marks-val          :marks))
       `(progn
          (defvar ,marks-var ,marks-val
            ,(format "\
 Alist of additional marks for 'list' buffer with '%s' entries.
 Marks from this list are used along with `guix-list-default-marks'."
+                    entry-type-str))
+
+         (defcustom ,describe-count-var ,describe-count-val
+           ,(format "\
+The maximum number of '%s' entries to describe without a warning.
+If a user wants to describe more than this number of marked
+entries, he will be prompted for confirmation.
+See also `guix-list-describe'."
+                    entry-type-str)
+           :type 'integer
+           :group ',group)
+
+         (defvar ,describe-var ,describe-val
+           ,(format "Function used to describe '%s' entries."
                     entry-type-str))
 
          (defun ,init-fun ()
@@ -462,29 +508,12 @@ Marks from this list are used along with `guix-list-default-marks'."
            (tabulated-list-init-header))
 
          (guix-alist-put!
-          '((marks . ,marks-var))
+          '((describe       . ,describe-var)
+            (describe-count . ,describe-count-var)
+            (marks          . ,marks-var))
           'guix-list-data ',entry-type)))))
 
 (put 'guix-list-define-entry-type 'lisp-indent-function 'defun)
-
-(defun guix-list-describe-maybe (entry-type ids)
-  "Describe ENTRY-TYPE entries in info buffer using list of IDS."
-  (let ((count (length ids)))
-    (when (or (<= count guix-list-describe-warning-count)
-              (y-or-n-p (format "Do you really want to describe %d entries? "
-                                count)))
-      (apply #'guix-get-show-entries
-             guix-profile 'info entry-type 'id ids))))
-
-(defun guix-list-describe (&optional arg)
-  "Describe entries marked with a general mark.
-If no entries are marked, describe the current entry.
-With prefix (if ARG is non-nil), describe entries marked with any mark."
-  (interactive "P")
-  (let ((ids (or (apply #'guix-list-get-marked-id-list
-                        (unless arg '(general)))
-                 (list (guix-list-current-id)))))
-    (guix-list-describe-maybe guix-entry-type ids)))
 
 (defun guix-list-edit-package ()
   "Go to the location of the current package."
@@ -497,6 +526,7 @@ With prefix (if ARG is non-nil), describe entries marked with any mark."
 (guix-define-buffer-type list package)
 
 (guix-list-define-entry-type package
+  :describe-function 'guix-list-describe-ids
   :sort-key name
   :marks '((install . ?I)
            (upgrade . ?U)
@@ -680,13 +710,13 @@ The specification is suitable for `guix-process-package-actions'."
   :required (package-id))
 
 (guix-list-define-entry-type output
+  :describe-function 'guix-output-list-describe
   :sort-key name
   :marks '((install . ?I)
            (upgrade . ?U)
            (delete  . ?D)))
 
 (let ((map guix-output-list-mode-map))
-  (define-key map (kbd "RET") 'guix-output-list-describe)
   (define-key map (kbd "e")   'guix-list-edit-package)
   (define-key map (kbd "x")   'guix-output-list-execute)
   (define-key map (kbd "i")   'guix-output-list-mark-install)
@@ -746,22 +776,19 @@ The specification is suitable for `guix-process-output-actions'."
                    (mapcar #'guix-package-id-and-output-by-output-id
                            ids)))))
 
-(defun guix-output-list-describe (&optional arg)
-  "Describe outputs or packages marked with a general mark.
-If no entries are marked, describe the current output or package.
-With prefix (if ARG is non-nil), describe entries marked with any mark.
-Also see `guix-package-info-type'."
-  (interactive "P")
+(defun guix-output-list-describe (ids)
+  "Describe outputs with IDS (list of output identifiers).
+See `guix-package-info-type'."
   (if (eq guix-package-info-type 'output)
-      (guix-list-describe arg)
-    (let* ((oids (or (apply #'guix-list-get-marked-id-list
-                            (unless arg '(general)))
-                     (list (guix-list-current-id))))
-           (pids (mapcar (lambda (oid)
-                           (car (guix-package-id-and-output-by-output-id
-                                 oid)))
-                         oids)))
-      (guix-list-describe-maybe 'package (cl-remove-duplicates pids)))))
+      (apply #'guix-get-show-entries
+             guix-profile 'info 'output 'id ids)
+    (let ((pids (mapcar (lambda (oid)
+                          (car (guix-package-id-and-output-by-output-id
+                                oid)))
+                        ids)))
+      (apply #'guix-get-show-entries
+             guix-profile 'info 'package 'id
+             (cl-remove-duplicates pids)))))
 
 
 ;;; Displaying generations
@@ -769,6 +796,7 @@ Also see `guix-package-info-type'."
 (guix-define-buffer-type list generation)
 
 (guix-list-define-entry-type generation
+  :describe-function 'guix-list-describe-ids
   :sort-key number
   :invert-sort t
   :marks '((delete . ?D)))
@@ -781,7 +809,6 @@ Also see `guix-package-info-type'."
   (define-key map (kbd "D")   'guix-generation-list-diff)
   (define-key map (kbd "e")   'guix-generation-list-ediff)
   (define-key map (kbd "x")   'guix-generation-list-execute)
-  (define-key map (kbd "i")   'guix-list-describe)
   (define-key map (kbd "s")   'guix-generation-list-switch)
   (define-key map (kbd "d")   'guix-generation-list-mark-delete))
 
