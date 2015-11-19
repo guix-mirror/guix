@@ -51,39 +51,6 @@
   "Face used for time stamps."
   :group 'guix-list-faces)
 
-(defvar guix-list-format
-  `((package
-     (name guix-package-list-get-name 20 t)
-     (version nil 10 nil)
-     (outputs nil 13 t)
-     (installed guix-package-list-get-installed-outputs 13 t)
-     (synopsis guix-list-get-one-line 30 nil))
-    (output
-     (name guix-package-list-get-name 20 t)
-     (version nil 10 nil)
-     (output nil 9 t)
-     (installed nil 12 t)
-     (synopsis guix-list-get-one-line 30 nil))
-    (generation
-     (number nil 5 guix-list-sort-numerically-0 :right-align t)
-     (current guix-generation-list-get-current 10 t)
-     (time guix-list-get-time 20 t)
-     (path guix-list-get-file-path 30 t)))
-  "List of format values of the displayed columns.
-Each element of the list has a form:
-
-  (ENTRY-TYPE . ((PARAM VALUE-FUN WIDTH SORT . PROPS) ...))
-
-PARAM is the name of an entry parameter of ENTRY-TYPE.
-
-VALUE-FUN may be either nil or a function returning a value that
-will be inserted.  The function is called with 2 arguments: the
-first one is the value of the parameter; the second one is an
-entry (alist of parameter names and values).
-
-For the meaning of WIDTH, SORT and PROPS, see
-`tabulated-list-format'.")
-
 (defvar guix-list-column-titles
   '((generation
      (number . "N.")))
@@ -130,7 +97,7 @@ This alist is filled by `guix-list-define-entry-type' macro.")
 
 (defun guix-list-format (entry-type)
   "Return column format for ENTRY-TYPE."
-  (guix-assq-value guix-list-format entry-type))
+  (guix-list-value entry-type 'format))
 
 (defun guix-list-displayed-params (entry-type)
   "Return a list of ENTRY-TYPE parameters that should be displayed."
@@ -459,9 +426,14 @@ Same as `tabulated-list-sort', but also restore marks after sorting."
 
 (defmacro guix-list-define-entry-type (entry-type &rest args)
   "Define common stuff for displaying ENTRY-TYPE entries in list buffers.
+Remaining arguments (ARGS) should have a form [KEYWORD VALUE] ...
 
-Remaining argument (ARGS) should have a form [KEYWORD VALUE] ...  The
-following keywords are available:
+Required keywords:
+
+  - `:format' - default value of the generated
+    `guix-ENTRY-TYPE-list-format' variable.
+
+Optional keywords:
 
   - `:sort-key' - default value of the generated
     `guix-ENTRY-TYPE-list-sort-key' variable.
@@ -480,14 +452,36 @@ following keywords are available:
          (describe-var       (intern (concat prefix "-describe-function")))
          (describe-count-var (intern (concat prefix
                                              "-describe-warning-count")))
+         (format-var         (intern (concat prefix "-format")))
          (sort-key-var       (intern (concat prefix "-sort-key")))
          (marks-var          (intern (concat prefix "-marks"))))
     (guix-keyword-args-let args
         ((describe-val       :describe-function)
          (describe-count-val :describe-count 10)
+         (format-val         :format)
          (sort-key-val       :sort-key)
          (marks-val          :marks))
       `(progn
+         (defcustom ,format-var ,format-val
+           ,(format "\
+List of format values of the displayed columns.
+Each element of the list has a form:
+
+  (PARAM VALUE-FUN WIDTH SORT . PROPS)
+
+PARAM is a name of '%s' entry parameter.
+
+VALUE-FUN may be either nil or a function returning a value that
+will be inserted.  The function is called with 2 arguments: the
+first one is the value of the parameter; the second one is an
+entry (alist of parameter names and values).
+
+For the meaning of WIDTH, SORT and PROPS, see
+`tabulated-list-format'."
+                    entry-type-str)
+           :type 'sexp
+           :group ',group)
+
          (defcustom ,sort-key-var ,sort-key-val
            ,(format "\
 Default sort key for 'list' buffer with '%s' entries.
@@ -529,6 +523,7 @@ See also `guix-list-describe'."
          (guix-alist-put!
           '((describe       . ,describe-var)
             (describe-count . ,describe-count-var)
+            (format         . ,format-var)
             (sort-key       . ,sort-key-var)
             (marks          . ,marks-var))
           'guix-list-data ',entry-type)))))
@@ -547,6 +542,11 @@ See also `guix-list-describe'."
 
 (guix-list-define-entry-type package
   :describe-function 'guix-list-describe-ids
+  :format '((name guix-package-list-get-name 20 t)
+            (version nil 10 nil)
+            (outputs nil 13 t)
+            (installed guix-package-list-get-installed-outputs 13 t)
+            (synopsis guix-list-get-one-line 30 nil))
   :sort-key '(name)
   :marks '((install . ?I)
            (upgrade . ?U)
@@ -731,6 +731,11 @@ The specification is suitable for `guix-process-package-actions'."
 
 (guix-list-define-entry-type output
   :describe-function 'guix-output-list-describe
+  :format '((name guix-package-list-get-name 20 t)
+            (version nil 10 nil)
+            (output nil 9 t)
+            (installed nil 12 t)
+            (synopsis guix-list-get-one-line 30 nil))
   :sort-key '(name)
   :marks '((install . ?I)
            (upgrade . ?U)
@@ -817,6 +822,10 @@ See `guix-package-info-type'."
 
 (guix-list-define-entry-type generation
   :describe-function 'guix-list-describe-ids
+  :format '((number nil 5 guix-list-sort-numerically-0 :right-align t)
+            (current guix-generation-list-get-current 10 t)
+            (time guix-list-get-time 20 t)
+            (path guix-list-get-file-path 30 t))
   :sort-key '(number . t)
   :marks '((delete . ?D)))
 
