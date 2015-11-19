@@ -3,7 +3,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015, 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
@@ -42,8 +42,10 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages compression)
@@ -1529,3 +1531,80 @@ for writing audit records to the disk.  Viewing the logs is done with the
 @code{ausearch} or @code{aureport} utilities.  Configuring the audit rules is
 done with the @code{auditctl} utility.")
     (license license:gpl2+)))
+
+(define-public nmap
+  (package
+    (name "nmap")
+    (version "7.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://nmap.org/dist/nmap-" version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "0jlmq1w0gjqpa7qa523kdj73ndm1xzww2wjvb94hxh6yalargyhk"))
+              (modules '((guix build utils)))
+              (snippet
+               '(map delete-file-recursively
+                 ;; Remove bundled lua, pcap, and pcre libraries.
+                 ;; FIXME: Remove bundled liblinear once packaged.
+                 '("liblua"
+                   "libpcap"
+                   "libpcre"
+                   ;; Remove pre-compiled binares.
+                   "mswin32")))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("openssl" ,openssl)
+       ("libpcap" ,libpcap)
+       ("pcre" ,pcre)
+       ("lua" ,lua)
+       ;; For 'ndiff'.
+       ("python" ,python-2)))
+
+    ;; TODO Add zenmap output.
+    (outputs '("out" "ndiff"))
+    (arguments
+     '(#:configure-flags '("--without-zenmap")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (define (make out . args)
+               (unless (zero? (apply system* "make"
+                                     (string-append "prefix=" out)
+                                     args))
+                 (error "make failed")))
+             (define (python-path dir)
+               (string-append dir "/lib/python2.7/site-packages"))
+             (let ((out (assoc-ref outputs "out"))
+                   (ndiff (assoc-ref outputs "ndiff")))
+               (for-each mkdir-p (list out ndiff))
+               (make out
+                 "install-nmap"
+                 "install-nse"
+                 "install-ncat"
+                 "install-nping")
+               (make ndiff "install-ndiff")
+               (wrap-program (string-append ndiff "/bin/ndiff")
+                 `("PYTHONPATH" prefix
+                   (,(python-path ndiff)))))))
+         ;; These are the tests that do not require network access.
+         (replace 'check
+           (lambda _ (zero? (system* "make"
+                                     "check-nse"
+                                     "check-ndiff"
+                                     "check-dns")))))
+       ;; Nmap can't cope with out-of-source building.
+       #:out-of-source? #f))
+    (home-page "https://nmap.org/")
+    (synopsis "Network discovery and security auditing tool")
+    (description
+     "Nmap (\"Network Mapper\") is a network discovery and security auditing
+tool.  It is also useful for tasks such as network inventory, managing service
+upgrade schedules, and monitoring host or service uptime.  It also provides an
+advanced netcat implementation (ncat), a utility for comparing scan
+results (ndiff), and a packet generation and response analysis tool (nping).")
+    ;; This package uses nmap's bundled versions of libdnet and liblinear, which
+    ;; both use a 3-clause BSD license.
+    (license (list license:nmap license:bsd-3))))
