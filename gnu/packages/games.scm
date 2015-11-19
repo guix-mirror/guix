@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
+;;; Copyright © 2014, 2015 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
@@ -38,6 +38,7 @@
   #:use-module (guix git-download)
   #:use-module (guix svn-download)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
@@ -1820,3 +1821,35 @@ towards a working Mupen64Plus for casual users.")
 System (NES/Famicom) emulator Nestopia, with enhancements from members of the
 emulation community.  It provides highly accurate emulation.")
     (license license:gpl2+)))
+
+(define-public emulation-station
+  (package
+    (name "emulation-station")
+    (version "2.0.1")
+    (source (origin
+              (method git-fetch) ; no tarball available
+              (uri (git-reference
+                    (url "https://github.com/Aloshi/EmulationStation.git")
+                    (commit "646bede"))) ; no version tag
+              (sha256
+               (base32
+                "0cm0sq2wri2l9cvab1l0g02za59q7klj0h3p028vr96n6njj4w9v"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f)) ; no tests
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("curl" ,curl)
+       ("eigin" ,eigen)
+       ("freeimage" ,freeimage)
+       ("freetype" ,freetype)
+       ("mesa" ,mesa)
+       ("sdl2" ,sdl2)))
+    (synopsis "Video game console emulator front-end")
+    (description "EmulationStation provides a graphical front-end to a large
+number of video game console emulators.  It features an interface that is
+usable with any game controller that has at least 4 buttons, theming support,
+and a game metadata scraper.")
+    (home-page "http://www.emulationstation.org")
+    (license license:expat)))
