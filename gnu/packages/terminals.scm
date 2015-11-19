@@ -28,20 +28,19 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages wm)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages wm))
 
 (define-public tilda
   (package
     (name "tilda")
-    (version "1.2.4")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/lanoxx/tilda/archive/"
-                                  "tilda-" version ".zip"))
+                                  "tilda-" version ".tar.gz"))
               (sha256
                (base32
-                "06r7q0b1xjclagsnw0ilxhw5az5ddly2f7xc1lcwlrf337x0jrar"))))
+                "1bbn2fflngx0g18ssvnzgzprvn1w6wc2y03sqzjwvxds488lhndx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
@@ -54,14 +53,12 @@
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
        ("gettext" ,gnu-gettext)
-       ("pkg-config" ,pkg-config)
-       ("unzip" ,unzip)))
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib "bin")
        ("gtk+" ,gtk+)
        ("libconfuse" ,libconfuse)
-       ("vte" ,vte-0.36))) ; TODO: try to use vte-0.38+ in 1.3
-                           ; https://github.com/lanoxx/tilda/issues/94
+       ("vte" ,vte)))
     (synopsis "GTK+-based drop-down terminal")
     (description "Tilda is a terminal emulator similar to normal terminals like
 gnome-terminal (GNOME) or Konsole (KDE), with the difference that it drops down
