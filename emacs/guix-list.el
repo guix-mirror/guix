@@ -429,6 +429,8 @@ Same as `tabulated-list-sort', but also restore marks after sorting."
   (guix-list-restore-marks))
 
 
+;;; Major mode and interface definer
+
 (defvar guix-list-mode-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent
@@ -442,11 +444,18 @@ Same as `tabulated-list-sort', but also restore marks after sorting."
     (define-key map (kbd "DEL") 'guix-list-unmark-backward)
     (define-key map [remap tabulated-list-sort] 'guix-list-sort)
     map)
-  "Parent keymap for list buffers.")
+  "Keymap for `guix-list-mode' buffers.")
 
 (define-derived-mode guix-list-mode tabulated-list-mode "Guix-List"
-  "Parent mode for displaying information in list buffers."
-  (setq tabulated-list-padding 2))
+  "Parent mode for displaying data in 'list' form.")
+
+(defun guix-list-mode-initialize (entry-type)
+  "Set up the current 'list' buffer for displaying ENTRY-TYPE entries."
+  (setq tabulated-list-padding  2
+        tabulated-list-format   (guix-list-tabulated-format entry-type)
+        tabulated-list-sort-key (guix-list-tabulated-sort-key entry-type))
+  (setq-local guix-list-marks   (guix-list-marks entry-type))
+  (tabulated-list-init-header))
 
 (defmacro guix-list-define-entry-type (entry-type &rest args)
   "Define common stuff for displaying ENTRY-TYPE entries in list buffers.
@@ -515,12 +524,7 @@ See also `guix-list-describe'."
 
          (defun ,init-fun ()
            ,(concat "Initial settings for `" mode-str "'.")
-           (setq tabulated-list-sort-key (guix-list-tabulated-sort-key
-                                          ',entry-type)
-                 tabulated-list-format (guix-list-tabulated-format
-                                        ',entry-type))
-           (setq-local guix-list-marks (guix-list-marks ',entry-type))
-           (tabulated-list-init-header))
+           (guix-list-mode-initialize ',entry-type))
 
          (guix-alist-put!
           '((describe       . ,describe-var)
