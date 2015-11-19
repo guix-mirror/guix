@@ -1755,6 +1755,30 @@ by command line options.  All of this comes with colored test output, progress
 reporting and test statistics output.")
     (license bsd-3)))
 
+(define-public ghc-test-framework-hunit
+  (package
+    (name "ghc-test-framework-hunit")
+    (version "0.3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://hackage.haskell.org/package/"
+                           "test-framework-hunit/test-framework-hunit-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1h0h55kf6ff25nbfx1mhliwyknc0glwv3zi78wpzllbjbs7gvyfk"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-test-framework" ,ghc-test-framework)))
+    (home-page "https://batterseapower.github.io/test-framework/")
+    (synopsis "HUnit support for test-framework")
+    (description
+     "This package provides HUnit support for the test-framework package.")
+    (license bsd-3)))
+
 (define-public ghc-tf-random
   (package
     (name "ghc-tf-random")
