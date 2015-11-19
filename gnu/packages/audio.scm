@@ -684,7 +684,8 @@ synchronous execution of all clients, and low latency operation.")
                "03b0iiyk3ng3vh5s8gaqwn565vik7910p56mlbk512bw3dhbdwc8"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f  ; no check target
+     `(#:python ,python-2
+       #:tests? #f  ; no check target
        #:configure-flags '("--dbus"
                            "--alsa")
        #:phases
@@ -697,13 +698,22 @@ synchronous execution of all clients, and low latency operation.")
               ((".*CFLAGS.*-Wall.*" m)
                (string-append m
                               "    conf.env.append_unique('LINKFLAGS',"
-                              "'-Wl,-rpath=" %output "/lib')\n"))))))))
+                              "'-Wl,-rpath=" %output "/lib')\n")))))
+         (add-after 'install 'wrap-python-scripts
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            ;; Make sure 'jack_control' runs with the correct PYTHONPATH.
+            (let* ((out (assoc-ref outputs "out"))
+                   (path (getenv "PYTHONPATH")))
+              (wrap-program (string-append out "/bin/jack_control")
+                `("PYTHONPATH" ":" prefix (,path))))
+            #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
        ("expat" ,expat)
        ("libsamplerate" ,libsamplerate)
        ("opus" ,opus)
+       ("python2-dbus" ,python2-dbus)
        ("readline" ,readline)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
