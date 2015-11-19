@@ -98,6 +98,17 @@ For the meaning of WIDTH, SORT and PROPS, see
 Has the same structure as `guix-param-titles', but titles from
 this list have a priority.")
 
+
+;;; Wrappers for 'list' variables
+
+(defvar guix-list-data nil
+  "Alist with 'list' data.
+This alist is filled by `guix-list-define-entry-type' macro.")
+
+(defun guix-list-value (entry-type symbol)
+  "Return SYMBOL's value for ENTRY-TYPE from `guix-list-data'."
+  (symbol-value (guix-assq-value guix-list-data entry-type symbol)))
+
 (defun guix-list-param-title (entry-type param)
   "Return column title of an ENTRY-TYPE parameter PARAM."
   (or (guix-assq-value guix-list-column-titles
@@ -111,6 +122,13 @@ this list have a priority.")
 (defun guix-list-displayed-params (entry-type)
   "Return a list of ENTRY-TYPE parameters that should be displayed."
   (mapcar #'car (guix-list-format entry-type)))
+
+(defun guix-list-additional-marks (entry-type)
+  "Return alist of additional marks for ENTRY-TYPE."
+  (guix-list-value entry-type 'marks))
+
+
+;;; Tabulated list internals
 
 (defun guix-list-sort-numerically (column a b)
   "Compare COLUMN of tabulated entries A and B numerically.
@@ -260,20 +278,28 @@ Each element of the list has a form:
   (ID MARK-NAME . ARGS)
 
 ID is an entry ID.
-MARK-NAME is a symbol from `guix-list-mark-alist'.
+MARK-NAME is a symbol from `guix-list-marks'.
 ARGS is a list of additional values.")
 
-(defvar guix-list-mark-alist
-  '((empty   . ?\s)
-    (general . ?*))
+(defvar-local guix-list-marks nil
   "Alist of available mark names and mark characters.")
 
-(defsubst guix-list-get-mark (name)
+(defvar guix-list-default-marks
+  '((empty   . ?\s)
+    (general . ?*))
+  "Alist of default mark names and mark characters.")
+
+(defun guix-list-marks (entry-type)
+  "Return alist of available marks for ENTRY-TYPE."
+  (append guix-list-default-marks
+          (guix-list-additional-marks entry-type)))
+
+(defun guix-list-get-mark (name)
   "Return mark character by its NAME."
-  (or (guix-assq-value guix-list-mark-alist name)
+  (or (guix-assq-value guix-list-marks name)
       (error "Mark '%S' not found" name)))
 
-(defsubst guix-list-get-mark-string (name)
+(defun guix-list-get-mark-string (name)
   "Return mark string by its NAME."
   (string (guix-list-get-mark name)))
 
@@ -285,11 +311,11 @@ ARGS is a list of additional values.")
   "Return list of specs of entries marked with any mark from MARK-NAMES.
 Entry specs are elements from `guix-list-marked' list.
 If MARK-NAMES are not specified, use all marks from
-`guix-list-mark-alist' except the `empty' one."
+`guix-list-marks' except the `empty' one."
   (or mark-names
       (setq mark-names
             (delq 'empty
-                  (mapcar #'car guix-list-mark-alist))))
+                  (mapcar #'car guix-list-marks))))
   (cl-remove-if-not (lambda (assoc)
                       (memq (cadr assoc) mark-names))
                     guix-list-marked))
@@ -311,7 +337,7 @@ See `guix-list-get-marked' for details."
 (defun guix-list--mark (mark-name &optional advance &rest args)
   "Put a mark on the current line.
 Also add the current entry to `guix-list-marked' using its ID and ARGS.
-MARK-NAME is a symbol from `guix-list-mark-alist'.
+MARK-NAME is a symbol from `guix-list-marks'.
 If ADVANCE is non-nil, move forward by one line after marking."
   (let ((id (guix-list-current-id)))
     (if (eq mark-name 'empty)
@@ -334,7 +360,7 @@ With ARG, mark all lines."
 
 (defun guix-list-mark-all (&optional mark-name)
   "Mark all lines with MARK-NAME mark.
-MARK-NAME is a symbol from `guix-list-mark-alist'.
+MARK-NAME is a symbol from `guix-list-marks'.
 Interactively, put a general mark on all lines."
   (interactive)
   (or mark-name (setq mark-name 'general))
@@ -360,7 +386,7 @@ With ARG, unmark all lines."
   (guix-list-mark-all 'empty))
 
 (defun guix-list-restore-marks ()
-  "Put marks according to `guix-list-mark-alist'."
+  "Put marks according to `guix-list-marked'."
   (guix-list-for-each-line
    (lambda ()
      (let ((mark-name (car (guix-assq-value guix-list-marked
@@ -405,36 +431,24 @@ following keywords are available:
 
   - `:invert-sort' - if non-nil, invert initial sort.
 
-  - `:marks' - default value for the defined
-    `guix-ENTRY-TYPE-mark-alist' variable.
-
-This macro defines the following functions:
-
-  - `guix-ENTRY-TYPE-mark-MARK-NAME' functions for each mark
-    specified in `:marks' argument."
+  - `:marks' - default value of the generated
+    `guix-ENTRY-TYPE-list-marks' variable.
+"
   (let* ((entry-type-str (symbol-name entry-type))
          (prefix         (concat "guix-" entry-type-str "-list"))
          (mode-str       (concat prefix "-mode"))
          (init-fun       (intern (concat prefix "-mode-initialize")))
-         (marks-var      (intern (concat prefix "-mark-alist"))))
+         (marks-var      (intern (concat prefix "-marks"))))
     (guix-keyword-args-let args
         ((sort-key :sort-key)
          (invert-sort :invert-sort)
          (marks-val :marks))
       `(progn
-         (defvar ,marks-var ',marks-val
-           ,(concat "Alist of additional marks for `" mode-str "'.\n"
-                    "Marks from this list are added to `guix-list-mark-alist'."))
-
-         ,@(mapcar (lambda (mark-spec)
-                     (let* ((mark-name (car mark-spec))
-                            (mark-name-str (symbol-name mark-name)))
-                       `(defun ,(intern (concat prefix "-mark-" mark-name-str "-simple")) ()
-                          ,(concat "Put '" mark-name-str "' mark and move to the next line.\n"
-                                   "Also add the current entry to `guix-list-marked'.")
-                          (interactive)
-                          (guix-list--mark ',mark-name t))))
-                   marks-val)
+         (defvar ,marks-var ,marks-val
+           ,(format "\
+Alist of additional marks for 'list' buffer with '%s' entries.
+Marks from this list are used along with `guix-list-default-marks'."
+                    entry-type-str))
 
          (defun ,init-fun ()
            ,(concat "Initial settings for `" mode-str "'.")
@@ -444,9 +458,12 @@ This macro defines the following functions:
                       ',entry-type ',sort-key ,invert-sort)))
            (setq tabulated-list-format
                  (guix-list-tabulated-format ',entry-type))
-           (setq-local guix-list-mark-alist
-                       (append guix-list-mark-alist ,marks-var))
-           (tabulated-list-init-header))))))
+           (setq-local guix-list-marks (guix-list-marks ',entry-type))
+           (tabulated-list-init-header))
+
+         (guix-alist-put!
+          '((marks . ,marks-var))
+          'guix-list-data ',entry-type)))))
 
 (put 'guix-list-define-entry-type 'lisp-indent-function 'defun)
 
@@ -481,9 +498,9 @@ With prefix (if ARG is non-nil), describe entries marked with any mark."
 
 (guix-list-define-entry-type package
   :sort-key name
-  :marks ((install . ?I)
-          (upgrade . ?U)
-          (delete  . ?D)))
+  :marks '((install . ?I)
+           (upgrade . ?U)
+           (delete  . ?D)))
 
 (defface guix-package-list-installed
   '((t :inherit guix-package-info-installed-outputs))
@@ -664,9 +681,9 @@ The specification is suitable for `guix-process-package-actions'."
 
 (guix-list-define-entry-type output
   :sort-key name
-  :marks ((install . ?I)
-          (upgrade . ?U)
-          (delete  . ?D)))
+  :marks '((install . ?I)
+           (upgrade . ?U)
+           (delete  . ?D)))
 
 (let ((map guix-output-list-mode-map))
   (define-key map (kbd "RET") 'guix-output-list-describe)
@@ -754,7 +771,7 @@ Also see `guix-package-info-type'."
 (guix-list-define-entry-type generation
   :sort-key number
   :invert-sort t
-  :marks ((delete . ?D)))
+  :marks '((delete . ?D)))
 
 (let ((map guix-generation-list-mode-map))
   (define-key map (kbd "RET") 'guix-generation-list-show-packages)
