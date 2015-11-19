@@ -2191,11 +2191,14 @@ with slicing and Clang-style colored diagnostics.")
         (base32
          "0cprkr7bl4lrr80pz8mryb4rbfwdgpsrl7g0fbcaybhl8p5hm26f"))))
     (build-system haskell-build-system)
-    (arguments `(#:tests? #f)) ; FIXME: ghc-test-framework unavailable
     (propagated-inputs
      `(("ghc-scientific" ,ghc-scientific)))
     (inputs
-     `(("ghc-text" ,ghc-text)
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-quickcheck-unicode" ,ghc-quickcheck-unicode)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-text" ,ghc-text)
        ("ghc-vector" ,ghc-vector)))
     (home-page "https://github.com/bos/attoparsec")
     (synopsis "Fast combinator parsing for bytestrings and text")
