@@ -2007,7 +2007,8 @@ regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
         (base32
          "0gkhzhj8nvfn1ija31c7xnl6p0gadwii9ihyp219ck2arlhrj0an"))))
     (build-system haskell-build-system)
-    (inputs `(("ghc-regex-base" ,ghc-regex-base)))
+    (propagated-inputs
+     `(("ghc-regex-base" ,ghc-regex-base)))
     (home-page "http://sourceforge.net/projects/lazy-regex")
     (synopsis "POSIX regular expressions for Haskell")
     (description "This library provides the POSIX regex backend used by the
