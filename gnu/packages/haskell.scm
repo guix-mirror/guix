@@ -43,6 +43,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
   #:use-module (gnu packages pcre)
+  #:use-module ((gnu packages xml) #:select (libxml2))
   #:use-module (gnu packages xorg))
 
 (define ghc-bootstrap-x86_64-7.8.4
@@ -265,6 +266,33 @@ interactive environment for the functional language Haskell.")
     (synopsis "Hostname in Haskell")
     (description "Network.HostName is a simple package providing a means to
 determine the hostname.")
+    (license bsd-3)))
+
+(define-public ghc-libxml
+  (package
+    (name "ghc-libxml")
+    (version "0.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://hackage.haskell.org/package/libxml/"
+                           "libxml-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01zvk86kg726lf2vnlr7dxiz7g3xwi5a4ak9gcfbwyhynkzjmsfi"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("libxml2" ,libxml2)))
+    (arguments
+     `(#:configure-flags
+       `(,(string-append "--extra-include-dirs="
+                         (assoc-ref %build-inputs "libxml2")
+                         "/include/libxml2"))))
+    (home-page "http://hackage.haskell.org/package/libxml")
+    (synopsis "Haskell bindings to libxml2")
+    (description
+     "This library provides minimal Haskell binding to libxml2.")
     (license bsd-3)))
 
 (define-public ghc-prelude-extras
