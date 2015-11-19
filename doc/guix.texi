@@ -5688,7 +5688,7 @@ Configuration of libc's name service switch (NSS)---a
 details.
 
 @item @code{services} (default: @var{%base-services})
-A list of monadic values denoting system services.  @xref{Services}.
+A list of service objects denoting system services.  @xref{Services}.
 
 @item @code{pam-services} (default: @code{(base-pam-services)})
 @cindex PAM
