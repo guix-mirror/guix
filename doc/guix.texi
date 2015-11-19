@@ -1000,6 +1000,17 @@ to display fonts, you will have to install fonts with Guix as well.
 Essential font packages include @code{gs-fonts}, @code{font-dejavu}, and
 @code{font-gnu-freefont-ttf}.
 
+To display text written in Chinese languages, Japanese, or Korean in
+graphical applications, consider installing
+@code{font-adobe-source-han-sans} or @code{font-wqy-zenhei}.  The former
+has multiple outputs, one per language family (@pxref{Packages with
+Multiple Outputs}).  For instance, the following command installs fonts
+for Chinese languages:
+
+@example
+guix package -i font-adobe-source-han-sans:cn
+@end example
+
 @c TODO What else?
 
 @c *********************************************************************
