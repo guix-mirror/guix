@@ -2997,6 +2997,44 @@ is an inductive definition of graphs in the style of algebraic data types that
 encourages inductive, recursive definitions of graph algorithms.")
     (license bsd-3)))
 
+(define-public ghc-chasingbottoms
+  (package
+    (name "ghc-chasingbottoms")
+    (version "1.3.0.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://hackage.haskell.org/package/ChasingBottoms/"
+                           "ChasingBottoms-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1fb86jd6cdz4rx3fj3r9n8d60kx824ywwy7dw4qnrdran46ja3pl"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; The Hackage page and the cabal file linked there for this package
+        ;; both list 0.7 as the upper version limit, but the source tarball
+        ;; specifies 0.6.  Assume the Hackage page is correct.
+        '(substitute* "ChasingBottoms.cabal"
+           (("syb >= 0.1.0.2 && < 0.6") "syb >= 0.1.0.2 && < 0.7")))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-random" ,ghc-random)
+       ("ghc-syb" ,ghc-syb)))
+    (home-page "http://hackage.haskell.org/package/ChasingBottoms")
+    (synopsis "Testing of partial and infinite values in Haskell")
+    (description
+     ;; FIXME: There should be a @comma{} in the uref text, but it is not
+     ;; rendered properly.
+     "This is a library for testing code involving bottoms or infinite values.
+For the underlying theory and a larger example involving use of QuickCheck,
+see the article
+@uref{http://www.cse.chalmers.se/~nad/publications/danielsson-jansson-mpc2004.html,
+\"Chasing Bottoms A Case Study in Program Verification in the Presence of
+Partial and Infinite Values\"}.")
+    (license expat)))
+
 (define-public ghc-unordered-containers
   (package
     (name "ghc-unordered-containers")
