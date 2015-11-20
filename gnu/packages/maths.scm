@@ -625,7 +625,7 @@ scientific applications modeled by partial differential equations.")
 (define-public slepc
   (package
     (name "slepc")
-    (version "3.6.0")
+    (version "3.6.2")
     (source
      (origin
        (method url-fetch)
@@ -633,7 +633,7 @@ scientific applications modeled by partial differential equations.")
                            "filename=slepc-" version ".tar.gz"))
        (sha256
         (base32
-         "1ij8w864spzk4cq2mmkssqyj0mbckkkvxm0wpw9gywy2jgbj07jr"))))
+         "1pv5iqz2kc8sj49zsabyz4arnfpana8mjrhq31vzgk16xldk3d1a"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -646,7 +646,7 @@ scientific applications modeled by partial differential equations.")
      `(#:parallel-build? #f             ;build is parallel by default
        #:configure-flags
        `(,(string-append "--with-arpack-dir="
-                         (assoc-ref %build-inputs "arpack")))
+                         (assoc-ref %build-inputs "arpack") "/lib"))
        #:phases
        (modify-phases %standard-phases
          (replace
@@ -660,7 +660,7 @@ scientific applications modeled by partial differential equations.")
               (format #t "build directory: ~s~%" (getcwd))
               (format #t "configure flags: ~s~%" flags)
               (setenv "SLEPC_DIR" (getcwd))
-              (setenv "PETSC_DIR" (assoc-ref %build-inputs "petsc"))
+              (setenv "PETSC_DIR" (assoc-ref inputs "petsc"))
               (zero? (apply system* "./configure" flags)))))
          (add-after
           'install 'delete-doc
