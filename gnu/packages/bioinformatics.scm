@@ -1514,9 +1514,11 @@ HMMs).")
                 "1i85ppf2j2lj12m0x690qq5nn17xxk23pbbx2c83r8ayb5wngzwv"))))
     (build-system python-build-system)
     (arguments `(#:python ,python-2)) ; only Python 2 is supported
-    (inputs
-     `(("python-numpy" ,python2-numpy)
-       ("python-setuptools" ,python2-setuptools)))
+    ;; Numpy needs to be propagated when htseq is used as a Python library.
+    (propagated-inputs
+     `(("python-numpy" ,python2-numpy)))
+    (native-inputs
+     `(("python-setuptools" ,python2-setuptools)))
     (home-page "http://www-huber.embl.de/users/anders/HTSeq/")
     (synopsis "Analysing high-throughput sequencing data with Python")
     (description
