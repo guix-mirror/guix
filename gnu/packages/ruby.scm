@@ -1223,6 +1223,38 @@ definitions on a Ruby object.")
     (home-page "https://github.com/floehopper/introspection")
     (license license:expat)))
 
+(define-public ruby-redcarpet
+  (package
+    (name "ruby-redcarpet")
+    (version "3.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "redcarpet" version))
+              (sha256
+               (base32
+                "14i3wypp97bpk20679d1csy88q4hsgfqbnqw6mryl77m2g0d09pk"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The gem archive does not include the conformance tests.
+         (add-after 'unpack 'disable-conformance-tests
+          (lambda _
+            (substitute* "Rakefile"
+              (("task :test => %w\\[test:unit test:conformance\\]")
+               "task :test => %w[test:unit]"))
+            #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-test-unit" ,ruby-test-unit)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (synopsis "Extensible Markdown to (X)HTML converter")
+    (description
+     "Redcarpet is an extensible Ruby library for Markdown processing and
+conversion to (X)HTML.")
+    (home-page "http://github.com/vmg/redcarpet")
+    (license license:expat)))
+
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
