@@ -2590,46 +2590,39 @@ structures, classes for genomic regions, mapped sequencing reads, etc.")
 (define-public preseq
   (package
     (name "preseq")
-    (version "1.0.2")
+    (version "2.0")
     (source (origin
               (method url-fetch)
-              (uri
-               (string-append "http://smithlabresearch.org/downloads/preseq-"
-                              version ".tar.bz2"))
+              (uri (string-append "https://github.com/smithlabcode/"
+                                  "preseq/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
-               (base32 "0r7sw07p6nv8ygvc17gd78lisbw5336v3vhs86b5wv8mw3pwqksc"))
-              (patches (list (search-patch "preseq-1.0.2-install-to-PREFIX.patch")
-                             (search-patch "preseq-1.0.2-link-with-libbam.patch")))
+               (base32 "08r684l50pnxjpvmhzjgqq56yv9rfw90k8vx0nsrnrzk8mf9hsdq"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove bundled samtools.
-               '(delete-file-recursively "preseq-master/samtools"))))
+               '(delete-file-recursively "samtools"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
        #:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'enter-dir
-          (lambda _
-            (chdir "preseq-master")
-            #t))
-         (add-after
-          'enter-dir 'use-samtools-headers
-          (lambda _
-            (substitute* '("smithlab_cpp/SAM.cpp"
-                           "smithlab_cpp/SAM.hpp")
-              (("sam.h") "samtools/sam.h"))
-            #t))
          (delete 'configure))
-       #:make-flags (list (string-append "PREFIX="
-                                         (assoc-ref %outputs "out"))
-                          (string-append "LIBBAM="
-                                         (assoc-ref %build-inputs "samtools")
-                                         "/lib/libbam.a"))))
+       #:make-flags
+       (list (string-append "PREFIX="
+                            (assoc-ref %outputs "out"))
+             (string-append "LIBBAM="
+                            (assoc-ref %build-inputs "samtools")
+                            "/lib/libbam.a")
+             (string-append "SMITHLAB_CPP="
+                            (assoc-ref %build-inputs "smithlab-cpp")
+                            "/lib")
+             "PROGS=preseq"
+             "INCLUDEDIRS=$(SMITHLAB_CPP)/../include/smithlab-cpp $(SAMTOOLS_DIR)")))
     (inputs
      `(("gsl" ,gsl)
        ("samtools" ,samtools-0.1)
+       ("smithlab-cpp" ,smithlab-cpp)
        ("zlib" ,zlib)))
     (home-page "http://smithlabresearch.org/software/preseq/")
     (synopsis "Program for analyzing library complexity")

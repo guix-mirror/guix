@@ -657,8 +657,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/polkit-drop-test.patch			\
   gnu/packages/patches/portaudio-audacity-compat.patch		\
-  gnu/packages/patches/preseq-1.0.2-install-to-PREFIX.patch	\
-  gnu/packages/patches/preseq-1.0.2-link-with-libbam.patch	\
   gnu/packages/patches/procps-make-3.82.patch			\
   gnu/packages/patches/pt-scotch-build-parallelism.patch	\
   gnu/packages/patches/pulseaudio-fix-mult-test.patch		\
