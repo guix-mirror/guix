@@ -2534,6 +2534,59 @@ subsequent visualization, annotation and storage of results.")
     ;; LGPLv2.1+
     (license (list license:gpl2 license:lgpl2.1+))))
 
+(define-public smithlab-cpp
+  (let ((revision "1")
+        (commit "728a097"))
+    (package
+      (name "smithlab-cpp")
+      (version (string-append "0." revision "." commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/smithlabcode/smithlab_cpp.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0d476lmj312xk77kr9fzrv7z1bv96yfyx0w7y62ycmnfbx32ll74"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (srfi srfi-26))
+         #:tests? #f ;no "check" target
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'use-samtools-headers
+            (lambda _
+              (substitute* '("SAM.cpp"
+                             "SAM.hpp")
+                (("sam.h") "samtools/sam.h"))
+              #t))
+           (replace 'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out     (assoc-ref outputs "out"))
+                     (lib     (string-append out "/lib"))
+                     (include (string-append out "/include/smithlab-cpp")))
+                (mkdir-p lib)
+                (mkdir-p include)
+                (for-each (cut install-file <> lib)
+                          (find-files "." "\\.o$"))
+                (for-each (cut install-file <> include)
+                          (find-files "." "\\.hpp$")))
+              #t))
+           (delete 'configure))))
+      (inputs
+       `(("samtools" ,samtools-0.1)
+         ("zlib" ,zlib)))
+      (home-page "https://github.com/smithlabcode/smithlab_cpp")
+      (synopsis "C++ helper library for functions used in Smith lab projects")
+      (description
+       "Smithlab CPP is a C++ library that includes functions used in many of
+the Smith lab bioinformatics projects, such as a wrapper around Samtools data
+structures, classes for genomic regions, mapped sequencing reads, etc.")
+      (license license:gpl3+))))
+
 (define-public preseq
   (package
     (name "preseq")
