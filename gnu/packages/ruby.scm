@@ -946,6 +946,25 @@ using Net::HTTP, supporting reconnection and retry according to RFC 2616.")
     (home-page "https://github.com/drbrain/net-http-persistent")
     (license license:expat)))
 
+(define-public ruby-power-assert
+  (package
+    (name "ruby-power-assert")
+    (version "0.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "power_assert" version))
+              (sha256
+               (base32
+                "0gbj379jhnff8rbb6m3kzdm282szjz1a021xzxa38d1bnswj2jx3"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Assert library with descriptive assertion messages")
+    (description "Power-assert is an assertion library providing descriptive
+assertion messages for tests.")
+    (home-page "https://github.com/k-tsj/power_assert")
+    (license (list license:bsd-2 license:ruby))))
+
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
