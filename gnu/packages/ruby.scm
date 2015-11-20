@@ -965,6 +965,31 @@ assertion messages for tests.")
     (home-page "https://github.com/k-tsj/power_assert")
     (license (list license:bsd-2 license:ruby))))
 
+(define-public ruby-locale
+  (package
+    (name "ruby-locale")
+    (version "2.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "locale" version))
+              (sha256
+               (base32
+                "1sls9bq4krx0fmnzmlbn64dw23c4d6pz46ynjzrn9k8zyassdd0x"))))
+    (build-system ruby-build-system)
+    ;; ruby-test-unit is required to run tests, but that needs ruby-packnga,
+    ;; which needs ruby-gettext, which needs ruby-locale.  To break the
+    ;; dependency cycle we disable tests.
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-yard" ,ruby-yard)))
+    (synopsis "Ruby library providing basic localization APIs")
+    (description
+     "Ruby-Locale is the pure ruby library which provides basic APIs for
+localization.")
+    (home-page "https://github.com/ruby-gettext/locale")
+    (license (list license:lgpl3+ license:ruby))))
+
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
