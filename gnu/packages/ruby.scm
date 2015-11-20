@@ -1311,6 +1311,27 @@ allows mocking and stubbing of methods on real (non-mock) classes.")
     (home-page "http://gofreerange.com/mocha/docs")
     (license license:expat)))
 
+(define-public ruby-net-ssh
+  (package
+    (name "ruby-net-ssh")
+    (version "3.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "net-ssh" version))
+              (sha256
+               (base32
+                "1dzqkgwi9xm6mbfk1rkk17rzmz8m5xakqi21w1b97ybng6kkw0hf"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-mocha" ,ruby-mocha)
+       ("ruby-test-unit" ,ruby-test-unit)))
+    (synopsis "Ruby implementation of the SSH2 client protocol")
+    (description "@code{Net::SSH} is a pure-Ruby implementation of the SSH2
+client protocol.  It allows you to write programs that invoke and interact
+with processes on remote servers, via SSH2.")
+    (home-page "https://github.com/net-ssh/net-ssh")
+    (license license:expat)))
+
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
