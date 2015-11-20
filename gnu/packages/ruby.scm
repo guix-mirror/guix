@@ -1121,6 +1121,34 @@ objects.")
     (home-page "http://github.com/floehopper/metaclass")
     (license license:expat)))
 
+(define-public ruby-blankslate
+  (package
+    (name "ruby-blankslate")
+    (version "3.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "blankslate" version))
+              (sha256
+               (base32
+                "0fwkb4d1j9gc7vdwn2nxvwgy2g5wlag4c4bp7bl85jvq0kgp6cyx"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+          (lambda _ (zero? (system* "rspec" "spec/")))))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Abstract base class with no predefined methods")
+    (description
+     "BlankSlate provides an abstract base class with no predefined
+methods (except for @code{__send__} and @code{__id__}).  BlankSlate is useful
+as a base class when writing classes that depend upon
+@code{method_missing} (e.g. dynamic proxies).")
+    (home-page "http://github.com/masover/blankslate")
+    (license license:expat)))
+
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
