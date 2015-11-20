@@ -1008,6 +1008,35 @@ Soundex, Metaphone, Double Metaphone, Porter Stemming.")
     (home-page "http://github.com/threedaymonk/text")
     (license license:expat)))
 
+(define-public ruby-gettext
+  (package
+    (name "ruby-gettext")
+    (version "3.1.7")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "gettext" version))
+              (sha256
+               (base32
+                "1hg9islkm324mb4sd4za1fgafj1hqnm3bdvzj3k4fqpnzqnbcfiq"))))
+    (build-system ruby-build-system)
+    ;; ruby-test-unit is required to run tests, but that needs ruby-packnga,
+    ;; which needs ruby-gettext.  To break the dependency cycle we disable
+    ;; tests.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-locale" ,ruby-locale)
+       ("ruby-text" ,ruby-text)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-yard" ,ruby-yard)))
+    (synopsis "GNU gettext-like program for Ruby")
+    (description
+     "Gettext is a GNU gettext-like program for Ruby.  The catalog
+file (po-file) used is the same as that used by GNU gettext, allowing you to
+use GNU gettext tools for maintenance.")
+    (home-page "http://ruby-gettext.github.com/")
+    (license (list license:lgpl3+ license:ruby))))
+
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
