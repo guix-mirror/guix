@@ -1087,6 +1087,40 @@ It allows writing tests, checking results and automated testing in Ruby.")
     (home-page "http://test-unit.github.io/")
     (license (list license:psfl license:ruby))))
 
+(define-public ruby-metaclass
+  (package
+    (name "ruby-metaclass")
+    (version "0.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "metaclass" version))
+              (sha256
+               (base32
+                "0hp99y2b1nh0nr8pc398n3f8lakgci6pkrg4bf2b2211j1f6hsc5"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'add-test-unit-to-search-path
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "Rakefile"
+              (("t\\.libs << \"test\"" line)
+               (string-append line "; t.libs << \""
+                              (assoc-ref inputs "ruby-test-unit")
+                              "/lib/ruby/gems/2.2.0/gems/test-unit-"
+                              ,(package-version ruby-test-unit)
+                              "/lib\"")))
+            #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-test-unit" ,ruby-test-unit)))
+    (synopsis "Ruby library adding metaclass method to all objects")
+    (description
+     "Metaclass is a Ruby library adding a @code{metaclass} method to all Ruby
+objects.")
+    (home-page "http://github.com/floehopper/metaclass")
+    (license license:expat)))
+
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
