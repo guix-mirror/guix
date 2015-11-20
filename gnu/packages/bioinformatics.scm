@@ -2389,26 +2389,8 @@ simultaneously.")
                           (srfi srfi-26))
                          ,@(package-arguments ngs-sdk))
            ((#:phases phases)
-            `(alist-cons-after
-              'enter-dir 'fix-java-symlink-installation
-              (lambda _
-                ;; Only replace the version suffix, not the version number in
-                ;; the directory name.  Reported here:
-                ;; https://github.com/ncbi/ngs/pull/4
-                (substitute* "Makefile.java"
-                  (((string-append "\\$\\(subst "
-                                   "(\\$\\(VERSION[^\\)]*\\)),"
-                                   "(\\$\\([^\\)]+\\)),"
-                                   "(\\$\\([^\\)]+\\)|\\$\\@)"
-                                   "\\)")
-                    _ pattern replacement target)
-                   (string-append "$(patsubst "
-                                  "%" pattern ","
-                                  "%" replacement ","
-                                  target ")"))))
-              (alist-replace
-               'enter-dir (lambda _ (chdir "ngs-java") #t)
-               ,phases))))))
+            `(modify-phases ,phases
+               (replace 'enter-dir (lambda _ (chdir "ngs-java") #t)))))))
     (inputs
      `(("jdk" ,icedtea6 "jdk")
        ("ngs-sdk" ,ngs-sdk)))
