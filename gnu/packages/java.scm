@@ -135,7 +135,7 @@ is implemented.")
 (define-public ant
   (package
     (name "ant")
-    (version "1.9.4")
+    (version "1.9.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -143,7 +143,7 @@ is implemented.")
                     version "-src.tar.gz"))
               (sha256
                (base32
-                "09kf5s1ir0rdrclsy174bsvbdcbajza9fja490w4mmvcpkw3zpak"))))
+                "1396wflczyxjxl603dhxjvd559f289lha9y2f04f71c7hapjl3am"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
