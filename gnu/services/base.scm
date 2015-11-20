@@ -1131,7 +1131,7 @@ gexp, to open it, and evaluate @var{close} to close it."
 
 (define gpm-dmd-service
   (match-lambda
-    (($ <gpm-configuration> dmd options)
+    (($ <gpm-configuration> gpm options)
      (list (dmd-service
             (requirement '(udev))
             (provision '(gpm))
