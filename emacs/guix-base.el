@@ -23,7 +23,7 @@
 ;; package.
 
 ;; List and info buffers have many common patterns that are defined
-;; using `guix-define-buffer-type' macro from this file.
+;; using `guix-buffer-define-interface' macro from this file.
 
 ;;; Code:
 
@@ -337,102 +337,92 @@ VAL is a value of this parameter.")
                     (concat (symbol-name entry-type) "-"))
                   (symbol-name buffer-type) "-" postfix)))
 
-(defmacro guix-define-buffer-type (buf-type entry-type &rest args)
-  "Define common for BUF-TYPE buffers for displaying ENTRY-TYPE entries.
-
-In the text below TYPE means ENTRY-TYPE-BUF-TYPE.
-
-This macro defines `guix-TYPE-mode', a custom group and several
-user variables.
+(defmacro guix-buffer-define-interface (buffer-type entry-type &rest args)
+  "Define BUFFER-TYPE interface for displaying ENTRY-TYPE entries.
+Remaining arguments (ARGS) should have a form [KEYWORD VALUE] ...
+In the following description TYPE means ENTRY-TYPE-BUFFER-TYPE.
 
 The following stuff should be defined outside this macro:
 
-  - `guix-BUF-TYPE-mode' - parent mode for the defined mode.
+  - `guix-BUFFER-TYPE-mode' - parent mode of the generated mode.
 
   - `guix-TYPE-mode-initialize' (optional) - function for
   additional mode settings; it is called without arguments.
 
-Remaining argument (ARGS) should have a form [KEYWORD VALUE] ...  The
-following keywords are available:
+Optional keywords:
 
-  - `:buffer-name' - default value for the defined
+  - `:buffer-name' - default value of the generated
     `guix-TYPE-buffer-name' variable.
 
-  - `:required' - default value for the defined
-    `guix-TYPE-required-params' variable.
-
-  - `:history-size' - default value for the defined
+  - `:history-size' - default value of the generated
     `guix-TYPE-history-size' variable.
 
-  - `:revert' - default value for the defined
-    `guix-TYPE-revert-no-confirm' variable."
-  (let* ((entry-type-str (symbol-name entry-type))
-         (buf-type-str   (symbol-name buf-type))
-         (Entry-type-str (capitalize entry-type-str))
-         (Buf-type-str   (capitalize buf-type-str))
-         (entry-str      (concat entry-type-str " entries"))
-         (buf-str        (concat buf-type-str " buffer"))
-         (prefix         (concat "guix-" entry-type-str "-" buf-type-str))
-         (group          (intern prefix))
-         (faces-group    (intern (concat prefix "-faces")))
-         (mode-map-str   (concat prefix "-mode-map"))
-         (parent-mode    (intern (concat "guix-" buf-type-str "-mode")))
-         (mode           (intern (concat prefix "-mode")))
-         (mode-init-fun  (intern (concat prefix "-mode-initialize")))
-         (buf-name-var   (intern (concat prefix "-buffer-name")))
-         (revert-var     (intern (concat prefix "-revert-no-confirm")))
-         (history-var    (intern (concat prefix "-history-size")))
-         (params-var     (intern (concat prefix "-required-params"))))
+  - `:revert-confirm?' - default value of the generated
+    `guix-TYPE-revert-confirm' variable."
+  (declare (indent 2))
+  (let* ((entry-type-str     (symbol-name entry-type))
+         (buffer-type-str    (symbol-name buffer-type))
+         (Entry-type-str     (capitalize entry-type-str))
+         (Buffer-type-str    (capitalize buffer-type-str))
+         (entry-str          (concat entry-type-str " entries"))
+         (buffer-str         (concat buffer-type-str " buffer"))
+         (prefix             (concat "guix-" entry-type-str "-"
+                                     buffer-type-str))
+         (group              (intern prefix))
+         (faces-group        (intern (concat prefix "-faces")))
+         (mode-map-str       (concat prefix "-mode-map"))
+         (parent-mode        (intern (concat "guix-" buffer-type-str "-mode")))
+         (mode               (intern (concat prefix "-mode")))
+         (mode-init-fun      (intern (concat prefix "-mode-initialize")))
+         (buffer-name-var    (intern (concat prefix "-buffer-name")))
+         (history-size-var   (intern (concat prefix "-history-size")))
+         (revert-confirm-var (intern (concat prefix "-revert-confirm"))))
     (guix-keyword-args-let args
-        ((params-val :required '(id))
-         (history-val :history-size 20)
-         (revert-val :revert)
-         (buf-name-val :buffer-name
-                       (format "*Guix %s %s*" Entry-type-str Buf-type-str)))
+        ((buffer-name-val    :buffer-name
+                             (format "*Guix %s %s*"
+                                     Entry-type-str Buffer-type-str))
+         (history-size-val   :history-size 20)
+         (revert-confirm-val :revert-confirm? t))
       `(progn
          (defgroup ,group nil
-           ,(concat Buf-type-str " buffer with " entry-str ".")
+           ,(format "Display '%s' entries in '%s' buffer."
+                    entry-type-str buffer-type-str)
            :prefix ,(concat prefix "-")
-           :group ',(intern (concat "guix-" buf-type-str)))
+           :group ',(intern (concat "guix-" buffer-type-str)))
 
          (defgroup ,faces-group nil
-           ,(concat "Faces for " buf-type-str " buffer with " entry-str ".")
-           :group ',(intern (concat "guix-" buf-type-str "-faces")))
+           ,(format "Faces for displaying '%s' entries in '%s' buffer."
+                    entry-type-str buffer-type-str)
+           :group ',(intern (concat "guix-" buffer-type-str "-faces")))
 
-         (defcustom ,buf-name-var ,buf-name-val
-           ,(concat "Default name of the " buf-str " for displaying " entry-str ".")
+         (defcustom ,buffer-name-var ,buffer-name-val
+           ,(format "\
+Default name of '%s' buffer for displaying '%s' entries."
+                    buffer-type-str entry-type-str)
            :type 'string
            :group ',group)
 
-         (defcustom ,history-var ,history-val
-           ,(concat "Maximum number of items saved in the history of the " buf-str ".\n"
-                    "If 0, the history is disabled.")
+         (defcustom ,history-size-var ,history-size-val
+           ,(format "\
+Maximum number of items saved in history of `%S' buffer.
+If 0, the history is disabled."
+                    buffer-name-var)
            :type 'integer
            :group ',group)
 
-         (defcustom ,revert-var ,revert-val
-           ,(concat "If non-nil, do not ask to confirm for reverting the " buf-str ".")
+         (defcustom ,revert-confirm-var ,revert-confirm-val
+           ,(format "\
+If non-nil, ask to confirm for reverting `%S' buffer."
+                    buffer-name-var)
            :type 'boolean
            :group ',group)
 
-         (defvar ,params-var ',params-val
-           ,(concat "List of required " entry-type-str " parameters.\n\n"
-                    "Displayed parameters and parameters from this list are received\n"
-                    "for each " entry-type-str ".\n\n"
-                    "May be a special value `all', in which case all supported\n"
-                    "parameters are received (this may be very slow for a big number\n"
-                    "of entries).\n\n"
-                    "Do not remove `id' from this list as it is required for\n"
-                    "identifying an entry."))
-
-         (define-derived-mode ,mode ,parent-mode ,(concat "Guix-" Buf-type-str)
+         (define-derived-mode ,mode ,parent-mode ,(concat "Guix-" Buffer-type-str)
            ,(concat "Major mode for displaying information about " entry-str ".\n\n"
                     "\\{" mode-map-str "}")
            (setq-local revert-buffer-function 'guix-revert-buffer)
-           (setq-local guix-history-size ,history-var)
+           (setq-local guix-history-size ,history-size-var)
            (and (fboundp ',mode-init-fun) (,mode-init-fun)))))))
-
-(put 'guix-define-buffer-type 'lisp-indent-function 'defun)
 
 
 ;;; Getting and displaying info about packages and generations

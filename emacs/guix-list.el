@@ -30,6 +30,7 @@
 (require 'guix-base)
 (require 'guix-entry)
 (require 'guix-utils)
+(require 'guix-ui)
 
 (defgroup guix-list nil
   "General settings for list buffers."
@@ -73,17 +74,12 @@ With prefix argument, describe entries marked with any mark."
                                 count)))
       (guix-list-describe-entries entry-type ids))))
 
-(defun guix-list-describe-ids (ids)
-  "Describe entries with IDS (list of identifiers)."
-  (apply #'guix-get-show-entries
-         guix-profile 'info guix-entry-type 'id ids))
-
 
 ;;; Wrappers for 'list' variables
 
 (defvar guix-list-data nil
   "Alist with 'list' data.
-This alist is filled by `guix-list-define-entry-type' macro.")
+This alist is filled by `guix-list-define-interface' macro.")
 
 (defun guix-list-value (entry-type symbol)
   "Return SYMBOL's value for ENTRY-TYPE from `guix-list-data'."
@@ -416,8 +412,8 @@ Same as `tabulated-list-sort', but also restore marks after sorting."
   (setq-local guix-list-marks   (guix-list-marks entry-type))
   (tabulated-list-init-header))
 
-(defmacro guix-list-define-entry-type (entry-type &rest args)
-  "Define common stuff for displaying ENTRY-TYPE entries in list buffers.
+(defmacro guix-list-define-interface (entry-type &rest args)
+  "Define 'list' interface for displaying ENTRY-TYPE entries.
 Remaining arguments (ARGS) should have a form [KEYWORD VALUE] ...
 
 Required keywords:
@@ -435,7 +431,10 @@ Optional keywords:
 
   - `:marks' - default value of the generated
     `guix-ENTRY-TYPE-list-marks' variable.
-"
+
+The rest keyword arguments are passed to
+`guix-buffer-define-interface' macro."
+  (declare (indent 1))
   (let* ((entry-type-str     (symbol-name entry-type))
          (prefix             (concat "guix-" entry-type-str "-list"))
          (group              (intern prefix))
@@ -518,17 +517,15 @@ See also `guix-list-describe'."
             (format         . ,format-var)
             (sort-key       . ,sort-key-var)
             (marks          . ,marks-var))
-          'guix-list-data ',entry-type)))))
+          'guix-list-data ',entry-type)
 
-(put 'guix-list-define-entry-type 'lisp-indent-function 'defun)
+         (guix-buffer-define-interface list ,entry-type
+           ,@%foreign-args)))))
 
 
 ;;; Displaying packages
 
-(guix-define-buffer-type list package)
-
-(guix-list-define-entry-type package
-  :describe-function 'guix-list-describe-ids
+(guix-ui-list-define-interface package
   :format '((name guix-package-list-get-name 20 t)
             (version nil 10 nil)
             (outputs nil 13 t)
@@ -717,17 +714,15 @@ The specification is suitable for `guix-process-package-actions'."
 
 ;;; Displaying outputs
 
-(guix-define-buffer-type list output
+(guix-ui-list-define-interface output
   :buffer-name "*Guix Package List*"
-  :required (package-id))
-
-(guix-list-define-entry-type output
   :describe-function 'guix-output-list-describe
   :format '((name guix-package-list-get-name 20 t)
             (version nil 10 nil)
             (output nil 9 t)
             (installed nil 12 t)
             (synopsis guix-list-get-one-line 30 nil))
+  :required '(package-id)
   :sort-key '(name)
   :marks '((install . ?I)
            (upgrade . ?U)
@@ -816,10 +811,7 @@ See `guix-package-info-type'."
 
 ;;; Displaying generations
 
-(guix-define-buffer-type list generation)
-
-(guix-list-define-entry-type generation
-  :describe-function 'guix-list-describe-ids
+(guix-ui-list-define-interface generation
   :format '((number nil 5 guix-list-sort-numerically-0 :right-align t)
             (current guix-generation-list-get-current 10 t)
             (time guix-list-get-time 20 t)
@@ -953,6 +945,15 @@ With ARG, mark all generations for deletion."
     (or marked
         (user-error "No generations marked for deletion"))
     (guix-delete-generations guix-profile marked (current-buffer))))
+
+
+(defvar guix-list-font-lock-keywords
+  (eval-when-compile
+    `((,(rx "(" (group "guix-list-define-interface")
+            symbol-end)
+       . 1))))
+
+(font-lock-add-keywords 'emacs-lisp-mode guix-list-font-lock-keywords)
 
 (provide 'guix-list)
 

@@ -40,6 +40,7 @@ ELFILES =					\
   emacs/guix-prettify.el			\
   emacs/guix-profiles.el			\
   emacs/guix-read.el				\
+  emacs/guix-ui.el				\
   emacs/guix-utils.el				\
   emacs/guix.el
 

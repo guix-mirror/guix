@@ -28,6 +28,7 @@
 (require 'guix-base)
 (require 'guix-entry)
 (require 'guix-utils)
+(require 'guix-ui)
 
 (defgroup guix-info nil
   "General settings for info buffers."
@@ -455,6 +456,8 @@ See `insert-text-button' for the meaning of PROPERTIES."
          properties))
 
 
+;;; Major mode and interface definer
+
 (defvar guix-info-mode-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent
@@ -466,11 +469,21 @@ See `insert-text-button' for the meaning of PROPERTIES."
 (define-derived-mode guix-info-mode special-mode "Guix-Info"
   "Parent mode for displaying information in info buffers.")
 
+(defmacro guix-info-define-interface (entry-type &rest args)
+  "Define 'info' interface for displaying ENTRY-TYPE entries.
+Remaining arguments (ARGS) should have a form [KEYWORD VALUE] ...
+
+The rest keyword arguments are passed to
+`guix-buffer-define-interface' macro."
+  (declare (indent 1))
+  `(guix-buffer-define-interface info ,entry-type
+     ,@args))
+
 
 ;;; Displaying packages
 
-(guix-define-buffer-type info package
-  :required (id name version installed non-unique))
+(guix-ui-info-define-interface package
+  :required '(id name version installed non-unique))
 
 (defface guix-package-info-heading
   '((t :inherit guix-info-heading))
@@ -758,7 +771,7 @@ This function is used to hide a \"Download\" button if needed."
 
 (guix-ui-info-define-interface output
   :buffer-name "*Guix Package Info*"
-  :required (id package-id installed non-unique))
+  :required '(id package-id installed non-unique))
 
 (defun guix-output-info-insert-version (version entry)
   "Insert output VERSION and obsolete text if needed at point."
@@ -786,7 +799,7 @@ This function is used to hide a \"Download\" button if needed."
 
 ;;; Displaying generations
 
-(guix-define-buffer-type info generation)
+(guix-ui-info-define-interface generation)
 
 (defface guix-generation-info-number
   '((t :inherit font-lock-keyword-face))
@@ -836,6 +849,15 @@ This function is used to hide a \"Download\" button if needed."
                                   (current-buffer)))
      "Switch to this generation (make it the current one)"
      'number (guix-entry-value entry 'number))))
+
+
+(defvar guix-info-font-lock-keywords
+  (eval-when-compile
+    `((,(rx "(" (group "guix-info-define-interface")
+            symbol-end)
+       . 1))))
+
+(font-lock-add-keywords 'emacs-lisp-mode guix-info-font-lock-keywords)
 
 (provide 'guix-info)
 
