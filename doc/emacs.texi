@@ -484,7 +484,7 @@ the following variables (@dfn{ENTRY-TYPE} means @code{package},
 Specify the columns, their names, what and how is displayed in ``list''
 buffers.
 
-@item guix-info-format
+@item guix-ENTRY-TYPE-info-format
 @itemx guix-info-ignore-empty-values
 @itemx guix-info-param-title-format
 @itemx guix-info-multiline-prefix

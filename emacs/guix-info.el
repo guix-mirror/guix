@@ -114,76 +114,16 @@ This string is used by `guix-info-insert-value-format'.")
 (defvar guix-info-delimiter "\n\f\n"
   "String used to separate entries.")
 
-(defvar guix-info-format
-  '((package
-     guix-package-info-insert-heading
-     ignore
-     (synopsis ignore (simple guix-package-info-synopsis))
-     ignore
-     (description ignore (simple guix-package-info-description))
-     ignore
-     (outputs simple guix-package-info-insert-outputs)
-     (source simple guix-package-info-insert-source)
-     (location format (format guix-package-location))
-     (home-url format (format guix-url))
-     (license format (format guix-package-info-license))
-     (inputs format (format guix-package-input))
-     (native-inputs format (format guix-package-native-input))
-     (propagated-inputs format (format guix-package-propagated-input)))
-    (installed
-     (path simple (indent guix-file))
-     (dependencies simple (indent guix-file)))
-    (output
-     (name format (format guix-package-info-name))
-     (version format guix-output-info-insert-version)
-     (output format guix-output-info-insert-output)
-     (synopsis simple (indent guix-package-info-synopsis))
-     (source simple guix-package-info-insert-source)
-     (path simple (indent guix-file))
-     (dependencies simple (indent guix-file))
-     (location format (format guix-package-location))
-     (home-url format (format guix-url))
-     (license format (format guix-package-info-license))
-     (inputs format (format guix-package-input))
-     (native-inputs format (format guix-package-native-input))
-     (propagated-inputs format (format guix-package-propagated-input))
-     (description simple (indent guix-package-info-description)))
-    (generation
-     (number format guix-generation-info-insert-number)
-     (prev-number format (format))
-     (current format guix-generation-info-insert-current)
-     (path simple (indent guix-file))
-     (time format (time))))
-  "Methods for inserting parameter values.
-Each element of the list should have a form:
+
+;;; Wrappers for 'info' variables
 
-  (ENTRY-TYPE . (METHOD ...))
+(defvar guix-info-data nil
+  "Alist with 'info' data.
+This alist is filled by `guix-info-define-interface' macro.")
 
-Each METHOD should be either a function or should have the
-following form:
-
-  (PARAM INSERT-TITLE INSERT-VALUE)
-
-If METHOD is a function, it is called with an entry as argument.
-
-PARAM is a name of entry parameter.
-
-INSERT-TITLE may be either a symbol or a list.  If it is a
-symbol, it should be a function or an alias from
-`guix-info-title-aliases', in which case it is called with title
-as argument.  If it is a list, it should have a
-form (FUN-OR-ALIAS [ARGS ...]), in which case FUN-OR-ALIAS is
-called with title and ARGS as arguments.
-
-INSERT-VALUE may be either a symbol or a list.  If it is a
-symbol, it should be a function or an alias from
-`guix-info-value-aliases', in which case it is called with value
-and entry as arguments.  If it is a list, it should have a
-form (FUN-OR-ALIAS [ARGS ...]), in which case FUN-OR-ALIAS is
-called with value and ARGS as arguments.
-
-Parameters are inserted in the same order as defined by this list.
-After calling each METHOD, a new line is inserted.")
+(defun guix-info-value (entry-type symbol)
+  "Return SYMBOL's value for ENTRY-TYPE from `guix-info-data'."
+  (symbol-value (guix-assq-value guix-info-data entry-type symbol)))
 
 (defun guix-info-param-title (entry-type param)
   "Return a title of an ENTRY-TYPE parameter PARAM."
@@ -191,7 +131,7 @@ After calling each METHOD, a new line is inserted.")
 
 (defun guix-info-format (entry-type)
   "Return 'info' format for ENTRY-TYPE."
-  (guix-assq-value guix-info-format entry-type))
+  (guix-info-value entry-type 'format))
 
 (defun guix-info-displayed-params (entry-type)
   "Return a list of ENTRY-TYPE parameters that should be displayed."
@@ -473,17 +413,85 @@ See `insert-text-button' for the meaning of PROPERTIES."
   "Define 'info' interface for displaying ENTRY-TYPE entries.
 Remaining arguments (ARGS) should have a form [KEYWORD VALUE] ...
 
+Required keywords:
+
+  - `:format' - default value of the generated
+    `guix-ENTRY-TYPE-info-format' variable.
+
 The rest keyword arguments are passed to
 `guix-buffer-define-interface' macro."
   (declare (indent 1))
-  `(guix-buffer-define-interface info ,entry-type
-     ,@args))
+  (let* ((entry-type-str     (symbol-name entry-type))
+         (prefix             (concat "guix-" entry-type-str "-info"))
+         (group              (intern prefix))
+         (format-var         (intern (concat prefix "-format"))))
+    (guix-keyword-args-let args
+        ((format-val         :format))
+      `(progn
+         (defcustom ,format-var ,format-val
+           ,(format "\
+List of methods for inserting '%s' entry.
+Each METHOD should be either a function or should have the
+following form:
+
+  (PARAM INSERT-TITLE INSERT-VALUE)
+
+If METHOD is a function, it is called with an entry as argument.
+
+PARAM is a name of '%s' entry parameter.
+
+INSERT-TITLE may be either a symbol or a list.  If it is a
+symbol, it should be a function or an alias from
+`guix-info-title-aliases', in which case it is called with title
+as argument.  If it is a list, it should have a
+form (FUN-OR-ALIAS [ARGS ...]), in which case FUN-OR-ALIAS is
+called with title and ARGS as arguments.
+
+INSERT-VALUE may be either a symbol or a list.  If it is a
+symbol, it should be a function or an alias from
+`guix-info-value-aliases', in which case it is called with value
+and entry as arguments.  If it is a list, it should have a
+form (FUN-OR-ALIAS [ARGS ...]), in which case FUN-OR-ALIAS is
+called with value and ARGS as arguments.
+
+Parameters are inserted in the same order as defined by this list.
+After calling each METHOD, a new line is inserted."
+                    entry-type-str entry-type-str)
+           :type 'sexp
+           :group ',group)
+
+         (guix-alist-put!
+          '((format . ,format-var))
+          'guix-info-data ',entry-type)
+
+         (guix-buffer-define-interface info ,entry-type
+           ,@%foreign-args)))))
 
 
 ;;; Displaying packages
 
 (guix-ui-info-define-interface package
+  :format '(guix-package-info-insert-heading
+            ignore
+            (synopsis ignore (simple guix-package-info-synopsis))
+            ignore
+            (description ignore (simple guix-package-info-description))
+            ignore
+            (outputs simple guix-package-info-insert-outputs)
+            (source simple guix-package-info-insert-source)
+            (location format (format guix-package-location))
+            (home-url format (format guix-url))
+            (license format (format guix-package-info-license))
+            (inputs format (format guix-package-input))
+            (native-inputs format (format guix-package-native-input))
+            (propagated-inputs format
+                               (format guix-package-propagated-input)))
   :required '(id name version installed non-unique))
+
+(guix-info-define-interface installed-output
+  :format '((path simple (indent guix-file))
+            (dependencies simple (indent guix-file)))
+  :reduced? t)
 
 (defface guix-package-info-heading
   '((t :inherit guix-info-heading))
@@ -641,7 +649,7 @@ current OUTPUT is installed (if there is such output in
       (guix-package-info-insert-action-button 'upgrade entry output))
     (insert "\n")
     (when installed-entry
-      (guix-info-insert-entry installed-entry 'installed 2))))
+      (guix-info-insert-entry installed-entry 'installed-output 2))))
 
 (defun guix-package-info-insert-action-button (type entry output)
   "Insert button to process an action on a package OUTPUT at point.
@@ -771,6 +779,21 @@ This function is used to hide a \"Download\" button if needed."
 
 (guix-ui-info-define-interface output
   :buffer-name "*Guix Package Info*"
+  :format '((name format (format guix-package-info-name))
+            (version format guix-output-info-insert-version)
+            (output format guix-output-info-insert-output)
+            (synopsis simple (indent guix-package-info-synopsis))
+            (source simple guix-package-info-insert-source)
+            (path simple (indent guix-file))
+            (dependencies simple (indent guix-file))
+            (location format (format guix-package-location))
+            (home-url format (format guix-url))
+            (license format (format guix-package-info-license))
+            (inputs format (format guix-package-input))
+            (native-inputs format (format guix-package-native-input))
+            (propagated-inputs format
+                               (format guix-package-propagated-input))
+            (description simple (indent guix-package-info-description)))
   :required '(id package-id installed non-unique))
 
 (defun guix-output-info-insert-version (version entry)
@@ -799,7 +822,12 @@ This function is used to hide a \"Download\" button if needed."
 
 ;;; Displaying generations
 
-(guix-ui-info-define-interface generation)
+(guix-ui-info-define-interface generation
+  :format '((number format guix-generation-info-insert-number)
+            (prev-number format (format))
+            (current format guix-generation-info-insert-current)
+            (path simple (indent guix-file))
+            (time format (time))))
 
 (defface guix-generation-info-number
   '((t :inherit font-lock-keyword-face))

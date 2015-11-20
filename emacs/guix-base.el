@@ -358,7 +358,9 @@ Optional keywords:
     `guix-TYPE-history-size' variable.
 
   - `:revert-confirm?' - default value of the generated
-    `guix-TYPE-revert-confirm' variable."
+    `guix-TYPE-revert-confirm' variable.
+
+  - `:reduced?' - if non-nil, generate only group and faces group."
   (declare (indent 2))
   (let* ((entry-type-str     (symbol-name entry-type))
          (buffer-type-str    (symbol-name buffer-type))
@@ -382,7 +384,8 @@ Optional keywords:
                              (format "*Guix %s %s*"
                                      Entry-type-str Buffer-type-str))
          (history-size-val   :history-size 20)
-         (revert-confirm-val :revert-confirm? t))
+         (revert-confirm-val :revert-confirm? t)
+         (reduced?           :reduced?))
       `(progn
          (defgroup ,group nil
            ,(format "Display '%s' entries in '%s' buffer."
@@ -395,34 +398,38 @@ Optional keywords:
                     entry-type-str buffer-type-str)
            :group ',(intern (concat "guix-" buffer-type-str "-faces")))
 
-         (defcustom ,buffer-name-var ,buffer-name-val
-           ,(format "\
+         ,(unless reduced?
+            `(progn
+               (defcustom ,buffer-name-var ,buffer-name-val
+                 ,(format "\
 Default name of '%s' buffer for displaying '%s' entries."
-                    buffer-type-str entry-type-str)
-           :type 'string
-           :group ',group)
+                          buffer-type-str entry-type-str)
+                 :type 'string
+                 :group ',group)
 
-         (defcustom ,history-size-var ,history-size-val
-           ,(format "\
+               (defcustom ,history-size-var ,history-size-val
+                 ,(format "\
 Maximum number of items saved in history of `%S' buffer.
 If 0, the history is disabled."
-                    buffer-name-var)
-           :type 'integer
-           :group ',group)
+                          buffer-name-var)
+                 :type 'integer
+                 :group ',group)
 
-         (defcustom ,revert-confirm-var ,revert-confirm-val
-           ,(format "\
+               (defcustom ,revert-confirm-var ,revert-confirm-val
+                 ,(format "\
 If non-nil, ask to confirm for reverting `%S' buffer."
-                    buffer-name-var)
-           :type 'boolean
-           :group ',group)
+                          buffer-name-var)
+                 :type 'boolean
+                 :group ',group)
 
-         (define-derived-mode ,mode ,parent-mode ,(concat "Guix-" Buffer-type-str)
-           ,(concat "Major mode for displaying information about " entry-str ".\n\n"
-                    "\\{" mode-map-str "}")
-           (setq-local revert-buffer-function 'guix-revert-buffer)
-           (setq-local guix-history-size ,history-size-var)
-           (and (fboundp ',mode-init-fun) (,mode-init-fun)))))))
+               (define-derived-mode ,mode ,parent-mode
+                 ,(concat "Guix-" Buffer-type-str)
+                 ,(concat "Major mode for displaying information about "
+                          entry-str ".\n\n"
+                          "\\{" mode-map-str "}")
+                 (setq-local revert-buffer-function 'guix-revert-buffer)
+                 (setq-local guix-history-size ,history-size-var)
+                 (and (fboundp ',mode-init-fun) (,mode-init-fun)))))))))
 
 
 ;;; Getting and displaying info about packages and generations
