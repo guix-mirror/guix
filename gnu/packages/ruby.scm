@@ -990,6 +990,24 @@ localization.")
     (home-page "https://github.com/ruby-gettext/locale")
     (license (list license:lgpl3+ license:ruby))))
 
+(define-public ruby-text
+  (package
+    (name "ruby-text")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "text" version))
+              (sha256
+               (base32
+                "1x6kkmsr49y3rnrin91rv8mpc3dhrf3ql08kbccw8yffq61brfrg"))))
+    (build-system ruby-build-system)
+    (synopsis "Collection of text algorithms for Ruby")
+    (description
+     "This package provides a collection of text algorithms: Levenshtein,
+Soundex, Metaphone, Double Metaphone, Porter Stemming.")
+    (home-page "http://github.com/threedaymonk/text")
+    (license license:expat)))
+
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
