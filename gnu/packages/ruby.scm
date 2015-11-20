@@ -1037,6 +1037,31 @@ use GNU gettext tools for maintenance.")
     (home-page "http://ruby-gettext.github.com/")
     (license (list license:lgpl3+ license:ruby))))
 
+(define-public ruby-packnga
+  (package
+    (name "ruby-packnga")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "packnga" version))
+              (sha256
+               (base32
+                "1i71yhvlkvi5fp3m8jl9317cnddkbnrcy0syrmiw4y1lrq0cbncj"))))
+    (build-system ruby-build-system)
+    ;; ruby-test-unit is required to run tests, but that needs ruby-packnga.
+    ;; To break the dependency cycle we disable tests.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-gettext" ,ruby-gettext)
+       ("ruby-yard" ,ruby-yard)))
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Utility library to package internationalized libraries")
+    (description
+     "Packnga is a library to translate to many languages using YARD.")
+    (home-page "http://ranguba.org/packnga/")
+    (license license:lgpl2.0+)))
+
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
