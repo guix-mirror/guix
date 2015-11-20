@@ -1113,7 +1113,7 @@ data and settings.")
        ("perl" ,perl)))
     (native-inputs
      `(("unzip" ,unzip)))
-    (home-page "http://www.ncbi.nlm.nih.gov/books/NBK179288")
+    (home-page "http://www.ncbi.nlm.nih.gov/books/NBK179288/")
     (synopsis "Tools for accessing the NCBI's set of databases")
     (description
      "Entrez Direct (EDirect) is a method for accessing the National Center
