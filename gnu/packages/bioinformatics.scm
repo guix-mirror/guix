@@ -2593,7 +2593,7 @@ complexity samples.")
 (define-public sra-tools
   (package
     (name "sra-tools")
-    (version "2.4.5-5")
+    (version "2.5.4")
     (source
      (origin
        (method url-fetch)
@@ -2603,7 +2603,7 @@ complexity samples.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "11nrnvz7a012f4iryf0wiwrid0h111grsfxbxa9j51h3f2xbvgns"))))
+         "1rxxc8a34g70jcaa2j8sys2x93amlbc24k7az39wldhkzgi96825"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
