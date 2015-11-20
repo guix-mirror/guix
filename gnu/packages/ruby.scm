@@ -1149,6 +1149,42 @@ as a base class when writing classes that depend upon
     (home-page "http://github.com/masover/blankslate")
     (license license:expat)))
 
+(define-public ruby-instantiator
+  (package
+    (name "ruby-instantiator")
+    (version "0.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "instantiator" version))
+              (sha256
+               (base32
+                "0mfmqhg9xrv9i8i1kmphf15ywddhivyh2z3ccl0xjw8qy54zr21i"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'add-test-unit-to-search-path
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "Rakefile"
+              (("t\\.libs << \"test\"" line)
+               (string-append line "; t.libs << \""
+                              (assoc-ref inputs "ruby-test-unit")
+                              "/lib/ruby/gems/2.2.0/gems/test-unit-"
+                              ,(package-version ruby-test-unit)
+                              "/lib\"")))
+            #t)))))
+    (propagated-inputs
+     `(("ruby-blankslate" ,ruby-blankslate)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-test-unit" ,ruby-test-unit)))
+    (synopsis "Instantiate an arbitrary Ruby class")
+    (description
+     "Instantiator lets you instantiate an arbitrary Ruby class without
+knowing anything about the constructor.")
+    (home-page "https://github.com/floehopper/instantiator")
+    (license license:expat)))
+
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
