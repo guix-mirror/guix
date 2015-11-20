@@ -1062,6 +1062,31 @@ use GNU gettext tools for maintenance.")
     (home-page "http://ranguba.org/packnga/")
     (license license:lgpl2.0+)))
 
+(define-public ruby-test-unit
+  (package
+    (name "ruby-test-unit")
+    (version "3.1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "test-unit" version))
+              (sha256
+               (base32
+                "0jxznjzwmrlp8wqjxsd06qbiddffn68pdhz6nrqpjbiln1z3af4w"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-power-assert" ,ruby-power-assert)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-packnga" ,ruby-packnga)
+       ("ruby-yard" ,ruby-yard)))
+    (synopsis "Unit testing framework for Ruby")
+    (description "@code{Test::Unit} is unit testing framework for Ruby, based
+on xUnit principles.  These were originally designed by Kent Beck, creator of
+extreme programming software development methodology, for Smalltalk's SUnit.
+It allows writing tests, checking results and automated testing in Ruby.")
+    (home-page "http://test-unit.github.io/")
+    (license (list license:psfl license:ruby))))
+
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
