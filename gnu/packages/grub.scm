@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -41,7 +41,7 @@
   ;; <https://bugs.launchpad.net/bugs/947597> and fixed at
   ;; <http://bzr.savannah.gnu.org/lh/grub/trunk/grub/revision/4828>.
   ;; Work around it by using an older QEMU.
-  (package (inherit qemu-headless)
+  (package (inherit qemu-minimal)
     (version "1.3.1")
     (source (origin
              (method url-fetch)
@@ -55,7 +55,7 @@
     ;;   ERROR:tests/rtc-test.c:176:check_time: assertion failed (ABS(t - s) <= wiggle): (382597824 <= 2)
     ;; Simply disable the tests.
     (arguments `(#:tests? #f
-                          ,@(package-arguments qemu)))
+                 ,@(package-arguments qemu-minimal)))
 
     ;; The manual fails to build with Texinfo 5.x.
     (native-inputs (alist-delete "texinfo" (package-native-inputs qemu)))))

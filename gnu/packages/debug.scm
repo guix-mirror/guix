@@ -143,7 +143,7 @@ tools that process C/C++ code.")
 
 (define qemu-2.3.0
   (package
-    (inherit qemu-headless)
+    (inherit qemu-minimal)
     (version "2.3.0")
     (source (origin
               (method url-fetch)
@@ -157,7 +157,7 @@ tools that process C/C++ code.")
      ;; XXX: Disable tests because of GTester's rejection of duplicate test
      ;; names, which wasn't addressed in this version of QEMU.
      `(#:tests? #f
-       ,@(package-arguments qemu-headless)))))
+       ,@(package-arguments qemu-minimal)))))
 
 (define-public american-fuzzy-lop
   (let ((machine (match (or (%current-target-system)

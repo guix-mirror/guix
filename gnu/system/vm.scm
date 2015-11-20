@@ -92,7 +92,7 @@
                                              (system (%current-system))
                                              (linux linux-libre)
                                              initrd
-                                             (qemu qemu-headless)
+                                             (qemu qemu-minimal)
                                              (env-vars '())
                                              (modules
                                               '((gnu build vm)
@@ -185,7 +185,7 @@ made available under the /xchg CIFS share."
 (define* (qemu-image #:key
                      (name "qemu-image")
                      (system (%current-system))
-                     (qemu qemu-headless)
+                     (qemu qemu-minimal)
                      (disk-image-size (* 100 (expt 2 20)))
                      (disk-image-format "qcow2")
                      (file-system-type "ext4")
