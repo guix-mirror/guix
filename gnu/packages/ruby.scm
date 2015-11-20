@@ -1185,6 +1185,44 @@ knowing anything about the constructor.")
     (home-page "https://github.com/floehopper/instantiator")
     (license license:expat)))
 
+(define-public ruby-introspection
+  (package
+    (name "ruby-introspection")
+    (version "0.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "introspection" version))
+              (sha256
+               (base32
+                "0g1j71sqfxbqk32wj7d0bkd3dlayfqzprfq3dbr0rq107xbxjcrr"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'add-test-unit-to-search-path
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "Rakefile"
+              (("t\\.libs << \"test\"" line)
+               (string-append line "; t.libs << \""
+                              (assoc-ref inputs "ruby-test-unit")
+                              "/lib/ruby/gems/2.2.0/gems/test-unit-"
+                              ,(package-version ruby-test-unit)
+                              "/lib\"")))
+            #t)))))
+    (propagated-inputs
+     `(("ruby-instantiator" ,ruby-instantiator)
+       ("ruby-metaclass" ,ruby-metaclass)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-blankslate" ,ruby-blankslate)
+       ("ruby-test-unit" ,ruby-test-unit)))
+    (synopsis "Dynamic inspection of the method hierarchy on a Ruby object")
+    (description
+     "Introspection provides tools to inspect the hierarchy of method
+definitions on a Ruby object.")
+    (home-page "https://github.com/floehopper/introspection")
+    (license license:expat)))
+
 (define-public ruby-minitest
   (package
     (name "ruby-minitest")
