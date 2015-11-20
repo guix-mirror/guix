@@ -2399,7 +2399,7 @@ simultaneously.")
 (define-public ncbi-vdb
   (package
     (name "ncbi-vdb")
-    (version "2.4.5-5")
+    (version "2.5.4")
     (source
      (origin
        (method url-fetch)
@@ -2409,7 +2409,7 @@ simultaneously.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1cj8nk6if8sqagv20vx36v566fdvhcaadf0x1ycnbgql6chbs6vy"))))
+         "1rcnyc4xkdfcjww2i0s0qrbapys0cxbjcx2sy3qkpslf9f400fgj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
@@ -2419,20 +2419,6 @@ simultaneously.")
         'configure
         (lambda* (#:key inputs outputs #:allow-other-keys)
           (let ((out (assoc-ref outputs "out")))
-            ;; Only replace the version suffix, not the version number in the
-            ;; directory name; fixed in commit 4dbba5c6a809 (no release yet).
-            (substitute* "setup/konfigure.perl"
-              (((string-append "\\$\\(subst "
-                               "(\\$\\(VERSION[^\\)]*\\)),"
-                               "(\\$\\([^\\)]+\\)),"
-                               "(\\$\\([^\\)]+\\)|\\$\\@)"
-                               "\\)")
-                _ pattern replacement target)
-               (string-append "$(patsubst "
-                              "%" pattern ","
-                              "%" replacement ","
-                              target ")")))
-
             ;; Override include path for libmagic
             (substitute* "setup/package.prl"
               (("name => 'magic', Include => '/usr/include'")
