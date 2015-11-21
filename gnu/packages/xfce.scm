@@ -35,6 +35,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages pdf)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages photo)
@@ -426,7 +427,16 @@ your system in categories, so you can quickly find and launch them.")
                 "01kvbd09c06j20n155hracsgrq06rlmfgdywffjsvlwpn19m9j38"))
               (patches
                ;; See: https://bugzilla.xfce.org/show_bug.cgi?id=12282
-               (list (search-patch "xfce4-session-fix-xflock4.patch")))))
+               (list (search-patch "xfce4-session-fix-xflock4.patch")))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* "xfsm-shutdown-helper/main.c"
+                    (("/sbin/shutdown -h now")  "halt")
+                    (("/sbin/shutdown -r now")  "restart")
+                    (("/usr/sbin/pm-suspend")   "pm-suspend")
+                    (("/usr/sbin/pm-hibernate") "pm-hibernate"))
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -436,6 +446,8 @@ your system in categories, so you can quickly find and launch them.")
        ("intltool" ,intltool)))
     (inputs
      `(("iceauth" ,iceauth)
+       ("upower" ,upower)
+       ("polkit" ,polkit)
        ("libsm" ,libsm)
        ("libwnck" ,libwnck-1)
        ("libxfce4ui" ,libxfce4ui)))
