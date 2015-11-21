@@ -275,6 +275,14 @@ This alist is filled by `guix-buffer-define-interface' macro.")
                          param))
       (guix-symbol-title param)))
 
+(defun guix-buffer-history-size (buffer-type entry-type)
+  "Return history size for BUFFER-TYPE/ENTRY-TYPE."
+  (guix-buffer-value buffer-type entry-type 'history-size))
+
+(defun guix-buffer-revert-confirm? (buffer-type entry-type)
+  "Return 'revert-confirm' value for BUFFER-TYPE/ENTRY-TYPE."
+  (guix-buffer-value buffer-type entry-type 'revert-confirm))
+
 (defvar guix-root-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "l") 'guix-history-back)
@@ -431,13 +439,20 @@ If non-nil, ask to confirm for reverting `%S' buffer."
                  :type 'boolean
                  :group ',group)
 
+               (guix-alist-put!
+                '((history-size   . ,history-size-var)
+                  (revert-confirm . ,revert-confirm-var))
+                'guix-buffer-data ',buffer-type ',entry-type)
+
                (define-derived-mode ,mode ,parent-mode
                  ,(concat "Guix-" Buffer-type-str)
                  ,(concat "Major mode for displaying information about "
                           entry-str ".\n\n"
                           "\\{" mode-map-str "}")
                  (setq-local revert-buffer-function 'guix-revert-buffer)
-                 (setq-local guix-history-size ,history-size-var)
+                 (setq-local guix-history-size
+                             (guix-buffer-history-size
+                              ',buffer-type ',entry-type))
                  (and (fboundp ',mode-init-fun) (,mode-init-fun)))))
 
          (guix-alist-put!
@@ -574,9 +589,8 @@ If NO-DISPLAY is non-nil, do not switch to the buffer."
 The function is suitable for `revert-buffer-function'.
 See `revert-buffer' for the meaning of NOCONFIRM."
   (when (or noconfirm
-            (symbol-value
-             (guix-get-symbol "revert-no-confirm"
-                              guix-buffer-type guix-entry-type))
+            (guix-buffer-revert-confirm? guix-buffer-type
+                                         guix-entry-type)
             (y-or-n-p "Update current information? "))
     (let* ((search-type guix-search-type)
            (search-vals guix-search-vals)
