@@ -2930,3 +2930,31 @@ methods, a @code{Mixin} module for including color methods, a @code{Logger}, a
 device.")
     (home-page "http://rubyworks.github.io/ansi")
     (license license:bsd-2)))
+
+(define-public ruby-systemu
+  (package
+    (name "ruby-systemu")
+    (version "2.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "systemu" version))
+       (sha256
+        (base32
+         "0gmkbakhfci5wnmbfx5i54f25j9zsvbw858yg3jjhfs5n4ad1xq1"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-version
+           (lambda _
+             (setenv "VERSION" ,version)
+             #t)))))
+    (synopsis "Capture of stdout/stderr and handling of child processes")
+    (description
+     "Systemu can be used on any platform to return status, stdout, and stderr
+of any command.  Unlike other methods like @code{open3} and @code{popen4}
+there is no danger of full pipes or threading issues hanging your process or
+subprocess.")
+    (home-page "https://github.com/ahoward/systemu")
+    (license license:ruby)))
