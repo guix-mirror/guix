@@ -18,6 +18,7 @@
 
 (define-module (test-graph)
   #:use-module (guix tests)
+  #:use-module (guix graph)
   #:use-module (guix scripts graph)
   #:use-module (guix packages)
   #:use-module (guix derivations)

@@ -29,6 +29,7 @@
   #:use-module (guix profiles)
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
+  #:use-module (guix graph)
   #:use-module (guix scripts graph)
   #:use-module (guix build utils)
   #:use-module (gnu build install)

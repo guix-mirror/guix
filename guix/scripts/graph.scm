@@ -18,6 +18,7 @@
 
 (define-module (guix scripts graph)
   #:use-module (guix ui)
+  #:use-module (guix graph)
   #:use-module (guix scripts)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -28,9 +29,7 @@
   #:use-module ((guix build-system gnu) #:select (standard-packages))
   #:use-module (gnu packages)
   #:use-module (guix sets)
-  #:use-module (guix records)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
@@ -41,37 +40,7 @@
             %reference-node-type
             %node-types
 
-            node-type
-            node-type?
-            node-type-identifier
-            node-type-label
-            node-type-edges
-            node-type-convert
-            node-type-name
-            node-type-description
-
-            %graphviz-backend
-            graph-backend?
-            graph-backend
-
-            export-graph
-
             guix-graph))
-
-
-;;;
-;;; Node types.
-;;;
-
-(define-record-type* <node-type> node-type make-node-type
-  node-type?
-  (identifier  node-type-identifier)              ;node -> M identifier
-  (label       node-type-label)                   ;node -> string
-  (edges       node-type-edges)                   ;node -> M list of nodes
-  (convert     node-type-convert                  ;package -> M list of nodes
-               (default (lift1 list %store-monad)))
-  (name        node-type-name)                    ;string
-  (description node-type-description))            ;string
 
 
 ;;;
@@ -290,73 +259,6 @@ substitutes."
                       (node-type-name type)
                       (node-type-description type)))
             %node-types))
-
-
-;;;
-;;; Graphviz export.
-;;;
-
-(define-record-type <graph-backend>
-  (graph-backend prologue epilogue node edge)
-  graph-backend?
-  (prologue graph-backend-prologue)
-  (epilogue graph-backend-epilogue)
-  (node     graph-backend-node)
-  (edge     graph-backend-edge))
-
-(define (emit-prologue name port)
-  (format port "digraph \"Guix ~a\" {\n"
-          name))
-(define (emit-epilogue port)
-  (display "\n}\n" port))
-(define (emit-node id label port)
-  (format port "  \"~a\" [label = \"~a\", shape = box, fontname = Helvetica];~%"
-          id label))
-(define (emit-edge id1 id2 port)
-  (format port "  \"~a\" -> \"~a\" [color = red];~%"
-          id1 id2))
-
-(define %graphviz-backend
-  (graph-backend emit-prologue emit-epilogue
-                 emit-node emit-edge))
-
-(define* (export-graph sinks port
-                       #:key
-                       reverse-edges?
-                       (node-type %package-node-type)
-                       (backend %graphviz-backend))
-  "Write to PORT the representation of the DAG with the given SINKS, using the
-given BACKEND.  Use NODE-TYPE to traverse the DAG.  When REVERSE-EDGES? is
-true, draw reverse arrows."
-  (match backend
-    (($ <graph-backend> emit-prologue emit-epilogue emit-node emit-edge)
-     (emit-prologue (node-type-name node-type) port)
-
-     (match node-type
-       (($ <node-type> node-identifier node-label node-edges)
-        (let loop ((nodes   sinks)
-                   (visited (set)))
-          (match nodes
-            (()
-             (with-monad %store-monad
-               (emit-epilogue port)
-               (store-return #t)))
-            ((head . tail)
-             (mlet %store-monad ((id (node-identifier head)))
-               (if (set-contains? visited id)
-                   (loop tail visited)
-                   (mlet* %store-monad ((dependencies (node-edges head))
-                                        (ids          (mapm %store-monad
-                                                            node-identifier
-                                                            dependencies)))
-                     (emit-node id (node-label head) port)
-                     (for-each (lambda (dependency dependency-id)
-                                 (if reverse-edges?
-                                     (emit-edge dependency-id id port)
-                                     (emit-edge id dependency-id port)))
-                               dependencies ids)
-                     (loop (append dependencies tail)
-                           (set-insert id visited)))))))))))))
 
 
 ;;;

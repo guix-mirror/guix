@@ -50,6 +50,7 @@ MODULES =					\
   guix/gnu-maintenance.scm			\
   guix/upstream.scm				\
   guix/licenses.scm				\
+  guix/graph.scm				\
   guix/build-system.scm				\
   guix/build-system/cmake.scm			\
   guix/build-system/emacs.scm			\
