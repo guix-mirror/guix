@@ -54,7 +54,7 @@ case
 export ACLOCAL_PATH=/usr/share/aclocal
 @end example
 
-See @pxref{Macro Search Path,,, automake, The GNU Automake Manual} for
+@xref{Macro Search Path,,, automake, The GNU Automake Manual}, for
 more information.
 
 Then, run @command{./configure} as usual.
