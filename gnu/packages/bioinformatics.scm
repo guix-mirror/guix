@@ -2079,7 +2079,7 @@ that a read originated from a particular isoform.")
 (define-public orfm
   (package
     (name "orfm")
-    (version "0.4.1")
+    (version "0.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2087,12 +2087,16 @@ that a read originated from a particular isoform.")
                     version "/orfm-" version ".tar.gz"))
               (sha256
                (base32
-                "05fmw145snk646ly076zby0fjav0k7ysbclck5d4s9pmgcfpijc2"))))
+                "0vb6d771gl4mix8bwx919x5ayy9pkj44n7ki336nz3rz2rx4c7gk"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
+    (native-inputs
+     `(("ruby-bio-commandeer" ,ruby-bio-commandeer)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby" ,ruby)))
     (synopsis "Simple and not slow open reading frame (ORF) caller")
     (description
-     "An ORF caller finds stretches of DNA that when translated are not
+     "An ORF caller finds stretches of DNA that, when translated, are not
 interrupted by stop codons.  OrfM finds and prints these ORFs.")
     (home-page "https://github.com/wwood/OrfM")
     (license license:lgpl3+)))
