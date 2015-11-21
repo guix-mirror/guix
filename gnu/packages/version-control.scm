@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -672,7 +673,8 @@ machine.")
     (build-system gnu-build-system)
     (arguments
      ;; XXX: The test suite looks flawed, and the package is obsolete anyway.
-     '(#:tests? #f))
+     '(#:tests? #f
+       #:configure-flags (list "--with-external-zlib")))
     (inputs `(("zlib" ,zlib)
               ("nano" ,nano)))                    ; the default editor
     (home-page "http://cvs.nongnu.org")
