@@ -27,6 +27,13 @@
 (require 'cl-lib)
 (require 'guix-utils)
 
+(defvar guix-ui-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "M") 'guix-apply-manifest)
+    (define-key map (kbd "C-c C-z") 'guix-switch-to-repl)
+    map)
+  "Parent keymap for Guix package/generation buffers.")
+
 (defun guix-ui-list-describe (ids)
   "Describe 'ui' entries with IDS (list of identifiers)."
   (apply #'guix-get-show-entries
@@ -52,12 +59,23 @@ The rest keyword arguments are passed to
          (buffer-type-str (symbol-name buffer-type))
          (prefix          (concat "guix-" entry-type-str "-"
                                   buffer-type-str))
+         (mode-str        (concat prefix "-mode"))
+         (mode-map        (intern (concat mode-str "-map")))
+         (parent-map      (intern (format "guix-%s-mode-map"
+                                          buffer-type-str)))
          (required-var    (intern (concat prefix "-required-params")))
          (definer         (intern (format "guix-%s-define-interface"
                                           buffer-type-str))))
     (guix-keyword-args-let args
         ((required-val    :required ''(id)))
       `(progn
+         (defvar ,mode-map
+           (let ((map (make-sparse-keymap)))
+             (set-keymap-parent
+              map (make-composed-keymap ,parent-map guix-ui-map))
+             map)
+           ,(format "Keymap for `%s' buffers." mode-str))
+
          (defvar ,required-var ,required-val
            ,(format "\
 List of the required '%s' parameters for '%s' buffer.

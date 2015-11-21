@@ -283,16 +283,14 @@ This alist is filled by `guix-buffer-define-interface' macro.")
   "Return 'revert-confirm' value for BUFFER-TYPE/ENTRY-TYPE."
   (guix-buffer-value buffer-type entry-type 'revert-confirm))
 
-(defvar guix-root-map
+(defvar guix-buffer-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "l") 'guix-history-back)
     (define-key map (kbd "r") 'guix-history-forward)
     (define-key map (kbd "g") 'revert-buffer)
     (define-key map (kbd "R") 'guix-redisplay-buffer)
-    (define-key map (kbd "M") 'guix-apply-manifest)
-    (define-key map (kbd "C-c C-z") 'guix-switch-to-repl)
     map)
-  "Parent keymap for all guix modes.")
+  "Parent keymap for Guix buffer modes.")
 
 (defvar-local guix-profile nil
   "Profile used for the current buffer.")

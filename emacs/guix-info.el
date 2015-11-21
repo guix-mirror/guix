@@ -401,10 +401,10 @@ See `insert-text-button' for the meaning of PROPERTIES."
 (defvar guix-info-mode-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent
-     map (make-composed-keymap (list guix-root-map button-buffer-map)
+     map (make-composed-keymap (list guix-buffer-map button-buffer-map)
                                special-mode-map))
     map)
-  "Parent keymap for info buffers.")
+  "Keymap for `guix-info-mode' buffers.")
 
 (define-derived-mode guix-info-mode special-mode "Guix-Info"
   "Parent mode for displaying information in info buffers.")
