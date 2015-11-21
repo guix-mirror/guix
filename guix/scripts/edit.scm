@@ -49,8 +49,10 @@ Start $VISUAL or $EDITOR to edit the definitions of PACKAGE...\n"))
   (show-bug-report-information))
 
 (define %editor
-  (make-parameter (or (getenv "VISUAL") (getenv "EDITOR")
-                      "emacsclient")))
+  ;; XXX: It would be better to default to something more likely to be
+  ;; pre-installed on an average GNU system.  Since Nano is not suited for
+  ;; editing Scheme, Emacs is used instead.
+  (make-parameter (or (getenv "VISUAL") (getenv "EDITOR") "emacs")))
 
 (define (search-path* path file)
   "Like 'search-path' but exit if FILE is not found."
