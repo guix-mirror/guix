@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,8 +84,11 @@ line."
 
       (catch 'system-error
         (lambda ()
-          (apply execlp (%editor) (%editor)
-                 (append-map package->location-specification packages)))
+          (let ((file-names (append-map package->location-specification
+                                        packages)))
+            ;; Use `system' instead of `exec' in order to sanely handle
+            ;; possible command line arguments in %EDITOR.
+            (exit (system (string-join (cons (%editor) file-names))))))
         (lambda args
           (let ((errno (system-error-errno args)))
             (leave (_ "failed to launch '~a': ~a~%")
