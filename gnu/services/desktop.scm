@@ -381,7 +381,8 @@ site} for more information."
   (match-lambda
     (($ <polkit-configuration> polkit)
      (list #~(string-append #$polkit
-                            "/lib/polkit-1/polkit-agent-helper-1")))))
+                            "/lib/polkit-1/polkit-agent-helper-1")
+           #~(string-append #$polkit "/bin/pkexec")))))
 
 (define polkit-service-type
   (service-type (name 'polkit)
