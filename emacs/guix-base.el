@@ -39,28 +39,6 @@
 
 ;;; Parameters of the entries
 
-(defvar guix-param-titles
-  '((package
-     (home-url          . "Home page"))
-    (installed
-     (path              . "Installed path"))
-    (output
-     (home-url          . "Home page")
-     (path              . "Installed path"))
-    (generation
-     (prev-number       . "Previous number")))
-  "List for defining titles of entry parameters.
-Titles are used for displaying information about entries.
-Each element of the list has a form:
-
-  (ENTRY-TYPE . ((PARAM . TITLE) ...))")
-
-(defun guix-get-param-title (entry-type param)
-  "Return title of an ENTRY-TYPE entry parameter PARAM."
-  (or (guix-assq-value guix-param-titles
-                       entry-type param)
-      (guix-symbol-title param)))
-
 (defun guix-package-name-specification (name version &optional output)
   "Return Guix package specification by its NAME, VERSION and OUTPUT."
   (concat name "-" version
@@ -278,6 +256,25 @@ See `guix-update-after-operation' for details."
 
 ;;; Common definitions for buffer types
 
+(defvar guix-buffer-data nil
+  "Alist with 'buffer' data.
+This alist is filled by `guix-buffer-define-interface' macro.")
+
+(defun guix-buffer-value (buffer-type entry-type symbol)
+  "Return SYMBOL's value for BUFFER-TYPE/ENTRY-TYPE from `guix-buffer-data'."
+  (symbol-value
+   (guix-assq-value guix-buffer-data buffer-type entry-type symbol)))
+
+(defun guix-buffer-param-title (buffer-type entry-type param)
+  "Return PARAM title for BUFFER-TYPE/ENTRY-TYPE."
+  (or (guix-assq-value (guix-buffer-value buffer-type entry-type 'titles)
+                       param)
+      ;; Fallback to a title defined in 'info' interface.
+      (unless (eq buffer-type 'info)
+        (guix-assq-value (guix-buffer-value 'info entry-type 'titles)
+                         param))
+      (guix-symbol-title param)))
+
 (defvar guix-root-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "l") 'guix-history-back)
@@ -354,13 +351,17 @@ Optional keywords:
   - `:buffer-name' - default value of the generated
     `guix-TYPE-buffer-name' variable.
 
+  - `:titles' - default value of the generated
+    `guix-TYPE-titles' variable.
+
   - `:history-size' - default value of the generated
     `guix-TYPE-history-size' variable.
 
   - `:revert-confirm?' - default value of the generated
     `guix-TYPE-revert-confirm' variable.
 
-  - `:reduced?' - if non-nil, generate only group and faces group."
+  - `:reduced?' - if non-nil, generate only group, faces group
+    and titles variable."
   (declare (indent 2))
   (let* ((entry-type-str     (symbol-name entry-type))
          (buffer-type-str    (symbol-name buffer-type))
@@ -377,12 +378,14 @@ Optional keywords:
          (mode               (intern (concat prefix "-mode")))
          (mode-init-fun      (intern (concat prefix "-mode-initialize")))
          (buffer-name-var    (intern (concat prefix "-buffer-name")))
+         (titles-var         (intern (concat prefix "-titles")))
          (history-size-var   (intern (concat prefix "-history-size")))
          (revert-confirm-var (intern (concat prefix "-revert-confirm"))))
     (guix-keyword-args-let args
         ((buffer-name-val    :buffer-name
                              (format "*Guix %s %s*"
                                      Entry-type-str Buffer-type-str))
+         (titles-val         :titles)
          (history-size-val   :history-size 20)
          (revert-confirm-val :revert-confirm? t)
          (reduced?           :reduced?))
@@ -397,6 +400,12 @@ Optional keywords:
            ,(format "Faces for displaying '%s' entries in '%s' buffer."
                     entry-type-str buffer-type-str)
            :group ',(intern (concat "guix-" buffer-type-str "-faces")))
+
+         (defcustom ,titles-var ,titles-val
+           ,(format "Alist of titles of '%s' parameters."
+                    entry-type-str)
+           :type '(alist :key-type symbol :value-type string)
+           :group ',group)
 
          ,(unless reduced?
             `(progn
@@ -429,7 +438,11 @@ If non-nil, ask to confirm for reverting `%S' buffer."
                           "\\{" mode-map-str "}")
                  (setq-local revert-buffer-function 'guix-revert-buffer)
                  (setq-local guix-history-size ,history-size-var)
-                 (and (fboundp ',mode-init-fun) (,mode-init-fun)))))))))
+                 (and (fboundp ',mode-init-fun) (,mode-init-fun)))))
+
+         (guix-alist-put!
+          ',titles-var 'guix-buffer-data
+          ',buffer-type ',entry-type 'titles)))))
 
 
 ;;; Getting and displaying info about packages and generations

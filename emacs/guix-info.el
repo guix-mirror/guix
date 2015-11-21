@@ -127,7 +127,7 @@ This alist is filled by `guix-info-define-interface' macro.")
 
 (defun guix-info-param-title (entry-type param)
   "Return a title of an ENTRY-TYPE parameter PARAM."
-  (guix-get-param-title entry-type param))
+  (guix-buffer-param-title 'info entry-type param))
 
 (defun guix-info-format (entry-type)
   "Return 'info' format for ENTRY-TYPE."
@@ -486,11 +486,13 @@ After calling each METHOD, a new line is inserted."
             (native-inputs format (format guix-package-native-input))
             (propagated-inputs format
                                (format guix-package-propagated-input)))
+  :titles '((home-url . "Home page"))
   :required '(id name version installed non-unique))
 
 (guix-info-define-interface installed-output
   :format '((path simple (indent guix-file))
             (dependencies simple (indent guix-file)))
+  :titles '((path . "Store directory"))
   :reduced? t)
 
 (defface guix-package-info-heading
@@ -794,6 +796,7 @@ This function is used to hide a \"Download\" button if needed."
             (propagated-inputs format
                                (format guix-package-propagated-input))
             (description simple (indent guix-package-info-description)))
+  :titles guix-package-info-titles
   :required '(id package-id installed non-unique))
 
 (defun guix-output-info-insert-version (version entry)
@@ -827,7 +830,9 @@ This function is used to hide a \"Download\" button if needed."
             (prev-number format (format))
             (current format guix-generation-info-insert-current)
             (path simple (indent guix-file))
-            (time format (time))))
+            (time format (time)))
+  :titles '((path . "File name")
+            (prev-number . "Previous number")))
 
 (defface guix-generation-info-number
   '((t :inherit font-lock-keyword-face))

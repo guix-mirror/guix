@@ -52,13 +52,6 @@
   "Face used for time stamps."
   :group 'guix-list-faces)
 
-(defvar guix-list-column-titles
-  '((generation
-     (number . "N.")))
-  "Column titles for list buffers.
-Has the same structure as `guix-param-titles', but titles from
-this list have a priority.")
-
 (defun guix-list-describe (&optional mark-names)
   "Describe entries marked with a general mark.
 'Describe' means display entries in 'info' buffer.
@@ -87,9 +80,7 @@ This alist is filled by `guix-list-define-interface' macro.")
 
 (defun guix-list-param-title (entry-type param)
   "Return column title of an ENTRY-TYPE parameter PARAM."
-  (or (guix-assq-value guix-list-column-titles
-                       entry-type param)
-      (guix-get-param-title entry-type param)))
+  (guix-buffer-param-title 'list entry-type param))
 
 (defun guix-list-format (entry-type)
   "Return column format for ENTRY-TYPE."
@@ -816,6 +807,7 @@ See `guix-package-info-type'."
             (current guix-generation-list-get-current 10 t)
             (time guix-list-get-time 20 t)
             (path guix-list-get-file-path 30 t))
+  :titles '((number . "N."))
   :sort-key '(number . t)
   :marks '((delete . ?D)))
 
