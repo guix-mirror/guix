@@ -27,6 +27,9 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix upstream)
+  #:use-module (guix graph)
+  #:use-module (guix scripts graph)
+  #:use-module (guix monads)
   #:use-module ((guix gnu-maintenance) #:select (%gnu-updater))
   #:use-module (guix import elpa)
   #:use-module (guix import cran)
@@ -230,6 +233,50 @@ downloaded and authenticated; not updating~%")
 
 
 ;;;
+;;; Dependents.
+;;;
+
+(define (all-packages)
+  "Return the list of all the distro's packages."
+  (fold-packages cons '()))
+
+(define (list-dependents packages)
+  "List all the things that would need to be rebuilt if PACKAGES are changed."
+  (with-store store
+    (run-with-store store
+      ;; Using %BAG-NODE-TYPE is more accurate than using %PACKAGE-NODE-TYPE
+      ;; because it includes implicit dependencies.
+      (mlet %store-monad ((edges (node-back-edges %bag-node-type
+                                                  (all-packages))))
+        (let* ((dependents (node-transitive-edges packages edges))
+               (covering   (filter (lambda (node)
+                                     (null? (edges node)))
+                                   dependents)))
+          (match dependents
+            (()
+             (format (current-output-port)
+                     (N_ "No dependents other than itself: ~{~a~}~%"
+                         "No dependents other than themselves: ~{~a~^ ~}~%"
+                         (length packages))
+                     (map package-full-name packages)))
+
+            ((x)
+             (format (current-output-port)
+                     (_ "A single dependent package: ~a~%")
+                     (package-full-name x)))
+            (lst
+             (format (current-output-port)
+                     (N_ "Building the following package would ensure ~d \
+dependent packages are rebuilt: ~*~{~a~^ ~}~%"
+                         "Building the following ~d packages would ensure ~d \
+dependent packages are rebuilt: ~{~a~^ ~}~%"
+                         (length covering))
+                     (length covering) (length dependents)
+                     (map package-full-name covering))))
+          (return #t))))))
+
+
+;;;
 ;;; Entry point.
 ;;;
 
@@ -318,29 +365,7 @@ update would trigger a complete rebuild."
     (with-error-handling
       (cond
        (list-dependent?
-        (let* ((rebuilds (map package-full-name
-                              (package-covering-dependents packages)))
-               (total-dependents
-                (length (package-transitive-dependents packages))))
-          (cond ((= total-dependents 0)
-                 (format (current-output-port)
-                         (N_ "No dependents other than itself: ~{~a~}~%"
-                             "No dependents other than themselves: ~{~a~^ ~}~%"
-                             (length packages))
-                         (map package-full-name packages)))
-
-                ((= total-dependents 1)
-                 (format (current-output-port)
-                         (_ "A single dependent package: ~{~a~}~%")
-                         rebuilds))
-                (else
-                 (format (current-output-port)
-                         (N_ "Building the following package would ensure ~d \
-dependent packages are rebuilt: ~*~{~a~^ ~}~%"
-                             "Building the following ~d packages would ensure ~d \
-dependent packages are rebuilt: ~{~a~^ ~}~%"
-                          (length rebuilds))
-                         (length rebuilds) total-dependents rebuilds)))))
+        (list-dependents packages))
        (update?
         (let ((store (open-connection)))
           (parameterize ((%openpgp-key-server
