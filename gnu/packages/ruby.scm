@@ -2958,3 +2958,39 @@ there is no danger of full pipes or threading issues hanging your process or
 subprocess.")
     (home-page "https://github.com/ahoward/systemu")
     (license license:ruby)))
+
+(define-public ruby-bio-commandeer
+  (package
+    (name "ruby-bio-commandeer")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "bio-commandeer" version))
+       (sha256
+        (base32
+         "061jxa6km92qfwzl058r2gp8gfcsbyr7m643nw1pxvmjdswaf6ly"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; Run test without calling 'rake' so that jeweler is
+           ;; not required as an input.
+           (lambda _
+             (zero? (system* "rspec" "spec/bio-commandeer_spec.rb")))))))
+    (propagated-inputs
+     `(("ruby-bio-logger" ,ruby-bio-logger)
+       ("ruby-systemu" ,ruby-systemu)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Simplified running of shell commands from within Ruby")
+    (description
+     "Bio-commandeer provides an opinionated method of running shell commands
+from within Ruby.  The advantage of bio-commandeer over other methods of
+running external commands is that when something goes wrong, messages printed
+to the @code{STDOUT} and @code{STDERR} streams are reported, giving extra
+detail to ease debugging.")
+    (home-page "http://github.com/wwood/bioruby-commandeer")
+    (license license:expat)))
