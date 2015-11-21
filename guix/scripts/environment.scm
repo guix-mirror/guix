@@ -317,8 +317,15 @@ requisite store items i.e. the union closure of all the inputs."
                                       (map input->requisites inputs))))
     (return (delete-duplicates (concatenate reqs)))))
 
-(define exit/status (compose exit status:exit-val))
-(define primitive-exit/status (compose primitive-exit status:exit-val))
+(define (status->exit-code status)
+  "Compute the exit code made from STATUS, a value as returned by 'waitpid',
+and suitable for 'exit'."
+  ;; See <bits/waitstatus.h>.
+  (or (status:exit-val status)
+      (logior #x80 (status:term-sig status))))
+
+(define exit/status (compose exit status->exit-code))
+(define primitive-exit/status (compose primitive-exit status->exit-code))
 
 (define (launch-environment command inputs paths pure?)
   "Run COMMAND in a new environment containing INPUTS, using the native search

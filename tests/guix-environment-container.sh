@@ -81,3 +81,10 @@ grep $(guix build guile-bootstrap) $tmpdir/mounts
 grep -e "$NIX_STORE_DIR/.*-bash" $tmpdir/mounts # bootstrap bash
 
 rm $tmpdir/mounts
+
+if guix environment --bootstrap --container \
+	--ad-hoc bootstrap-binaries -- kill -SEGV 2
+then false;
+else
+    test $? -gt 127
+fi
