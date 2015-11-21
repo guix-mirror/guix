@@ -903,7 +903,7 @@ any project with more than one developer, is one of Aegis's major functions.")
 (define-public tig
   (package
     (name "tig")
-    (version "2.1")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -911,12 +911,13 @@ any project with more than one developer, is one of Aegis's major functions.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1c1w6w39a1dwx4whrg0ga1mhrlz095hz875z7ajn6xgmhkv8fqih"))))
+                "0bw5wivswwh7vx897q8xc2cqgkqhdzk8gh6fnav2kf34sngigiah"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)))
     (arguments
-     `(#:tests? #f)) ; no tests implemented
+     `(#:tests? #f)) ; tests require access to /dev/tty
+     ;;`(#:test-target "test"))
     (home-page "http://jonas.nitro.dk/tig/")
     (synopsis "Ncurses-based text user interface for Git")
     (description
