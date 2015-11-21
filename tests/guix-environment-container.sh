@@ -24,6 +24,12 @@ set -e
 
 guix environment --version
 
+if ! guile -c '((@@ (guix scripts environment) assert-container-features))'
+then
+    # User containers are not supported; skip this test.
+    exit 77
+fi
+
 tmpdir="t-guix-environment-$$"
 trap 'rm -r "$tmpdir"' EXIT
 
