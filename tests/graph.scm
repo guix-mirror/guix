@@ -25,8 +25,12 @@
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (guix gexp)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -111,7 +115,7 @@ edges."
                                    ".drv")))
                           implicit)))))))
 
-(test-assert "bag DAG"
+(test-assert "bag DAG"                            ;a big town in Iraq
   (let-values (((backend nodes+edges) (make-recording-backend)))
     (let ((p (dummy-package "p")))
       (run-with-store %store
@@ -187,6 +191,38 @@ edges."
                              ids))
                           (list out txt))
                   (equal? edges `((,out ,txt)))))))))))
+
+(test-assert "node-edges"
+  (run-with-store %store
+    (let ((packages (fold-packages cons '())))
+      (mlet %store-monad ((edges (node-edges %package-node-type packages)))
+        (return (and (null? (edges grep))
+                     (lset= eq?
+                            (edges guile-2.0)
+                            (match (package-direct-inputs guile-2.0)
+                              (((labels packages _ ...) ...)
+                               packages)))))))))
+
+(test-assert "node-transitive-edges + node-back-edges"
+  (run-with-store %store
+    (let ((packages   (fold-packages cons '()))
+          (bootstrap? (lambda (package)
+                        (string-contains
+                         (location-file (package-location package))
+                         "bootstrap.scm")))
+          (trivial?   (lambda (package)
+                        (eq? (package-build-system package)
+                             trivial-build-system))))
+      (mlet %store-monad ((edges (node-back-edges %bag-node-type packages)))
+        (let* ((glibc      (canonical-package glibc))
+               (dependents (node-transitive-edges (list glibc) edges))
+               (diff       (lset-difference eq? packages dependents)))
+          ;; All the packages depend on libc, except bootstrap packages and
+          ;; some that use TRIVIAL-BUILD-SYSTEM.
+          (return (null? (remove (lambda (package)
+                                   (or (trivial? package)
+                                       (bootstrap? package)))
+                                 diff))))))))
 
 (test-end "graph")
 

@@ -21,8 +21,11 @@
   #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix sets)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 vlist)
   #:export (node-type
             node-type?
             node-type-identifier
@@ -31,6 +34,10 @@
             node-type-convert
             node-type-name
             node-type-description
+
+            node-edges
+            node-back-edges
+            node-transitive-edges
 
             %graphviz-backend
             graph-backend?
@@ -62,6 +69,54 @@
                (default (lift1 list %store-monad)))
   (name        node-type-name)                    ;string
   (description node-type-description))            ;string
+
+(define (%node-edges type nodes cons-edge)
+  (with-monad %store-monad
+    (match type
+      (($ <node-type> identifier label node-edges)
+       (define (add-edge node edges)
+         (>>= (node-edges node)
+              (lambda (nodes)
+                (return (fold (cut cons-edge node <> <>)
+                              edges nodes)))))
+
+       (mlet %store-monad ((edges (foldm %store-monad
+                                         add-edge vlist-null nodes)))
+         (return (lambda (node)
+                   (reverse (vhash-foldq* cons '() node edges)))))))))
+
+(define (node-edges type nodes)
+  "Return, as a monadic value, a one-argument procedure that, given a node of TYPE,
+returns its edges.  NODES is taken to be the sinks of the global graph."
+  (%node-edges type nodes
+               (lambda (source target edges)
+                 (vhash-consq source target edges))))
+
+(define (node-back-edges type nodes)
+  "Return, as a monadic value, a one-argument procedure that, given a node of TYPE,
+returns its back edges.  NODES is taken to be the sinks of the global graph."
+  (%node-edges type nodes
+               (lambda (source target edges)
+                 (vhash-consq target source edges))))
+
+(define (node-transitive-edges nodes node-edges)
+  "Return the list of nodes directly or indirectly connected to NODES
+according to the NODE-EDGES procedure.  NODE-EDGES must be a one-argument
+procedure that, given a node, returns its list of direct dependents; it is
+typically returned by 'node-edges' or 'node-back-edges'."
+  (let loop ((nodes   (append-map node-edges nodes))
+             (result  '())
+             (visited (setq)))
+    (match nodes
+      (()
+       result)
+      ((head . tail)
+       (if (set-contains? visited head)
+           (loop tail result visited)
+           (let ((edges (node-edges head)))
+             (loop (append edges tail)
+                   (cons head result)
+                   (set-insert head visited))))))))
 
 
 ;;;
