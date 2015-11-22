@@ -139,31 +139,32 @@ TIMEOUT, an ETIMEDOUT error is raised."
                      AI_ADDRCONFIG)))
 
   (let loop ((addresses addresses))
-    (let* ((ai (car addresses))
-           (s  (socket (addrinfo:fam ai)
-                       ;; TCP/IP only
-                       SOCK_STREAM IPPROTO_IP)))
+    (match addresses
+      ((ai rest ...)
+       (let ((s (socket (addrinfo:fam ai)
+                        ;; TCP/IP only
+                        SOCK_STREAM IPPROTO_IP)))
 
-      (catch 'system-error
-        (lambda ()
-          (connect* s (addrinfo:addr ai) timeout)
-          (setvbuf s _IOLBF)
-          (let-values (((code message) (%ftp-listen s)))
-            (if (eqv? code 220)
-                (begin
-                  ;;(%ftp-command "OPTS UTF8 ON" 200 s)
-                  (%ftp-login "anonymous" "guix@example.com" s)
-                  (%make-ftp-connection s ai))
-                (begin
-                  (close s)
-                  (throw 'ftp-error s "log-in" code message)))))
+         (catch 'system-error
+           (lambda ()
+             (connect* s (addrinfo:addr ai) timeout)
+             (setvbuf s _IOLBF)
+             (let-values (((code message) (%ftp-listen s)))
+               (if (eqv? code 220)
+                   (begin
+                     ;;(%ftp-command "OPTS UTF8 ON" 200 s)
+                     (%ftp-login "anonymous" "guix@example.com" s)
+                     (%make-ftp-connection s ai))
+                   (begin
+                     (close s)
+                     (throw 'ftp-error s "log-in" code message)))))
 
-        (lambda args
-          ;; Connection failed, so try one of the other addresses.
-          (close s)
-          (if (null? addresses)
-              (apply throw args)
-              (loop (cdr addresses))))))))
+           (lambda args
+             ;; Connection failed, so try one of the other addresses.
+             (close s)
+             (if (null? rest)
+                 (apply throw args)
+                 (loop rest)))))))))
 
 (define (ftp-close conn)
   (close (ftp-connection-socket conn)))
