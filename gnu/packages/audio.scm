@@ -42,6 +42,8 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages fltk)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -588,6 +590,56 @@ fill the rack with effects from more than 25 built-in modules including stuff
 from a simple noise gate to modulation effects like flanger, phaser or
 auto-wah.")
     (license license:gpl2+)))
+
+(define-public rakarrack
+  (package
+    (name "rakarrack")
+    (version "0.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/rakarrack/rakarrack/"
+                                  "rakarrack-" version "/rakarrack-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1rpf63pdn54c4yg13k7cb1w1c7zsvl97c4qxcpz41c8l91xd55kn"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* '("src/process.C"
+                                 "src/global.h")
+                    (("#include <Fl/") "#include <FL/"))
+                  #t))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("alsa-utils" ,alsa-utils)
+       ("fltk" ,fltk)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxfixes" ,libxfixes)
+       ("libxft" ,libxft)
+       ("libxrender" ,libxrender)
+       ("libxpm" ,libxpm)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("jack" ,jack-1)
+       ("alsa-lib" ,alsa-lib)
+       ("libsndfile" ,libsndfile)
+       ("libsamplerate" ,libsamplerate)
+       ("zlib" ,zlib)))
+    (home-page "http://rakarrack.sourceforge.net/")
+    (synopsis "Audio effects processor")
+    (description
+     "Rakarrack is a richly featured multi-effects processor emulating a
+guitar effects pedalboard.  Effects include compressor, expander, noise gate,
+equalizers, exciter, flangers, chorus, various delay and reverb effects,
+distortion modules and many more.  Most of the effects engine is built from
+modules found in the excellent software synthesizer ZynAddSubFX.  Presets and
+user interface are optimized for guitar, but Rakarrack processes signals in
+stereo while it does not apply internal band-limiting filtering, and thus is
+well suited to all musical instruments and vocals.")
+    ;; The code is explicitly licensed under the GPL version 2 only.
+    (license license:gpl2)))
 
 (define-public ir
   (package
