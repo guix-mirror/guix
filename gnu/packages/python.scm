@@ -7085,6 +7085,39 @@ Python at your fingertips, in Lisp form.")
 (define-public python2-hy
   (package-with-python2 python-hy))
 
+(define-public python-rauth
+  (package
+    (name "python-rauth")
+    (version "0.7.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "rauth" version))
+        (sha256
+         (base32
+          "00pq7zw429hhza9c0qzxiqp77m653jv09z92nralnmzwdf6pzicf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:test-target "check"))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (home-page "https://github.com/litl/rauth")
+    (synopsis "Python library for OAuth 1.0/a, 2.0, and Ofly")
+    (description
+     "Rauth is a Python library for OAuth 1.0/a, 2.0, and Ofly.  It also
+provides service wrappers for convenient connection initialization and
+authenticated session objects providing things like keep-alive.")
+    (license license:expat)))
+
+(define-public python2-rauth
+  (let ((rauth (package-with-python2 python-rauth)))
+    (package (inherit rauth)
+      (native-inputs
+       `(("python2-unittest2", python2-unittest2)
+         ,@(package-native-inputs rauth))))))
+
 (define-public python-futures
   (package
     (name "python-futures")
