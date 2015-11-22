@@ -316,7 +316,7 @@ for connections to complete; when TIMEOUT is #f, wait as long as needed."
       ('ftp
        (catch #t
          (lambda ()
-           (let ((conn (ftp-open (uri-host uri) 21 #:timeout timeout)))
+           (let ((conn (ftp-open (uri-host uri) #:timeout timeout)))
              (define response
                (dynamic-wind
                  (const #f)

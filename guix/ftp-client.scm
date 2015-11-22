@@ -121,15 +121,18 @@ seconds to wait for the connection to succeed."
              (raise-error errno)))))
       (connect s sockaddr)))
 
-(define* (ftp-open host #:optional (port 21) #:key timeout)
+(define* (ftp-open host #:optional (port "ftp") #:key timeout)
   "Open an FTP connection to HOST on PORT (a service-identifying string,
 or a TCP port number), and return it.
 
 When TIMEOUT is not #f, it must be a (possibly inexact) number denoting the
 maximum duration in seconds to wait for the connection to complete; passed
 TIMEOUT, an ETIMEDOUT error is raised."
-  ;; Use 21 as the default PORT instead of "ftp", to avoid depending on
-  ;; libc's NSS, which is not available during bootstrap.
+  ;; Using "ftp" for PORT instead of 21 allows 'getaddrinfo' to return only
+  ;; TCP/IP addresses (otherwise it would return SOCK_DGRAM and SOCK_RAW
+  ;; addresses as well.)  With our bootstrap Guile, which includes a
+  ;; statically-linked NSS, resolving "ftp" works well, as long as
+  ;; /etc/services is available.
 
   (define addresses
     (getaddrinfo host
