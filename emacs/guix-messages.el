@@ -31,9 +31,8 @@
 (defvar guix-messages
   `((package
      (id
-      (0 "Packages not found.")
-      (1 "")
-      (many "%d packages." count))
+      ,(lambda (_ entries ids)
+         (guix-message-packages-by-id entries 'package ids)))
      (name
       ,(lambda (_ entries names)
          (guix-message-packages-by-name entries 'package names)))
@@ -67,9 +66,8 @@
 
     (output
      (id
-      (0 "Package outputs not found.")
-      (1 "")
-      (many "%d package outputs." count))
+      ,(lambda (_ entries ids)
+         (guix-message-packages-by-id entries 'output ids)))
      (name
       ,(lambda (_ entries names)
          (guix-message-packages-by-name entries 'output names)))
@@ -146,6 +144,22 @@
                count
                (guix-message-string-entry-type
                 entry-type 'plural)))))
+
+(defun guix-message-packages-by-id (entries entry-type ids)
+  "Display a message for packages or outputs searched by IDS."
+  (let* ((count (length entries))
+         (str-beg (guix-message-string-entries count entry-type))
+         (str-end (if (> count 1)
+                      (concat "with the following IDs: "
+                              (mapconcat #'guix-get-string ids ", "))
+                    (concat "with ID " (guix-get-string (car ids))))))
+    (if (zerop count)
+        (message "%s %s.
+Most likely, Guix REPL was restarted, so IDs are not actual
+anymore, because they live only during the REPL process.
+Try \"M-x guix-search-by-name\"."
+                 str-beg str-end)
+      (message "%s %s." str-beg str-end))))
 
 (defun guix-message-packages-by-name (entries entry-type names)
   "Display a message for packages or outputs searched by NAMES."
