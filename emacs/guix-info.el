@@ -560,9 +560,10 @@ After calling each METHOD, a new line is inserted."
 
 (defun guix-package-info-insert-heading (entry)
   "Insert package ENTRY heading (name specification) at point."
-  (guix-format-insert (concat (guix-entry-value entry 'name) " "
-                              (guix-entry-value entry 'version))
-                      'guix-package-info-heading))
+  (guix-insert-button
+   (guix-package-entry->name-specification entry)
+   'guix-package-name
+   'face 'guix-package-info-heading))
 
 (defmacro guix-package-info-define-insert-inputs (&optional type)
   "Define a face and a function for inserting package inputs.
