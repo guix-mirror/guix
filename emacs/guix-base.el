@@ -235,7 +235,7 @@ If MODES is nil, return list of all Guix 'list' and 'info' buffers."
 (defun guix-update-buffer (buffer)
   "Update information in a 'list' or 'info' BUFFER."
   (with-current-buffer buffer
-    (guix-revert-buffer nil t)))
+    (guix-buffer-revert nil t)))
 
 (defun guix-update-buffers-maybe-after-operation ()
   "Update buffers after Guix operation if needed.
@@ -447,7 +447,7 @@ If non-nil, ask to confirm for reverting `%S' buffer."
                  ,(concat "Major mode for displaying information about "
                           entry-str ".\n\n"
                           "\\{" mode-map-str "}")
-                 (setq-local revert-buffer-function 'guix-revert-buffer)
+                 (setq-local revert-buffer-function 'guix-buffer-revert)
                  (setq-local guix-history-size
                              (guix-buffer-history-size
                               ',buffer-type ',entry-type))
@@ -582,7 +582,7 @@ If NO-DISPLAY is non-nil, do not switch to the buffer."
                                           buffer-type)
                          entry-type)))))
 
-(defun guix-revert-buffer (_ignore-auto noconfirm)
+(defun guix-buffer-revert (_ignore-auto noconfirm)
   "Update information in the current buffer.
 The function is suitable for `revert-buffer-function'.
 See `revert-buffer' for the meaning of NOCONFIRM."
@@ -590,31 +590,13 @@ See `revert-buffer' for the meaning of NOCONFIRM."
             (guix-buffer-revert-confirm? guix-buffer-type
                                          guix-entry-type)
             (y-or-n-p "Update current information? "))
-    (let* ((search-type guix-search-type)
-           (search-vals guix-search-vals)
-           (params (guix-get-params-for-receiving guix-buffer-type
+    (let* ((params (guix-get-params-for-receiving guix-buffer-type
                                                   guix-entry-type))
            (entries (guix-get-entries
                      guix-profile guix-entry-type
-                     guix-search-type guix-search-vals params))
-           ;; If a REPL was restarted, package/output IDs are not actual
-           ;; anymore, because 'object-address'-es died with the REPL, so if a
-           ;; search by ID didn't give results, search again by name.
-           (entries (if (and (null entries)
-                             (eq guix-search-type 'id)
-                             (or (eq guix-entry-type 'package)
-                                 (eq guix-entry-type 'output)))
-                        (progn
-                          (setq search-type 'name
-                                search-vals
-                                (guix-package-entries->name-specifications
-                                 guix-entries))
-                          (guix-get-entries
-                           guix-profile guix-entry-type
-                           search-type search-vals params))
-                      entries)))
+                     guix-search-type guix-search-vals params)))
       (guix-set-buffer guix-profile entries guix-buffer-type guix-entry-type
-                       search-type search-vals t t))))
+                       guix-search-type guix-search-vals t t))))
 
 (defvar guix-buffer-after-redisplay-hook nil
   "Hook run by `guix-buffer-redisplay'.
