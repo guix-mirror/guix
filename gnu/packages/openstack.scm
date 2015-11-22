@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -243,7 +244,7 @@ tested on Python version 3.2, 2.7 and 2.6.")
 (define-public python-pbr
   (package
     (name "python-pbr")
-    (version "1.6.0")
+    (version "1.8.1")
     (source
       (origin
         (method url-fetch)
@@ -253,7 +254,7 @@ tested on Python version 3.2, 2.7 and 2.6.")
                ".tar.gz"))
         (sha256
           (base32
-            "1lg1klrczvzfan89y3bl9ykrknl3nb01vvai37fkww24apzyibjf"))))
+            "0jcny36cf3s8ar5r4a575npz080hndnrfs4np1fqhv0ym4k7c4p2"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ;; Most tests seem to use the Internet.
