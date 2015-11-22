@@ -32,23 +32,36 @@ the installation instructions (@pxref{Requirements}).
 @item @url{http://www.gnu.org/software/help2man/, GNU Help2man (optional)}.
 @end itemize
 
-Run @command{./bootstrap} to download the Nix daemon source code and to
-generate the build system infrastructure using autoconf.  It reports an
-error if an inappropriate version of the above packages is being used.
+The easiest way to set up a development environment for Guix is, of
+course, by using Guix!  The following command starts a new shell where
+all the dependencies and appropriate environment variables are set up to
+hack on Guix:
 
-@noindent
-If you get an error like this one:
+@example
+guix environment guix
+@end example
+
+@xref{Invoking guix environment}, for more information on that command.
+Extra dependencies can be added with @option{--ad-hoc}:
+
+@example
+guix environment guix --ad-hoc help2man git strace
+@end example
+
+Run @command{./bootstrap} to generate the build system infrastructure
+using Autoconf and Automake.  If you get an error like this one:
 
 @example
 configure.ac:46: error: possibly undefined macro: PKG_CHECK_MODULES
 @end example
 
+@noindent
 it probably means that Autoconf couldn’t find @file{pkg.m4}, which is
-provided by @command{pkg-config}.  Make sure that @file{pkg.m4} is
-available.  For instance, if you installed Automake in
-@file{/usr/local}, it wouldn’t look for @file{.m4} files in
-@file{/usr/share}.  So you have to invoke the following command in that
-case
+provided by pkg-config.  Make sure that @file{pkg.m4} is available.  The
+same holds for the @file{guile.m4} set of macros provided by Guile.  For
+instance, if you installed Automake in @file{/usr/local}, it wouldn’t
+look for @file{.m4} files in @file{/usr/share}.  In that case, you have
+to invoke the following command:
 
 @example
 export ACLOCAL_PATH=/usr/share/aclocal
