@@ -714,14 +714,16 @@ prompt depending on `guix-operation-confirm' variable)."
 Find the file if needed (see `guix-package-info-auto-find-source').
 ENTRY-ID is an ID of the current entry (package or output).
 PACKAGE-ID is an ID of the package which source to show."
-  (let* ((entry (guix-entry-by-id entry-id guix-entries))
-         (file  (guix-package-source-path package-id)))
+  (let* ((entries guix-entries)
+         (entry   (guix-entry-by-id entry-id guix-entries))
+         (file    (guix-package-source-path package-id)))
     (or file
-        (error "Couldn't define file path of the package source"))
+        (error "Couldn't define file name of the package source"))
     (let* ((new-entry (cons (cons 'source-file file)
                             entry))
-           (entries (guix-replace-entry entry-id new-entry guix-entries)))
-      (guix-redisplay-buffer :entries entries)
+           (new-entries (guix-replace-entry entry-id new-entry entries)))
+      (setq guix-entries new-entries)
+      (guix-buffer-redisplay-goto-button)
       (if (file-exists-p file)
           (if guix-package-info-auto-find-source
               (guix-find-file file)
@@ -770,7 +772,8 @@ SOURCE is a list of URLs."
   "Redisplay an 'info' buffer after downloading the package source.
 This function is used to hide a \"Download\" button if needed."
   (when (buffer-live-p guix-package-info-download-buffer)
-    (guix-redisplay-buffer :buffer guix-package-info-download-buffer)
+    (with-current-buffer guix-package-info-download-buffer
+      (guix-buffer-redisplay-goto-button))
     (setq guix-package-info-download-buffer nil)))
 
 (add-hook 'guix-after-source-download-hook

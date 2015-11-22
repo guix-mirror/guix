@@ -288,7 +288,7 @@ This alist is filled by `guix-buffer-define-interface' macro.")
     (define-key map (kbd "l") 'guix-history-back)
     (define-key map (kbd "r") 'guix-history-forward)
     (define-key map (kbd "g") 'revert-buffer)
-    (define-key map (kbd "R") 'guix-redisplay-buffer)
+    (define-key map (kbd "R") 'guix-buffer-redisplay)
     map)
   "Parent keymap for Guix buffer modes.")
 
@@ -616,41 +616,39 @@ See `revert-buffer' for the meaning of NOCONFIRM."
       (guix-set-buffer guix-profile entries guix-buffer-type guix-entry-type
                        search-type search-vals t t))))
 
-(cl-defun guix-redisplay-buffer (&key buffer profile entries buffer-type
-                                      entry-type search-type search-vals)
-  "Redisplay a Guix BUFFER.
-Restore the point and window positions after redisplaying if possible.
+(defvar guix-buffer-after-redisplay-hook nil
+  "Hook run by `guix-buffer-redisplay'.
+This hook is called before seting up a window position.")
 
-This function will not update the information, use
-\"\\[revert-buffer]\" if you want the full update.
+(defun guix-buffer-redisplay ()
+  "Redisplay the current Guix buffer.
+Restore the point and window positions after redisplaying.
 
-If BUFFER is nil, use the current buffer.  For the meaning of the
-rest arguments, see `guix-set-buffer'."
+This function does not update the buffer data, use
+'\\[revert-buffer]' if you want the full update."
   (interactive)
-  (or buffer (setq buffer (current-buffer)))
-  (with-current-buffer buffer
-    (or (derived-mode-p 'guix-info-mode 'guix-list-mode)
-        (error "%S is not a Guix buffer" buffer))
-    (let* ((point (point))
-           (was-at-button (button-at point))
-           ;; For simplicity, ignore an unlikely case when multiple
-           ;; windows display the same BUFFER.
-           (window (car (get-buffer-window-list buffer nil t)))
-           (window-start (and window (window-start window))))
-      (guix-set-buffer (or profile     guix-profile)
-                       (or entries     guix-entries)
-                       (or buffer-type guix-buffer-type)
-                       (or entry-type  guix-entry-type)
-                       (or search-type guix-search-type)
-                       (or search-vals guix-search-vals)
-                       t t)
-      (goto-char point)
-      (and was-at-button
-           (not (button-at (point)))
-           (forward-button 1))
-      (when window
-        (set-window-point window (point))
-        (set-window-start window window-start)))))
+  (let* ((old-point (point))
+         ;; For simplicity, ignore an unlikely case when multiple
+         ;; windows display the same buffer.
+         (window (car (get-buffer-window-list (current-buffer) nil t)))
+         (window-start (and window (window-start window))))
+    (guix-set-buffer guix-profile guix-entries guix-buffer-type
+                     guix-entry-type guix-search-type guix-search-vals
+                     t t)
+    (goto-char old-point)
+    (run-hooks 'guix-buffer-after-redisplay-hook)
+    (when window
+      (set-window-point window (point))
+      (set-window-start window window-start))))
+
+(defun guix-buffer-redisplay-goto-button ()
+  "Redisplay the current buffer and go to the next button, if needed."
+  (let ((guix-buffer-after-redisplay-hook
+         (cons (lambda ()
+                 (unless (button-at (point))
+                   (forward-button 1)))
+               guix-buffer-after-redisplay-hook)))
+    (guix-buffer-redisplay)))
 
 
 ;;; Generations
