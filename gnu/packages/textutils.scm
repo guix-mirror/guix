@@ -40,7 +40,8 @@
              (url "https://github.com/pinard/Recode.git")
              (commit "2d7092a9999194fc0e9449717a8048c8d8e26c18")))
        (sha256
-        (base32 "1wssv8z6g3ryrw33sksz4rjhlnhgvvdqszw1ggl4rcwks34n86zm"))))
+        (base32 "1wssv8z6g3ryrw33sksz4rjhlnhgvvdqszw1ggl4rcwks34n86zm"))
+       (file-name (string-append name "-" version "-checkout"))))
     (build-system gnu-build-system)
     (native-inputs `(("python" ,python-2)))
     (arguments
