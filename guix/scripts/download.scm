@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -102,7 +102,8 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
   (with-error-handling
     (let* ((opts  (parse-options))
            (store (open-connection))
-           (arg   (assq-ref opts 'argument))
+           (arg   (or (assq-ref opts 'argument)
+                      (leave (_ "no download URI was specified~%"))))
            (uri   (or (string->uri arg)
                       (leave (_ "~a: failed to parse URI~%")
                              arg)))
