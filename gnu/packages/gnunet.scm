@@ -263,6 +263,7 @@ privacy-preserving, decentralized public key infrastructure.")
                 (uri (git-reference
                       (url "git://git.sv.gnu.org/guix/gnunet.git")
                       (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
                   "0k6mn28isjlxrnvbnblab3nh2xqx1b7san8k98kc35ap9lq0iz8w"))))

@@ -184,6 +184,7 @@ Additionally, various channel-specific options can be negotiated.")
               (uri (git-reference
                     (url "https://github.com/artyom-poptsov/libguile-ssh.git")
                     (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1ld2khzylaylhqfsfcvbxs95frvm8pkr7dq40ia1wwn9c349fcdv"))))

@@ -200,6 +200,7 @@ without requiring the source code to be rewritten.")
               (uri (git-reference
                     (url "git://git.sv.gnu.org/guile.git")
                     (commit "e5bccb6e5df3485152bc6501e1f36275e09c6352")))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0z7ywryfcargrpz8hdrz6sfs06c2h2y9baqin3mbjvvg96a5bx47"))))
@@ -471,6 +472,7 @@ http:://json.org specification.  These are the main features:
               (uri (git-reference
                     (url "https://github.com/ijp/minikanren.git")
                     (commit "e844d85512f8c055d3f96143ee506007389a25e3")))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0r50jlpzi940jlmxyy3ddqqwmj5r12gb4bcv0ssini9v8km13xz6"))))
@@ -628,6 +630,7 @@ inspired by the SCSH regular expression system.")
               (uri (git-reference
                     (url "https://github.com/ijp/guile-gdbm.git")
                     (commit "fa1d5b6231d0e4d096687b378c025f2148c5f246")))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1j8wrsw7v9w6qkl47xz0rdikg50v16nn6kbs3lgzcymjzpa7babj"))))
