@@ -19,12 +19,14 @@
 
 (define-module (gnu packages openstack)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module ((guix licenses)
                 #:select (asl2.0))
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (srfi srfi-1))
 
 (define-public python-bandit
   (package
@@ -679,3 +681,72 @@ handling.")
 
 (define-public python2-oslo.utils
   (package-with-python2 python-oslo.utils))
+
+(define-public python-keystoneclient
+  (package
+    (name "python-keystoneclient")
+    (version "1.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-keystoneclient" version))
+        (sha256
+         (base32
+          "1w4csvkah67rfpxylxnvs2s3594i0f9isy8pf4gnsqs5zirvjaa4"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-sphinx" ,python-sphinx)
+       ;; and some packages for the tests
+       ("openssl" ,openssl)
+       ("python-coverage" ,python-coverage)
+       ("python-discover" ,python-discover)
+       ("python-fixtures" ,python-fixtures)
+       ("python-hacking" ,python-hacking)
+       ("python-keyring" ,python-keyring)
+       ("python-lxml" ,python-lxml)
+       ("python-mock" ,python-mock)
+       ("python-mox3" ,python-mox3)
+       ("python-oauthlib" ,python-oauthlib)
+       ("python-oslosphinx" ,python-oslosphinx)
+       ("python-oslotest" ,python-oslotest)
+       ("python-pycrypto" ,python-pycrypto)
+       ("python-requests-mock" ,python-requests-mock)
+       ("python-temptest-lib" ,python-tempest-lib)
+       ("python-testrepository" ,python-testrepository)
+       ("python-testresources" ,python-testresources)
+       ("python-testtools" ,python-testtools)
+       ("python-webob" ,python-webob)))
+    (propagated-inputs
+     `(("python-babel" ,python-babel)
+       ("python-debtcollector" ,python-debtcollector)
+       ("python-iso8601" ,python-iso8601)
+       ("python-netaddr" ,python-netaddr)
+       ("python-oslo.config" ,python-oslo.config)
+       ("python-oslo.i18n" ,python-oslo.i18n)
+       ("python-oslo.serialization" ,python-oslo.serialization)
+       ("python-oslo.utils" ,python-oslo.utils)
+       ("python-pbr" ,python-pbr)
+       ("python-prettytable" ,python-prettytable)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)
+       ("python-stevedore" ,python-stevedore)))
+    (home-page "http://www.openstack.org/")
+    (synopsis "Client Library for OpenStack Identity")
+    (description
+     "Python-keystoneclient is the identity service used by OpenStack for
+authentication (authN) and high-level authorization (authZ).  It currently
+supports token-based authN with user/service authZ, and is scalable to support
+OAuth, SAML, and OpenID in future versions.  Out of the box, Keystone uses
+SQLite for its identity store database, with the option to connect to external
+LDAP.")
+    (license asl2.0)))
+
+(define-public python2-keystoneclient
+  (let ((keystoneclient (package-with-python2 python-keystoneclient)))
+    (package (inherit keystoneclient)
+      (native-inputs
+       `(("python2-oauthlib" ,python2-oauthlib)
+         ,@(alist-delete
+            "python-oauthlib"
+            (package-native-inputs keystoneclient)))))))
