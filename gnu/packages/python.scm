@@ -2194,21 +2194,21 @@ compatible install in a way that is very close to the on-disk format.")
 (define-public python-requests
   (package
     (name "python-requests")
-    (version "2.8.0")
+    (version "2.8.1")
     (source (origin
              (method url-fetch)
-             (uri
-              (string-append
-               "https://pypi.python.org/packages/source/r/requests/requests-"
-               version ".tar.gz"))
+             (uri (pypi-uri "requests" version))
              (sha256
               (base32
-               "0yrvj8hfnabrdxds59w6d6887sn5j0jlgpmcq04lk4k0kdc07w5j"))))
+               "0ny2nr1sqr4hcn3903ghmh7w2yni8shlfv240a8c9p6wyidqvzl4"))))
     (build-system python-build-system)
-    (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-certifi" ,python-certifi)))
-    (arguments `(#:tests? #f)) ; no tests
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-py" ,python-py)
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-cov" ,python-pytest-cov)
+       ("python-wheel" ,python-wheel)))
     (home-page "http://python-requests.org/")
     (synopsis "Python HTTP library")
     (description
