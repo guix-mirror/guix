@@ -2710,8 +2710,8 @@ framebuffer device.")
            "19y13xl7yfrgyis92rmxi0ld95ajgr5il0n9j1dridwzw9aizz1q"))
         (patches (list (search-patch "xf86-video-geode-glibc-2.20.patch")))))
     (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)
-              ("xorg-server" ,xorg-server)))
+    (inputs `(("xorg-server" ,xorg-server)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (supported-systems
      ;; This driver is only supported on i686 systems.
      (filter (lambda (system) (string-prefix? "i686-" system))

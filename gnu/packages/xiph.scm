@@ -166,9 +166,11 @@ stereo encoding, and voice activity detection.")
     ;; XXX: Should back-ends be pushed to different outputs?  For instance,
     ;; "out" would include only the ALSA back-end, while "pulse" would
     ;; contain 'lib/ao/plugins-4/libpulse.*'.
-    (inputs `(("pkg-config" ,pkg-config)
-              ("alsa-lib" ,alsa-lib)
-              ("pulseaudio" ,pulseaudio)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("pulseaudio" ,pulseaudio)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (synopsis "Cross platform audio library")
     (description
      "Libao is a cross-platform audio library that allows programs to
