@@ -96,6 +96,9 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
                 (lambda (opt name arg result)
                   (leave (_ "~A: unrecognized option~%") name))
                 (lambda (arg result)
+                  (when (assq 'argument result)
+                    (leave (_ "~A: extraneous argument~%") arg))
+
                   (alist-cons 'argument arg result))
                 %default-options))
 
