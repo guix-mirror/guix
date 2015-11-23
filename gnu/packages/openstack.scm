@@ -750,3 +750,57 @@ LDAP.")
          ,@(alist-delete
             "python-oauthlib"
             (package-native-inputs keystoneclient)))))))
+
+(define-public python-swiftclient
+  (package
+    (name "python-swiftclient")
+    (version "2.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-swiftclient" version))
+        (sha256
+         (base32
+          "1j33l4z9vqh0scfncl4fxg01zr1hgqxhhai6gvcih1gccqm4nd7p"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pbr", python-pbr)
+       ("python-setuptools" ,python-setuptools)
+       ("python-sphinx" ,python-sphinx)
+       ;; The folloing packages are needed for the tests.
+       ("python-coverage" ,python-coverage)
+       ("python-discover" ,python-discover)
+       ("python-hacking" ,python-hacking)
+       ("python-mock" ,python-mock)
+       ("python-oslosphinx" ,python-oslosphinx)
+       ("python-keystoneclient" ,python-keystoneclient)
+       ("python-testrepository" ,python-testrepository)
+       ("python-testtools" ,python-testtools)))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (home-page "http://www.openstack.org/")
+    (synopsis "OpenStack Object Storage API Client Library")
+    (description
+     "OpenStack Object Storage (code-named Swift) creates redundant, scalable
+object storage using clusters of standardized servers to store petabytes of
+accessible data.  It is not a file system or real-time data storage system, but
+rather a long-term storage system for a more permanent type of static data that
+can be retrieved, leveraged, and then updated if necessary.  Primary examples of
+data that best fit this type of storage model are virtual machine images, photo
+storage, email storage and backup archiving.  Having no central \"brain\" or
+master point of control provides greater scalability, redundancy and
+permanence.")
+  (license asl2.0)))
+
+(define-public python2-swiftclient
+  (let ((swiftclient (package-with-python2 python-swiftclient)))
+    (package (inherit swiftclient)
+      (propagated-inputs
+       `(("python2-futures" ,python2-futures)
+         ,@(package-propagated-inputs swiftclient)))
+      (native-inputs
+       `(("python2-keystoneclient" ,python2-keystoneclient)
+         ,@(alist-delete
+            "python-keystoneclient"
+            (package-native-inputs swiftclient)))))))
