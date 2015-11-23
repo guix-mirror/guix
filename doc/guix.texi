@@ -4156,6 +4156,15 @@ package definition.
 When importing a GNU package, the synopsis and descriptions are replaced
 by their canonical upstream variant.
 
+Usually, you will first need to do:
+
+@example
+export NIX_REMOTE=daemon
+@end example
+
+@noindent
+so that @command{nix-instantiate} does not try to open the Nix database.
+
 As an example, the command below imports the package definition of
 LibreOffice (more precisely, it imports the definition of the package
 bound to the @code{libreoffice} top-level attribute):
