@@ -24,7 +24,7 @@ guix graph --version
 
 for package in guile-bootstrap coreutils python
 do
-    for graph in package bag-emerged bag
+    for graph in package bag-emerged bag bag-with-origins
     do
 	guix graph -t "$graph" "$package" | grep "$package"
     done

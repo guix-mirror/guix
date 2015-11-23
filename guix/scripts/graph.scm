@@ -30,11 +30,13 @@
   #:use-module (gnu packages)
   #:use-module (guix sets)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:export (%package-node-type
             %bag-node-type
+            %bag-with-origins-node-type
             %bag-emerged-node-type
             %derivation-node-type
             %reference-node-type
@@ -104,17 +106,23 @@ file name."
                       low))))))
 
 (define (bag-node-edges thing)
-  "Return the list of dependencies of THING, a package or origin, etc."
-  (if (package? thing)
-      (match (bag-direct-inputs (package->bag thing))
-        (((labels things . outputs) ...)
-         (filter-map (match-lambda
-                       ((? package? p) p)
-                       ;; XXX: Here we choose to filter out origins, files,
-                       ;; etc.  Replace "#f" with "x" to reinstate them.
-                       (x #f))
-                     things)))
-      '()))
+  "Return the list of dependencies of THING, a package or origin.
+Dependencies may include packages, origin, and file names."
+  (cond ((package? thing)
+         (match (bag-direct-inputs (package->bag thing))
+           (((labels things . outputs) ...)
+            things)))
+        ((origin? thing)
+         (cons (origin-patch-guile thing)
+               (if (or (pair? (origin-patches thing))
+                       (origin-snippet thing))
+                   (match (origin-patch-inputs thing)
+                     (#f '())
+                     (((labels dependencies _ ...) ...)
+                      (delete-duplicates dependencies eq?)))
+                   '())))
+        (else
+         '())))
 
 (define %bag-node-type
   ;; Type for the traversal of package nodes via the "bag" representation,
@@ -124,7 +132,22 @@ file name."
    (description "the DAG of packages, including implicit inputs")
    (identifier bag-node-identifier)
    (label node-full-name)
-   (edges (lift1 bag-node-edges %store-monad))))
+   (edges (lift1 (compose (cut filter package? <>) bag-node-edges)
+                 %store-monad))))
+
+(define %bag-with-origins-node-type
+  (node-type
+   (name "bag-with-origins")
+   (description "the DAG of packages and origins, including implicit inputs")
+   (identifier bag-node-identifier)
+   (label node-full-name)
+   (edges (lift1 (lambda (thing)
+                   (filter (match-lambda
+                             ((? package?) #t)
+                             ((? origin?)  #t)
+                             (_            #f))
+                           (bag-node-edges thing)))
+                 %store-monad))))
 
 (define standard-package-set
   (memoize
@@ -239,6 +262,7 @@ substitutes."
   ;; List of all the node types.
   (list %package-node-type
         %bag-node-type
+        %bag-with-origins-node-type
         %bag-emerged-node-type
         %derivation-node-type
         %reference-node-type))

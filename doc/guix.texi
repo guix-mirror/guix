@@ -4631,6 +4631,9 @@ here, for conciseness.
 Similar to @code{bag-emerged}, but this time including all the bootstrap
 dependencies.
 
+@item bag-with-origins
+Similar to @code{bag}, but also showing origins and their dependencies.
+
 @item derivations
 This is the most detailed representation: It shows the DAG of
 derivations (@pxref{Derivations}) and plain store items.  Compared to

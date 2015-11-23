@@ -134,6 +134,32 @@ edges."
                  (((labels packages) ...)
                   (map package-full-name packages))))))))
 
+(test-assert "bag DAG, including origins"
+  (let-values (((backend nodes+edges) (make-recording-backend)))
+    (let* ((m (lambda* (uri hash-type hash name #:key system)
+                (text-file "foo-1.2.3.tar.gz" "This is a fake!")))
+           (o (origin (method m) (uri "the-uri") (sha256 #vu8(0 1 2))))
+           (p (dummy-package "p" (source o))))
+      (run-with-store %store
+        (export-graph (list p) 'port
+                      #:node-type %bag-with-origins-node-type
+                      #:backend backend))
+      ;; We should see O among the nodes, with an edge coming from P.
+      (let-values (((nodes edges) (nodes+edges)))
+        (run-with-store %store
+          (mlet %store-monad ((o* (lower-object o))
+                              (p* (lower-object p)))
+            (return
+             (and (find (match-lambda
+                          ((file "the-uri") #t)
+                          (_                #f))
+                        nodes)
+                  (find (match-lambda
+                          ((source target)
+                           (and (string=? source (derivation-file-name p*))
+                                (string=? target o*))))
+                        edges)))))))))
+
 (test-assert "derivation DAG"
   (let-values (((backend nodes+edges) (make-recording-backend)))
     (run-with-store %store
