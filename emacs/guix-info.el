@@ -471,6 +471,7 @@ After calling each METHOD, a new line is inserted."
 ;;; Displaying packages
 
 (guix-ui-info-define-interface package
+  :buffer-name "*Guix Package Info*"
   :format '(guix-package-info-insert-heading
             ignore
             (synopsis ignore (simple guix-package-info-synopsis))
@@ -830,6 +831,7 @@ This function is used to hide a \"Download\" button if needed."
 ;;; Displaying generations
 
 (guix-ui-info-define-interface generation
+  :buffer-name "*Guix Generation Info*"
   :format '((number format guix-generation-info-insert-number)
             (prev-number format (format))
             (current format guix-generation-info-insert-current)

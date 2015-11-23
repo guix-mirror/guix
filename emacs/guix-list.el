@@ -517,6 +517,7 @@ See also `guix-list-describe'."
 ;;; Displaying packages
 
 (guix-ui-list-define-interface package
+  :buffer-name "*Guix Package List*"
   :format '((name guix-package-list-get-name 20 t)
             (version nil 10 nil)
             (outputs nil 13 t)
@@ -803,6 +804,7 @@ See `guix-package-info-type'."
 ;;; Displaying generations
 
 (guix-ui-list-define-interface generation
+  :buffer-name "*Guix Generation List*"
   :format '((number nil 5 guix-list-sort-numerically-0 :right-align t)
             (current guix-generation-list-get-current 10 t)
             (time guix-list-get-time 20 t)

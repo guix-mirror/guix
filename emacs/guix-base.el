@@ -33,6 +33,7 @@
 (require 'guix-entry)
 (require 'guix-guile)
 (require 'guix-utils)
+(require 'guix-ui)
 (require 'guix-history)
 (require 'guix-messages)
 
@@ -142,116 +143,13 @@ For the meaning of location, see `guix-find-location'."
    #'string<))
 
 
-;;; Buffers and auto updating.
-
-(defcustom guix-update-after-operation 'current
-  "Define what information to update after executing an operation.
-
-After successful executing an operation in the Guix REPL (for
-example after installing a package), information in Guix buffers
-will or will not be automatically updated depending on a value of
-this variable.
-
-If nil, update nothing (do not revert any buffer).
-If `current', update the buffer from which an operation was performed.
-If `all', update all Guix buffers (not recommended)."
-  :type '(choice (const :tag "Do nothing" nil)
-                 (const :tag "Update operation buffer" current)
-                 (const :tag "Update all Guix buffers" all))
-  :group 'guix)
-
-(defcustom guix-buffer-name-function #'guix-buffer-name-default
-  "Function used to define name of a buffer for displaying information.
-The function is called with 4 arguments: PROFILE, BUFFER-TYPE,
-ENTRY-TYPE, SEARCH-TYPE.  See `guix-get-entries' for the meaning
-of the arguments."
-  :type '(choice (function-item guix-buffer-name-default)
-                 (function-item guix-buffer-name-simple)
-                 (function :tag "Other function"))
-  :group 'guix)
-
-(defun guix-buffer-name-simple (_profile buffer-type entry-type
-                                &optional _search-type)
-  "Return name of a buffer used for displaying information.
-The name is defined by `guix-ENTRY-TYPE-BUFFER-TYPE-buffer-name'
-variable."
-  (symbol-value
-   (guix-get-symbol "buffer-name" buffer-type entry-type)))
-
-(defun guix-buffer-name-default (profile buffer-type entry-type
-                                 &optional _search-type)
-  "Return name of a buffer used for displaying information.
-The name is almost the same as the one defined by
-`guix-buffer-name-simple' except the PROFILE name is added to it."
-  (let ((simple-name (guix-buffer-name-simple
-                      profile buffer-type entry-type))
-        (profile-name (file-name-base (directory-file-name profile)))
-        (re (rx string-start
-                (group (? "*"))
-                (group (*? any))
-                (group (? "*"))
-                string-end)))
-    (or (string-match re simple-name)
-        (error "Unexpected error in defining guix buffer name"))
-    (let ((first*    (match-string 1 simple-name))
-          (name-body (match-string 2 simple-name))
-          (last*     (match-string 3 simple-name)))
-      ;; Handle the case when buffer name is wrapped by '*'.
-      (if (and (string= "*" first*)
-               (string= "*" last*))
-          (concat "*" name-body ": " profile-name "*")
-        (concat simple-name ": " profile-name)))))
-
-(defun guix-buffer-name (profile buffer-type entry-type search-type)
-  "Return name of a buffer used for displaying information.
-See `guix-buffer-name-function' for details."
-  (let ((fun (if (functionp guix-buffer-name-function)
-                 guix-buffer-name-function
-               #'guix-buffer-name-default)))
-    (funcall fun profile buffer-type entry-type search-type)))
+;;; Buffers
 
 (defun guix-switch-to-buffer (buffer)
   "Switch to a 'list' or 'info' BUFFER."
   (pop-to-buffer buffer
                  '((display-buffer-reuse-window
                     display-buffer-same-window))))
-
-(defun guix-buffer-p (&optional buffer modes)
-  "Return non-nil if BUFFER mode is derived from any of the MODES.
-If BUFFER is nil, check current buffer.
-If MODES is nil, use `guix-list-mode' and `guix-info-mode'."
-  (with-current-buffer (or buffer (current-buffer))
-    (apply #'derived-mode-p
-           (or modes
-               '(guix-list-mode guix-info-mode)))))
-
-(defun guix-buffers (&optional modes)
-  "Return list of all buffers with major modes derived from MODES.
-If MODES is nil, return list of all Guix 'list' and 'info' buffers."
-  (cl-remove-if-not (lambda (buf)
-                      (guix-buffer-p buf modes))
-                    (buffer-list)))
-
-(defun guix-update-buffer (buffer)
-  "Update information in a 'list' or 'info' BUFFER."
-  (with-current-buffer buffer
-    (guix-buffer-revert nil t)))
-
-(defun guix-update-buffers-maybe-after-operation ()
-  "Update buffers after Guix operation if needed.
-See `guix-update-after-operation' for details."
-  (let ((to-update
-         (and guix-operation-buffer
-              (cl-case guix-update-after-operation
-                (current (and (buffer-live-p guix-operation-buffer)
-                              (guix-buffer-p guix-operation-buffer)
-                              (list guix-operation-buffer)))
-                (all     (guix-buffers))))))
-    (setq guix-operation-buffer nil)
-    (mapc #'guix-update-buffer to-update)))
-
-(add-hook 'guix-after-repl-operation-hook
-          'guix-update-buffers-maybe-after-operation)
 
 
 ;;; Common definitions for buffer types
@@ -274,6 +172,14 @@ This alist is filled by `guix-buffer-define-interface' macro.")
         (guix-assq-value (guix-buffer-value 'info entry-type 'titles)
                          param))
       (guix-symbol-title param)))
+
+(defun guix-buffer-name (buffer-type entry-type profile)
+  "Return name of BUFFER-TYPE buffer for displaying ENTRY-TYPE entries."
+  (let ((str-or-fun (guix-buffer-value buffer-type entry-type
+                                       'buffer-name)))
+    (if (stringp str-or-fun)
+        str-or-fun
+      (funcall str-or-fun profile))))
 
 (defun guix-buffer-history-size (buffer-type entry-type)
   "Return history size for BUFFER-TYPE/ENTRY-TYPE."
@@ -352,10 +258,12 @@ The following stuff should be defined outside this macro:
   - `guix-TYPE-mode-initialize' (optional) - function for
   additional mode settings; it is called without arguments.
 
-Optional keywords:
+Required keywords:
 
   - `:buffer-name' - default value of the generated
     `guix-TYPE-buffer-name' variable.
+
+Optional keywords:
 
   - `:titles' - default value of the generated
     `guix-TYPE-titles' variable.
@@ -374,7 +282,6 @@ Optional keywords:
          (Entry-type-str     (capitalize entry-type-str))
          (Buffer-type-str    (capitalize buffer-type-str))
          (entry-str          (concat entry-type-str " entries"))
-         (buffer-str         (concat buffer-type-str " buffer"))
          (prefix             (concat "guix-" entry-type-str "-"
                                      buffer-type-str))
          (group              (intern prefix))
@@ -388,9 +295,7 @@ Optional keywords:
          (history-size-var   (intern (concat prefix "-history-size")))
          (revert-confirm-var (intern (concat prefix "-revert-confirm"))))
     (guix-keyword-args-let args
-        ((buffer-name-val    :buffer-name
-                             (format "*Guix %s %s*"
-                                     Entry-type-str Buffer-type-str))
+        ((buffer-name-val    :buffer-name)
          (titles-val         :titles)
          (history-size-val   :history-size 20)
          (revert-confirm-val :revert-confirm? t)
@@ -438,7 +343,8 @@ If non-nil, ask to confirm for reverting `%S' buffer."
                  :group ',group)
 
                (guix-alist-put!
-                '((history-size   . ,history-size-var)
+                '((buffer-name    . ,buffer-name-var)
+                  (history-size   . ,history-size-var)
                   (revert-confirm . ,revert-confirm-var))
                 'guix-buffer-data ',buffer-type ',entry-type)
 
@@ -531,8 +437,7 @@ If NO-DISPLAY is non-nil, do not switch to the buffer."
                         (equal guix-profile profile))
                    (current-buffer)
                  (get-buffer-create
-                  (guix-buffer-name profile buffer-type
-                                    entry-type search-type)))))
+                  (guix-buffer-name buffer-type entry-type profile)))))
       (with-current-buffer buf
         (guix-show-entries entries buffer-type entry-type)
         (guix-set-vars profile entries buffer-type entry-type
@@ -1124,12 +1029,12 @@ The function is called with a single argument - a command line string."
 (defun guix-update-buffers-maybe-after-pull ()
   "Update buffers depending on `guix-update-after-pull'."
   (when guix-update-after-pull
-    (mapc #'guix-update-buffer
+    (mapc #'guix-ui-update-buffer
           ;; No need to update "generation" buffers.
-          (guix-buffers '(guix-package-list-mode
-                          guix-package-info-mode
-                          guix-output-list-mode
-                          guix-output-info-mode)))
+          (guix-ui-buffers '(guix-package-list-mode
+                             guix-package-info-mode
+                             guix-output-list-mode
+                             guix-output-info-mode)))
     (message "Guix buffers have been updated.")))
 
 ;;;###autoload

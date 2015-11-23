@@ -414,7 +414,7 @@ changed with the following variables:
 
 By default, the name of a profile is also displayed in a ``list'' or
 ``info'' buffer name.  To change this behavior, use
-@code{guix-buffer-name-function} variable.
+@code{guix-ui-buffer-name-function} variable.
 
 For example, if you want to display all types of results in a single
 buffer (in such case you will probably use a history (@kbd{l}/@kbd{r})
@@ -428,8 +428,7 @@ extensively), you may do it like this:
    guix-generation-list-buffer-name name
    guix-package-info-buffer-name    name
    guix-output-info-buffer-name     name
-   guix-generation-info-buffer-name name
-   guix-buffer-name-function        #'guix-buffer-name-simple))
+   guix-generation-info-buffer-name name))
 @end example
 
 @node Emacs Keymaps
