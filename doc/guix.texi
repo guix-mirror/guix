@@ -4277,6 +4277,19 @@ The following options are supported:
 
 @table @code
 
+@item --expression=@var{expr}
+@itemx -e @var{expr}
+Consider the package @var{expr} evaluates to.
+
+This is useful to precisely refer to a package, as in this example:
+
+@example
+guix refresh -l -e '(@@@@ (gnu packages commencement) glibc-final)'
+@end example
+
+This command lists the dependents of the ``final'' libc (essentially all
+the packages.)
+
 @item --update
 @itemx -u
 Update distribution source files (package recipes) in place.  This is

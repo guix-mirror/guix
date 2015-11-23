@@ -80,6 +80,9 @@
         (option '(#\L "list-updaters") #f #f
                 (lambda args
                   (list-updaters-and-exit)))
+        (option '(#\e "expression") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'expression arg result)))
         (option '(#\l "list-dependent") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'list-dependent? #t result)))
@@ -115,6 +118,8 @@ Update package definitions to match the latest upstream version.
 When PACKAGE... is given, update only the specified packages.  Otherwise
 update all the packages of the distribution, or the subset thereof
 specified with `--select'.\n"))
+  (display (_ "
+  -e, --expression=EXPR  consider the package EXPR evaluates to"))
   (display (_ "
   -u, --update           update source files in place"))
   (display (_ "
@@ -348,6 +353,8 @@ update would trigger a complete rebuild."
                                 ;; Take either the specified version or the
                                 ;; latest one.
                                 (specification->package spec))
+                               (('expression . exp)
+                                (read/eval-package-expression exp))
                                (_ #f))
                              opts)
             (()                                   ; default to all packages
