@@ -75,7 +75,8 @@ handy front-end to the library.")
        (uri (string-append
              "https://github.com/nijel/enca/archive/" version ".tar.gz"))
        (sha256
-        (base32 "1xik00x0yvhswsw2isnclabhv536xk1s42cf5z54gfbpbhc7ni8l"))))
+        (base32 "1xik00x0yvhswsw2isnclabhv536xk1s42cf5z54gfbpbhc7ni8l"))
+       (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (inputs `(("recode" ,recode)))
 
