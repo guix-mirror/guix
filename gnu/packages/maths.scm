@@ -337,22 +337,24 @@ singular value problems.")
 (define-public gnuplot
   (package
     (name "gnuplot")
-    (version "4.6.3")
+    (version "5.0.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/gnuplot/gnuplot/"
-                                version "/gnuplot-" version ".tar.gz"))
+                          version "/gnuplot-" version ".tar.gz"))
       (sha256
        (base32
-        "1xd7gqdhlk7k1p9yyqf9vkk811nadc7m4si0q3nb6cpv4pxglpyz"))))
+        "0irwig94w3f8bn4a444hrjnp7w55vqwv8gqj42jiwn6zf5z5bg3w"))))
     (build-system gnu-build-system)
     (inputs `(("readline" ,readline)
               ("cairo" ,cairo)
               ("pango" ,pango)
               ("gd" ,gd)))
-    (native-inputs `(("texlive" ,texlive)
-                     ("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ;; Need 'tex', 'latex', 'pdflatex', 'kpsexand', and
+                     ;; 'texhash' binaries.
+                     ("texlive" ,texlive-bin)))
     (home-page "http://www.gnuplot.info")
     (synopsis "Command-line driven graphing utility")
     (description "Gnuplot is a portable command-line driven graphing
