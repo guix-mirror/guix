@@ -2164,6 +2164,33 @@ with sensible defaults out of the box.")
 (define-public python2-click
   (package-with-python2 python-click))
 
+(define-public python-wheel
+  (package
+    (name "python-wheel")
+    (version "0.26.0")
+      (source
+        (origin
+          (method url-fetch)
+          (uri (pypi-uri "wheel" version))
+          (sha256
+            (base32
+             "032k1ajijbqnv0z0k88bhf75mdimi18fcmm28mss90610lw3bbga"))))
+  (build-system python-build-system)
+  (native-inputs
+   `(("python-setuptools" ,python-setuptools)
+     ("python-jsonschema" ,python-jsonschema)
+     ("python-pytest-cov" ,python-pytest-cov)))
+  (home-page "https://bitbucket.org/pypa/wheel/")
+  (synopsis "Built-package format for Python")
+  (description
+   "A wheel is a ZIP-format archive with a specially formatted filename and the
+.whl extension.  It is designed to contain all the files for a PEP 376
+compatible install in a way that is very close to the on-disk format.")
+  (license license:expat)))
+
+(define-public python2-wheel
+  (package-with-python2 python-wheel))
+
 (define-public python-requests
   (package
     (name "python-requests")
