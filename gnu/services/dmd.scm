@@ -116,25 +116,47 @@ service that extends DMD-ROOT-SERVICE-TYPE and nothing else."
                  (default #t)))
 
 
-(define (assert-no-duplicates services)
-  "Raise an error if SERVICES provide the same dmd service more than once.
+(define (assert-valid-graph services)
+  "Raise an error if SERVICES does not define a valid dmd service graph, for
+instance if a service requires a nonexistent service, or if more than one
+service uses a given name.
 
-This is a constraint that dmd's 'register-service' verifies but we'd better
-verify it here statically than wait until PID 1 halts with an assertion
+These are constraints that dmd's 'register-service' verifies but we'd better
+verify them here statically than wait until PID 1 halts with an assertion
 failure."
-  (fold (lambda (service set)
-          (define (assert-unique symbol)
-            (when (set-contains? set symbol)
-              (raise (condition
-                      (&message
-                       (message
-                        (format #f (_ "service '~a' provided more than once")
-                                symbol)))))))
+  (define provisions
+    ;; The set of provisions (symbols).  Bail out if a symbol is given more
+    ;; than once.
+    (fold (lambda (service set)
+            (define (assert-unique symbol)
+              (when (set-contains? set symbol)
+                (raise (condition
+                        (&message
+                         (message
+                          (format #f (_ "service '~a' provided more than once")
+                                  symbol)))))))
 
-          (for-each assert-unique (dmd-service-provision service))
-          (fold set-insert set (dmd-service-provision service)))
-        (setq)
-        services))
+            (for-each assert-unique (dmd-service-provision service))
+            (fold set-insert set (dmd-service-provision service)))
+          (setq 'dmd)
+          services))
+
+  (define (assert-satisfied-requirements service)
+    ;; Bail out if the requirements of SERVICE aren't satisfied.
+    (for-each (lambda (requirement)
+                (unless (set-contains? provisions requirement)
+                  (raise (condition
+                          (&message
+                           (message
+                            (format #f (_ "service '~a' requires '~a', \
+which is undefined")
+                                    (match (dmd-service-provision service)
+                                      ((head . _) head)
+                                      (_          service))
+                                    requirement)))))))
+              (dmd-service-requirement service)))
+
+  (for-each assert-satisfied-requirements services))
 
 (define (dmd-configuration-file services)
   "Return the dmd configuration file for SERVICES."
@@ -144,7 +166,7 @@ failure."
       (gnu build file-systems)
       (guix build utils)))
 
-  (assert-no-duplicates services)
+  (assert-valid-graph services)
 
   (mlet %store-monad ((modules  (imported-modules modules))
                       (compiled (compiled-modules modules)))
