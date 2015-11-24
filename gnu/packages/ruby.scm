@@ -544,6 +544,33 @@ line of code.")
     ;; of the Expat license.
     (license license:bsd-3)))
 
+(define-public ruby-ci-reporter
+  (package
+    (name "ruby-ci-reporter")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "ci_reporter" version))
+              (sha256
+               (base32
+                "17fm20jmw3ajdryhkkxpjahcfx7bgswqzxrskivlkns2718ayyyg"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "rspec"))
+    (propagated-inputs
+     `(("ruby-builder" ,ruby-builder)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Generate XML reports of runs test")
+    (description
+     "@code{CI::Reporter} is an add-on to Ruby testing frameworks that allows
+you to generate XML reports of your test runs.  The resulting files can be
+read by a continuous integration system that understands Ant's JUnit report
+format.")
+    (home-page "https://github.com/nicksieger/ci_reporter")
+    (license license:expat)))
+
 (define-public ruby-orderedhash
   (package
     (name "ruby-orderedhash")
