@@ -852,6 +852,33 @@ the SimpleCov code coverage tool for Ruby version 1.9 and above.")
     (home-page "https://github.com/colszowka/simplecov-html")
     (license license:expat)))
 
+(define-public ruby-simplecov
+  (package
+    (name "ruby-simplecov")
+    (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "simplecov" version))
+              (sha256
+               (base32
+                "1q2iq2vgrdvvla5y907gkmqx6ry2qvnvc7a90hlcbwgp1w0sv6z4"))))
+    (build-system ruby-build-system)
+    ;; Simplecov depends on rubocop for code style checking at build time.
+    ;; Rubocop needs simplecov at build time.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-json" ,ruby-json)
+       ("ruby-docile" ,ruby-docile)
+       ("ruby-simplecov-html" ,ruby-simplecov-html)))
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Code coverage framework for Ruby")
+    (description "SimpleCov is a code coverage framework for Ruby with a
+powerful configuration library and automatic merging of coverage across test
+suites.")
+    (home-page "http://github.com/colszowka/simplecov")
+    (license license:expat)))
+
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
