@@ -1830,6 +1830,38 @@ current line in an external editor.")
     (home-page "https://github.com/tpope/pry-editline")
     (license license:expat)))
 
+(define-public ruby-sdoc
+  (package
+    (name "ruby-sdoc")
+    (version "0.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "sdoc" version))
+              (sha256
+               (base32
+                "16xyfair1j4irfkd6sxvmdcak957z71lwkvhglrznfpkalfnqyqp"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'relax-minitest-requirement
+          (lambda _
+            (substitute* "sdoc.gemspec"
+              (("<minitest>, \\[\"~> 4\\.0\"\\]")
+               "<minitest>, [\">= 4.0\"]"))
+            #t)))))
+    (propagated-inputs
+     `(("ruby-json" ,ruby-json)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-minitest" ,ruby-minitest)))
+    (synopsis "Generate searchable RDoc documentation")
+    (description
+     "SDoc is an RDoc documentation generator to build searchable HTML
+documentation for Ruby code.")
+    (home-page "http://github.com/voloko/sdoc")
+    (license license:expat)))
+
 (define-public ruby-json
   (package
     (name "ruby-json")
