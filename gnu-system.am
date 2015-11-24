@@ -269,6 +269,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/python.scm			\
   gnu/packages/qemu.scm				\
   gnu/packages/qt.scm				\
+  gnu/packages/ragel.scm			\
   gnu/packages/ratpoison.scm			\
   gnu/packages/rc.scm				\
   gnu/packages/rdesktop.scm			\
