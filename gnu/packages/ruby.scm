@@ -1809,6 +1809,27 @@ kernel subsystem for monitoring changes to files and directories.")
     (home-page "https://github.com/nex3/rb-inotify")
     (license license:expat)))
 
+(define-public ruby-pry-editline
+  (package
+    (name "ruby-pry-editline")
+    (version "1.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "pry-editline" version))
+              (sha256
+               (base32
+                "1pjxyvdxvw41xw3yyl18pwzix8hbvn6lgics7qcfhjfsf1zs8x1z"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f)) ; no tests included
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Open the current REPL line in an editor")
+    (description
+     "This gem provides a plugin for the Ruby REPL to enable opening the
+current line in an external editor.")
+    (home-page "https://github.com/tpope/pry-editline")
+    (license license:expat)))
+
 (define-public ruby-json
   (package
     (name "ruby-json")
