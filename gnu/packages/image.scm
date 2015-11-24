@@ -703,3 +703,24 @@ applications with support for many types of images.  DevIL can load, save,
 convert, manipulate, filter and display a wide variety of image formats.")
     (home-page "http://openil.sourceforge.net")
     (license license:lgpl2.1+)))
+
+(define-public jasper
+  (package
+    (name "jasper")
+    (version "1.900.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.ece.uvic.ca/~frodo/jasper"
+                                  "/software/jasper-" version ".zip"))
+              (sha256
+               (base32
+                "154l7zk7yh3v8l2l6zm5s2alvd2fzkp6c9i18iajfbna5af5m43b"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (synopsis "JPEG-2000 library")
+    (description "The JasPer Project is an initiative to provide a reference
+implementation of the codec specified in the JPEG-2000 Part-1 standard (i.e.,
+ISO/IEC 15444-1).")
+    (home-page "https://www.ece.uvic.ca/~frodo/jasper/")
+    (license (license:x11-style "file://LICENSE"))))
