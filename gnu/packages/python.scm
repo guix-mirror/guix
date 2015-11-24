@@ -5642,6 +5642,32 @@ suitable for a wide range of protocols based on the ASN.1 specification.")
 (define-public python2-pyasn1
   (package-with-python2 python-pyasn1))
 
+(define-public python-pyasn1-modules
+  (package
+    (name "python-pyasn1-modules")
+    (version "0.0.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pyasn1-modules" version))
+        (sha256
+         (base32
+          "0drqgw81xd3fxdlg89kgd79zzrabvfncvkbybi2wr6w2y4s1jmhh"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-pyasn1" ,python-pyasn1)))
+    (home-page "http://sourceforge.net/projects/pyasn1/")
+    (synopsis "ASN.1 codec implementations")
+    (description
+     "Pyasn1-modules is a collection of Python modules providing ASN.1 types and
+implementations of ASN.1-based codecs and protocols.")
+    (license bsd-3)))
+
+(define-public python2-pyasn1-modules
+  (package-with-python2 python-pyasn1-modules))
+
 (define-public python2-ipaddress
   (package
     (name "python2-ipaddress")
