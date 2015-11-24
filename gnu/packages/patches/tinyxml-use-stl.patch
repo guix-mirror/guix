@@ -1,0 +1,41 @@
+From a53b6ee4519a7657164610ac14a82c57b1273bf6 Mon Sep 17 00:00:00 2001
+From: David Thompson <dthompson2@worcester.edu>
+Date: Mon, 23 Nov 2015 06:54:36 -0500
+Subject: [PATCH] Use STL.
+
+Software that uses the shared library, such as Kodi, assume that TinyXML was
+compiled with STL activated.
+
+---
+ tinyxml.h   | 2 ++
+ xmltest.cpp | 1 +
+ 2 files changed, 3 insertions(+)
+
+diff --git a/tinyxml.h b/tinyxml.h
+index a3589e5..6cbfc7d 100644
+--- a/tinyxml.h
++++ b/tinyxml.h
+@@ -43,6 +43,8 @@ distribution.
+ #define DEBUG
+ #endif
+ 
++#define TIXML_USE_STL 1
++
+ #ifdef TIXML_USE_STL
+ 	#include <string>
+  	#include <iostream>
+diff --git a/xmltest.cpp b/xmltest.cpp
+index 663c157..057dbfe 100644
+--- a/xmltest.cpp
++++ b/xmltest.cpp
+@@ -2,6 +2,7 @@
+    Test program for TinyXML.
+ */
+ 
++#define TIXML_USE_STL 1
+ 
+ #ifdef TIXML_USE_STL
+ 	#include <iostream>
+-- 
+2.5.0
+
