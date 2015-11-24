@@ -13,6 +13,7 @@
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Erik Edrosa <erik.edrosa@gmail.com>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3895,20 +3896,19 @@ child application and control it as if a human were typing commands.")
 (define-public python-setuptools-scm
   (package
     (name "python-setuptools-scm")
-    (version "1.8.0")
+    (version "1.9.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://pypi.python.org/packages/source/s/"
-                                  "setuptools_scm/setuptools_scm-"
-                                  version ".tar.bz2"))
+              (uri (pypi-uri "setuptools_scm" version))
               (sha256
                (base32
-                "00p60v2yfqy1r58pjcx9wy6dvqd7wkpfs5z1dzwf7y75c1g3dgyx"))))
+                "0y24bl893zk6nrklbvdrlmpkalf214zjn6k1xrglljd29rrn4wxi"))))
     (build-system python-build-system)
+    (native-inputs `(("python-setuptools" ,python-setuptools)))
     (home-page "https://github.com/pypa/setuptools_scm/")
     (synopsis "Manage Python package versions in SCM metadata")
     (description
-     "setuptools_scm handles managing your Python package versions in
+     "Setuptools_scm handles managing your Python package versions in
 @dfn{software configuration management} (SCM) metadata instead of declaring
 them as the version argument or in a SCM managed file.")
     (license license:expat)))
