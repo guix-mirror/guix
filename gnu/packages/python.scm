@@ -2159,19 +2159,18 @@ somewhat intelligeble.")
 (define-public python-pyjwt
   (package
     (name "python-pyjwt")
-    (version "0.2.1")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/P/PyJWT/PyJWT-"
-             version ".tar.gz"))
+       (uri (pypi-uri "PyJWT" version))
        (sha256
         (base32
-         "1ahqblfy2sj3xz34wsa48cn9rp0dspzq56p54i5znmws3b8gml6g"))))
+         "1556v2jppd8mjkkj66pxb5rcazm35jq81r233mdl8hfmz9n3icp1"))))
     (build-system python-build-system)
-    (inputs
-     `(("python-setuptools" ,python-setuptools)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-pytest-runner" ,python-pytest-runner)))
     (arguments
      '(#:tests? #f)) ; test suite doesn't work
     (home-page "http://github.com/progrium/pyjwt")
