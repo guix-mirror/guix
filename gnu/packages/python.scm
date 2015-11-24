@@ -7084,3 +7084,29 @@ Python at your fingertips, in Lisp form.")
 
 (define-public python2-hy
   (package-with-python2 python-hy))
+
+(define-public python-futures
+  (package
+    (name "python-futures")
+    (version "3.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "futures" version))
+        (sha256
+         (base32
+          "1vcb34dqhzkhbq1957vdjszhhm5y3j9ba88dgwhqx2zynhmk9qig"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/agronholm/pythonfutures")
+    (synopsis
+     "Backport of the concurrent.futures package from Python 3.2")
+    (description
+     "The concurrent.futures module provides a high-level interface for
+asynchronously executing callables.  This package backports the
+concurrent.futures package from Python 3.2")
+    (license bsd-3)))
+
+(define-public python2-futures
+  (package-with-python2 python-futures))
