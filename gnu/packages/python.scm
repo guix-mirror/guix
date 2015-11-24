@@ -2185,23 +2185,23 @@ somewhat intelligeble.")
 (define-public python-oauthlib
   (package
     (name "python-oauthlib")
-    (version "0.6.3")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
-              (uri
-               (string-append
-                "https://pypi.python.org/packages/source/o/oauthlib/oauthlib-"
-                version ".tar.gz"))
+              (uri (pypi-uri "oauthlib" version))
               (sha256
                (base32
-                "1yaj3j64la4arwsbhbfmpnickzh3jpg9nlpyg409v8pp24isn48a"))))
+                "1bfrj70vdjxjw74khbyh6f0dksv7p5rh2346jnlrffyacd3gwjzg"))))
     (build-system python-build-system)
-    (inputs
+    (native-inputs
      `(("python-setuptools" ,python-setuptools)
-       ("python-pyjwt" ,python-pyjwt)
-       ("python-pycrypto" ,python-pycrypto)
+       ("python-coverage", python-coverage)
        ("python-nose" ,python-nose)
        ("python-mock" ,python-mock)))
+    (inputs
+     `(("python-blinker" ,python-blinker)
+       ("python-cryptography" ,python-cryptography)
+       ("python-pyjwt" ,python-pyjwt)))
     (home-page "https://github.com/idan/oauthlib")
     (synopsis "OAuth implementation for Python")
     (description
