@@ -841,8 +841,9 @@ and JRuby.")
               (uri (rubygems-uri "simplecov-html" version))
               (sha256
                (base32
-                "1m5mprppw0xcrv2mkim5zsk70v089ajzqiq5hpyb0xg96fcyzyxj"))))
+                "1qni8g0xxglkx25w54qcfbi4wjkpvmb28cb7rj5zk3iqynjcdrqf"))))
     (build-system ruby-build-system)
+    (arguments `(#:tests? #f)) ; there are no tests
     (native-inputs
      `(("bundler" ,bundler)))
     (synopsis "Default HTML formatter for SimpleCov code coverage tool")
