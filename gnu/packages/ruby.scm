@@ -1862,6 +1862,36 @@ documentation for Ruby code.")
     (home-page "http://github.com/voloko/sdoc")
     (license license:expat)))
 
+(define-public ruby-tins
+  (package
+    (name "ruby-tins")
+    (version "1.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "tins" version))
+              (sha256
+               (base32
+                "1060h8dgnjl9az0sv1b74yrni8d4mh3x858wq6yfbfdf5dxrfl0a"))))
+    (build-system ruby-build-system)
+    ;; This gem needs gem-hadar at development time, but gem-hadar needs tins
+    ;; at runtime.  To avoid the dependency on gem-hadar we disable rebuilding
+    ;; the gemspec.
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+          (lambda _
+            ;; "lib/spruz" is a symlink.  Leaving it in the gemspec file
+            ;; causes an error.
+            (substitute* "tins.gemspec"
+              (("\"lib/spruz\", ") ""))
+            (zero? (system* "gem" "build" "tins.gemspec")))))))
+    (synopsis "Assorted tools for Ruby")
+    (description "Tins is a Ruby library providing assorted tools.")
+    (home-page "https://github.com/flori/tins")
+    (license license:expat)))
+
 (define-public ruby-json
   (package
     (name "ruby-json")
