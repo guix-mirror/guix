@@ -518,6 +518,32 @@ script.")
     (home-page "http://rubyforge.org/projects/antwrap/")
     (license license:expat)))
 
+(define-public ruby-atoulme-saikuro
+  (package
+    (name "ruby-atoulme-saikuro")
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "atoulme-Saikuro" version))
+              (sha256
+               (base32
+                "0kvd2nsxffbza61d3q4j94wrbnbv50r1zy3a7q26f6k706fw1f19"))))
+    (build-system ruby-build-system)
+    ;; FIXME: There are no unit tests.  The tests are demonstrations of the
+    ;; "saikuro" tool.
+    (arguments `(#:tests? #f))
+    (synopsis "Cyclomatic complexity analyzer")
+    (description "Saikuro is a Ruby cyclomatic complexity analyzer.  When
+given Ruby source code Saikuro will generate a report listing the cyclomatic
+complexity of each method found.  In addition, Saikuro counts the number of
+lines per method and can generate a listing of the number of tokens on each
+line of code.")
+    (home-page "http://www.github.com/atoulme/Saikuro")
+    ;; File headers contain the BSD-3 license and the README.rdoc says that
+    ;; "Saikuro uses the BSD license", but the LICENSE file contains the text
+    ;; of the Expat license.
+    (license license:bsd-3)))
+
 (define-public ruby-orderedhash
   (package
     (name "ruby-orderedhash")
