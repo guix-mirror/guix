@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,14 +27,17 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libidn)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages base))
 
@@ -319,6 +323,39 @@ security, and applying best practice development processes.")
                    (license:non-copyleft
                      "file://COPYING"
                      "See COPYING in the distribution.")))))
+
+(define-public acme
+  (package
+    (name "acme")
+    (version "0.1.0")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/a/acme/acme-"
+                          version ".tar.gz"))
+      (sha256
+        (base32
+          "0fj0m04zzdxx23vazl00ilqyl3jxqq9c9p4x61pfz1zps7nbzsy3"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    ;; TODO: Add optional inputs for testing and building documentation.
+    (native-inputs
+     `(("python2-mock" ,python2-mock)
+       ("python2-setuptools" ,python2-setuptools)))
+    (propagated-inputs
+     `(("python2-ndg-httpsclient" ,python2-ndg-httpsclient)
+       ("python2-werkzeug" ,python2-werkzeug)
+       ("python2-six" ,python2-six)
+       ("python2-requests" ,python2-requests)
+       ("python2-pytz" ,python2-pytz)
+       ("python2-pyrfc3339" ,python2-pyrfc3339)
+       ("python2-pyasn1" ,python2-pyasn1)
+       ("python2-cryptography" ,python2-cryptography)
+       ("python2-pyopenssl" ,python2-pyopenssl)))
+    (home-page "https://github.com/letsencrypt/letsencrypt")
+    (synopsis "ACME protocol implementation in Python")
+    (description "ACME protocol implementation in Python")
+    (license license:asl2.0)))
 
 (define-public perl-net-ssleay
   (package
