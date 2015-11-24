@@ -1598,6 +1598,7 @@ and many external plugins.")
             #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
+       ("python-setuptools" ,python-setuptools)
        ("python-setuptools-scm" ,python-setuptools-scm)))
     (home-page "https://bitbucket.org/pytest-dev/pytest-runner")
     (synopsis "Invoke py.test as a distutils command")
