@@ -6342,6 +6342,43 @@ facilities for defining, registering and looking up components.")
 (define-public python2-zope-component
   (package-with-python2 python-zope-component))
 
+(define-public python2-pythondialog
+  (package
+    (name "python2-pythondialog")
+    (version "3.3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/p/"
+                           "python2-pythondialog/python2-pythondialog-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1yhkagsh99bfi592ymczf8rnw8rk6n9hdqy3dd98m3yrx8zmjvry"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((dialog (assoc-ref inputs "dialog")))
+               ;; Since this library really wants to grovel the search path, we
+               ;; must hardcode dialog's store path into it.
+               (substitute* "dialog.py"
+                 (("os.getenv\\(\"PATH\", \":/bin:/usr/bin\"\\)")
+                  (string-append "os.getenv(\"PATH\")  + \":" dialog "/bin\"")))
+               #t))))
+       #:python ,python-2
+       #:tests? #f)) ; no test suite
+    (propagated-inputs
+     `(("dialog" ,dialog)))
+    (home-page "http://pythondialog.sourceforge.net/")
+    (synopsis "Python interface to the UNIX dialog utility")
+    (description "A Python wrapper for the dialog utility.  Its purpose is to
+provide an easy to use, pythonic and comprehensive Python interface to dialog.
+This allows one to make simple text-mode user interfaces on Unix-like systems")
+    (license lgpl2.1)))
+
 (define-public python-pyrfc3339
   (package
     (name "python-pyrfc3339")
