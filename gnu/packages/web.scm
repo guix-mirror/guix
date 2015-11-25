@@ -3003,3 +3003,34 @@ the package implements a framework for performing fully customized requests
 where data can be processed either in memory, on disk, or streaming via the
 callback or connection interfaces.")
     (license l:expat)))
+
+(define-public gumbo-parser
+  (package
+    (name "gumbo-parser")
+    (version "0.10.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/google/"
+                                  "gumbo-parser/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bgg2kbj311pqdzw2v33za7k66g1rv44kkvvnz2gnpaasi9k0ii8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; tests require bundling googletest sources
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+          (lambda _ (zero? (system* "sh" "autogen.sh")))))))
+    ;; The release tarball lacks the generated files.
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://github.com/google/gumbo-parser")
+    (synopsis "HTML5 parsing library")
+    (description
+     "Gumbo is an implementation of the HTML5 parsing algorithm implemented as
+a pure C99 library.")
+    (license l:asl2.0)))
