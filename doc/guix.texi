@@ -6290,8 +6290,8 @@ services that one expects from the system.  The services exported by
 this module are listed below.
 
 @defvr {Scheme Variable} %base-services
-This variable contains a list of basic services@footnote{Technically,
-this is a list of monadic services.  @xref{The Store Monad}.} one would
+This variable contains a list of basic services (@pxref{Service Types
+and Services}, for more information on service objects) one would
 expect from the system: a login service (mingetty) on each tty, syslogd,
 libc's name service cache daemon (nscd), the udev device manager, and
 more.
