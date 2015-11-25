@@ -1782,6 +1782,54 @@ invocation, and source and documentation browsing.")
     (home-page "http://pryrepl.org")
     (license license:expat)))
 
+(define-public ruby-guard
+  (package
+    (name "ruby-guard")
+    (version "2.13.0")
+    (source (origin
+              (method url-fetch)
+              ;; The gem does not include a Rakefile, nor does it contain a
+              ;; gemspec file, nor does it come with the tests.  This is why
+              ;; we fetch the tarball from Github.
+              (uri (string-append "https://github.com/guard/guard/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hwj0yi17k6f5axrm0k2bb7fq71dlp0zfywmd7pij9iimbppcca0"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f ; tests require cucumber
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-git-ls-files
+          (lambda* (#:key outputs #:allow-other-keys)
+            (substitute* "guard.gemspec"
+              (("git ls-files -z") "find . -type f -print0"))
+            #t))
+         (replace 'build
+          (lambda _
+            (zero? (system* "gem" "build" "guard.gemspec")))))))
+    (propagated-inputs
+     `(("ruby-formatador" ,ruby-formatador)
+       ("ruby-listen" ,ruby-listen)
+       ("ruby-lumberjack" ,ruby-lumberjack)
+       ("ruby-nenv" ,ruby-nenv)
+       ("ruby-notiffany" ,ruby-notiffany)
+       ("ruby-pry" ,ruby-pry)
+       ("ruby-shellany" ,ruby-shellany)
+       ("ruby-thor" ,ruby-thor)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Tool to handle events on file system modifications")
+    (description
+     "Guard is a command line tool to easily handle events on file system
+modifications.  Guard automates various tasks by running custom rules whenever
+file or directories are modified.")
+    (home-page "http://guardgem.org/")
+    (license license:expat)))
+
 (define-public ruby-thread-safe
   (package
     (name "ruby-thread-safe")
