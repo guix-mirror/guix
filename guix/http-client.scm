@@ -35,7 +35,8 @@
   #:use-module ((guix build utils)
                 #:select (mkdir-p dump-port))
   #:use-module ((guix build download)
-                #:select (open-socket-for-uri resolve-uri-reference))
+                #:select (open-socket-for-uri
+                          open-connection-for-uri resolve-uri-reference))
   #:re-export (open-socket-for-uri)
   #:export (&http-get-error
             http-get-error?
@@ -207,7 +208,7 @@ unbuffered port, suitable for use in `filtered-port'.
 
 Raise an '&http-get-error' condition if downloading fails."
   (let loop ((uri uri))
-    (let ((port (or port (open-socket-for-uri uri))))
+    (let ((port (or port (open-connection-for-uri uri))))
       (unless buffered?
         (setvbuf port _IONBF))
       (let*-values (((resp data)
