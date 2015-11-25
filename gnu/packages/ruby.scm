@@ -2043,6 +2043,33 @@ process tree data structure for the current host.")
     ;; There is no mention of the "or later" clause.
     (license license:gpl2)))
 
+(define-public ruby-utils
+  (package
+    (name "ruby-utils")
+    (version "0.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "utils" version))
+              (sha256
+               (base32
+                "0vycgscxf3s1xn4yyfsq54zlh082581ga8azybmqgc4pij6iz2cd"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-tins" ,ruby-tins)
+       ("ruby-term-ansicolor" ,ruby-term-ansicolor)
+       ("ruby-pstree" ,ruby-pstree)
+       ("ruby-pry-editline" ,ruby-pry-editline)))
+    (native-inputs
+     `(("ruby-gem-hadar" ,ruby-gem-hadar)
+       ("bundler" ,bundler)))
+    (synopsis "Command line tools for working with Ruby")
+    (description
+     "This package provides assorted command line tools that may be useful
+when working with Ruby code.")
+    (home-page "https://github.com/flori/utils")
+    ;; There is no mention of the "or later" clause.
+    (license license:gpl2)))
+
 (define-public ruby-json
   (package
     (name "ruby-json")
