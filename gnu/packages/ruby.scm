@@ -2422,6 +2422,45 @@ alternative to Marshal for Object serialization. ")
     (home-page "http://www.ohler.com/ox")
     (license license:expat)))
 
+(define-public ruby-redcloth
+  (package
+    (name "ruby-redcloth")
+    (version "4.2.9")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "RedCloth" version))
+              (sha256
+               (base32
+                "06pahxyrckhgb7alsxwhhlx1ib2xsx33793finj01jk8i054bkxl"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         ;; Redcloth has complicated rake tasks to build various versions for
+         ;; multiple targets using RVM.  We don't want this so we just use the
+         ;; existing gemspec.
+         (replace 'build
+          (lambda _
+            (zero? (system* "gem" "build" "redcloth.gemspec"))))
+         ;; Make sure that the "redcloth" executable finds required Ruby
+         ;; libraries.
+         (add-after 'install 'wrap-bin-redcloth
+          (lambda* (#:key outputs #:allow-other-keys)
+            (wrap-program (string-append (assoc-ref outputs "out")
+                                         "/bin/redcloth")
+              `("GEM_HOME" ":" prefix (,(getenv "GEM_HOME"))))
+            #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-diff-lcs" ,ruby-diff-lcs)
+       ("ruby-rspec-2" ,ruby-rspec-2)))
+    (synopsis "Textile markup language parser for Ruby")
+    (description
+     "RedCloth is a Ruby parser for the Textile markup language.")
+    (home-page "http://redcloth.org")
+    (license license:expat)))
+
 (define-public ruby-pg
   (package
     (name "ruby-pg")
