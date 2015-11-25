@@ -50,8 +50,13 @@ AC_DEFUN([GUIX_SYSTEM_TYPE], [
        i*86)
 	  machine_name="i686";;
        amd64)
-	  machine_name="x86_64";;
-       arm*)
+          machine_name="x86_64";;
+       arm|armv[7-9]*)
+          # Here we want to exclude CPUs such as "armv6l".  On ARMv7
+          # machines, we normally get "armv7l".  However, in Guix, we
+          # configure with --build=arm-unknown-linux-gnueabihf, leading
+          # to just "arm", so we also have to allow it.
+          #
           # TODO: If not cross-compiling, add a sanity check to make
           #       sure this build machine has the needed features to
           #       support executables compiled using our armhf gcc,
