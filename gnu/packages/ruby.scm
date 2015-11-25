@@ -2427,6 +2427,31 @@ tree-like structures.  It is similar to Ruby's built-in @code{TSort} module.")
     (home-page "https://github.com/postmodern/tdiff")
     (license license:expat)))
 
+(define-public ruby-nokogiri-diff
+  (package
+    (name "ruby-nokogiri-diff")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "nokogiri-diff" version))
+              (sha256
+               (base32
+                "0njr1s42war0bj1axb2psjvk49l74a8wzr799wckqqdcb6n51lc1"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-tdiff" ,ruby-tdiff)
+       ("ruby-nokogiri" ,ruby-nokogiri)))
+    (native-inputs
+     `(("ruby-rspec-2" ,ruby-rspec-2)
+       ("ruby-yard" ,ruby-yard)
+       ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
+    (synopsis "Calculate the differences between two XML/HTML documents")
+    (description
+     "@code{Nokogiri::Diff} adds the ability to calculate the
+differences (added or removed nodes) between two XML/HTML documents.")
+    (home-page "https://github.com/postmodern/nokogiri-diff")
+    (license license:expat)))
+
 (define-public ruby-rack
   (package
     (name "ruby-rack")
