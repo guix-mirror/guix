@@ -2199,8 +2199,8 @@ a native C extension.")
     (build-system ruby-build-system)
     (arguments '(#:tests? #f)) ; no tests
     (propagated-inputs
-     ;; FIXME: omitting "ruby-rb-fsevent" which is only for MacOS.
-     `(("ruby-rb-inotify" ,ruby-rb-inotify)))
+     `(("ruby-rb-inotify" ,ruby-rb-inotify)
+       ("ruby-rb-fsevent" ,ruby-rb-fsevent)))
     (synopsis "Listen to file modifications")
     (description "The Listen gem listens to file modifications and notifies
 you about the changes.")
