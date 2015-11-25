@@ -30,6 +30,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages ragel)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
@@ -2741,6 +2742,46 @@ simple case of executing code based on the flags or parameters passed.")
     (description
      "Cutest runs tests in separate processes to avoid shared state.")
     (home-page "https://github.com/djanowski/cutest")
+    (license license:expat)))
+
+(define-public ruby-pygmentize
+  (package
+    (name "ruby-pygmentize")
+    (version "0.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "pygmentize" version))
+              (sha256
+               (base32
+                "1pxryhkiwvsz6xzda3bvqwz5z8ggzl1cdglf8qbcf4bb7akirdpb"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-pygmentize-path
+          (lambda _
+            (substitute* "lib/pygmentize.rb"
+              (("\"/usr/bin/env python.*")
+               (string-append "\"" (which "pygmentize") "\"\n")))
+            #t))
+         (add-after 'build 'do-not-use-vendor-directory
+          (lambda _
+            ;; Remove bundled pygments sources
+            ;; FIXME: ruby-build-system does not support snippets.
+            (delete-file-recursively "vendor")
+            (substitute* "pygmentize.gemspec"
+              (("\"vendor/\\*\\*/\\*\",") ""))
+            #t)))))
+    (inputs
+     `(("pygments" ,python-pygments)))
+    (native-inputs
+     `(("ruby-cutest" ,ruby-cutest)
+       ("ruby-nokogiri" ,ruby-nokogiri)))
+    (synopsis "Thin Ruby wrapper around pygmentize")
+    (description
+     "Pygmentize provides a simple way to call pygmentize from within a Ruby
+application.")
+    (home-page "https://github.com/djanowski/pygmentize")
     (license license:expat)))
 
 (define-public ruby-eventmachine
