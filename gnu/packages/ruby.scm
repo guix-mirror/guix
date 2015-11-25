@@ -2724,6 +2724,25 @@ simple case of executing code based on the flags or parameters passed.")
     (home-page "https://github.com/djanowski/cutest")
     (license license:expat)))
 
+(define-public ruby-cutest
+  (package
+    (name "ruby-cutest")
+    (version "1.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "cutest" version))
+              (sha256
+               (base32
+                "1mldhjn62g53vx4gq2qdqg2lgjvyrqxa8d0khf8347bbfgi16d32"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-clap" ,ruby-clap)))
+    (synopsis "Run tests in separate processes")
+    (description
+     "Cutest runs tests in separate processes to avoid shared state.")
+    (home-page "https://github.com/djanowski/cutest")
+    (license license:expat)))
+
 (define-public ruby-eventmachine
   (package
     (name "ruby-eventmachine")
