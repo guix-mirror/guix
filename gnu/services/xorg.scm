@@ -43,6 +43,8 @@
             xorg-start-command
             %default-slim-theme
             %default-slim-theme-name
+            slim-configuration
+            slim-service-type
             slim-service
 
             screen-locker-service-type
