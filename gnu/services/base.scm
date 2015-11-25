@@ -223,7 +223,14 @@ FILE-SYSTEM."
                   (chdir "/")
 
                   (umount #$target)
-                  #f)))))))
+                  #f))
+
+        ;; We need an additional module.
+        (modules `(((gnu build file-systems)
+                    #:select (check-file-system canonicalize-device-spec))
+                   ,@%default-modules))
+        (imported-modules `((gnu build file-systems)
+                            ,@%default-imported-modules)))))))
 
 (define* (file-system-service file-system)
   "Return a service that mounts @var{file-system}, a @code{<file-system>}

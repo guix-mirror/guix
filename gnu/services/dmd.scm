@@ -107,18 +107,14 @@ service that extends DMD-ROOT-SERVICE-TYPE and nothing else."
 (define %default-imported-modules
   ;; Default set of modules imported for a service's consumption.
   '((guix build utils)
-    (guix build syscalls)
-    (gnu build file-systems)))
+    (guix build syscalls)))
 
 (define %default-modules
   ;; Default set of modules visible in a service's file.
   `((dmd service)
     (oop goops)
-    (ice-9 ftw)
     (guix build utils)
-    (guix build syscalls)
-    ((gnu build file-systems)
-     #:select (check-file-system canonicalize-device-spec))))
+    (guix build syscalls)))
 
 (define-record-type* <dmd-service>
   dmd-service make-dmd-service
