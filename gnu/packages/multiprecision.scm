@@ -30,7 +30,7 @@
 (define-public gmp
   (package
    (name "gmp")
-   (version "6.0.0a")
+   (version "6.1.0")
    (source (origin
             (method url-fetch)
             (uri
@@ -38,7 +38,7 @@
                             version ".tar.xz"))
             (sha256
              (base32
-              "0r5pp27cy7ch3dg5v0rsny8bib1zfvrza6027g2mp5f6v8pd6mli"))
+              "12b9s4jn48gbar6dbs5qrlmljdmnq43xy3ji9yjzic0mwp6dmnk8"))
             (patches (map search-patch
                           '("gmp-arm-asm-nothumb.patch"
                             "gmp-faulty-test.patch")))))
