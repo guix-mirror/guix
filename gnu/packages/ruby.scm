@@ -2163,6 +2163,28 @@ a native C extension.")
     (home-page "http://flori.github.com/json")
     (license license:ruby)))
 
+;; Even though this package only provides bindings for a Mac OSX API it is
+;; required by "ruby-listen" at runtime.
+(define-public ruby-rb-fsevent
+  (package
+    (name "ruby-rb-fsevent")
+    (version "0.9.6")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rb-fsevent" version))
+              (sha256
+               (base32
+                "1hq57by28iv0ijz8pk9ynih0xdg7vnl1010xjcijfklrcv89a1j2"))))
+    (build-system ruby-build-system)
+    ;; Tests need "guard-rspec", which needs "guard".  However, "guard" needs
+    ;; "listen", which needs "rb-fsevent" at runtime.
+    (arguments `(#:tests? #f))
+    (synopsis "FSEvents API with signals catching")
+    (description
+     "This library provides Ruby bindings for the Mac OSX FSEvents API.")
+    (home-page "https://rubygems.org/gems/rb-fsevent")
+    (license license:expat)))
+
 (define-public ruby-listen
   (package
     (name "ruby-listen")
