@@ -1504,7 +1504,7 @@ standard library.")
         (base32
          "0wbs4i4x3x7klr3v35ss6p9mcqz883i1xgcpkhvl7n2lyv6yhpda"))))
     (inputs
-     `(("python2-setuptools" ,python-setuptools)))
+     `(("python2-setuptools" ,python2-setuptools)))
     (arguments
      `(#:python ,python-2
        #:tests? #f)))) ; no setup.py test command
