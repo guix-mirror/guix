@@ -1989,6 +1989,38 @@ Ruby's large and slower test/unit.")
     (home-page "https://rubygems.org/gems/minitest_tu_shim")
     (license license:expat)))
 
+(define-public ruby-term-ansicolor
+  (package
+    (name "ruby-term-ansicolor")
+    (version "1.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "term-ansicolor" version))
+              (sha256
+               (base32
+                "0ydbbyjmk5p7fsi55ffnkq79jnfqx65c3nj8d9rpgl6sw85ahyys"))))
+    (build-system ruby-build-system)
+    ;; Rebuilding the gemspec seems to require git, even though this is not a
+    ;; git repository, so we just build the gem from the existing gemspec.
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'build
+          (lambda _
+            (zero? (system* "gem" "build" "term-ansicolor.gemspec")))))))
+    (propagated-inputs
+     `(("ruby-tins" ,ruby-tins)))
+    (native-inputs
+     `(("ruby-gem-hadar" ,ruby-gem-hadar)
+       ("ruby-minitest-tu-shim" ,ruby-minitest-tu-shim)))
+    (synopsis "Ruby library to control the attributes of terminal output")
+    (description
+     "This Ruby library uses ANSI escape sequences to control the attributes
+of terminal output.")
+    (home-page "http://flori.github.io/term-ansicolor/")
+    ;; There is no mention of the "or later" clause.
+    (license license:gpl2)))
+
 (define-public ruby-json
   (package
     (name "ruby-json")
