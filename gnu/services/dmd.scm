@@ -45,6 +45,11 @@
             dmd-service-start
             dmd-service-stop
             dmd-service-auto-start?
+            dmd-service-modules
+            dmd-service-imported-modules
+
+            %default-imported-modules
+            %default-modules
 
             dmd-service-back-edges))
 
@@ -99,6 +104,22 @@ service that extends DMD-ROOT-SERVICE-TYPE and nothing else."
     (list (service-extension dmd-root-service-type
                              (compose list proc))))))
 
+(define %default-imported-modules
+  ;; Default set of modules imported for a service's consumption.
+  '((guix build utils)
+    (guix build syscalls)
+    (gnu build file-systems)))
+
+(define %default-modules
+  ;; Default set of modules visible in a service's file.
+  `((dmd service)
+    (oop goops)
+    (ice-9 ftw)
+    (guix build utils)
+    (guix build syscalls)
+    ((gnu build file-systems)
+     #:select (check-file-system canonicalize-device-spec))))
+
 (define-record-type* <dmd-service>
   dmd-service make-dmd-service
   dmd-service?
@@ -113,7 +134,11 @@ service that extends DMD-ROOT-SERVICE-TYPE and nothing else."
   (stop          dmd-service-stop                 ;g-expression (procedure)
                  (default #~(const #f)))
   (auto-start?   dmd-service-auto-start?          ;Boolean
-                 (default #t)))
+                 (default #t))
+  (modules       dmd-service-modules              ;list of module names
+                 (default %default-modules))
+  (imported-modules dmd-service-imported-modules  ;list of module names
+                    (default %default-imported-modules)))
 
 
 (define (assert-valid-graph services)
@@ -158,41 +183,51 @@ which is undefined")
 
   (for-each assert-satisfied-requirements services))
 
+(define (dmd-service-file-name service)
+  "Return the file name where the initialization code for SERVICE is to be
+stored."
+  (let ((provisions (string-join (map symbol->string
+                                      (dmd-service-provision service)))))
+    (string-append "dmd-"
+                   (string-map (match-lambda
+                                 (#\/ #\-)
+                                 (chr chr))
+                               provisions)
+                   ".scm")))
+
+(define (dmd-service-file service)
+  "Return a file defining SERVICE."
+  (gexp->file (dmd-service-file-name service)
+              #~(begin
+                  (use-modules #$@(dmd-service-modules service))
+
+                  (make <service>
+                    #:docstring '#$(dmd-service-documentation service)
+                    #:provides '#$(dmd-service-provision service)
+                    #:requires '#$(dmd-service-requirement service)
+                    #:respawn? '#$(dmd-service-respawn? service)
+                    #:start #$(dmd-service-start service)
+                    #:stop #$(dmd-service-stop service)))))
+
 (define (dmd-configuration-file services)
   "Return the dmd configuration file for SERVICES."
   (define modules
-    ;; Extra modules visible to dmd.conf.
-    '((guix build syscalls)
-      (gnu build file-systems)
-      (guix build utils)))
+    (delete-duplicates
+     (append-map dmd-service-imported-modules services)))
 
   (assert-valid-graph services)
 
   (mlet %store-monad ((modules  (imported-modules modules))
-                      (compiled (compiled-modules modules)))
+                      (compiled (compiled-modules modules))
+                      (files    (mapm %store-monad dmd-service-file services)))
     (define config
       #~(begin
           (eval-when (expand load eval)
             (set! %load-path (cons #$modules %load-path))
             (set! %load-compiled-path
-                  (cons #$compiled %load-compiled-path)))
+              (cons #$compiled %load-compiled-path)))
 
-          (use-modules (ice-9 ftw)
-                       (guix build syscalls)
-                       (guix build utils)
-                       ((gnu build file-systems)
-                        #:select (check-file-system canonicalize-device-spec)))
-
-          (register-services
-           #$@(map (lambda (service)
-                     #~(make <service>
-                         #:docstring '#$(dmd-service-documentation service)
-                         #:provides '#$(dmd-service-provision service)
-                         #:requires '#$(dmd-service-requirement service)
-                         #:respawn? '#$(dmd-service-respawn? service)
-                         #:start #$(dmd-service-start service)
-                         #:stop #$(dmd-service-stop service)))
-                   services))
+          (apply register-services (map primitive-load '#$files))
 
           ;; guix-daemon 0.6 aborts if 'PATH' is undefined, so work around it.
           (setenv "PATH" "/run/current-system/profile/bin")
