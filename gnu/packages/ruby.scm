@@ -2021,6 +2021,28 @@ of terminal output.")
     ;; There is no mention of the "or later" clause.
     (license license:gpl2)))
 
+(define-public ruby-pstree
+  (package
+    (name "ruby-pstree")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "pstree" version))
+              (sha256
+               (base32
+                "1mig1sv5qx1cdyhjaipy8jlh9j8pnja04vprrzihyfr54x0215p1"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-gem-hadar" ,ruby-gem-hadar)
+       ("bundler" ,bundler)))
+    (synopsis "Create a process tree data structure")
+    (description
+     "This library uses the output of the @code{ps} command to create a
+process tree data structure for the current host.")
+    (home-page "http://flori.github.com/pstree")
+    ;; There is no mention of the "or later" clause.
+    (license license:gpl2)))
+
 (define-public ruby-json
   (package
     (name "ruby-json")
