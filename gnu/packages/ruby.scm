@@ -2384,6 +2384,27 @@ including comments and whitespace.")
     (home-page "https://github.com/geemus/netrc")
     (license license:expat)))
 
+(define-public ruby-unf-ext
+  (package
+    (name "ruby-unf-ext")
+    (version "0.0.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "unf_ext" version))
+              (sha256
+               (base32
+                "0ly2ms6c3irmbr1575ldyh52bz2v0lzzr2gagf0p526k12ld2n5b"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)
+       ("ruby-test-unit" ,ruby-test-unit)))
+    (synopsis "Unicode normalization form support library")
+    (description
+     "This package provides unicode normalization form support for Ruby.")
+    (home-page "https://github.com/knu/ruby-unf_ext")
+    (license license:expat)))
+
 (define-public ruby-rack
   (package
     (name "ruby-rack")
