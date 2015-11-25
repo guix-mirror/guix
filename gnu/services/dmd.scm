@@ -223,7 +223,13 @@ stored."
             (set! %load-compiled-path
               (cons #$compiled %load-compiled-path)))
 
-          (apply register-services (map primitive-load '#$files))
+          (use-modules (system repl error-handling))
+
+          ;; Arrange to spawn a REPL if loading one of FILES fails.  This is
+          ;; better than a kernel panic.
+          (call-with-error-handling
+            (lambda ()
+              (apply register-services (map primitive-load '#$files))))
 
           ;; guix-daemon 0.6 aborts if 'PATH' is undefined, so work around it.
           (setenv "PATH" "/run/current-system/profile/bin")
