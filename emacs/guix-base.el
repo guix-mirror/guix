@@ -1087,9 +1087,10 @@ FILE.  With a prefix argument, also prompt for PROFILE."
                               file profile)))
     (guix-eval-in-repl
      (guix-make-guile-expression
-      'guix-package
-      (concat "--profile=" profile)
-      (concat "--manifest=" file))
+      'guix-command
+      "package"
+      (concat "--profile="  (expand-file-name profile))
+      (concat "--manifest=" (expand-file-name file)))
      operation-buffer)))
 
 
