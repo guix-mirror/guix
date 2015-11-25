@@ -1911,6 +1911,39 @@ documentation for Ruby code.")
     (home-page "https://github.com/flori/tins")
     (license license:expat)))
 
+(define-public ruby-gem-hadar
+  (package
+    (name "ruby-gem-hadar")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "gem_hadar" version))
+              (sha256
+               (base32
+                "1j8qri4m9wf8nbfv0kakrgsv2x8vg10914xgm6f69nw8zi3i39ws"))))
+    (build-system ruby-build-system)
+    ;; This gem needs itself at development time. We disable rebuilding of the
+    ;; gemspec to avoid this loop.
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+          (lambda _
+            (zero? (system* "gem" "build" "gem_hadar.gemspec")))))))
+    (propagated-inputs
+     `(("git" ,git)
+       ("ruby-tins" ,ruby-tins)
+       ("ruby-sdoc" ,ruby-sdoc)))
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Library for the development of Ruby gems")
+    (description
+     "This library contains some useful functionality to support the
+development of Ruby gems.")
+    (home-page "https://github.com/flori/gem_hadar")
+    (license license:expat)))
+
 (define-public ruby-json
   (package
     (name "ruby-json")
