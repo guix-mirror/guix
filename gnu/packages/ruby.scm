@@ -2354,6 +2354,36 @@ other things and it comes with a command line interface.")
     (home-page "http://github.com/deivid-rodriguez/byebug")
     (license license:bsd-2)))
 
+(define-public ruby-netrc
+  (package
+    (name "ruby-netrc")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "netrc" version))
+              (sha256
+               (base32
+                "0gzfmcywp1da8nzfqsql2zqi648mfnx6qwkig3cv36n9m0yy676y"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; There is no Rakefile and minitest can only run one file at once,
+           ;; so we have to iterate over all test files.
+           (lambda _
+             (and (map (lambda (file)
+                         (zero? (system* "ruby" "-Itest" file)))
+                       (find-files "./test" "test_.*\\.rb"))))))))
+    (native-inputs
+     `(("ruby-minitest" ,ruby-minitest)))
+    (synopsis "Library to read and update netrc files")
+    (description
+     "This library can read and update netrc files, preserving formatting
+including comments and whitespace.")
+    (home-page "https://github.com/geemus/netrc")
+    (license license:expat)))
+
 (define-public ruby-rack
   (package
     (name "ruby-rack")
