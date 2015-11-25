@@ -2405,6 +2405,28 @@ including comments and whitespace.")
     (home-page "https://github.com/knu/ruby-unf_ext")
     (license license:expat)))
 
+(define-public ruby-tdiff
+  (package
+    (name "ruby-tdiff")
+    (version "0.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "tdiff" version))
+              (sha256
+               (base32
+                "0k41jbvn8qq4mgrixnhlk742b971d136i8wpbcv2cczvi22xpc86"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-rspec-2" ,ruby-rspec-2)
+       ("ruby-yard" ,ruby-yard)
+       ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
+    (synopsis "Calculate the differences between two tree-like structures")
+    (description
+     "This library provides functions to calculate the differences between two
+tree-like structures.  It is similar to Ruby's built-in @code{TSort} module.")
+    (home-page "https://github.com/postmodern/tdiff")
+    (license license:expat)))
+
 (define-public ruby-rack
   (package
     (name "ruby-rack")
