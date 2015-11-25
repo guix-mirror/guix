@@ -43,11 +43,14 @@
              (sha256
               (base32
                "04pjks075x20d19l623mj50bw64g8i41s63z4kzzqcbg9qg96x64"))
-             (patches (list (search-patch "cpio-gets-undeclared.patch")))))
+             (patches (map search-patch
+                           '("cpio-gets-undeclared.patch"
+                             "dico-libtool-deterministic.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--with-guile-site-dir=" %output
                                               "/share/guile/site/2.0"))
+       #:make-flags '("V=1")
        #:phases (modify-phases %standard-phases
                   (add-before 'check 'silence-guile
                     (lambda _
