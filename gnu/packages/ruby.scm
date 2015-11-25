@@ -2704,6 +2704,26 @@ extending for custom Ruby constructs such as custom class level definitions.")
     (home-page "http://yardoc.org")
     (license license:expat)))
 
+(define-public ruby-clap
+  (package
+    (name "ruby-clap")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "clap" version))
+              (sha256
+               (base32
+                "190m05k3pca72c1h8k0fnvby15m303zi0lpb9c478ad19wqawa5q"))))
+    (build-system ruby-build-system)
+    ;; Clap needs cutest for running tests, but cutest needs clap.
+    (arguments `(#:tests? #f))
+    (synopsis "Command line argument parsing for simple applications")
+    (description
+     "Clap provides command line argument parsing features.  It covers the
+simple case of executing code based on the flags or parameters passed.")
+    (home-page "https://github.com/djanowski/cutest")
+    (license license:expat)))
+
 (define-public ruby-eventmachine
   (package
     (name "ruby-eventmachine")
