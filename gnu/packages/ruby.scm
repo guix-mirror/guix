@@ -572,6 +572,32 @@ format.")
     (home-page "https://github.com/nicksieger/ci_reporter")
     (license license:expat)))
 
+(define-public ruby-saikuro-treemap
+  (package
+    (name "ruby-saikuro-treemap")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "saikuro_treemap" version))
+              (sha256
+               (base32
+                "0w70nmh43mwfbpq20iindl61siqqr8acmf7p3m7n5ipd61c24950"))))
+    (build-system ruby-build-system)
+    ;; Some of the tests fail because the generated JSON has keys in a
+    ;; different order.  This is a problem with the test suite rather than any
+    ;; of the involved libraries.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-json-pure" ,ruby-json-pure)
+       ("ruby-atoulme-saikuro" ,ruby-atoulme-saikuro)))
+    (synopsis "Generate complexity treemap based on saikuro analysis")
+    (description
+     "This gem generates a treemap showing the complexity of Ruby code on
+which it is run.  It uses Saikuro under the covers to analyze Ruby code
+complexity.")
+    (home-page "http://github.com/ThoughtWorksStudios/saikuro_treemap")
+    (license license:expat)))
+
 (define-public ruby-orderedhash
   (package
     (name "ruby-orderedhash")
