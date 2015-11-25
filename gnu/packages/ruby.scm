@@ -2367,6 +2367,38 @@ access the result as a Nokogiri parsed document.")
     (home-page "https://github.com/rubys/nokogumbo/")
     (license license:asl2.0)))
 
+(define-public ruby-sanitize
+  (package
+    (name "ruby-sanitize")
+    (version "4.0.0")
+    (source (origin
+              (method url-fetch)
+              ;; The gem does not include the Rakefile, so we download the
+              ;; release tarball from Github.
+              (uri (string-append "https://github.com/rgrove/"
+                                  "sanitize/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "055xnj38l60gxnnng76kpy2l2jbrp0byjdyq17jw79w7l4b40znr"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-crass" ,ruby-crass)
+       ("ruby-nokogiri" ,ruby-nokogiri)
+       ("ruby-nokogumbo" ,ruby-nokogumbo)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-minitest" ,ruby-minitest)
+       ("ruby-redcarpet" ,ruby-redcarpet)
+       ("ruby-yard" ,ruby-yard)))
+    (synopsis "Whitelist-based HTML and CSS sanitizer")
+    (description
+     "Sanitize is a whitelist-based HTML and CSS sanitizer.  Given a list of
+acceptable elements, attributes, and CSS properties, Sanitize will remove all
+unacceptable HTML and/or CSS from a string.")
+    (home-page "https://github.com/rgrove/sanitize/")
+    (license license:expat)))
+
 (define-public ruby-ox
   (package
     (name "ruby-ox")
