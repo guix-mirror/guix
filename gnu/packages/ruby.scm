@@ -1944,6 +1944,51 @@ development of Ruby gems.")
     (home-page "https://github.com/flori/gem_hadar")
     (license license:expat)))
 
+(define-public ruby-minitest-tu-shim
+  (package
+    (name "ruby-minitest-tu-shim")
+    (version "1.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "minitest_tu_shim" version))
+              (sha256
+               (base32
+                "0xlyh94iirvssix157ng2akr9nqhdygdd0c6094hhv7dqcfrn9fn"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-test-include-path
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "Rakefile"
+              (("Hoe\\.add_include_dirs .*")
+               (string-append "Hoe.add_include_dirs \""
+                              (assoc-ref inputs "ruby-minitest-4")
+                              "/lib/ruby/gems/2.2.0/gems/minitest-"
+                              ,(package-version ruby-minitest-4)
+                              "/lib" "\"")))))
+         (add-before 'check 'fix-test-assumptions
+          (lambda _
+            ;; The test output includes the file name, so a couple of tests
+            ;; fail.  Changing the regular expressions slightly fixes this
+            ;; problem.
+            (substitute* "test/test_mini_test.rb"
+              (("output.sub!\\(.*, 'FILE:LINE'\\)")
+               "output.sub!(/\\/.+-[\\w\\/\\.]+:\\d+/, 'FILE:LINE')")
+              (("gsub\\(/.*, 'FILE:LINE'\\)")
+               "gsub(/\\/.+-[\\w\\/\\.]+:\\d+/, 'FILE:LINE')"))
+            #t)))))
+    (propagated-inputs
+     `(("ruby-minitest-4" ,ruby-minitest-4)))
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)))
+    (synopsis "Adapter library between minitest and test/unit")
+    (description
+     "This library bridges the gap between the small and fast minitest and
+Ruby's large and slower test/unit.")
+    (home-page "https://rubygems.org/gems/minitest_tu_shim")
+    (license license:expat)))
+
 (define-public ruby-json
   (package
     (name "ruby-json")
