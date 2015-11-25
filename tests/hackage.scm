@@ -50,8 +50,28 @@ build-depends:
 }
 ")
 
+;; Check compiler implementation test with and without spaces.
+(define test-cabal-3
+  "name: foo
+version: 1.0.0
+homepage: http://test.org
+synopsis: synopsis
+description: description
+license: BSD3
+library
+  if impl(ghc >= 7.2 && < 7.6)
+    Build-depends: ghc-a
+  if impl(ghc>=7.2&&<7.6)
+    Build-depends: ghc-b
+  if impl(ghc == 7.8)
+    Build-depends: 
+      HTTP       >= 4000.2.5 && < 4000.3,
+      mtl        >= 2.0      && < 3
+")
+
 ;; A fragment of a real Cabal file with minor modification to check precedence
-;; of 'and' over 'or'.
+;; of 'and' over 'or', missing final newline, spaces between keywords and
+;; parentheses and between key and column.
 (define test-read-cabal-1
   "name: test-me
 library
@@ -66,24 +86,23 @@ library
         Build-depends: base >= 3 && < 4
       else
         Build-depends: base < 3
-  if flag(base4point8) || flag(base4) && flag(base3)
+  if flag(base4point8) || flag (base4) && flag(base3)
     Build-depends: random
-  Build-depends: containers
+  Build-depends : containers
 
   -- Modules that are always built.
   Exposed-Modules:
-    Test.QuickCheck.Exception
-")
+    Test.QuickCheck.Exception")
 
 (test-begin "hackage")
 
-(define (eval-test-with-cabal test-cabal)
+(define* (eval-test-with-cabal test-cabal #:key (cabal-environment '()))
   (mock
    ((guix import hackage) hackage-fetch
     (lambda (name-version)
       (call-with-input-string test-cabal
         read-cabal)))
-   (match (hackage->guix-package "foo")
+   (match (hackage->guix-package "foo" #:cabal-environment cabal-environment)
      (('package
         ('name "ghc-foo")
         ('version "1.0.0")
@@ -115,6 +134,10 @@ library
 
 (test-assert "hackage->guix-package test 2"
   (eval-test-with-cabal test-cabal-2))
+
+(test-assert "hackage->guix-package test 3"
+  (eval-test-with-cabal test-cabal-3
+                        #:cabal-environment '(("impl" . "ghc-7.8"))))
 
 (test-assert "read-cabal test 1"
   (match (call-with-input-string test-read-cabal-1 read-cabal)
