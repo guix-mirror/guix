@@ -2282,6 +2282,26 @@ multibyte strings, internationalization, time zones, and testing.")
     (home-page "http://www.rubyonrails.org")
     (license license:expat)))
 
+(define-public ruby-crass
+  (package
+    (name "ruby-crass")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "crass" version))
+              (sha256
+               (base32
+                "1c377r8g7m58y22803iyjgqkkvnnii0pymskda1pardxrzaighj9"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-minitest" ,ruby-minitest)))
+    (synopsis "Pure Ruby CSS parser")
+    (description
+     "Crass is a pure Ruby CSS parser based on the CSS Syntax Level 3 spec.")
+    (home-page "https://github.com/rgrove/crass/")
+    (license license:expat)))
+
 (define-public ruby-ox
   (package
     (name "ruby-ox")
