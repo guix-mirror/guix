@@ -1432,6 +1432,25 @@ facilities supporting TDD, BDD, mocking, and benchmarking.")
     (home-page "https://github.com/seattlerb/minitest")
     (license license:expat)))
 
+;; This is the last release of Minitest 4, which is used by some packages.
+(define-public ruby-minitest-4
+  (package (inherit ruby-minitest)
+    (version "4.7.5")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "minitest" version))
+              (sha256
+               (base32
+                "03p6iban9gcpcflzp4z901s1hgj9369p6515h967ny6hlqhcf2iy"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-unsupported-method
+          (lambda _
+            (substitute* "Rakefile"
+              (("self\\.rubyforge_name = .*") ""))
+            #t)))))))
+
 (define-public ruby-minitest-sprint
   (package
     (name "ruby-minitest-sprint")
