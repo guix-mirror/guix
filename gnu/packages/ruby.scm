@@ -30,6 +30,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages ragel)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (guix packages)
@@ -2088,6 +2089,53 @@ when working with Ruby code.")
 a native C extension.")
     (home-page "http://json-jruby.rubyforge.org/")
     (license (list license:ruby license:gpl2)))) ; GPL2 only
+
+(define-public ruby-json-pure
+  (package
+    (name "ruby-json-pure")
+    (version "1.8.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "json_pure" version))
+              (sha256
+               (base32
+                "025aykr360x6dr1jmg8pmsrx7gr30pws4p1q686vnb48zyw1sc94"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:modules ((srfi srfi-1)
+                  (ice-9 regex)
+                  (rnrs io ports)
+                  (guix build ruby-build-system)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'replace-git-ls-files
+           (lambda _
+             ;; The existing gemspec file already contains a nice list of
+             ;; files that belong to the gem.  We extract the list from the
+             ;; gemspec file and then replace the file list in the Rakefile to
+             ;; get rid of the call to "git ls-files".
+             (let* ((contents (call-with-input-file "json.gemspec" get-string-all))
+                    ;; Guile is unhappy about the #\nul characters in comments.
+                    (filtered (string-filter (lambda (char)
+                                               (not (equal? #\nul char)))
+                                             contents))
+                    (files (match:substring
+                            (string-match "  s\\.files = ([^]]+\\])" filtered) 1)))
+               (substitute* "Rakefile"
+                 (("FileList\\[`git ls-files`\\.split\\(/\\\\n/\\)\\]")
+                  (string-append "FileList" files))))
+             #t)))))
+    (native-inputs
+     `(("ruby-permutation" ,ruby-permutation)
+       ("ruby-utils" ,ruby-utils)
+       ("ragel" ,ragel)
+       ("bundler" ,bundler)))
+    (synopsis "JSON implementation in pure Ruby")
+    (description
+     "This package provides a JSON implementation written in pure Ruby.")
+    (home-page "http://flori.github.com/json")
+    (license license:ruby)))
 
 (define-public ruby-listen
   (package
