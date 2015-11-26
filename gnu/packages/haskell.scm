@@ -5108,6 +5108,31 @@ provided, along with a utility for generating new parsers from Kate XML syntax
 descriptions.")
     (license gpl2+)))
 
+(define-public ghc-cmark
+  (package
+    (name "ghc-cmark")
+    (version "0.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "cmark/cmark-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0c134qh65viaq4q6pv7bnnr5wchzivg94nv0dj8pc1326sx0dw12"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-text" ,ghc-text)))
+    (native-inputs
+     `(("ghc-hunit" ,ghc-hunit)))
+    (home-page "https://github.com/jgm/commonmark-hs")
+    (synopsis "Fast, accurate CommonMark (Markdown) parser and renderer")
+    (description
+     "This package provides Haskell bindings for
+@uref{https://github.com/jgm/cmark, libcmark}, the reference parser for
+CommonMark, a fully specified variant of Markdown.  It includes sources for
+libcmark (0.21.0) and does not require prior installation of the C library.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
