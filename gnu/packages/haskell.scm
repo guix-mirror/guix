@@ -5156,6 +5156,35 @@ instead, for maximum portability, we just return the leafname of the program
 as invoked.\" This library tries to provide the missing path.")
     (license public-domain)))
 
+(define-public ghc-enclosed-exceptions
+  (package
+    (name "ghc-enclosed-exceptions")
+    (version "1.0.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "enclosed-exceptions/enclosed-exceptions-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "16ax1kqdsk4apg642qxkm2hf9vb5hzmkd14zmkxra8ssp8rn28z5"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-async" ,ghc-async)
+       ("ghc-transformers-base" ,ghc-transformers-base)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "https://github.com/jcristovao/enclosed-exceptions")
+    (synopsis "Catch all exceptions from within an enclosed computation")
+    (description
+     "This library implements a technique to catch all exceptions raised
+within an enclosed computation, while remaining responsive to (external)
+asynchronous exceptions.")
+    (license expat)))
+
 (define-public idris
   (package
     (name "idris")
