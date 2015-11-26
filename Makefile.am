@@ -51,6 +51,7 @@ MODULES =					\
   guix/upstream.scm				\
   guix/licenses.scm				\
   guix/graph.scm				\
+  guix/cve.scm					\
   guix/build-system.scm				\
   guix/build-system/cmake.scm			\
   guix/build-system/emacs.scm			\
@@ -224,6 +225,7 @@ SCM_TESTS =					\
   tests/size.scm				\
   tests/graph.scm				\
   tests/challenge.scm				\
+  tests/cve.scm					\
   tests/file-systems.scm			\
   tests/services.scm				\
   tests/containers.scm
@@ -312,6 +314,7 @@ EXTRA_DIST =						\
   tests/test.drv					\
   tests/signing-key.pub					\
   tests/signing-key.sec					\
+  tests/cve-sample.xml					\
   build-aux/config.rpath				\
   bootstrap						\
   release.nix						\
