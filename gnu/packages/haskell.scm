@@ -5257,6 +5257,32 @@ datatypes.")
 @dfn{abstract syntax trees} (ASTs).")
     (license bsd-3)))
 
+(define-public ghc-th-reify-many
+  (package
+    (name "ghc-th-reify-many")
+    (version "0.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "th-reify-many/th-reify-many-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "00hryljcs434wcv1vaamfdbjk857f46djxv7mlwplkl3zsmfhlfx"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-safe" ,ghc-safe)
+       ("ghc-th-expand-syns" ,ghc-th-expand-syns)))
+    (home-page "http://github.com/mgsloan/th-reify-many")
+    (synopsis "Recurseively reify template haskell datatype info")
+    (description
+     "th-reify-many provides functions for recursively reifying top level
+declarations.  The main intended use case is for enumerating the names of
+datatypes reachable from an initial datatype, and passing these names to some
+function which generates instances.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
