@@ -4974,6 +4974,31 @@ functionality.")
 providing an 'rnf' implementation.")
     (license bsd-3)))
 
+(define-public ghc-pandoc-types
+  (package
+    (name "ghc-pandoc-types")
+    (version "1.12.4.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "pandoc-types/pandoc-types-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "108n11kbdaj2ii3cyf0xczhsx90p1gjbxwqp1f0wyn2m3cls632n"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-syb" ,ghc-syb)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-deepseq-generics" ,ghc-deepseq-generics)))
+    (home-page "http://johnmacfarlane.net/pandoc")
+    (synopsis "Types for representing a structured document")
+    (description
+     "This module defines the @code{Pandoc} data structure, which is used by
+pandoc to represent structured documents.  It also provides functions for
+building up, manipulating and serialising @code{Pandoc} structures.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
