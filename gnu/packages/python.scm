@@ -3961,6 +3961,8 @@ common operations on files to be invoked on those path objects directly.")
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pathpy" ,python-pathpy)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
     (home-page "https://github.com/vivainio/pickleshare")
     (synopsis "Tiny key value database with concurrency support")
     (description
