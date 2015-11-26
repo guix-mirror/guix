@@ -5235,6 +5235,28 @@ asynchronous exceptions.")
 datatypes.")
     (license bsd-3)))
 
+(define-public ghc-th-expand-syns
+  (package
+    (name "ghc-th-expand-syns")
+    (version "0.3.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "th-expand-syns/th-expand-syns-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "03qv93pyqk8all39knsf0mzmbfdck5x61kqnyn8rbisw5c1ymx6j"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-syb" ,ghc-syb)))
+    (home-page "http://hackage.haskell.org/package/th-expand-syns")
+    (synopsis "Expands type synonyms in Template Haskell ASTs")
+    (description
+     "This package enables users to expand type synonyms in Template Haskell
+@dfn{abstract syntax trees} (ASTs).")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
