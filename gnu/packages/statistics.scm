@@ -1322,3 +1322,23 @@ scaling functions for R.")
     (description
      "This package provides an integration of base and grid graphics for R.")
     (license license:gpl2+)))
+
+(define-public r-lattice
+  (package
+    (name "r-lattice")
+    (version "0.20-33")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "lattice" version))
+              (sha256
+               (base32
+                "0car12x5vl9k180i9pc86lq3cvwqakdpqn3lgdf98k9n2h52cilg"))))
+    (build-system r-build-system)
+    (home-page "http://lattice.r-forge.r-project.org/")
+    (synopsis "High-level data visualization system")
+    (description
+     "The lattice package provides a powerful and elegant high-level data
+visualization system inspired by Trellis graphics, with an emphasis on
+multivariate data.  Lattice is sufficient for typical graphics needs, and is
+also flexible enough to handle most nonstandard requirements.")
+    (license license:gpl2+)))
