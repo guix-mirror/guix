@@ -2214,8 +2214,10 @@ OAuth request-signing logic.")
     (package
       (inherit base)
       (inputs
-       (append (package-inputs base)
-               `(("python2-unittest2" ,python2-unittest2)))))))
+       `(("python2-unittest2" ,python2-unittest2)
+         ("python2-cryptography" ,python2-cryptography)
+         ,@(alist-delete "python-cryptography"
+	                 (package-inputs base)))))))
 
 (define-public python-itsdangerous
   (package
