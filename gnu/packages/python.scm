@@ -3933,7 +3933,8 @@ them as the version argument or in a SCM managed file.")
     (propagated-inputs
      `(("python-appdirs" ,python-appdirs)))
     (native-inputs
-     `(("python-setuptools-scm" ,python-setuptools-scm)
+     `(("python-setuptools" ,python-setuptools)
+       ("python-setuptools-scm" ,python-setuptools-scm)
        ("python-pytest" ,python-pytest)
        ("python-pytest-runner" ,python-pytest-runner)))
     (home-page "http://github.com/jaraco/path.py")
