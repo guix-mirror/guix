@@ -21,7 +21,9 @@
 
 (define-module (gnu packages haskell)
   #:use-module (ice-9 regex)
-  #:use-module ((guix licenses) #:select (bsd-3 lgpl2.1 lgpl2.1+ gpl3+ expat))
+  #:use-module ((guix licenses) #:select (bsd-3
+                                          lgpl2.1 lgpl2.1+ gpl2+ gpl3+
+                                          expat))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -4998,6 +5000,39 @@ providing an 'rnf' implementation.")
 pandoc to represent structured documents.  It also provides functions for
 building up, manipulating and serialising @code{Pandoc} structures.")
     (license bsd-3)))
+
+(define-public ghc-texmath
+  (package
+    (name "ghc-texmath")
+    (version "0.8.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "texmath/texmath-" version ".tar.gz"))
+              (sha256
+               (base32
+                "15821jg64fbr4rwaglp5ksah6q8qqz1vkjxlqp6d3bbb1rj8v2ri"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-syb" ,ghc-syb)
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-split" ,ghc-split)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-xml" ,ghc-xml)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-pandoc-types" ,ghc-pandoc-types)))
+    (home-page "http://github.com/jgm/texmath")
+    (synopsis "Conversion between formats used to represent mathematics")
+    (description
+     "The texmath library provides functions to read and write TeX math,
+presentation MathML, and OMML (Office Math Markup Language, used in Microsoft
+Office).  Support is also included for converting math formats to pandoc's
+native format (allowing conversion, via pandoc, to a variety of different
+markup formats).  The TeX reader supports basic LaTeX and AMS extensions, and
+it can parse and apply LaTeX macros.")
+    (license gpl2+)))
 
 (define-public idris
   (package
