@@ -5335,6 +5335,37 @@ package, and that's where the version number started.")
 template-haskell abstract syntax.")
     (license bsd-3)))
 
+(define-public ghc-aeson-qq
+  (package
+    (name "ghc-aeson-qq")
+    (version "0.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "aeson-qq/aeson-qq-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1z8kh3qjc4khadz1ijdqm7fbk7dh17sisqhpwd3c9aibj2927k9d"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-base-compat" ,ghc-base-compat)
+       ("ghc-text" ,ghc-text)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-haskell-src-meta" ,ghc-haskell-src-meta)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)))
+    (home-page "http://github.com/zalora/aeson-qq")
+    (synopsis "JSON quasiquoter for Haskell")
+    (description
+     "aeson-qq provides a JSON quasiquoter for Haskell.  This package exposes
+the function @code{aesonQQ} that compile-time converts a string representation
+of a JSON value into a @code{Data.Aeson.Value}.")
+    (license expat)))
+
 (define-public idris
   (package
     (name "idris")
