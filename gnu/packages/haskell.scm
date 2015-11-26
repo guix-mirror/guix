@@ -5076,6 +5076,38 @@ providing the PCRE backend to accompany regex-base, with bundled code from
 and utilities for pretty printing.")
     (license bsd-3)))
 
+(define-public ghc-highlighting-kate
+  (package
+    (name "ghc-highlighting-kate")
+    (version "0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "highlighting-kate/highlighting-kate-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "16334fbiyq6017zbgc59qc00h0bk24xh4dcrbqx63dvf72ac37dk"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-diff" ,ghc-diff)
+       ("ghc-regex-pcre-builtin" ,ghc-regex-pcre-builtin)))
+    (native-inputs
+     `(("ghc-parsec" ,ghc-parsec)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-utf8-string" ,ghc-utf8-string)
+       ("ghc-mtl" ,ghc-mtl)))
+    (home-page "http://github.com/jgm/highlighting-kate")
+    (synopsis "Syntax highlighting library")
+    (description
+     "Highlighting-kate is a syntax highlighting library with support for
+nearly one hundred languages.  The syntax parsers are automatically generated
+from @uref{http://kate-editor.org/, Kate syntax descriptions}, so any syntax
+supported by Kate can be added.  An (optional) command-line program is
+provided, along with a utility for generating new parsers from Kate XML syntax
+descriptions.")
+    (license gpl2+)))
+
 (define-public idris
   (package
     (name "idris")
