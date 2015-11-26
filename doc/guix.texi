@@ -366,6 +366,10 @@ On hosts using the systemd init system, drop
 @file{~root/.guix-profile/lib/systemd/system/guix-daemon.service} in
 @file{/etc/systemd/system}.
 
+Likewise, on hosts using the Upstart init system, drop
+@file{~root/.guix-profile/lib/upstart/system/guix-daemon.conf} in
+@file{/etc/init}.
+
 @item
 Make the @command{guix} command available to other users on the machine,
 for instance with:
@@ -554,7 +558,10 @@ parallel, as specified by the @option{--max-jobs} option
 following command@footnote{If your machine uses the systemd init system,
 dropping the @file{@var{prefix}/lib/systemd/system/guix-daemon.service}
 file in @file{/etc/systemd/system} will ensure that
-@command{guix-daemon} is automatically started.}:
+@command{guix-daemon} is automatically started.  Similarly, if your
+machine uses the Upstart init system, drop the
+@file{@var{prefix}/lib/upstart/system/guix-daemon.conf}
+file in @file{/etc/init}.}:
 
 @example
 # guix-daemon --build-users-group=guixbuild
