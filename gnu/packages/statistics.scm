@@ -1287,3 +1287,21 @@ tools to simplify the devolpment of R packages.")
      "This package provides functions to read flat or tabular text files from
 disk (or a connection).")
     (license license:gpl2+)))
+
+(define-public r-plotrix
+  (package
+    (name "r-plotrix")
+    (version "3.6")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "plotrix" version))
+              (sha256
+               (base32
+                "0zn6k8azh40v0lg7q9yd4sy30a26bcc0fjvndn4z7k36avlw4i25"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/plotrix")
+    (synopsis "Various plotting functions")
+    (description
+     "This package provides lots of plotting, various labeling, axis and color
+scaling functions for R.")
+    (license license:gpl2+)))
