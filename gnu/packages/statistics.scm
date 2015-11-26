@@ -1265,3 +1265,25 @@ informative error messages when it's not available.")
     (description "The devtools package is a collection of package development
 tools to simplify the devolpment of R packages.")
     (license license:gpl2+)))
+
+(define-public r-readr
+  (package
+    (name "r-readr")
+    (version "0.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "readr" version))
+              (sha256
+               (base32
+                "156422xwvskynna5kjc8h1qqnn50kxgjrihl2h2b7vm9sxxdyr2m"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-rcpp" ,r-rcpp)
+       ("r-bh" ,r-bh)))
+    (home-page "https://github.com/hadley/readr")
+    (synopsis "Read tabular data")
+    (description
+     "This package provides functions to read flat or tabular text files from
+disk (or a connection).")
+    (license license:gpl2+)))
