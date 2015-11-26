@@ -5283,6 +5283,34 @@ datatypes reachable from an initial datatype, and passing these names to some
 function which generates instances.")
     (license bsd-3)))
 
+(define-public ghc-th-orphans
+  (package
+    (name "ghc-th-orphans")
+    (version "0.13.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "th-orphans/th-orphans-" version ".tar.gz"))
+              (sha256
+               (base32
+                "105y03bxh0a2r69l603i7md17gg1vxs1jj1n40pn5q486lmfxbmx"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-th-lift" ,ghc-th-lift)
+       ("ghc-th-reify-many" ,ghc-th-reify-many)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-generic-deriving" ,ghc-generic-deriving)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)))
+    (home-page "http://hackage.haskell.org/package/th-orphans")
+    (synopsis "Orphan instances for TH datatypes")
+    (description
+     "This package provides orphan instances for Template Haskell datatypes.  In particular,
+instances for @code{Ord} and @code{Lift}, as well as a few missing @code{Show}
+and @code{Eq} instances.  These instances used to live in the haskell-src-meta
+package, and that's where the version number started.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
