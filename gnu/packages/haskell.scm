@@ -5311,6 +5311,30 @@ and @code{Eq} instances.  These instances used to live in the haskell-src-meta
 package, and that's where the version number started.")
     (license bsd-3)))
 
+(define-public ghc-haskell-src-meta
+  (package
+    (name "ghc-haskell-src-meta")
+    (version "0.6.0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "haskell-src-meta/haskell-src-meta-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1mzbfrfvl6pj8068w3m6alzry1403ir1gmz3czg66n5z198l4dql"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-haskell-src-exts" ,ghc-haskell-src-exts)
+       ("ghc-syb" ,ghc-syb)
+       ("ghc-th-orphans" ,ghc-th-orphans)))
+    (home-page "http://hackage.haskell.org/package/haskell-src-meta")
+    (synopsis "Parse source to template-haskell abstract syntax")
+    (description
+     "This package provides tools to parse Haskell sources to the
+template-haskell abstract syntax.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
