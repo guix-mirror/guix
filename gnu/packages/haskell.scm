@@ -23,6 +23,7 @@
   #:use-module (ice-9 regex)
   #:use-module ((guix licenses) #:select (bsd-3
                                           lgpl2.1 lgpl2.1+ gpl2+ gpl3+
+                                          public-domain
                                           expat))
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -5132,6 +5133,28 @@ descriptions.")
 CommonMark, a fully specified variant of Markdown.  It includes sources for
 libcmark (0.21.0) and does not require prior installation of the C library.")
     (license bsd-3)))
+
+(define-public ghc-executable-path
+  (package
+    (name "ghc-executable-path")
+    (version "0.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "executable-path/executable-path-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1jg58qf19qz93c60ryglcavwdcysz4fd4qn8kpw5im9w9kniawlc"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/executable-path")
+    (synopsis "Find out the full path of the executable")
+    (description
+     "The documentation of @code{System.Environment.getProgName} says that
+\"However, this is hard-to-impossible to implement on some non-Unix OSes, so
+instead, for maximum portability, we just return the leafname of the program
+as invoked.\" This library tries to provide the missing path.")
+    (license public-domain)))
 
 (define-public idris
   (package
