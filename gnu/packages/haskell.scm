@@ -765,15 +765,16 @@ Happy works in a similar way to the yacc tool for C.")
         (base32
          "1h8gjw5g92rvvzadqzpscg73x7ajvs1wlphrh27afim3scdd8frz"))))
     (build-system haskell-build-system)
-    (inputs
+    (propagated-inputs
      `(("cpphs" ,cpphs)
        ("ghc-mtl" ,ghc-mtl)
-       ("ghc-smallcheck" ,ghc-smallcheck)
-       ("ghc-tasty" ,ghc-tasty)
        ("ghc-happy" ,ghc-happy)
-       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)
-       ("ghc-tasty-golden" ,ghc-tasty-golden)
        ("ghc-syb" ,ghc-syb)))
+    (native-inputs
+     `(("ghc-smallcheck" ,ghc-smallcheck)
+       ("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-smallcheck" ,ghc-tasty-smallcheck)
+       ("ghc-tasty-golden" ,ghc-tasty-golden)))
     (home-page "https://github.com/haskell-suite/haskell-src-exts")
     (synopsis "Library for manipulating Haskell source")
     (description "Haskell-Source with Extensions (HSE, haskell-src-exts) is an
