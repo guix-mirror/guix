@@ -5034,6 +5034,29 @@ markup formats).  The TeX reader supports basic LaTeX and AMS extensions, and
 it can parse and apply LaTeX macros.")
     (license gpl2+)))
 
+(define-public ghc-regex-pcre-builtin
+  (package
+    (name "ghc-regex-pcre-builtin")
+    (version "0.94.4.8.8.35")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "regex-pcre-builtin/regex-pcre-builtin-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0y7as9wqlkykpipka2cfdhmcnin345q01pp0wsva8fwmvsavdl8b"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-regex-base" ,ghc-regex-base)))
+    (home-page "http://hackage.haskell.org/package/regex-pcre")
+    (synopsis "Enhancement of the builtin Text.Regex library")
+    (description
+     "This package is an enhancement of the @code{Text.Regex} library,
+providing the PCRE backend to accompany regex-base, with bundled code from
+@url{http://www.pcre.org}.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
