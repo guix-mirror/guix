@@ -5057,6 +5057,25 @@ providing the PCRE backend to accompany regex-base, with bundled code from
 @url{http://www.pcre.org}.")
     (license bsd-3)))
 
+(define-public ghc-diff
+  (package
+    (name "ghc-diff")
+    (version "0.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "Diff/Diff-" version ".tar.gz"))
+              (sha256
+               (base32
+                "13iqqmpadcm7fvqwbfrz94w030rvjh66w2bdls1253128ac2n0vz"))))
+    (build-system haskell-build-system)
+    (home-page "http://hub.darcs.net/sterlingclover/Diff")
+    (synopsis "O(ND) diff algorithm in Haskell")
+    (description
+     "This package provides an implementation of the standard diff algorithm,
+and utilities for pretty printing.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
