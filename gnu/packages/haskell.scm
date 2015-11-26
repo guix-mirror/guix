@@ -5214,6 +5214,27 @@ asynchronous exceptions.")
      "This deprecated library provides an implementation of packed strings.")
     (license bsd-3)))
 
+(define-public ghc-th-lift
+  (package
+    (name "ghc-th-lift")
+    (version "0.7.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "th-lift/th-lift-" version ".tar.gz"))
+              (sha256
+               (base32
+                "13xdkk1chdghf059sfx8d3d8r0mj1dbzdi5kf2zf0mjmz3qq7m7k"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-packedstring" ,ghc-packedstring)))
+    (home-page "http://github.com/mboes/th-lift")
+    (synopsis "Derive Template Haskell's Lift class for datatypes")
+    (description
+     "This is a Haskell library to derive Template Haskell's Lift class for
+datatypes.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
