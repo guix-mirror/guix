@@ -32,6 +32,7 @@
   #:use-module (guix scripts)
   #:use-module (guix gnu-maintenance)
   #:use-module (guix monads)
+  #:use-module (guix cve)
   #:use-module (gnu packages)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
@@ -61,6 +62,7 @@
             check-source
             check-source-file-name
             check-license
+            check-vulnerabilities
             check-formatting
             run-checkers
 
@@ -571,6 +573,34 @@ descriptions maintained upstream."
      (emit-warning package (_ "invalid license field")
                    'license))))
 
+(define (package-name->cpe-name name)
+  "Do a basic conversion of NAME, a Guix package name, to the corresponding
+Common Platform Enumeration (CPE) name."
+  (match name
+    ("icecat"   "firefox")                        ;or "firefox_esr"
+    ;; TODO: Add more.
+    (_          name)))
+
+(define package-vulnerabilities
+  (let ((lookup (delay (vulnerabilities->lookup-proc
+                        (current-vulnerabilities)))))
+    (lambda (package)
+      "Return a list of vulnerabilities affecting PACKAGE."
+      ((force lookup)
+       (package-name->cpe-name (package-name package))
+       (package-version package)))))
+
+(define (check-vulnerabilities package)
+  "Check for known vulnerabilities for PACKAGE."
+  (match (package-vulnerabilities package)
+    (()
+     #t)
+    ((vulnerabilities ...)
+     (emit-warning package
+                   (format #f (_ "probably vulnerable to ~a")
+                           (string-join (map vulnerability-id vulnerabilities)
+                                        ", "))))))
+
 
 ;;;
 ;;; Source code formatting.
@@ -708,6 +738,11 @@ or a list thereof")
      (name        'synopsis)
      (description "Validate package synopses")
      (check       check-synopsis-style))
+   (lint-checker
+     (name        'cve)
+     (description "Check the Common Vulnerabilities and Exposures\
+ (CVE) database")
+     (check       check-vulnerabilities))
    (lint-checker
      (name        'formatting)
      (description "Look for formatting issues in the source")

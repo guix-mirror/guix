@@ -4452,6 +4452,12 @@ invalid.  Check that the source file name is meaningful, e.g. is not
 just a version number or ``git-checkout'', and should not have a
 @code{file-name} declared (@pxref{origin Reference}).
 
+@item cve
+Report known vulnerabilities found in the Common Vulnerabilities and
+Exposures (CVE) database
+@uref{https://nvd.nist.gov/download.cfm#CVE_FEED, published by the US
+NIST}.
+
 @item formatting
 Warn about obvious source code formatting issues: trailing white space,
 use of tabulations, etc.
