@@ -32,6 +32,8 @@
   #:use-module (gnu packages gnome)
   #:use-module (guix gexp)
   #:use-module (guix records)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (%facebook-host-aliases
@@ -39,6 +41,7 @@
             dhcp-client-service
             %ntp-servers
             ntp-service
+            tor-hidden-service
             tor-service
             bitlbee-service
             wicd-service
@@ -307,6 +310,15 @@ keep the system clock synchronized with that of @var{servers}."
 ;;; Tor.
 ;;;
 
+(define-record-type* <tor-configuration>
+  tor-configuration make-tor-configuration
+  tor-configuration?
+  (tor              tor-configuration-tor
+                    (default tor))
+  (config-file      tor-configuration-config-file)
+  (hidden-services  tor-configuration-hidden-services
+                    (default '())))
+
 (define %tor-accounts
   ;; User account and groups for Tor.
   (list (user-group (name "tor") (system? #t))
@@ -318,22 +330,55 @@ keep the system clock synchronized with that of @var{servers}."
          (home-directory "/var/empty")
          (shell #~(string-append #$shadow "/sbin/nologin")))))
 
+(define-record-type <hidden-service>
+  (hidden-service name mapping)
+  hidden-service?
+  (name    hidden-service-name)                   ;string
+  (mapping hidden-service-mapping))               ;list of port/address tuples
+
+(define (tor-configuration->torrc config)
+  "Return a 'torrc' file for CONFIG."
+  (match config
+    (($ <tor-configuration> tor config-file services)
+     (computed-file
+      "torrc"
+      #~(begin
+          (use-modules (guix build utils)
+                       (ice-9 match))
+
+          (call-with-output-file #$output
+            (lambda (port)
+              (display "\
+# The beginning was automatically added.
+User tor\n" port)
+
+              (for-each (match-lambda
+                          ((service (ports hosts) ...)
+                           (format port "\
+HiddenServiceDir /var/lib/tor/~a~%"
+                                   service)
+                           (for-each (lambda (tcp-port host)
+                                       (format port "\
+HiddenServicePort ~a ~a~%"
+                                               tcp-port host))
+                                     ports hosts)))
+                        '#$(map (match-lambda
+                                  (($ <hidden-service> name mapping)
+                                   (cons name mapping)))
+                                services))
+
+              ;; Append the user's config file.
+              (call-with-input-file #$config-file
+                (lambda (input)
+                  (dump-port input port)))
+              #t)))
+      #:modules '((guix build utils))))))
+
 (define (tor-dmd-service config)
   "Return a <dmd-service> running TOR."
   (match config
-    ((tor config-file)
-     (let ((torrc (computed-file "torrc"
-                                 #~(begin
-                                     (use-modules (guix build utils))
-                                     (call-with-output-file #$output
-                                       (lambda (port)
-                                         (display "\
-User tor  # automatically added\n" port)
-                                         (call-with-input-file #$config-file
-                                           (lambda (input)
-                                             (dump-port input port)))
-                                         #t)))
-                                 #:modules '((guix build utils)))))
+    (($ <tor-configuration> tor)
+     (let ((torrc (tor-configuration->torrc config)))
        (list (dmd-service
               (provision '(tor))
 
@@ -346,13 +391,43 @@ User tor  # automatically added\n" port)
               (stop #~(make-kill-destructor))
               (documentation "Run the Tor anonymous network overlay.")))))))
 
+(define (tor-hidden-service-activation config)
+  "Return the activation gexp for SERVICES, a list of hidden services."
+  #~(begin
+      (use-modules (guix build utils))
+
+      (define (initialize service)
+        (let ((directory (string-append "/var/lib/tor/"
+                                        service))
+              (user      (getpw "tor")))
+          (mkdir-p directory)
+          (chown directory (passwd:uid user) (passwd:gid user))
+
+          ;; The daemon bails out if we give wider permissions.
+          (chmod directory #o700)))
+
+      (for-each initialize
+                '#$(map hidden-service-name
+                        (tor-configuration-hidden-services config)))))
+
 (define tor-service-type
   (service-type (name 'tor)
                 (extensions
                  (list (service-extension dmd-root-service-type
                                           tor-dmd-service)
                        (service-extension account-service-type
-                                          (const %tor-accounts))))))
+                                          (const %tor-accounts))
+                       (service-extension activation-service-type
+                                          tor-hidden-service-activation)))
+
+                ;; This can be extended with hidden services.
+                (compose concatenate)
+                (extend (lambda (config services)
+                          (tor-configuration
+                           (inherit config)
+                           (hidden-services
+                            (append (tor-configuration-hidden-services config)
+                                    services)))))))
 
 (define* (tor-service #:optional
                       (config-file (plain-file "empty" ""))
@@ -361,9 +436,39 @@ User tor  # automatically added\n" port)
 networking daemon.
 
 The daemon runs as the @code{tor} unprivileged user.  It is passed
-@var{config-file}, a file-like object, with an additional @code{User tor}
-line.  Run @command{man tor} for information about the configuration file."
-  (service tor-service-type (list tor config-file)))
+@var{config-file}, a file-like object, with an additional @code{User tor} line
+and lines for hidden services added via @code{tor-hidden-service}.  Run
+@command{man tor} for information about the configuration file."
+  (service tor-service-type
+           (tor-configuration (tor tor)
+                              (config-file config-file))))
+
+(define tor-hidden-service-type
+  ;; A type that extends Tor with hidden services.
+  (service-type (name 'tor-hidden-service)
+                (extensions
+                 (list (service-extension tor-service-type list)))))
+
+(define (tor-hidden-service name mapping)
+  "Define a new Tor @dfn{hidden service} called @var{name} and implementing
+@var{mapping}.  @var{mapping} is a list of port/host tuples, such as:
+
+@example
+ '((22 \"127.0.0.1:22\")
+   (80 \"127.0.0.1:8080\"))
+@end example
+
+In this example, port 22 of the hidden service is mapped to local port 22, and
+port 80 is mapped to local port 8080.
+
+This creates a @file{/var/lib/tor/@var{name}} directory, where the
+@file{hostname} file contains the @code{.onion} host name for the hidden
+service.
+
+See @uref{https://www.torproject.org/docs/tor-hidden-service.html.en, the Tor
+project's documentation} for more information."
+  (service tor-hidden-service-type
+           (hidden-service name mapping)))
 
 
 ;;;
