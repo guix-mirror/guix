@@ -5743,6 +5743,34 @@ a type that has a @code{Time} instances, and thus are different
 representations of current time.")
     (license bsd-3)))
 
+(define-public ghc-pem
+  (package
+    (name "ghc-pem")
+    (version "0.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "pem/pem-" version ".tar.gz"))
+              (sha256
+               (base32
+                "162sk5sg22w21wqz5qv8kx6ibxp99v5p20g3nknhm1kddk3hha1p"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)))
+    (native-inputs
+     `(("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "http://github.com/vincenthz/hs-pem")
+    (synopsis "Privacy Enhanced Mail (PEM) format reader and writer")
+    (description
+     "This library provides readers and writers for the @dfn{Privacy Enhanced
+Mail} (PEM) format.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
