@@ -5989,6 +5989,38 @@ set, memory copy, ..) and more")
 collections, certificates, revocation lists, and exception lists.")
     (license bsd-3)))
 
+(define-public ghc-x509-validation
+  (package
+    (name "ghc-x509-validation")
+    (version "1.6.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "x509-validation/x509-validation-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1qr1v561hdlhjgqjv9pj9mbk0q1xf2mr1j67ghy93nlxxyzd7dw0"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-memory" ,ghc-memory)
+       ("ghc-byteable" ,ghc-byteable)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-hourglass" ,ghc-hourglass)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-pem" ,ghc-pem)
+       ("ghc-asn1-types" ,ghc-asn1-types)
+       ("ghc-asn1-encoding" ,ghc-asn1-encoding)
+       ("ghc-x509" ,ghc-x509)
+       ("ghc-x509-store" ,ghc-x509-store)
+       ("ghc-cryptonite" ,ghc-cryptonite)))
+    (home-page "http://github.com/vincenthz/hs-certificate")
+    (synopsis "X.509 certificate and revocation list validation")
+    (description
+     "This package provides functions for X.509 certificate and revocation
+list validation.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
