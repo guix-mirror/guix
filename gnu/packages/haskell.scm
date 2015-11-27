@@ -6110,6 +6110,37 @@ extensions.")
      "This library provides a SOCKS proxy (version 5) implementation.")
     (license bsd-3)))
 
+(define-public ghc-connection
+  (package
+    (name "ghc-connection")
+    (version "0.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "connection/connection-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "090il95jnm7ihwvcx3s9v6iwnp37nnsdx15q7722l845g51d95c8"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-byteable" ,ghc-byteable)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-network" ,ghc-network)
+       ("ghc-tls" ,ghc-tls)
+       ("ghc-socks" ,ghc-socks)
+       ("ghc-x509" ,ghc-x509)
+       ("ghc-x509-store" ,ghc-x509-store)
+       ("ghc-x509-system" ,ghc-x509-system)
+       ("ghc-x509-validation" ,ghc-x509-validation)))
+    (home-page "http://github.com/vincenthz/hs-connection")
+    (synopsis "Simple and easy network connections API")
+    (description
+     "This package provides a simple network library for all your connection
+needs.  It provides a very simple API to create sockets to a destination with
+the choice of SSL/TLS, and SOCKS.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
