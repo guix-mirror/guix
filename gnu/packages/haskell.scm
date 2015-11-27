@@ -5469,6 +5469,40 @@ back-ends.")
      "The mockery package provides support functions for automated testing.")
     (license expat)))
 
+(define-public ghc-yaml
+  (package
+    (name "ghc-yaml")
+    (version "0.8.15.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "yaml/yaml-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0v6c435xmgm99zxb30pqr7lhkb2a56wxqp70g4hjz8p7rj0vichx"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-conduit" ,ghc-conduit)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-text" ,ghc-text)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-enclosed-exceptions" ,ghc-enclosed-exceptions)
+       ("ghc-aeson-qq" ,ghc-aeson-qq)
+       ("ghc-base-compat" ,ghc-base-compat)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-mockery" ,ghc-mockery)))
+    (home-page "http://github.com/snoyberg/yaml/")
+    (synopsis "Parsing and rendering YAML documents")
+    (description
+     "This package provides a library to parse and render YAML documents.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
