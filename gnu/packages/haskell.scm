@@ -5869,6 +5869,43 @@ when ASN1 pattern matching is not convenient.")
 tasty.")
     (license expat)))
 
+(define-public ghc-cryptonite
+  (package
+    (name "ghc-cryptonite")
+    (version "0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "cryptonite/cryptonite-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1h22x22lq2m8h456v5j50xm0l25bcm3h1pchsk83br909hjxql4z"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-memory" ,ghc-memory)
+       ("ghc-byteable" ,ghc-byteable)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)
+       ("ghc-tasty-kat" ,ghc-tasty-kat)))
+    (home-page "https://github.com/haskell-crypto/cryptonite")
+    (synopsis "Cryptography primitives")
+    (description
+     "This package is a repository of cryptographic primitives for Haskell.
+It strives to be a cryptographic kitchen sink that provides cryptography for
+everyone.
+
+Supported symmetric ciphers: AES, DES, 3DES, Blowfish, Camellia, RC4, Salsa,
+ChaCha; supported hash functions: SHA1, SHA2, SHA3, MD2, MD4, MD5, Keccak,
+Skein, Ripemd, Tiger, Whirlpool, Blake2; MAC: HMAC, Poly1305; assymmetric
+crypto: DSA, RSA, DH, ECDH, ECDSA, ECC, Curve25519, Ed25519; key derivation
+functions: PBKDF2, Scrypt; cryptographic random number generation: system
+entropy, deterministic random generator; data-related features:
+@dfn{anti-forensic information splitter} (AFIS).")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
