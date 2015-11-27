@@ -5526,6 +5526,27 @@ directories.  It includes code for pattern matching, finding files, modifying
 file contents, and more.")
     (license bsd-3)))
 
+(define-public ghc-mmap
+  (package
+    (name "ghc-mmap")
+    (version "0.5.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "mmap/mmap-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1y5mk3yf4b8r6rzmlx1xqn4skaigrqnv08sqq0v7r3nbw42bpz2q"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/mmap")
+    (synopsis "Memory mapped files for Haskell")
+    (description
+     "This library provides a wrapper to @code{mmap}, allowing files or
+devices to be lazily loaded into memory as strict or lazy @code{ByteStrings},
+@code{ForeignPtrs} or plain @code{Ptrs}, using the virtual memory subsystem to
+do on-demand loading.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
