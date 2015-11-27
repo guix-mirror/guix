@@ -5771,6 +5771,29 @@ representations of current time.")
 Mail} (PEM) format.")
     (license bsd-3)))
 
+(define-public ghc-asn1-types
+  (package
+    (name "ghc-asn1-types")
+    (version "0.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "asn1-types/asn1-types-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1iif9yrh4mmj249gyvam0zb2vb3jnlz777gahh2z9sx00dsx9rja"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-memory" ,ghc-memory)
+       ("ghc-hourglass" ,ghc-hourglass)))
+    (home-page "http://github.com/vincenthz/hs-asn1-types")
+    (synopsis "ASN.1 types for Haskell")
+    (description
+     "The package provides the standard types for dealing with the ASN.1
+format.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
