@@ -565,31 +565,37 @@ if file doesn't exist, and the narinfo otherwise."
              (read-to-eof port))
          result))))
 
+  (define (do-fetch uri)
+    (case (and=> uri uri-scheme)
+      ((http)
+       (let ((requests (map (cut narinfo-request url <>) paths)))
+         (update-progress!)
+         (let ((result (http-multiple-get url
+                                          handle-narinfo-response '()
+                                          requests)))
+           (newline (current-error-port))
+           result)))
+      ((file #f)
+       (let* ((base  (string-append (uri-path uri) "/"))
+              (files (map (compose (cut string-append base <> ".narinfo")
+                                   store-path-hash-part)
+                          paths)))
+         (filter-map (cut narinfo-from-file <> url) files)))
+      (else
+       (leave (_ "~s: unsupported server URI scheme~%")
+              (if uri (uri-scheme uri) url)))))
+
   (define cache-info
     (download-cache-info url))
 
   (and cache-info
-       (string=? (cache-info-store-directory cache-info)
-                 (%store-prefix))
-       (let ((uri (string->uri url)))
-         (case (and=> uri uri-scheme)
-           ((http)
-            (let ((requests (map (cut narinfo-request url <>) paths)))
-              (update-progress!)
-              (let ((result (http-multiple-get url
-                                               handle-narinfo-response '()
-                                               requests)))
-                (newline (current-error-port))
-                result)))
-           ((file #f)
-            (let* ((base  (string-append (uri-path uri) "/"))
-                   (files (map (compose (cut string-append base <> ".narinfo")
-                                        store-path-hash-part)
-                               paths)))
-              (filter-map (cut narinfo-from-file <> url) files)))
-           (else
-            (leave (_ "~s: unsupported server URI scheme~%")
-                   (if uri (uri-scheme uri) url)))))))
+       (if (string=? (cache-info-store-directory cache-info)
+                     (%store-prefix))
+           (do-fetch (string->uri url))
+           (begin
+             (warning (_ "'~a' uses different store '~a'; ignoring it~%")
+                      url (cache-info-store-directory cache-info))
+             #f))))
 
 (define (lookup-narinfos cache paths)
   "Return the narinfos for PATHS, invoking the server at CACHE when no
