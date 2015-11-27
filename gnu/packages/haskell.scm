@@ -5446,6 +5446,29 @@ enumerator/iteratee and pipes." )
 back-ends.")
     (license expat)))
 
+(define-public ghc-mockery
+  (package
+    (name "ghc-mockery")
+    (version "0.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "mockery/mockery-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0m0lp2z63sgkylz5318j53r5hnrkp705qh7nqbb149ir4gy7g1bg"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-temporary" ,ghc-temporary)
+       ("ghc-logging-facade" ,ghc-logging-facade)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)))
+    (home-page "http://hackage.haskell.org/package/mockery")
+    (synopsis "Support functions for automated testing")
+    (description
+     "The mockery package provides support functions for automated testing.")
+    (license expat)))
+
 (define-public idris
   (package
     (name "idris")
