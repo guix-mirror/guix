@@ -5573,6 +5573,33 @@ do on-demand loading.")
 TIFF and GIF formats.")
     (license bsd-3)))
 
+(define-public ghc-sha
+  (package
+    (name "ghc-sha")
+    (version "1.6.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "SHA/SHA-" version ".tar.gz"))
+              (sha256
+               (base32
+                "134ajm87fm4lpsw86m9q8apv20dw4bpk46raa389zr6bcdpifw64"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)))
+    (home-page "http://hackage.haskell.org/package/SHA")
+    (synopsis "SHA suite of message digest functions")
+    (description
+     "This library implements the SHA suite of message digest functions,
+according to NIST FIPS 180-2 (with the SHA-224 addendum), as well as the
+SHA-based HMAC routines.  The functions have been tested against most of the
+NIST and RFC test vectors for the various functions.  While some attention has
+been paid to performance, these do not presently reach the speed of well-tuned
+libraries, like OpenSSL.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
