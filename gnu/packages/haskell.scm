@@ -6021,6 +6021,31 @@ collections, certificates, revocation lists, and exception lists.")
 list validation.")
     (license bsd-3)))
 
+(define-public ghc-x509-system
+  (package
+    (name "ghc-x509-system")
+    (version "1.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "x509-system/x509-system-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "10qf60d2f9jqwnbrhsb2cwpi86xg66m6dxndlxw967v1cdb3h6gf"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-pem" ,ghc-pem)
+       ("ghc-x509" ,ghc-x509)
+       ("ghc-x509-store" ,ghc-x509-store)))
+    (home-page "http://github.com/vincenthz/hs-certificate")
+    (synopsis "Handle system X.509 accessors and storage")
+    (description
+     "This package provides a library to handle system accessors and storage
+for X.509 certificates.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
