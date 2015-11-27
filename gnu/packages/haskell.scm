@@ -5962,6 +5962,33 @@ set, memory copy, ..) and more")
      "This library provides functions to read and write X509 certificates.")
     (license bsd-3)))
 
+(define-public ghc-x509-store
+  (package
+    (name "ghc-x509-store")
+    (version "1.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "x509-store/x509-store-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "01abx528i9f7djq2772xyna8x2mykrnwqkcfrapcx7z3bhprvml3"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-pem" ,ghc-pem)
+       ("ghc-asn1-types" ,ghc-asn1-types)
+       ("ghc-asn1-encoding" ,ghc-asn1-encoding)
+       ("ghc-cryptonite" ,ghc-cryptonite)
+       ("ghc-x509" ,ghc-x509)))
+    (home-page "http://github.com/vincenthz/hs-certificate")
+    (synopsis "X.509 collection accessing and storing methods")
+    (description
+     "This package provides functions for accessing and storing X.509
+collections, certificates, revocation lists, and exception lists.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
