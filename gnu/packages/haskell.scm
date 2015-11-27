@@ -5503,6 +5503,29 @@ back-ends.")
      "This package provides a library to parse and render YAML documents.")
     (license bsd-3)))
 
+(define-public ghc-filemanip
+  (package
+    (name "ghc-filemanip")
+    (version "0.3.6.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "filemanip/filemanip-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ilqr8jv41zxcj5qyicg29m8s30b9v70x6f9h2h2rw5ap8bxldl8"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-unix-compat" ,ghc-unix-compat)))
+    (home-page "https://github.com/bos/filemanip")
+    (synopsis "File and directory manipulation for Haskell")
+    (description
+     "This package provides a Haskell library for working with files and
+directories.  It includes code for pattern matching, finding files, modifying
+file contents, and more.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
