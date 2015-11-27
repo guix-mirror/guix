@@ -42,6 +42,7 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libedit)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
@@ -5599,6 +5600,37 @@ NIST and RFC test vectors for the various functions.  While some attention has
 been paid to performance, these do not presently reach the speed of well-tuned
 libraries, like OpenSSL.")
     (license bsd-3)))
+
+(define-public ghc-hslua
+  (package
+    (name "ghc-hslua")
+    (version "0.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "hslua/hslua-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gqp6qhp4v24kzv2j49kgk7bxqzw0w10x0zr0r2j9wkfavqb9wid"))))
+    (build-system haskell-build-system)
+    (arguments
+     `(#:configure-flags '("-fsystem-lua")))
+    (inputs
+     `(("lua" ,lua-5.1)))
+    (propagated-inputs
+     `(("ghc-text" ,ghc-text)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)
+       ("ghc-hspec-contrib" ,ghc-hspec-contrib)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-quickcheck-instances" ,ghc-quickcheck-instances)))
+    (home-page "http://hackage.haskell.org/package/hslua")
+    (synopsis "Lua language interpreter embedding in Haskell")
+    (description
+     "The Scripting.Lua module is a wrapper of the Lua language interpreter as
+described in @url{http://www.lua.org/}.")
+    (license expat)))
 
 (define-public idris
   (package
