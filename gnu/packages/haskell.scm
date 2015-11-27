@@ -5714,6 +5714,35 @@ The use case of this class is abstracting manipulation of types that are just
 wrapping a bytestring with stronger and more meaniful name.")
     (license bsd-3)))
 
+(define-public ghc-hourglass
+  (package
+    (name "ghc-hourglass")
+    (version "0.2.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "hourglass/hourglass-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xha17nwzxdjizbcp63d2142c6q051y77facs7xribgcl5iz2m4v"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-old-locale" ,ghc-old-locale)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page "https://github.com/vincenthz/hs-hourglass")
+    (synopsis "Simple time-related library for Haskell")
+    (description
+     "This is a simple time library providing a simple but powerful and
+performant API.  The backbone of the library are the @code{Timeable} and
+@code{Time} type classes.  Each @code{Timeable} instances can be converted to
+a type that has a @code{Time} instances, and thus are different
+representations of current time.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
