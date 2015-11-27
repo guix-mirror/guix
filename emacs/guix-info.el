@@ -409,6 +409,15 @@ See `insert-text-button' for the meaning of PROPERTIES."
 (define-derived-mode guix-info-mode special-mode "Guix-Info"
   "Parent mode for displaying information in info buffers.")
 
+(defun guix-info-mode-initialize ()
+  "Set up the current 'info' buffer."
+  ;; Without this, syntactic fontification is performed, and it may
+  ;; break our highlighting.  For example, description of "emacs-typo"
+  ;; package contains a single " (double-quote) character, so the
+  ;; default syntactic fontification highlights the rest text after it
+  ;; as a string.  See (info "(elisp) Font Lock Basics") for details.
+  (setq font-lock-defaults '(nil t)))
+
 (defmacro guix-info-define-interface (entry-type &rest args)
   "Define 'info' interface for displaying ENTRY-TYPE entries.
 Remaining arguments (ARGS) should have a form [KEYWORD VALUE] ...
@@ -465,6 +474,7 @@ After calling each METHOD, a new line is inserted."
           'guix-info-data ',entry-type)
 
          (guix-buffer-define-interface info ,entry-type
+           :mode-init-function 'guix-info-mode-initialize
            ,@%foreign-args)))))
 
 
