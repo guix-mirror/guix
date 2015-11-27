@@ -5794,6 +5794,34 @@ Mail} (PEM) format.")
 format.")
     (license bsd-3)))
 
+(define-public ghc-asn1-encoding
+  (package
+    (name "ghc-asn1-encoding")
+    (version "0.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "asn1-encoding/asn1-encoding-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "01ki5msrpccgdbdiaaa5a9zw0icp1hki4hca8qx6hzlp0rcf1mwh"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-hourglass" ,ghc-hourglass)
+       ("ghc-asn1-types" ,ghc-asn1-types)
+       ("ghc-text" ,ghc-text)
+       ("ghc-mtl" ,ghc-mtl)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (home-page "http://github.com/vincenthz/hs-asn1")
+    (synopsis "ASN1 data reader and writer in RAW, BER and DER forms")
+    (description
+     "This package provides a reader and writer for ASN1 data in raw form with
+supports for high level forms of ASN1 (BER, and DER).")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
