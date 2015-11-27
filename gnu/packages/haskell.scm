@@ -5653,6 +5653,47 @@ described in @url{http://www.lua.org/}.")
      "This library provides basic MIME type handling types and functions.")
     (license expat)))
 
+(define-public ghc-http-client
+  (package
+    (name "ghc-http-client")
+    (version "0.4.24")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "http-client/http-client-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0xz133kdfiyy2rm6z95bmvjj6y2540xzd86cfmdv9s6kz4p1ir4k"))))
+    (build-system haskell-build-system)
+    ;; Tests require access to the web.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("ghc-text" ,ghc-text)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-blaze-builder" ,ghc-blaze-builder)
+       ("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-network" ,ghc-network)
+       ("ghc-streaming-commons" ,ghc-streaming-commons)
+       ("ghc-case-insensitive" ,ghc-case-insensitive)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-cookie" ,ghc-cookie)
+       ("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-random" ,ghc-random)
+       ("ghc-mime-types" ,ghc-mime-types)
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-monad-control" ,ghc-monad-control)
+       ("ghc-zlib" ,ghc-zlib)
+       ("ghc-async" ,ghc-async)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://github.com/snoyberg/http-client")
+    (synopsis "HTTP client engine")
+    (description
+     "This package provides an HTTP client engine, intended as a base layer
+for more user-friendly packages.")
+    (license expat)))
+
 (define-public idris
   (package
     (name "idris")
