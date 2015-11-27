@@ -5906,6 +5906,32 @@ entropy, deterministic random generator; data-related features:
 @dfn{anti-forensic information splitter} (AFIS).")
     (license bsd-3)))
 
+(define-public ghc-memory
+  (package
+    (name "ghc-memory")
+    (version "0.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "memory/memory-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xqs9zmjbjihb7gfbk25f2q00m2lsi4kc3jv672175ac8a36pgag"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page "https://github.com/vincenthz/hs-memory")
+    (synopsis "Memory abstractions for Haskell")
+    (description
+     "This package provides memory abstractions, such as chunk of memory,
+polymorphic byte array management and manipulation functions.  It contains a
+polymorphic byte array abstraction and functions similar to strict ByteString,
+different type of byte array abstraction, raw memory IO operations (memory
+set, memory copy, ..) and more")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
