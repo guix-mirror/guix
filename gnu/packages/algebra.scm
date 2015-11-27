@@ -409,26 +409,18 @@ cosine/ sine transforms or DCT/DST).")
      '(;; Turn off debugging symbols to save space.
        #:build-type "Release"
 
-       ;; Use 'make check', as per
-       ;; <http://eigen.tuxfamily.org/index.php?title=Tests>.
-       #:test-target "check"
-
        #:phases (modify-phases %standard-phases
-                  (add-before 'check 'build-tests
+                  (replace 'check
                     (lambda _
-                      ;; First build the tests, in parallel.
-                      ;; See <http://eigen.tuxfamily.org/index.php?title=Tests>.
                       (let* ((cores  (parallel-job-count))
                              (dash-j (format #f "-j~a" cores)))
-                        ;; These variables are supposed to be honored.
-                        (setenv "EIGEN_MAKE_ARGS" dash-j)
+                        ;; First build the tests, in parallel.  See
+                        ;; <http://eigen.tuxfamily.org/index.php?title=Tests>.
+                        (and (zero? (system* "make" "buildtests" dash-j))
 
-                        ;; Use '-V' to get more details in case of test
-                        ;; failures.
-                        (setenv "EIGEN_CTEST_ARGS"
-                                (string-append "-V " dash-j))
-
-                        (zero? (system* "make" "buildtests" dash-j))))))))
+                             ;; Then run 'CTest' with -V so we get more
+                             ;; details upon failure.
+                             (zero? (system* "ctest" "-V" dash-j)))))))))
     (home-page "http://eigen.tuxfamily.org")
     (synopsis "C++ template library for linear algebra")
     (description
