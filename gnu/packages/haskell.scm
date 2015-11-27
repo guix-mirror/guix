@@ -5547,6 +5547,32 @@ devices to be lazily loaded into memory as strict or lazy @code{ByteStrings},
 do on-demand loading.")
     (license bsd-3)))
 
+(define-public ghc-juicypixels
+  (package
+    (name "ghc-juicypixels")
+    (version "3.2.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "JuicyPixels/JuicyPixels-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0hxa57cdknz86zywpjwfbdhac5lmk7j0wd5hy4mcnb8mw6r2m592"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-zlib" ,ghc-zlib)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-primitive" ,ghc-primitive)
+       ("ghc-mmap" ,ghc-mmap)))
+    (home-page "https://github.com/Twinside/Juicy.Pixels")
+    (synopsis "Picture loading and serialization library")
+    (description
+     "This library can load and store images in PNG, Bitmap, JPEG, Radiance,
+TIFF and GIF formats.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
