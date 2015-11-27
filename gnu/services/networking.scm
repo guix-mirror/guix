@@ -351,12 +351,13 @@ keep the system clock synchronized with that of @var{servers}."
               (display "\
 # The beginning was automatically added.
 User tor
+DataDirectory /var/lib/tor
 Log notice syslog\n" port)
 
               (for-each (match-lambda
                           ((service (ports hosts) ...)
                            (format port "\
-HiddenServiceDir /var/lib/tor/~a~%"
+HiddenServiceDir /var/lib/tor/hidden-services/~a~%"
                                    service)
                            (for-each (lambda (tcp-port host)
                                        (format port "\
@@ -397,15 +398,21 @@ HiddenServicePort ~a ~a~%"
   #~(begin
       (use-modules (guix build utils))
 
+      (define %user
+        (getpw "tor"))
+
       (define (initialize service)
-        (let ((directory (string-append "/var/lib/tor/"
-                                        service))
-              (user      (getpw "tor")))
+        (let ((directory (string-append "/var/lib/tor/hidden-services/"
+                                        service)))
           (mkdir-p directory)
-          (chown directory (passwd:uid user) (passwd:gid user))
+          (chown directory (passwd:uid %user) (passwd:gid %user))
 
           ;; The daemon bails out if we give wider permissions.
           (chmod directory #o700)))
+
+      (mkdir-p "/var/lib/tor")
+      (chown "/var/lib/tor" (passwd:uid %user) (passwd:gid %user))
+      (chmod "/var/lib/tor" #o700)
 
       (for-each initialize
                 '#$(map hidden-service-name
@@ -462,8 +469,8 @@ and lines for hidden services added via @code{tor-hidden-service}.  Run
 In this example, port 22 of the hidden service is mapped to local port 22, and
 port 80 is mapped to local port 8080.
 
-This creates a @file{/var/lib/tor/@var{name}} directory, where the
-@file{hostname} file contains the @code{.onion} host name for the hidden
+This creates a @file{/var/lib/tor/hidden-services/@var{name}} directory, where
+the @file{hostname} file contains the @code{.onion} host name for the hidden
 service.
 
 See @uref{https://www.torproject.org/docs/tor-hidden-service.html.en, the Tor

@@ -6597,8 +6597,8 @@ Define a new Tor @dfn{hidden service} called @var{name} and implementing
 In this example, port 22 of the hidden service is mapped to local port 22, and
 port 80 is mapped to local port 8080.
 
-This creates a @file{/var/lib/tor/@var{name}} directory, where the
-@file{hostname} file contains the @code{.onion} host name for the hidden
+This creates a @file{/var/lib/tor/hidden-services/@var{name}} directory, where
+the @file{hostname} file contains the @code{.onion} host name for the hidden
 service.
 
 See @uref{https://www.torproject.org/docs/tor-hidden-service.html.en, the Tor
