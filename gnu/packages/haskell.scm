@@ -5845,6 +5845,30 @@ supports for high level forms of ASN1 (BER, and DER).")
 when ASN1 pattern matching is not convenient.")
     (license bsd-3)))
 
+(define-public ghc-tasty-kat
+  (package
+    (name "ghc-tasty-kat")
+    (version "0.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "tasty-kat/tasty-kat-" version ".tar.gz"))
+              (sha256
+               (base32
+                "14yvlpli6cv6bn3kh8mlfp4x1l6ns4fvmfv6hmj75cvxyzq029d7"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)
+       ("ghc-tasty-hunit" ,ghc-tasty-hunit)))
+    (home-page "https://github.com/vincenthz/tasty-kat")
+    (synopsis "Known Answer Tests (KAT) framework for tasty")
+    (description
+     "This package provides a @dfn{Known Answer Tests} (KAT) framework for
+tasty.")
+    (license expat)))
+
 (define-public idris
   (package
     (name "idris")
