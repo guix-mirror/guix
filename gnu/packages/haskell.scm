@@ -5390,6 +5390,40 @@ the function @code{aesonQQ} that compile-time converts a string representation
 of a JSON value into a @code{Data.Aeson.Value}.")
     (license expat)))
 
+(define-public ghc-conduit
+  (package
+    (name "ghc-conduit")
+    (version "1.2.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "conduit/conduit-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0aq6wswd5dkhdmy7sjhd99mldpq33dqpgbdcwpm94ahvckqxs7v5"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-exceptions" ,ghc-exceptions)
+       ("ghc-lifted-base" ,ghc-lifted-base)
+       ("ghc-mmorph" ,ghc-mmorph)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-resourcet" ,ghc-resourcet)
+       ("ghc-transformers-base" ,ghc-transformers-base)
+       ("ghc-void" ,ghc-void)))
+    (native-inputs
+     `(("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-safe" ,ghc-safe)))
+    (home-page "https://github.com/snoyberg/conduit")
+    (synopsis "Streaming data library ")
+    (description
+     "conduit is a solution to the streaming data problem, allowing for
+production, transformation, and consumption of streams of data in constant
+memory.  It is an alternative to lazy I/O which guarantees deterministic
+resource handling, and fits in the same general solution space as
+enumerator/iteratee and pipes." )
+    (license expat)))
+
 (define-public idris
   (package
     (name "idris")
