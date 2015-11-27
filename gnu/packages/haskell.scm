@@ -5822,6 +5822,29 @@ format.")
 supports for high level forms of ASN1 (BER, and DER).")
     (license bsd-3)))
 
+(define-public ghc-asn1-parse
+  (package
+    (name "ghc-asn1-parse")
+    (version "0.9.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "asn1-parse/asn1-parse-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "025prsihk5g6rdv9xlfmj0zpa0wa3qjzj5i4ilzvg7f6f3sji8y6"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-asn1-types" ,ghc-asn1-types)
+       ("ghc-asn1-encoding" ,ghc-asn1-encoding)))
+    (home-page "https://github.com/vincenthz/hs-asn1")
+    (synopsis "Simple monadic parser for ASN1 stream types")
+    (description
+     "This package provides a simple monadic parser for ASN1 stream types,
+when ASN1 pattern matching is not convenient.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
