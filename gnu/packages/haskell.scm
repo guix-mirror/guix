@@ -6173,6 +6173,79 @@ connection and TLS libraries.  It is intended for use by higher-level
 libraries, such as http-conduit.")
     (license expat)))
 
+(define-public ghc-pandoc
+  (package
+    (name "ghc-pandoc")
+    (version "1.15.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://hackage.haskell.org/package/pandoc/pandoc-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0nfzwsdvrvg9zypgyqk0246p10yzlpqsqnkds8yraqybbvkb1g30"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-syb" ,ghc-syb)
+       ("ghc-unordered-containers" ,ghc-unordered-containers)
+       ("ghc-parsec" ,ghc-parsec)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-text" ,ghc-text)
+       ("ghc-zip-archive" ,ghc-zip-archive)
+       ("ghc-http" ,ghc-http)
+       ("ghc-texmath" ,ghc-texmath)
+       ("ghc-xml" ,ghc-xml)
+       ("ghc-random" ,ghc-random)
+       ("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
+       ("ghc-pandoc-types" ,ghc-pandoc-types)
+       ("ghc-aeson" ,ghc-aeson)
+       ("ghc-tagsoup" ,ghc-tagsoup)
+       ("ghc-base64-bytestring" ,ghc-base64-bytestring)
+       ("ghc-zlib" ,ghc-zlib)
+       ("ghc-highlighting-kate" ,ghc-highlighting-kate)
+       ("ghc-data-default" ,ghc-data-default)
+       ("ghc-temporary" ,ghc-temporary)
+       ("ghc-blaze-html" ,ghc-blaze-html)
+       ("ghc-blaze-markup" ,ghc-blaze-markup)
+       ("ghc-yaml" ,ghc-yaml)
+       ("ghc-scientific" ,ghc-scientific)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-hslua" ,ghc-hslua)
+       ("ghc-sha" ,ghc-sha)
+       ("ghc-haddock-library" ,ghc-haddock-library)
+       ("ghc-old-time" ,ghc-old-time)
+       ("ghc-deepseq-generics" ,ghc-deepseq-generics)
+       ("ghc-juicypixels" ,ghc-juicypixels)
+       ("ghc-filemanip" ,ghc-filemanip)
+       ("ghc-cmark" ,ghc-cmark)
+       ("ghc-network-uri" ,ghc-network-uri)
+       ("ghc-network" ,ghc-network)
+       ("ghc-http-client" ,ghc-http-client)
+       ("ghc-http-client-tls" ,ghc-http-client-tls)
+       ("ghc-http-types" ,ghc-http-types)
+       ("ghc-diff" ,ghc-diff)
+       ("ghc-ansi-terminal" ,ghc-ansi-terminal)
+       ("ghc-executable-path" ,ghc-executable-path)))
+    (native-inputs
+     `(("ghc-test-framework" ,ghc-test-framework)
+       ("ghc-test-framework-hunit" ,ghc-test-framework-hunit)
+       ("ghc-test-framework-quickcheck2" ,ghc-test-framework-quickcheck2)
+       ("ghc-quickcheck" ,ghc-quickcheck)
+       ("ghc-hunit" ,ghc-hunit)))
+    (home-page "http://pandoc.org")
+    (synopsis "Conversion between markup formats")
+    (description
+     "Pandoc is a Haskell library for converting from one markup format to
+another, and a command-line tool that uses this library.  It can read and
+write Markdown and (subsets of) other formats, such as HTML, reStructuredText,
+LaTeX, DocBook, and many more.
+
+Pandoc extends standard Markdown syntax with footnotes, embedded LaTeX,
+definition lists, tables, and other features.  A compatibility mode is
+provided for those who need a drop-in replacement for Markdown.pl.")
+    (license gpl2+)))
+
 (define-public idris
   (package
     (name "idris")
