@@ -6089,6 +6089,27 @@ Ephemeral (Elliptic curve and regular) Diffie Hellman key exchanges, and many
 extensions.")
     (license bsd-3)))
 
+(define-public ghc-socks
+  (package
+    (name "ghc-socks")
+    (version "0.5.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "socks/socks-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1nmldlwxqasmg359i2aa3a903gi3lmnlspvf12xk49jrg3mf3dg9"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-cereal" ,ghc-cereal)
+       ("ghc-network" ,ghc-network)))
+    (home-page "http://github.com/vincenthz/hs-socks")
+    (synopsis "SOCKS proxy (version 5) implementation.")
+    (description
+     "This library provides a SOCKS proxy (version 5) implementation.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
