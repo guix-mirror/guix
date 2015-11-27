@@ -129,26 +129,25 @@ a server that supports the SSH-2 protocol.")
    (arguments
     `(#:test-target "tests"
       #:phases
-       (alist-cons-after
-        'configure 'reset-/var/empty
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-            (substitute* "Makefile"
-              (("PRIVSEP_PATH=/var/empty")
-               (string-append "PRIVSEP_PATH=" out "/var/empty")))))
-       (alist-cons-before
-        'check 'patch-tests
-        (lambda _
-          ;; remove 't-exec' regress target which requires user 'sshd'
-          (substitute* "regress/Makefile"
-            (("^(REGRESS_TARGETS=.*) t-exec(.*)" all pre post)
-             (string-append pre post))))
-       (alist-replace
-        'install
-        (lambda* (#:key (make-flags '()) #:allow-other-keys)
-          ;; install without host keys and system configuration files
-          (zero? (apply system* "make" "install-nosysconf" make-flags)))
-       %standard-phases)))))
+      (modify-phases %standard-phases
+        (add-after 'configure 'reset-/var/empty
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((out (assoc-ref outputs "out")))
+             (substitute* "Makefile"
+               (("PRIVSEP_PATH=/var/empty")
+                (string-append "PRIVSEP_PATH=" out "/var/empty")))
+             #t)))
+        (add-before 'check 'patch-tests
+         (lambda _
+           ;; remove 't-exec' regress target which requires user 'sshd'
+           (substitute* "regress/Makefile"
+             (("^(REGRESS_TARGETS=.*) t-exec(.*)" all pre post)
+              (string-append pre post)))
+           #t))
+        (replace 'install
+         (lambda* (#:key (make-flags '()) #:allow-other-keys)
+           ;; install without host keys and system configuration files
+           (zero? (apply system* "make" "install-nosysconf" make-flags)))))))
    (synopsis "Client and server for the secure shell (ssh) protocol")
    (description
     "The SSH2 protocol implemented in OpenSSH is standardised by the
