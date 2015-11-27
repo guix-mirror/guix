@@ -5632,6 +5632,27 @@ libraries, like OpenSSL.")
 described in @url{http://www.lua.org/}.")
     (license expat)))
 
+(define-public ghc-mime-types
+  (package
+    (name "ghc-mime-types")
+    (version "0.1.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "mime-types/mime-types-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "090z3dp928243amnc6s8g10rk2h2bprk9y138q6wj3cpflzr72pw"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-text" ,ghc-text)))
+    (home-page "https://github.com/yesodweb/wai")
+    (synopsis "Basic MIME type handling types and functions")
+    (description
+     "This library provides basic MIME type handling types and functions.")
+    (license expat)))
+
 (define-public idris
   (package
     (name "idris")
