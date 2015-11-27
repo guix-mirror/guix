@@ -5424,6 +5424,28 @@ resource handling, and fits in the same general solution space as
 enumerator/iteratee and pipes." )
     (license expat)))
 
+(define-public ghc-logging-facade
+  (package
+    (name "ghc-logging-facade")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "logging-facade/logging-facade-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0zhdbjyj0j9by19rma9alxysrxnnl3s4kks4zk4bx0dg5xa0264y"))))
+    (build-system haskell-build-system)
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)))
+    (home-page "http://hackage.haskell.org/package/logging-facade")
+    (synopsis "Simple logging abstraction that allows multiple back-ends")
+    (description
+     "This package provides a simple logging abstraction that allows multiple
+back-ends.")
+    (license expat)))
+
 (define-public idris
   (package
     (name "idris")
