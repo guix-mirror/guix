@@ -12,7 +12,7 @@ avoid loading autoloads of Emacs packages installed in
 (add-to-list 'load-path (guix-emacs-directory))
 
 (when guix-package-enable-at-startup
-  (guix-emacs-load-autoloads 'all))
+  (guix-emacs-load-autoloads))
 
 (add-hook 'scheme-mode-hook 'guix-devel-activate-mode-maybe)
 (add-hook 'shell-mode-hook 'guix-build-log-minor-mode-activate-maybe)

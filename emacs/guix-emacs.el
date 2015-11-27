@@ -74,29 +74,33 @@ Return nil if there are no emacs packages installed in PROFILE."
       nil)))
 
 ;;;###autoload
-(defun guix-emacs-load-autoloads (&optional all)
-  "Load autoloads for Emacs packages installed in a user profile.
-Add autoloads directories to `load-path'.
-If ALL is nil, activate only those packages that were installed
-after the last activation, otherwise activate all Emacs packages
-installed in `guix-user-profile'."
-  (interactive "P")
-  (let* ((autoloads (guix-emacs-find-autoloads))
-         (files (if all
-                    autoloads
-                  (cl-nset-difference autoloads guix-emacs-autoloads
-                                      :test #'string=))))
-    (dolist (file files)
-      (cl-pushnew (file-name-directory file) load-path
+(defun guix-emacs-load-autoloads (&optional profile)
+  "Load autoloads for Emacs packages installed in PROFILE.
+If PROFILE is nil, use `guix-user-profile'.
+Add autoloads directories to `load-path'."
+  (interactive (list (guix-profile-prompt)))
+  (let* ((autoloads     (guix-emacs-find-autoloads profile))
+         (new-autoloads (cl-nset-difference autoloads
+                                            guix-emacs-autoloads
+                                            :test #'string=)))
+    (dolist (file new-autoloads)
+      (cl-pushnew (directory-file-name (file-name-directory file))
+                  load-path
                   :test #'string=)
       (load file 'noerror))
-    (setq guix-emacs-autoloads autoloads)))
+    (setq guix-emacs-autoloads
+          (append new-autoloads guix-emacs-autoloads))))
 
 (defun guix-emacs-load-autoloads-maybe ()
   "Load autoloads for Emacs packages if needed.
 See `guix-emacs-activate-after-operation' for details."
   (and guix-emacs-activate-after-operation
-       (guix-emacs-load-autoloads)))
+       ;; FIXME Since a user can work with a non-current profile (using
+       ;; C-u before `guix-search-by-name' and other commands), emacs
+       ;; packages can be installed to another profile, and the
+       ;; following code will not work (i.e., the autoloads for this
+       ;; profile will not be loaded).
+       (guix-emacs-load-autoloads guix-current-profile)))
 
 (provide 'guix-emacs)
 
