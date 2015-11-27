@@ -5932,6 +5932,36 @@ different type of byte array abstraction, raw memory IO operations (memory
 set, memory copy, ..) and more")
     (license bsd-3)))
 
+(define-public ghc-x509
+  (package
+    (name "ghc-x509")
+    (version "1.6.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "x509/x509-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1pmsby29abn485fvnymsgipvb3p1ch9c591xj5ncszkf0ivjiiin"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-memory" ,ghc-memory)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-hourglass" ,ghc-hourglass)
+       ("ghc-pem" ,ghc-pem)
+       ("ghc-asn1-types" ,ghc-asn1-types)
+       ("ghc-asn1-encoding" ,ghc-asn1-encoding)
+       ("ghc-asn1-parse" ,ghc-asn1-parse)
+       ("ghc-cryptonite" ,ghc-cryptonite)))
+    (native-inputs
+     `(("ghc-tasty" ,ghc-tasty)
+       ("ghc-tasty-quickcheck" ,ghc-tasty-quickcheck)))
+    (home-page "http://github.com/vincenthz/hs-certificate")
+    (synopsis "X509 reader and writer")
+    (description
+     "This library provides functions to read and write X509 certificates.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
