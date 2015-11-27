@@ -3435,6 +3435,30 @@ responses coming back.")
 Haskell, inspired by the Ruby library RSpec.")
     (license expat)))
 
+(define-public ghc-hspec-contrib
+  (package
+    (name "ghc-hspec-contrib")
+    (version "0.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "hspec-contrib/hspec-contrib-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "006syw8xagfhsx06ws9ywig1qx5lk4cgl7sq6pbid1s64c72mxn4"))))
+    (build-system haskell-build-system)
+    (propagated-inputs
+     `(("ghc-hspec-core" ,ghc-hspec-core)
+       ("ghc-hunit" ,ghc-hunit)
+       ("ghc-hspec" ,ghc-hspec)
+       ("ghc-quickcheck" ,ghc-quickcheck)))
+    (home-page "http://hspec.github.io/")
+    (synopsis "Contributed functionality for Hspec")
+    (description
+     "This package provides contributed Hspec extensions.")
+    (license expat)))
+
 (define-public ghc-hspec-expectations
   (package
     (name "ghc-hspec-expectations")
