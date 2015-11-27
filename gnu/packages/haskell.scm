@@ -5694,6 +5694,26 @@ described in @url{http://www.lua.org/}.")
 for more user-friendly packages.")
     (license expat)))
 
+(define-public ghc-byteable
+  (package
+    (name "ghc-byteable")
+    (version "0.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "byteable/byteable-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1qizg0kxxjqnd3cbrjhhidk5pbbciz0pb3z5kzikjjxnnnhk8fr4"))))
+    (build-system haskell-build-system)
+    (home-page "http://github.com/vincenthz/hs-byteable")
+    (synopsis "Type class for sequence of bytes")
+    (description
+     "This package provides an abstract class to manipulate sequence of bytes.
+The use case of this class is abstracting manipulation of types that are just
+wrapping a bytestring with stronger and more meaniful name.")
+    (license bsd-3)))
+
 (define-public idris
   (package
     (name "idris")
