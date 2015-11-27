@@ -350,7 +350,8 @@ keep the system clock synchronized with that of @var{servers}."
             (lambda (port)
               (display "\
 # The beginning was automatically added.
-User tor\n" port)
+User tor
+Log notice syslog\n" port)
 
               (for-each (match-lambda
                           ((service (ports hosts) ...)
@@ -384,7 +385,7 @@ HiddenServicePort ~a ~a~%"
 
               ;; Tor needs at least one network interface to be up, hence the
               ;; dependency on 'loopback'.
-              (requirement '(user-processes loopback))
+              (requirement '(user-processes loopback syslogd))
 
               (start #~(make-forkexec-constructor
                         (list (string-append #$tor "/bin/tor") "-f" #$torrc)))
