@@ -6141,6 +6141,38 @@ needs.  It provides a very simple API to create sockets to a destination with
 the choice of SSL/TLS, and SOCKS.")
     (license bsd-3)))
 
+(define-public ghc-http-client-tls
+  (package
+    (name "ghc-http-client-tls")
+    (version "0.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://hackage.haskell.org/package/"
+                                  "http-client-tls/http-client-tls-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0a01r05h5fxswyn6k6cgqgak4scqjan72hyy5wbdqzzhl4rmh7j5"))))
+    (build-system haskell-build-system)
+    ;; Tests require Internet access
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("ghc-data-default-class" ,ghc-data-default-class)
+       ("ghc-http-client" ,ghc-http-client)
+       ("ghc-connection" ,ghc-connection)
+       ("ghc-network" ,ghc-network)
+       ("ghc-tls" ,ghc-tls)
+       ("ghc-http-types" ,ghc-http-types)))
+    (native-inputs
+     `(("ghc-hspec" ,ghc-hspec)))
+    (home-page "https://github.com/snoyberg/http-client")
+    (synopsis "Backend for http-client using the TLS library")
+    (description
+     "This package provides a backend for the http-client package using the
+connection and TLS libraries.  It is intended for use by higher-level
+libraries, such as http-conduit.")
+    (license expat)))
+
 (define-public idris
   (package
     (name "idris")
