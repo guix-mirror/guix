@@ -294,7 +294,6 @@ OUTPUT) tuples, using the build options in OPTS."
          (if dry-run?
              (return #f)
              (mbegin %store-monad
-               (set-build-options-from-command-line* opts)
                (built-derivations derivations)
                (return derivations))))))))
 
@@ -500,6 +499,7 @@ message if any test fails."
       (when container? (assert-container-features))
 
       (with-store store
+        (set-build-options-from-command-line store opts)
         (run-with-store store
           (mlet* %store-monad ((inputs (lower-inputs
                                         (map (match-lambda
