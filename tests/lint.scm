@@ -529,6 +529,23 @@ requests."
            (check-vulnerabilities (dummy-package "pi" (version "3.14"))))
          "vulnerable to CVE-2015-1234")))
 
+(test-assert "cve: one patched vulnerability"
+  (mock ((guix scripts lint) package-vulnerabilities
+         (lambda (package)
+           (list (make-struct (@@ (guix cve) <vulnerability>) 0
+                              "CVE-2015-1234"
+                              (list (cons (package-name package)
+                                          (package-version package)))))))
+        (string-null?
+         (with-warnings
+           (check-vulnerabilities
+            (dummy-package "pi"
+                           (version "3.14")
+                           (source
+                            (dummy-origin
+                             (patches
+                              (list "/a/b/pi-CVE-2015-1234.patch"))))))))))
+
 (test-assert "formatting: lonely parentheses"
   (string-contains
    (with-warnings

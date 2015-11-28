@@ -573,6 +573,15 @@ descriptions maintained upstream."
      (emit-warning package (_ "invalid license field")
                    'license))))
 
+(define (patch-file-name patch)
+  "Return the basename of PATCH's file name, or #f if the file name could not
+be determined."
+  (match patch
+    ((? string?)
+     (basename patch))
+    ((? origin?)
+     (and=> (origin-actual-file-name patch) basename))))
+
 (define (package-name->cpe-name name)
   "Do a basic conversion of NAME, a Guix package name, to the corresponding
 Common Platform Enumeration (CPE) name."
@@ -596,10 +605,20 @@ Common Platform Enumeration (CPE) name."
     (()
      #t)
     ((vulnerabilities ...)
-     (emit-warning package
-                   (format #f (_ "probably vulnerable to ~a")
-                           (string-join (map vulnerability-id vulnerabilities)
-                                        ", "))))))
+     (let* ((patches   (filter-map patch-file-name
+                                   (or (and=> (package-source package)
+                                              origin-patches)
+                                       '())))
+            (unpatched (remove (lambda (vuln)
+                                 (find (cute string-contains
+                                         <> (vulnerability-id vuln))
+                                       patches))
+                               vulnerabilities)))
+       (unless (null? unpatched)
+         (emit-warning package
+                       (format #f (_ "probably vulnerable to ~a")
+                               (string-join (map vulnerability-id unpatched)
+                                            ", "))))))))
 
 
 ;;;
