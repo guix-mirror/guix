@@ -714,7 +714,8 @@ convert, manipulate, filter and display a wide variety of image formats.")
                                   "/software/jasper-" version ".zip"))
               (sha256
                (base32
-                "154l7zk7yh3v8l2l6zm5s2alvd2fzkp6c9i18iajfbna5af5m43b"))))
+                "154l7zk7yh3v8l2l6zm5s2alvd2fzkp6c9i18iajfbna5af5m43b"))
+              (patches (list (search-patch "jasper-CVE-2008-3522.patch")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("unzip" ,unzip)))

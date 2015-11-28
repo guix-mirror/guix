@@ -535,6 +535,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/icu4c-CVE-2015-4760.patch		\
   gnu/packages/patches/imagemagick-test-segv.patch		\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
+  gnu/packages/patches/jasper-CVE-2008-3522.patch		\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/julia-0.3.10-fix-empty-array.patch	\
   gnu/packages/patches/kmod-module-directory.patch		\
