@@ -5543,6 +5543,26 @@ editor, @command{find}, @command{grep}, etc.  The example above adds
 tcpdump to those, taken from the @code{(gnu packages admin)} module
 (@pxref{Package Modules}).
 
+@findex specification->package
+Referring to packages by variable name, like @var{tcpdump} above, has
+the advantage of being unambiguous; it also allows typos and such to be
+diagnosed right away as ``unbound variables''.  The downside is that one
+needs to know which module defines which package, and to augment the
+@code{use-package-modules} line accordingly.  To avoid that, one can use
+the @code{specification->package} procedure of the @code{(gnu packages)}
+module, which returns the best package for a given name or name and
+version:
+
+@lisp
+(use-modules (gnu packages))
+
+(operating-system
+  ;; ...
+  (packages (append (map specification->package
+                         '("tcpdump" "htop" "gnupg-2.0"))
+                    %base-packages)))
+@end lisp
+
 @vindex %base-services
 The @code{services} field lists @dfn{system services} to be made
 available when the system starts (@pxref{Services}).
