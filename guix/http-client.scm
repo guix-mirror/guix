@@ -207,7 +207,9 @@ textual.  Follow any HTTP redirection.  When BUFFERED? is #f, return an
 unbuffered port, suitable for use in `filtered-port'.
 
 Raise an '&http-get-error' condition if downloading fails."
-  (let loop ((uri uri))
+  (let loop ((uri (if (string? uri)
+                      (string->uri uri)
+                      uri)))
     (let ((port (or port (open-connection-for-uri uri))))
       (unless buffered?
         (setvbuf port _IONBF))
