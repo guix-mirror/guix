@@ -20,6 +20,7 @@
 ;; TODO: Add ruby
 
 (define-module (gnu packages weechat)
+  #:use-module (gnu packages)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages base)
   #:use-module (gnu packages gettext)
@@ -52,7 +53,9 @@
               (uri (string-append "http://weechat.org/files/src/weechat-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "13b7dfs3sn71c51fi0bli5rzlsppil6gg1lzik3k8l43yhhqyv2w"))))
+               (base32
+                "13b7dfs3sn71c51fi0bli5rzlsppil6gg1lzik3k8l43yhhqyv2w"))
+              (patches (list (search-patch "weechat-python.patch")))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("pkg-config" ,pkg-config)
