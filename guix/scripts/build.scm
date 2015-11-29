@@ -494,6 +494,15 @@ arguments with packages that use the specified source."
       ((head tail ...)
        (loop tail sources (cons head result))))))
 
+(define (show-build-log store file urls)
+  "Show the build log for FILE, falling back to remote logs from URLS if
+needed."
+  (let ((log (or (log-file store file)
+                 (log-url store file #:base-urls urls))))
+    (if log
+        (format #t "~a~%" log)
+        (leave (_ "no build log for '~a'~%") file))))
+
 
 ;;;
 ;;; Entry point.
@@ -515,9 +524,14 @@ arguments with packages that use the specified source."
                                  ;; daemon's substitute URLs.
                                  %default-substitute-urls)
                              '())))
+             (items (filter-map (match-lambda
+                                  (('argument . (? store-path? file))
+                                   file)
+                                  (_ #f))
+                                opts))
              (roots (filter-map (match-lambda
-                                 (('gc-root . root) root)
-                                 (_ #f))
+                                  (('gc-root . root) root)
+                                  (_ #f))
                                 opts)))
 
         (set-build-options-from-command-line store opts)
@@ -527,22 +541,10 @@ arguments with packages that use the specified source."
                               #:dry-run? (assoc-ref opts 'dry-run?)))
 
         (cond ((assoc-ref opts 'log-file?)
-               (for-each (lambda (file)
-                           (let ((log (or (log-file store file)
-                                          (log-url store file
-                                                   #:base-urls urls))))
-                             (if log
-                                 (format #t "~a~%" log)
-                                 (leave (_ "no build log for '~a'~%")
-                                        file))))
+               (for-each (cut show-build-log store <> urls)
                          (delete-duplicates
                           (append (map derivation-file-name drv)
-                                  (filter-map (match-lambda
-                                               (('argument
-                                                 . (? store-path? file))
-                                                file)
-                                               (_ #f))
-                                              opts)))))
+                                  items))))
               ((assoc-ref opts 'derivations-only?)
                (format #t "~{~a~%~}" (map derivation-file-name drv))
                (for-each (cut register-root store <> <>)
