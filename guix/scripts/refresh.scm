@@ -157,20 +157,21 @@ specified with `--select'.\n"))
 ;;;
 
 (define-syntax maybe-updater
-  ;; Helper macro for 'list-udpaters'.
-  (lambda (s)
-    (syntax-case s (=>)
-      ((_ ((module => updater) rest ...) (result ...))
-       (let ((met? (false-if-exception
-                    (resolve-interface (syntax->datum #'module)))))
-         (if met?
-             #'(maybe-updater (rest ...)
-                              (result ... (@ module updater)))
-             #'(maybe-updater (rest ...) (result ...)))))
-      ((_ (updater rest ...) (result ...))
-       #'(maybe-updater (rest ...) (result ... updater)))
-      ((_ () result)
-       #'result))))
+  ;; Helper macro for 'list-updaters'.
+  (syntax-rules (=>)
+    ((_ ((module => updater) rest ...) result)
+     (maybe-updater (rest ...)
+                    (let ((iface (false-if-exception
+                                  (resolve-interface 'module)))
+                          (tail  result))
+                      (if iface
+                          (cons (module-ref iface 'updater) tail)
+                          tail))))
+    ((_ (updater rest ...) result)
+     (maybe-updater (rest ...)
+                    (cons updater result)))
+    ((_ () result)
+     (reverse result))))
 
 (define-syntax-rule (list-updaters updaters ...)
   "Expand to '(list UPDATERS ...)' but only the subset of UPDATERS that are
@@ -181,11 +182,11 @@ A conditional updater has this form:
   ((SOME MODULE) => UPDATER)
 
 meaning that UPDATER is added to the list if and only if (SOME MODULE) could
-be resolved at macro expansion time.
+be resolved at run time.
 
 This is a way to discard at macro expansion time updaters that depend on
 unavailable optional dependencies such as Guile-JSON."
-  (maybe-updater (updaters ...) (list)))
+  (maybe-updater (updaters ...) '()))
 
 (define %updaters
   ;; List of "updaters" used by default.  They are consulted in this order.
