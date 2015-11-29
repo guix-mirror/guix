@@ -194,41 +194,15 @@ without requiring the source code to be rewritten.")
 (define-public guile-next
   (package (inherit guile-2.0)
     (name "guile-next")
-    (version "20151025.e5bccb6")
+    (version "2.1.1")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "git://git.sv.gnu.org/guile.git")
-                    (commit "e5bccb6e5df3485152bc6501e1f36275e09c6352")))
-              (file-name (string-append name "-" version "-checkout"))
+              (method url-fetch)
+              (uri (string-append "ftp://alpha.gnu.org/gnu/guile/guile-"
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "0z7ywryfcargrpz8hdrz6sfs06c2h2y9baqin3mbjvvg96a5bx47"))))
-
-    (arguments
-     (substitute-keyword-arguments `(;; Tests aren't passing for now.
-                                     ;; Obviously we should re-enable this!
-                                     #:tests? #f
-                                     ,@(package-arguments guile-2.0))
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'autogen
-                      (lambda _
-                        (zero? (system* "sh" "autogen.sh"))))
-           (add-before 'autogen 'patch-/bin/sh
-                       (lambda _
-                         (substitute* "build-aux/git-version-gen"
-                           (("#!/bin/sh") (string-append "#!" (which "sh"))))
-                         #t))))))
-    (synopsis "Snapshot of what will become version 2.2 of GNU Guile")
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("flex" ,flex)
-       ("texinfo" ,texinfo)
-       ("gettext" ,gnu-gettext)
-       ,@(package-native-inputs guile-2.0)))))
+                "0nixmx7as79g8rr8bvznh59pwcc2jd22cfk17v309p57zp2c255r"))))
+    (synopsis "Snapshot of what will become version 2.2 of GNU Guile")))
 
 (define-public guile-for-guile-emacs
   (package (inherit guile-next)
@@ -241,7 +215,30 @@ without requiring the source code to be rewritten.")
                     (commit "d8d9a8da05ec876acba81a559798eb5eeceb5a17")))
               (sha256
                (base32
-                "00sprsshy16y8pxjy126hr2adqcvvzzz96hjyjwgg8swva1qh6b0"))))))
+                "00sprsshy16y8pxjy126hr2adqcvvzzz96hjyjwgg8swva1qh6b0"))))
+    (arguments
+     (substitute-keyword-arguments `(;; Tests aren't passing for now.
+                                     ;; Obviously we should re-enable this!
+                                     #:tests? #f
+                                     ,@(package-arguments guile-next))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'autogen
+                      (lambda _
+                        (zero? (system* "sh" "autogen.sh"))))
+           (add-before 'autogen 'patch-/bin/sh
+                       (lambda _
+                         (substitute* "build-aux/git-version-gen"
+                           (("#!/bin/sh") (string-append "#!" (which "sh"))))
+                         #t))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("flex" ,flex)
+       ("texinfo" ,texinfo)
+       ("gettext" ,gnu-gettext)
+       ,@(package-native-inputs guile-next)))))
 
 
 ;;;
