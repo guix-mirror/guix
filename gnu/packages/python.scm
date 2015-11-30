@@ -875,7 +875,10 @@ password storage.")
     (license x11)))
 
 (define-public python2-keyring
-  (package-with-python2 python-keyring))
+  (let ((keyring (package-with-python2 python-keyring)))
+    (package (inherit keyring)
+      (inputs
+       `(("python2-pycrypto" ,python2-pycrypto))))))
 
 (define-public python-six
   (package
