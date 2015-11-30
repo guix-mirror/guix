@@ -624,6 +624,11 @@ doesn't need it."
 
   (add-indirect-root store absolute))
 
+
+;;;
+;;; Queries and actions.
+;;;
+
 (define (process-query opts)
   "Process any query specified by OPTS.  Return #t when a query was actually
 processed, #f otherwise."
@@ -729,6 +734,58 @@ processed, #f otherwise."
 
       (_ #f))))
 
+
+(define* (roll-back-action store profile arg opts
+                           #:key dry-run?)
+  "Roll back PROFILE to its previous generation."
+  (unless dry-run?
+    (roll-back* store profile)))
+
+(define* (switch-generation-action store profile spec opts
+                                   #:key dry-run?)
+  "Switch PROFILE to the generation specified by SPEC."
+  (unless dry-run?
+    (let* ((number (string->number spec))
+           (number (and number
+                        (case (string-ref spec 0)
+                          ((#\+ #\-)
+                           (relative-generation profile number))
+                          (else number)))))
+      (if number
+          (switch-to-generation* profile number)
+          (leave (_ "cannot switch to generation '~a'~%") spec)))))
+
+(define* (delete-generations-action store profile pattern opts
+                                    #:key dry-run?)
+  "Delete PROFILE's generations that match PATTERN."
+  (unless dry-run?
+    (delete-matching-generations store profile pattern)))
+
+(define* (manifest-action store profile file opts
+                          #:key dry-run?)
+  "Change PROFILE to contain the packages specified in FILE."
+  (let* ((user-module  (make-user-module '((guix profiles) (gnu))))
+         (manifest     (load* file user-module))
+         (bootstrap?   (assoc-ref opts 'bootstrap?))
+         (substitutes? (assoc-ref opts 'substitutes?)))
+    (if dry-run?
+        (format #t (_ "would install new manifest from '~a' with ~d entries~%")
+                file (length (manifest-entries manifest)))
+        (format #t (_ "installing new manifest from '~a' with ~d entries~%")
+                file (length (manifest-entries manifest))))
+    (build-and-use-profile store profile manifest
+                           #:bootstrap? bootstrap?
+                           #:use-substitutes? substitutes?
+                           #:dry-run? dry-run?)))
+
+(define %actions
+  ;; List of actions that may be processed.  The car of each pair is the
+  ;; action's symbol in the option list; the cdr is the action's procedure.
+  `((roll-back? . ,roll-back-action)
+    (switch-generation . ,switch-generation-action)
+    (delete-generations . ,delete-generations-action)
+    (manifest . ,manifest-action)))
+
 
 ;;;
 ;;; Entry point.
@@ -749,70 +806,30 @@ processed, #f otherwise."
     (define substitutes? (assoc-ref opts 'substitutes?))
     (define profile  (or (assoc-ref opts 'profile) %current-profile))
 
-    ;; First roll back if asked to.
-    (cond ((and (assoc-ref opts 'roll-back?)
-                (not dry-run?))
-           (roll-back* (%store) profile)
-           (process-actions (alist-delete 'roll-back? opts)))
-          ((and (assoc-ref opts 'switch-generation)
-                (not dry-run?))
-           (for-each
-            (match-lambda
-              (('switch-generation . pattern)
-               (let* ((number (string->number pattern))
-                      (number (and number
-                                   (case (string-ref pattern 0)
-                                     ((#\+ #\-)
-                                      (relative-generation profile number))
-                                     (else number)))))
-                 (if number
-                     (switch-to-generation* profile number)
-                     (leave (_ "cannot switch to generation '~a'~%")
-                            pattern)))
-               (process-actions (alist-delete 'switch-generation opts)))
-              (_ #f))
-            opts))
-          ((and (assoc-ref opts 'delete-generations)
-                (not dry-run?))
-           (for-each
-            (match-lambda
-              (('delete-generations . pattern)
-               (delete-matching-generations (%store) profile pattern)
+    ;; First, process roll-backs, generation removals, etc.
+    (for-each (match-lambda
+                ((key . arg)
+                 (and=> (assoc-ref %actions key)
+                        (lambda (proc)
+                          (proc (%store) profile arg opts
+                                #:dry-run? dry-run?)))))
+              opts)
 
-               (process-actions
-                (alist-delete 'delete-generations opts)))
-              (_ #f))
-            opts))
-          ((assoc-ref opts 'manifest)
-           (let* ((file-name   (assoc-ref opts 'manifest))
-                  (user-module (make-user-module '((guix profiles)
-                                                   (gnu))))
-                  (manifest    (load* file-name user-module)))
-             (if dry-run?
-                 (format #t (_ "would install new manifest from '~a' with ~d entries~%")
-                         file-name (length (manifest-entries manifest)))
-                 (format #t (_ "installing new manifest from '~a' with ~d entries~%")
-                         file-name (length (manifest-entries manifest))))
-             (build-and-use-profile (%store) profile manifest
-                                    #:bootstrap? bootstrap?
-                                    #:use-substitutes? substitutes?
-                                    #:dry-run? dry-run?)))
-          (else
-           (let* ((manifest    (profile-manifest profile))
-                  (install     (options->installable opts manifest))
-                  (remove      (options->removable opts manifest))
-                  (transaction (manifest-transaction (install install)
-                                                     (remove remove)))
-                  (new         (manifest-perform-transaction
-                                manifest transaction)))
+    ;; Then, process normal package installation/removal/upgrade.
+    (let* ((manifest    (profile-manifest profile))
+           (install     (options->installable opts manifest))
+           (remove      (options->removable opts manifest))
+           (transaction (manifest-transaction (install install)
+                                              (remove remove)))
+           (new         (manifest-perform-transaction manifest transaction)))
 
-             (unless (and (null? install) (null? remove))
-               (show-manifest-transaction (%store) manifest transaction
-                                          #:dry-run? dry-run?)
-               (build-and-use-profile (%store) profile new
-                                      #:bootstrap? bootstrap?
-                                      #:use-substitutes? substitutes?
-                                      #:dry-run? dry-run?))))))
+      (unless (and (null? install) (null? remove))
+        (show-manifest-transaction (%store) manifest transaction
+                                   #:dry-run? dry-run?)
+        (build-and-use-profile (%store) profile new
+                               #:bootstrap? bootstrap?
+                               #:use-substitutes? substitutes?
+                               #:dry-run? dry-run?))))
 
   (let ((opts (parse-command-line args %options (list %default-options #f)
                                   #:argument-handler handle-argument)))
