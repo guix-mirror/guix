@@ -110,7 +110,7 @@ denote ranges as interpreted by 'matching-derivations'."
            (raise (condition (&profile-not-found-error
                               (profile profile)))))
           ((string-null? pattern)
-           (delete-generations (%store) profile
+           (delete-generations store profile
                                (delv current (profile-generations profile))))
           ;; Do not delete the zeroth generation.
           ((equal? 0 (string->number pattern))
@@ -131,7 +131,7 @@ denote ranges as interpreted by 'matching-derivations'."
              (let ((numbers (delv current numbers)))
                (when (null-list? numbers)
                  (leave (_ "no matching generation~%")))
-               (delete-generations (%store) profile numbers))))
+               (delete-generations store profile numbers))))
           (else
            (leave (_ "invalid syntax: ~a~%") pattern)))))
 
