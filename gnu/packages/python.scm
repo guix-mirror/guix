@@ -826,7 +826,13 @@ etc.).  The package is structured to make adding new modules easy.")
     (license public-domain)))
 
 (define-public python2-pycrypto
-  (package-with-python2 python-pycrypto))
+  (let ((pycrypto (package-with-python2 python-pycrypto)))
+    (package (inherit pycrypto)
+      (inputs
+       `(("python" ,python-2)
+         ,@(alist-delete
+            "python"
+            (package-inputs pycrypto)))))))
 
 (define-public python-keyring
   (package
