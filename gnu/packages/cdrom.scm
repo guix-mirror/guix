@@ -3,6 +3,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -125,14 +126,14 @@ libcdio.")
 (define-public xorriso
   (package
     (name "xorriso")
-    (version "1.4.0")
+    (version "1.4.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/xorriso/xorriso-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0mhfxn2idkrw1i65a5y4gnb1fig85zpnszb9ax7w4a2v062y1l8b"))))
+               "1cq4a0904lnz6nygbgarnlq49cz4qnfdyvz90s3nfk5as7gbwhr8"))))
     (build-system gnu-build-system)
     (inputs
      `(("acl" ,acl)
