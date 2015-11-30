@@ -56,6 +56,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages openstack)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -1028,3 +1029,33 @@ fetching updates) over a collection of version control repositories.  It
 supports a large number of version control systems: Git, Subversion,
 Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
     (license gpl2+)))
+
+(define-public git-annex-remote-hubic
+  (package
+    (name "git-annex-remote-hubic")
+    (version "0.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Schnouki/" name "/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "196g3jkaybjx11nbr51n0cjps3wjzb145ab76y717diqvvxp5v4r"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ;; for the tests
+       ("python-six" ,python-six)))
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil-2)
+       ("python-futures" ,python-futures)
+       ("python-rauth" ,python-rauth)
+       ("python-swiftclient" ,python-swiftclient)))
+    (home-page "https://github.com/Schnouki/git-annex-remote-hubic/")
+    (synopsis "Use hubic as a git-annex remote")
+    (description
+     "This package allows you to use your hubic account as a \"special
+repository\" with git-annex.")
+    (license gpl3+)))
