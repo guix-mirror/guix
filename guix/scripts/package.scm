@@ -510,86 +510,75 @@ kind of search path~%")
 
          %standard-build-options))
 
+(define (options->upgrade-predicate opts)
+  "Return a predicate based on the upgrade/do-not-upgrade regexps in OPTS
+that, given a package name, returns true if the package is a candidate for
+upgrading, #f otherwise."
+  (define upgrade-regexps
+    (filter-map (match-lambda
+                  (('upgrade . regexp)
+                   (make-regexp* (or regexp "")))
+                  (_ #f))
+                opts))
+
+  (define do-not-upgrade-regexps
+    (filter-map (match-lambda
+                  (('do-not-upgrade . regexp)
+                   (make-regexp* regexp))
+                  (_ #f))
+                opts))
+
+  (lambda (name)
+    (and (any (cut regexp-exec <> name) upgrade-regexps)
+         (not (any (cut regexp-exec <> name) do-not-upgrade-regexps)))))
+
+(define (store-item->manifest-entry item)
+  "Return a manifest entry for ITEM, a \"/gnu/store/...\" file name."
+  (let-values (((name version)
+                (package-name->name+version (store-path-package-name item))))
+    (manifest-entry
+      (name name)
+      (version version)
+      (output #f)
+      (item item))))
+
 (define (options->installable opts manifest)
   "Given MANIFEST, the current manifest, and OPTS, the result of 'args-fold',
 return the new list of manifest entries."
   (define (package->manifest-entry* package output)
     (check-package-freshness package)
-    ;; When given a package via `-e', install the first of its
-    ;; outputs (XXX).
     (package->manifest-entry package output))
 
-  (define upgrade-regexps
-    (filter-map (match-lambda
-                 (('upgrade . regexp)
-                  (make-regexp* (or regexp "")))
-                 (_ #f))
-                opts))
-
-  (define do-not-upgrade-regexps
-    (filter-map (match-lambda
-                 (('do-not-upgrade . regexp)
-                  (make-regexp* regexp))
-                 (_ #f))
-                opts))
-
-  (define packages-to-upgrade
-    (match upgrade-regexps
-      (()
-       '())
-      ((_ ...)
-       (filter-map (match-lambda
-                    (($ <manifest-entry> name version output path _)
-                     (and (any (cut regexp-exec <> name)
-                               upgrade-regexps)
-                          (not (any (cut regexp-exec <> name)
-                                    do-not-upgrade-regexps))
-                          (upgradeable? name version path)
-                          (let ((output (or output "out")))
-                            (call-with-values
-                                (lambda ()
-                                  (specification->package+output name output))
-                              list))))
-                    (_ #f))
-                   (manifest-entries manifest)))))
+  (define upgrade?
+    (options->upgrade-predicate opts))
 
   (define to-upgrade
-    (map (match-lambda
-          ((package output)
-           (package->manifest-entry* package output)))
-         packages-to-upgrade))
-
-  (define packages-to-install
     (filter-map (match-lambda
-                 (('install . (? package? p))
-                  (list p "out"))
-                 (('install . (? string? spec))
-                  (and (not (store-path? spec))
-                       (let-values (((package output)
-                                     (specification->package+output spec)))
-                         (and package (list package output)))))
-                 (_ #f))
-                opts))
+                  (($ <manifest-entry> name version output path _)
+                   (and (upgrade? name)
+                        (upgradeable? name version path)
+                        (let ((output (or output "out")))
+                          (call-with-values
+                              (lambda ()
+                                (specification->package+output name output))
+                            package->manifest-entry*))))
+                  (_ #f))
+                (manifest-entries manifest)))
 
   (define to-install
-    (append (map (match-lambda
-                  ((package output)
-                   (package->manifest-entry* package output)))
-                 packages-to-install)
-            (filter-map (match-lambda
-                         (('install . (? package?))
-                          #f)
-                         (('install . (? store-path? path))
-                          (let-values (((name version)
-                                        (package-name->name+version
-                                         (store-path-package-name path))))
-                            (manifest-entry
-                             (name name)
-                             (version version)
-                             (output #f)
-                             (item path))))
-                         (_ #f))
-                        opts)))
+    (filter-map (match-lambda
+                  (('install . (? package? p))
+                   ;; When given a package via `-e', install the first of its
+                   ;; outputs (XXX).
+                   (package->manifest-entry* p "out"))
+                  (('install . (? string? spec))
+                   (if (store-path? spec)
+                       (store-item->manifest-entry spec)
+                       (let-values (((package output)
+                                     (specification->package+output spec)))
+                         (package->manifest-entry* package output))))
+                  (_ #f))
+                opts))
 
   (append to-upgrade to-install))
 
