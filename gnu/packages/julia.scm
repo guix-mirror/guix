@@ -39,6 +39,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages wget)
   #:use-module (ice-9 match))
 
 (define libuv-julia
@@ -67,16 +68,15 @@
 (define-public julia
   (package
     (name "julia")
-    (version "0.3.10")
+    (version "0.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/JuliaLang/julia/releases/download/v"
-                    version "/julia-" version "_c8ceeefcc1.tar.gz"))
+                    version "/julia-" version "-full.tar.gz"))
               (sha256
                (base32
-                "0j6mw6wr35lxid10nh9gz7k6wck3a90ic92w99n1r052325gl9r7"))
-              (patches (list (search-patch "julia-0.3.10-fix-empty-array.patch")))))
+                "0sikirixvryf8z3d0skig22fpip64jk001qsha98iwsrcfiqpyds"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -92,8 +92,7 @@
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
-         (add-after
-          'unpack 'hardcode-soname-map
+         (add-after 'unpack 'hardcode-soname-map
           ;; ./src/ccall.cpp creates a map from library names to paths using the
           ;; output of "/sbin/ldconfig -p".  Since ldconfig is not used in Guix,
           ;; we patch ccall.cpp to contain a static map.
@@ -108,46 +107,70 @@
                          "sonameMap[\"" libname "\"] = "
                          "\"" (assoc-ref inputs input) "/lib/" soname "\";")))
                      '(("libc"        "libc"           "libc.so.6")
-                       ("pcre"        "libpcre"        "libpcre.so")
+                       ("pcre2"       "libpcre2-8"     "libpcre2-8.so")
                        ("mpfr"        "libmpfr"        "libmpfr.so")
                        ("openblas"    "libblas"        "libopenblas.so")
                        ("arpack-ng"   "libarpack"      "libarpack.so")
                        ("lapack"      "liblapack"      "liblapack.so")
+                       ("libgit2"     "libgit2"        "libgit2.so")
                        ("gmp"         "libgmp"         "libgmp.so")
                        ("openlibm"    "libopenlibm"    "libopenlibm.so")
                        ("openspecfun" "libopenspecfun" "libopenspecfun.so")
                        ("fftw"        "libfftw3"       "libfftw3.so")
                        ("fftwf"       "libfftw3f"      "libfftw3f.so"))))))
             #t))
-         ;; This phase will no longer be necessary in 0.3.11; see
-         ;; https://github.com/JuliaLang/julia/issues/12028
-         (add-before
-          'build 'fix-building-with-mcjit-llvm
-          (lambda _
-            (substitute* "src/cgutils.cpp"
-              (("addComdat\\(gv\\);") ""))
-            #t))
-         (add-before
-          'build 'patch-include-path
-          (lambda _
+         (add-before 'build 'fix-include-and-link-paths
+          (lambda* (#:key inputs #:allow-other-keys)
+            ;; LIBUTF8PROC is a linker flag, not a build target.  It is
+            ;; included in the LIBFILES_* variable which is used as a
+            ;; collection of build targets and a list of libraries to link
+            ;; against.
+            (substitute* "src/flisp/Makefile"
+              (("\\$\\(BUILDDIR\\)/\\$\\(EXENAME\\): \\$\\(OBJS\\) \\$\\(LIBFILES_release\\)")
+               "$(BUILDDIR)/$(EXENAME): $(OBJS) $(LLT_release)")
+              (("\\$\\(BUILDDIR\\)/\\$\\(EXENAME\\)-debug: \\$\\(DOBJS\\) \\$\\(LIBFILES_debug\\)")
+               "$(BUILDDIR)/$(EXENAME)-debug: $(DOBJS) $(LLT_debug)"))
+
+            ;; The REPL must be linked with libuv.
+            (substitute* "ui/Makefile"
+              (("JLDFLAGS \\+= ")
+               (string-append "JLDFLAGS += "
+                              (assoc-ref %build-inputs "libuv")
+                              "/lib/libuv.so ")))
+
             (substitute* "deps/Makefile"
               (("/usr/include/double-conversion")
                (string-append (assoc-ref %build-inputs "double-conversion")
                               "/include/double-conversion")))
+            (substitute* "base/Makefile"
+              (("\\$\\(build_includedir\\)/uv-errno.h")
+               (string-append (assoc-ref inputs "libuv")
+                              "/include/uv-errno.h")))
             #t))
-         (add-before
-          'build 'replace-default-shell
+         (add-before 'build 'replace-default-shell
           (lambda _
             (substitute* "base/client.jl"
               (("/bin/sh") (which "sh")))
             #t))
-         (add-before
-          'check 'disable-broken-test
-          ;; One test fails because it produces slightly different output.
-          (lambda _
-            (substitute* "test/repl.jl"
-              (("@test output") "# @test output"))
-            #t)))
+         (add-after 'unpack 'hardcode-paths
+           (lambda _
+             (substitute* "base/interactiveutil.jl"
+               (("`which") (string-append "`" (which "which")))
+               (("`wget")  (string-append "`" (which "wget"))))
+             #t))
+         (add-before 'check 'disable-broken-tests
+           (lambda _
+             (substitute* "test/choosetests.jl"
+               ;; These tests time out.  See
+               ;; https://github.com/JuliaLang/julia/issues/14374 for ongoing
+               ;; discussion.
+               (("\"replcompletions\",") "")
+               (("\"repl\",") ""))
+             (substitute* "test/repl.jl"
+               ;; This test fails because we cannot escape the build
+               ;; directory.
+               (("@test pwd\\(\\) == homedir\\(\\)") "#"))
+             #t)))
        #:make-flags
        (list
         (string-append "prefix=" (assoc-ref %outputs "out"))
@@ -163,7 +186,6 @@
            (_ "MARCH=UNSUPPORTED"))
 
         "CONFIG_SHELL=bash"     ;needed to build bundled libraries
-        "USE_SYSTEM_LIBUV=0"    ;Julia expects a modified libuv
         "USE_SYSTEM_DSFMT=0"    ;not packaged for Guix and upstream has no
                                 ;build system for a shared library.
         "USE_SYSTEM_RMATH=0"    ;Julia uses a bundled version of R's math
@@ -184,10 +206,22 @@
         ;;                (assoc-ref %build-inputs "suitesparse")
         ;;                "/include")
 
+        "USE_GPL_LIBS=1"        ;proudly
         "USE_SYSTEM_GRISU=1"    ;for double-conversion
         "USE_SYSTEM_UTF8PROC=1"
+        (string-append "UTF8PROC_INC="
+                       (assoc-ref %build-inputs "utf8proc")
+                       "/include")
         "USE_SYSTEM_LLVM=1"
         "USE_SYSTEM_LIBUNWIND=1"
+        "USE_SYSTEM_LIBUV=1"
+        (string-append "LIBUV="
+                       (assoc-ref %build-inputs "libuv")
+                       "/lib/libuv.so")
+        (string-append "LIBUV_INC="
+                       (assoc-ref %build-inputs "libuv")
+                       "/include")
+        "USE_SYSTEM_PATCHELF=1"
         "USE_SYSTEM_PCRE=1"
         "USE_SYSTEM_OPENLIBM=1"
         "USE_SYSTEM_GMP=1"
@@ -198,26 +232,29 @@
     (inputs
      `(("llvm" ,llvm-3.5)
        ("arpack-ng" ,arpack-ng)
+       ("coreutils" ,coreutils) ;for bindings to "mkdir" and the like
        ("lapack" ,lapack)
        ("openblas" ,openblas) ;Julia does not build with Atlas
        ("libunwind" ,libunwind)
        ("openlibm" ,openlibm)
        ("openspecfun" ,openspecfun)
        ("double-conversion" ,double-conversion)
+       ("libgit2" ,libgit2)
        ("fftw" ,fftw)
        ("fftwf" ,fftwf)
        ("fortran" ,gfortran)
-       ("pcre" ,pcre)
+       ("libuv" ,libuv-julia)
+       ("pcre2" ,pcre2)
        ("utf8proc" ,utf8proc)
-       ("git" ,git)
        ("mpfr" ,mpfr)
+       ("wget" ,wget)
+       ("which" ,which)
        ("gmp" ,gmp)))
     (native-inputs
      `(("perl" ,perl)
        ("patchelf" ,patchelf)
        ("pkg-config" ,pkg-config)
-       ("python" ,python-2)
-       ("which" ,which)))
+       ("python" ,python-2)))
     ;; Julia is not officially released for ARM and MIPS.
     ;; See https://github.com/JuliaLang/julia/issues/10639
     (supported-systems '("i686-linux" "x86_64-linux"))
