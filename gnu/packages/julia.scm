@@ -20,6 +20,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
@@ -27,6 +29,7 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages llvm)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages multiprecision) ; mpfr
@@ -37,6 +40,29 @@
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages version-control)
   #:use-module (ice-9 match))
+
+(define libuv-julia
+  (let ((commit "030481e9d659fd46702ab747caf2cbbe19d537ba")
+        (revision "1"))
+    (package (inherit libuv)
+      (name "libuv-julia")
+      (version (string-append "0.11.26." revision "-" (string-take commit 8)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/JuliaLang/libuv.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1ss63wfr2hghc8kb6ciry394gp6x58haz8vaj57l5mp80z04gd54"))))
+      (build-system gnu-build-system)
+      (arguments
+       (substitute-keyword-arguments (package-arguments libuv)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'autogen)))))
+      (home-page "https://github.com/JuliaLang/libuv"))))
 
 (define-public julia
   (package
