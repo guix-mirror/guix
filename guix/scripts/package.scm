@@ -786,6 +786,39 @@ processed, #f otherwise."
     (delete-generations . ,delete-generations-action)
     (manifest . ,manifest-action)))
 
+(define (process-actions store opts)
+  "Process any install/remove/upgrade action from OPTS."
+
+  (define dry-run? (assoc-ref opts 'dry-run?))
+  (define bootstrap? (assoc-ref opts 'bootstrap?))
+  (define substitutes? (assoc-ref opts 'substitutes?))
+  (define profile  (or (assoc-ref opts 'profile) %current-profile))
+
+  ;; First, process roll-backs, generation removals, etc.
+  (for-each (match-lambda
+              ((key . arg)
+               (and=> (assoc-ref %actions key)
+                      (lambda (proc)
+                        (proc store profile arg opts
+                              #:dry-run? dry-run?)))))
+            opts)
+
+  ;; Then, process normal package installation/removal/upgrade.
+  (let* ((manifest    (profile-manifest profile))
+         (install     (options->installable opts manifest))
+         (remove      (options->removable opts manifest))
+         (transaction (manifest-transaction (install install)
+                                            (remove remove)))
+         (new         (manifest-perform-transaction manifest transaction)))
+
+    (unless (and (null? install) (null? remove))
+      (show-manifest-transaction store manifest transaction
+                                 #:dry-run? dry-run?)
+      (build-and-use-profile store profile new
+                             #:bootstrap? bootstrap?
+                             #:use-substitutes? substitutes?
+                             #:dry-run? dry-run?))))
+
 
 ;;;
 ;;; Entry point.
@@ -797,39 +830,6 @@ processed, #f otherwise."
     (if arg-handler
         (arg-handler arg result)
         (leave (_ "~A: extraneous argument~%") arg)))
-
-  (define (process-actions opts)
-    ;; Process any install/remove/upgrade action from OPTS.
-
-    (define dry-run? (assoc-ref opts 'dry-run?))
-    (define bootstrap? (assoc-ref opts 'bootstrap?))
-    (define substitutes? (assoc-ref opts 'substitutes?))
-    (define profile  (or (assoc-ref opts 'profile) %current-profile))
-
-    ;; First, process roll-backs, generation removals, etc.
-    (for-each (match-lambda
-                ((key . arg)
-                 (and=> (assoc-ref %actions key)
-                        (lambda (proc)
-                          (proc (%store) profile arg opts
-                                #:dry-run? dry-run?)))))
-              opts)
-
-    ;; Then, process normal package installation/removal/upgrade.
-    (let* ((manifest    (profile-manifest profile))
-           (install     (options->installable opts manifest))
-           (remove      (options->removable opts manifest))
-           (transaction (manifest-transaction (install install)
-                                              (remove remove)))
-           (new         (manifest-perform-transaction manifest transaction)))
-
-      (unless (and (null? install) (null? remove))
-        (show-manifest-transaction (%store) manifest transaction
-                                   #:dry-run? dry-run?)
-        (build-and-use-profile (%store) profile new
-                               #:bootstrap? bootstrap?
-                               #:use-substitutes? substitutes?
-                               #:dry-run? dry-run?))))
 
   (let ((opts (parse-command-line args %options (list %default-options #f)
                                   #:argument-handler handle-argument)))
@@ -844,4 +844,4 @@ processed, #f otherwise."
                              (if (assoc-ref opts 'bootstrap?)
                                  %bootstrap-guile
                                  (canonical-package guile-2.0)))))
-              (process-actions opts)))))))
+              (process-actions (%store) opts)))))))
