@@ -182,6 +182,49 @@ denote ranges as interpreted by 'matching-derivations'."
           (else
            (leave (_ "invalid syntax: ~a~%") pattern)))))
 
+(define* (build-and-use-profile store profile manifest
+                                #:key
+                                bootstrap? use-substitutes?
+                                dry-run?)
+  "Build a new generation of PROFILE, a file name, using the packages
+specified in MANIFEST, a manifest object."
+  (when (equal? profile %current-profile)
+    (ensure-default-profile))
+
+  (let* ((prof-drv (run-with-store store
+                     (profile-derivation manifest
+                                         #:hooks (if bootstrap?
+                                                     '()
+                                                     %default-profile-hooks))))
+         (prof     (derivation->output-path prof-drv)))
+    (show-what-to-build store (list prof-drv)
+                        #:use-substitutes? use-substitutes?
+                        #:dry-run? dry-run?)
+
+    (cond
+     (dry-run? #t)
+     ((and (file-exists? profile)
+           (and=> (readlink* profile) (cut string=? prof <>)))
+      (format (current-error-port) (_ "nothing to be done~%")))
+     (else
+      (let* ((number (generation-number profile))
+
+             ;; Always use NUMBER + 1 for the new profile, possibly
+             ;; overwriting a "previous future generation".
+             (name   (generation-file-name profile (+ 1 number))))
+        (and (build-derivations store (list prof-drv))
+             (let* ((entries (manifest-entries manifest))
+                    (count   (length entries)))
+               (switch-symlinks name prof)
+               (switch-symlinks profile name)
+               (unless (string=? profile %current-profile)
+                 (register-gc-root store name))
+               (format #t (N_ "~a package in profile~%"
+                              "~a packages in profile~%"
+                              count)
+                       count)
+               (display-search-paths entries (list profile)))))))))
+
 
 ;;;
 ;;; Package specifications.
@@ -702,51 +745,9 @@ processed, #f otherwise."
     ;; Process any install/remove/upgrade action from OPTS.
 
     (define dry-run? (assoc-ref opts 'dry-run?))
+    (define bootstrap? (assoc-ref opts 'bootstrap?))
+    (define substitutes? (assoc-ref opts 'substitutes?))
     (define profile  (or (assoc-ref opts 'profile) %current-profile))
-
-    (define (build-and-use-profile manifest)
-      (let* ((bootstrap?  (assoc-ref opts 'bootstrap?)))
-
-        (when (equal? profile %current-profile)
-          (ensure-default-profile))
-
-        (let* ((prof-drv (run-with-store (%store)
-                           (profile-derivation
-                            manifest
-                            #:hooks (if bootstrap?
-                                        '()
-                                        %default-profile-hooks))))
-               (prof     (derivation->output-path prof-drv)))
-          (show-what-to-build (%store) (list prof-drv)
-                              #:use-substitutes?
-                              (assoc-ref opts 'substitutes?)
-                              #:dry-run? dry-run?)
-
-          (cond
-           (dry-run? #t)
-           ((and (file-exists? profile)
-                 (and=> (readlink* profile) (cut string=? prof <>)))
-            (format (current-error-port) (_ "nothing to be done~%")))
-           (else
-            (let* ((number (generation-number profile))
-
-                   ;; Always use NUMBER + 1 for the new profile,
-                   ;; possibly overwriting a "previous future
-                   ;; generation".
-                   (name   (generation-file-name profile
-                                                 (+ 1 number))))
-              (and (build-derivations (%store) (list prof-drv))
-                   (let* ((entries (manifest-entries manifest))
-                          (count   (length entries)))
-                     (switch-symlinks name prof)
-                     (switch-symlinks profile name)
-                     (unless (string=? profile %current-profile)
-                       (register-gc-root (%store) name))
-                     (format #t (N_ "~a package in profile~%"
-                                    "~a packages in profile~%"
-                                    count)
-                             count)
-                     (display-search-paths entries (list profile))))))))))
 
     ;; First roll back if asked to.
     (cond ((and (assoc-ref opts 'roll-back?)
@@ -787,12 +788,15 @@ processed, #f otherwise."
                   (user-module (make-user-module '((guix profiles)
                                                    (gnu))))
                   (manifest    (load* file-name user-module)))
-             (if (assoc-ref opts 'dry-run?)
+             (if dry-run?
                  (format #t (_ "would install new manifest from '~a' with ~d entries~%")
                          file-name (length (manifest-entries manifest)))
                  (format #t (_ "installing new manifest from '~a' with ~d entries~%")
                          file-name (length (manifest-entries manifest))))
-             (build-and-use-profile manifest)))
+             (build-and-use-profile (%store) profile manifest
+                                    #:bootstrap? bootstrap?
+                                    #:use-substitutes? substitutes?
+                                    #:dry-run? dry-run?)))
           (else
            (let* ((manifest    (profile-manifest profile))
                   (install     (options->installable opts manifest))
@@ -805,7 +809,10 @@ processed, #f otherwise."
              (unless (and (null? install) (null? remove))
                (show-manifest-transaction (%store) manifest transaction
                                           #:dry-run? dry-run?)
-               (build-and-use-profile new))))))
+               (build-and-use-profile (%store) profile new
+                                      #:bootstrap? bootstrap?
+                                      #:use-substitutes? substitutes?
+                                      #:dry-run? dry-run?))))))
 
   (let ((opts (parse-command-line args %options (list %default-options #f)
                                   #:argument-handler handle-argument)))
