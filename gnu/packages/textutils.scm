@@ -95,7 +95,7 @@ libenca and several charset conversion libraries and tools.")
 (define-public utf8proc
   (package
     (name "utf8proc")
-    (version "1.1.6")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
@@ -104,23 +104,15 @@ libenca and several charset conversion libraries and tools.")
              version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0wmsi672knii0q70wh6a3ll0gv7qk33c50zbpzasrs3b16bqy659"))))
+        (base32 "1k48as5kjkar4yj3dwxyll8ykj4k723ib5a6mnw1g86q3zi0zdl3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;no "check" target
-       #:make-flags '("CC=gcc")
+       #:make-flags (list "CC=gcc"
+                          (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
-       (alist-replace
-        'install
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((lib (string-append (assoc-ref outputs "out") "/lib/"))
-                (include (string-append (assoc-ref outputs "out") "/include/")))
-            (install-file "utf8proc.h" include)
-            (for-each (lambda (file)
-                        (install-file file lib))
-                      '("libutf8proc.a" "libutf8proc.so"))))
-        ;; no configure script
-        (alist-delete 'configure %standard-phases))))
+       (modify-phases %standard-phases
+         (delete 'configure))))
     (home-page "http://julialang.org/utf8proc/")
     (synopsis "C library for processing UTF-8 Unicode data")
     (description "utf8proc is a small C library that provides Unicode
