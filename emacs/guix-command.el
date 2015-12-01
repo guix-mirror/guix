@@ -239,6 +239,7 @@ to be modified."
      :switch? nil :option? t)
     ("--install-from-file" :fun guix-read-file-name)
     ("--manifest"       :fun guix-read-file-name)
+    ("--profile"        :fun guix-read-file-name)
     ("--do-not-upgrade" :char ?U)
     ("--roll-back"      :char ?R)
     ("--show"           :char ?w :fun guix-read-package-name)))
