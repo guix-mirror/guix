@@ -278,16 +278,14 @@ and sensible default behaviors into your setuptools run.")
 (define-public python-requests-mock
   (package
     (name "python-requests-mock")
-    (version "0.6.0")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/r/requests-mock/"
-             "requests-mock-" version ".tar.gz"))
+       (uri (pypi-uri "requests-mock" version))
        (sha256
         (base32
-         "0gmd88c224y53b1ai8cfsrcxm9kw3gdqzysclmnaqspg7zjhxwd1"))))
+         "0s6mrpiv2w0km39qvl1pq2d56xblnm57p369qdp5j1a55ncica7f"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-requests" ,python-requests)
