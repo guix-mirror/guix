@@ -457,17 +457,14 @@ pipeline and used by various modules such as logging.")
 (define-public python-oslo.i18n
   (package
     (name "python-oslo.i18n")
-    (version "2.5.0")
+    (version "3.0.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/o/oslo.i18n/oslo.i18n-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "oslo.i18n" version))
         (sha256
           (base32
-            "1kg72mqldlri3x0bhxai7j979czrd7mf8s3iflvvv0x9kn9ah4cw"))))
+           "0bpb1c20sm8my650gl824nzaip83bfn8hr91s65k5ncmyh8hb6pl"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-babel" ,python-babel)
