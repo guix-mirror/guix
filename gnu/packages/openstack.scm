@@ -637,17 +637,14 @@ and better support for mocking results.")
 (define-public python-oslo.utils
   (package
     (name "python-oslo.utils")
-    (version "2.5.0")
+    (version "3.0.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/o/oslo.utils/oslo.utils-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "oslo.utils" version))
         (sha256
           (base32
-            "11b073gblhzkxhi1j6sqk3apq2ll8xhi9h9g9kxzx9dycqdq0qp0"))
+           "1c4jrbvfs4hs37fics8frqlyhmsv7v92ncv2cpbm0av9x0ic6pnj"))
         (snippet
          '(begin
             ;; FIXME: setuptools fails to import this file during the test
