@@ -3276,13 +3276,23 @@ backend = TkAgg~%"
                ;; The doc recommends to run the 'html' target twice.
                (system* "python" "make.py" "html")
                (system* "python" "make.py" "html")
+               (copy-recursively "build/html" html)
                (system* "python" "make.py" "latex")
                (system* "python" "make.py" "texinfo")
+               (symlink (string-append html "/_images")
+                        (string-append info "/matplotlib-figures"))
+               (with-directory-excursion "build/texinfo"
+                 (substitute* "matplotlib.texi"
+                   (("@image\\{([^,]*)" all file)
+                    (string-append "@image{matplotlib-figures/" file)))
+                 (symlink (string-append html "/_images")
+                          "./matplotlib-figures")
+                 (system* "makeinfo" "--no-split"
+                          "-o" "matplotlib.info" "matplotlib.texi"))
                (copy-file "build/texinfo/matplotlib.info"
                           (string-append info "/matplotlib.info"))
                (copy-file "build/latex/Matplotlib.pdf"
-                          (string-append doc "/Matplotlib.pdf"))
-               (copy-recursively "build/html" html))))
+                          (string-append doc "/Matplotlib.pdf")))))
         %standard-phases))))
     (home-page "http://matplotlib.org")
     (synopsis "2D plotting library for Python")
