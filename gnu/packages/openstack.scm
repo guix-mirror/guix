@@ -138,17 +138,14 @@ guidelines}.")
 (define-public python-mox3
   (package
     (name "python-mox3")
-    (version "0.8.0")
+    (version "0.12.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/m/mox3/mox3-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "mox3" version))
         (sha256
           (base32
-            "1dwj9lkifdqvrcympqa47bj55l0n0j9jhzv2gj03h0dpzg6mgfkj"))))
+           "1pwz98q098cb8xxf8yryq21nvklc7hla880bsrq4y3j6bprw3iaj"))))
     (build-system python-build-system)
     (inputs
       `(("python-fixtures" ,python-fixtures)
