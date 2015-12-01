@@ -307,17 +307,14 @@ portions of your testing code.")
 (define-public python-stevedore
   (package
     (name "python-stevedore")
-    (version "1.7.0")
+    (version "1.9.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/s/stevedore/stevedore-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "stevedore" version))
        (sha256
          (base32
-          "149pjc0c3z6khjisn4yil3f94qjnzwafz093wc8rrzbw828qdkv8"))))
+          "01pcrdqsb6ca7hmqwm11b3baj6ml8yz9pxawrgvxb3j9824906fc"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-six" ,python-six)))
