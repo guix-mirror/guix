@@ -428,16 +428,14 @@ common features used in Tempest.")
 (define-public python-oslo.context
   (package
     (name "python-oslo.context")
-    (version "0.6.0")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/o/oslo.context/"
-             "oslo.context-" version ".tar.gz"))
+       (uri (pypi-uri "oslo.context" version))
        (sha256
         (base32
-         "16wr9qrkc3lb94ssb14qid4liza66x316fvzjw0izg67h1a0fm86"))))
+         "0kvha0rs9295njyl2z6n6zm5dapi5mrl5zwjm0m6ldqrvccyf8c3"))))
     (build-system python-build-system)
     (inputs
       `(("python-babel" ,python-babel)
