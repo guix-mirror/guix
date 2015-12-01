@@ -7,6 +7,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -953,3 +954,32 @@ output of the 'git' command.")
      "Recursively find the newest file in a file tree and print its
 modification time.")
     (license bsd-2)))
+
+(define-public myrepos
+  (package
+    (name "myrepos")
+    (version "1.20151022")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/joeyh/myrepos/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0c93lqsngpsxsca7nygk4qhidr40ijgih86q81x1mfcwbs0gbds8"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("perl" ,perl)))
+    (arguments
+     `(#:test-target "test"
+       #:phases (alist-delete 'configure %standard-phases)
+       #:make-flags (list (string-append "PREFIX=" %output))))
+    (home-page "http://myrepos.branchable.com/")
+    (synopsis "Multiple repository management tool")
+    (description
+     "Myrepos provides the @code{mr} command, which maps an operation (e.g.,
+fetching updates) over a collection of version control repositories.  It
+supports a large number of version control systems: Git, Subversion,
+Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
+    (license gpl2+)))
