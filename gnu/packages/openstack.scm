@@ -163,17 +163,14 @@ tested on Python version 3.2, 2.7 and 2.6.")
 (define-public python-os-client-config
   (package
     (name "python-os-client-config")
-    (version "1.4.0")
+    (version "1.12.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/o/os-client-config/os-client-config-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "os-client-config" version))
         (sha256
           (base32
-            "14png6ml3zbbilh8bihav24f8vig9lyijwynnjcvazdxxrzvwq9j"))))
+           "1vjn7667pswnmpqv6ngwyqm2xn46w90hi5b4pv2grwfz751cn1lf"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ;; Circular dependency with python-oslotest
