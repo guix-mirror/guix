@@ -882,15 +882,14 @@ password storage.")
 (define-public python-six
   (package
     (name "python-six")
-    (version "1.9.0")
+    (version "1.10.0")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/s/"
-                          "six/six-" version ".tar.gz"))
+      (uri (pypi-uri "six" version))
       (sha256
        (base32
-        "1mci5i8mjqmljmv33h0q3d4djc13zk1kfmb3fbvd3yy43x0m4h72"))))
+        "0snmb8xffb3vsma0z67i0h0w2g2dy0p3gsgh9gi4i0kgc5l8spqh"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
