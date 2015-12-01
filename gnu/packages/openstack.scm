@@ -69,16 +69,14 @@ all the files it generates a report.")
 (define-public python-debtcollector
   (package
     (name "python-debtcollector")
-    (version "0.5.0")
+    (version "1.0.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/d/debtcollector/"
-               "debtcollector-" version ".tar.gz"))
+        (uri (pypi-uri "debtcollector" version))
         (sha256
           (base32
-            "0amlcg5f98lk2mfzdg44slh1nsi2y4ds123g5d57376fjk2b3njd"))))
+           "0g4dfskaiy47rhsh4gh66l5vmdsrgq0qk68pl3ix1cj3ffvfndzv"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
