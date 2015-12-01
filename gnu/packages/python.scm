@@ -3182,7 +3182,7 @@ transcendental functions).")
 (define-public python-matplotlib
   (package
     (name "python-matplotlib")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
        (method url-fetch)
@@ -3190,13 +3190,15 @@ transcendental functions).")
                            "/matplotlib-" version ".tar.gz"))
        (sha256
         (base32
-         "0m6v9nwdldlwk22gcd339zg6mny5m301fxgks7z8sb8m9wawg8qp"))))
+         "1dn05cvd0g984lzhh72wa0z93psgwshbbg93fkab6slx5m3l95av"))
+       (patches (list (search-patch "matplotlib-setupext-tk.patch")))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs ; the following packages are all needed at run time
      `(("python-pyparsing" ,python-pyparsing)
        ("python-pygobject" ,python-pygobject)
        ("gobject-introspection" ,gobject-introspection)
+       ("python-tkinter" ,python "tk")
        ;; The 'gtk+' package (and 'gdk-pixbuf', 'atk' and 'pango' propagated
        ;; from 'gtk+') provides the required 'typelib' files used by
        ;; 'gobject-introspection'. The location of these files is set with the
@@ -3231,7 +3233,8 @@ transcendental functions).")
        ;; FIXME: Add backends when available.
        ;("python-wxpython" ,python-wxpython)
        ;("python-pyqt" ,python-pyqt)
-       ))
+       ("tcl" ,tcl)
+       ("tk" ,tk)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("texlive" ,texlive)
@@ -3250,8 +3253,12 @@ transcendental functions).")
             (setenv "HOME" (getcwd))
             (call-with-output-file "setup.cfg"
               (lambda (port)
-                (format port "[rc_options]~%
-backend = GTK3Agg~%")))))
+                (format port "[directories]~%
+basedirlist = ~a,~a~%
+[rc_options]~%
+backend = TkAgg~%"
+                        (assoc-ref inputs "tcl")
+                        (assoc-ref inputs "tk"))))))
         (alist-cons-after
          'install 'install-doc
          (lambda* (#:key outputs #:allow-other-keys)
@@ -3295,10 +3302,9 @@ toolkits.")
       (propagated-inputs
        `(("python2-pycairo" ,python2-pycairo)
          ("python2-pygobject-2" ,python2-pygobject-2)
-         ,@(alist-delete "python-pycairo"
-                         (alist-delete "python-pygobject"
-                                       (package-propagated-inputs
-                                        matplotlib))))))))
+         ("python2-tkinter" ,python-2 "tk")
+         ,@(fold alist-delete (package-propagated-inputs matplotlib)
+                 '("python-pycairo" "python-pygobject" "python-tkinter")))))))
 
 (define-public python2-pysnptools
   (package
