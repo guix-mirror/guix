@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,8 @@
   #:use-module ((ice-9 rdelim) #:select (read-line))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (rnrs bytevectors)
   #:use-module (json)
   #:use-module (web uri)
@@ -54,6 +57,11 @@ or #f on failure."
           (json-fetch (string-append "https://pypi.python.org/pypi/"
                                      name "/json")))))))
 
+;; For packages found on PyPI that lack a source distribution.
+(define-condition-type &missing-source-error &error
+  missing-source-error?
+  (package  missing-source-error-package))
+
 (define (latest-source-release pypi-package)
   "Return the latest source release for PYPI-PACKAGE."
   (let ((releases (assoc-ref* pypi-package "releases"
@@ -61,9 +69,8 @@ or #f on failure."
     (or (find (lambda (release)
                 (string=? "sdist" (assoc-ref release "packagetype")))
               releases)
-        (error "No source release found for pypi package: "
-               (assoc-ref* pypi-package "info" "name")
-               (assoc-ref* pypi-package "info" "version")))))
+        (raise (condition (&missing-source-error
+                           (package pypi-package)))))))
 
 (define (python->package-name name)
   "Given the NAME of a package on PyPI, return a Guix-compliant name for the
@@ -203,15 +210,20 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
 `package' s-expression corresponding to that package, or #f on failure."
   (let ((package (pypi-fetch package-name)))
     (and package
-         (let ((name (assoc-ref* package "info" "name"))
-               (version (assoc-ref* package "info" "version"))
-               (release (assoc-ref (latest-source-release package) "url"))
-               (synopsis (assoc-ref* package "info" "summary"))
-               (description (assoc-ref* package "info" "summary"))
-               (home-page (assoc-ref* package "info" "home_page"))
-               (license (string->license (assoc-ref* package "info" "license"))))
-           (make-pypi-sexp name version release home-page synopsis
-                           description license)))))
+         (guard (c ((missing-source-error? c)
+                    (let ((package (missing-source-error-package c)))
+                      (leave (_ "no source release for pypi package ~a ~a~%")
+                             (assoc-ref* package "info" "name")
+                             (assoc-ref* package "info" "version")))))
+           (let ((name (assoc-ref* package "info" "name"))
+                 (version (assoc-ref* package "info" "version"))
+                 (release (assoc-ref (latest-source-release package) "url"))
+                 (synopsis (assoc-ref* package "info" "summary"))
+                 (description (assoc-ref* package "info" "summary"))
+                 (home-page (assoc-ref* package "info" "home_page"))
+                 (license (string->license (assoc-ref* package "info" "license"))))
+             (make-pypi-sexp name version release home-page synopsis
+                             description license))))))
 
 (define (pypi-package? package)
   "Return true if PACKAGE is a Python package from PyPI."
@@ -230,15 +242,16 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
 
 (define (latest-release guix-package)
   "Return an <upstream-source> for the latest release of GUIX-PACKAGE."
-  (let* ((pypi-name (guix-package->pypi-name
-                     (specification->package guix-package)))
-         (metadata (pypi-fetch pypi-name))
-         (version (assoc-ref* metadata "info" "version"))
-         (url (assoc-ref (latest-source-release metadata) "url")))
-    (upstream-source
-     (package guix-package)
-     (version version)
-     (urls (list url)))))
+  (guard (c ((missing-source-error? c) #f))
+    (let* ((pypi-name (guix-package->pypi-name
+                       (specification->package guix-package)))
+           (metadata (pypi-fetch pypi-name))
+           (version (assoc-ref* metadata "info" "version"))
+           (url (assoc-ref (latest-source-release metadata) "url")))
+      (upstream-source
+       (package guix-package)
+       (version version)
+       (urls (list url))))))
 
 (define %pypi-updater
   (upstream-updater
