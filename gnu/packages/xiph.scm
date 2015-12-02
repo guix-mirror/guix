@@ -5,6 +5,7 @@
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -290,7 +291,7 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
 (define opus
   (package
     (name "opus")
-    (version "1.1")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -298,7 +299,7 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
                     ".tar.gz"))
               (sha256
                (base32
-                "158xprn2086arvdib3vbbygz7z6jqkw2nci7nlywzzwallap0wmr"))))
+                "07iplfwim26b6k1bqjyciaqvihps9rk5gi8385axa83ppmbgz14v"))))
     (build-system gnu-build-system)
     (synopsis "Versatile audio codec")
     (description
