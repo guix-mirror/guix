@@ -451,8 +451,17 @@ static void performOp(bool trusted, unsigned int clientVersion,
 
     case wopBuildPaths: {
         PathSet drvs = readStorePaths<PathSet>(from);
+        BuildMode mode = bmNormal;
+        if (GET_PROTOCOL_MINOR(clientVersion) >= 15) {
+            mode = (BuildMode)readInt(from);
+
+	    /* Repairing is not atomic, so disallowed for "untrusted"
+	       clients.  */
+            if (mode == bmRepair && !trusted)
+                throw Error("repairing is not supported when building through the Nix daemon");
+        }
         startWork();
-        store->buildPaths(drvs);
+        store->buildPaths(drvs, mode);
         stopWork();
         writeInt(1, to);
         break;
