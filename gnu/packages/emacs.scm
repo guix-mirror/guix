@@ -226,13 +226,14 @@ metadata.")
 (define-public paredit
   (package
     (name "paredit")
-    (version "23")
+    (version "24")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "http://mumble.net/~campbell/emacs/paredit-"
-                                 version ".el"))
-             (sha256
-              (base32 "1np882jzvxckljx3cjz4absyzmc5hw65cs21sjmbic82163m9lf8"))))
+              (method url-fetch)
+              (uri (string-append "http://mumble.net/~campbell/emacs/paredit-"
+                                  version ".el"))
+              (sha256
+               (base32
+                "0pp3n8q6kc70blqsaw0zlzp6bc327dpgdrjr0cnh7hqg1lras7ka"))))
     (build-system trivial-build-system)
     (inputs `(("emacs" ,emacs-no-x)))
     (arguments
