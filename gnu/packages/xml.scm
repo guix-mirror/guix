@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -432,7 +433,7 @@ parsing/saving.")
 (define-public xmlto
   (package
     (name "xmlto")
-    (version "0.0.25")
+    (version "0.0.28")
     (source
      (origin
       (method url-fetch)
@@ -441,7 +442,7 @@ parsing/saving.")
             version ".tar.bz2"))
       (sha256
        (base32
-        "0dp5nxq491gymq806za0dk4hngfmq65ysrqbn0ypajqbbl6vf71n"))))
+        "0xhj8b2pwp4vhl9y16v3dpxpsakkflfamr191mprzsspg4xdyc0i"))))
     (build-system gnu-build-system)
     (arguments
      ;; Make sure the reference to util-linux's 'getopt' is kept in 'xmlto'.
