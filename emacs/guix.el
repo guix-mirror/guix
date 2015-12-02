@@ -56,42 +56,39 @@ If nil, show a single package in the info buffer."
 (defvar guix-search-history nil
   "A history of minibuffer prompts.")
 
-(defun guix-get-show-packages (profile search-type &rest search-vals)
+(defun guix-get-show-packages (profile search-type &rest search-values)
   "Search for packages and show results.
 
 If PROFILE is nil, use `guix-current-profile'.
 
-See `guix-get-entries' for the meaning of SEARCH-TYPE and
-SEARCH-VALS.
+See `guix-ui-get-entries' for the meaning of SEARCH-TYPE and
+SEARCH-VALUES.
 
 Results are displayed in the list buffer, unless a single package
 is found and `guix-list-single-package' is nil."
-  (or profile (setq profile guix-current-profile))
-  (let ((packages (guix-get-entries profile guix-package-list-type
-                                    search-type search-vals
-                                    (guix-get-params-for-receiving
-                                     'list guix-package-list-type))))
+  (let* ((args    (cl-list* (or profile guix-current-profile)
+                            search-type search-values))
+         (entries (guix-buffer-get-entries
+                   'list guix-package-list-type args)))
     (if (or guix-list-single-package
-            (cdr packages))
-        (guix-set-buffer profile packages 'list guix-package-list-type
-                         search-type search-vals)
-      (let ((packages (guix-get-entries profile guix-package-info-type
-                                        search-type search-vals
-                                        (guix-get-params-for-receiving
-                                         'info guix-package-info-type))))
-        (guix-set-buffer profile packages 'info guix-package-info-type
-                         search-type search-vals)))))
+            (null entries)
+            (cdr entries))
+        (guix-buffer-display-entries
+         entries 'list guix-package-list-type args 'add)
+      (guix-buffer-get-display-entries
+       'info guix-package-info-type args 'add))))
 
-(defun guix-get-show-generations (profile search-type &rest search-vals)
+(defun guix-get-show-generations (profile search-type &rest search-values)
   "Search for generations and show results.
 
 If PROFILE is nil, use `guix-current-profile'.
 
-See `guix-get-entries' for the meaning of SEARCH-TYPE and
-SEARCH-VALS."
-  (apply #'guix-get-show-entries
-         (or profile guix-current-profile)
-         'list 'generation search-type search-vals))
+See `guix-ui-get-entries' for the meaning of SEARCH-TYPE and
+SEARCH-VALUES."
+  (let ((args (cl-list* (or profile guix-current-profile)
+                        search-type search-values)))
+    (guix-buffer-get-display-entries
+     'list 'generation args 'add)))
 
 ;;;###autoload
 (defun guix-search-by-name (name &optional profile)

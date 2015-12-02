@@ -22,9 +22,6 @@
 ;; This file provides some base and common definitions for guix.el
 ;; package.
 
-;; List and info buffers have many common patterns that are defined
-;; using `guix-buffer-define-interface' macro from this file.
-
 ;;; Code:
 
 (require 'cl-lib)
@@ -34,8 +31,6 @@
 (require 'guix-guile)
 (require 'guix-utils)
 (require 'guix-ui)
-(require 'guix-history)
-(require 'guix-messages)
 
 
 ;;; Parameters of the entries
@@ -143,227 +138,6 @@ For the meaning of location, see `guix-find-location'."
    #'string<))
 
 
-;;; Buffers
-
-(defun guix-switch-to-buffer (buffer)
-  "Switch to a 'list' or 'info' BUFFER."
-  (pop-to-buffer buffer
-                 '((display-buffer-reuse-window
-                    display-buffer-same-window))))
-
-
-;;; Common definitions for buffer types
-
-(defvar guix-buffer-data nil
-  "Alist with 'buffer' data.
-This alist is filled by `guix-buffer-define-interface' macro.")
-
-(defun guix-buffer-value (buffer-type entry-type symbol)
-  "Return SYMBOL's value for BUFFER-TYPE/ENTRY-TYPE from `guix-buffer-data'."
-  (symbol-value
-   (guix-assq-value guix-buffer-data buffer-type entry-type symbol)))
-
-(defun guix-buffer-param-title (buffer-type entry-type param)
-  "Return PARAM title for BUFFER-TYPE/ENTRY-TYPE."
-  (or (guix-assq-value (guix-buffer-value buffer-type entry-type 'titles)
-                       param)
-      ;; Fallback to a title defined in 'info' interface.
-      (unless (eq buffer-type 'info)
-        (guix-assq-value (guix-buffer-value 'info entry-type 'titles)
-                         param))
-      (guix-symbol-title param)))
-
-(defun guix-buffer-name (buffer-type entry-type profile)
-  "Return name of BUFFER-TYPE buffer for displaying ENTRY-TYPE entries."
-  (let ((str-or-fun (guix-buffer-value buffer-type entry-type
-                                       'buffer-name)))
-    (if (stringp str-or-fun)
-        str-or-fun
-      (funcall str-or-fun profile))))
-
-(defun guix-buffer-history-size (buffer-type entry-type)
-  "Return history size for BUFFER-TYPE/ENTRY-TYPE."
-  (guix-buffer-value buffer-type entry-type 'history-size))
-
-(defun guix-buffer-revert-confirm? (buffer-type entry-type)
-  "Return 'revert-confirm' value for BUFFER-TYPE/ENTRY-TYPE."
-  (guix-buffer-value buffer-type entry-type 'revert-confirm))
-
-(defvar guix-buffer-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "l") 'guix-history-back)
-    (define-key map (kbd "r") 'guix-history-forward)
-    (define-key map (kbd "g") 'revert-buffer)
-    (define-key map (kbd "R") 'guix-buffer-redisplay)
-    map)
-  "Parent keymap for Guix buffer modes.")
-
-(defvar-local guix-profile nil
-  "Profile used for the current buffer.")
-(put 'guix-profile 'permanent-local t)
-
-(defvar-local guix-entries nil
-  "List of the currently displayed entries.
-Each element of the list is alist with entry info of the
-following form:
-
-  ((PARAM . VAL) ...)
-
-PARAM is a name of the entry parameter.
-VAL is a value of this parameter.")
-(put 'guix-entries 'permanent-local t)
-
-(defvar-local guix-buffer-type nil
-  "Type of the current buffer.")
-(put 'guix-buffer-type 'permanent-local t)
-
-(defvar-local guix-entry-type nil
-  "Type of the current entry.")
-(put 'guix-entry-type 'permanent-local t)
-
-(defvar-local guix-search-type nil
-  "Type of the current search.")
-(put 'guix-search-type 'permanent-local t)
-
-(defvar-local guix-search-vals nil
-  "Values of the current search.")
-(put 'guix-search-vals 'permanent-local t)
-
-(defsubst guix-set-vars (profile entries buffer-type entry-type
-                         search-type search-vals)
-  "Set local variables for the current Guix buffer."
-  (setq default-directory profile
-        guix-profile      profile
-        guix-entries      entries
-        guix-buffer-type  buffer-type
-        guix-entry-type   entry-type
-        guix-search-type  search-type
-        guix-search-vals  search-vals))
-
-(defun guix-get-symbol (postfix buffer-type &optional entry-type)
-  (intern (concat "guix-"
-                  (when entry-type
-                    (concat (symbol-name entry-type) "-"))
-                  (symbol-name buffer-type) "-" postfix)))
-
-(defmacro guix-buffer-define-interface (buffer-type entry-type &rest args)
-  "Define BUFFER-TYPE interface for displaying ENTRY-TYPE entries.
-Remaining arguments (ARGS) should have a form [KEYWORD VALUE] ...
-In the following description TYPE means ENTRY-TYPE-BUFFER-TYPE.
-
-The following stuff should be defined outside this macro:
-
-  - `guix-BUFFER-TYPE-mode' - parent mode of the generated mode.
-
-  - `guix-TYPE-mode-initialize' (optional) - function for
-  additional mode settings; it is called without arguments.
-
-Required keywords:
-
-  - `:buffer-name' - default value of the generated
-    `guix-TYPE-buffer-name' variable.
-
-Optional keywords:
-
-  - `:titles' - default value of the generated
-    `guix-TYPE-titles' variable.
-
-  - `:history-size' - default value of the generated
-    `guix-TYPE-history-size' variable.
-
-  - `:revert-confirm?' - default value of the generated
-    `guix-TYPE-revert-confirm' variable.
-
-  - `:reduced?' - if non-nil, generate only group, faces group
-    and titles variable."
-  (declare (indent 2))
-  (let* ((entry-type-str     (symbol-name entry-type))
-         (buffer-type-str    (symbol-name buffer-type))
-         (Entry-type-str     (capitalize entry-type-str))
-         (Buffer-type-str    (capitalize buffer-type-str))
-         (entry-str          (concat entry-type-str " entries"))
-         (prefix             (concat "guix-" entry-type-str "-"
-                                     buffer-type-str))
-         (group              (intern prefix))
-         (faces-group        (intern (concat prefix "-faces")))
-         (mode-map-str       (concat prefix "-mode-map"))
-         (parent-mode        (intern (concat "guix-" buffer-type-str "-mode")))
-         (mode               (intern (concat prefix "-mode")))
-         (mode-init-fun      (intern (concat prefix "-mode-initialize")))
-         (buffer-name-var    (intern (concat prefix "-buffer-name")))
-         (titles-var         (intern (concat prefix "-titles")))
-         (history-size-var   (intern (concat prefix "-history-size")))
-         (revert-confirm-var (intern (concat prefix "-revert-confirm"))))
-    (guix-keyword-args-let args
-        ((buffer-name-val    :buffer-name)
-         (titles-val         :titles)
-         (history-size-val   :history-size 20)
-         (revert-confirm-val :revert-confirm? t)
-         (reduced?           :reduced?))
-      `(progn
-         (defgroup ,group nil
-           ,(format "Display '%s' entries in '%s' buffer."
-                    entry-type-str buffer-type-str)
-           :prefix ,(concat prefix "-")
-           :group ',(intern (concat "guix-" buffer-type-str)))
-
-         (defgroup ,faces-group nil
-           ,(format "Faces for displaying '%s' entries in '%s' buffer."
-                    entry-type-str buffer-type-str)
-           :group ',(intern (concat "guix-" buffer-type-str "-faces")))
-
-         (defcustom ,titles-var ,titles-val
-           ,(format "Alist of titles of '%s' parameters."
-                    entry-type-str)
-           :type '(alist :key-type symbol :value-type string)
-           :group ',group)
-
-         ,(unless reduced?
-            `(progn
-               (defcustom ,buffer-name-var ,buffer-name-val
-                 ,(format "\
-Default name of '%s' buffer for displaying '%s' entries."
-                          buffer-type-str entry-type-str)
-                 :type 'string
-                 :group ',group)
-
-               (defcustom ,history-size-var ,history-size-val
-                 ,(format "\
-Maximum number of items saved in history of `%S' buffer.
-If 0, the history is disabled."
-                          buffer-name-var)
-                 :type 'integer
-                 :group ',group)
-
-               (defcustom ,revert-confirm-var ,revert-confirm-val
-                 ,(format "\
-If non-nil, ask to confirm for reverting `%S' buffer."
-                          buffer-name-var)
-                 :type 'boolean
-                 :group ',group)
-
-               (guix-alist-put!
-                '((buffer-name    . ,buffer-name-var)
-                  (history-size   . ,history-size-var)
-                  (revert-confirm . ,revert-confirm-var))
-                'guix-buffer-data ',buffer-type ',entry-type)
-
-               (define-derived-mode ,mode ,parent-mode
-                 ,(concat "Guix-" Buffer-type-str)
-                 ,(concat "Major mode for displaying information about "
-                          entry-str ".\n\n"
-                          "\\{" mode-map-str "}")
-                 (setq-local revert-buffer-function 'guix-buffer-revert)
-                 (setq-local guix-history-size
-                             (guix-buffer-history-size
-                              ',buffer-type ',entry-type))
-                 (and (fboundp ',mode-init-fun) (,mode-init-fun)))))
-
-         (guix-alist-put!
-          ',titles-var 'guix-buffer-data
-          ',buffer-type ',entry-type 'titles)))))
-
-
 ;;; Getting and displaying info about packages and generations
 
 (defcustom guix-package-list-type 'output
@@ -383,159 +157,6 @@ information)."
   :type '(choice (const :tag "Display packages" package)
                  (const :tag "Display outputs" output))
   :group 'guix)
-
-(defun guix-get-entries (profile entry-type search-type search-vals
-                         &optional params)
-  "Search for entries of ENTRY-TYPE.
-
-Call an appropriate scheme function and return a list of the
-form of `guix-entries'.
-
-ENTRY-TYPE should be one of the following symbols: `package',
-`output' or `generation'.
-
-SEARCH-TYPE may be one of the following symbols:
-
-- If ENTRY-TYPE is `package' or `output': `id', `name', `regexp',
-  `all-available', `newest-available', `installed', `obsolete',
-  `generation'.
-
-- If ENTRY-TYPE is `generation': `id', `last', `all', `time'.
-
-PARAMS is a list of parameters for receiving.  If nil, get
-information with all available parameters."
-  (guix-eval-read (guix-make-guile-expression
-                   'entries
-                   profile params entry-type search-type search-vals)))
-
-(defun guix-get-show-entries (profile buffer-type entry-type search-type
-                              &rest search-vals)
-  "Search for ENTRY-TYPE entries and show results in BUFFER-TYPE buffer.
-See `guix-get-entries' for the meaning of SEARCH-TYPE and SEARCH-VALS."
-  (let ((entries (guix-get-entries profile entry-type search-type search-vals
-                                   (guix-get-params-for-receiving
-                                    buffer-type entry-type))))
-    (guix-set-buffer profile entries buffer-type entry-type
-                     search-type search-vals)))
-
-(defun guix-set-buffer (profile entries buffer-type entry-type search-type
-                        search-vals &optional history-replace no-display)
-  "Set up BUFFER-TYPE buffer for displaying ENTRY-TYPE ENTRIES.
-
-Insert ENTRIES in buffer, set variables and make history item.
-ENTRIES should have a form of `guix-entries'.
-
-See `guix-get-entries' for the meaning of SEARCH-TYPE and SEARCH-VALS.
-
-If HISTORY-REPLACE is non-nil, replace current history item,
-otherwise add the new one.
-
-If NO-DISPLAY is non-nil, do not switch to the buffer."
-  (when entries
-    (let ((buf (if (and (eq major-mode
-                            (guix-get-symbol "mode" buffer-type entry-type))
-                        (equal guix-profile profile))
-                   (current-buffer)
-                 (get-buffer-create
-                  (guix-buffer-name buffer-type entry-type profile)))))
-      (with-current-buffer buf
-        (guix-show-entries entries buffer-type entry-type)
-        (guix-set-vars profile entries buffer-type entry-type
-                       search-type search-vals)
-        (funcall (if history-replace
-                     #'guix-history-replace
-                   #'guix-history-add)
-                 (guix-make-history-item)))
-      (or no-display
-          (guix-switch-to-buffer buf))))
-  (guix-result-message profile entries entry-type
-                       search-type search-vals))
-
-(defun guix-show-entries (entries buffer-type entry-type)
-  "Display ENTRY-TYPE ENTRIES in the current BUFFER-TYPE buffer."
-  (let ((inhibit-read-only t))
-    (erase-buffer)
-    (funcall (symbol-function (guix-get-symbol
-                               "mode" buffer-type entry-type)))
-    (funcall (guix-get-symbol "insert-entries" buffer-type)
-             entries entry-type)
-    (goto-char (point-min))))
-
-(defun guix-history-call (profile entries buffer-type entry-type
-                          search-type search-vals)
-  "Function called for moving by history."
-  (guix-show-entries entries buffer-type entry-type)
-  (guix-set-vars profile entries buffer-type entry-type
-                 search-type search-vals)
-  (guix-result-message profile entries entry-type
-                       search-type search-vals))
-
-(defun guix-make-history-item ()
-  "Make and return a history item for the current buffer."
-  (list #'guix-history-call
-        guix-profile guix-entries guix-buffer-type guix-entry-type
-        guix-search-type guix-search-vals))
-
-(defun guix-get-params-for-receiving (buffer-type entry-type)
-  "Return parameters that should be received for BUFFER-TYPE, ENTRY-TYPE."
-  (let* ((required-var (guix-get-symbol "required-params"
-                                        buffer-type entry-type))
-         (required (symbol-value required-var)))
-    (unless (equal required 'all)
-      (cl-union required
-                (funcall (guix-get-symbol "displayed-params"
-                                          buffer-type)
-                         entry-type)))))
-
-(defun guix-buffer-revert (_ignore-auto noconfirm)
-  "Update information in the current buffer.
-The function is suitable for `revert-buffer-function'.
-See `revert-buffer' for the meaning of NOCONFIRM."
-  (when (or noconfirm
-            (guix-buffer-revert-confirm? guix-buffer-type
-                                         guix-entry-type)
-            (y-or-n-p "Update current information? "))
-    (let* ((params (guix-get-params-for-receiving guix-buffer-type
-                                                  guix-entry-type))
-           (entries (guix-get-entries
-                     guix-profile guix-entry-type
-                     guix-search-type guix-search-vals params)))
-      (guix-set-buffer guix-profile entries guix-buffer-type guix-entry-type
-                       guix-search-type guix-search-vals t t))))
-
-(defvar guix-buffer-after-redisplay-hook nil
-  "Hook run by `guix-buffer-redisplay'.
-This hook is called before seting up a window position.")
-
-(defun guix-buffer-redisplay ()
-  "Redisplay the current Guix buffer.
-Restore the point and window positions after redisplaying.
-
-This function does not update the buffer data, use
-'\\[revert-buffer]' if you want the full update."
-  (interactive)
-  (let* ((old-point (point))
-         ;; For simplicity, ignore an unlikely case when multiple
-         ;; windows display the same buffer.
-         (window (car (get-buffer-window-list (current-buffer) nil t)))
-         (window-start (and window (window-start window))))
-    (guix-set-buffer guix-profile guix-entries guix-buffer-type
-                     guix-entry-type guix-search-type guix-search-vals
-                     t t)
-    (goto-char old-point)
-    (run-hooks 'guix-buffer-after-redisplay-hook)
-    (when window
-      (set-window-point window (point))
-      (set-window-start window window-start))))
-
-(defun guix-buffer-redisplay-goto-button ()
-  "Redisplay the current buffer and go to the next button, if needed."
-  (let ((guix-buffer-after-redisplay-hook
-         (cons (lambda ()
-                 (unless (button-at (point))
-                   (forward-button 1)))
-               guix-buffer-after-redisplay-hook)))
-    (guix-buffer-redisplay)))
 
 
 ;;; Generations
@@ -640,13 +261,14 @@ Create the buffer if needed."
 
 (defun guix-profile-generation-manifest-file (generation)
   "Return the file name of a GENERATION's manifest.
-GENERATION is a generation number of `guix-profile' profile."
-  (guix-manifest-file guix-profile generation))
+GENERATION is a generation number of the current profile."
+  (guix-manifest-file (guix-ui-current-profile) generation))
 
 (defun guix-profile-generation-packages-buffer (generation)
   "Insert GENERATION's package outputs in a buffer and return it.
-GENERATION is a generation number of `guix-profile' profile."
-  (guix-generation-packages-buffer guix-profile generation))
+GENERATION is a generation number of the current profile."
+  (guix-generation-packages-buffer (guix-ui-current-profile)
+                                   generation))
 
 
 ;;; Actions on packages and generations
@@ -757,7 +379,7 @@ Ask a user if needed (see `guix-operation-confirm').
 INSTALL, UPGRADE, REMOVE are 'package action specifications'.
 See `guix-process-package-actions' for details."
   (or (null guix-operation-confirm)
-      (let* ((entries (guix-get-entries
+      (let* ((entries (guix-ui-get-entries
                        profile 'package 'id
                        (append (mapcar #'car install)
                                (mapcar #'car upgrade)
@@ -930,12 +552,12 @@ See Info node `(guix) Invoking guix package' for details.
 Interactively, use the current profile and prompt for manifest
 FILE.  With a prefix argument, also prompt for PROFILE."
   (interactive
-   (let* ((default-profile (or guix-profile guix-current-profile))
+   (let* ((current-profile (guix-ui-current-profile))
           (profile (if current-prefix-arg
                        (guix-profile-prompt)
-                     default-profile))
+                     (or current-profile guix-current-profile)))
           (file (read-file-name "File with manifest: "))
-          (buffer (and guix-profile (current-buffer))))
+          (buffer (and current-profile (current-buffer))))
      (list profile file buffer)))
   (when (or (not guix-operation-confirm)
             (y-or-n-p (format "Apply manifest from '%s' to profile '%s'? "

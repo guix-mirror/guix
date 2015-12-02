@@ -26,7 +26,10 @@
 
 (require 'cl-lib)
 (require 'guix-backend)
+(require 'guix-buffer)
+(require 'guix-guile)
 (require 'guix-utils)
+(require 'guix-messages)
 
 (defgroup guix-ui nil
   "Settings for Guix package management.
@@ -41,10 +44,38 @@ generations in 'list' and 'info' buffers."
     map)
   "Parent keymap for Guix package/generation buffers.")
 
+(guix-buffer-define-current-args-accessors
+ "guix-ui-current" "profile" "search-type" "search-values")
+
+(defun guix-ui-get-entries (profile entry-type search-type search-values
+                                    &optional params)
+  "Receive ENTRY-TYPE entries for PROFILE.
+Call an appropriate scheme procedure and return a list of entries.
+
+ENTRY-TYPE should be one of the following symbols: `package',
+`output' or `generation'.
+
+SEARCH-TYPE may be one of the following symbols:
+
+- If ENTRY-TYPE is `package' or `output': `id', `name', `regexp',
+  `all-available', `newest-available', `installed', `obsolete',
+  `generation'.
+
+- If ENTRY-TYPE is `generation': `id', `last', `all', `time'.
+
+PARAMS is a list of parameters for receiving.  If nil, get data
+with all available parameters."
+  (guix-eval-read
+   (guix-make-guile-expression
+    'entries
+    profile params entry-type search-type search-values)))
+
 (defun guix-ui-list-describe (ids)
   "Describe 'ui' entries with IDS (list of identifiers)."
-  (apply #'guix-get-show-entries
-         guix-profile 'info guix-entry-type 'id ids))
+  (guix-buffer-get-display-entries
+   'info (guix-buffer-current-entry-type)
+   (cl-list* (guix-ui-current-profile) 'id ids)
+   'add))
 
 
 ;;; Buffers and auto updating
@@ -161,7 +192,16 @@ Optional keywords:
     `guix-TYPE-required-params' variable.
 
 The rest keyword arguments are passed to
-`guix-BUFFER-TYPE-define-interface' macro."
+`guix-BUFFER-TYPE-define-interface' macro.
+
+Along with the mentioned definitions, this macro also defines:
+
+  - `guix-TYPE-mode-map' - keymap based on `guix-ui-map' and
+    `guix-BUFFER-TYPE-mode-map'.
+
+  - `guix-TYPE-get-entries' - a wrapper around `guix-ui-get-entries'.
+
+  - `guix-TYPE-message' - a wrapper around `guix-result-message'."
   (declare (indent 2))
   (let* ((entry-type-str  (symbol-name entry-type))
          (buffer-type-str (symbol-name buffer-type))
@@ -173,6 +213,10 @@ The rest keyword arguments are passed to
                                           buffer-type-str)))
          (required-var    (intern (concat prefix "-required-params")))
          (buffer-name-fun (intern (concat prefix "-buffer-name")))
+         (get-fun         (intern (concat prefix "-get-entries")))
+         (message-fun     (intern (concat prefix "-message")))
+         (displayed-fun   (intern (format "guix-%s-displayed-params"
+                                          buffer-type-str)))
          (definer         (intern (format "guix-%s-define-interface"
                                           buffer-type-str))))
     (guix-keyword-args-let args
@@ -188,9 +232,13 @@ The rest keyword arguments are passed to
 
          (defvar ,required-var ,required-val
            ,(format "\
-List of the required '%s' parameters for '%s' buffer.
-These parameters are received along with the displayed parameters."
-                    entry-type-str buffer-type-str))
+List of the required '%s' parameters.
+These parameters are received by `%S'
+along with the displayed parameters.
+
+Do not remove `id' from this list as it is required for
+identifying an entry."
+                    entry-type-str get-fun))
 
          (defun ,buffer-name-fun (profile &rest _)
            ,(format "\
@@ -199,7 +247,27 @@ See `guix-ui-buffer-name' for details."
                     buffer-type-str entry-type-str)
            (guix-ui-buffer-name ,buffer-name-val profile))
 
+         (defun ,get-fun (profile search-type &rest search-values)
+           ,(format "\
+Receive '%s' entries for displaying them in '%s' buffer.
+See `guix-ui-get-entries' for details."
+                    entry-type-str buffer-type-str)
+           (guix-ui-get-entries
+            profile ',entry-type search-type search-values
+            (cl-union ,required-var
+                      (,displayed-fun ',entry-type))))
+
+         (defun ,message-fun (entries profile search-type
+                                      &rest search-values)
+           ,(format "\
+Display a message after showing '%s' entries."
+                    entry-type-str)
+           (guix-result-message
+            profile entries ',entry-type search-type search-values))
+
          (,definer ,entry-type
+           :get-entries-function ',get-fun
+           :message-function ',message-fun
            :buffer-name ',buffer-name-fun
            ,@%foreign-args)))))
 

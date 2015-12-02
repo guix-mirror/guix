@@ -61,7 +61,7 @@ With prefix argument, describe entries marked with any mark."
   (let* ((ids        (or (apply #'guix-list-get-marked-id-list mark-names)
                          (list (guix-list-current-id))))
          (count      (length ids))
-         (entry-type guix-entry-type))
+         (entry-type (guix-buffer-current-entry-type)))
     (when (or (<= count (guix-list-describe-warning-count entry-type))
               (y-or-n-p (format "Do you really want to describe %d entries? "
                                 count)))
@@ -168,8 +168,7 @@ Return a vector made of values of FUN calls."
            rest-spec))))
 
 (defun guix-list-insert-entries (entries entry-type)
-  "Display ENTRIES of ENTRY-TYPE in the current list buffer.
-ENTRIES should have a form of `guix-entries'."
+  "Print ENTRY-TYPE ENTRIES in the current buffer."
   (setq tabulated-list-entries
         (guix-list-tabulated-entries entries entry-type))
   (tabulated-list-print))
@@ -212,14 +211,18 @@ VAL may be nil."
         'follow-link t
         'help-echo "Find file"))
 
+
+;;; 'List' lines
+
 (defun guix-list-current-id ()
-  "Return ID of the current entry."
+  "Return ID of the entry at point."
   (or (tabulated-list-get-id)
       (user-error "No entry here")))
 
 (defun guix-list-current-entry ()
-  "Return alist of the current entry info."
-  (guix-entry-by-id (guix-list-current-id) guix-entries))
+  "Return entry at point."
+  (guix-entry-by-id (guix-list-current-id)
+                    (guix-buffer-current-entries)))
 
 (defun guix-list-for-each-line (fun &rest args)
   "Call FUN with ARGS for each entry line."
@@ -429,8 +432,6 @@ The rest keyword arguments are passed to
   (let* ((entry-type-str     (symbol-name entry-type))
          (prefix             (concat "guix-" entry-type-str "-list"))
          (group              (intern prefix))
-         (mode-str           (concat prefix "-mode"))
-         (init-fun           (intern (concat prefix "-mode-initialize")))
          (describe-var       (intern (concat prefix "-describe-function")))
          (describe-count-var (intern (concat prefix
                                              "-describe-warning-count")))
@@ -438,7 +439,8 @@ The rest keyword arguments are passed to
          (sort-key-var       (intern (concat prefix "-sort-key")))
          (marks-var          (intern (concat prefix "-marks"))))
     (guix-keyword-args-let args
-        ((describe-val       :describe-function)
+        ((show-entries-val   :show-entries-function)
+         (describe-val       :describe-function)
          (describe-count-val :describe-count 10)
          (format-val         :format)
          (sort-key-val       :sort-key)
@@ -498,10 +500,6 @@ See also `guix-list-describe'."
            ,(format "Function used to describe '%s' entries."
                     entry-type-str))
 
-         (defun ,init-fun ()
-           ,(concat "Initial settings for `" mode-str "'.")
-           (guix-list-mode-initialize ',entry-type))
-
          (guix-alist-put!
           '((describe       . ,describe-var)
             (describe-count . ,describe-count-var)
@@ -510,8 +508,30 @@ See also `guix-list-describe'."
             (marks          . ,marks-var))
           'guix-list-data ',entry-type)
 
-         (guix-buffer-define-interface list ,entry-type
-           ,@%foreign-args)))))
+         ,(if show-entries-val
+              `(guix-buffer-define-interface list ,entry-type
+                 :show-entries-function ,show-entries-val
+                 ,@%foreign-args)
+
+            (let ((insert-fun    (intern (concat prefix "-insert-entries")))
+                  (mode-init-fun (intern (concat prefix "-mode-initialize"))))
+              `(progn
+                 (defun ,insert-fun (entries)
+                   ,(format "\
+Print '%s' ENTRIES in the current 'list' buffer."
+                            entry-type-str)
+                   (guix-list-insert-entries entries ',entry-type))
+
+                 (defun ,mode-init-fun ()
+                   ,(format "\
+Set up the current 'list' buffer for displaying '%s' entries."
+                            entry-type-str)
+                   (guix-list-mode-initialize ',entry-type))
+
+                 (guix-buffer-define-interface list ,entry-type
+                   :insert-entries-function ',insert-fun
+                   :mode-init-function ',mode-init-fun
+                   ,@%foreign-args))))))))
 
 
 ;;; Displaying packages
@@ -584,7 +604,7 @@ Colorize it with `guix-package-list-installed' or
   (when (and (not guix-package-list-generation-marking-enabled)
              (or (derived-mode-p 'guix-package-list-mode)
                  (derived-mode-p 'guix-output-list-mode))
-             (eq guix-search-type 'generation))
+             (eq (guix-ui-current-search-type) 'generation))
     (error "Action marks are disabled for lists of 'generation packages'")))
 
 (defun guix-package-list-mark-outputs (mark default
@@ -655,7 +675,7 @@ accept an entry as argument."
   (let ((obsolete (cl-remove-if-not
                    (lambda (entry)
                      (guix-entry-value entry 'obsolete))
-                   guix-entries)))
+                   (guix-buffer-current-entries))))
     (guix-list-for-each-line
      (lambda ()
        (let* ((id (guix-list-current-id))
@@ -682,8 +702,8 @@ FUN should accept action-type as argument."
   (let ((actions (delq nil
                        (mapcar fun '(install delete upgrade)))))
     (if actions
-        (guix-process-package-actions
-         guix-profile actions (current-buffer))
+        (guix-process-package-actions (guix-ui-current-profile)
+                                      actions (current-buffer))
       (user-error "No operations specified"))))
 
 (defun guix-package-list-execute ()
@@ -714,7 +734,7 @@ The specification is suitable for `guix-process-package-actions'."
             (output nil 9 t)
             (installed nil 12 t)
             (synopsis guix-list-get-one-line 30 nil))
-  :required '(package-id)
+  :required '(id package-id)
   :sort-key '(name)
   :marks '((install . ?I)
            (upgrade . ?U)
@@ -784,15 +804,19 @@ The specification is suitable for `guix-process-output-actions'."
   "Describe outputs with IDS (list of output identifiers).
 See `guix-package-info-type'."
   (if (eq guix-package-info-type 'output)
-      (apply #'guix-get-show-entries
-             guix-profile 'info 'output 'id ids)
+      (guix-buffer-get-display-entries
+       'info 'output
+       (cl-list* (guix-ui-current-profile) 'id ids)
+       'add)
     (let ((pids (mapcar (lambda (oid)
                           (car (guix-package-id-and-output-by-output-id
                                 oid)))
                         ids)))
-      (apply #'guix-get-show-entries
-             guix-profile 'info 'package 'id
-             (cl-remove-duplicates pids)))))
+      (guix-buffer-get-display-entries
+       'info 'package
+       (cl-list* (guix-ui-current-profile)
+                 'id (cl-remove-duplicates pids))
+       'add))))
 
 (defun guix-output-list-edit ()
   "Go to the location of the current package."
@@ -837,13 +861,15 @@ VAL is a boolean value."
          (number  (guix-entry-value entry 'number)))
     (if current
         (user-error "This generation is already the current one")
-      (guix-switch-to-generation guix-profile number (current-buffer)))))
+      (guix-switch-to-generation (guix-ui-current-profile)
+                                 number (current-buffer)))))
 
 (defun guix-generation-list-show-packages ()
   "List installed packages for the generation at point."
   (interactive)
-  (guix-get-show-entries guix-profile 'list guix-package-list-type
-                         'generation (guix-list-current-id)))
+  (guix-get-show-packages
+   (guix-ui-current-profile)
+   'generation (guix-list-current-id)))
 
 (defun guix-generation-list-generations-to-compare ()
   "Return a sorted list of 2 marked generations for comparing."
@@ -858,9 +884,12 @@ If 2 generations are marked with \\[guix-list-mark], display
 outputs installed in the latest marked generation that were not
 installed in the other one."
   (interactive)
-  (apply #'guix-get-show-entries
-         guix-profile 'list 'output 'generation-diff
-         (reverse (guix-generation-list-generations-to-compare))))
+  (guix-buffer-get-display-entries
+   'list 'output
+   (cl-list* (guix-ui-current-profile)
+             'generation-diff
+             (reverse (guix-generation-list-generations-to-compare)))
+   'add))
 
 (defun guix-generation-list-show-removed-packages ()
   "List package outputs removed from the latest marked generation.
@@ -868,9 +897,12 @@ If 2 generations are marked with \\[guix-list-mark], display
 outputs not installed in the latest marked generation that were
 installed in the other one."
   (interactive)
-  (apply #'guix-get-show-entries
-         guix-profile 'list 'output 'generation-diff
-         (guix-generation-list-generations-to-compare)))
+  (guix-buffer-get-display-entries
+   'list 'output
+   (cl-list* (guix-ui-current-profile)
+             'generation-diff
+             (guix-generation-list-generations-to-compare))
+   'add))
 
 (defun guix-generation-list-compare (diff-fun gen-fun)
   "Run GEN-FUN on the 2 marked generations and run DIFF-FUN on the results."
@@ -938,7 +970,8 @@ With ARG, mark all generations for deletion."
   (let ((marked (guix-list-get-marked-id-list 'delete)))
     (or marked
         (user-error "No generations marked for deletion"))
-    (guix-delete-generations guix-profile marked (current-buffer))))
+    (guix-delete-generations (guix-ui-current-profile)
+                             marked (current-buffer))))
 
 
 (defvar guix-list-font-lock-keywords

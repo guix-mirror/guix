@@ -202,8 +202,7 @@ LEVEL is 1 by default."
   (insert (guix-info-get-indent level)))
 
 (defun guix-info-insert-entries (entries entry-type)
-  "Display ENTRIES of ENTRY-TYPE in the current info buffer.
-ENTRIES should have a form of `guix-entries'."
+  "Display ENTRY-TYPE ENTRIES in the current info buffer."
   (guix-mapinsert (lambda (entry)
                     (guix-info-insert-entry entry entry-type))
                   entries
@@ -371,8 +370,11 @@ BUTTON-OR-FACE is a button type)."
   'face 'guix-package-info-name-button
   'help-echo "Describe this package"
   'action (lambda (btn)
-            (guix-get-show-entries guix-profile 'info guix-package-info-type
-                                   'name (button-label btn))))
+            (guix-buffer-get-display-entries-current
+             'info guix-package-info-type
+             (list (guix-ui-current-profile)
+                   'name (button-label btn))
+             'add)))
 
 (defun guix-info-button-copy-label (&optional pos)
   "Copy a label of the button at POS into kill ring.
@@ -407,7 +409,8 @@ See `insert-text-button' for the meaning of PROPERTIES."
   "Keymap for `guix-info-mode' buffers.")
 
 (define-derived-mode guix-info-mode special-mode "Guix-Info"
-  "Parent mode for displaying information in info buffers.")
+  "Parent mode for displaying data in 'info' form."
+  (setq-local revert-buffer-function 'guix-buffer-revert))
 
 (defun guix-info-mode-initialize ()
   "Set up the current 'info' buffer."
@@ -435,7 +438,8 @@ The rest keyword arguments are passed to
          (group              (intern prefix))
          (format-var         (intern (concat prefix "-format"))))
     (guix-keyword-args-let args
-        ((format-val         :format))
+        ((show-entries-val   :show-entries-function)
+         (format-val         :format))
       `(progn
          (defcustom ,format-var ,format-val
            ,(format "\
@@ -473,9 +477,23 @@ After calling each METHOD, a new line is inserted."
           '((format . ,format-var))
           'guix-info-data ',entry-type)
 
-         (guix-buffer-define-interface info ,entry-type
-           :mode-init-function 'guix-info-mode-initialize
-           ,@%foreign-args)))))
+         ,(if show-entries-val
+              `(guix-buffer-define-interface info ,entry-type
+                 :show-entries-function ,show-entries-val
+                 ,@%foreign-args)
+
+            (let ((insert-fun (intern (concat prefix "-insert-entries"))))
+              `(progn
+                 (defun ,insert-fun (entries)
+                   ,(format "\
+Print '%s' ENTRIES in the current 'info' buffer."
+                            entry-type-str)
+                   (guix-info-insert-entries entries ',entry-type))
+
+                 (guix-buffer-define-interface info ,entry-type
+                   :insert-entries-function ',insert-fun
+                   :mode-init-function 'guix-info-mode-initialize
+                   ,@%foreign-args))))))))
 
 
 ;;; Displaying packages
@@ -675,7 +693,7 @@ ENTRY is an alist with package info."
      type-str
      (lambda (btn)
        (guix-process-package-actions
-        guix-profile
+        (guix-ui-current-profile)
         `((,(button-get btn 'action-type) (,(button-get btn 'id)
                                            ,(button-get btn 'output))))
         (current-buffer)))
@@ -726,15 +744,16 @@ prompt depending on `guix-operation-confirm' variable)."
 Find the file if needed (see `guix-package-info-auto-find-source').
 ENTRY-ID is an ID of the current entry (package or output).
 PACKAGE-ID is an ID of the package which source to show."
-  (let* ((entries guix-entries)
-         (entry   (guix-entry-by-id entry-id guix-entries))
+  (let* ((entries (guix-buffer-current-entries))
+         (entry   (guix-entry-by-id entry-id entries))
          (file    (guix-package-source-path package-id)))
     (or file
         (error "Couldn't define file name of the package source"))
     (let* ((new-entry (cons (cons 'source-file file)
                             entry))
            (new-entries (guix-replace-entry entry-id new-entry entries)))
-      (setq guix-entries new-entries)
+      (setf (guix-buffer-item-entries guix-buffer-item)
+            new-entries)
       (guix-buffer-redisplay-goto-button)
       (if (file-exists-p file)
           (if guix-package-info-auto-find-source
@@ -872,15 +891,19 @@ This function is used to hide a \"Download\" button if needed."
   (guix-info-insert-action-button
    "Packages"
    (lambda (btn)
-     (guix-get-show-entries guix-profile 'list guix-package-list-type
-                            'generation (button-get btn 'number)))
+     (guix-buffer-get-display-entries
+      'list guix-package-list-type
+      (list (guix-ui-current-profile)
+            'generation (button-get btn 'number))
+      'add))
    "Show installed packages for this generation"
    'number number)
   (guix-info-insert-indent)
   (guix-info-insert-action-button
    "Delete"
    (lambda (btn)
-     (guix-delete-generations guix-profile (list (button-get btn 'number))
+     (guix-delete-generations (guix-ui-current-profile)
+                              (list (button-get btn 'number))
                               (current-buffer)))
    "Delete this generation"
    'number number))
@@ -894,7 +917,8 @@ This function is used to hide a \"Download\" button if needed."
     (guix-info-insert-action-button
      "Switch"
      (lambda (btn)
-       (guix-switch-to-generation guix-profile (button-get btn 'number)
+       (guix-switch-to-generation (guix-ui-current-profile)
+                                  (button-get btn 'number)
                                   (current-buffer)))
      "Switch to this generation (make it the current one)"
      'number (guix-entry-value entry 'number))))

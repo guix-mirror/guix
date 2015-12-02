@@ -22,6 +22,7 @@ ELFILES =					\
   emacs/guix-backend.el				\
   emacs/guix-base.el				\
   emacs/guix-build-log.el			\
+  emacs/guix-buffer.el				\
   emacs/guix-command.el				\
   emacs/guix-devel.el				\
   emacs/guix-emacs.el				\
