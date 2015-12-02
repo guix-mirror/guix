@@ -600,6 +600,14 @@ user @file{nobody};
 a writable @file{/tmp} directory.
 @end itemize
 
+You can influence the directory where the daemon stores build trees
+@i{via} the @code{TMPDIR} environment variable.  However, the build tree
+within the chroot is always @file{/tmp/nix-build-@var{name}.drv-0},
+where @var{name} is the derivation name---e.g., @code{coreutils-8.24}.
+This way, the value of @code{TMPDIR} does not leak inside build
+environments, which avoids discrepancies in cases where build processes
+capture the name of their build tree.
+
 If you are installing Guix as an unprivileged user, it is still possible
 to run @command{guix-daemon} provided you pass @code{--disable-chroot}.
 However, build processes will not be isolated from one another, and not

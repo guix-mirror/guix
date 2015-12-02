@@ -736,6 +736,9 @@ private:
     /* The temporary directory. */
     Path tmpDir;
 
+    /* The path of the temporary directory in the sandbox. */
+    Path tmpDirInSandbox;
+
     /* File descriptor for the log file. */
     FILE * fLogFile;
     BZFILE * bzLogFile;
@@ -1662,6 +1665,8 @@ void DerivationGoal::startBuilder()
             % drv.platform % settings.thisSystem % drvPath);
     }
 
+    useChroot = settings.useChroot;
+
     /* Construct the environment passed to the builder. */
     env.clear();
 
@@ -1694,20 +1699,25 @@ void DerivationGoal::startBuilder()
 
     /* Create a temporary directory where the build will take
        place. */
-    tmpDir = createTempDir("", "nix-build-" + storePathToName(drvPath), false, false, 0700);
+    auto drvName = storePathToName(drvPath);
+    tmpDir = createTempDir("", "nix-build-" + drvName, false, false, 0700);
+
+    /* In a sandbox, for determinism, always use the same temporary
+       directory. */
+    tmpDirInSandbox = useChroot ? "/tmp/nix-build-" + drvName + "-0" : tmpDir;
 
     /* For convenience, set an environment pointing to the top build
        directory. */
-    env["NIX_BUILD_TOP"] = tmpDir;
+    env["NIX_BUILD_TOP"] = tmpDirInSandbox;
 
     /* Also set TMPDIR and variants to point to this directory. */
-    env["TMPDIR"] = env["TEMPDIR"] = env["TMP"] = env["TEMP"] = tmpDir;
+    env["TMPDIR"] = env["TEMPDIR"] = env["TMP"] = env["TEMP"] = tmpDirInSandbox;
 
     /* Explicitly set PWD to prevent problems with chroot builds.  In
        particular, dietlibc cannot figure out the cwd because the
        inode of the current directory doesn't appear in .. (because
        getdents returns the inode of the mount point). */
-    env["PWD"] = tmpDir;
+    env["PWD"] = tmpDirInSandbox;
 
     /* Compatibility hack with Nix <= 0.7: if this is a fixed-output
        derivation, tell the builder, so that for instance `fetchurl'
@@ -1792,8 +1802,6 @@ void DerivationGoal::startBuilder()
             throw SysError(format("cannot change ownership of '%1%'") % tmpDir);
     }
 
-    useChroot = settings.useChroot;
-
     if (useChroot) {
 #if CHROOT_ENABLED
         /* Create a temporary directory in which we set up the chroot
@@ -1855,7 +1863,7 @@ void DerivationGoal::startBuilder()
             else
                 dirsInChroot[string(i, 0, p)] = string(i, p + 1);
         }
-        dirsInChroot[tmpDir] = tmpDir;
+        dirsInChroot[tmpDirInSandbox] = tmpDir;
 
         /* Make the closure of the inputs available in the chroot,
            rather than the whole Nix store.  This prevents any access
@@ -2173,7 +2181,7 @@ void DerivationGoal::runChild()
         }
 #endif
 
-        if (chdir(tmpDir.c_str()) == -1)
+        if (chdir(tmpDirInSandbox.c_str()) == -1)
             throw SysError(format("changing into `%1%'") % tmpDir);
 
         /* Close all other file descriptors. */
