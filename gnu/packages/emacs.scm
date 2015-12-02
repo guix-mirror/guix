@@ -911,7 +911,7 @@ single buffer.")
 (define-public emacs-pdf-tools
   (package
     (name "emacs-pdf-tools")
-    (version "0.60")
+    (version "0.70")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -920,7 +920,7 @@ single buffer.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1y8k5n2jbyaxby0j6f4m9xbm0ddpmbkrfj6rp6ll5sb97lcg3vrx"))))
+                "1m0api6wiawswyk46bdsyk6r5rg3b86a4paar6nassm6x6c6vr77"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
