@@ -128,7 +128,10 @@ dumped in /etc/pam.d/NAME, where NAME is the name of SERVICE."
 (define unix-pam-service
   (let ((unix (pam-entry
                (control "required")
-               (module "pam_unix.so"))))
+               (module "pam_unix.so")))
+        (env  (pam-entry ; to honor /etc/environment.
+               (control "required")
+               (module "pam_env.so"))))
     (lambda* (name #:key allow-empty-passwords? motd)
       "Return a standard Unix-style PAM service for NAME.  When
 ALLOW-EMPTY-PASSWORDS? is true, allow empty passwords.  When MOTD is true, it
@@ -150,13 +153,13 @@ should be a file-like object used as the message-of-the-day."
                           ;; Store SHA-512 encrypted passwords in /etc/shadow.
                           (arguments '("sha512" "shadow")))))
          (session (if motd
-                      (list unix
+                      (list env unix
                             (pam-entry
                              (control "optional")
                              (module "pam_motd.so")
                              (arguments
                               (list #~(string-append "motd=" #$motd)))))
-                      (list unix))))))))
+                      (list env unix))))))))
 
 (define (rootok-pam-service command)
   "Return a PAM service for COMMAND such that 'root' does not need to
