@@ -40,8 +40,7 @@
              (base32
               "12b9s4jn48gbar6dbs5qrlmljdmnq43xy3ji9yjzic0mwp6dmnk8"))
             (patches (map search-patch
-                          '("gmp-arm-asm-nothumb.patch"
-                            "gmp-faulty-test.patch")))))
+                          '("gmp-faulty-test.patch")))))
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)))
    (outputs '("out" "debug"))
