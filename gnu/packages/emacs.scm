@@ -980,7 +980,7 @@ and stored in memory.")
 (define-public emacs-dash
   (package
     (name "emacs-dash")
-    (version "2.11.0")
+    (version "2.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -989,7 +989,7 @@ and stored in memory.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1piwcwilkxcbjxx832mhb7q3pz1fgwp203r581bpqcw6kd5x726q"))))
+                "082jl7mp4x063bpj5ad2pc5125k0d6p7rb89gcj7ny3lma9h2ij1"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
