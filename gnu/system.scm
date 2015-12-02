@@ -299,6 +299,8 @@ a container or that of a \"bare metal\" system."
                                     (operating-system-groups os))
                             (operating-system-skeletons os))
            (operating-system-etc-service os)
+           (session-environment-service
+            (operating-system-environment-variables os))
            host-name procs root-fs unmount
            (service setuid-program-service-type
                     (operating-system-setuid-programs os))
@@ -417,18 +419,6 @@ directory."
         ;; Startup file for POSIX-compliant login shells, which set system-wide
         ;; environment variables.
         (profile    (mixed-text-file "profile"  "\
-export LANG=\"" (operating-system-locale os) "\"
-export TZ=\"" (operating-system-timezone os) "\"
-export TZDIR=\"" tzdata "/share/zoneinfo\"
-
-# Tell 'modprobe' & co. where to look for modules.
-export LINUX_MODULE_DIRECTORY=/run/booted-system/kernel/lib/modules
-
-# These variables are honored by OpenSSL (libssl) and Git.
-export SSL_CERT_DIR=/etc/ssl/certs
-export SSL_CERT_FILE=\"$SSL_CERT_DIR/ca-certificates.crt\"
-export GIT_SSL_CAINFO=\"$SSL_CERT_FILE\"
-
 # Crucial variables that could be missing in the profiles' 'etc/profile'
 # because they would require combining both profiles.
 # FIXME: See <http://bugs.gnu.org/20255>.
@@ -457,13 +447,6 @@ else
   # when the user installs their first package.
   export PATH=\"$HOME/.guix-profile/bin:$PATH\"
 fi
-
-# Append the directory of 'site-start.el' to the search path.
-export EMACSLOADPATH=:/etc/emacs
-
-# By default, applications that use D-Bus, such as Emacs, abort at startup
-# when /etc/machine-id is missing.  Make sure these warnings are non-fatal.
-export DBUS_FATAL_WARNINGS=0
 
 # Allow Aspell to find dictionaries installed in the user profile.
 export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
@@ -560,6 +543,24 @@ use 'plain-file' instead~%")
   (etc-directory
    (fold-services (operating-system-services os)
                   #:target-type etc-service-type)))
+
+(define (operating-system-environment-variables os)
+  "Return the environment variables of OS for
+@var{session-environment-service-type}, to be used in @file{/etc/environment}."
+  `(("LANG" . ,(operating-system-locale os))
+    ("TZ" . ,(operating-system-timezone os))
+    ("TZDIR" . ,#~(string-append #$tzdata "/share/zoneinfo"))
+    ;; Tell 'modprobe' & co. where to look for modules.
+    ("LINUX_MODULE_DIRECTORY" . "/run/booted-system/kernel/lib/modules")
+    ;; These variables are honored by OpenSSL (libssl) and Git.
+    ("SSL_CERT_DIR" . "/etc/ssl/certs")
+    ("SSL_CERT_FILE" . "/etc/ssl/certs/ca-certificates.crt")
+    ("GIT_SSL_CAINFO" . "/etc/ssl/certs/ca-certificates.crt")
+    ;; Append the directory of 'site-start.el' to the search path.
+    ("EMACSLOADPATH" . ":/etc/emacs")
+    ;; By default, applications that use D-Bus, such as Emacs, abort at startup
+    ;; when /etc/machine-id is missing.  Make sure these warnings are non-fatal.
+    ("DBUS_FATAL_WARNINGS" . "0")))
 
 (define %setuid-programs
   ;; Default set of setuid-root programs.
