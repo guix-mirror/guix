@@ -600,40 +600,39 @@ provides an optional IDE-like error list.")
                               out "/share/images/emacs-w3m")))
        #:tests? #f  ; no check target
        #:phases
-       (alist-cons-after
-        'unpack 'autoconf
-        (lambda _
-          (zero? (system* "autoconf")))
-        (alist-cons-before
-         'build 'patch-exec-paths
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out"))
-                (w3m (assoc-ref inputs "w3m"))
-                (imagemagick (assoc-ref inputs "imagemagick"))
-                (coreutils (assoc-ref inputs "coreutils")))
-            (emacs-substitute-variables "w3m.el"
-              ("w3m-command" (string-append w3m "/bin/w3m"))
-              ("w3m-touch-command" (string-append coreutils "/bin/touch"))
-              ("w3m-image-viewer" (string-append imagemagick "/bin/display"))
-              ("w3m-icon-directory" (string-append out
-                                                   "/share/images/emacs-w3m")))
-            (emacs-substitute-variables "w3m-image.el"
-              ("w3m-imagick-convert-program" (string-append imagemagick
-                                                            "/bin/convert"))
-              ("w3m-imagick-identify-program" (string-append imagemagick
-                                                             "/bin/identify")))
-            #t))
-         (alist-replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (and (zero? (system* "make" "install" "install-icons"))
-                 (with-directory-excursion
-                     (string-append (assoc-ref outputs "out")
-                                    "/share/emacs/site-lisp")
-                   (for-each delete-file '("ChangeLog" "ChangeLog.1"))
-                   (symlink "w3m-load.el" "w3m-autoloads.el")
-                   #t)))
-          %standard-phases)))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _
+             (zero? (system* "autoconf"))))
+         (add-before 'build 'patch-exec-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (w3m (assoc-ref inputs "w3m"))
+                   (imagemagick (assoc-ref inputs "imagemagick"))
+                   (coreutils (assoc-ref inputs "coreutils")))
+               (emacs-substitute-variables "w3m.el"
+                 ("w3m-command" (string-append w3m "/bin/w3m"))
+                 ("w3m-touch-command"
+                  (string-append coreutils "/bin/touch"))
+                 ("w3m-image-viewer"
+                  (string-append imagemagick "/bin/display"))
+                 ("w3m-icon-directory"
+                  (string-append out "/share/images/emacs-w3m")))
+               (emacs-substitute-variables "w3m-image.el"
+                 ("w3m-imagick-convert-program"
+                  (string-append imagemagick "/bin/convert"))
+                 ("w3m-imagick-identify-program"
+                  (string-append imagemagick "/bin/identify")))
+               #t)))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (and (zero? (system* "make" "install" "install-icons"))
+                  (with-directory-excursion
+                      (string-append (assoc-ref outputs "out")
+                                     "/share/emacs/site-lisp")
+                    (for-each delete-file '("ChangeLog" "ChangeLog.1"))
+                    (symlink "w3m-load.el" "w3m-autoloads.el")
+                    #t)))))))
     (home-page "http://emacs-w3m.namazu.org/")
     (synopsis "Simple Web browser for Emacs based on w3m")
     (description
