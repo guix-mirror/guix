@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,8 @@
             device-mapping-service
             swap-service
             user-processes-service
+            session-environment-service
+            session-environment-service-type
             host-name-service
             console-keymap-service
             console-font-service
@@ -365,6 +368,39 @@ All the services that spawn processes must depend on this one so that they are
 stopped before 'kill' is called."
   (service user-processes-service-type
            (list file-systems grace-delay)))
+
+
+;;;
+;;; System-wide environment variables.
+;;;
+
+(define (environment-variables->environment-file vars)
+  "Return a file for pam_env(8) that contains environment variables VARS."
+  (apply mixed-text-file "environment"
+         (append-map (match-lambda
+                       ((key . value)
+                        (list key "=" value "\n")))
+                     vars)))
+
+(define session-environment-service-type
+  (service-type
+   (name 'session-environment)
+   (extensions
+    (list (service-extension
+           etc-service-type
+           (lambda (vars)
+             (list `("environment"
+                     ,(environment-variables->environment-file vars)))))))
+   (compose concatenate)
+   (extend append)))
+
+(define (session-environment-service vars)
+  "Return a service that builds the @file{/etc/environment}, which can be read
+by PAM-aware applications to set environment variables for sessions.
+
+VARS should be an association list in which both the keys and the values are
+strings or string-valued gexps."
+  (service session-environment-service-type vars))
 
 
 ;;;
