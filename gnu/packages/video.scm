@@ -831,7 +831,7 @@ YouTube.com and a few more sites.")
 (define-public libbluray
   (package
     (name "libbluray")
-    (version "0.9.0")
+    (version "0.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.videolan.org/videolan/"
@@ -839,7 +839,7 @@ YouTube.com and a few more sites.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0kb9znxk6610vi0fjhqxn4z5i98nvxlsz1f8dakj99rg42livdl4"))))
+                "1sp71j4agcsg17g6b85cqz78pn5vknl5pl39rvr6mkib5ps99jgg"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags '("--disable-bdjava")))
     (native-inputs `(("pkg-config" ,pkg-config)))
