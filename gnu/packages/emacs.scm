@@ -574,13 +574,14 @@ provides an optional IDE-like error list.")
 (define-public emacs-w3m
   (package
     (name "emacs-w3m")
-    (version "1.4.483+0.20120614")
+    (version "1.4.538+0.20141022")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://debian/pool/main/w/w3m-el/w3m-el_"
                                  version ".orig.tar.gz"))
              (sha256
-              (base32 "0ms181gjavnfk79hhv5xl9llik4c6kj0w3c04kgyif8lcy2sxljx"))))
+              (base32
+               "0zfxmq86pwk64yv0426gnjrvhjrgrjqn08sdcdhmmjmfpmqvm79y"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)))
     (inputs `(("w3m" ,w3m)
@@ -597,7 +598,11 @@ provides an optional IDE-like error list.")
          (list (string-append "--with-lispdir="
                               out "/share/emacs/site-lisp")
                (string-append "--with-icondir="
-                              out "/share/images/emacs-w3m")))
+                              out "/share/images/emacs-w3m")
+               ;; Leave .el files uncompressed, otherwise GC can't
+               ;; identify run-time dependencies.  See
+               ;; <http://lists.gnu.org/archive/html/guix-devel/2015-12/msg00208.html>
+               "--without-compress-install"))
        #:tests? #f  ; no check target
        #:phases
        (modify-phases %standard-phases
