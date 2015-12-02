@@ -441,8 +441,8 @@ static void performOp(bool trusted, unsigned int clientVersion,
         startWork();
         TunnelSource source(from);
 
-	/* Unlike Nix, always require a signature, even for "trusted"
-	   users.  */
+        /* Unlike Nix, always require a signature, even for "trusted"
+           users.  */
         Paths paths = store->importPaths(true, source);
         stopWork();
         writeStrings(paths, to);
@@ -538,8 +538,8 @@ static void performOp(bool trusted, unsigned int clientVersion,
         settings.keepGoing = readInt(from) != 0;
         settings.set("build-fallback", readInt(from) ? "true" : "false");
         verbosity = (Verbosity) readInt(from);
-        settings.set("build-max-jobs", int2String(readInt(from)));
-        settings.set("build-max-silent-time", int2String(readInt(from)));
+        settings.set("build-max-jobs", std::to_string(readInt(from)));
+        settings.set("build-max-silent-time", std::to_string(readInt(from)));
         if (GET_PROTOCOL_MINOR(clientVersion) >= 2)
             settings.useBuildHook = readInt(from) != 0;
         if (GET_PROTOCOL_MINOR(clientVersion) >= 4) {
@@ -548,7 +548,7 @@ static void performOp(bool trusted, unsigned int clientVersion,
             settings.printBuildTrace = readInt(from) != 0;
         }
         if (GET_PROTOCOL_MINOR(clientVersion) >= 6)
-            settings.set("build-cores", int2String(readInt(from)));
+            settings.set("build-cores", std::to_string(readInt(from)));
         if (GET_PROTOCOL_MINOR(clientVersion) >= 10)
             settings.set("build-use-substitutes", readInt(from) ? "true" : "false");
         if (GET_PROTOCOL_MINOR(clientVersion) >= 12) {
@@ -819,7 +819,7 @@ static void daemonLoop()
 
     /* Handle socket-based activation by systemd. */
     if (getEnv("LISTEN_FDS") != "") {
-        if (getEnv("LISTEN_PID") != int2String(getpid()) || getEnv("LISTEN_FDS") != "1")
+        if (getEnv("LISTEN_PID") != std::to_string(getpid()) || getEnv("LISTEN_FDS") != "1")
             throw Error("unexpected systemd environment variables");
         fdSocket = SD_LISTEN_FDS_START;
     }
@@ -906,10 +906,10 @@ static void daemonLoop()
             clientPid = cred.pid;
 
             struct passwd * pw = getpwuid(cred.uid);
-            string user = pw ? pw->pw_name : int2String(cred.uid);
+            string user = pw ? pw->pw_name : std::to_string(cred.uid);
 
             struct group * gr = getgrgid(cred.gid);
-            string group = gr ? gr->gr_name : int2String(cred.gid);
+            string group = gr ? gr->gr_name : std::to_string(cred.gid);
 
             Strings trustedUsers = settings.get("trusted-users", Strings({"root"}));
             Strings allowedUsers = settings.get("allowed-users", Strings({"*"}));
@@ -937,7 +937,7 @@ static void daemonLoop()
 
                 /* For debugging, stuff the pid into argv[1]. */
                 if (clientPid != -1 && argvSaved[1]) {
-                    string processName = int2String(clientPid);
+                    string processName = std::to_string(clientPid);
                     strncpy(argvSaved[1], processName.c_str(), strlen(argvSaved[1]));
                 }
 
