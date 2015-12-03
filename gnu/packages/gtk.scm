@@ -522,7 +522,8 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0mj6xn40py9r9lvzg633fal81xfwfm89d9mvz7jk4lmwk0g49imj"))))
+              "0mj6xn40py9r9lvzg633fal81xfwfm89d9mvz7jk4lmwk0g49imj"))
+            (patches (list (search-patch "gtk2-respect-GUIX_GTK2_PATH.patch")))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (propagated-inputs
@@ -557,7 +558,11 @@ is part of the GNOME accessibility project.")
          ;; FIXME: re-enable tests requiring an X server
          (substitute* "gtk/Makefile.in"
            (("SUBDIRS = theme-bits . tests") "SUBDIRS = theme-bits .")))
-      %standard-phases)))
+       %standard-phases)))
+   (native-search-paths
+    (list (search-path-specification
+           (variable "GUIX_GTK2_PATH")
+           (files '("lib/gtk-2.0")))))
    (synopsis "Cross-platform toolkit for creating graphical user interfaces")
    (description
     "GTK+, or the GIMP Toolkit, is a multi-platform toolkit for creating
