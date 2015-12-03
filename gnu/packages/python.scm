@@ -7144,6 +7144,31 @@ authenticated session objects providing things like keep-alive.")
        `(("python2-unittest2", python2-unittest2)
          ,@(package-native-inputs rauth))))))
 
+(define-public python2-functools32
+  (package
+    (name "python2-functools32")
+    (version "3.2.3-2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "functools32" version))
+        (sha256
+         (base32
+          "0v8ya0b58x47wp216n1zamimv4iw57cxz3xxhzix52jkw3xks9gn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f)) ; no test target
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)))
+    (home-page "https://github.com/MiCHiLU/python-functools32")
+    (synopsis
+     "Backport of the functools module from Python 3.2.3")
+    (description
+     "This package is a backport of the @code{functools} module from Python
+3.2.3 for use with older versions of Python and PyPy.")
+    (license license:expat)))
+
 (define-public python-futures
   (package
     (name "python-futures")
