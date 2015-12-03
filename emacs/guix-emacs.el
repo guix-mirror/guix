@@ -37,6 +37,11 @@ they are successfully installed."
 (defvar guix-emacs-autoloads nil
   "List of the last loaded Emacs autoloads.")
 
+(defvar guix-emacs-autoloads-regexp
+  (rx (group (* any) "-autoloads")
+      ".el" (zero-or-one "c") string-end)
+  "Regexp to match Emacs 'autoloads' file.")
+
 (defun guix-emacs-directory (&optional profile)
   "Return directory with Emacs packages installed in PROFILE.
 If PROFILE is nil, use `guix-user-profile'."
@@ -44,8 +49,15 @@ If PROFILE is nil, use `guix-user-profile'."
                     (or profile guix-user-profile)))
 
 (defun guix-emacs-find-autoloads-in-directory (directory)
-  "Return list of Emacs 'autoloads' files in DIRECTORY."
-  (directory-files directory 'full-name "-autoloads\\.el\\'" 'no-sort))
+  "Return a list of Emacs 'autoloads' files in DIRECTORY.
+The files in the list do not have extensions (.el, .elc)."
+  (cl-remove-duplicates
+   (delq nil
+        (mapcar (lambda (file)
+                  (when (string-match guix-emacs-autoloads-regexp file)
+                    (match-string 1 file)))
+                (directory-files directory 'full-name nil 'no-sort)))
+   :test #'string=))
 
 (defun guix-emacs-subdirs (directory)
   "Return list of DIRECTORY subdirectories."
