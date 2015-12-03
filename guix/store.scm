@@ -129,7 +129,7 @@
             direct-store-path
             log-file))
 
-(define %protocol-version #x10c)
+(define %protocol-version #x10e)
 
 (define %worker-magic-1 #x6e697863)               ; "nixc"
 (define %worker-magic-2 #x6478696f)               ; "dxio"
@@ -328,11 +328,13 @@
   (status  nix-protocol-error-status))
 
 (define* (open-connection #:optional (file (%daemon-socket-file))
-                          #:key (reserve-space? #t))
+                          #:key (reserve-space? #t) cpu-affinity)
   "Connect to the daemon over the Unix-domain socket at FILE.  When
-RESERVE-SPACE? is true, instruct it to reserve a little bit of extra
-space on the file system so that the garbage collector can still
-operate, should the disk become full.  Return a server object."
+RESERVE-SPACE? is true, instruct it to reserve a little bit of extra space on
+the file system so that the garbage collector can still operate, should the
+disk become full.  When CPU-AFFINITY is true, it must be an integer
+corresponding to an OS-level CPU number to which the daemon's worker process
+for this connection will be pinned.  Return a server object."
   (let ((s (with-fluids ((%default-port-encoding #f))
              ;; This trick allows use of the `scm_c_read' optimization.
              (socket PF_UNIX SOCK_STREAM 0)))
@@ -355,8 +357,12 @@ operate, should the disk become full.  Return a server object."
                         (protocol-major v))
                   (begin
                     (write-int %protocol-version s)
-                    (if (>= (protocol-minor v) 11)
-                        (write-int (if reserve-space? 1 0) s))
+                    (when (>= (protocol-minor v) 14)
+                      (write-int (if cpu-affinity 1 0) s)
+                      (when cpu-affinity
+                        (write-int cpu-affinity s)))
+                    (when (>= (protocol-minor v) 11)
+                      (write-int (if reserve-space? 1 0) s))
                     (let ((s (%make-nix-server s
                                                (protocol-major v)
                                                (protocol-minor v)
