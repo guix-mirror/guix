@@ -53,6 +53,7 @@
             nix-protocol-error-status
 
             hash-algo
+            build-mode
 
             open-connection
             close-connection
@@ -129,7 +130,7 @@
             direct-store-path
             log-file))
 
-(define %protocol-version #x10e)
+(define %protocol-version #x10f)
 
 (define %worker-magic-1 #x6e697863)               ; "nixc"
 (define %worker-magic-2 #x6478696f)               ; "dxio"
@@ -187,6 +188,12 @@
   (md5 1)
   (sha1 2)
   (sha256 3))
+
+(define-enumerate-type build-mode
+  ;; store-api.hh
+  (normal 0)
+  (repair 1)
+  (check 2))
 
 (define-enumerate-type gc-action
   ;; store-api.hh
@@ -637,12 +644,17 @@ bits are kept.  HASH-ALGO must be a string such as \"sha256\"."
               (hash-set! cache args path)
               path))))))
 
-(define-operation (build-things (string-list things))
-  "Build THINGS, a list of store items which may be either '.drv' files or
+(define build-things
+  (let ((build (operation (build-things (string-list things)
+                                        (integer mode))
+                          "Do it!"
+                          boolean)))
+    (lambda* (store things #:optional (mode (build-mode normal)))
+      "Build THINGS, a list of store items which may be either '.drv' files or
 outputs, and return when the worker is done building them.  Elements of THINGS
 that are not derivations can only be substituted and not built locally.
 Return #t on success."
-  boolean)
+      (build store things mode))))
 
 (define-operation (add-temp-root (store-path path))
   "Make PATH a temporary root for the duration of the current session.

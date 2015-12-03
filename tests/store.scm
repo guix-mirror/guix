@@ -756,6 +756,41 @@
              ;; Delete the corrupt item to leave the store in a clean state.
              (delete-paths s (list file)))))))
 
+(test-assert "build-things, check mode"
+  (with-store store
+    (call-with-temporary-output-file
+     (lambda (entropy entropy-port)
+       (write (random-text) entropy-port)
+       (force-output entropy-port)
+       (let* ((drv  (build-expression->derivation
+                     store "non-deterministic"
+                     `(begin
+                        (use-modules (rnrs io ports))
+                        (let ((out (assoc-ref %outputs "out")))
+                          (call-with-output-file out
+                            (lambda (port)
+                              (display (call-with-input-file ,entropy
+                                         get-string-all)
+                                       port)))
+                          #t))
+                     #:guile-for-build
+                     (package-derivation store %bootstrap-guile (%current-system))))
+              (file (derivation->output-path drv)))
+         (and (build-things store (list (derivation-file-name drv)))
+              (begin
+                (write (random-text) entropy-port)
+                (force-output entropy-port)
+                (guard (c ((nix-protocol-error? c)
+                           (pk 'determinism-exception c)
+                           (and (not (zero? (nix-protocol-error-status c)))
+                                (string-contains (nix-protocol-error-message c)
+                                                 "deterministic"))))
+                  ;; This one will produce a different result.  Since we're in
+                  ;; 'check' mode, this must fail.
+                  (build-things store (list (derivation-file-name drv))
+                                (build-mode check))
+                  #f))))))))
+
 (test-equal "store-lower"
   "Lowered."
   (let* ((add  (store-lower text-file))
