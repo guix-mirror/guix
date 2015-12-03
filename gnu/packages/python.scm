@@ -2791,7 +2791,11 @@ mining and data analysis.")
          ,@(package-native-inputs scikit-image)))
       (propagated-inputs
        `(("python2-pytz" ,python2-pytz)
-         ,@(package-propagated-inputs scikit-image))))))
+         ("python2-matplotlib" ,python2-matplotlib)
+         ("python2-numpy" ,python2-numpy)
+         ("python2-scipy" ,python2-scipy)
+         ,@(fold alist-delete (package-propagated-inputs scikit-image)
+                 '("python-matplotlib" "python-numpy" "python-scipy")))))))
 
 (define-public python-redis
   (package
