@@ -64,35 +64,14 @@ things the parser might find in the XML document (like start tags).")
 (define-public libxml2
   (package
     (name "libxml2")
-    (version "2.9.2")
+    (version "2.9.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1g6mf03xcabmk5ing1lwqmasr803616gb2xhn7pll10x2l5w6y2i"))
-             (patches
-              (map search-patch
-                   '("libxml2-fix-catalog-corruption.patch"
-                     "libxml2-bug-738805.patch"
-                     "libxml2-id-attrs-in-xmlSetTreeDoc.patch"
-                     "libxml2-CVE-2015-7941-pt1.patch"
-                     "libxml2-CVE-2015-7941-pt2.patch"
-                     "libxml2-node-sort-order-pt1.patch"
-                     "libxml2-bug-747437.patch"
-                     "libxml2-CVE-2015-1819.patch"
-                     "libxml2-bug-751603.patch"
-                     "libxml2-bug-751631.patch"
-                     "libxml2-node-sort-order-pt2.patch"
-                     "libxml2-bug-737840.patch"
-                     "libxml2-bug-754946.patch"
-                     "libxml2-bug-754947.patch"
-                     "libxml2-bug-755857.patch"
-                     "libxml2-CVE-2015-7942-pt1.patch"
-                     "libxml2-CVE-2015-7942-pt2.patch"
-                     "libxml2-bug-746048.patch"
-                     "libxml2-CVE-2015-8035.patch")))))
+               "0bd17g6znn2r98gzpjppsqjg33iraky4px923j3k8kdl8qgy7sad"))))
     (build-system gnu-build-system)
     (home-page "http://www.xmlsoft.org/")
     (synopsis "C parser for XML")
