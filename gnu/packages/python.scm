@@ -4246,8 +4246,9 @@ computing.")
       (inputs
        `(("python2-mock" ,python2-mock)
          ("python2-matplotlib" ,python2-matplotlib)
-         ,@(alist-delete "python-matplotlib"
-                         (package-inputs ipython)))))))
+         ("python2-numpy" ,python2-numpy)
+         ,@(fold alist-delete (package-inputs ipython)
+                 '("python-matplotlib" "python-numpy")))))))
 
 (define-public python-isodate
   (package
