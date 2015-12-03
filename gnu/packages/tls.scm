@@ -192,14 +192,14 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (version "1.0.2d")
+   (version "1.0.2e")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.openssl.org/source/openssl-" version
                                 ".tar.gz"))
             (sha256
              (base32
-              "1j58r7rdj9fz2lanir8ajbx4bspb5jnm5ikl6dq8lql5fx43c737"))
+              "1zqb1rff1wikc62a7vj5qxd1k191m8qif5d05mwdxz2wnzywlg72"))
             (patches (map search-patch
                           '("openssl-runpath.patch"
                             "openssl-c-rehash.patch")))))
@@ -212,10 +212,11 @@ required structures.")
       #:phases
       (modify-phases %standard-phases
         (add-before
-         'configure 'fix-man-dir
+         'configure 'patch-Makefile.org
          (lambda* (#:key outputs #:allow-other-keys)
            ;; The default MANDIR is some unusual place.  Fix that.
            (let ((out (assoc-ref outputs "out")))
+             (patch-makefile-SHELL "Makefile.org")
              (substitute* "Makefile.org"
                (("^MANDIR[[:blank:]]*=.*$")
                 (string-append "MANDIR = " out "/share/man\n")))
@@ -254,6 +255,27 @@ required structures.")
                        (find-files (string-append out "/lib")
                                    "\\.so"))
              #t)))
+        (add-after
+         'unpack 'fix-broken-symlinks
+         (lambda _
+           ;; Repair the broken symlinks in the openssl-1.0.2e tarball.
+           (let* ((link-prefix "openssl-1.0.2e/")
+                  (link-prefix-length (string-length link-prefix))
+                  (broken-links
+                   (find-files "." (lambda (file stat)
+                                     (and (eq? 'symlink (stat:type stat))
+                                          (string-prefix? link-prefix
+                                                          (readlink file)))))))
+             (when (null? broken-links)
+               (error "The 'fix-broken-symlinks' phase is obsolete; remove it"))
+             (for-each (lambda (file)
+                         (let* ((old-target (readlink file))
+                                (new-target (string-drop old-target
+                                                         link-prefix-length)))
+                           (delete-file file)
+                           (symlink new-target file)))
+                       broken-links)
+             #t)))
         (add-before
          'patch-source-shebangs 'patch-tests
          (lambda* (#:key inputs native-inputs #:allow-other-keys)
@@ -262,7 +284,8 @@ required structures.")
                (("/bin/sh")
                 (string-append bash "/bin/bash"))
                (("/bin/rm")
-                "rm")))))
+                "rm"))
+             #t)))
         (add-after
          'install 'remove-miscellany
          (lambda* (#:key outputs #:allow-other-keys)
