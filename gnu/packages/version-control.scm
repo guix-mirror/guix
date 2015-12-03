@@ -36,6 +36,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build utils)
   #:use-module (gnu packages apr)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages asciidoc)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
@@ -925,3 +926,30 @@ any project with more than one developer, is one of Aegis's major functions.")
 a history browser.  It can also stage hunks for commit, or colorize the
 output of the 'git' command.")
     (license gpl2+)))
+
+(define-public findnewest
+  (package
+    (name "findnewest")
+    (version "0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/0-wiz-0/findnewest/archive/findnewest-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0zlflad568y203yc5ynf1nxi2szn2pmbf1lvz6yk77kjyrpw7zxg"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'bootstrap
+                    (lambda _
+                      (zero? (system* "autoreconf" "-vfi")))))))
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)))
+    (home-page "https://github.com/0-wiz-0/findnewest/releases")
+    (synopsis "Print the modification time of the latest file")
+    (description
+     "Recursively find the newest file in a file tree and print its
+modification time.")
+    (license bsd-2)))
