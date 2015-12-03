@@ -4701,7 +4701,9 @@ and statistical routines from scipy and statsmodels.")
     (package (inherit seaborn)
       (propagated-inputs
        `(("python2-pytz" ,python2-pytz)
-         ,@(package-propagated-inputs seaborn))))))
+         ("python2-pandas" ,python2-pandas)
+         ("python2-matplotlib" ,python2-matplotlib)
+         ("python2-scipy" ,python2-scipy))))))
 
 (define-public python-sympy
   (package
