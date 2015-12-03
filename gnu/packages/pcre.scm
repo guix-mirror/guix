@@ -29,14 +29,18 @@
 (define-public pcre
   (package
    (name "pcre")
-   (version "8.37")
+   (version "8.38")
    (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://sourceforge/pcre/pcre/"
-                                version "/pcre-" version ".tar.bz2"))
+            (uri (list
+                  (string-append "ftp://ftp.csx.cam.ac.uk"
+                                 "/pub/software/programming/pcre/"
+                                 "pcre-" version ".tar.bz2")
+                  (string-append "mirror://sourceforge/pcre/pcre/"
+                                 version "/pcre-" version ".tar.bz2")))
             (sha256
              (base32
-              "17bqykp604p7376wj3q2nmjdhrb6v1ny8q08zdwi7qvc02l9wrsi"))))
+              "1pvra19ljkr5ky35y2iywjnsckrs9ch2anrf5b0dc91hw8v2vq5r"))))
    (build-system gnu-build-system)
    (inputs `(("bzip2" ,bzip2)
              ("readline" ,readline)
