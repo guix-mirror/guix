@@ -1016,7 +1016,12 @@ doing practical, real world data analysis in Python.")
     (license bsd-3)))
 
 (define-public python2-pandas
-  (package-with-python2 python-pandas))
+  (let ((pandas (package-with-python2 python-pandas)))
+    (package (inherit pandas)
+             (propagated-inputs
+              `(("python2-numpy" ,python2-numpy)
+                ,@(alist-delete "python-numpy"
+                                (package-propagated-inputs pandas)))))))
 
 (define-public python-tzlocal
   (package
