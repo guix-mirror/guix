@@ -648,13 +648,22 @@ bits are kept.  HASH-ALGO must be a string such as \"sha256\"."
   (let ((build (operation (build-things (string-list things)
                                         (integer mode))
                           "Do it!"
-                          boolean)))
+                          boolean))
+        (build/old (operation (build-things (string-list things))
+                              "Do it!"
+                              boolean)))
     (lambda* (store things #:optional (mode (build-mode normal)))
       "Build THINGS, a list of store items which may be either '.drv' files or
 outputs, and return when the worker is done building them.  Elements of THINGS
 that are not derivations can only be substituted and not built locally.
 Return #t on success."
-      (build store things mode))))
+      (if (>= (nix-server-minor-version store) 15)
+          (build store things mode)
+          (if (= mode (build-mode normal))
+              (build/old store things)
+              (raise (condition (&nix-protocol-error
+                                 (message "unsupported build mode")
+                                 (status  1)))))))))
 
 (define-operation (add-temp-root (store-path path))
   "Make PATH a temporary root for the duration of the current session.
