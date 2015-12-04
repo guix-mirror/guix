@@ -658,7 +658,8 @@ creates the GTK+ 'icon-theme.cache' file for each theme."
 
             ;; Union all the icons.
             (mkdir-p (string-append #$output "/share"))
-            (union-build destdir icondirs)
+            (union-build destdir icondirs
+                         #:log-port (%make-void-port "w"))
 
             ;; Update the 'icon-theme.cache' file for each icon theme.
             (for-each
