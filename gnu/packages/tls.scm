@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -355,6 +356,45 @@ security, and applying best practice development processes.")
     (home-page "https://github.com/letsencrypt/letsencrypt")
     (synopsis "ACME protocol implementation in Python")
     (description "ACME protocol implementation in Python")
+    (license license:asl2.0)))
+
+(define-public letsencrypt
+  (package
+    (name "letsencrypt")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://pypi.python.org/packages/source/l/"
+                                  "letsencrypt/letsencrypt-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1zb96xz32k6ai41h5m1l22qi47y71dq69dcmbz7vfm6jfrhjgxl1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    ;; TODO: Add optional inputs for testing building documentation.
+    (native-inputs
+     `(("python2-nose" ,python2-nose)
+       ("python2-mock" ,python2-mock)))
+    (propagated-inputs
+     `(("acme" ,acme)
+       ("python2-zope-interface" ,python2-zope-interface)
+       ("python2-pythondialog" ,python2-pythondialog)
+       ("python2-pyrfc3339" ,python2-pyrfc3339)
+       ("python2-pyopenssl" ,python2-pyopenssl)
+       ("python2-configobj" ,python2-configobj)
+       ("python2-configargparse" ,python2-configargparse)
+       ("python2-zope-component" ,python2-zope-component)
+       ("python2-parsedatetime" ,python2-parsedatetime)
+       ("python2-six" ,python2-six)
+       ("python2-psutil" ,python2-psutil)
+       ("python2-requests" ,python2-requests)
+       ("python2-pytz" ,python2-pytz)))
+    (synopsis "Let's Encrypt client")
+    (description "Tool to automatically receive and install X.509 certificates
+to enable TLS on servers.  The client will interoperate with the Let’s Encrypt CA which
+will be issuing browser-trusted certificates for free.")
+    (home-page "https://letsencrypt.org/")
     (license license:asl2.0)))
 
 (define-public perl-net-ssleay
