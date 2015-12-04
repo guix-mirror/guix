@@ -669,7 +669,7 @@ creates the GTK+ 'icon-theme.cache' file for each theme."
                  ;; "abiword_48.png".  Ignore these.
                  (when (file-is-directory? dir)
                    (ensure-writable-directory dir)
-                   (system* update-icon-cache "-t" dir))))
+                   (system* update-icon-cache "-t" dir "--quiet"))))
              (scandir destdir (negate (cut member <> '("." ".."))))))))
 
     ;; Don't run the hook when there's nothing to do.
