@@ -15,6 +15,7 @@
 ;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6009,6 +6010,41 @@ automatically detect a wide range of file encodings.")
 
 (define-public python2-chardet
   (package-with-python2 python-chardet))
+
+(define-public python-docopt
+  (package
+    (name "python-docopt")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       ;; The release on PyPI does not include tests.
+       (uri (string-append
+             "https://github.com/docopt/docopt/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16bf890xbdz3m30rsv2qacklh2rdn1zrfspfnwzx9g7vwz8yw4r1"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools" ,python-setuptools)))
+    (arguments
+     `(#:phases (alist-replace
+                 'check
+                 (lambda _ (zero? (system* "py.test")))
+                 %standard-phases)))
+    (home-page "http://docopt.org")
+    (synopsis "Command-line interface description language for Python")
+    (description "This library allows the user to define a command-line
+interface from a program's help message rather than specifying it
+programatically with command-line parsers like @code{getopt} and
+@code{argparse}.")
+    (license license:expat)))
+
+(define-public python2-docopt
+  (package-with-python2 python-docopt))
 
 (define-public python-zope-event
   (package
