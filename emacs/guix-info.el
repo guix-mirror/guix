@@ -374,7 +374,7 @@ If POS is nil, use the current point position."
   (interactive)
   (let ((button (button-at (or pos (point)))))
     (when button
-      (kill-new (button-label button)))))
+      (guix-copy-as-kill (button-label button)))))
 
 (defun guix-info-insert-action-button (label action &optional message
                                              &rest properties)
