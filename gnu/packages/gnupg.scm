@@ -33,6 +33,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages tls)
@@ -515,18 +516,19 @@ including tools for signing keys, keyring analysis, and party preparation.
 (define-public pinentry
   (package
     (name "pinentry")
-    (version "0.9.5")
+    (version "0.9.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/pinentry/pinentry-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1338hj1h3sh34897120y30x12b64wyj3xjzzk5asm2hdzhxgsmva"))))
+                "0rhyw1vk28kgasjp22myf7m2q8kycw82d65pr9kgh93z17lj849a"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
        ("libassuan" ,libassuan)
+       ("libsecret" ,libsecret "out")
        ("gtk+" ,gtk+-2)
        ("glib" ,glib)))
     (native-inputs
