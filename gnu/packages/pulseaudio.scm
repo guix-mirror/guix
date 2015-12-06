@@ -55,8 +55,9 @@
     (inputs
      `(("libvorbis" ,libvorbis)
        ("libogg" ,libogg)
-       ("flac" ,flac)
-       ("pkg-config" ,pkg-config)))
+       ("flac" ,flac)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://www.mega-nerd.com/libsndfile/")
     (synopsis "Reading and writing files containing sampled sound")
     (description
@@ -84,7 +85,8 @@ for reading and writing new sound file formats.")
               (base32
                "01hw5xjbjavh412y63brcslj5hi9wdgkjd3h9csx5rnm8vglpdck"))))
     (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("libsndfile" ,libsndfile)
        ("fftw" ,fftw)))
@@ -159,13 +161,14 @@ rates.")
        ("dbus" ,dbus)
        ("glib" ,glib)
        ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
        ("m4" ,m4)
        ("libltdl" ,libltdl)
        ("fftwf" ,fftwf)
        ("avahi" ,avahi)
        ("eudev" ,eudev)           ;for the detection of hardware audio devices
        ("check" ,check)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      ;; 'libpulse*.la' contain `-lgdbm' and `-lcap', so propagate them.
      `(("libcap" ,libcap)
