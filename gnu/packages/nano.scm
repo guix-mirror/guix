@@ -28,7 +28,7 @@
 (define-public nano
   (package
     (name "nano")
-    (version "2.4.3")
+    (version "2.5.0")
     (source
      (origin
       (method url-fetch)
@@ -36,7 +36,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1wk82xh9px17ry8nvpa2qmzar4pcmm3w15a09y76f9k05c3jgmij"))))
+        "1vl9bim56k1b4zwc3icxp46w6pn6gb042j1h4jlz1jklxxpkwcpz"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gnu-gettext)
