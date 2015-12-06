@@ -195,19 +195,20 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.1.9")
+    (version "2.1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1dpp555glln6fldk72ad7lkrn8h3cr2bg714z5kfn2qrawx67dqw"))))
+                "1ybcsazjm21i2ys1wh49cz4azmqz7ghx5rb6hm4gm93i2zc5igck"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("bzip2" ,bzip2)
+     `(("adns" ,adns)
+       ("bzip2" ,bzip2)
        ("curl" ,curl)
        ("gnutls" ,gnutls)
        ("libassuan" ,libassuan)
