@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -110,7 +111,7 @@ generation.")
 (define-public libassuan
   (package
     (name "libassuan")
-    (version "2.4.0")
+    (version "2.4.2")
     (source
      (origin
       (method url-fetch)
@@ -118,7 +119,7 @@ generation.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "08l4261r56kv7w9qyq021s905bplh2m8h52qlkq46m7w8y9y932d"))))
+        "086bbcdnvs48qq5g4iac7dpk76j0q3jrp16mchdvyx0b720xq1mv"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error) ("pth" ,pth)))
