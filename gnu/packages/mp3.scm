@@ -171,7 +171,8 @@ Speex, WavPack TrueAudio, WAV, AIFF, MP4 and ASF files.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "ftp://ftp.ibiblio.org/pub/linux/apps/sound/mp3-utils/mp3info/mp3info-"
+                    "http://ibiblio.org"
+                    "/pub/linux/apps/sound/mp3-utils/mp3info/mp3info-"
                     version ".tgz"))
               (sha256
                (base32
