@@ -41,6 +41,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)               ;for libgudev
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages linux)
@@ -530,24 +531,34 @@ compact configuration syntax.")
   (package
     (name "rxvt-unicode")
     (version "9.21")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-              "http://dist.schmorp.de/rxvt-unicode/"
-              name "-"
-              version
-              ".tar.bz2"))
-        (sha256
-          (base32
-            "0swmi308v5yxsddrdhvi4cch88k2bbs2nffpl5j5m2f55gbhw9vm"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://dist.schmorp.de/rxvt-unicode/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0swmi308v5yxsddrdhvi4cch88k2bbs2nffpl5j5m2f55gbhw9vm"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; This sets the destination when installing the necessary terminal
+     ;; capability data, which are not provided by 'ncurses'.  See
+     ;; https://lists.gnu.org/archive/html/bug-ncurses/2009-10/msg00031.html
+     '(#:make-flags (list (string-append "TERMINFO="
+                                         (assoc-ref %outputs "out")
+                                         "/share/terminfo"))))
     (inputs
      `(("libXft" ,libxft)
        ("libX11" ,libx11)))
     (native-inputs
-     `(("perl" ,perl)
+     `(("ncurses" ,ncurses)         ;trigger the installation of terminfo data
+       ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
+    ;; FIXME: This should only be located in 'ncurses'.  Nonetheless it is
+    ;; provided for usability reasons.  See <https://bugs.gnu.org/22138>.
+    (native-search-paths
+     (list (search-path-specification
+            (variable "TERMINFO_DIRS")
+            (files '("share/terminfo")))))
     (home-page "http://software.schmorp.de/pkg/rxvt-unicode.html")
     (synopsis "Rxvt clone with XFT and unicode support")
     (description "Rxvt-unicode (urxvt) is a colour vt102 terminal emulator
