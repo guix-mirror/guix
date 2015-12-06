@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -424,7 +425,7 @@ was initially a fork of xmpppy, but is using non-blocking sockets.")
 (define-public gajim
   (package
     (name "gajim")
-    (version "0.16.3")
+    (version "0.16.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gajim.org/downloads/"
@@ -432,7 +433,7 @@ was initially a fork of xmpppy, but is using non-blocking sockets.")
                                   "/gajim-" version ".tar.bz2"))
               (sha256
                (base32
-                "05a59hf9wna6n9fi0a4bhz1hifqj21bwb4ff9rd0my23rdwmij51"))))
+                "0zyfs7q1qg8iqszr8l1gb18gqla6zrrfsgpmbxblpi9maqxas5i1"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
