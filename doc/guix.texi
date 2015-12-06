@@ -4879,7 +4879,7 @@ Attempt to build for @var{system}---e.g., @code{i686-linux}.
 @itemx -C
 @cindex container
 Run @var{command} within an isolated container.  The current working
-directory outside the container is mapped to @file{/env} inside the
+directory outside the container is mapped inside the
 container.  Additionally, the spawned process runs as the current user
 outside the container, but has root privileges in the context of the
 container.
