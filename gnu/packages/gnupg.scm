@@ -23,6 +23,7 @@
 
 (define-module (gnu packages gnupg)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages adns)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
@@ -238,17 +239,18 @@ libskba (working with X.509 certificates and CMS data).")
 
 (define-public gnupg-2.0
   (package (inherit gnupg)
-    (version "2.0.28")
+    (version "2.0.29")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0k2k399fnhfhhr4dvm8d6vs4ihq6gg06191lzfwikzaqmgj2w2ff"))))
+                "1jaakn0mi6pi2b3g3imxj3qzxw2zg0ifxs30baq2b157dcw6pvb8"))))
     (native-inputs '())
     (inputs
-     `(("bzip2" ,bzip2)
+     `(("adns" ,adns)
+       ("bzip2" ,bzip2)
        ("curl" ,curl)
        ("libassuan" ,libassuan)
        ("libgcrypt" ,libgcrypt)
