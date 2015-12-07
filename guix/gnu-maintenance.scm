@@ -317,10 +317,14 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
                               files)
                   result))))))))
 
-(define* (latest-release project
-                         #:key (ftp-open ftp-open) (ftp-close ftp-close))
-  "Return (\"FOO-X.Y\" . \"/bar/foo\") or #f.  Use FTP-OPEN and FTP-CLOSE to
-open (resp. close) FTP connections; this can be useful to reuse connections."
+(define* (latest-ftp-release project
+                             #:key
+                             (server "ftp.gnu.org")
+                             (directory (string-append "/gnu/" project))
+                             (ftp-open ftp-open) (ftp-close ftp-close))
+  "Return an <upstream-source> for the latest release of PROJECT on SERVER
+under DIRECTORY, or #f.  Use FTP-OPEN and FTP-CLOSE to open (resp. close) FTP
+connections; this can be useful to reuse connections."
   (define (latest a b)
     (if (version>? a b) a b))
 
@@ -335,63 +339,72 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
     ;; Return #t for patch directory names such as 'bash-4.2-patches'.
     (cut string-suffix? "patches" <>))
 
-  (let-values (((server directory) (ftp-server/directory project)))
-    (define conn (ftp-open server))
+  (define conn (ftp-open server))
 
-    (define (file->url directory file)
-      (string-append "ftp://" server directory "/" file))
+  (define (file->url directory file)
+    (string-append "ftp://" server directory "/" file))
 
-    (define (file->source directory file)
-      (let ((url (file->url directory file)))
-        (upstream-source
-         (package project)
-         (version (tarball->version file))
-         (urls (list url))
-         (signature-urls (list (string-append url ".sig"))))))
+  (define (file->source directory file)
+    (let ((url (file->url directory file)))
+      (upstream-source
+       (package project)
+       (version (tarball->version file))
+       (urls (list url))
+       (signature-urls (list (string-append url ".sig"))))))
 
-    (let loop ((directory directory)
-               (result    #f))
-      (let* ((entries (ftp-list conn directory))
+  (let loop ((directory directory)
+             (result    #f))
+    (let* ((entries (ftp-list conn directory))
 
-             ;; Filter out sub-directories that do not contain digits---e.g.,
-             ;; /gnuzilla/lang and /gnupg/patches.  Filter out "w32"
-             ;; directories as found on ftp.gnutls.org.
-             (subdirs (filter-map (match-lambda
-                                    (((? patch-directory-name? dir)
-                                      'directory . _)
-                                     #f)
-                                    (("w32" 'directory . _)
-                                     #f)
-                                    (((? contains-digit? dir) 'directory . _)
-                                     dir)
-                                    (_ #f))
-                                  entries))
+           ;; Filter out sub-directories that do not contain digits---e.g.,
+           ;; /gnuzilla/lang and /gnupg/patches.  Filter out "w32"
+           ;; directories as found on ftp.gnutls.org.
+           (subdirs (filter-map (match-lambda
+                                  (((? patch-directory-name? dir)
+                                    'directory . _)
+                                   #f)
+                                  (("w32" 'directory . _)
+                                   #f)
+                                  (((? contains-digit? dir) 'directory . _)
+                                   dir)
+                                  (_ #f))
+                                entries))
 
-             ;; Whether or not SUBDIRS is empty, compute the latest releases
-             ;; for the current directory.  This is necessary for packages
-             ;; such as 'sharutils' that have a sub-directory that contains
-             ;; only an older release.
-             (releases (filter-map (match-lambda
-                                     ((file 'file . _)
-                                      (and (release-file? project file)
-                                           (file->source directory file)))
-                                     (_ #f))
-                                   entries)))
+           ;; Whether or not SUBDIRS is empty, compute the latest releases
+           ;; for the current directory.  This is necessary for packages
+           ;; such as 'sharutils' that have a sub-directory that contains
+           ;; only an older release.
+           (releases (filter-map (match-lambda
+                                   ((file 'file . _)
+                                    (and (release-file? project file)
+                                         (file->source directory file)))
+                                   (_ #f))
+                                 entries)))
 
-        ;; Assume that SUBDIRS correspond to versions, and jump into the
-        ;; one with the highest version number.
-        (let* ((release  (reduce latest-release #f
-                                 (coalesce-sources releases)))
-               (result   (if (and result release)
-                             (latest-release release result)
-                             (or release result)))
-               (target   (reduce latest #f subdirs)))
-          (if target
-              (loop (string-append directory "/" target)
-                    result)
-              (begin
-                (ftp-close conn)
-                result)))))))
+      ;; Assume that SUBDIRS correspond to versions, and jump into the
+      ;; one with the highest version number.
+      (let* ((release  (reduce latest-release #f
+                               (coalesce-sources releases)))
+             (result   (if (and result release)
+                           (latest-release release result)
+                           (or release result)))
+             (target   (reduce latest #f subdirs)))
+        (if target
+            (loop (string-append directory "/" target)
+                  result)
+            (begin
+              (ftp-close conn)
+              result))))))
+
+(define (latest-release package . rest)
+  "Return the <upstream-source> for the latest version of PACKAGE or #f.
+PACKAGE is the name of a GNU package.  This procedure automatically uses the
+right FTP server and directory for PACKAGE."
+  (let-values (((server directory) (ftp-server/directory package)))
+    (apply latest-ftp-release package
+           #:server server
+           #:directory directory
+           rest)))
 
 (define (latest-release* package)
   "Like 'latest-release', but ignore FTP errors that might occur when PACKAGE
