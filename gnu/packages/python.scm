@@ -6345,7 +6345,13 @@ security policies on Python objects.")
     (license zpl2.1)))
 
 (define-public python2-zope-security
-  (package-with-python2 python-zope-security))
+  (let ((zope-security (package-with-python2 python-zope-security)))
+    (package (inherit zope-security)
+      (propagated-inputs
+       `(("python2-zope-testrunner" ,python2-zope-testrunner)
+         ,@(alist-delete
+            "python-zope-testrunner"
+            (package-propagated-inputs zope-security)))))))
 
 (define-public python-zope-component
   (package
