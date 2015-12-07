@@ -7299,3 +7299,26 @@ library as well as on the command line.")
 
 (define-public python2-rsa
   (package-with-python2 python-rsa))
+
+(define-public python-pluggy
+  (package
+   (name "python-pluggy")
+   (version "0.3.1")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (pypi-uri "pluggy" version))
+     (sha256
+      (base32
+       "18qfzfm40bgx672lkg8q9x5hdh76n7vax99aank7vh2nw21wg70m"))))
+   (build-system python-build-system)
+   (inputs
+    `(("python-setuptools" ,python-setuptools)))
+   (synopsis "Plugin and hook calling mechanism for Python")
+   (description "Pluggy is an extraction of the plugin manager as used by
+Pytest but stripped of Pytest specific details.")
+   (home-page "https://pypi.python.org/pypi/pluggy")
+   (license license:expat)))
+
+(define-public python2-pluggy
+  (package-with-python2 python-pluggy))
