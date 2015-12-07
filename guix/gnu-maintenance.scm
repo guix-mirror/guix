@@ -237,8 +237,10 @@ stored."
     (substring tarball 0 end)))
 
 (define %tarball-rx
-  ;; Note: .zip files are notably used for freefont-ttf.
-  (make-regexp "^(.+)-([0-9]|[^-])*(-src)?\\.(tar\\.|zip$)"))
+  ;; The .zip extensions is notably used for freefont-ttf.
+  ;; The "-src" pattern is for "TeXmacs-1.0.7.9-src.tar.gz".
+  ;; The "-gnu[0-9]" pattern is for "icecat-38.4.0-gnu1.tar.bz2".
+  (make-regexp "^([^.]+)-([0-9]|[^-])+(-(src|gnu[0-9]))?\\.(tar\\.|zip$)"))
 
 (define %alpha-tarball-rx
   (make-regexp "^.*-.*[0-9](-|~)?(alpha|beta|rc|cvs|svn|git)-?[0-9\\.]*\\.tar\\."))
