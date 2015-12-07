@@ -197,9 +197,10 @@ unavailable optional dependencies such as Guile-JSON."
 
 (define (lookup-updater name)
   "Return the updater called NAME."
-  (find (lambda (updater)
-          (eq? name (upstream-updater-name updater)))
-        %updaters))
+  (or (find (lambda (updater)
+              (eq? name (upstream-updater-name updater)))
+            %updaters)
+      (leave (_ "~a: no such updater~%") name)))
 
 (define (list-updaters-and-exit)
   "Display available updaters and exit."
