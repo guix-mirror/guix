@@ -7356,3 +7356,27 @@ servers.")
 
 (define-public python2-tox
   (package-with-python2 python-tox))
+
+(define-public python-jmespath
+  (package
+   (name "python-jmespath")
+   (version "0.9.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (pypi-uri "jmespath" version))
+     (sha256
+      (base32
+       "0g9xvl69y7nr3w7ag4fsp6sm4fqf6vrqjw7504x2hzrrsh3ampq8"))))
+   (build-system python-build-system)
+   (inputs
+    `(("python-setuptools" ,python-setuptools)))
+   (synopsis "JSON Matching Expressions")
+   (description "JMESPath (pronounced “james path”) is a Python library that
+allows one to declaratively specify how to extract elements from a JSON
+document.")
+   (home-page "https://github.com/jmespath/jmespath.py")
+   (license license:expat)))
+
+(define-public python2-jmespath
+  (package-with-python2 python-jmespath))
