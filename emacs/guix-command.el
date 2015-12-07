@@ -65,6 +65,7 @@
 (require 'guix-help-vars)
 (require 'guix-read)
 (require 'guix-base)
+(require 'guix-build-log)
 (require 'guix-guile)
 (require 'guix-external)
 
@@ -692,8 +693,7 @@ open the log file(s)."
          (output (guix-command-output args))
          (files  (split-string output "\n" t)))
     (dolist (file files)
-      (guix-find-file-or-url file)
-      (guix-build-log-mode))))
+      (guix-build-log-find-file file))))
 
 (defun guix-run-view-graph (args)
   "Run 'guix ARGS ...' graph command, make the image and open it."

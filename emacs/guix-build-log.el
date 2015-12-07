@@ -24,6 +24,8 @@
 
 ;;; Code:
 
+(require 'guix-utils)
+
 (defgroup guix-build-log nil
   "Settings for `guix-build-log-mode'."
   :group 'guix)
@@ -358,6 +360,11 @@ programmatically using hooks:
 `guix-build-log-minor-mode-activate' variable."
   (when guix-build-log-minor-mode-activate
     (guix-build-log-minor-mode)))
+
+(defun guix-build-log-find-file (file-or-url)
+  "Open FILE-OR-URL in `guix-build-log-mode'."
+  (guix-find-file-or-url file-or-url)
+  (guix-build-log-mode))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist
