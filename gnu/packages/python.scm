@@ -7322,3 +7322,37 @@ Pytest but stripped of Pytest specific details.")
 
 (define-public python2-pluggy
   (package-with-python2 python-pluggy))
+
+(define-public python-tox
+  (package
+   (name "python-tox")
+   (version "2.3.1")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (pypi-uri "tox" version))
+     (sha256
+      (base32
+       "1vj73ar4rimq3fwy5r2z3jv4g9qbh8rmpmncsc00g0k310acqzxz"))))
+   (build-system python-build-system)
+   (arguments
+    ;; FIXME: Tests require a newer version of pytest, but upgrading our
+    ;; pytest breaks other packages.
+    '(#:tests? #f))
+   (inputs
+    `(("python-setuptools" ,python-setuptools)
+      ("python-pluggy" ,python-pluggy)
+      ("python-py" ,python-py)
+      ("python-virtualenv" ,python-virtualenv)
+      ("python-pytest" ,python-pytest)))
+   (home-page "http://tox.testrun.org/")
+   (synopsis "Virtualenv-based automation of test activities")
+   (description "Tox is a generic virtualenv management and test command line
+tool.  It can be used to check that a package installs correctly with
+different Python versions and interpreters, or run tests in each type of
+supported environment, or act as a frontend to continuous integration
+servers.")
+   (license license:expat)))
+
+(define-public python2-tox
+  (package-with-python2 python-tox))
