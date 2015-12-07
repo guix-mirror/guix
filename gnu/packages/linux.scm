@@ -447,8 +447,9 @@ providing the system administrator with some help in common tasks.")
        ("net-base" ,net-base)))                   ;for tests
     (home-page "https://www.kernel.org/pub/linux/utils/util-linux/")
     (synopsis "Collection of utilities for the Linux kernel")
-    (description
-     "Util-linux is a random collection of utilities for the Linux kernel.")
+    (description "Util-linux is a diverse collection of Linux kernel
+utilities.  It provides dmesg and includes tools for working with filesystems,
+block devices, UUIDs, TTYs, and many other tools.")
 
     ;; Note that util-linux doesn't use the same license for all the
     ;; code.  GPLv2+ is the default license for a code without an
