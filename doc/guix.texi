@@ -4342,6 +4342,8 @@ list of updaters).  Currently, @var{updater} may be one of:
 @table @code
 @item gnu
 the updater for GNU packages;
+@item gnome
+the updater for GNOME packages;
 @item elpa
 the updater for @uref{http://elpa.gnu.org/, ELPA} packages;
 @item cran

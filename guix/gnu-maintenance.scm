@@ -56,7 +56,8 @@
             gnu-release-archive-types
             gnu-package-name->name+version
 
-            %gnu-updater))
+            %gnu-updater
+            %gnome-updater))
 
 ;;; Commentary:
 ;;;
@@ -221,7 +222,6 @@ stored."
       ("mit-scheme"   "ftp.gnu.org" "/gnu/mit-scheme/stable.pkg")
       ("icecat"       "ftp.gnu.org" "/gnu/gnuzilla")
       ("source-highlight" "ftp.gnu.org" "/gnu/src-highlite")
-      ("glib"         "ftp.gnome.org" "/pub/gnome/sources/glib")
       ("gnutls"       "ftp.gnutls.org" "/gcrypt/gnutls")
 
       ;; FIXME: ftp.texmacs.org is currently outdated; texmacs.org refers to
@@ -406,18 +406,23 @@ right FTP server and directory for PACKAGE."
            #:directory directory
            rest)))
 
-(define (latest-release* package)
-  "Like 'latest-release', but ignore FTP errors that might occur when PACKAGE
-is not actually a GNU package, or not hosted on ftp.gnu.org, or not under that
-name (this is the case for \"emacs-auctex\", for instance.)"
+(define-syntax-rule (false-if-ftp-error exp)
+  "Return #f if an FTP error is raise while evaluating EXP; return the result
+of EXP otherwise."
   (catch 'ftp-error
     (lambda ()
-      (latest-release package))
+      exp)
     (lambda (key port . rest)
       (if (ftp-connection? port)
           (ftp-close port)
           (close-port port))
       #f)))
+
+(define (latest-release* package)
+  "Like 'latest-release', but ignore FTP errors that might occur when PACKAGE
+is not actually a GNU package, or not hosted on ftp.gnu.org, or not under that
+name (this is the case for \"emacs-auctex\", for instance.)"
+  (false-if-ftp-error (latest-release package)))
 
 (define %package-name-rx
   ;; Regexp for a package name, e.g., "foo-X.Y".  Since TeXmacs uses
@@ -431,17 +436,52 @@ name (this is the case for \"emacs-auctex\", for instance.)"
         (values name+version #f)
         (values (match:substring match 1) (match:substring match 2)))))
 
-(define (non-emacs-gnu-package? package)
-  "Return true if PACKAGE is a non-Emacs GNU package.  This excludes AucTeX,
-for instance, whose releases are now uploaded to elpa.gnu.org."
+(define (pure-gnu-package? package)
+  "Return true if PACKAGE is a non-Emacs and non-GNOME GNU package.  This
+excludes AucTeX, for instance, whose releases are now uploaded to
+elpa.gnu.org, and all the GNOME packages."
   (and (not (string-prefix? "emacs-" (package-name package)))
+       (not (gnome-package? package))
        (gnu-package? package)))
+
+(define (gnome-package? package)
+  "Return true if PACKAGE is a GNOME package, hosted on gnome.org."
+  (define gnome-uri?
+    (match-lambda
+      ((? string? uri)
+       (string-prefix? "mirror://gnome/" uri))
+      (_
+       #f)))
+
+  (match (package-source package)
+    ((? origin? origin)
+     (match (origin-uri origin)
+       ((? gnome-uri?) #t)
+       (_              #f)))
+    (_ #f)))
+
+(define (latest-gnome-release package)
+  "Return the latest release of PACKAGE, the name of a GNOME package."
+  (false-if-ftp-error
+   (latest-ftp-release package
+                       #:server "ftp.gnome.org"
+                       #:directory (string-append "/pub/gnome/sources/"
+                                                  (match package
+                                                    ("gconf" "GConf")
+                                                    (x       x))))))
 
 (define %gnu-updater
   (upstream-updater
    (name 'gnu)
    (description "Updater for GNU packages")
-   (pred non-emacs-gnu-package?)
+   (pred pure-gnu-package?)
    (latest latest-release*)))
+
+(define %gnome-updater
+  (upstream-updater
+   (name 'gnome)
+   (description "Updater for GNOME packages")
+   (pred gnome-package?)
+   (latest latest-gnome-release)))
 
 ;;; gnu-maintenance.scm ends here
