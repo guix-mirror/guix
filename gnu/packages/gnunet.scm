@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -113,14 +114,14 @@ tool to extract metadata from a file and print the results.")
 (define-public libmicrohttpd
   (package
    (name "libmicrohttpd")
-   (version "0.9.46")
+   (version "0.9.47")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libmicrohttpd/libmicrohttpd-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0yc97flxi6pjkfj9k0d3cpnw59j92ky67q3g37la23rr9xjx5nq6"))))
+              "1335kznai5ih3kmavl1707sr4sakk0cc0srl5aax77x0a91spgcn"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
