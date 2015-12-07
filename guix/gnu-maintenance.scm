@@ -321,10 +321,13 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
                              #:key
                              (server "ftp.gnu.org")
                              (directory (string-append "/gnu/" project))
+                             (file->signature (cut string-append <> ".sig"))
                              (ftp-open ftp-open) (ftp-close ftp-close))
   "Return an <upstream-source> for the latest release of PROJECT on SERVER
 under DIRECTORY, or #f.  Use FTP-OPEN and FTP-CLOSE to open (resp. close) FTP
-connections; this can be useful to reuse connections."
+connections; this can be useful to reuse connections.  FILE->SIGNATURE must be
+a procedure; it is passed a source file URL and must return the corresponding
+signature URL, or #f it signatures are unavailable."
   (define (latest a b)
     (if (version>? a b) a b))
 
@@ -350,7 +353,9 @@ connections; this can be useful to reuse connections."
        (package project)
        (version (tarball->version file))
        (urls (list url))
-       (signature-urls (list (string-append url ".sig"))))))
+       (signature-urls (match (file->signature url)
+                         (#f #f)
+                         (sig (list sig)))))))
 
   (let loop ((directory directory)
              (result    #f))
@@ -468,7 +473,11 @@ elpa.gnu.org, and all the GNOME packages."
                        #:directory (string-append "/pub/gnome/sources/"
                                                   (match package
                                                     ("gconf" "GConf")
-                                                    (x       x))))))
+                                                    (x       x)))
+
+                       ;; ftp.gnome.org provides no signatures, only
+                       ;; checksums.
+                       #:file->signature (const #f))))
 
 (define %gnu-updater
   (upstream-updater

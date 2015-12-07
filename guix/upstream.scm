@@ -98,8 +98,9 @@ correspond to the same version."
                         (urls (append (upstream-source-urls release)
                                       (upstream-source-urls head)))
                         (signature-urls
-                         (append (upstream-source-signature-urls release)
-                                 (upstream-source-signature-urls head))))
+                         (let ((one (upstream-source-signature-urls release))
+                               (two (upstream-source-signature-urls release)))
+                           (and one two (append one two)))))
                        tail)
                  (cons release result)))
             (()
