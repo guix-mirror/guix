@@ -10,7 +10,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
@@ -7250,3 +7250,26 @@ supports url redirection and retries, and also gzip and deflate decoding.")
 
 (define-public python2-urllib3
   (package-with-python2 python-urllib3))
+
+(define-public python-colorama
+  (package
+   (name "python-colorama")
+   (version "0.3.3")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (pypi-uri "colorama" version))
+     (sha256
+      (base32
+       "1716z9pq1r5ys3nkg7wdrb3h2f9rmd0zdxpxzmx3bgwgf6xg48gb"))))
+   (build-system python-build-system)
+   (inputs
+    `(("python-setuptools" ,python-setuptools)))
+   (synopsis "colored terminal text rendering for Python")
+   (description "Colorama is a Python library for rendering colored terminal
+text.")
+   (home-page "https://pypi.python.org/pypi/colorama")
+   (license bsd-3)))
+
+(define-public python2-colorama
+  (package-with-python2 python-colorama))
