@@ -222,6 +222,9 @@ stored."
       ("source-highlight" "ftp.gnu.org" "/gnu/src-highlite")
       ("glib"         "ftp.gnome.org" "/pub/gnome/sources/glib")
       ("gnutls"       "ftp.gnutls.org" "/gcrypt/gnutls")
+
+      ;; FIXME: ftp.texmacs.org is currently outdated; texmacs.org refers to
+      ;; its own http URL instead.
       ("TeXmacs"      "ftp.texmacs.org" "/TeXmacs/targz")))
 
   (match (assoc project quirks)
@@ -252,7 +255,10 @@ true."
        (and=> (regexp-exec %tarball-rx file)
               (lambda (match)
                 ;; Filter out unrelated files, like `guile-www-1.1.1'.
-                (equal? project (match:substring match 1))))
+                ;; Case-insensitive for things like "TeXmacs" vs. "texmacs".
+                (and=> (match:substring match 1)
+                       (lambda (name)
+                         (string-ci=? name project)))))
        (not (regexp-exec %alpha-tarball-rx file))
        (let ((s (sans-extension file)))
          (regexp-exec %package-name-rx s))))
