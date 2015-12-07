@@ -199,6 +199,7 @@ SCM_TESTS =					\
   tests/pk-crypto.scm				\
   tests/pki.scm					\
   tests/sets.scm				\
+  tests/gnu-maintenance.scm			\
   tests/substitute.scm				\
   tests/builders.scm				\
   tests/derivations.scm				\

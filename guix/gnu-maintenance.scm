@@ -50,6 +50,7 @@
             find-packages
             gnu-package?
 
+            release-file?
             releases
             latest-release
             gnu-release-archive-types
