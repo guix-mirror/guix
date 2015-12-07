@@ -7410,3 +7410,34 @@ interface to the Amazon Web Services (AWS) API.")
 
 (define-public python2-botocore
   (package-with-python2 python-botocore))
+
+(define-public awscli
+  (package
+   (name "awscli")
+   (version "1.9.17")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "https://pypi.python.org/packages/source/a/awscli/awscli-"
+           version ".tar.gz"))
+     (sha256
+      (base32
+       "1nj7jqvlpq57hfhby1njsbf8303gapa3njc4dramr6p3ffzvfi2i"))))
+   (build-system python-build-system)
+   (inputs
+    `(("python-colorama" ,python-colorama)
+      ("python-docutils" ,python-docutils)
+      ("python-mock" ,python-mock)
+      ("python-nose" ,python-nose)
+      ("python-rsa" ,python-rsa)
+      ("python-setuptools" ,python-setuptools)
+      ("python-sphinx" ,python-sphinx)
+      ("python-tox" ,python-tox)
+      ("python-wheel" ,python-wheel)
+      ("python-botocore" ,python-botocore)))
+   (home-page "http://aws.amazon.com/cli/")
+   (synopsis "Command line client for AWS")
+   (description "AWS CLI provides a unified command line interface to the
+Amazon Web Services (AWS) API.")
+   (license asl2.0)))
