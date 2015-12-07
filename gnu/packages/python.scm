@@ -7273,3 +7273,29 @@ text.")
 
 (define-public python2-colorama
   (package-with-python2 python-colorama))
+
+(define-public python-rsa
+  (package
+   (name "python-rsa")
+   (version "3.2")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (pypi-uri "rsa" version))
+     (sha256
+      (base32
+       "0xwp929g7lvb1sghxfpqlxvgg96qcwqdbhh27sjplx30n3xp3wrh"))))
+   (build-system python-build-system)
+   (inputs
+    `(("python-pyasn1" ,python-pyasn1)
+      ("python-setuptools" ,python-setuptools)))
+   (synopsis "Pure-Python RSA implementation")
+   (description "Python-RSA is a pure-Python RSA implementation.  It supports
+encryption and decryption, signing and verifying signatures, and key
+generation according to PKCS#1 version 1.5.  It can be used as a Python
+library as well as on the command line.")
+   (home-page "http://stuvel.eu/rsa")
+   (license asl2.0)))
+
+(define-public python2-rsa
+  (package-with-python2 python-rsa))
