@@ -7380,3 +7380,33 @@ document.")
 
 (define-public python2-jmespath
   (package-with-python2 python-jmespath))
+
+(define-public python-botocore
+  (package
+   (name "python-botocore")
+   (version "1.3.17")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (pypi-uri "botocore" version))
+     (sha256
+      (base32
+       "08vpvdixx1c1lfv6vzjig68bpiir7wfyhzf49ysxgvhbprg5ra0w"))))
+   (build-system python-build-system)
+   (inputs
+    `(("python-dateutil" ,python-dateutil-2)
+      ("python-docutils" ,python-docutils)
+      ("python-mock" ,python-mock)
+      ("python-nose" ,python-nose)
+      ("python-setuptools" ,python-setuptools)
+      ("python-tox" ,python-tox)
+      ("python-wheel" ,python-wheel)
+      ("python-jmespath" ,python-jmespath)))
+   (home-page "https://github.com/boto/botocore")
+   (synopsis "Low-level interface to AWS")
+   (description "Botocore is a Python library that provides a low-level
+interface to the Amazon Web Services (AWS) API.")
+   (license asl2.0)))
+
+(define-public python2-botocore
+  (package-with-python2 python-botocore))
