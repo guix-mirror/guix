@@ -354,10 +354,13 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
       (let* ((entries (ftp-list conn directory))
 
              ;; Filter out sub-directories that do not contain digits---e.g.,
-             ;; /gnuzilla/lang and /gnupg/patches.
+             ;; /gnuzilla/lang and /gnupg/patches.  Filter out "w32"
+             ;; directories as found on ftp.gnutls.org.
              (subdirs (filter-map (match-lambda
                                     (((? patch-directory-name? dir)
                                       'directory . _)
+                                     #f)
+                                    (("w32" 'directory . _)
                                      #f)
                                     (((? contains-digit? dir) 'directory . _)
                                      dir)
