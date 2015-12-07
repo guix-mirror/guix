@@ -329,11 +329,11 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
   (let-values (((server directory) (ftp-server/directory project)))
     (define conn (ftp-open server))
 
-    (define (file->url file)
+    (define (file->url directory file)
       (string-append "ftp://" server directory "/" file))
 
-    (define (file->source file)
-      (let ((url (file->url file)))
+    (define (file->source directory file)
+      (let ((url (file->url directory file)))
         (upstream-source
          (package project)
          (version (tarball->version file))
@@ -362,7 +362,7 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
              (releases (filter-map (match-lambda
                                      ((file 'file . _)
                                       (and (release-file? project file)
-                                           (file->source file)))
+                                           (file->source directory file)))
                                      (_ #f))
                                    entries)))
 
