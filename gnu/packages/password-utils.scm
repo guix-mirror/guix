@@ -57,15 +57,14 @@ human.")
 (define-public keepassx
   (package
     (name "keepassx")
-    (version "2.0-beta2")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/keepassx/keepassx/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append "https://www.keepassx.org/releases/" version
+                           "/keepassx-" version ".tar.gz"))
        (sha256
-        (base32 "0ljf9ws3wh62zd0gyb0vk2qw6pqsmxrlybrfs5mqahf44q92ca2q"))))
+        (base32 "1ri2r1sldc62hbg74m4pmci0nrjwvv38rqhyzhyjin247an0zd0f"))))
     (build-system cmake-build-system)
     (inputs
      `(("libgcrypt" ,libgcrypt)
