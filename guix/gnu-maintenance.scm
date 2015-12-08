@@ -321,13 +321,18 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
                              #:key
                              (server "ftp.gnu.org")
                              (directory (string-append "/gnu/" project))
+                             (keep-file? (const #t))
                              (file->signature (cut string-append <> ".sig"))
                              (ftp-open ftp-open) (ftp-close ftp-close))
   "Return an <upstream-source> for the latest release of PROJECT on SERVER
 under DIRECTORY, or #f.  Use FTP-OPEN and FTP-CLOSE to open (resp. close) FTP
-connections; this can be useful to reuse connections.  FILE->SIGNATURE must be
-a procedure; it is passed a source file URL and must return the corresponding
-signature URL, or #f it signatures are unavailable."
+connections; this can be useful to reuse connections.
+
+KEEP-FILE? is a predicate to decide whether to consider a given file (source
+tarball) as a valid candidate based on its name.
+
+FILE->SIGNATURE must be a procedure; it is passed a source file URL and must
+return the corresponding signature URL, or #f it signatures are unavailable."
   (define (latest a b)
     (if (version>? a b) a b))
 
@@ -382,6 +387,7 @@ signature URL, or #f it signatures are unavailable."
            (releases (filter-map (match-lambda
                                    ((file 'file . _)
                                     (and (release-file? project file)
+                                         (keep-file? file)
                                          (file->source directory file)))
                                    (_ #f))
                                  entries)))
@@ -467,6 +473,22 @@ elpa.gnu.org, and all the GNOME packages."
 
 (define (latest-gnome-release package)
   "Return the latest release of PACKAGE, the name of a GNOME package."
+  (define %not-dot
+    (char-set-complement (char-set #\.)))
+
+  (define (even-minor-version? version)
+    (match (string-tokenize (version-major+minor version)
+                            %not-dot)
+      (((= string->number major) (= string->number minor))
+       (even? minor))
+      (_
+       #t)))                                      ;cross fingers
+
+  (define (even-numbered-tarball? file)
+    (let-values (((name version) (gnu-package-name->name+version file)))
+      (and version
+           (even-minor-version? version))))
+
   (false-if-ftp-error
    (latest-ftp-release package
                        #:server "ftp.gnome.org"
@@ -474,6 +496,12 @@ elpa.gnu.org, and all the GNOME packages."
                                                   (match package
                                                     ("gconf" "GConf")
                                                     (x       x)))
+
+
+                       ;; <https://www.gnome.org/gnome-3/source/> explains
+                       ;; that odd minor version numbers represent development
+                       ;; releases, which we are usually not interested in.
+                       #:keep-file? even-numbered-tarball?
 
                        ;; ftp.gnome.org provides no signatures, only
                        ;; checksums.
