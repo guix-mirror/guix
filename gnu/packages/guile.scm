@@ -812,7 +812,7 @@ users and in some situations.")
     (version "0.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://files.dthompson.us/sly/sly-"
+              (uri (string-append "https://files.dthompson.us/sly/sly-"
                                   version ".tar.gz"))
               (sha256
                (base32
