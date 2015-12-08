@@ -504,6 +504,7 @@ encoding conversion errors."
 (define* (set-build-options server
                             #:key keep-failed? keep-going? fallback?
                             (verbosity 0)
+                            rounds                ;number of build rounds
                             (max-build-jobs 1)
                             timeout
                             (max-silent-time 3600)
@@ -549,6 +550,10 @@ encoding conversion errors."
                      ,@(if substitute-urls
                            `(("substitute-urls"
                               . ,(string-join substitute-urls)))
+                           '())
+                     ,@(if rounds
+                           `(("build-repeat"
+                              . ,(number->string (max 0 (1- rounds)))))
                            '()))))
         (send (string-pairs pairs))))
     (let loop ((done? (process-stderr server)))

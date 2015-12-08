@@ -769,6 +769,8 @@
                         (let ((out (assoc-ref %outputs "out")))
                           (call-with-output-file out
                             (lambda (port)
+                              ;; Rely on the fact that tests do not use the
+                              ;; chroot, and thus ENTROPY is readable.
                               (display (call-with-input-file ,entropy
                                          get-string-all)
                                        port)))
@@ -790,6 +792,44 @@
                   (build-things store (list (derivation-file-name drv))
                                 (build-mode check))
                   #f))))))))
+
+(test-assert "build multiple times"
+  (with-store store
+    ;; Ask to build twice.
+    (set-build-options store #:rounds 2 #:use-substitutes? #f)
+
+    (call-with-temporary-output-file
+     (lambda (entropy entropy-port)
+       (write (random-text) entropy-port)
+       (force-output entropy-port)
+       (let* ((drv  (build-expression->derivation
+                     store "non-deterministic"
+                     `(begin
+                        (use-modules (rnrs io ports))
+                        (let ((out (assoc-ref %outputs "out")))
+                          (call-with-output-file out
+                            (lambda (port)
+                              ;; Rely on the fact that tests do not use the
+                              ;; chroot, and thus ENTROPY is accessible.
+                              (display (call-with-input-file ,entropy
+                                         get-string-all)
+                                       port)
+                              (call-with-output-file ,entropy
+                                (lambda (port)
+                                  (write 'foobar port)))))
+                          #t))
+                     #:guile-for-build
+                     (package-derivation store %bootstrap-guile (%current-system))))
+              (file (derivation->output-path drv)))
+         (guard (c ((nix-protocol-error? c)
+                    (pk 'multiple-build c)
+                    (and (not (zero? (nix-protocol-error-status c)))
+                         (string-contains (nix-protocol-error-message c)
+                                          "deterministic"))))
+           ;; This one will produce a different result on the second run.
+           (current-build-output-port (current-error-port))
+           (build-things store (list (derivation-file-name drv)))
+           #f))))))
 
 (test-equal "store-lower"
   "Lowered."
