@@ -171,6 +171,8 @@ options handled by 'set-build-options-from-command-line', and listed in
   (display (_ "
       --verbosity=LEVEL  use the given verbosity LEVEL"))
   (display (_ "
+      --rounds=N         build N times in a row to detect non-determinism"))
+  (display (_ "
   -c, --cores=N          allow the use of up to N CPU cores for the build"))
   (display (_ "
   -M, --max-jobs=N       allow at most N build jobs")))
@@ -181,6 +183,7 @@ options handled by 'set-build-options-from-command-line', and listed in
   ;; TODO: Add more options.
   (set-build-options store
                      #:keep-failed? (assoc-ref opts 'keep-failed?)
+                     #:rounds (assoc-ref opts 'rounds)
                      #:build-cores (or (assoc-ref opts 'cores) 0)
                      #:max-build-jobs (or (assoc-ref opts 'max-jobs) 1)
                      #:fallback? (assoc-ref opts 'fallback?)
@@ -209,6 +212,12 @@ options handled by 'set-build-options-from-command-line', and listed in
                 (lambda (opt name arg result . rest)
                   (apply values
                          (alist-cons 'keep-failed? #t result)
+                         rest)))
+        (option '("rounds") #t #f
+                (lambda (opt name arg result . rest)
+                  (apply values
+                         (alist-cons 'rounds (string->number* arg)
+                                     result)
                          rest)))
         (option '("fallback") #f #f
                 (lambda (opt name arg result . rest)

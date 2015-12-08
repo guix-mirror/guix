@@ -3876,6 +3876,20 @@ Do not use substitutes for build products.  That is, always build things
 locally instead of allowing downloads of pre-built binaries
 (@pxref{Substitutes}).
 
+@item --rounds=@var{n}
+Build each derivation @var{n} times in a row, and raise an error if
+consecutive build results are not bit-for-bit identical.
+
+This is a useful way to detect non-deterministic builds processes.
+Non-deterministic build processes are a problem because they make it
+practically impossible for users to @emph{verify} whether third-party
+binaries are genuine.  @xref{Invoking guix challenge}, for more.
+
+Note that, currently, the differing build results are not kept around,
+so you will have to manually investigate in case of an error---e.g., by
+stashing one of the build results with @code{guix archive --export},
+then rebuilding, and finally comparing the two results.
+
 @item --no-build-hook
 Do not attempt to offload builds @i{via} the daemon's ``build hook''
 (@pxref{Daemon Offload Setup}).  That is, always build things locally

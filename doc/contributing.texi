@@ -279,15 +279,31 @@ not affected by the change; @code{guix refresh --list-dependent
 @var{package}} will help you do that (@pxref{Invoking guix refresh}).
 
 @item
+@cindex determinism, of build processes
+@cindex reproducible builds, checking
 Check whether the package's build process is deterministic.  This
 typically means checking whether an independent build of the package
 yields the exact same result that you obtained, bit for bit.
 
-A simple way to do that is with @command{guix challenge}
-(@pxref{Invoking guix challenge}).  You may run it once the package has
-been committed and built by @code{hydra.gnu.org} to check whether it
-obtains the same result as you did.  Better yet: Find another machine
-that can build it and run @command{guix publish}.
+A simple way to do that is by building the same package several times in
+a row on your machine (@pxref{Invoking guix build}):
+
+@example
+guix build --rounds=2 my-package
+@end example
+
+This is enough to catch a class of common non-determinism issues, such
+as timestamps or randomly-generated output in the build result.
+
+Another option is to use @command{guix challenge} (@pxref{Invoking guix
+challenge}).  You may run it once the package has been committed and
+built by @code{hydra.gnu.org} to check whether it obtains the same
+result as you did.  Better yet: Find another machine that can build it
+and run @command{guix publish}.  Since the remote build machine is
+likely different from yours, this can catch non-determinism issues
+related to the hardware---e.g., use of different instruction set
+extensions---or to the operating system kernel---e.g., reliance on
+@code{uname} or @file{/proc} files.
 
 @end enumerate
 
