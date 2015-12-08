@@ -38,6 +38,12 @@
   :group 'guix-info
   :group 'guix-faces)
 
+(defface guix-info-heading
+  '((((type tty pc) (class color)) :weight bold)
+    (t :height 1.6 :weight bold :inherit variable-pitch))
+  "Face for headings."
+  :group 'guix-info-faces)
+
 (defface guix-info-param-title
   '((t :inherit font-lock-type-face))
   "Face used for titles of parameters."
@@ -416,8 +422,7 @@ See `insert-text-button' for the meaning of PROPERTIES."
   :required (id installed non-unique))
 
 (defface guix-package-info-heading
-  '((((type tty pc) (class color)) :weight bold)
-    (t :height 1.6 :weight bold :inherit variable-pitch))
+  '((t :inherit guix-info-heading))
   "Face for package name and version headings."
   :group 'guix-package-info-faces)
 
