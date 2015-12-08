@@ -16,6 +16,7 @@
 ;;; Copyright © 2015 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2015 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6616,3 +6617,34 @@ of the SSL peer.")
     (arguments `(#:python ,python-2))
     (propagated-inputs
      `(("python2-pyopenssl" ,python2-pyopenssl)))))
+
+(define-public python-contextlib2
+  (package
+    (name "python-contextlib2")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "contextlib2" version))
+       (sha256
+        (base32
+         "0cmp131dlh0d0zvw0aza1zd13glvngzk8lb4avks0hm7yxwdr9am"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (zero?
+                      (system*
+                       "python" "test_contextlib2.py", "-v")))))))
+    (home-page "http://contextlib2.readthedocs.org/")
+    (synopsis "Tools for decorators and context managers")
+    (description "This module is primarily a backport of the Python
+3.2 contextlib to earlier Python versions.  Like contextlib, it
+provides utilities for common tasks involving decorators and context
+managers.  It also contains additional features that are not part of
+the standard library.")
+    (license psfl)))
+
+(define-public python2-contextlib2
+  (package-with-python2 python-contextlib2))
