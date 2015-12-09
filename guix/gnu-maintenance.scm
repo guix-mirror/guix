@@ -328,8 +328,8 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
 under DIRECTORY, or #f.  Use FTP-OPEN and FTP-CLOSE to open (resp. close) FTP
 connections; this can be useful to reuse connections.
 
-KEEP-FILE? is a predicate to decide whether to consider a given file (source
-tarball) as a valid candidate based on its name.
+KEEP-FILE? is a predicate to decide whether to enter a directory and to
+consider a given file (source tarball) as a valid candidate based on its name.
 
 FILE->SIGNATURE must be a procedure; it is passed a source file URL and must
 return the corresponding signature URL, or #f it signatures are unavailable."
@@ -376,7 +376,7 @@ return the corresponding signature URL, or #f it signatures are unavailable."
                                   (("w32" 'directory . _)
                                    #f)
                                   (((? contains-digit? dir) 'directory . _)
-                                   dir)
+                                   (and (keep-file? dir) dir))
                                   (_ #f))
                                 entries))
 
@@ -477,17 +477,18 @@ elpa.gnu.org, and all the GNOME packages."
     (char-set-complement (char-set #\.)))
 
   (define (even-minor-version? version)
-    (match (string-tokenize (version-major+minor version)
-                            %not-dot)
-      (((= string->number major) (= string->number minor))
-       (even? minor))
+    (match (string-tokenize version %not-dot)
+      (((= string->number major) (= string->number minor) . rest)
+       (and minor (even? minor)))
       (_
        #t)))                                      ;cross fingers
 
-  (define (even-numbered-tarball? file)
-    (let-values (((name version) (gnu-package-name->name+version file)))
-      (and version
-           (even-minor-version? version))))
+  (define (even-numbered? file)
+    ;; Return true if FILE somehow denotes an even-numbered file name.  The
+    ;; trick here is that we want this to match both directories such as
+    ;; "3.18.6" and actual file names such as "gtk+-3.18.6.tar.bz2".
+    (let-values (((name version) (package-name->name+version file)))
+      (even-minor-version? (or version name))))
 
   (false-if-ftp-error
    (latest-ftp-release package
@@ -501,7 +502,7 @@ elpa.gnu.org, and all the GNOME packages."
                        ;; <https://www.gnome.org/gnome-3/source/> explains
                        ;; that odd minor version numbers represent development
                        ;; releases, which we are usually not interested in.
-                       #:keep-file? even-numbered-tarball?
+                       #:keep-file? even-numbered?
 
                        ;; ftp.gnome.org provides no signatures, only
                        ;; checksums.
