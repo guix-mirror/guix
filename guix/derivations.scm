@@ -972,13 +972,16 @@ recursively."
 ;;; Store compatibility layer.
 ;;;
 
-(define (build-derivations store derivations)
-  "Build DERIVATIONS, a list of <derivation> objects or .drv file names."
+(define* (build-derivations store derivations
+                            #:optional (mode (build-mode normal)))
+  "Build DERIVATIONS, a list of <derivation> objects or .drv file names, using
+the specified MODE."
   (build-things store (map (match-lambda
                             ((? string? file) file)
                             ((and drv ($ <derivation>))
                              (derivation-file-name drv)))
-                           derivations)))
+                           derivations)
+                mode))
 
 
 ;;;

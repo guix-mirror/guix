@@ -1638,7 +1638,10 @@ a diverse set of independent package builds, we can strengthen the
 integrity of our systems.  The @command{guix challenge} command aims to
 help users assess substitute servers, and to assist developers in
 finding out about non-deterministic package builds (@pxref{Invoking guix
-challenge}).
+challenge}).  Similarly, the @option{--check} option of @command{guix
+build} allows users to check whether previously-installed substitutes
+are genuine by rebuilding them locally (@pxref{build-check,
+@command{guix build --check}}).
 
 In the future, we want Guix to have support to publish and retrieve
 binaries to/from other users, in a peer-to-peer fashion.  If you would
@@ -3785,6 +3788,19 @@ guix build guile --with-source=../guile-2.0.9.219-e1bb7.tar.xz
 $ git clone git://git.sv.gnu.org/guix.git
 $ guix build guix --with-source=./guix
 @end example
+
+@anchor{build-check}
+@item --check
+@cindex determinism, checking
+@cindex reproducibility, checking
+Rebuild @var{package-or-derivation}, which are already available in the
+store, and raise an error if the build results are not bit-for-bit
+identical.
+
+This mechanism allows you to check whether previously-installed
+substitutes are genuine (@pxref{Substitutes}), or whether a package's
+build result is deterministic.  @xref{Invoking guix challenge}, for more
+background information and tools.
 
 @item --no-grafts
 Do not ``graft'' packages.  In practice, this means that package updates

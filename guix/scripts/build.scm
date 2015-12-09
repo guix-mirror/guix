@@ -285,6 +285,7 @@ options handled by 'set-build-options-from-command-line', and listed in
 (define %default-options
   ;; Alist of default option values.
   `((system . ,(%current-system))
+    (build-mode . ,(build-mode normal))
     (graft? . #t)
     (substitutes? . #t)
     (build-hook? . #t)
@@ -316,6 +317,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
       --no-grafts        do not graft packages"))
   (display (_ "
   -d, --derivations      return the derivation paths of the given packages"))
+  (display (_ "
+      --check            rebuild items to check for non-determinism issues"))
   (display (_ "
   -r, --root=FILE        make FILE a symlink to the result, and register it
                          as a garbage collector root"))
@@ -356,6 +359,12 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                       (leave (_ "invalid argument: '~a' option argument: ~a, ~
 must be one of 'package', 'all', or 'transitive'~%")
                              name arg)))))
+        (option '("check") #f #f
+                (lambda (opt name arg result . rest)
+                  (apply values
+                         (alist-cons 'build-mode (build-mode check)
+                                     result)
+                         rest)))
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
@@ -540,6 +549,7 @@ needed."
       (let* ((opts  (parse-command-line args %options
                                         (list %default-options)))
              (store (open-connection))
+             (mode  (assoc-ref opts 'build-mode))
              (drv   (options->derivations store opts))
              (urls  (map (cut string-append <> "/log")
                          (if (assoc-ref opts 'substitutes?)
@@ -562,7 +572,8 @@ needed."
         (unless (assoc-ref opts 'log-file?)
           (show-what-to-build store drv
                               #:use-substitutes? (assoc-ref opts 'substitutes?)
-                              #:dry-run? (assoc-ref opts 'dry-run?)))
+                              #:dry-run? (assoc-ref opts 'dry-run?)
+                              #:mode mode))
 
         (cond ((assoc-ref opts 'log-file?)
                (for-each (cut show-build-log store <> urls)
@@ -575,7 +586,7 @@ needed."
                          (map (compose list derivation-file-name) drv)
                          roots))
               ((not (assoc-ref opts 'dry-run?))
-               (and (build-derivations store drv)
+               (and (build-derivations store drv mode)
                     (for-each show-derivation-outputs drv)
                     (for-each (cut register-root store <> <>)
                               (map (lambda (drv)
