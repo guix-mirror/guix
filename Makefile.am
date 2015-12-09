@@ -299,6 +299,7 @@ EXTRA_DIST =						\
   HACKING						\
   ROADMAP						\
   TODO							\
+  CODE-OF-CONDUCT					\
   .dir-locals.el					\
   build-aux/build-self.scm				\
   build-aux/hydra/gnu-system.scm			\
