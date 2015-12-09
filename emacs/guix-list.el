@@ -97,6 +97,10 @@ This alist is filled by `guix-list-define-interface' macro.")
   "Return alist of additional marks for ENTRY-TYPE."
   (guix-list-value entry-type 'marks))
 
+(defun guix-list-single-entry? (entry-type)
+  "Return non-nil, if a single entry of ENTRY-TYPE should be listed."
+  (guix-list-value entry-type 'list-single))
+
 (defun guix-list-describe-warning-count (entry-type)
   "Return the maximum number of ENTRY-TYPE entries to describe."
   (guix-list-value entry-type 'describe-count))
@@ -422,6 +426,9 @@ Optional keywords:
   - `:describe-function' - default value of the generated
     `guix-ENTRY-TYPE-describe-function' variable.
 
+  - `:list-single?' - default value of the generated
+    `guix-ENTRY-TYPE-list-single' variable.
+
   - `:marks' - default value of the generated
     `guix-ENTRY-TYPE-list-marks' variable.
 
@@ -436,6 +443,7 @@ The rest keyword arguments are passed to
                                              "-describe-warning-count")))
          (format-var         (intern (concat prefix "-format")))
          (sort-key-var       (intern (concat prefix "-sort-key")))
+         (list-single-var    (intern (concat prefix "-single")))
          (marks-var          (intern (concat prefix "-marks"))))
     (guix-keyword-args-let args
         ((show-entries-val   :show-entries-function)
@@ -443,6 +451,7 @@ The rest keyword arguments are passed to
          (describe-count-val :describe-count 10)
          (format-val         :format)
          (sort-key-val       :sort-key)
+         (list-single-val    :list-single?)
          (marks-val          :marks))
       `(progn
          (defcustom ,format-var ,format-val
@@ -485,6 +494,14 @@ Alist of additional marks for 'list' buffer with '%s' entries.
 Marks from this list are used along with `guix-list-default-marks'."
                     entry-type-str))
 
+         (defcustom ,list-single-var ,list-single-val
+           ,(format "\
+If non-nil, list '%s' entry even if it is the only matching result.
+If nil, show a single '%s' entry in the 'info' buffer."
+                    entry-type-str entry-type-str)
+           :type 'boolean
+           :group ',group)
+
          (defcustom ,describe-count-var ,describe-count-val
            ,(format "\
 The maximum number of '%s' entries to describe without a warning.
@@ -504,6 +521,7 @@ See also `guix-list-describe'."
             (describe-count . ,describe-count-var)
             (format         . ,format-var)
             (sort-key       . ,sort-key-var)
+            (list-single    . ,list-single-var)
             (marks          . ,marks-var))
           'guix-list-data ',entry-type)
 

@@ -57,12 +57,6 @@ package data)."
                  (const :tag "Display outputs" output))
   :group 'guix-package)
 
-(defcustom guix-package-list-single nil
-  "If non-nil, list a package even if it is the only matching result.
-If nil, show a single package in the info buffer."
-  :type 'boolean
-  :group 'guix)
-
 (defun guix-package-get-display (profile search-type &rest search-values)
   "Search for packages/outputs and show results.
 
