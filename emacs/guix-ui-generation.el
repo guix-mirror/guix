@@ -47,10 +47,10 @@ If PROFILE is nil, use `guix-current-profile'.
 
 See `guix-ui-get-entries' for the meaning of SEARCH-TYPE and
 SEARCH-VALUES."
-  (let ((args (cl-list* (or profile guix-current-profile)
-                        search-type search-values)))
-    (guix-buffer-get-display-entries
-     'list 'generation args 'add)))
+  (apply #'guix-list-get-display-entries
+         'generation
+         (or profile guix-current-profile)
+         search-type search-values))
 
 (defun guix-delete-generations (profile generations
                                 &optional operation-buffer)

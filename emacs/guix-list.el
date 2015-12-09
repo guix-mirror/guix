@@ -170,12 +170,6 @@ Return a vector made of values of FUN calls."
      (cons (guix-list-param-title entry-type param)
            rest-spec))))
 
-(defun guix-list-insert-entries (entries entry-type)
-  "Print ENTRY-TYPE ENTRIES in the current buffer."
-  (setq tabulated-list-entries
-        (guix-list-tabulated-entries entries entry-type))
-  (tabulated-list-print))
-
 (defun guix-list-tabulated-entries (entries entry-type)
   "Return a list of ENTRY-TYPE values for `tabulated-list-entries'."
   (mapcar (lambda (entry)
@@ -193,6 +187,28 @@ Parameters are taken from ENTRY-TYPE ENTRY."
        (if fun
            (funcall fun val entry)
          (guix-get-string val))))))
+
+
+;;; Displaying entries
+
+(defun guix-list-get-display-entries (entry-type &rest args)
+  "Search for entries and show them in a 'list' buffer preferably."
+  (let ((entries (guix-buffer-get-entries 'list entry-type args)))
+    (if (or (null entries)      ; = 0
+            (cdr entries)       ; > 1
+            (guix-list-single-entry? entry-type)
+            (null (guix-buffer-value 'info entry-type 'show-entries)))
+        (guix-buffer-display-entries entries 'list entry-type args 'add)
+      (if (equal (guix-buffer-value 'info entry-type 'get-entries)
+                 (guix-buffer-value 'list entry-type 'get-entries))
+          (guix-buffer-display-entries entries 'info entry-type args 'add)
+        (guix-buffer-get-display-entries 'info entry-type args 'add)))))
+
+(defun guix-list-insert-entries (entries entry-type)
+  "Print ENTRY-TYPE ENTRIES in the current buffer."
+  (setq tabulated-list-entries
+        (guix-list-tabulated-entries entries entry-type))
+  (tabulated-list-print))
 
 (defun guix-list-get-one-line (val &optional _)
   "Return one-line string from a multi-line string VAL.
