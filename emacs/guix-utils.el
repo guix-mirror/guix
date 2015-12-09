@@ -232,6 +232,14 @@ Return time value."
   (require 'org)
   (org-read-date nil t nil prompt))
 
+(defun guix-read-file-name (prompt &optional dir default-filename
+                                   mustmatch initial predicate)
+  "Read file name.
+This function is similar to `read-file-name' except it also
+expands the file name."
+  (expand-file-name (read-file-name prompt dir default-filename
+                                    mustmatch initial predicate)))
+
 (defcustom guix-find-file-function #'find-file
   "Function used to find a file.
 The function is called by `guix-find-file' with a file name as a
@@ -397,6 +405,77 @@ See `guix-alist-put' for details."
   (diff old new (or switches guix-diff-switches) no-async))
 
 
+;;; Completing readers definers
+
+(defmacro guix-define-reader (name read-fun completions prompt)
+  "Define NAME function to read from minibuffer.
+READ-FUN may be `completing-read', `completing-read-multiple' or
+another function with the same arguments."
+  `(defun ,name (&optional prompt initial-contents)
+     (,read-fun ,(if prompt
+                     `(or prompt ,prompt)
+                   'prompt)
+                ,completions nil nil initial-contents)))
+
+(defmacro guix-define-readers (&rest args)
+  "Define reader functions.
+
+ARGS should have a form [KEYWORD VALUE] ...  The following
+keywords are available:
+
+  - `completions-var' - variable used to get completions.
+
+  - `completions-getter' - function used to get completions.
+
+  - `single-reader', `single-prompt' - name of a function to read
+    a single value, and a prompt for it.
+
+  - `multiple-reader', `multiple-prompt' - name of a function to
+    read multiple values, and a prompt for it.
+
+  - `multiple-separator' - if specified, another
+    `<multiple-reader-name>-string' function returning a string
+    of multiple values separated the specified separator will be
+    defined."
+  (guix-keyword-args-let args
+      ((completions-var    :completions-var)
+       (completions-getter :completions-getter)
+       (single-reader      :single-reader)
+       (single-prompt      :single-prompt)
+       (multiple-reader    :multiple-reader)
+       (multiple-prompt    :multiple-prompt)
+       (multiple-separator :multiple-separator))
+    (let ((completions
+           (cond ((and completions-var completions-getter)
+                  `(or ,completions-var
+                       (setq ,completions-var
+                             (funcall ',completions-getter))))
+                 (completions-var
+                  completions-var)
+                 (completions-getter
+                  `(funcall ',completions-getter)))))
+      `(progn
+         ,(when (and completions-var
+                     (not (boundp completions-var)))
+            `(defvar ,completions-var nil))
+
+         ,(when single-reader
+            `(guix-define-reader ,single-reader completing-read
+                                 ,completions ,single-prompt))
+
+         ,(when multiple-reader
+            `(guix-define-reader ,multiple-reader completing-read-multiple
+                                 ,completions ,multiple-prompt))
+
+         ,(when (and multiple-reader multiple-separator)
+            (let ((name (intern (concat (symbol-name multiple-reader)
+                                        "-string"))))
+              `(defun ,name (&optional prompt initial-contents)
+                 (guix-concat-strings
+                  (,multiple-reader prompt initial-contents)
+                  ,multiple-separator))))))))
+
+
 ;;; Memoizing
 
 (defun guix-memoize (function)
@@ -436,7 +515,9 @@ See `defun' for the meaning of arguments."
 
 (defvar guix-utils-font-lock-keywords
   (eval-when-compile
-    `((,(rx "(" (group (or "guix-keyword-args-let"
+    `((,(rx "(" (group (or "guix-define-reader"
+                           "guix-define-readers"
+                           "guix-keyword-args-let"
                            "guix-with-indent"))
             symbol-end)
        . 1)

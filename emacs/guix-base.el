@@ -109,35 +109,6 @@ For the meaning of location, see `guix-find-location'."
                    'package-location-string id-or-name)))
 
 
-;;; Receivable lists of packages, lint checkers, etc.
-
-(guix-memoized-defun guix-graph-type-names ()
-  "Return a list of names of available graph node types."
-  (guix-eval-read (guix-make-guile-expression 'graph-type-names)))
-
-(guix-memoized-defun guix-refresh-updater-names ()
-  "Return a list of names of available refresh updater types."
-  (guix-eval-read (guix-make-guile-expression 'refresh-updater-names)))
-
-(guix-memoized-defun guix-lint-checker-names ()
-  "Return a list of names of available lint checkers."
-  (guix-eval-read (guix-make-guile-expression 'lint-checker-names)))
-
-(guix-memoized-defun guix-package-names ()
-  "Return a list of names of available packages."
-  (sort
-   ;; Work around <https://github.com/jaor/geiser/issues/64>:
-   ;; list of strings is parsed much slower than list of lists,
-   ;; so we use 'package-names-lists' instead of 'package-names'.
-
-   ;; (guix-eval-read (guix-make-guile-expression 'package-names))
-
-   (mapcar #'car
-           (guix-eval-read (guix-make-guile-expression
-                            'package-names-lists)))
-   #'string<))
-
-
 ;;; Getting and displaying info about packages and generations
 
 (defcustom guix-package-list-type 'output

@@ -26,83 +26,40 @@
 
 (require 'guix-help-vars)
 (require 'guix-utils)
-(require 'guix-base)
+(require 'guix-backend)
+(require 'guix-guile)
 
-(defun guix-read-file-name (prompt &optional dir default-filename
-                                   mustmatch initial predicate)
-  "Read file name.
-This function is similar to `read-file-name' except it also
-expands the file name."
-  (expand-file-name (read-file-name prompt dir default-filename
-                                    mustmatch initial predicate)))
+
+;;; Receivable lists of packages, lint checkers, etc.
 
-(defmacro guix-define-reader (name read-fun completions prompt)
-  "Define NAME function to read from minibuffer.
-READ-FUN may be `completing-read', `completing-read-multiple' or
-another function with the same arguments."
-  `(defun ,name (&optional prompt initial-contents)
-     (,read-fun ,(if prompt
-                     `(or prompt ,prompt)
-                   'prompt)
-                ,completions nil nil initial-contents)))
+(guix-memoized-defun guix-graph-type-names ()
+  "Return a list of names of available graph node types."
+  (guix-eval-read (guix-make-guile-expression 'graph-type-names)))
 
-(defmacro guix-define-readers (&rest args)
-  "Define reader functions.
+(guix-memoized-defun guix-refresh-updater-names ()
+  "Return a list of names of available refresh updater types."
+  (guix-eval-read (guix-make-guile-expression 'refresh-updater-names)))
 
-ARGS should have a form [KEYWORD VALUE] ...  The following
-keywords are available:
+(guix-memoized-defun guix-lint-checker-names ()
+  "Return a list of names of available lint checkers."
+  (guix-eval-read (guix-make-guile-expression 'lint-checker-names)))
 
-  - `completions-var' - variable used to get completions.
+(guix-memoized-defun guix-package-names ()
+  "Return a list of names of available packages."
+  (sort
+   ;; Work around <https://github.com/jaor/geiser/issues/64>:
+   ;; list of strings is parsed much slower than list of lists,
+   ;; so we use 'package-names-lists' instead of 'package-names'.
 
-  - `completions-getter' - function used to get completions.
+   ;; (guix-eval-read (guix-make-guile-expression 'package-names))
 
-  - `single-reader', `single-prompt' - name of a function to read
-    a single value, and a prompt for it.
+   (mapcar #'car
+           (guix-eval-read (guix-make-guile-expression
+                            'package-names-lists)))
+   #'string<))
 
-  - `multiple-reader', `multiple-prompt' - name of a function to
-    read multiple values, and a prompt for it.
-
-  - `multiple-separator' - if specified, another
-    `<multiple-reader-name>-string' function returning a string
-    of multiple values separated the specified separator will be
-    defined."
-  (guix-keyword-args-let args
-      ((completions-var    :completions-var)
-       (completions-getter :completions-getter)
-       (single-reader      :single-reader)
-       (single-prompt      :single-prompt)
-       (multiple-reader    :multiple-reader)
-       (multiple-prompt    :multiple-prompt)
-       (multiple-separator :multiple-separator))
-    (let ((completions
-           (cond ((and completions-var completions-getter)
-                  `(or ,completions-var
-                       (setq ,completions-var
-                             (funcall ',completions-getter))))
-                 (completions-var
-                  completions-var)
-                 (completions-getter
-                  `(funcall ',completions-getter)))))
-      `(progn
-         ,(when (and completions-var
-                     (not (boundp completions-var)))
-            `(defvar ,completions-var nil))
-
-         ,(when single-reader
-            `(guix-define-reader ,single-reader completing-read
-                                 ,completions ,single-prompt))
-
-         ,(when multiple-reader
-            `(guix-define-reader ,multiple-reader completing-read-multiple
-                                 ,completions ,multiple-prompt))
-
-         ,(when (and multiple-reader multiple-separator)
-            (let ((name (intern (concat (symbol-name multiple-reader)
-                                        "-string"))))
-              `(defun ,name (&optional prompt initial-contents)
-                 (guix-concat-strings
-                  (,multiple-reader prompt initial-contents)
-                  ,multiple-separator))))))))
+
+;;; Readers
 
 (guix-define-readers
  :completions-var guix-help-system-types
