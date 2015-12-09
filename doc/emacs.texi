@@ -160,7 +160,7 @@ Display package(s) with the specified name.
 @item M-x guix-search-by-regexp
 Search for packages by a specified regexp.  By default ``name'',
 ``synopsis'' and ``description'' of the packages will be searched.  This
-can be changed by modifying @code{guix-search-params} variable.
+can be changed by modifying @code{guix-package-search-params} variable.
 
 @end table
 

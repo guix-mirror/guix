@@ -25,50 +25,29 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'guix-profiles)
 (require 'guix-backend)
-(require 'guix-entry)
 (require 'guix-guile)
+(require 'guix-read)
 (require 'guix-utils)
 (require 'guix-ui)
 
-
-;;; Parameters of the entries
+(defgroup guix nil
+  "Settings for Guix package manager and friends."
+  :prefix "guix-"
+  :group 'external)
+
+(defgroup guix-faces nil
+  "Guix faces."
+  :group 'guix
+  :group 'faces)
 
 (defun guix-package-name-specification (name version &optional output)
   "Return Guix package specification by its NAME, VERSION and OUTPUT."
   (concat name "-" version
           (when output (concat ":" output))))
 
-(defun guix-package-entry->name-specification (entry &optional output)
-  "Return name specification of the package ENTRY and OUTPUT."
-  (guix-package-name-specification
-   (guix-entry-value entry 'name)
-   (guix-entry-value entry 'version)
-   (or output (guix-entry-value entry 'output))))
-
-(defun guix-package-entries->name-specifications (entries)
-  "Return name specifications by the package or output ENTRIES."
-  (cl-remove-duplicates (mapcar #'guix-package-entry->name-specification
-                                entries)
-                        :test #'string=))
-
-(defun guix-package-installed-outputs (entry)
-  "Return list of installed outputs for the package ENTRY."
-  (mapcar (lambda (installed-entry)
-            (guix-entry-value installed-entry 'output))
-          (guix-entry-value entry 'installed)))
-
-(defun guix-package-id-and-output-by-output-id (oid)
-  "Return list (PACKAGE-ID OUTPUT) by output id OID."
-  (cl-multiple-value-bind (pid-str output)
-      (split-string oid ":")
-    (let ((pid (string-to-number pid-str)))
-      (list (if (= 0 pid) pid-str pid)
-            output))))
-
 
-;;; Location of the packages
+;;; Location of packages, profiles and manifests
 
 (defvar guix-directory nil
   "Default Guix directory.
@@ -108,56 +87,6 @@ For the meaning of location, see `guix-find-location'."
   (guix-eval-read (guix-make-guile-expression
                    'package-location-string id-or-name)))
 
-
-;;; Getting and displaying info about packages and generations
-
-(defcustom guix-package-list-type 'output
-  "Define how to display packages in a list buffer.
-May be a symbol `package' or `output' (if `output', display each
-output on a separate line; if `package', display each package on
-a separate line)."
-  :type '(choice (const :tag "List of packages" package)
-                 (const :tag "List of outputs" output))
-  :group 'guix)
-
-(defcustom guix-package-info-type 'package
-  "Define how to display packages in an info buffer.
-May be a symbol `package' or `output' (if `output', display each
-output separately; if `package', display outputs inside a package
-information)."
-  :type '(choice (const :tag "Display packages" package)
-                 (const :tag "Display outputs" output))
-  :group 'guix)
-
-
-;;; Generations
-
-(defcustom guix-generation-packages-buffer-name-function
-  #'guix-generation-packages-buffer-name-default
-  "Function used to define name of a buffer with generation packages.
-This function is called with 2 arguments: PROFILE (string) and
-GENERATION (number)."
-  :type '(choice (function-item guix-generation-packages-buffer-name-default)
-                 (function-item guix-generation-packages-buffer-name-long)
-                 (function :tag "Other function"))
-  :group 'guix)
-
-(defcustom guix-generation-packages-update-buffer t
-  "If non-nil, always update list of packages during comparing generations.
-If nil, generation packages are received only once.  So when you
-compare generation 1 and generation 2, the packages for both
-generations will be received.  Then if you compare generation 1
-and generation 3, only the packages for generation 3 will be
-received.  Thus if you use comparing of different generations a
-lot, you may set this variable to nil to improve the
-performance."
-  :type 'boolean
-  :group 'guix)
-
-(defvar guix-output-name-width 30
-  "Width of an output name \"column\".
-This variable is used in auxiliary buffers for comparing generations.")
-
 (defun guix-generation-file (profile generation)
   "Return the file name of a PROFILE's GENERATION."
   (format "%s-%s-link" profile generation))
@@ -171,75 +100,14 @@ this generation."
                         (guix-generation-file profile generation)
                       profile)))
 
-(defun guix-generation-packages (profile generation)
-  "Return a list of sorted packages installed in PROFILE's GENERATION.
-Each element of the list is a list of the package specification and its path."
-  (let ((names+paths (guix-eval-read
-                      (guix-make-guile-expression
-                       'generation-package-specifications+paths
-                       profile generation))))
-    (sort names+paths
-          (lambda (a b)
-            (string< (car a) (car b))))))
-
-(defun guix-generation-packages-buffer-name-default (profile generation)
-  "Return name of a buffer for displaying GENERATION's package outputs.
-Use base name of PROFILE path."
-  (let ((profile-name (file-name-base (directory-file-name profile))))
-    (format "*Guix %s: generation %s*"
-            profile-name generation)))
-
-(defun guix-generation-packages-buffer-name-long (profile generation)
-  "Return name of a buffer for displaying GENERATION's package outputs.
-Use the full PROFILE path."
-  (format "*Guix generation %s (%s)*"
-          generation profile))
-
-(defun guix-generation-packages-buffer-name (profile generation)
-  "Return name of a buffer for displaying GENERATION's package outputs."
-  (let ((fun (if (functionp guix-generation-packages-buffer-name-function)
-                 guix-generation-packages-buffer-name-function
-               #'guix-generation-packages-buffer-name-default)))
-    (funcall fun profile generation)))
-
-(defun guix-generation-insert-package (name path)
-  "Insert package output NAME and PATH at point."
-  (insert name)
-  (indent-to guix-output-name-width 2)
-  (insert path "\n"))
-
-(defun guix-generation-insert-packages (buffer profile generation)
-  "Insert package outputs installed in PROFILE's GENERATION in BUFFER."
-  (with-current-buffer buffer
-    (setq buffer-read-only nil
-          indent-tabs-mode nil)
-    (erase-buffer)
-    (mapc (lambda (name+path)
-            (guix-generation-insert-package
-             (car name+path) (cadr name+path)))
-          (guix-generation-packages profile generation))))
-
-(defun guix-generation-packages-buffer (profile generation)
-  "Return buffer with package outputs installed in PROFILE's GENERATION.
-Create the buffer if needed."
-  (let ((buf-name (guix-generation-packages-buffer-name
-                   profile generation)))
-    (or (and (null guix-generation-packages-update-buffer)
-             (get-buffer buf-name))
-        (let ((buf (get-buffer-create buf-name)))
-          (guix-generation-insert-packages buf profile generation)
-          buf))))
-
-(defun guix-profile-generation-manifest-file (generation)
-  "Return the file name of a GENERATION's manifest.
-GENERATION is a generation number of the current profile."
-  (guix-manifest-file (guix-ui-current-profile) generation))
-
-(defun guix-profile-generation-packages-buffer (generation)
-  "Insert GENERATION's package outputs in a buffer and return it.
-GENERATION is a generation number of the current profile."
-  (guix-generation-packages-buffer (guix-ui-current-profile)
-                                   generation))
+;;;###autoload
+(defun guix-edit (id-or-name)
+  "Edit (go to location of) package with ID-OR-NAME."
+  (interactive (list (guix-read-package-name)))
+  (let ((loc (guix-package-location id-or-name)))
+    (if loc
+        (guix-find-location loc)
+      (message "Couldn't find package location."))))
 
 
 ;;; Actions on packages and generations
@@ -313,101 +181,6 @@ VARIABLE is a name of an option variable.")
       guix-operation-option-true-string
     guix-operation-option-false-string))
 
-(defun guix-process-package-actions (profile actions
-                                     &optional operation-buffer)
-  "Process package ACTIONS on PROFILE.
-Each action is a list of the form:
-
-  (ACTION-TYPE PACKAGE-SPEC ...)
-
-ACTION-TYPE is one of the following symbols: `install',
-`upgrade', `remove'/`delete'.
-PACKAGE-SPEC should have the following form: (ID [OUTPUT] ...)."
-  (let (install upgrade remove)
-    (mapc (lambda (action)
-            (let ((action-type (car action))
-                  (specs (cdr action)))
-              (cl-case action-type
-                (install (setq install (append install specs)))
-                (upgrade (setq upgrade (append upgrade specs)))
-                ((remove delete) (setq remove (append remove specs))))))
-          actions)
-    (when (guix-continue-package-operation-p
-           profile
-           :install install :upgrade upgrade :remove remove)
-      (guix-eval-in-repl
-       (guix-make-guile-expression
-        'process-package-actions profile
-        :install install :upgrade upgrade :remove remove
-        :use-substitutes? (or guix-use-substitutes 'f)
-        :dry-run? (or guix-dry-run 'f))
-       (and (not guix-dry-run) operation-buffer)))))
-
-(cl-defun guix-continue-package-operation-p (profile
-                                             &key install upgrade remove)
-  "Return non-nil if a package operation should be continued.
-Ask a user if needed (see `guix-operation-confirm').
-INSTALL, UPGRADE, REMOVE are 'package action specifications'.
-See `guix-process-package-actions' for details."
-  (or (null guix-operation-confirm)
-      (let* ((entries (guix-ui-get-entries
-                       profile 'package 'id
-                       (append (mapcar #'car install)
-                               (mapcar #'car upgrade)
-                               (mapcar #'car remove))
-                       '(id name version location)))
-             (install-strings (guix-get-package-strings install entries))
-             (upgrade-strings (guix-get-package-strings upgrade entries))
-             (remove-strings  (guix-get-package-strings remove entries)))
-        (if (or install-strings upgrade-strings remove-strings)
-            (let ((buf (get-buffer-create guix-temp-buffer-name)))
-              (with-current-buffer buf
-                (setq-local cursor-type nil)
-                (setq buffer-read-only nil)
-                (erase-buffer)
-                (insert "Profile: " profile "\n\n")
-                (guix-insert-package-strings install-strings "install")
-                (guix-insert-package-strings upgrade-strings "upgrade")
-                (guix-insert-package-strings remove-strings "remove")
-                (let ((win (temp-buffer-window-show
-                            buf
-                            '((display-buffer-reuse-window
-                               display-buffer-at-bottom)
-                              (window-height . fit-window-to-buffer)))))
-                  (prog1 (guix-operation-prompt)
-                    (quit-window nil win)))))
-          (message "Nothing to be done.  If the REPL was restarted, information is not up-to-date.")
-          nil))))
-
-(defun guix-get-package-strings (specs entries)
-  "Return short package descriptions for performing package actions.
-See `guix-process-package-actions' for the meaning of SPECS.
-ENTRIES is a list of package entries to get info about packages."
-  (delq nil
-        (mapcar
-         (lambda (spec)
-           (let* ((id (car spec))
-                  (outputs (cdr spec))
-                  (entry (guix-entry-by-id id entries)))
-             (when entry
-               (let ((location (guix-entry-value entry 'location)))
-                 (concat (guix-package-entry->name-specification entry)
-                         (when outputs
-                           (concat ":"
-                                   (guix-concat-strings outputs ",")))
-                         (when location
-                           (concat "\t(" location ")")))))))
-         specs)))
-
-(defun guix-insert-package-strings (strings action)
-  "Insert information STRINGS at point for performing package ACTION."
-  (when strings
-    (insert "Package(s) to " (propertize action 'face 'bold) ":\n")
-    (mapc (lambda (str)
-            (insert "  " str "\n"))
-          strings)
-    (insert "\n")))
-
 (defun guix-operation-prompt (&optional prompt)
   "Prompt a user for continuing the current operation.
 Return non-nil, if the operation should be continued; nil otherwise.
@@ -461,34 +234,6 @@ Ask a user with PROMPT for continuing an operation."
                  guix-operation-options
                  guix-operation-option-separator)))
   (force-mode-line-update))
-
-(defun guix-delete-generations (profile generations
-                                &optional operation-buffer)
-  "Delete GENERATIONS from PROFILE.
-Each element from GENERATIONS is a generation number."
-  (when (or (not guix-operation-confirm)
-            (y-or-n-p
-             (let ((count (length generations)))
-               (if (> count 1)
-                   (format "Delete %d generations from profile '%s'? "
-                           count profile)
-                 (format "Delete generation %d from profile '%s'? "
-                         (car generations) profile)))))
-    (guix-eval-in-repl
-     (guix-make-guile-expression
-      'delete-generations* profile generations)
-     operation-buffer)))
-
-(defun guix-switch-to-generation (profile generation
-                                  &optional operation-buffer)
-  "Switch PROFILE to GENERATION."
-  (when (or (not guix-operation-confirm)
-            (y-or-n-p (format "Switch profile '%s' to generation %d? "
-                              profile generation)))
-    (guix-eval-in-repl
-     (guix-make-guile-expression
-      'switch-to-generation* profile generation)
-     operation-buffer)))
 
 (defun guix-package-source-path (package-id)
   "Return a store file path to a source of a package PACKAGE-ID."

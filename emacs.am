@@ -42,8 +42,9 @@ ELFILES =					\
   emacs/guix-profiles.el			\
   emacs/guix-read.el				\
   emacs/guix-ui.el				\
-  emacs/guix-utils.el				\
-  emacs/guix.el
+  emacs/guix-ui-package.el			\
+  emacs/guix-ui-generation.el			\
+  emacs/guix-utils.el
 
 if HAVE_EMACS
 
