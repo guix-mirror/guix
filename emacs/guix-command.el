@@ -175,7 +175,8 @@ to be modified."
 (defvar guix-command-improve-common-build-argument
   '(("--no-substitutes"  :char ?s)
     ("--no-build-hook"   :char ?h)
-    ("--max-silent-time" :char ?x)))
+    ("--max-silent-time" :char ?x)
+    ("--rounds"          :char ?R :fun read-number)))
 
 (defun guix-command-improve-common-build-argument (argument)
   (guix-command-modify-argument-from-alist
