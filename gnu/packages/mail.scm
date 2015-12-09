@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -208,7 +209,7 @@ operating systems.")
 (define-public gmime
   (package
     (name "gmime")
-    (version "2.6.19")
+    (version "2.6.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gmime/"
@@ -216,7 +217,7 @@ operating systems.")
                                   "/gmime-" version ".tar.xz"))
               (sha256
                (base32
-                "0jm1fgbjgh496rsc0il2y46qd4bqq2ln9168p4zzh68mk4ml1yxg"))))
+                "0rfzbgsh8ira5p76kdghygl5i3fvmmx4wbw5rp7f8ajc4vxp18g0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -226,20 +227,21 @@ operating systems.")
               ("zlib" ,zlib)))
     (arguments
      `(#:phases
-       (alist-cons-after
-        'unpack 'patch-paths-in-tests
-        (lambda _
-          ;; The test programs run several programs using 'system' with
-          ;; hard-coded paths.  Here we patch them all.  We also change "gpg"
-          ;; to "gpg2".  We use ISO-8859-1 here because test-iconv.c contains
-          ;; raw byte sequences in several different encodings.
-          (with-fluids ((%default-port-encoding #f))
-            (substitute* (find-files "tests" "\\.c$")
-              (("(system *\\(\")(/[^ ]*)" all pre prog-path)
-               (let* ((base (basename prog-path))
-                      (prog (which (if (string=? base "gpg") "gpg2" base))))
-                 (string-append pre (or prog (error "not found: " base))))))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'patch-paths-in-tests
+          (lambda _
+            ;; The test programs run several programs using 'system' with
+            ;; hard-coded paths.  Here we patch them all.  We also change "gpg"
+            ;; to "gpg2".  We use ISO-8859-1 here because test-iconv.c contains
+            ;; raw byte sequences in several different encodings.
+            (with-fluids ((%default-port-encoding #f))
+              (substitute* (find-files "tests" "\\.c$")
+                (("(system *\\(\")(/[^ ]*)" all pre prog-path)
+                 (let* ((base (basename prog-path))
+                        (prog (which (if (string=? base "gpg") "gpg2" base))))
+                   (string-append pre
+                                  (or prog (error "not found: " base))))))))))))
     (home-page "http://spruce.sourceforge.net/gmime/")
     (synopsis "MIME message parser and creator library")
     (description
