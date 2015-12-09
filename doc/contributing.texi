@@ -9,12 +9,11 @@ particularly welcome help on packaging (@pxref{Packaging Guidelines}).
 
 @cindex code of conduct, of contributors
 @cindex contributor covenant
-In the interest of welcoming everyone who thinks this is a great project
-to contribute to---which it is, indeed!---contributors express their
-commitment to providing a warm, friendly, and harassment-free experience
-by agreeing to our ``Contributor Covenant'', adapted from
-@url{http://contributor-covenant.org/}, and which can be found in the
-@file{CODE-OF-CONDUCT} file in the source tree.
+We want to provide a warm, friendly, and harassment-free environment, so
+that anyone can contribute to the best of their abilities.  To this end
+our project uses a ``Contributor Covenant'', which was adapted from
+@url{http://contributor-covenant.org/}.  You can find a local version in
+the @file{CODE-OF-CONDUCT} file in the source tree.
 
 @menu
 * Building from Git::           The latest and greatest.
