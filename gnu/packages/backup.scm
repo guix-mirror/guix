@@ -145,7 +145,8 @@ backups (called chunks) to allow easy burning to CD/DVD.")
        (patches
         (list (search-patch "libarchive-mtree-filename-length-fix.patch")
               (search-patch "libarchive-fix-lzo-test-case.patch")
-              (search-patch "libarchive-CVE-2013-0211.patch")))))
+              (search-patch "libarchive-CVE-2013-0211.patch")
+              (search-patch "libarchive-bsdtar-test.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
