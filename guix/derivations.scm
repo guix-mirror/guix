@@ -239,7 +239,8 @@ result is the set of prerequisites of DRV not already in valid."
             (derivation-output-path (assoc-ref outputs sub-drv)))
           sub-drvs))))
 
-(define* (substitution-oracle store drv)
+(define* (substitution-oracle store drv
+                              #:key (mode (build-mode normal)))
   "Return a one-argument procedure that, when passed a store file name,
 returns #t if it's substitutable and #f otherwise.  The returned procedure
 knows about all substitutes for all the derivations listed in DRV, *except*
@@ -271,9 +272,12 @@ substituter many times."
                           (let ((self (match (derivation->output-paths drv)
                                         (((names . paths) ...)
                                          paths))))
-                            (if (every valid? self)
-                                result
-                                (cons* self (dependencies drv) result))))
+                            (cond ((eqv? mode (build-mode check))
+                                   (cons (dependencies drv) result))
+                                  ((every valid? self)
+                                   result)
+                                  (else
+                                   (cons* self (dependencies drv) result)))))
                         '()
                         drv))))
          (subst (list->set (substitutable-paths store paths))))
@@ -281,11 +285,13 @@ substituter many times."
 
 (define* (derivation-prerequisites-to-build store drv
                                             #:key
+                                            (mode (build-mode normal))
                                             (outputs
                                              (derivation-output-names drv))
                                             (substitutable?
                                              (substitution-oracle store
-                                                                  (list drv))))
+                                                                  (list drv)
+                                                                  #:mode mode)))
   "Return two values: the list of derivation-inputs required to build the
 OUTPUTS of DRV and not already available in STORE, recursively, and the list
 of required store paths that can be substituted.  SUBSTITUTABLE? must be a
@@ -301,8 +307,11 @@ one-argument procedure similar to that returned by 'substitution-oracle'."
     ;; least one is missing, then everything must be rebuilt.
     (compose (cut every substitutable? <>) derivation-input-output-paths))
 
-  (define (derivation-built? drv sub-drvs)
-    (every built? (derivation-output-paths drv sub-drvs)))
+  (define (derivation-built? drv* sub-drvs)
+    ;; In 'check' mode, assume that DRV is not built.
+    (and (not (and (eqv? mode (build-mode check))
+                   (eq? drv* drv)))
+         (every built? (derivation-output-paths drv* sub-drvs))))
 
   (define (derivation-substitutable? drv sub-drvs)
     (and (substitutable-derivation? drv)

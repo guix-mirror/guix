@@ -531,17 +531,18 @@ error."
                (derivation-outputs derivation))))
 
 (define* (show-what-to-build store drv
-                             #:key dry-run? (use-substitutes? #t))
+                             #:key dry-run? (use-substitutes? #t)
+                             (mode (build-mode normal)))
   "Show what will or would (depending on DRY-RUN?) be built in realizing the
-derivations listed in DRV.  Return #t if there's something to build, #f
-otherwise.  When USE-SUBSTITUTES?, check and report what is prerequisites are
-available for download."
+derivations listed in DRV using MODE, a 'build-mode' value.  Return #t if
+there's something to build, #f otherwise.  When USE-SUBSTITUTES?, check and
+report what is prerequisites are available for download."
   (define substitutable?
     ;; Call 'substitutation-oracle' upfront so we don't end up launching the
     ;; substituter many times.  This makes a big difference, especially when
     ;; DRV is a long list as is the case with 'guix environment'.
     (if use-substitutes?
-        (substitution-oracle store drv)
+        (substitution-oracle store drv #:mode mode)
         (const #f)))
 
   (define (built-or-substitutable? drv)
@@ -555,6 +556,7 @@ available for download."
                           (let-values (((b d)
                                         (derivation-prerequisites-to-build
                                          store drv
+                                         #:mode mode
                                          #:substitutable? substitutable?)))
                             (values (append b build)
                                     (append d download))))
