@@ -297,7 +297,7 @@ GNOME Desktop.")
 (define-public libgnome-keyring
   (package
     (name "libgnome-keyring")
-    (version "3.6.0")
+    (version "3.12.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -305,7 +305,7 @@ GNOME Desktop.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0c4qrjpmv1hqga3xv6wsq2z10x2n78qgw7q3k3s01y1pggxkgjkd"))))
+               "10vpjhgbjm7z2djy04qakd02qlzpd02xnbfjhk2aqwjzn3xpihf4"))))
     (build-system gnu-build-system)
     (inputs
      `(("libgcrypt" ,libgcrypt)
