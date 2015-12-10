@@ -2791,6 +2791,43 @@ BioPython in a convenient way.  Instead of having a big mess of scripts, there
 is one that takes arguments.")
     (license license:gpl3)))
 
+(define-public snap-aligner
+  (package
+    (name "snap-aligner")
+    (version "1.0beta.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/amplab/snap/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vnsjwv007k1fl1q7d681kbwn6bc66cgw6h16hym6gvyy71qv2ly"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'check (lambda _ (zero? (system* "./unit_tests"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (mkdir-p bin)
+               (install-file "snap-aligner" bin)
+               (install-file "SNAPCommand" bin)
+               #t))))))
+    (native-inputs
+     `(("zlib" ,zlib)))
+    (home-page "http://snap.cs.berkeley.edu/")
+    (synopsis "Short read DNA sequence aligner")
+    (description
+     "SNAP is a fast and accurate aligner for short DNA reads.  It is
+optimized for modern read lengths of 100 bases or higher, and takes advantage
+of these reads to align data quickly through a hash-based indexing scheme.")
+    (license license:asl2.0)))
+
 (define-public star
   (package
     (name "star")
