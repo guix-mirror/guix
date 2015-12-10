@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 xd1le <elisp.vim@gmail.com>
+;;; Copyright © 2015 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -655,3 +656,37 @@ use it as well.")
      "The xf86-input-wacom driver is the wacom-specific X11 input driver for
 the X.Org X Server version 1.7 and later (X11R7.5 or later).")
     (license license:x11)))
+
+(define-public redshift
+  (package
+    (name "redshift")
+    (version "1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/jonls/redshift/"
+                       "releases/download/v" version
+                       "/redshift-" version ".tar.xz"))
+       (sha256
+        (base32
+         "19pfk9il5x2g2ivqix4a555psz8mj3m0cvjwnjpjvx0llh5fghjv"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("libdrm" ,libdrm)
+       ("libx11" ,libx11)
+       ("libxcb" ,libxcb)
+       ("libxxf86vm", libxxf86vm)
+       ("glib" ,glib)))                           ;for Geoclue2 support
+    (home-page "https://github.com/jonls/redshift")
+    (synopsis "Adjust the color temperature of your screen")
+    (description
+     "Redshift adjusts the color temperature according to the position of the
+sun.  A different color temperature is set during night and daytime.  During
+twilight and early morning, the color temperature transitions smoothly from
+night to daytime temperature to allow your eyes to slowly adapt.  At night the
+color temperature should be set to match the lamps in your room.")
+    (license license:gpl3+)))
