@@ -43,7 +43,6 @@
     (build-system gnu-build-system)
     (native-inputs `(("procps" ,procps)))  ;one of the tests needs pgrep
     (inputs `(("ncurses" ,ncurses)
-              ("xz" ,xz)
               ("perl" ,perl)))
 
     (native-search-paths
