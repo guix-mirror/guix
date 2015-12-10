@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2015 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -179,3 +180,24 @@ the Hannon Lab.")
      "CityHash provides hash functions for strings.  The functions mix the
 input bits thoroughly but are not suitable for cryptography.")
     (license license:expat))))
+
+(define-public libconfig
+  (package
+    (name "libconfig")
+    (version "1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.hyperrealm.com/libconfig/"
+                                  "libconfig-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xh3hzk63v4y8815lc5209m3s6ms2cpgw4h5hg462i4f1lwsl7g3"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.hyperrealm.com/libconfig/")
+    (synopsis "C/C++ configuration file library")
+    (description
+     "Libconfig is a simple library for manipulating structured configuration
+files.  This file format is more compact and more readable than XML.  And
+unlike XML, it is type-aware, so it is not necessary to do string parsing in
+application code.")
+    (license license:lgpl2.1+)))
