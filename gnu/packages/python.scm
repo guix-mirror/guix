@@ -574,23 +574,22 @@ Cassandra cluster on localhost.")
 (define-public python-pytz
   (package
     (name "python-pytz")
-    (version "2013b")
+    (version "2015.7")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://launchpad.net/pytz/main/" version
-                          "/+download/pytz-" version ".tar.bz2"))
+      (uri (pypi-uri "pytz" version))
       (sha256
        (base32
-        "19giwgfcrg0nr1gdv49qnmf2jb2ilkcfc7qyqvfpz4dp0p64ksv5"))))
+        "1spgdfp1ssya7v3kww7zp71xpj437skpqazcvqr3kr1p1brnw9lr"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; no test target
-    (home-page "https://launchpad.net/pytz")
+    (home-page "http://pythonhosted.org/pytz")
     (synopsis "Python timezone library")
     (description
      "This library allows accurate and cross platform timezone calculations
 using Python 2.4 or higher and provides access to the Olson timezone database.")
-    (license x11)))
+    (license license:expat)))
 
 (define-public python2-pytz
   (package-with-python2 python-pytz))
