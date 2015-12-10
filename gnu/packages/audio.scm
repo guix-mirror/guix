@@ -385,6 +385,50 @@ performances.  The plugins include a cellular automaton synthesizer, an
 envelope follower, distortion effects, tape effects and more.")
     (license license:gpl2+)))
 
+(define-public swh-plugins-lv2
+  (package
+    (name "swh-plugins-lv2")
+    (version "1.0.16")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/swh/"
+                                  "lv2/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0j1mih0lp4fds07knp5i32in515sh0df1qi6694pmyz2wqnm295w"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no check target
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure)
+         (add-after 'unpack 'patch-makefile-and-enter-directory
+           ;; The default install target doesn't install, but the
+           ;; "install-system" target does.
+           (lambda _
+             (substitute* "Makefile"
+               (("install:") "install: install-system"))
+             #t)))))
+    (inputs
+     `(("lv2" ,lv2)
+       ("fftwf" ,fftwf)))
+    (native-inputs
+     `(("libxslt" ,libxslt)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://plugin.org.uk")
+    (synopsis "SWH plugins in LV2 format")
+    (description
+     "Swh-plugins-lv2 is a collection of audio plugins in LV2 format.  Plugin
+classes include: dynamics (compressor, limiter), time (delay, chorus,
+flanger), ringmodulator, distortion, filters, pitchshift, oscillators,
+emulation (valve, tape), bit fiddling (decimator, pointer-cast), etc.")
+    (license license:gpl3+)))
+
 (define-public csound
   (package
     (name "csound")
