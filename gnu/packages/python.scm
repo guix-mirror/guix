@@ -6948,3 +6948,23 @@ processes across test runs.")
 files for use with Python.")
     (home-page "https://github.com/collective/icalendar")
     (license bsd-2)))
+
+(define-public python-sphinxcontrib-newsfeed
+  (package
+    (name "python-sphinxcontrib-newsfeed")
+    (version "0.1.4")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "sphinxcontrib-newsfeed" version))
+             (sha256
+              (base32
+               "1d7gam3mn8v4in4p16yn3v10vps7nnaz6ilw99j4klij39dqd37p"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-docutils" ,python-docutils)
+       ("python-sphinx" ,python-sphinx)))
+    (synopsis "News Feed extension for Sphinx")
+    (description "Sphinxcontrib-newsfeed is an extension for adding a simple
+Blog, News or Announcements section to a Sphinx website.")
+    (home-page "https://bitbucket.org/prometheus/sphinxcontrib-newsfeed")
+    (license bsd-2)))
