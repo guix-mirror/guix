@@ -6723,3 +6723,22 @@ WebSocket usage in Python programs.")
 for atomic filesystem operations.")
     (home-page "https://github.com/untitaker/python-atomicwrites")
     (license license:expat)))
+
+(define-public python-requests-toolbelt
+  (package
+    (name "python-requests-toolbelt")
+    (version "0.5.0")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "requests-toolbelt" version))
+             (sha256
+              (base32
+               "1kbms1s52dhb98vbpaprr15b0ijdbqp500lpfsyjccpd8cjkyngk"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (synopsis "Extensions to python-requests")
+    (description "This is a toolbelt of useful classes and functions to be used
+with python-requests.")
+    (home-page "https://github.com/sigmavirus24/requests-toolbelt")
+    (license asl2.0)))
