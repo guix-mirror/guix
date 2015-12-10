@@ -6761,3 +6761,22 @@ with python-requests.")
 applications.")
     (home-page "https://github.com/click-contrib/click-threading")
     (license license:expat)))
+
+(define-public python-click-log
+  (package
+    (name "python-click-log")
+    (version "0.1.1")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "click-log" version))
+             (sha256
+              (base32
+               "1z3jdwjmwax159zrnyx830xa968rfqrpkm04ad5xqyh0269ydiqb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-click" ,python-click)))
+    (synopsis "Logging for click applications")
+    (description "This package provides a Python library for logging Click
+applications.")
+    (home-page "https://github.com/click-contrib/click-log")
+    (license license:expat)))
