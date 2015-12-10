@@ -23,7 +23,7 @@
 
 (define-module (gnu packages linux)
   #:use-module ((guix licenses)
-                #:hide (zlib))
+                #:hide (zlib openssl))
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
@@ -57,6 +57,7 @@
   #:use-module (gnu packages asciidoc)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages calendar)
+  #:use-module (gnu packages tls)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -210,7 +211,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "4.2.6")
+  (let* ((version "4.3.2")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -284,11 +285,12 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "0phjk4dp0bk9s5mwawkxg3myl7fh244s833b33dc6m2y9clvzskl"))))
+               "0d87jbmplv36kxq40k44zh3sj82qp79lf8n4by7jb2wvyk06rvfg"))))
     (build-system gnu-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
+                     ("openssl" ,openssl)
                      ("module-init-tools" ,module-init-tools)
                      ("patch/freedo+gnu" ,%boot-logo-patch)
 
