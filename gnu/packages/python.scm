@@ -6928,3 +6928,23 @@ your Web app.")
 processes across test runs.")
     (home-page "https://bitbucket.org/pytest-dev/pytest-xprocess")
     (license license:expat)))
+
+(define-public python-icalendar
+  (package
+    (name "python-icalendar")
+    (version "3.9.1")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "icalendar" version))
+             (sha256
+              (base32
+               "0fhrczdj3jxy5bvswphp3vys7vwv5c9bpwg7asykqwa3z6253q6q"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dateutil-2" ,python-dateutil-2)
+       ("python-pytz" ,python-pytz)))
+    (synopsis "Python library for parsing iCalendar files")
+    (description "The icalendar package is a parser/generator of iCalendar
+files for use with Python.")
+    (home-page "https://github.com/collective/icalendar")
+    (license bsd-2)))
