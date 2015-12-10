@@ -6742,3 +6742,22 @@ for atomic filesystem operations.")
 with python-requests.")
     (home-page "https://github.com/sigmavirus24/requests-toolbelt")
     (license asl2.0)))
+
+(define-public python-click-threading
+  (package
+    (name "python-click-threading")
+    (version "0.1.2")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "click-threading" version))
+             (sha256
+              (base32
+               "0jmrv4334lfxa2ss53c06dafdwqbk1pb3ihd26izn5igw1bm8145"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-click" ,python-click)))
+    (synopsis "Utilities for multithreading in Click")
+    (description "This package provides utilities for multithreading in Click
+applications.")
+    (home-page "https://github.com/click-contrib/click-threading")
+    (license license:expat)))
