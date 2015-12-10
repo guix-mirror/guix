@@ -5894,16 +5894,9 @@ tasty.")
     (synopsis "Cryptography primitives")
     (description
      "This package is a repository of cryptographic primitives for Haskell.
-It strives to be a cryptographic kitchen sink that provides cryptography for
-everyone.
-
-Supported symmetric ciphers: AES, DES, 3DES, Blowfish, Camellia, RC4, Salsa,
-ChaCha; supported hash functions: SHA1, SHA2, SHA3, MD2, MD4, MD5, Keccak,
-Skein, Ripemd, Tiger, Whirlpool, Blake2; MAC: HMAC, Poly1305; assymmetric
-crypto: DSA, RSA, DH, ECDH, ECDSA, ECC, Curve25519, Ed25519; key derivation
-functions: PBKDF2, Scrypt; cryptographic random number generation: system
-entropy, deterministic random generator; data-related features:
-@dfn{anti-forensic information splitter} (AFIS).")
+It supports a wide range of symmetric ciphers, cryptographic hash functions,
+public key algorithms, key derivation numbers, cryptographic random number
+generators, and more.")
     (license bsd-3)))
 
 (define-public ghc-memory
