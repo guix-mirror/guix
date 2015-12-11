@@ -1515,7 +1515,7 @@ Hints specification (EWMH).")
 (define-public gnumeric
   (package
     (name "gnumeric")
-    (version "1.12.17")
+    (version "1.12.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1523,31 +1523,34 @@ Hints specification (EWMH).")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "18bvc3phghr4p5440fp8hm6gvp53d3mqs9cyc637zpmk0b6bcp7c"))))
+                "0lcm8k0jb8rd5y4ii803f21nv8rx6gc3mmdlrj5h0rkkn9qm57f5"))))
     (build-system gnu-build-system)
     (arguments
      `(;; The gnumeric developers don't worry much about failing tests.
        ;; See https://bugzilla.gnome.org/show_bug.cgi?id=732387
        #:tests? #f
        #:phases
-       (alist-cons-before
-        'configure 'pre-conf
-        (lambda* (#:key outputs #:allow-other-keys)
-          ;; Make install tries to write into the directory of goffice
-          ;; I am informed that this only affects the possibility to embed a
-          ;; spreadsheet inside an Abiword document.   So presumably when we
-          ;; package Abiword we'll have to refer it to this directory.
-          (substitute* "configure"
-            (("^GOFFICE_PLUGINS_DIR=.*")
-             (string-append "GOFFICE_PLUGINS_DIR="
-                            (assoc-ref outputs "out") "/goffice/plugins"))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'pre-conf
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make install tries to write into the directory of goffice
+             ;; I am informed that this only affects the possibility to embed a
+             ;; spreadsheet inside an Abiword document.   So presumably when we
+             ;; package Abiword we'll have to refer it to this directory.
+             (substitute* "configure"
+               (("^GOFFICE_PLUGINS_DIR=.*")
+                (string-append "GOFFICE_PLUGINS_DIR="
+                               (assoc-ref outputs "out")
+                               "/goffice/plugins"))))))))
     (inputs
      `(("glib" ,glib)
        ("gtk+" ,gtk+)
        ("goffice" ,goffice)
        ("libgsf" ,libgsf)
+       ("librsvg" ,librsvg)
        ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
        ("zlib" ,zlib)))
     (native-inputs
      `(("intltool" ,intltool)
