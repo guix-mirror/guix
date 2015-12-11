@@ -921,9 +921,9 @@ database.")
 times.")
     (license license:gpl2)))
 
-(define-public r-data.table
+(define-public r-data-table
   (package
-    (name "r-data.table")
+    (name "r-data-table")
     (version "1.9.6")
     (source (origin
               (method url-fetch)
@@ -937,10 +937,11 @@ times.")
     (home-page "https://github.com/Rdatatable/data.table/wiki")
     (synopsis "Enhanced version of data.frame R object")
     (description
-     "The R data.table package provides functions for fast aggregation of
-large data (e.g. 100GB in RAM), fast ordered joins, fast add/modify/delete of
-columns by group, column listing and fast file reading.")
-    (license license:gpl2+)))
+     "The R package @code{data.table} is an extension of @code{data.frame}
+providing functions for fast aggregation of large data (e.g. 100GB in RAM),
+fast ordered joins, fast add/modify/delete of columns by group, column listing
+and fast file reading.")
+    (license license:gpl3+)))
 
 (define-public python-patsy
   (package
