@@ -841,4 +841,32 @@ capabilities.")
     (home-page "http://dthompson.us/pages/software/sly.html")
     (license gpl3+)))
 
+(define-public g-wrap
+  (package
+    (name "g-wrap")
+    (version "1.9.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/g-wrap/g-wrap-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0ak0bha37dfpj9kmyw1r8fj8nva639aw5xr66wr5gd3l1rqf5xhg"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("guile" ,guile-2.0)
+       ("guile-lib" ,guile-lib)))
+    (inputs
+     `(("libffi" ,libffi)))
+    (synopsis "Generate C bindings for Guile")
+    (description "G-Wrap is a tool and Guile library for generating function
+wrappers for inter-language calls.  It currently only supports generating Guile
+wrappers for C functions.  Given a definition of the types and prototypes for
+a given C interface, G-Wrap will automatically generate the C code that
+provides access to that interface and its types from the Scheme level.")
+    (home-page "http://www.nongnu.org/g-wrap/index.html")
+    (license lgpl2.1+)))
+
 ;;; guile.scm ends here
