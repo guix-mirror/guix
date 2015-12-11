@@ -3236,7 +3236,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
 (define-public gvfs
   (package
     (name "gvfs")
-    (version "1.24.1")
+    (version "1.26.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3244,7 +3244,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1ygiknnd24qgzds8wif3jns981mqr65lgjlxs5pw65cl3376g0yk"))))
+                "064dsjrdjcbi38zl38jhh4r9jcpiygg7x4c8s6s2rb757l7nwnv9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f)) ; XXX: requiring `pidof'
@@ -3259,6 +3259,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
        ("docbook-xsl" ,docbook-xsl)
        ("dbus" ,dbus)
        ("fuse" ,fuse)
+       ("gcr" ,gcr)
        ("glib" ,glib)
        ("libarchive" ,libarchive)
        ("libbluray" ,libbluray)
