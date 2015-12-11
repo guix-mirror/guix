@@ -34,6 +34,7 @@
 (require 'guix-guile)
 (require 'guix-entry)
 (require 'guix-utils)
+(require 'guix-hydra-build)
 
 (guix-ui-define-entry-type package)
 (guix-ui-define-entry-type output)
@@ -546,6 +547,7 @@ This function is used to hide a \"Download\" button if needed."
            (delete  . ?D)))
 
 (let ((map guix-package-list-mode-map))
+  (define-key map (kbd "B")   'guix-package-list-latest-builds)
   (define-key map (kbd "e")   'guix-package-list-edit)
   (define-key map (kbd "x")   'guix-package-list-execute)
   (define-key map (kbd "i")   'guix-package-list-mark-install)
@@ -720,6 +722,18 @@ The specification is suitable for `guix-process-package-actions'."
   (interactive)
   (guix-edit (guix-list-current-id)))
 
+(defun guix-package-list-latest-builds (number &rest args)
+  "Display latest NUMBER of Hydra builds of the current package.
+Interactively, prompt for NUMBER.  With prefix argument, prompt
+for all ARGS."
+  (interactive
+   (let ((entry (guix-list-current-entry)))
+     (guix-hydra-build-latest-prompt-args
+      :job (guix-package-name-specification
+            (guix-entry-value entry 'name)
+            (guix-entry-value entry 'version)))))
+  (apply #'guix-hydra-latest-builds number args))
+
 
 ;;; Output 'info'
 
@@ -784,6 +798,7 @@ The specification is suitable for `guix-process-package-actions'."
            (delete  . ?D)))
 
 (let ((map guix-output-list-mode-map))
+  (define-key map (kbd "B")   'guix-package-list-latest-builds)
   (define-key map (kbd "e")   'guix-output-list-edit)
   (define-key map (kbd "x")   'guix-output-list-execute)
   (define-key map (kbd "i")   'guix-output-list-mark-install)

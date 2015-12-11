@@ -288,6 +288,8 @@ similar to @command{guix edit} command (@pxref{Invoking guix edit}), but
 for opening a package recipe in the current Emacs instance.
 @item x
 Execute actions on the marked packages.
+@item B
+Display latest builds of the current package (@pxref{Emacs Hydra}).
 @end table
 
 A ``generation-list'' buffer additionally provides the following
