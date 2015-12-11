@@ -2113,16 +2113,13 @@ files.")
 (define-public python-certifi
   (package
     (name "python-certifi")
-    (version "14.05.14")
+    (version "2015.11.20.1")
     (source (origin
               (method url-fetch)
-              (uri
-               (string-append
-                "https://pypi.python.org/packages/source/c/certifi/certifi-"
-                version ".tar.gz"))
+              (uri (pypi-uri "certifi" version))
               (sha256
                (base32
-                "0s8vxzfz6s4m6fvxc7z25k9j35w0rh6jkw3wwcd1az1mssncn6qy"))))
+                "05lgwf9rz1kn465azy2bpb3zmpnsn9gkypbhnjlclchv98ssgc1h"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
