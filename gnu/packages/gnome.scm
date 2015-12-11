@@ -1458,14 +1458,14 @@ Hints specification (EWMH).")
 (define-public goffice
   (package
     (name "goffice")
-    (version "0.10.14")
+    (version "0.10.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version)  "/"
                                   name "-" version ".tar.xz"))
               (sha256
-               (base32 "0kj0iwng6w4axm7yv2zy7myn5dhw5ilrlq2pzrjlm9i852ikqy60"))))
+               (base32 "0nmghi26dpjcw7knkviq031crhm0zjy4k650pv1jj3hb1fmhx9yd"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+)
