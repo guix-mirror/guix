@@ -582,18 +582,14 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                 ((_ rest ...)
                  (loop rest)))))
            ((#:make-flags flags)
-            ;; Since $LIBRARY_PATH and $CPATH are not honored, add the
-            ;; relevant flags.
-            `(cons (string-append "CPPFLAGS=-I"
-                                  (assoc-ref %build-inputs "libstdc++")
-                                  "/include")
-                   (map (lambda (flag)
-                          (if (string-prefix? "LDFLAGS=" flag)
-                              (string-append flag " -L"
-                                             (assoc-ref %build-inputs "libstdc++")
-                                             "/lib")
-                              flag))
-                        ,flags)))
+            ;; Since $LIBRARY_PATH is not honored, add the relevant flags.
+            `(map (lambda (flag)
+                    (if (string-prefix? "LDFLAGS=" flag)
+                        (string-append flag " -L"
+                                       (assoc-ref %build-inputs "libstdc++")
+                                       "/lib")
+                        flag))
+                  ,flags))
            ((#:phases phases)
             `(alist-delete 'symlink-libgcc_eh ,phases)))))
 
