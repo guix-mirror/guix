@@ -32,6 +32,9 @@ ELFILES =					\
   emacs/guix-guile.el				\
   emacs/guix-help-vars.el			\
   emacs/guix-history.el				\
+  emacs/guix-hydra.el				\
+  emacs/guix-hydra-build.el			\
+  emacs/guix-hydra-jobset.el			\
   emacs/guix-info.el				\
   emacs/guix-init.el				\
   emacs/guix-list.el				\

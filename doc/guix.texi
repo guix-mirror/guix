@@ -116,6 +116,7 @@ Emacs Interface
 * Build Log Mode: Emacs Build Log.	Highlighting Guix build logs.
 * Completions: Emacs Completions.	Completing @command{guix} shell command.
 * Development: Emacs Development.	Tools for Guix developers.
+* Hydra: Emacs Hydra.			Interface for Guix build farm.
 
 Programming Interface
 
@@ -1585,7 +1586,9 @@ also result from derivation builds, can be available as substitutes.
 
 The @code{hydra.gnu.org} server is a front-end to a build farm that
 builds packages from the GNU distribution continuously for some
-architectures, and makes them available as substitutes.  This is the
+architectures, and makes them available as substitutes (@pxref{Emacs
+Hydra}, for information on how to query the continuous integration
+server).  This is the
 default source of substitutes; it can be overridden by passing the
 @option{--substitute-urls} option either to @command{guix-daemon}
 (@pxref{daemon-substitute-urls,, @code{guix-daemon --substitute-urls}})

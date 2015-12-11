@@ -14,6 +14,7 @@ Guix convenient and fun.
 * Build Log Mode: Emacs Build Log.	Highlighting Guix build logs.
 * Completions: Emacs Completions.	Completing @command{guix} shell command.
 * Development: Emacs Development.	Tools for Guix developers.
+* Hydra: Emacs Hydra.			Interface for Guix build farm.
 @end menu
 
 
@@ -741,3 +742,41 @@ evaluation will be finished in the REPL.
 Alternatively, to avoid this limitation, you may just run another Geiser
 REPL, and while something is being evaluated in the previous REPL, you
 can continue editing a scheme file with the help of the current one.
+
+
+@node Emacs Hydra
+@section Hydra
+
+The continuous integration server at @code{hydra.gnu.org} builds all
+the distribution packages on the supported architectures and serves
+them as substitutes (@pxref{Substitutes}).  Continuous integration is
+currently orchestrated by @uref{https://nixos.org/hydra/, Hydra}.
+
+This section describes an Emacs interface to query Hydra to know the
+build status of specific packages, discover recent and ongoing builds,
+view build logs, and so on.  This interface is mostly the same as the
+``list''/``info'' interface for displaying packages and generations
+(@pxref{Emacs Package Management}).
+
+The following commands are available:
+
+@table @kbd
+
+@item M-x guix-hydra-latest-builds
+Display latest failed or successful builds (you will be prompted for a
+number of builds).  With @kbd{C-u}, you will also be prompted for other
+parameters (project, jobset, job and system).
+
+@item M-x guix-hydra-queued-builds
+Display scheduled or currently running builds (you will be prompted for
+a number of builds).
+
+@item M-x guix-hydra-jobsets
+Display available jobsets (you will be prompted for a project).
+
+@end table
+
+In a list of builds you can press @kbd{L} key to display a build log of
+the current build.  Also both a list of builds and a list of jobsets
+provide @kbd{B} key to display latest builds of the current job or
+jobset (don't forget about @kbd{C-u}).

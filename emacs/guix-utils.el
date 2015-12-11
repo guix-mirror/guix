@@ -174,6 +174,15 @@ add both to the end and to the beginning."
           (t
            (concat separator str separator)))))
 
+(defun guix-hexify (value)
+  "Convert VALUE to string and hexify it."
+  (url-hexify-string (guix-get-string value)))
+
+(defun guix-number->bool (number)
+  "Convert NUMBER to boolean value.
+Return nil, if NUMBER is 0; return t otherwise."
+  (not (zerop number)))
+
 (defun guix-shell-quote-argument (argument)
   "Quote shell command ARGUMENT.
 This function is similar to `shell-quote-argument', but less strict."
@@ -281,6 +290,15 @@ single argument."
      (goto-char (point-min))
      (while (re-search-forward ,regexp nil t)
        ,@body)))
+
+(defmacro guix-while-null (&rest body)
+  "Evaluate BODY until its result becomes non-nil."
+  (declare (indent 0) (debug t))
+  (let ((result-var (make-symbol "result")))
+    `(let (,result-var)
+       (while (null ,result-var)
+         (setq ,result-var ,@body))
+       ,result-var)))
 
 (defun guix-modify (object modifiers)
   "Apply MODIFIERS to OBJECT.
@@ -527,6 +545,8 @@ See `defun' for the meaning of arguments."
     `((,(rx "(" (group (or "guix-define-reader"
                            "guix-define-readers"
                            "guix-keyword-args-let"
+                           "guix-while-null"
+                           "guix-while-search"
                            "guix-with-indent"))
             symbol-end)
        . 1)
