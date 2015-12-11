@@ -204,7 +204,8 @@
                             "--disable-libssp"
                             "--disable-libquadmath"
                             "--disable-decimal-float")
-                      (remove (cut string-match "--enable-languages.*" <>)
+                      (remove (cut string-match
+                                "--(with-system-zlib|enable-languages.*)" <>)
                               ,flags)))
             ((#:phases phases)
              `(alist-cons-after
@@ -548,6 +549,25 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
      (propagated-inputs '())
      (synopsis "GNU C++ standard library (intermediate)"))))
 
+(define zlib-final
+  ;; Zlib used by GCC-FINAL.
+  (package-with-bootstrap-guile
+   (package
+     (inherit zlib)
+     (arguments
+      `(#:guile ,%bootstrap-guile
+        #:implicit-inputs? #f
+        #:allowed-references ("out" ,glibc-final)
+        ,@(package-arguments zlib)))
+     (inputs %boot2-inputs))))
+
+(define ld-wrapper-boot3
+  ;; A linker wrapper that uses the bootstrap Guile.
+  (make-ld-wrapper "ld-wrapper-boot3"
+                   #:binutils binutils-final
+                   #:guile %bootstrap-guile
+                   #:bash (car (assoc-ref %boot2-inputs "bash"))))
+
 (define gcc-final
   ;; The final GCC.
   (package (inherit gcc-boot0)
@@ -562,7 +582,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
      `(#:guile ,%bootstrap-guile
        #:implicit-inputs? #f
 
-       #:allowed-references ("out" "lib"
+       #:allowed-references ("out" "lib" ,zlib-final
                              ,glibc-final ,static-bash-for-glibc)
 
        ;; Things like libasan.so and libstdc++.so NEED ld.so for some
@@ -583,13 +603,15 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                  (loop rest)))))
            ((#:make-flags flags)
             ;; Since $LIBRARY_PATH is not honored, add the relevant flags.
-            `(map (lambda (flag)
-                    (if (string-prefix? "LDFLAGS=" flag)
-                        (string-append flag " -L"
-                                       (assoc-ref %build-inputs "libstdc++")
-                                       "/lib")
-                        flag))
-                  ,flags))
+            `(let ((zlib (assoc-ref %build-inputs "zlib")))
+               (map (lambda (flag)
+                      (if (string-prefix? "LDFLAGS=" flag)
+                          (string-append flag " -L"
+                                         (assoc-ref %build-inputs "libstdc++")
+                                         "/lib -L" zlib "/lib -Wl,-rpath="
+                                         zlib "/lib")
+                          flag))
+                    ,flags)))
            ((#:phases phases)
             `(alist-delete 'symlink-libgcc_eh ,phases)))))
 
@@ -604,16 +626,11 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     (inputs `(("gmp-source" ,(bootstrap-origin (package-source gmp)))
               ("mpfr-source" ,(package-source mpfr))
               ("mpc-source" ,(package-source mpc))
+              ("ld-wrapper" ,ld-wrapper-boot3)
               ("binutils" ,binutils-final)
               ("libstdc++" ,libstdc++)
+              ("zlib" ,zlib-final)
               ,@%boot2-inputs))))
-
-(define ld-wrapper-boot3
-  ;; A linker wrapper that uses the bootstrap Guile.
-  (make-ld-wrapper "ld-wrapper-boot3"
-                   #:binutils binutils-final
-                   #:guile %bootstrap-guile
-                   #:bash (car (assoc-ref %boot2-inputs "bash"))))
 
 (define %boot3-inputs
   ;; 4th stage inputs.

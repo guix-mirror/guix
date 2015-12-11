@@ -97,6 +97,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                    '("--enable-plugin"
                      "--enable-languages=c,c++"
                      "--disable-multilib"
+                     "--with-system-zlib"
 
                      ;; No pre-compiled libstdc++ headers, to save space.
                      "--disable-libstdcxx-pch"
