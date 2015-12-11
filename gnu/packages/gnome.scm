@@ -1551,6 +1551,8 @@ Hints specification (EWMH).")
        ("librsvg" ,librsvg)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
+       ("python" ,python-2)
+       ("python2-pygobject", python2-pygobject-2)
        ("zlib" ,zlib)))
     (native-inputs
      `(("intltool" ,intltool)
