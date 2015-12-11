@@ -80,6 +80,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/cyrus-sasl.scm			\
   gnu/packages/databases.scm			\
   gnu/packages/datamash.scm			\
+  gnu/packages/datastructures.scm		\
   gnu/packages/dc.scm				\
   gnu/packages/debug.scm			\
   gnu/packages/dejagnu.scm			\
