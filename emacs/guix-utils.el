@@ -214,6 +214,15 @@ If NO-MESSAGE? is non-nil, do not display a message about it."
 See also `guix-copy-as-kill'."
   (guix-copy-as-kill (guix-command-string args) no-message?))
 
+(defun guix-completing-read (prompt table &optional predicate
+                             require-match initial-input
+                             hist def inherit-input-method)
+  "Same as `completing-read' but return nil instead of an empty string."
+  (let ((res (completing-read prompt table predicate
+                              require-match initial-input
+                              hist def inherit-input-method)))
+    (unless (string= "" res) res)))
+
 (defun guix-completing-read-multiple (prompt table &optional predicate
                                       require-match initial-input
                                       hist def inherit-input-method)
@@ -460,7 +469,7 @@ keywords are available:
             `(defvar ,completions-var nil))
 
          ,(when single-reader
-            `(guix-define-reader ,single-reader completing-read
+            `(guix-define-reader ,single-reader guix-completing-read
                                  ,completions ,single-prompt))
 
          ,(when multiple-reader
