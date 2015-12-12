@@ -34,14 +34,14 @@
 (define-public owncloud-client
   (package
     (name "owncloud-client")
-    (version "2.0.2")
+    (version "2.1.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.owncloud.com/desktop/stable/"
                            "owncloudclient-" version ".tar.xz"))
        (sha256
-        (base32 "0a42nqx0gn10n7ikhxwif0lqddmb6gbvr45bqbbl30an9gixq598"))))
+        (base32 "0gyhll4yfxcpyc5m73zar5f33qgnmpwiggw2adxdiqy55hc3ymbk"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -50,9 +50,9 @@
           (lambda _
             (substitute* '("src/libsync/CMakeLists.txt"
                            "csync/src/CMakeLists.txt")
-              ;; We store the libs in out/lib and not /usr/lib/appname, so we 
+              ;; We store the libs in out/lib and not /usr/lib/appname, so we
               ;; need the executable to point to the libraries in /lib and not
-              ;; in /lib/appname. 
+              ;; in /lib/appname.
               (("\\/\\$\\{APPLICATION_EXECUTABLE\\}") ""))
             (substitute* '("src/cmd/CMakeLists.txt"
                            "src/crashreporter/CMakeLists.txt"
