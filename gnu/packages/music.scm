@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +40,7 @@
   #:use-module (gnu packages code)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages doxygen)
   #:use-module (gnu packages flex)
@@ -46,6 +48,7 @@
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -1078,3 +1081,38 @@ computer's keyboard.")
 JACK for audio and ALSA sequencer for MIDI as multimedia infrastructures and
 follows a traditional multi-track tape recorder control paradigm.")
     (license license:gpl2+)))
+
+(define-public pianobar
+  (package
+    (name "pianobar")
+    (version "2015.11.22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/PromyLOPh/"
+                                  name "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "022df19bhxqvkhy0qy21xahba5s1fm17b13y0p9p9dnf2yl44wfv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags (list "CC=gcc" "CFLAGS=-std=c99"
+                          (string-append "PREFIX=" %output))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (inputs
+     `(("ao" ,ao)
+       ("curl" ,curl)
+       ("libgcrypt" ,libgcrypt)
+       ("json-c" ,json-c)
+       ("ffmpeg" ,ffmpeg)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://6xq.net/projects/pianobar/")
+    (synopsis "Console-based pandora.com player")
+    (description "pianobar is a console-based music player for the
+personalized online radio pandora.com.  It has configurable keys for playing
+and managing stations, can be controlled remotely via fifo, and can run
+event-based scripts for scrobbling, notifications, etc.")
+    (license license:expat)))
