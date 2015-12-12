@@ -39,6 +39,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)               ;for libgudev
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages linux)
@@ -199,7 +200,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.58")
+    (version "2.4.65")
     (source
       (origin
         (method url-fetch)
@@ -209,7 +210,8 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1pb5lfb3kh36p9axq620daclq68rqb3mhzxpz0pb18y9p7kglmdi"))))
+            "1i4n7mz49l0j4kr0dg9n1j3hlc786ncqgj0v5fci1mz7pp40m5ki"))
+        (patches (list (search-patch "libdrm-symbol-check.patch")))))
     (build-system gnu-build-system)
     (inputs
       `(("libpciaccess" ,libpciaccess)
@@ -605,6 +607,7 @@ Escape key when Left Control is pressed and released on its own.")
     (inputs
      `(("glib" ,glib)
        ("gtk+" ,gtk+)
+       ("libgudev" ,libgudev)
        ("eudev" ,eudev)
        ("libxml2" ,libxml2)))
     (home-page "http://linuxwacom.sourceforge.net/")

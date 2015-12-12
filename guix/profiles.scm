@@ -84,13 +84,17 @@
             packages->manifest
             %default-profile-hooks
             profile-derivation
+
             generation-number
             generation-numbers
             profile-generations
             relative-generation
             previous-generation-number
             generation-time
-            generation-file-name))
+            generation-file-name
+            switch-to-generation
+            roll-back
+            delete-generation))
 
 ;;; Commentary:
 ;;;
@@ -654,7 +658,8 @@ creates the GTK+ 'icon-theme.cache' file for each theme."
 
             ;; Union all the icons.
             (mkdir-p (string-append #$output "/share"))
-            (union-build destdir icondirs)
+            (union-build destdir icondirs
+                         #:log-port (%make-void-port "w"))
 
             ;; Update the 'icon-theme.cache' file for each icon theme.
             (for-each
@@ -664,7 +669,7 @@ creates the GTK+ 'icon-theme.cache' file for each theme."
                  ;; "abiword_48.png".  Ignore these.
                  (when (file-is-directory? dir)
                    (ensure-writable-directory dir)
-                   (system* update-icon-cache "-t" dir))))
+                   (system* update-icon-cache "-t" dir "--quiet"))))
              (scandir destdir (negate (cut member <> '("." ".."))))))))
 
     ;; Don't run the hook when there's nothing to do.
@@ -843,5 +848,79 @@ case when generations have been deleted (there are \"holes\")."
   "Return the creation time of a generation in the UTC format."
   (make-time time-utc 0
              (stat:ctime (stat (generation-file-name profile number)))))
+
+(define (link-to-empty-profile store generation)
+  "Link GENERATION, a string, to the empty profile.  An error is raised if
+that fails."
+  (let* ((drv  (run-with-store store
+                 (profile-derivation (manifest '()))))
+         (prof (derivation->output-path drv "out")))
+    (build-derivations store (list drv))
+    (switch-symlinks generation prof)))
+
+(define (switch-to-generation profile number)
+  "Atomically switch PROFILE to the generation NUMBER.  Return the number of
+the generation that was current before switching."
+  (let ((current    (generation-number profile))
+        (generation (generation-file-name profile number)))
+    (cond ((not (file-exists? profile))
+           (raise (condition (&profile-not-found-error
+                              (profile profile)))))
+          ((not (file-exists? generation))
+           (raise (condition (&missing-generation-error
+                              (profile profile)
+                              (generation number)))))
+          (else
+           (switch-symlinks profile generation)
+           current))))
+
+(define (switch-to-previous-generation profile)
+  "Atomically switch PROFILE to the previous generation.  Return the former
+generation number and the current one."
+  (let ((previous (previous-generation-number profile)))
+    (values (switch-to-generation profile previous)
+            previous)))
+
+(define (roll-back store profile)
+  "Roll back to the previous generation of PROFILE.  Return the number of the
+generation that was current before switching and the new generation number."
+  (let* ((number              (generation-number profile))
+         (previous-number     (previous-generation-number profile number))
+         (previous-generation (generation-file-name profile previous-number)))
+    (cond ((not (file-exists? profile))           ;invalid profile
+           (raise (condition (&profile-not-found-error
+                              (profile profile)))))
+          ((zero? number)                         ;empty profile
+           (values number number))
+          ((or (zero? previous-number)            ;going to emptiness
+               (not (file-exists? previous-generation)))
+           (link-to-empty-profile store previous-generation)
+           (switch-to-previous-generation profile))
+          (else                                   ;anything else
+           (switch-to-previous-generation profile)))))
+
+(define (delete-generation store profile number)
+  "Delete generation with NUMBER from PROFILE.  Return the file name of the
+generation that has been deleted, or #f if nothing was done (for instance
+because the NUMBER is zero.)"
+  (define (delete-and-return)
+    (let ((generation (generation-file-name profile number)))
+      (delete-file generation)
+      generation))
+
+  (let* ((current-number      (generation-number profile))
+         (previous-number     (previous-generation-number profile number))
+         (previous-generation (generation-file-name profile previous-number)))
+    (cond ((zero? number) #f)                     ;do not delete generation 0
+          ((and (= number current-number)
+                (not (file-exists? previous-generation)))
+           (link-to-empty-profile store previous-generation)
+           (switch-to-previous-generation profile)
+           (delete-and-return))
+          ((= number current-number)
+           (roll-back store profile)
+           (delete-and-return))
+          (else
+           (delete-and-return)))))
 
 ;;; profiles.scm ends here

@@ -68,7 +68,7 @@ provided as well as the framework to add new color models and data types.")
     (version "0.2.0")
     (source (origin
               (method url-fetch)
-              (uri (list (string-append "http://download.gimp.org/pub/gegl/" 
+              (uri (list (string-append "http://download.gimp.org/pub/gegl/"
                                         (string-take version 3)
                                         "/" name "-" version ".tar.bz2")))
               (sha256

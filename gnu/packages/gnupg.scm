@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
 
 (define-module (gnu packages gnupg)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages adns)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
@@ -31,6 +33,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages tls)
@@ -110,7 +113,7 @@ generation.")
 (define-public libassuan
   (package
     (name "libassuan")
-    (version "2.2.1")
+    (version "2.4.2")
     (source
      (origin
       (method url-fetch)
@@ -118,7 +121,7 @@ generation.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1pp2kl5gc2vja41g3wk03h1hgh7gxy6pj354fb5n4lrlg6xqb4ll"))))
+        "086bbcdnvs48qq5g4iac7dpk76j0q3jrp16mchdvyx0b720xq1mv"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error) ("pth" ,pth)))
@@ -193,19 +196,20 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.1.9")
+    (version "2.1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "1dpp555glln6fldk72ad7lkrn8h3cr2bg714z5kfn2qrawx67dqw"))))
+                "1ybcsazjm21i2ys1wh49cz4azmqz7ghx5rb6hm4gm93i2zc5igck"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("bzip2" ,bzip2)
+     `(("adns" ,adns)
+       ("bzip2" ,bzip2)
        ("curl" ,curl)
        ("gnutls" ,gnutls)
        ("libassuan" ,libassuan)
@@ -237,17 +241,18 @@ libskba (working with X.509 certificates and CMS data).")
 
 (define-public gnupg-2.0
   (package (inherit gnupg)
-    (version "2.0.28")
+    (version "2.0.29")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0k2k399fnhfhhr4dvm8d6vs4ihq6gg06191lzfwikzaqmgj2w2ff"))))
+                "1jaakn0mi6pi2b3g3imxj3qzxw2zg0ifxs30baq2b157dcw6pvb8"))))
     (native-inputs '())
     (inputs
-     `(("bzip2" ,bzip2)
+     `(("adns" ,adns)
+       ("bzip2" ,bzip2)
        ("curl" ,curl)
        ("libassuan" ,libassuan)
        ("libgcrypt" ,libgcrypt)
@@ -294,7 +299,7 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.5.5")
+    (version "1.6.0")
     (source
      (origin
       (method url-fetch)
@@ -302,7 +307,7 @@ libskba (working with X.509 certificates and CMS data).")
                           ".tar.bz2"))
       (sha256
        (base32
-        "01y28fkq52wwf4p470wscaxd2vgzl615irmafx3mj3380x8ksg8b"))))
+        "17892sclz3yg45wbyqqrzzpq3l0icbnfl28f101b3062g8cy97dh"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
@@ -371,14 +376,15 @@ and signature functionality from Python programs.")
 (define-public pius
   (package
    (name "pius")
-   (version "2.1.1")
+   (version "2.2.1")
    (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://sourceforge/pgpius/pius/"
-                                version "/pius-"
-                                version ".tar.bz2"))
-            (sha256 (base32
-                     "0ry3kc3x1qjmvb581ja2z2v32r1rl1g8rhfj7iqvs8nzq4ca512i"))))
+            (uri (string-append
+                  "https://github.com/jaymzh/pius/releases/download/v"
+                  version "/pius-" version ".tar.bz2"))
+            (sha256
+             (base32
+              "003dwpamq0c7w8q9zpgi4h03rs8rwjm0czkn9s60m91p6aql5f42"))))
    (build-system python-build-system)
    (inputs `(("perl" ,perl)                ;for 'pius-party-worksheet'
              ("gpg" ,gnupg-2.0)))          ;2.1 fails to talk to gpg-agent 2.0
@@ -393,7 +399,7 @@ and signature functionality from Python programs.")
            (let* ((gpg (string-append (assoc-ref inputs "gpg")
                                       "/bin/gpg2")))
              (substitute* "libpius/constants.py"
-               (("/usr/bin/gpg") gpg))))))))
+               (("/usr/bin/gpg2") gpg))))))))
    (synopsis "Programs to simplify GnuPG key signing")
    (description
     "Pius (PGP Individual UID Signer) helps attendees of PGP keysigning
@@ -510,18 +516,19 @@ including tools for signing keys, keyring analysis, and party preparation.
 (define-public pinentry
   (package
     (name "pinentry")
-    (version "0.9.5")
+    (version "0.9.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/pinentry/pinentry-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1338hj1h3sh34897120y30x12b64wyj3xjzzk5asm2hdzhxgsmva"))))
+                "0rhyw1vk28kgasjp22myf7m2q8kycw82d65pr9kgh93z17lj849a"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
        ("libassuan" ,libassuan)
+       ("libsecret" ,libsecret "out")
        ("gtk+" ,gtk+-2)
        ("glib" ,glib)))
     (native-inputs

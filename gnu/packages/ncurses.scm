@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -110,3 +111,27 @@ implement user interfaces for command-line applications.  The accompanying
 ncursesw library provides wide character support.")
      (license x11)
      (home-page "http://www.gnu.org/software/ncurses/"))))
+
+(define-public dialog
+  (package
+    (name "dialog")
+    (version "1.2-20150920")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://invisible-mirror.net/archives/dialog/dialog-"
+                    version ".tgz"))
+              (sha256
+               (base32
+                "01ccd585c241nkj02n0zdbx8jqhylgcfpcmmshynh0c7fv2ixrn4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; no test suite
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (synopsis "Curses widgets")
+    (description "Dialog is a script-interpreter which provides a set of
+curses widgets, such as dialog boxes.")
+    (home-page "http://invisible-island.net/dialog/dialog.html")
+    ;; Includes the gpl3 file "config.sub" from Automake.
+    (license (list lgpl2.1 gpl3))))

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -110,7 +111,7 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "7.0p1")
+   (version "7.1p1")
    (source (origin
             (method url-fetch)
             (uri (let ((tail (string-append name "-" version ".tar.gz")))
@@ -121,7 +122,7 @@ a server that supports the SSH-2 protocol.")
                          (string-append "http://ftp2.fr.openbsd.org/pub/OpenBSD/OpenSSH/portable/"
                                         tail))))
             (sha256 (base32
-                     "1rc52jyc5v5b8j9kvasrnz9vnj9b0i7fw4nqac8wix0r794k4ngx"))))
+                     "0a44mnr8bvw41zg83xh4sb55d8nds29j95gxvxk5qg863lnns2pw"))))
    (build-system gnu-build-system)
    (inputs `(("groff" ,groff)
              ("openssl" ,openssl)
@@ -129,26 +130,35 @@ a server that supports the SSH-2 protocol.")
    (arguments
     `(#:test-target "tests"
       #:phases
-       (alist-cons-after
-        'configure 'reset-/var/empty
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-            (substitute* "Makefile"
-              (("PRIVSEP_PATH=/var/empty")
-               (string-append "PRIVSEP_PATH=" out "/var/empty")))))
-       (alist-cons-before
-        'check 'patch-tests
-        (lambda _
-          ;; remove 't-exec' regress target which requires user 'sshd'
-          (substitute* "regress/Makefile"
-            (("^(REGRESS_TARGETS=.*) t-exec(.*)" all pre post)
-             (string-append pre post))))
-       (alist-replace
-        'install
-        (lambda* (#:key (make-flags '()) #:allow-other-keys)
-          ;; install without host keys and system configuration files
-          (zero? (apply system* "make" "install-nosysconf" make-flags)))
-       %standard-phases)))))
+      (modify-phases %standard-phases
+        (add-after 'configure 'reset-/var/empty
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((out (assoc-ref outputs "out")))
+             (substitute* "Makefile"
+               (("PRIVSEP_PATH=/var/empty")
+                (string-append "PRIVSEP_PATH=" out "/var/empty")))
+             #t)))
+        (add-before 'check 'patch-tests
+         (lambda _
+           ;; remove 't-exec' regress target which requires user 'sshd'
+           (substitute* "regress/Makefile"
+             (("^(REGRESS_TARGETS=.*) t-exec(.*)" all pre post)
+              (string-append pre post)))
+           #t))
+        (replace 'install
+         (lambda* (#:key outputs (make-flags '()) #:allow-other-keys)
+           ;; install without host keys and system configuration files
+           (and (zero? (apply system* "make" "install-nosysconf" make-flags))
+                (begin
+                  (install-file "contrib/ssh-copy-id"
+                                (string-append (assoc-ref outputs "out")
+                                               "/bin/"))
+                  (chmod (string-append (assoc-ref outputs "out")
+                                        "/bin/ssh-copy-id") #o555)
+                  (install-file "contrib/ssh-copy-id.1"
+                                (string-append (assoc-ref outputs "out")
+                                               "/share/man/man1/"))
+                  #t)))))))
    (synopsis "Client and server for the secure shell (ssh) protocol")
    (description
     "The SSH2 protocol implemented in OpenSSH is standardised by the
@@ -184,6 +194,7 @@ Additionally, various channel-specific options can be negotiated.")
               (uri (git-reference
                     (url "https://github.com/artyom-poptsov/libguile-ssh.git")
                     (commit (string-append "v" version))))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1ld2khzylaylhqfsfcvbxs95frvm8pkr7dq40ia1wwn9c349fcdv"))))
@@ -325,7 +336,8 @@ especially over Wi-Fi, cellular, and long-distance links.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://matt.ucc.asn.au/" name "/releases/" name "-" version ".tar.bz2"))
+                    "http://matt.ucc.asn.au/" name "/releases/"
+                    name "-" version ".tar.bz2"))
               (sha256
                (base32 "1bjpbg2vi5f332q4bqxkidkjfxsqmnqvp4g1wyh8d99b8gg94nar"))))
     (build-system gnu-build-system)

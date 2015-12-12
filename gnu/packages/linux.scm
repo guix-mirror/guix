@@ -23,7 +23,7 @@
 
 (define-module (gnu packages linux)
   #:use-module ((guix licenses)
-                #:hide (zlib))
+                #:hide (zlib openssl))
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
@@ -57,6 +57,7 @@
   #:use-module (gnu packages asciidoc)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages calendar)
+  #:use-module (gnu packages tls)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -210,7 +211,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "4.2.3")
+  (let* ((version "4.3.2")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -220,6 +221,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (let ((arch (car (string-split system #\-))))
                (setenv "ARCH"
                        (cond ((string=? arch "i686") "i386")
+                             ((string=? arch "mips64el") "mips")
                              (else arch)))
                (format #t "`ARCH' set to `~a'~%" (getenv "ARCH")))
 
@@ -266,7 +268,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
                (for-each (lambda (file)
                            (copy-file file
                                       (string-append out "/" (basename file))))
-                         (find-files "." "^(bzImage|System\\.map)$"))
+                         (find-files "." "^(bzImage|vmlinuz|System\\.map)$"))
                (copy-file ".config" (string-append out "/config"))
                (zero? (system* "make"
                                (string-append "DEPMOD=" mit "/sbin/depmod")
@@ -283,10 +285,12 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "1xpx32k6bzxqg5y8lyaana97jjcli00iyqklh5fdhirfvjb9dimd"))))
+               "0d87jbmplv36kxq40k44zh3sj82qp79lf8n4by7jb2wvyk06rvfg"))))
     (build-system gnu-build-system)
+    (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
+                     ("openssl" ,openssl)
                      ("module-init-tools" ,module-init-tools)
                      ("patch/freedo+gnu" ,%boot-logo-patch)
 
@@ -445,8 +449,9 @@ providing the system administrator with some help in common tasks.")
        ("net-base" ,net-base)))                   ;for tests
     (home-page "https://www.kernel.org/pub/linux/utils/util-linux/")
     (synopsis "Collection of utilities for the Linux kernel")
-    (description
-     "Util-linux is a random collection of utilities for the Linux kernel.")
+    (description "Util-linux is a diverse collection of Linux kernel
+utilities.  It provides dmesg and includes tools for working with filesystems,
+block devices, UUIDs, TTYs, and many other tools.")
 
     ;; Note that util-linux doesn't use the same license for all the
     ;; code.  GPLv2+ is the default license for a code without an
@@ -542,7 +547,7 @@ slabtop, and skill.")
     (arguments
      '(;; util-linux is not the preferred source for some of the libraries and
        ;; commands, so disable them (see, e.g.,
-       ;; <http://git.buildroot.net/buildroot/commit/?id=e1ffc2f791b336339909c90559b7db40b455f172>.)
+       ;; <http://git.buildroot.net/buildroot/commit/?id=e1ffc2f791b33633>.)
        #:configure-flags '("--disable-libblkid"
                            "--disable-libuuid" "--disable-uuidd"
                            "--disable-fsck"
@@ -1361,7 +1366,7 @@ file system is as easy as logging into the server with an SSH client.")
 (define-public numactl
   (package
     (name "numactl")
-    (version "2.0.9")
+    (version "2.0.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1370,35 +1375,13 @@ file system is as easy as logging into the server with an SSH client.")
                     ".tar.gz"))
               (sha256
                (base32
-                "073myxlyyhgxh1w3r757ajixb7s2k69czc3r0g12c3scq7k3784w"))))
+                "0qbqa9gac2vlahrngi553hws2mqgqdwv2lc69a3yx4gq6l90j325"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; There's no 'configure' script, just a raw makefile.
-                   (substitute* "Makefile"
-                     (("^prefix := .*$")
-                      (string-append "prefix := " (assoc-ref outputs "out")
-                                     "\n"))
-                     (("^libdir := .*$")
-                      ;; By default the thing tries to install under
-                      ;; $prefix/lib64 when on a 64-bit platform.
-                      (string-append "libdir := $(prefix)/lib\n"))))
-                 %standard-phases)
-
-       #:make-flags (list
-                     ;; By default the thing tries to use 'cc'.
-                     "CC=gcc"
-
-                     ;; Make sure programs have an RPATH so they can find
-                     ;; libnuma.so.
-                     (string-append "LDLIBS=-Wl,-rpath="
-                                    (assoc-ref %outputs "out") "/lib"))
-
-       ;; There's a 'test' target, but it requires NUMA support in the kernel
+     '(;; There's a 'test' target, but it requires NUMA support in the kernel
        ;; to run, which we can't assume to have.
        #:tests? #f))
+
     (home-page "http://oss.sgi.com/projects/libnuma/")
     (synopsis "Tools for non-uniform memory access (NUMA) machines")
     (description
@@ -1540,7 +1523,7 @@ from the module-init-tools project.")
   ;; The post-systemd fork, maintained by Gentoo.
   (package
     (name "eudev")
-    (version "2.1.1")
+    (version "3.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1548,55 +1531,15 @@ from the module-init-tools project.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0shf5vqiz9fdxl95aa1a8vh0xjxwim3psc39wr2xr8lnahf11vva"))
-              (patches (list (search-patch "eudev-rules-directory.patch")))
-              (modules '((guix build utils)))
-              (snippet
-               ;; 'configure' checks uses <linux/btrfs.h> as an indication of
-               ;; whether Linux headers are available, but it doesn't actually
-               ;; use it, and our 'linux-libre-headers' package doesn't
-               ;; provide it.  So just remove that.
-               '(substitute* "configure"
-                  (("linux/btrfs\\.h")
-                   "")))))
+                "0akg9gcc3c2p56xbhlvbybqavcprly5q0bvk655zwl6d62j8an7p"))
+              (patches (list (search-patch "eudev-rules-directory.patch")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("gperf" ,gperf)
-       ("glib" ,glib "bin")                       ; glib-genmarshal, etc.
-       ("perl" ,perl)                             ; for the tests
-       ("python" ,python-2)))                     ; ditto
+       ("perl" ,perl)
+       ("gperf" ,gperf)))
     (inputs
-     `(("kmod" ,kmod)
-       ("pciutils" ,pciutils)
-       ("usbutils" ,usbutils)
-       ("util-linux" ,util-linux)
-       ("glib" ,glib)
-       ("gobject-introspection" ,gobject-introspection)))
-    (arguments
-     `(#:configure-flags (list "--enable-libkmod"
-
-                               (string-append
-                                "--with-pci-ids-path="
-                                (assoc-ref %build-inputs "pciutils")
-                                "/share/pci.ids.gz")
-
-                               "--with-firmware-path=/no/firmware"
-
-                               ;; Work around undefined reference to
-                               ;; 'mq_getattr' in sc-daemon.c.
-                               "LDFLAGS=-lrt")
-       #:phases
-       (alist-cons-before
-        'build 'pre-build
-        ;; The program 'g-ir-scanner' (part of the package
-        ;; 'gobject-introspection'), to generate .gir files, makes some
-        ;; library pre-processing.  During that phase it looks for the C
-        ;; compiler as either 'cc' or as defined by the environment variable
-        ;; 'CC' (with code in 'giscanner/dumper.py').
-        (lambda* _
-          (setenv "CC" "gcc"))
-        %standard-phases)))
+     `(("kmod" ,kmod)))
     (home-page "http://www.gentoo.org/proj/en/eudev/")
     (synopsis "Userspace device management")
     (description "Udev is a daemon which dynamically creates and removes
@@ -2327,7 +2270,7 @@ applications.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.30")
+    (version "5.35")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2335,7 +2278,9 @@ applications.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0b1qbnq1xzcdw5rajg9yyg31bf21jnff0n6gnf1snz89bbdllfhy"))))
+                "1qphz25hganfnd5ipfscbj7s70anv5favmwqmi9ig2saciaf1zhs"))
+              (patches
+               (list (search-patch "bluez-tests.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2417,4 +2362,47 @@ id=0B7CLI-REKbE3VTdaa0EzTkhYdU0")
     (description
      "This package provides a FUSE-based file system that provides read and
 write access to exFAT devices.")
+    (license gpl2+)))
+
+(define-public gpm
+  (package
+    (name "gpm")
+    (version "1.20.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.nico.schottelius.org/software/gpm/archives/gpm-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "13d426a8h403ckpc8zyf7s2p5rql0lqbg2bv0454x0pvgbfbf4gh"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'bootstrap
+                    (lambda _
+                      ;; The tarball was not generated with 'make dist' so we
+                      ;; need to bootstrap things ourselves.
+                      (and (zero? (system* "./autogen.sh"))
+                           (begin
+                             (patch-makefile-SHELL "Makefile.include.in")
+                             #t)))))
+
+       ;; Make sure programs find libgpm.so.
+       #:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib"))))
+    (native-inputs
+     `(("texinfo" ,texinfo)
+       ("bison" ,bison)
+       ("flex" ,flex)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "http://www.nico.schottelius.org/software/gpm/")
+    (synopsis "Mouse support for the Linux console")
+    (description
+     "The GPM (general-purpose mouse) daemon is a mouse server for
+applications running on the Linux console.  It allows users to select items
+and copy/paste text in the console and in xterm.")
     (license gpl2+)))

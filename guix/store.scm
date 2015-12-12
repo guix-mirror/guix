@@ -53,6 +53,7 @@
             nix-protocol-error-status
 
             hash-algo
+            build-mode
 
             open-connection
             close-connection
@@ -129,7 +130,7 @@
             direct-store-path
             log-file))
 
-(define %protocol-version #x10c)
+(define %protocol-version #x10f)
 
 (define %worker-magic-1 #x6e697863)               ; "nixc"
 (define %worker-magic-2 #x6478696f)               ; "dxio"
@@ -187,6 +188,12 @@
   (md5 1)
   (sha1 2)
   (sha256 3))
+
+(define-enumerate-type build-mode
+  ;; store-api.hh
+  (normal 0)
+  (repair 1)
+  (check 2))
 
 (define-enumerate-type gc-action
   ;; store-api.hh
@@ -328,11 +335,13 @@
   (status  nix-protocol-error-status))
 
 (define* (open-connection #:optional (file (%daemon-socket-file))
-                          #:key (reserve-space? #t))
+                          #:key (reserve-space? #t) cpu-affinity)
   "Connect to the daemon over the Unix-domain socket at FILE.  When
-RESERVE-SPACE? is true, instruct it to reserve a little bit of extra
-space on the file system so that the garbage collector can still
-operate, should the disk become full.  Return a server object."
+RESERVE-SPACE? is true, instruct it to reserve a little bit of extra space on
+the file system so that the garbage collector can still operate, should the
+disk become full.  When CPU-AFFINITY is true, it must be an integer
+corresponding to an OS-level CPU number to which the daemon's worker process
+for this connection will be pinned.  Return a server object."
   (let ((s (with-fluids ((%default-port-encoding #f))
              ;; This trick allows use of the `scm_c_read' optimization.
              (socket PF_UNIX SOCK_STREAM 0)))
@@ -355,8 +364,12 @@ operate, should the disk become full.  Return a server object."
                         (protocol-major v))
                   (begin
                     (write-int %protocol-version s)
-                    (if (>= (protocol-minor v) 11)
-                        (write-int (if reserve-space? 1 0) s))
+                    (when (>= (protocol-minor v) 14)
+                      (write-int (if cpu-affinity 1 0) s)
+                      (when cpu-affinity
+                        (write-int cpu-affinity s)))
+                    (when (>= (protocol-minor v) 11)
+                      (write-int (if reserve-space? 1 0) s))
                     (let ((s (%make-nix-server s
                                                (protocol-major v)
                                                (protocol-minor v)
@@ -491,6 +504,7 @@ encoding conversion errors."
 (define* (set-build-options server
                             #:key keep-failed? keep-going? fallback?
                             (verbosity 0)
+                            rounds                ;number of build rounds
                             (max-build-jobs 1)
                             timeout
                             (max-silent-time 3600)
@@ -501,11 +515,11 @@ encoding conversion errors."
                             (build-cores (current-processor-count))
                             (use-substitutes? #t)
 
-                            ;; Client-provided substitute URLs.  For
-                            ;; unprivileged clients, these are considered
-                            ;; "untrusted"; for "trusted" users, they override
-                            ;; the daemon's settings.
-                            (substitute-urls %default-substitute-urls))
+                            ;; Client-provided substitute URLs.  If it is #f,
+                            ;; the daemon's settings are used.  Otherwise, it
+                            ;; overrides the daemons settings; see 'guix
+                            ;; substitute'.
+                            (substitute-urls #f))
   ;; Must be called after `open-connection'.
 
   (define socket
@@ -533,7 +547,14 @@ encoding conversion errors."
       (let ((pairs `(,@(if timeout
                            `(("build-timeout" . ,(number->string timeout)))
                            '())
-                     ("substitute-urls" . ,(string-join substitute-urls)))))
+                     ,@(if substitute-urls
+                           `(("substitute-urls"
+                              . ,(string-join substitute-urls)))
+                           '())
+                     ,@(if rounds
+                           `(("build-repeat"
+                              . ,(number->string (max 0 (1- rounds)))))
+                           '()))))
         (send (string-pairs pairs))))
     (let loop ((done? (process-stderr server)))
       (or done? (process-stderr server)))))
@@ -628,12 +649,26 @@ bits are kept.  HASH-ALGO must be a string such as \"sha256\"."
               (hash-set! cache args path)
               path))))))
 
-(define-operation (build-things (string-list things))
-  "Build THINGS, a list of store items which may be either '.drv' files or
+(define build-things
+  (let ((build (operation (build-things (string-list things)
+                                        (integer mode))
+                          "Do it!"
+                          boolean))
+        (build/old (operation (build-things (string-list things))
+                              "Do it!"
+                              boolean)))
+    (lambda* (store things #:optional (mode (build-mode normal)))
+      "Build THINGS, a list of store items which may be either '.drv' files or
 outputs, and return when the worker is done building them.  Elements of THINGS
 that are not derivations can only be substituted and not built locally.
 Return #t on success."
-  boolean)
+      (if (>= (nix-server-minor-version store) 15)
+          (build store things mode)
+          (if (= mode (build-mode normal))
+              (build/old store things)
+              (raise (condition (&nix-protocol-error
+                                 (message "unsupported build mode")
+                                 (status  1)))))))))
 
 (define-operation (add-temp-root (store-path path))
   "Make PATH a temporary root for the duration of the current session.

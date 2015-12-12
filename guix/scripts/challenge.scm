@@ -125,10 +125,8 @@ taken since we do not import the archives."
                                               servers))
                        ;; No 'assert-valid-narinfo' on purpose.
                        (narinfos -> (fold (lambda (narinfo vhash)
-                                            (if narinfo
-                                                (vhash-cons (narinfo-path narinfo) narinfo
-                                                            vhash)
-                                                vhash))
+                                            (vhash-cons (narinfo-path narinfo) narinfo
+                                                        vhash))
                                           vlist-null
                                           remote)))
     (return (filter-map (lambda (item local)

@@ -272,8 +272,10 @@ as \"debbugs\"."
 (define %elpa-updater
   ;; The ELPA updater.  We restrict it to packages hosted on elpa.gnu.org
   ;; because for other repositories, we typically grab the source elsewhere.
-  (upstream-updater 'elpa
-                    package-from-gnu.org?
-                    latest-release))
+  (upstream-updater
+   (name 'elpa)
+   (description "Updater for ELPA packages")
+   (pred package-from-gnu.org?)
+   (latest latest-release)))
 
 ;;; elpa.scm ends here

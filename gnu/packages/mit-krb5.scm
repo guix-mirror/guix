@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,59 +25,88 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
 (define-public mit-krb5
   (package
     (name "mit-krb5")
-    (version "1.11.3")
+    (version "1.13.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://web.mit.edu/kerberos/www/dist/krb5/"
-                                  (string-copy version 0 (string-rindex version #\.))
+                                  (version-major+minor version)
                                   "/krb5-" version "-signed.tar"))
               (sha256 (base32
-                       "1daiaxgkxcryqs37w28v4x1vajqmay4l144d1zd9c2d7jjxr9gcs"))))
+                       "1qbdzyrws7d0q4filsibh28z54pd5l987jr0ygv43iq9085w6a75"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("patch/init-fix" ,(search-patch "mit-krb5-init-fix.patch"))
-       ("bison" ,bison)
-       ("perl" ,perl)))
+     `(("bison" ,bison)
+       ("perl" ,perl)
+
+       ;; Include the patches as native-inputs.
+       ,@(map (lambda (label)
+                (let ((input-name (string-append "patch/" label))
+                      (file-name  (string-append name "-" label ".patch")))
+                  `(,input-name ,(search-patch file-name))))
+              '("CVE-2015-2695-pt1"
+                "CVE-2015-2695-pt2"
+                "CVE-2015-2696"
+                "CVE-2015-2697"
+                "CVE-2015-2698-pt1"
+                "CVE-2015-2698-pt2"))))
     (arguments
-     '(#:phases
-       (alist-replace
-        'unpack
-        (lambda* (#:key source #:allow-other-keys)
-          (let ((inner
-                 (substring source
-                            (string-index-right source #\k)
-                            (string-index-right source #\-))))
-            (and (zero? (system* "tar" "xvf" source))
-                 (zero? (system* "tar" "xvf" (string-append inner ".tar.gz")))
-                 (chdir inner)
-                 (chdir "src")
-                 ;; XXX The current patch system does not support unusual
-                 ;; source unpack methods, so we have to apply this patch in a
-                 ;; non-standard way.
-                 (zero? (system* "patch" "-p1" "--force" "-i"
-                                 (assoc-ref %build-inputs "patch/init-fix"))))))
-        (alist-replace
-         'check
-         (lambda* (#:key inputs #:allow-other-keys #:rest args)
-           (let ((perl (assoc-ref inputs "perl"))
-                 (check (assoc-ref %standard-phases 'check)))
-             (substitute* "plugins/kdb/db2/libdb2/test/run.test"
-               (("/bin/cat") (string-append perl "/bin/perl")))
-             (substitute* "plugins/kdb/db2/libdb2/test/run.test"
-               (("D/bin/sh") (string-append "D" (which "bash"))))
-             (substitute* "plugins/kdb/db2/libdb2/test/run.test"
-               (("bindir=/bin/.") (string-append "bindir=" perl "/bin")))
-             ;; use existing files and directories in test
+     `(#:modules ((ice-9 ftw)
+                  (ice-9 match)
+                  (srfi srfi-1)
+                  ,@%gnu-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (define (sub-directory? name)
+               (and (not (member name '("." "..")))
+                    (equal? (stat:type (stat name))
+                            'directory)))
+             (and (zero? (system* "tar" "xvf" source))
+                  (match (find-files "." "\\.tar\\.gz$")
+                    ((inner-tar-file)
+                     (zero? (system* "tar" "xvf" inner-tar-file))))
+                  (match (scandir "." sub-directory?)
+                    ((directory)
+                     (chdir directory)
+                     #t)))))
+
+         (add-after 'unpack 'apply-patches
+           (lambda* (#:key inputs native-inputs #:allow-other-keys)
+             (let ((patches (filter (match-lambda
+                                      ((name . file)
+                                       (string-prefix? "patch/" name)))
+                                    (or native-inputs inputs))))
+               (every (match-lambda
+                        ((name . file)
+                         (format (current-error-port)
+                                 "applying '~a'...~%" name)
+                         (zero? (system* "patch" "-p1" "--force" "-i" file))))
+                      patches))))
+
+         (add-after 'apply-patches 'enter-source-directory
+           (lambda _
+             (chdir "src")
+             #t))
+
+         (add-before 'check 'pre-check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((perl (assoc-ref inputs "perl")))
+               (substitute* "plugins/kdb/db2/libdb2/test/run.test"
+                 (("/bin/cat") (string-append perl "/bin/perl"))
+                 (("D/bin/sh") (string-append "D" (which "bash")))
+                 (("bindir=/bin/.") (string-append "bindir=" perl "/bin"))))
+
+             ;; avoid service names since /etc/services is unavailable
              (substitute* "tests/resolve/Makefile"
                (("-p telnet") "-p 23"))
-             ;; avoid service names since /etc/services is unavailable
-             (apply check args)))
-         %standard-phases))))
+             #t)))))
     (synopsis "MIT Kerberos 5")
     (description
      "Massachusetts Institute of Technology implementation of Kerberos.

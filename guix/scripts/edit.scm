@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +39,7 @@
 
 (define (show-help)
   (display (_ "Usage: guix edit PACKAGE...
-Start $EDITOR to edit the definitions of PACKAGE...\n"))
+Start $VISUAL or $EDITOR to edit the definitions of PACKAGE...\n"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -48,7 +49,10 @@ Start $EDITOR to edit the definitions of PACKAGE...\n"))
   (show-bug-report-information))
 
 (define %editor
-  (make-parameter (or (getenv "EDITOR") "emacsclient")))
+  ;; XXX: It would be better to default to something more likely to be
+  ;; pre-installed on an average GNU system.  Since Nano is not suited for
+  ;; editing Scheme, Emacs is used instead.
+  (make-parameter (or (getenv "VISUAL") (getenv "EDITOR") "emacs")))
 
 (define (search-path* path file)
   "Like 'search-path' but exit if FILE is not found."
@@ -58,6 +62,15 @@ Start $EDITOR to edit the definitions of PACKAGE...\n"))
       (leave (_ "file '~a' not found in search path ~s~%")
              file path))
     absolute-file-name))
+
+(define (package->location-specification package)
+  "Return the location specification for PACKAGE for a typical editor command
+line."
+  (let ((loc (package-location package)))
+    (list (string-append "+"
+                         (number->string
+                          (location-line loc)))
+          (search-path* %load-path (location-file loc)))))
 
 
 (define (guix-edit . args)
@@ -70,11 +83,15 @@ Start $EDITOR to edit the definitions of PACKAGE...\n"))
                     (leave (_ "source location of package '~a' is unknown~%")
                            (package-full-name package))))
                 packages)
-      (apply execlp (%editor) (%editor)
-             (append-map (lambda (package)
-                           (let ((loc (package-location package)))
-                             (list (string-append "+"
-                                                  (number->string
-                                                   (location-line loc)))
-                                   (search-path* %load-path (location-file loc)))))
-                         packages)))))
+
+      (catch 'system-error
+        (lambda ()
+          (let ((file-names (append-map package->location-specification
+                                        packages)))
+            ;; Use `system' instead of `exec' in order to sanely handle
+            ;; possible command line arguments in %EDITOR.
+            (exit (system (string-join (cons (%editor) file-names))))))
+        (lambda args
+          (let ((errno (system-error-errno args)))
+            (leave (_ "failed to launch '~a': ~a~%")
+                   (%editor) (strerror errno))))))))

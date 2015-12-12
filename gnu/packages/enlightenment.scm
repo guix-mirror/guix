@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Daniel Pimentel <d4n1@member.fsf.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,7 +52,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.15.2")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -59,7 +60,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "1962wqx7gdnpzvnkbighyn4hj5vw8l4c1d7xl5zilqjlyhcqywyx"))))
+                "08w3hrjyz1yjqjq77px86fljxxi5xz5yfy79qwssypafjvcvpzky"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -134,7 +135,7 @@ removable devices or support for multimedia.")
 (define-public elementary
   (package
     (name "elementary")
-    (version "1.15.2")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -142,7 +143,7 @@ removable devices or support for multimedia.")
                               "elementary/elementary-" version ".tar.xz"))
               (sha256
                (base32
-                "0gqg98bglnl2jggdzxzrh9r7bv32i4sahspms0bihq8b45rk0g2j"))))
+                "1546b7pdpw6nx1hjxy674zr8dgpzwl7lq3hvnv4axkpd4zwkqgs8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -159,7 +160,7 @@ full capabilities of EFL.")
 (define-public evas-generic-loaders
   (package
     (name "evas-generic-loaders")
-    (version "1.15.0")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -169,7 +170,7 @@ full capabilities of EFL.")
                 version ".tar.xz"))
               (sha256
                (base32
-                "0zzx06j20x580xqnnsxp7gb7rv279zcgvdxfbhs905af9m6rwlqy"))))
+                "1il3i3rii6ddpj7cw2mdqnb0q2wmhwnvs6qi9janna1n5hhrqyfm"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -191,7 +192,7 @@ files in Evas (EFL canvas library).")
 (define-public emotion-generic-players
   (package
     (name "emotion-generic-players")
-    (version "1.15.0")
+    (version "1.16.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -200,7 +201,7 @@ files in Evas (EFL canvas library).")
                               "-" version ".tar.xz"))
               (sha256
                (base32
-                "0pszwmcygxnv1sfx0m79md2jmi4sng8mdb1xcr6h2z5c8685wvcz"))))
+                "163ay26c6dx49m1am7vsxxn0gy877zhayxq0yxn9zkbq2srzvjym"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -270,16 +271,18 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.19.12")
+    (version "0.20.0")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "https://download.enlightenment.org/rel/apps/"
                               name "/" name "-" version ".tar.xz"))
               (sha256
-               (base32 
-                 "098bdx9qmv1yqqwfydrzs7fvbnhsf3vaib9pmqsyg4ihgqrkrwjm"))))
+               (base32
+                 "0mwiim0nv640v3af7qxc5ajfk702qkl5c1cnqlhz6rqzr5yjapxv"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-mount-eeze")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

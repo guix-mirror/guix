@@ -34,6 +34,7 @@
   #:use-module (guix serialization)
   #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module ((guix licenses) #:select (license? license-name))
+  #:use-module (gnu system file-systems)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
@@ -60,6 +61,7 @@
             warn-about-load-error
             show-version-and-exit
             show-bug-report-information
+            make-regexp*
             string->number*
             size->number
             show-derivation-outputs
@@ -72,7 +74,6 @@
             read/eval
             read/eval-package-expression
             location->string
-            switch-symlinks
             config-directory
             fill-paragraph
             texi->plain-text
@@ -80,8 +81,15 @@
             string->recutils
             package->recutils
             package-specification->name+version+output
+            specification->file-system-mapping
             string->generations
             string->duration
+            matching-generations
+            display-generation
+            display-profile-content
+            roll-back*
+            switch-to-generation*
+            delete-generation*
             run-guix-command
             run-guix
             program-name
@@ -343,6 +351,16 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
                  (list (strerror (car errno)) target)
                  (list errno)))))))
 
+(define (make-regexp* regexp . flags)
+  "Like 'make-regexp' but error out if REGEXP is invalid, reporting the error
+nicely."
+  (catch 'regular-expression-syntax
+    (lambda ()
+      (apply make-regexp regexp flags))
+    (lambda (key proc message . rest)
+      (leave (_ "'~a' is not a valid regular expression: ~a~%")
+             regexp message))))
+
 (define (string->number* str)
   "Like `string->number', but error out with an error message on failure."
   (or (string->number str)
@@ -513,17 +531,18 @@ error."
                (derivation-outputs derivation))))
 
 (define* (show-what-to-build store drv
-                             #:key dry-run? (use-substitutes? #t))
+                             #:key dry-run? (use-substitutes? #t)
+                             (mode (build-mode normal)))
   "Show what will or would (depending on DRY-RUN?) be built in realizing the
-derivations listed in DRV.  Return #t if there's something to build, #f
-otherwise.  When USE-SUBSTITUTES?, check and report what is prerequisites are
-available for download."
+derivations listed in DRV using MODE, a 'build-mode' value.  Return #t if
+there's something to build, #f otherwise.  When USE-SUBSTITUTES?, check and
+report what is prerequisites are available for download."
   (define substitutable?
     ;; Call 'substitutation-oracle' upfront so we don't end up launching the
     ;; substituter many times.  This makes a big difference, especially when
     ;; DRV is a long list as is the case with 'guix environment'.
     (if use-substitutes?
-        (substitution-oracle store drv)
+        (substitution-oracle store drv #:mode mode)
         (const #f)))
 
   (define (built-or-substitutable? drv)
@@ -537,6 +556,7 @@ available for download."
                           (let-values (((b d)
                                         (derivation-prerequisites-to-build
                                          store drv
+                                         #:mode mode
                                          #:substitutable? substitutable?)))
                             (values (append b build)
                                     (append d download))))
@@ -709,13 +729,6 @@ replacement if PORT is not Unicode-capable."
     (#f (_ "<unknown location>"))
     (($ <location> file line column)
      (format #f "~a:~a:~a" file line column))))
-
-(define (switch-symlinks link target)
-  "Atomically switch LINK, a symbolic link, to point to TARGET.  Works
-both when LINK already exists and when it does not."
-  (let ((pivot (string-append link ".new")))
-    (symlink target pivot)
-    (rename-file pivot link)))
 
 (define (config-directory)
   "Return the name of the configuration directory, after making sure that it
@@ -946,6 +959,119 @@ following patterns: \"1d\", \"1w\", \"1m\"."
            (hours->duration (* 24 30) match)))
         (else #f)))
 
+(define* (matching-generations str profile
+                               #:key (duration-relation <=))
+  "Return the list of available generations matching a pattern in STR.  See
+'string->generations' and 'string->duration' for the list of valid patterns.
+When STR is a duration pattern, return all the generations whose ctime has
+DURATION-RELATION with the current time."
+  (define (valid-generations lst)
+    (define (valid-generation? n)
+      (any (cut = n <>) (generation-numbers profile)))
+
+    (fold-right (lambda (x acc)
+                  (if (valid-generation? x)
+                      (cons x acc)
+                      acc))
+                '()
+                lst))
+
+  (define (filter-generations generations)
+    (match generations
+      (() '())
+      (('>= n)
+       (drop-while (cut > n <>)
+                   (generation-numbers profile)))
+      (('<= n)
+       (valid-generations (iota n 1)))
+      ((lst ..1)
+       (valid-generations lst))
+      (_ #f)))
+
+  (define (filter-by-duration duration)
+    (define (time-at-midnight time)
+      ;; Return TIME at midnight by setting nanoseconds, seconds, minutes, and
+      ;; hours to zeros.
+      (let ((d (time-utc->date time)))
+         (date->time-utc
+          (make-date 0 0 0 0
+                     (date-day d) (date-month d)
+                     (date-year d) (date-zone-offset d)))))
+
+    (define generation-ctime-alist
+      (map (lambda (number)
+             (cons number
+                   (time-second
+                    (time-at-midnight
+                     (generation-time profile number)))))
+           (generation-numbers profile)))
+
+    (match duration
+      (#f #f)
+      (res
+       (let ((s (time-second
+                 (subtract-duration (time-at-midnight (current-time))
+                                    duration))))
+         (delete #f (map (lambda (x)
+                           (and (duration-relation s (cdr x))
+                                (first x)))
+                         generation-ctime-alist))))))
+
+  (cond ((string->generations str)
+         =>
+         filter-generations)
+        ((string->duration str)
+         =>
+         filter-by-duration)
+        (else #f)))
+
+(define (display-generation profile number)
+  "Display a one-line summary of generation NUMBER of PROFILE."
+  (unless (zero? number)
+    (let ((header (format #f (_ "Generation ~a\t~a") number
+                          (date->string
+                           (time-utc->date
+                            (generation-time profile number))
+                           "~b ~d ~Y ~T")))
+          (current (generation-number profile)))
+      (if (= number current)
+          (format #t (_ "~a\t(current)~%") header)
+          (format #t "~a~%" header)))))
+
+(define (display-profile-content profile number)
+  "Display the packages in PROFILE, generation NUMBER, in a human-readable
+way."
+  (for-each (match-lambda
+              (($ <manifest-entry> name version output location _)
+               (format #t "  ~a\t~a\t~a\t~a~%"
+                       name version output location)))
+
+            ;; Show most recently installed packages last.
+            (reverse
+             (manifest-entries
+              (profile-manifest (generation-file-name profile number))))))
+
+(define (display-generation-change previous current)
+  (format #t (_ "switched from generation ~a to ~a~%") previous current))
+
+(define (roll-back* store profile)
+  "Like 'roll-back', but display what is happening."
+  (call-with-values
+      (lambda ()
+        (roll-back store profile))
+    display-generation-change))
+
+(define (switch-to-generation* profile number)
+  "Like 'switch-generation', but display what is happening."
+  (let ((previous (switch-to-generation profile number)))
+    (display-generation-change previous number)))
+
+(define (delete-generation* store profile generation)
+  "Like 'delete-generation', but display what is going on."
+  (format #t (_ "deleting ~a~%")
+          (generation-file-name profile generation))
+  (delete-generation store profile generation))
+
 (define* (package-specification->name+version+output spec
                                                      #:optional (output "out"))
   "Parse package specification SPEC and return three value: the specified
@@ -965,6 +1091,23 @@ optionally contain a version number and an output name, as in these examples:
                 ((name version)
                  (package-name->name+version name)))
     (values name version sub-drv)))
+
+(define (specification->file-system-mapping spec writable?)
+  "Read the SPEC and return the corresponding <file-system-mapping>.  SPEC is
+a string of the form \"SOURCE\" or \"SOURCE=TARGET\".  The former specifies
+that SOURCE from the host should be mounted at SOURCE in the other system.
+The latter format specifies that SOURCE from the host should be mounted at
+TARGET in the other system."
+  (let ((index (string-index spec #\=)))
+    (if index
+        (file-system-mapping
+         (source (substring spec 0 index))
+         (target (substring spec (+ 1 index)))
+         (writable? writable?))
+        (file-system-mapping
+         (source spec)
+         (target spec)
+         (writable? writable?)))))
 
 
 ;;;
@@ -1050,6 +1193,9 @@ and signal handling has already been set up."
      (format (current-error-port)
              (_ "guix: unrecognized option '~a'~%") o)
      (show-guix-usage))
+    (("help" command)
+     (apply run-guix-command (string->symbol command)
+            '("--help")))
     (("help" args ...)
      (show-guix-help))
     ((command args ...)

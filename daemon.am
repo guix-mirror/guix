@@ -21,7 +21,7 @@
 #
 
 BUILT_SOURCES += nix/libstore/schema.sql.hh
-CLEANFILES += $(BUILT_SOURCES) etc/guix-daemon.service
+CLEANFILES += $(BUILT_SOURCES) etc/guix-daemon.service etc/guix-daemon.conf
 
 noinst_LIBRARIES = libformat.a libutil.a libstore.a
 
@@ -69,7 +69,8 @@ libutil_headers =				\
   nix/libutil/gcrypt-hash.hh			\
   nix/libutil/md5.h				\
   nix/libutil/sha1.h				\
-  nix/libutil/sha256.h
+  nix/libutil/sha256.h				\
+  nix/libutil/sha512.h
 
 libutil_a_CPPFLAGS =				\
   -I$(top_builddir)/nix				\
@@ -191,11 +192,23 @@ etc/guix-daemon.service: etc/guix-daemon.service.in	\
 	       "$(srcdir)/etc/guix-daemon.service.in" > "$@.tmp"
 	mv "$@.tmp" "$@"
 
+# The '.conf' job for Upstart.
+upstartjobdir = $(libdir)/upstart/system
+nodist_upstartjob_DATA = etc/guix-daemon.conf
+
+etc/guix-daemon.conf: etc/guix-daemon.conf.in	\
+			 $(top_builddir)/config.status
+	$(MKDIR_P) "`dirname "$@"`"
+	$(SED) -e 's|@''bindir''@|$(bindir)|' <				\
+	       "$(srcdir)/etc/guix-daemon.conf.in" > "$@.tmp"
+	mv "$@.tmp" "$@"
+
 EXTRA_DIST +=					\
   nix/libstore/schema.sql			\
   nix/AUTHORS					\
   nix/COPYING					\
-  etc/guix-daemon.service.in
+  etc/guix-daemon.service.in	\
+  etc/guix-daemon.conf.in
 
 AM_TESTS_ENVIRONMENT +=				\
   top_builddir="$(abs_top_builddir)"

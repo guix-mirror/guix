@@ -30,6 +30,7 @@
   #:use-module (srfi srfi-9 gnu)
   #:use-module (system base lalr)
   #:use-module (rnrs enums)
+  #:use-module (guix utils)
   #:export (read-cabal
             eval-cabal
             
@@ -138,7 +139,7 @@ to the stack."
   "Generate a parser for Cabal files."
   (lalr-parser
    ;; --- token definitions
-   (CCURLY VCCURLY OPAREN CPAREN TEST ID VERSION RELATION
+   (CCURLY VCCURLY OPAREN CPAREN TEST ID VERSION RELATION TRUE FALSE
            (right: IF FLAG EXEC TEST-SUITE SOURCE-REPO BENCHMARK LIB OCURLY)
            (left: OR)
            (left: PROPERTY AND)
@@ -206,6 +207,8 @@ to the stack."
    (if-then     (IF tests OCURLY exprs CCURLY) : `(if ,$2 ,$4 ())
                 (IF tests open exprs close)    : `(if ,$2 ,$4 ()))
    (tests       (TEST OPAREN ID CPAREN)        : `(,$1 ,$3)
+                (TRUE)                         : 'true
+                (FALSE)                        : 'false
                 (TEST OPAREN ID RELATION VERSION CPAREN)
                 : `(,$1 ,(string-append $3 " " $4 " " $5))
                 (TEST OPAREN ID RELATION VERSION AND RELATION VERSION CPAREN)
@@ -224,19 +227,24 @@ to the stack."
   "This function can be called when the next character on PORT is #\newline
 and returns the indentation of the line starting after the #\newline
 character.  Discard (and consume) empty and comment lines."
-  (let ((initial-newline (string (read-char port))))
-    (let loop ((char (peek-char port))
-               (word ""))
-      (cond ((eqv? char #\newline) (read-char port)
-             (loop (peek-char port) ""))
-            ((or (eqv? char #\space) (eqv? char #\tab))
-             (let ((c (read-char port)))
-               (loop (peek-char port) (string-append word (string c)))))
-            ((comment-line port char) (loop (peek-char port) ""))
-            (else
-             (let ((len (string-length word)))
-               (unread-string (string-append initial-newline word) port)
-               len))))))
+  (if (eof-object? (peek-char port))
+      ;; If the file is missing the #\newline on the last line, add it and act
+      ;; as if it were there. This is needed for proper operation of
+      ;; indentation based block recognition (based on ‘port-column’).
+      (begin (unread-char #\newline port) (read-char port) 0)
+      (let ((initial-newline (string (read-char port))))
+        (let loop ((char (peek-char port))
+                   (word ""))
+          (cond ((eqv? char #\newline) (read-char port)
+                 (loop (peek-char port) ""))
+                ((or (eqv? char #\space) (eqv? char #\tab))
+                 (let ((c (read-char port)))
+                   (loop (peek-char port) (string-append word (string c)))))
+                ((comment-line port char) (loop (peek-char port) ""))
+                (else
+                 (let ((len (string-length word)))
+                   (unread-string (string-append initial-newline word) port)
+                   len)))))))
 
 (define* (read-value port value min-indent #:optional (separator " "))
   "The next character on PORT must be #\newline.  Append to VALUE the
@@ -325,7 +333,7 @@ matching a string against the created regexp."
                 (make-regexp pat))))
     (cut regexp-exec rx <>)))
 
-(define is-property (make-rx-matcher "([a-z0-9-]+):[ \t]*(\\w?.*)$"
+(define is-property (make-rx-matcher "([a-z0-9-]+)[ \t]*:[ \t]*(\\w?.*)$"
                                      regexp/icase))
 
 (define is-flag (make-rx-matcher "^flag +([a-z0-9_-]+)"
@@ -350,21 +358,32 @@ matching a string against the created regexp."
 
 (define (is-if s) (string-ci=? s "if"))
 
+(define (is-true s) (string-ci=? s "true"))
+
+(define (is-false s) (string-ci=? s "false"))
+
 (define (is-and s) (string=? s "&&"))
 
 (define (is-or s) (string=? s "||"))
 
-(define (is-id s)
+(define (is-id s port)
   (let ((cabal-reserved-words
          '("if" "else" "library" "flag" "executable" "test-suite"
-           "source-repository" "benchmark")))
+           "source-repository" "benchmark"))
+        (spaces (read-while (cut char-set-contains? char-set:blank <>) port))
+        (c (peek-char port)))
+    (unread-string spaces port)
     (and (every (cut string-ci<> s <>) cabal-reserved-words)
-         (not (char=? (last (string->list s)) #\:)))))
+         (and (not (char=? (last (string->list s)) #\:))
+              (not (char=? #\: c))))))
 
 (define (is-test s port)
   (let ((tests-rx (make-regexp "os|arch|flag|impl"))
+        (spaces (read-while (cut char-set-contains? char-set:blank <>) port))
         (c (peek-char port)))
-    (and (regexp-exec tests-rx s) (char=? #\( c))))
+    (if (and (regexp-exec tests-rx s) (char=? #\( c))
+        #t
+        (begin (unread-string spaces port) #f))))
 
 ;; Lexers for individual tokens.
 
@@ -423,6 +442,10 @@ string with the read characters."
 (define (lex-else loc) (make-lexical-token 'ELSE loc #f))
 
 (define (lex-if loc) (make-lexical-token 'IF loc #f))
+
+(define (lex-true loc) (make-lexical-token 'TRUE loc #t))
+
+(define (lex-false loc) (make-lexical-token 'FALSE loc #f))
 
 (define (lex-and loc) (make-lexical-token 'AND loc #f))
 
@@ -486,12 +509,14 @@ location."
 (define (lex-word port loc)
   "Process tokens which can be recognized by reading the next word form PORT.
 LOC is the current port location."
-  (let* ((w (read-delimited " ()\t\n" port 'peek)))
+  (let* ((w (read-delimited " <>=()\t\n" port 'peek)))
     (cond ((is-if w) (lex-if loc))
           ((is-test w port) (lex-test w loc))
+          ((is-true w) (lex-true loc))
+          ((is-false w) (lex-false loc))
           ((is-and w) (lex-and loc))
           ((is-or w) (lex-or loc))
-          ((is-id w) (lex-id w loc))
+          ((is-id w port) (lex-id w loc))
           (else (unread-string w port) #f))))
 
 (define (lex-line port loc)
@@ -684,11 +709,18 @@ the ordering operation and the version."
                   ((spec-name spec-op spec-ver)
                    (comp-spec-name+op+version haskell)))
       (if (and spec-ver comp-ver)
-          (eval-string
-           (string-append "(string" spec-op " \"" comp-name "\""
-                          " \"" spec-name "-" spec-ver "\")"))
+          (cond
+           ((not (string= spec-name comp-name)) #f)
+           ((string= spec-op "==") (string= spec-ver comp-ver))
+           ((string= spec-op ">=") (version>=? comp-ver spec-ver))
+           ((string= spec-op ">") (version>? comp-ver spec-ver))
+           ((string= spec-op "<=") (not (version>? comp-ver spec-ver)))
+           ((string= spec-op "<") (not (version>=? comp-ver spec-ver)))
+           (else
+            (raise (condition
+                    (&message (message "Failed to evaluate 'impl' test."))))))
           (string-match spec-name comp-name))))
-  
+
   (define (cabal-flags)
     (make-cabal-section cabal-sexp 'flag))
   
@@ -714,6 +746,8 @@ the ordering operation and the version."
       (('os name) (os name))
       (('arch name) (arch name))
       (('impl name) (impl name))
+      ('true #t)
+      ('false #f)
       (('not name) (not (eval name)))
       ;; 'and' and 'or' aren't functions, thus we can't use apply
       (('and args ...) (fold (lambda (e s) (and e s)) #t (eval args)))

@@ -157,7 +157,10 @@ the freedesktop.org XDG Base Directory specification.")
                             (assoc-ref %build-inputs "libcap"))
              (string-append "--with-udevrulesdir="
                             (assoc-ref %outputs "out")
-                            "/lib/udev/rules.d"))
+                            "/lib/udev/rules.d")
+             ;; XXX: fail with:
+             ;;  src/shared/clean-ipc.c:315: undefined reference to `mq_unlink'
+             "LDFLAGS=-lrt")
        #:make-flags '("PKTTYAGENT=/run/current-system/profile/bin/pkttyagent")))
     (native-inputs
      `(("intltool" ,intltool)
@@ -236,14 +239,14 @@ Python.")
 (define-public wayland
   (package
     (name "wayland")
-    (version "1.8.1")
+    (version "1.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://wayland.freedesktop.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1j3gfzn8i0xhk3j34mwb2srrscjxfyi279jhyq80mz943j6r6z7i"))))
+                "1yhy62vkbq8j8c9zaa6yzvn75cd99kfa8n2zfdwl80x019r711ww"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
@@ -340,12 +343,19 @@ Analysis and Reporting Technology) functionality.")
      `(("acl" ,acl)
        ("libatasmart" ,libatasmart)
        ("libgudev" ,libgudev)
-       ("polkit" ,polkit)))
+       ("polkit" ,polkit)
+       ("util-linux" ,util-linux)))
+    (outputs '("out"
+               "doc"))                            ;5 MiB of gtk-doc HTML
     (arguments
      `(#:tests? #f ; requiring system message dbus
        #:configure-flags
        (list "--disable-man"
              "--localstatedir=/var"
+             "--enable-fhs-media"     ;mount devices in /media, not /run/media
+             (string-append "--with-html-dir="
+                            (assoc-ref %outputs "doc")
+                            "/share/doc/udisks/html")
              (string-append "--with-udevdir=" %output "/lib/udev"))
        #:phases
        (modify-phases %standard-phases
@@ -357,7 +367,18 @@ Analysis and Reporting Technology) functionality.")
               (("girdir = .*")
                "girdir = $(datadir)/gir-1.0\n")
               (("typelibsdir = .*")
-               "typelibsdir = $(libdir)/girepository-1.0\n")))))))
+               "typelibsdir = $(libdir)/girepository-1.0\n"))))
+         (add-after 'install 'set-mount-file-name
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             ;; Tell 'udisksd' where to find the 'mount' command.
+             (let ((out   (assoc-ref outputs "out"))
+                   (utils (assoc-ref inputs "util-linux")))
+               (wrap-program (string-append out "/libexec/udisks2/udisksd")
+                 `("PATH" ":" prefix
+                   (,(string-append utils "/bin") ;for 'mount'
+                    "/run/current-system/profile/bin"
+                    "/run/current-system/profile/sbin")))
+               #t))))))
     (home-page "http://www.freedesktop.org/wiki/Software/udisks/")
     (synopsis "Disk manager service")
     (description

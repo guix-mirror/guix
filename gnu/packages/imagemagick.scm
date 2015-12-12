@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +23,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix download)
-  #:use-module ((guix licenses) #:select (fsf-free))
+  #:use-module (guix utils)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages compression)
@@ -104,7 +106,7 @@ including DPX, EXR, GIF, JPEG, JPEG-2000, PDF, PhotoCD, PNG, Postscript, SVG,
 and TIFF.  Use ImageMagick to resize, flip, mirror, rotate, distort, shear and
 transform images, adjust image colors, apply various special effects, or draw
 text, lines, polygons, ellipses and Bézier curves.")
-    (license (fsf-free "http://www.imagemagick.org/script/license.php"))))
+    (license (license:fsf-free "http://www.imagemagick.org/script/license.php"))))
 
 (define-public perl-image-magick
   (package
@@ -149,3 +151,50 @@ Use it to create, edit, compose, or convert bitmap images from within a Perl
 script.")
     ;; See Magick.pm
     (license (package-license imagemagick))))
+
+(define-public graphicsmagick
+  (package
+    (name "graphicsmagick")
+    (version "1.3.23")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "ftp://ftp.graphicsmagick.org/pub/"
+                                 "GraphicsMagick/" (version-major+minor version)
+                                 "/GraphicsMagick-" version ".tar.xz"))
+             (sha256
+              (base32
+               "03g6l2h8cmf231y1vma0z7x85070jm1ysgs9ppqcd3jj56jka9gx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--with-frozenpaths"
+             "--enable-shared=yes"
+             "--with-x=yes"
+             (string-append "--with-gs-font-dir="
+                            (assoc-ref %build-inputs "gs-fonts")
+                            "/share/fonts/type1/ghostscript"))))
+    (inputs
+     `(("graphviz" ,graphviz)
+       ("ghostscript" ,ghostscript)
+       ("gs-fonts" ,gs-fonts)
+       ("lcms" ,lcms)
+       ("libx11" ,libx11)
+       ("libxml2" ,libxml2)
+       ("libtiff" ,libtiff)
+       ("libpng" ,libpng)
+       ("libjpeg" ,libjpeg)
+       ("freetype" ,freetype)
+       ("bzip2" ,bzip2)
+       ("xz" ,xz)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (outputs '("out"   ; 13 MiB
+               "doc")) ; ~7 MiB
+    (home-page "http://www.graphicsmagick.org")
+    (synopsis "Create, edit, compose, or convert bitmap images")
+    (description
+     "GraphicsMagick provides a comprehensive collection of utilities,
+programming interfaces, and GUIs, to support file format conversion, image
+processing, and 2D vector rendering.")
+    (license license:expat)))

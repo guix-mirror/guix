@@ -40,7 +40,7 @@
 (define-public hwloc
   (package
     (name "hwloc")
-    (version "1.10.1")
+    (version "1.11.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.open-mpi.org/software/hwloc/v"
@@ -48,9 +48,7 @@
                                   "/downloads/hwloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "0jji5rphy05s0lp6bknn8lxwixrq0hy5rjzsqvhjszbkl2li7kim"))
-              (patches (list
-                        (search-patch "hwloc-gather-topology-lstopo.patch")))))
+                "03vcr9f98z45xfkk34x376mfrwyi7ff4ay60gvn4v95sqihl0qa8"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
@@ -95,7 +93,7 @@ bind processes, and much more.")
 (define-public openmpi
   (package
     (name "openmpi")
-    (version "1.8.5")
+    (version "1.10.1")
     (source
      (origin
       (method url-fetch)
@@ -104,7 +102,7 @@ bind processes, and much more.")
                           "/downloads/openmpi-" version ".tar.bz2"))
       (sha256
        (base32
-        "1i7vjf599kl5lm8n4vnwq9q1d9scn4sdjh42kfq1i9yzxnlhdsjc"))))
+        "14p4px9a3qzjc22lnl6braxrcrmd9rgmy7fh4qpanawn2pgfq6br"))))
     (build-system gnu-build-system)
     (inputs
      `(("hwloc" ,hwloc)
@@ -115,16 +113,12 @@ bind processes, and much more.")
        ("perl" ,perl)))
     (arguments
      `(#:configure-flags `("--enable-static"
-                           "--enable-oshmem"
 
-                           "--enable-event-thread-support"
-                           "--enable-opal-multi-threads"
-                           "--enable-orte-progress-threads"
                            "--enable-mpi-thread-multiple"
+                           "--enable-builtin-atomics"
 
                            "--enable-mpi-ext=all"
                            "--with-devel-headers"
-                           "--enable-debug"
                            "--enable-memchecker"
                            ,(string-append "--with-valgrind="
                                            (assoc-ref %build-inputs "valgrind"))

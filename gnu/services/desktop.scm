@@ -27,13 +27,15 @@
   #:use-module (gnu services xorg)
   #:use-module (gnu services networking)
   #:use-module (gnu system shadow)
-  #:use-module (gnu system linux) ; unix-pam-service
+  #:use-module (gnu system pam)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages polkit)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages suckless)
   #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module (guix store)
@@ -41,6 +43,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:export (upower-service
+            udisks-service
             colord-service
             geoclue-application
             %standard-geoclue-applications
@@ -224,65 +227,6 @@ levels, with the given configuration settings.  It implements the
 
 
 ;;;
-;;; Colord D-Bus service.
-;;;
-
-(define %colord-activation
-  #~(begin
-      (use-modules (guix build utils))
-      (mkdir-p "/var/lib/colord")
-      (let ((user (getpwnam "colord")))
-        (chown "/var/lib/colord"
-               (passwd:uid user) (passwd:gid user)))))
-
-(define %colord-accounts
-  (list (user-group (name "colord") (system? #t))
-        (user-account
-         (name "colord")
-         (group "colord")
-         (system? #t)
-         (comment "colord daemon user")
-         (home-directory "/var/empty")
-         (shell #~(string-append #$shadow "/sbin/nologin")))))
-
-(define (colord-dmd-service colord)
-  "Return a dmd service for COLORD."
-  ;; TODO: Remove when D-Bus activation works.
-  (list (dmd-service
-         (documentation "Run the colord color management service.")
-         (provision '(colord-daemon))
-         (requirement '(dbus-system udev))
-         (start #~(make-forkexec-constructor
-                   (list (string-append #$colord "/libexec/colord"))))
-         (stop #~(make-kill-destructor)))))
-
-(define colord-service-type
-  (service-type (name 'colord)
-                (extensions
-                 (list (service-extension account-service-type
-                                          (const %colord-accounts))
-                       (service-extension activation-service-type
-                                          (const %colord-activation))
-                       (service-extension dmd-root-service-type
-                                          colord-dmd-service)
-
-                       ;; Colord is a D-Bus service that dbus-daemon can
-                       ;; activate.
-                       (service-extension dbus-root-service-type list)
-
-                       ;; Colord provides "color device" rules for udev.
-                       (service-extension udev-service-type list)))))
-
-(define* (colord-service #:key (colord colord))
-  "Return a service that runs @command{colord}, a system service with a D-Bus
-interface to manage the color profiles of input and output devices such as
-screens and scanners.  It is notably used by the GNOME Color Manager graphical
-tool.  See @uref{http://www.freedesktop.org/software/colord/, the colord web
-site} for more information."
-  (service colord-service-type colord))
-
-
-;;;
 ;;; GeoClue D-Bus service.
 ;;;
 
@@ -343,23 +287,6 @@ users are allowed."
                               "GEOCLUE_CONFIG_FILE"
                               (geoclue-configuration-file config))))
 
-(define (geoclue-dmd-service config)
-  "Return a GeoClue dmd service for CONFIG."
-  ;; TODO: Remove when D-Bus activation works.
-  (let ((geoclue (geoclue-configuration-geoclue config))
-        (config  (geoclue-configuration-file config)))
-    (list (dmd-service
-           (documentation "Run the GeoClue location service.")
-           (provision '(geoclue-daemon))
-           (requirement '(dbus-system))
-
-           (start #~(make-forkexec-constructor
-                     (list (string-append #$geoclue "/libexec/geoclue"))
-                     #:user "geoclue"
-                     #:environment-variables
-                     (list (string-append "GEOCLUE_CONFIG_FILE=" #$config))))
-           (stop #~(make-kill-destructor))))))
-
 (define %geoclue-accounts
   (list (user-group (name "geoclue") (system? #t))
         (user-account
@@ -375,8 +302,6 @@ users are allowed."
                 (extensions
                  (list (service-extension dbus-root-service-type
                                           geoclue-dbus-service)
-                       (service-extension dmd-root-service-type
-                                          geoclue-dmd-service)
                        (service-extension account-service-type
                                           (const %geoclue-accounts))))))
 
@@ -413,6 +338,14 @@ site} for more information."
 ;;; Polkit privilege management service.
 ;;;
 
+(define-record-type* <polkit-configuration>
+  polkit-configuration make-polkit-configuration
+  polkit-configuration?
+  (polkit   polkit-configuration-polkit           ;<package>
+            (default polkit))
+  (actions  polkit-configuration-actions          ;list of <package>
+            (default '())))
+
 (define %polkit-accounts
   (list (user-group (name "polkitd") (system? #t))
         (user-account
@@ -424,23 +357,34 @@ site} for more information."
          (shell "/run/current-system/profile/sbin/nologin"))))
 
 (define %polkit-pam-services
-  (list (unix-pam-service "polkitd")))
+  (list (unix-pam-service "polkit-1")))
 
-(define (polkit-dmd-service polkit)
-  "Return the <dmd-service> for POLKIT."
-  ;; TODO: Remove when D-Bus activation works.
-  (list (dmd-service
-         (documentation "Run the polkit privilege management service.")
-         (provision '(polkit-daemon))
-         (requirement '(dbus-system))
+(define (polkit-directory packages)
+  "Return a directory containing an @file{actions} and possibly a
+@file{rules.d} sub-directory, for use as @file{/etc/polkit-1}."
+  (computed-file "etc-polkit-1"
+                 #~(begin
+                     (use-modules (guix build union) (srfi srfi-26))
 
-         (start #~(make-forkexec-constructor
-                   (list (string-append #$polkit "/lib/polkit-1/polkitd"))))
-         (stop #~(make-kill-destructor)))))
+                     (union-build #$output
+                                  (map (cut string-append <>
+                                            "/share/polkit-1")
+                                       (list #$@packages))))
+                 #:modules '((guix build union))))
+
+(define polkit-etc-files
+  (match-lambda
+    (($ <polkit-configuration> polkit packages)
+     `(("polkit-1" ,(polkit-directory packages))))))
+
+(define polkit-setuid-programs
+  (match-lambda
+    (($ <polkit-configuration> polkit)
+     (list #~(string-append #$polkit
+                            "/lib/polkit-1/polkit-agent-helper-1")
+           #~(string-append #$polkit "/bin/pkexec")))))
 
 (define polkit-service-type
-  ;; TODO: Make it extensible so it can collect policy files from other
-  ;; services.
   (service-type (name 'polkit)
                 (extensions
                  (list (service-extension account-service-type
@@ -448,17 +392,118 @@ site} for more information."
                        (service-extension pam-root-service-type
                                           (const %polkit-pam-services))
                        (service-extension dbus-root-service-type
-                                          list)
-                       (service-extension dmd-root-service-type
-                                          polkit-dmd-service)))))
+                                          (compose
+                                           list
+                                           polkit-configuration-polkit))
+                       (service-extension etc-service-type
+                                          polkit-etc-files)
+                       (service-extension setuid-program-service-type
+                                          polkit-setuid-programs)))
+
+                ;; Extensions are lists of packages that provide polkit rules
+                ;; or actions under share/polkit-1/{actions,rules.d}.
+                (compose concatenate)
+                (extend (lambda (config actions)
+                          (polkit-configuration
+                           (inherit config)
+                           (actions
+                            (append (polkit-configuration-actions config)
+                                    actions)))))))
 
 (define* (polkit-service #:key (polkit polkit))
-  "Return a service that runs the @command{polkit} privilege management
-service.  By querying the @command{polkit} service, a privileged system
-component can know when it should grant additional capabilities to ordinary
-users.  For example, an ordinary user can be granted the capability to suspend
-the system if the user is logged in locally."
-  (service polkit-service-type polkit))
+  "Return a service that runs the
+@uref{http://www.freedesktop.org/wiki/Software/polkit/, Polkit privilege
+management service}, which allows system administrators to grant access to
+privileged operations in a structured way.  By querying the Polkit service, a
+privileged system component can know when it should grant additional
+capabilities to ordinary users.  For example, an ordinary user can be granted
+the capability to suspend the system if the user is logged in locally."
+  (service polkit-service-type
+           (polkit-configuration (polkit polkit))))
+
+
+;;;
+;;; Colord D-Bus service.
+;;;
+
+(define %colord-activation
+  #~(begin
+      (use-modules (guix build utils))
+      (mkdir-p "/var/lib/colord")
+      (let ((user (getpwnam "colord")))
+        (chown "/var/lib/colord"
+               (passwd:uid user) (passwd:gid user)))))
+
+(define %colord-accounts
+  (list (user-group (name "colord") (system? #t))
+        (user-account
+         (name "colord")
+         (group "colord")
+         (system? #t)
+         (comment "colord daemon user")
+         (home-directory "/var/empty")
+         (shell #~(string-append #$shadow "/sbin/nologin")))))
+
+(define colord-service-type
+  (service-type (name 'colord)
+                (extensions
+                 (list (service-extension account-service-type
+                                          (const %colord-accounts))
+                       (service-extension activation-service-type
+                                          (const %colord-activation))
+
+                       ;; Colord is a D-Bus service that dbus-daemon can
+                       ;; activate.
+                       (service-extension dbus-root-service-type list)
+
+                       ;; Colord provides "color device" rules for udev.
+                       (service-extension udev-service-type list)
+
+                       ;; It provides polkit "actions".
+                       (service-extension polkit-service-type list)))))
+
+(define* (colord-service #:key (colord colord))
+  "Return a service that runs @command{colord}, a system service with a D-Bus
+interface to manage the color profiles of input and output devices such as
+screens and scanners.  It is notably used by the GNOME Color Manager graphical
+tool.  See @uref{http://www.freedesktop.org/software/colord/, the colord web
+site} for more information."
+  (service colord-service-type colord))
+
+
+;;;
+;;; UDisks.
+;;;
+
+(define-record-type* <udisks-configuration>
+  udisks-configuration make-udisks-configuration
+  udisks-configuration?
+  (udisks   udisks-configuration-udisks
+            (default udisks)))
+
+(define udisks-service-type
+  (let ((udisks-package (lambda (config)
+                          (list (udisks-configuration-udisks config)))))
+    (service-type (name 'udisks)
+                  (extensions
+                   (list (service-extension polkit-service-type
+                                            udisks-package)
+                         (service-extension dbus-root-service-type
+                                            udisks-package)
+                         (service-extension udev-service-type
+                                            udisks-package)
+
+                         ;; Profile 'udisksctl' & co. in the system profile.
+                         (service-extension profile-service-type
+                                            udisks-package))))))
+
+(define* (udisks-service #:key (udisks udisks))
+  "Return a service for @uref{http://udisks.freedesktop.org/docs/latest/,
+UDisks}, a @dfn{disk management} daemon that provides user interfaces with
+notifications and ways to mount/unmount disks.  Programs that talk to UDisks
+include the @command{udisksctl} command, part of UDisks, and GNOME Disks."
+  (service udisks-service-type
+           (udisks-configuration (udisks udisks))))
 
 
 ;;;
@@ -601,6 +646,8 @@ the system if the user is logged in locally."
 
 (define (elogind-dmd-service config)
   "Return a dmd service for elogind, using @var{config}."
+  ;; TODO: We could probably rely on service activation but the '.service'
+  ;; file currently contains an erroneous 'Exec' line.
   (let ((config-file (elogind-configuration-file config))
         (elogind     (elogind-package config)))
     (list (dmd-service
@@ -623,7 +670,9 @@ the system if the user is logged in locally."
                                           (compose list elogind-package))
                        (service-extension udev-service-type
                                           (compose list elogind-package))
-                       ;; TODO: Extend polkit(?) and PAM.
+                       (service-extension polkit-service-type
+                                          (compose list elogind-package))
+                       ;; TODO: Extend PAM with pam_elogind.so.
                        ))))
 
 (define* (elogind-service #:key (config (elogind-configuration)))
@@ -643,9 +692,14 @@ when they log out."
   ;; List of services typically useful for a "desktop" use case.
   (cons* (slim-service)
 
+         ;; Screen lockers are a pretty useful thing and these are small.
+         (screen-locker-service slock)
+         (screen-locker-service xlockmore "xlock")
+
          ;; The D-Bus clique.
          (avahi-service)
          (wicd-service)
+         (udisks-service)
          (upower-service)
          (colord-service)
          (geoclue-service)

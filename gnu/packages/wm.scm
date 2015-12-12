@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 xd1le <elisp.vim@gmail.com>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
 (define-module (gnu packages wm)
   #:use-module (guix licenses)
   #:use-module (guix packages)
+  #:use-module (gnu packages)
   #:use-module (gnu packages linux)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
@@ -177,7 +179,7 @@ commands would.")
        ("pkg-config" ,pkg-config)))
     (home-page "http://i3wm.org/")
     (synopsis "Improved tiling window manager")
-    (description "i3 is a tiling window manager, completely written
+    (description "A tiling window manager, completely written
 from scratch.  i3 is primarily targeted at advanced users and
 developers.")
     (license bsd-3)))
@@ -190,10 +192,19 @@ developers.")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://hackage.haskell.org/package/xmonad/"
-                                  "xmonad-" version ".tar.gz"))
+                                  name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1pfjssamiwpwjp1qqkm9m9p9s35pv381m0cwg6jxg0ppglibzq1r"))))
+                "1pfjssamiwpwjp1qqkm9m9p9s35pv381m0cwg6jxg0ppglibzq1r"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Here we update the constraints on the utf8-string package in
+               ;; the Cabal file.  We allow a newer version which is compatible
+               ;; with GHC 7.10.2.  The same change is applied on Hackage.  See
+               ;; <https://hackage.haskell.org/package/xmonad-0.11.1/revisions/>.
+               '(substitute* "xmonad.cabal"
+                  (("utf8-string >= 0.3 && < 0.4")
+                   "utf8-string >= 0.3 && < 1.1")))))
     (build-system haskell-build-system)
     (inputs
      `(("ghc-mtl" ,ghc-mtl)
@@ -232,7 +243,7 @@ tiled on several screens.")
 (define-public ghc-xmonad-contrib
   (package
     (name "ghc-xmonad-contrib")
-    (version "0.11.3")
+    (version "0.11.4")
     (source
      (origin
        (method url-fetch)
@@ -240,10 +251,11 @@ tiled on several screens.")
                            "xmonad-contrib-" version ".tar.gz"))
        (sha256
         (base32
-         "14h9vr33yljymswj50wbimav263y9abdcgi07mvfis0zd08rxqxa"))))
+         "1g5cw9vvnfbiyi599fngk02zlmdhrf82x0bndhypkn6kybab6yd3"))))
     (build-system haskell-build-system)
     (propagated-inputs
      `(("ghc-mtl" ,ghc-mtl)
+       ("ghc-old-time" ,ghc-old-time)
        ("ghc-random" ,ghc-random)
        ("ghc-utf8-string" ,ghc-utf8-string)
        ("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
@@ -268,7 +280,8 @@ tiling window manager for X.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0ak0yajzk3v4dg5wmaghv6acf7v02a4iw8qxmq5yw5ard8lrqn3r"))))
+         "0ak0yajzk3v4dg5wmaghv6acf7v02a4iw8qxmq5yw5ard8lrqn3r"))
+       (patches (map search-patch '("evilwm-lost-focus-bug.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)

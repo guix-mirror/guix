@@ -30,6 +30,7 @@
   #:export (ftp-connection?
             ftp-connection-addrinfo
 
+            connect*
             ftp-open
             ftp-close
             ftp-chdir
@@ -82,42 +83,91 @@
         ((331) (%ftp-command (string-append "PASS " pass) 230 port))
         (else  (throw 'ftp-error port command code message))))))
 
-(define* (ftp-open host #:optional (port 21))
+(define-syntax-rule (catch-EINPROGRESS body ...)
+  (catch 'system-error
+    (lambda ()
+      body ...)
+    (lambda args
+      (unless (= (system-error-errno args) EINPROGRESS)
+        (apply throw args)))))
+
+;; XXX: For lack of a better place.
+(define* (connect* s sockaddr #:optional timeout)
+  "When TIMEOUT is omitted or #f, this procedure is equivalent to 'connect'.
+When TIMEOUT is a number, it is the (possibly inexact) maximum number of
+seconds to wait for the connection to succeed."
+  (define (raise-error errno)
+    (throw 'system-error 'connect* "~A"
+           (list (strerror errno))
+           (list errno)))
+
+  (if timeout
+      (let ((flags (fcntl s F_GETFL)))
+        (fcntl s F_SETFL (logior flags O_NONBLOCK))
+        (catch-EINPROGRESS (connect s sockaddr))
+        (match (select '() (list s) (list s) timeout)
+          ((() () ())
+           ;; Time is up!
+           (raise-error ETIMEDOUT))
+          ((() (write) ())
+           ;; Check for ECONNREFUSED and the likes.
+           (fcntl s F_SETFL flags)
+           (let ((errno (getsockopt s SOL_SOCKET SO_ERROR)))
+             (unless (zero? errno)
+               (raise-error errno))))
+          ((() () (except))
+           ;; Seems like this cannot really happen, but who knows.
+           (let ((errno (getsockopt s SOL_SOCKET SO_ERROR)))
+             (raise-error errno)))))
+      (connect s sockaddr)))
+
+(define* (ftp-open host #:optional (port "ftp") #:key timeout)
   "Open an FTP connection to HOST on PORT (a service-identifying string,
-or a TCP port number), and return it."
-  ;; Use 21 as the default PORT instead of "ftp", to avoid depending on
-  ;; libc's NSS, which is not available during bootstrap.
+or a TCP port number), and return it.
+
+When TIMEOUT is not #f, it must be a (possibly inexact) number denoting the
+maximum duration in seconds to wait for the connection to complete; passed
+TIMEOUT, an ETIMEDOUT error is raised."
+  ;; Using "ftp" for PORT instead of 21 allows 'getaddrinfo' to return only
+  ;; TCP/IP addresses (otherwise it would return SOCK_DGRAM and SOCK_RAW
+  ;; addresses as well.)  With our bootstrap Guile, which includes a
+  ;; statically-linked NSS, resolving "ftp" works well, as long as
+  ;; /etc/services is available.
 
   (define addresses
     (getaddrinfo host
                  (if (number? port) (number->string port) port)
-                 (if (number? port) AI_NUMERICSERV 0)))
+                 (if (number? port)
+                     (logior AI_ADDRCONFIG AI_NUMERICSERV)
+                     AI_ADDRCONFIG)))
 
   (let loop ((addresses addresses))
-    (let* ((ai (car addresses))
-           (s  (socket (addrinfo:fam ai) (addrinfo:socktype ai)
-                       (addrinfo:protocol ai))))
+    (match addresses
+      ((ai rest ...)
+       (let ((s (socket (addrinfo:fam ai)
+                        ;; TCP/IP only
+                        SOCK_STREAM IPPROTO_IP)))
 
-      (catch 'system-error
-        (lambda ()
-          (connect s (addrinfo:addr ai))
-          (setvbuf s _IOLBF)
-          (let-values (((code message) (%ftp-listen s)))
-            (if (eqv? code 220)
-                (begin
-                  ;;(%ftp-command "OPTS UTF8 ON" 200 s)
-                  (%ftp-login "anonymous" "guix@example.com" s)
-                  (%make-ftp-connection s ai))
-                (begin
-                  (close s)
-                  (throw 'ftp-error s "log-in" code message)))))
+         (catch 'system-error
+           (lambda ()
+             (connect* s (addrinfo:addr ai) timeout)
+             (setvbuf s _IOLBF)
+             (let-values (((code message) (%ftp-listen s)))
+               (if (eqv? code 220)
+                   (begin
+                     ;;(%ftp-command "OPTS UTF8 ON" 200 s)
+                     (%ftp-login "anonymous" "guix@example.com" s)
+                     (%make-ftp-connection s ai))
+                   (begin
+                     (close s)
+                     (throw 'ftp-error s "log-in" code message)))))
 
-        (lambda args
-          ;; Connection failed, so try one of the other addresses.
-          (close s)
-          (if (null? addresses)
-              (apply throw args)
-              (loop (cdr addresses))))))))
+           (lambda args
+             ;; Connection failed, so try one of the other addresses.
+             (close s)
+             (if (null? rest)
+                 (apply throw args)
+                 (loop rest)))))))))
 
 (define (ftp-close conn)
   (close (ftp-connection-socket conn)))

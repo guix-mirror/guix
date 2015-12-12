@@ -22,7 +22,8 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-1)
   #:use-module ((guix download) #:select (download-to-store))
-  #:use-module ((guix utils) #:select (package-name->name+version))
+  #:use-module ((guix utils) #:select (package-name->name+version
+                                       canonical-newline-port))
   #:use-module (guix import utils)
   #:use-module (guix import cabal)
   #:use-module (guix store)
@@ -32,37 +33,35 @@
   #:export (hackage->guix-package))
 
 (define ghc-standard-libraries
-  ;; List of libraries distributed with ghc (7.8.4). We include GHC itself as
+  ;; List of libraries distributed with ghc (7.10.2). We include GHC itself as
   ;; some packages list it.
-  '("ghc"
-    "haskell98"
-    "hoopl"
+  '("array"
     "base"
-    "transformers"
-    "deepseq"
-    "array"
+    "bin-package-db"
     "binary"
     "bytestring"
+    "cabal" ;; in the output of `ghc-pkg list` Cabal is uppercased, but
+            ;; hackage-name->package-name takes this into account.
     "containers"
-    "time"
-    "cabal"
-    "bin-package-db"
-    "ghc-prim"
-    "integer-gmp"
-    "integer-simple"
-    "win32"
-    "template-haskell"
-    "process"
-    "haskeline"
-    "terminfo"
+    "deepseq"
     "directory"
     "filepath"
-    "old-locale"
-    "unix"
-    "old-time"
+    "ghc"
+    "ghc-prim"
+    "haskeline"
+    "hoopl"
+    "hpc"
+    "integer-gmp"
     "pretty"
-    "xhtml"
-    "hpc"))
+    "process"
+    "rts"
+    "template-haskell"
+    "terminfo"
+    "time"
+    "transformers"
+    "unix"
+    "win32"
+    "xhtml"))
 
 (define package-name-prefix "ghc-")
 
@@ -86,7 +85,8 @@ version."
     (call-with-temporary-output-file
      (lambda (temp port)
        (and (url-fetch url temp)
-            (call-with-input-file temp read-cabal))))))
+            (call-with-input-file temp
+              (compose read-cabal canonical-newline-port)))))))
 
 (define string->license
   ;; List of valid values from
@@ -218,7 +218,7 @@ to the Cabal file format definition.  The default value associated with the
 keys \"os\", \"arch\" and \"impl\" is \"linux\", \"x86_64\" and \"ghc\"
 respectively."
   (let ((cabal-meta (if port
-                        (read-cabal port)
+                        (read-cabal (canonical-newline-port port))
                         (hackage-fetch package-name))))
     (and=> cabal-meta (compose (cut hackage-module->sexp <>
                                     #:include-test-dependencies? 

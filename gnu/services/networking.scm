@@ -22,15 +22,18 @@
   #:use-module (gnu services dmd)
   #:use-module (gnu services dbus)
   #:use-module (gnu system shadow)
-  #:use-module (gnu system linux)                 ;PAM
+  #:use-module (gnu system pam)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages tor)
   #:use-module (gnu packages messaging)
   #:use-module (gnu packages ntp)
   #:use-module (gnu packages wicd)
+  #:use-module (gnu packages gnome)
   #:use-module (guix gexp)
   #:use-module (guix records)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (%facebook-host-aliases
@@ -38,9 +41,11 @@
             dhcp-client-service
             %ntp-servers
             ntp-service
+            tor-hidden-service
             tor-service
             bitlbee-service
-            wicd-service))
+            wicd-service
+            network-manager-service))
 
 ;;; Commentary:
 ;;;
@@ -305,6 +310,15 @@ keep the system clock synchronized with that of @var{servers}."
 ;;; Tor.
 ;;;
 
+(define-record-type* <tor-configuration>
+  tor-configuration make-tor-configuration
+  tor-configuration?
+  (tor              tor-configuration-tor
+                    (default tor))
+  (config-file      tor-configuration-config-file)
+  (hidden-services  tor-configuration-hidden-services
+                    (default '())))
+
 (define %tor-accounts
   ;; User account and groups for Tor.
   (list (user-group (name "tor") (system? #t))
@@ -316,20 +330,93 @@ keep the system clock synchronized with that of @var{servers}."
          (home-directory "/var/empty")
          (shell #~(string-append #$shadow "/sbin/nologin")))))
 
-(define (tor-dmd-service tor)
+(define-record-type <hidden-service>
+  (hidden-service name mapping)
+  hidden-service?
+  (name    hidden-service-name)                   ;string
+  (mapping hidden-service-mapping))               ;list of port/address tuples
+
+(define (tor-configuration->torrc config)
+  "Return a 'torrc' file for CONFIG."
+  (match config
+    (($ <tor-configuration> tor config-file services)
+     (computed-file
+      "torrc"
+      #~(begin
+          (use-modules (guix build utils)
+                       (ice-9 match))
+
+          (call-with-output-file #$output
+            (lambda (port)
+              (display "\
+# The beginning was automatically added.
+User tor
+DataDirectory /var/lib/tor
+Log notice syslog\n" port)
+
+              (for-each (match-lambda
+                          ((service (ports hosts) ...)
+                           (format port "\
+HiddenServiceDir /var/lib/tor/hidden-services/~a~%"
+                                   service)
+                           (for-each (lambda (tcp-port host)
+                                       (format port "\
+HiddenServicePort ~a ~a~%"
+                                               tcp-port host))
+                                     ports hosts)))
+                        '#$(map (match-lambda
+                                  (($ <hidden-service> name mapping)
+                                   (cons name mapping)))
+                                services))
+
+              ;; Append the user's config file.
+              (call-with-input-file #$config-file
+                (lambda (input)
+                  (dump-port input port)))
+              #t)))
+      #:modules '((guix build utils))))))
+
+(define (tor-dmd-service config)
   "Return a <dmd-service> running TOR."
-  (let ((torrc (plain-file "torrc" "User tor\n")))
-    (list (dmd-service
-           (provision '(tor))
+  (match config
+    (($ <tor-configuration> tor)
+     (let ((torrc (tor-configuration->torrc config)))
+       (list (dmd-service
+              (provision '(tor))
 
-           ;; Tor needs at least one network interface to be up, hence the
-           ;; dependency on 'loopback'.
-           (requirement '(user-processes loopback))
+              ;; Tor needs at least one network interface to be up, hence the
+              ;; dependency on 'loopback'.
+              (requirement '(user-processes loopback syslogd))
 
-           (start #~(make-forkexec-constructor
-                     (list (string-append #$tor "/bin/tor") "-f" #$torrc)))
-           (stop #~(make-kill-destructor))
-           (documentation "Run the Tor anonymous network overlay.")))))
+              (start #~(make-forkexec-constructor
+                        (list (string-append #$tor "/bin/tor") "-f" #$torrc)))
+              (stop #~(make-kill-destructor))
+              (documentation "Run the Tor anonymous network overlay.")))))))
+
+(define (tor-hidden-service-activation config)
+  "Return the activation gexp for SERVICES, a list of hidden services."
+  #~(begin
+      (use-modules (guix build utils))
+
+      (define %user
+        (getpw "tor"))
+
+      (define (initialize service)
+        (let ((directory (string-append "/var/lib/tor/hidden-services/"
+                                        service)))
+          (mkdir-p directory)
+          (chown directory (passwd:uid %user) (passwd:gid %user))
+
+          ;; The daemon bails out if we give wider permissions.
+          (chmod directory #o700)))
+
+      (mkdir-p "/var/lib/tor")
+      (chown "/var/lib/tor" (passwd:uid %user) (passwd:gid %user))
+      (chmod "/var/lib/tor" #o700)
+
+      (for-each initialize
+                '#$(map hidden-service-name
+                        (tor-configuration-hidden-services config)))))
 
 (define tor-service-type
   (service-type (name 'tor)
@@ -337,14 +424,59 @@ keep the system clock synchronized with that of @var{servers}."
                  (list (service-extension dmd-root-service-type
                                           tor-dmd-service)
                        (service-extension account-service-type
-                                          (const %tor-accounts))))))
+                                          (const %tor-accounts))
+                       (service-extension activation-service-type
+                                          tor-hidden-service-activation)))
 
-(define* (tor-service #:key (tor tor))
-  "Return a service to run the @uref{https://torproject.org,Tor} daemon.
+                ;; This can be extended with hidden services.
+                (compose concatenate)
+                (extend (lambda (config services)
+                          (tor-configuration
+                           (inherit config)
+                           (hidden-services
+                            (append (tor-configuration-hidden-services config)
+                                    services)))))))
 
-The daemon runs with the default settings (in particular the default exit
-policy) as the @code{tor} unprivileged user."
-  (service tor-service-type tor))
+(define* (tor-service #:optional
+                      (config-file (plain-file "empty" ""))
+                      #:key (tor tor))
+  "Return a service to run the @uref{https://torproject.org, Tor} anonymous
+networking daemon.
+
+The daemon runs as the @code{tor} unprivileged user.  It is passed
+@var{config-file}, a file-like object, with an additional @code{User tor} line
+and lines for hidden services added via @code{tor-hidden-service}.  Run
+@command{man tor} for information about the configuration file."
+  (service tor-service-type
+           (tor-configuration (tor tor)
+                              (config-file config-file))))
+
+(define tor-hidden-service-type
+  ;; A type that extends Tor with hidden services.
+  (service-type (name 'tor-hidden-service)
+                (extensions
+                 (list (service-extension tor-service-type list)))))
+
+(define (tor-hidden-service name mapping)
+  "Define a new Tor @dfn{hidden service} called @var{name} and implementing
+@var{mapping}.  @var{mapping} is a list of port/host tuples, such as:
+
+@example
+ '((22 \"127.0.0.1:22\")
+   (80 \"127.0.0.1:8080\"))
+@end example
+
+In this example, port 22 of the hidden service is mapped to local port 22, and
+port 80 is mapped to local port 8080.
+
+This creates a @file{/var/lib/tor/hidden-services/@var{name}} directory, where
+the @file{hostname} file contains the @code{.onion} host name for the hidden
+service.
+
+See @uref{https://www.torproject.org/docs/tor-hidden-service.html.en, the Tor
+project's documentation} for more information."
+  (service tor-hidden-service-type
+           (hidden-service name mapping)))
 
 
 ;;;
@@ -466,11 +598,58 @@ configuration file."
                        (service-extension dbus-root-service-type
                                           list)
                        (service-extension activation-service-type
-                                          (const %wicd-activation))))))
+                                          (const %wicd-activation))
+
+                       ;; Add Wicd to the global profile.
+                       (service-extension profile-service-type list)))))
 
 (define* (wicd-service #:key (wicd wicd))
   "Return a service that runs @url{https://launchpad.net/wicd,Wicd}, a network
-manager that aims to simplify wired and wireless networking."
+management daemon that aims to simplify wired and wireless networking.
+
+This service adds the @var{wicd} package to the global profile, providing
+several commands to interact with the daemon and configure networking:
+@command{wicd-client}, a graphical user interface, and the @command{wicd-cli}
+and @command{wicd-curses} user interfaces."
   (service wicd-service-type wicd))
+
+
+;;;
+;;; NetworkManager
+;;;
+
+(define %network-manager-activation
+  ;; Activation gexp for NetworkManager.
+  #~(begin
+      (use-modules (guix build utils))
+      (mkdir-p "/etc/NetworkManager/system-connections")))
+
+(define (network-manager-dmd-service network-manager)
+  "Return a dmd service for NETWORK-MANAGER."
+  (list (dmd-service
+         (documentation "Run the NetworkManager.")
+         (provision '(networking))
+         (requirement '(user-processes dbus-system loopback))
+         (start #~(make-forkexec-constructor
+                   (list (string-append #$network-manager
+                                        "/sbin/NetworkManager")
+                         "--no-daemon")))
+         (stop #~(make-kill-destructor)))))
+
+(define network-manager-service-type
+  (service-type (name 'network-manager)
+                (extensions
+                 (list (service-extension dmd-root-service-type
+                                          network-manager-dmd-service)
+                       (service-extension dbus-root-service-type list)
+                       (service-extension activation-service-type
+                                          (const %network-manager-activation))
+                       ;; Add network-manager to the system profile.
+                       (service-extension profile-service-type list)))))
+
+(define* (network-manager-service #:key (network-manager network-manager))
+  "Return a service that runs NetworkManager, a network connection manager
+that attempting to keep active network connectivity when available."
+  (service network-manager-service-type network-manager))
 
 ;;; networking.scm ends here

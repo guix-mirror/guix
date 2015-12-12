@@ -29,7 +29,8 @@
   #:use-module (srfi srfi-39)
   #:use-module (srfi srfi-60)
   #:use-module (rnrs bytevectors)
-  #:use-module ((rnrs io ports) #:select (put-bytevector))
+  #:use-module (rnrs io ports)
+  #:use-module ((rnrs bytevectors) #:select (bytevector-u8-set!))
   #:use-module ((guix build utils)
                 #:select (dump-port package-name->name+version))
   #:use-module ((guix build syscalls) #:select (errno mkdtemp!))
@@ -74,6 +75,7 @@
             arguments-from-environment-variable
             file-extension
             file-sans-extension
+            switch-symlinks
             call-with-temporary-output-file
             call-with-temporary-directory
             with-atomic-file-output
@@ -82,13 +84,15 @@
             fold-tree-leaves
             split
             cache-directory
+            readlink*
 
             filtered-port
             compressed-port
             decompressed-port
             call-with-decompressed-port
             compressed-output-port
-            call-with-compressed-output-port))
+            call-with-compressed-output-port
+            canonical-newline-port))
 
 
 ;;;
@@ -556,6 +560,13 @@ minor version numbers from version-string."
         (substring file 0 dot)
         file)))
 
+(define (switch-symlinks link target)
+  "Atomically switch LINK, a symbolic link, to point to TARGET.  Works
+both when LINK already exists and when it does not."
+  (let ((pivot (string-append link ".new")))
+    (symlink target pivot)
+    (rename-file pivot link)))
+
 (define* (string-replace-substring str substr replacement
                                    #:optional
                                    (start 0)
@@ -710,6 +721,61 @@ elements after E."
       (and=> (getenv "HOME")
              (cut string-append <> "/.cache/guix"))))
 
+(define (readlink* file)
+  "Call 'readlink' until the result is not a symlink."
+  (define %max-symlink-depth 50)
+
+  (let loop ((file  file)
+             (depth 0))
+    (define (absolute target)
+      (if (absolute-file-name? target)
+          target
+          (string-append (dirname file) "/" target)))
+
+    (if (>= depth %max-symlink-depth)
+        file
+        (call-with-values
+            (lambda ()
+              (catch 'system-error
+                (lambda ()
+                  (values #t (readlink file)))
+                (lambda args
+                  (let ((errno (system-error-errno args)))
+                    (if (or (= errno EINVAL))
+                        (values #f file)
+                        (apply throw args))))))
+          (lambda (success? target)
+            (if success?
+                (loop (absolute target) (+ depth 1))
+                file))))))
+
+(define (canonical-newline-port port)
+  "Return an input port that wraps PORT such that all newlines consist
+  of a single carriage return."
+  (define (get-position)
+    (if (port-has-port-position? port) (port-position port) #f))
+  (define (set-position! position)
+    (if (port-has-set-port-position!? port)
+        (set-port-position! position port)
+        #f))
+  (define (close) (close-port port))
+  (define (read! bv start n)
+    (let loop ((count 0)
+               (byte (get-u8 port)))
+      (cond ((eof-object? byte) count)
+            ((= count (- n 1))
+             (bytevector-u8-set! bv (+ start count) byte)
+             n)
+            ;; XXX: consume all LFs even if not followed by CR.
+            ((eqv? byte (char->integer #\return)) (loop count (get-u8 port)))
+            (else
+             (bytevector-u8-set! bv (+ start count) byte)
+             (loop (+ count 1) (get-u8 port))))))
+  (make-custom-binary-input-port "canonical-newline-port"
+                                 read!
+                                 get-position
+                                 set-position!
+                                 close))
 
 ;;;
 ;;; Source location.

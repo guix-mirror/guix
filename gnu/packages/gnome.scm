@@ -11,6 +11,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,22 +36,27 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages calendar)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages djvu)
+  #:use-module (gnu packages dns)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages enchant)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages gperf)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages polkit)
@@ -64,6 +70,7 @@
   #:use-module (gnu packages lua)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages networking)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
@@ -90,6 +97,7 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages samba)
+  #:use-module (gnu packages readline)
   #:use-module (srfi srfi-1))
 
 (define-public brasero
@@ -104,7 +112,7 @@
              (sha256
               (base32
                "09vi2hyhl0bz7imv3ky6h7x5m3d546n968wcghydwrkvwm9ylpls"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags (list
                           (string-append "--with-girdir="
@@ -166,7 +174,7 @@ commonly used macros.")
 (define-public gnome-desktop
   (package
     (name "gnome-desktop")
-    (version "3.16.2")
+    (version "3.18.1")
     (source
      (origin
       (method url-fetch)
@@ -175,18 +183,21 @@ commonly used macros.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "1l3v48i2w90i2cc056j4km9jb23axxgzpf5gl8xvv7gb8rmik3rs"))))
+        "0avpmyhzz5b3pyfpkp8iq5ym5r5w7zs3a396hqkdpdsiym0vrazc"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("itstool" ,itstool)
+     `(("gobject-introspection" ,gobject-introspection)
+       ("itstool" ,itstool)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("xmllint" ,libxml2)))
+    (propagated-inputs
+     ;; Required by gnome-desktop-3.0.pc.
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)))
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)
        ("glib" ,glib)
-       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
-       ("gtk+" ,gtk+)
        ("iso-codes" ,iso-codes)
        ("libx11" ,libx11)
        ("libxext" ,libxext)
@@ -240,7 +251,7 @@ and keep up to date translations of documentation.")
 (define-public gcr
   (package
     (name "gcr")
-    (version "3.16.0")
+    (version "3.18.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -248,7 +259,7 @@ and keep up to date translations of documentation.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0xfhi0w358lvca1jjx24x2gm67mif33dsnmi9cv5i0f83ks8vzpc"))))
+               "006f6xbd3jppkf9avg83mpqdld5d0z6mr0sm81lql52mmyjnvlfl"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;25 of 598 tests fail because /var/lib/dbus/machine-id does
@@ -267,7 +278,9 @@ and keep up to date translations of documentation.")
      `(("python" ,python-2) ;for tests
        ("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")
-       ("intltool" ,intltool)))
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("xsltproc" ,libxslt)))
     ;; mentioned in gck.pc, gcr.pc and gcr-ui.pc
     (propagated-inputs
      `(("p11-kit" ,p11-kit)
@@ -284,7 +297,7 @@ GNOME Desktop.")
 (define-public libgnome-keyring
   (package
     (name "libgnome-keyring")
-    (version "3.6.0")
+    (version "3.12.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -292,7 +305,7 @@ GNOME Desktop.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0c4qrjpmv1hqga3xv6wsq2z10x2n78qgw7q3k3s01y1pggxkgjkd"))))
+               "10vpjhgbjm7z2djy04qakd02qlzpd02xnbfjhk2aqwjzn3xpihf4"))))
     (build-system gnu-build-system)
     (inputs
      `(("libgcrypt" ,libgcrypt)
@@ -382,7 +395,7 @@ forgotten when the session ends.")
 (define-public evince
   (package
     (name "evince")
-    (version "3.16.1")
+    (version "3.18.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -390,7 +403,7 @@ forgotten when the session ends.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0c31pwfzfm5x036f018q31k33vl8xb96nbs0iiccsc1abc37bzq6"))))
+               "0cccmbvl1b6d2976642iyfr8g3r69zf3mzl2ln6vjvvdbrv26l3v"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus")
@@ -446,7 +459,7 @@ on the GNOME Desktop with a single simple application.")
 (define-public gsettings-desktop-schemas
   (package
     (name "gsettings-desktop-schemas")
-    (version "3.16.0")
+    (version "3.18.0")
     (source
      (origin
       (method url-fetch)
@@ -455,7 +468,7 @@ on the GNOME Desktop with a single simple application.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "02dp1hl38k16m9abydfca1n236mdazqdz0p3n92s7haf9mdqsf16"))))
+        "1szc857f46spdhrbnq9ci3kwfqg5vwpikbf0hprq6vd94rr369xs"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)))
@@ -669,7 +682,7 @@ some form of information without getting in the user's way.")
 (define-public libpeas
   (package
     (name "libpeas")
-    (version "1.12.1")
+    (version "1.16.0")
     (source
      (origin
       (method url-fetch)
@@ -678,7 +691,7 @@ some form of information without getting in the user's way.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "1mjjjjwphc83bjznmbsm7x0jg7ql261nys6qnl7mi0nkr4qvw476"))))
+        "0kj5n5hz93xq7qdb2r7n86nibzwqjr88jxaih1fdbxv5rn7014xh"))))
     (build-system gnu-build-system)
     (inputs
      `(("atk" ,atk)
@@ -732,14 +745,15 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
 (define-public glade3
   (package
     (name "glade")
-    (version "3.8.4")
+    (version "3.8.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version)  "/"
                                   name "3-" version ".tar.xz"))
               (sha256
-               (base32 "021xgq2l18w3rvwms9aq2idm0fk66vwb4f777gs0qh3ap5shgbn7"))))
+               (base32
+                "0d97df5pfkrh5670a98r3d3w8zlbh1jcax6cvq6j6a20vzjgd9aq"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+-2)
@@ -821,7 +835,7 @@ dealing with different structured file formats.")
 (define-public librsvg
   (package
     (name "librsvg")
-    (version "2.40.10")
+    (version "2.40.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -829,7 +843,9 @@ dealing with different structured file formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0y9lvnb9ij9mjg8cyp7xysi0c5ms5v4q1zrhx42b546f71s80p4n"))))
+                "00ifd9wjjjsw0ybk5j6qs4yyh66jj34hjmggy6dhrgfy8ksw06k1"))
+              (patches
+               (list (search-patch "librsvg-tests.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -919,23 +935,26 @@ functionality was designed to be as reusable and portable as possible.")
     (source (origin
               (method url-fetch)
               (uri (let ((upstream-name "ORBit2"))
-		     (string-append "mirror://gnome/sources/" upstream-name "/"
+                     (string-append "mirror://gnome/sources/" upstream-name "/"
                                     (version-major+minor version) "/"
                                     upstream-name "-" version ".tar.bz2")))
               (sha256
-               (base32 "0l3mhpyym9m5iz09fz0rgiqxl2ym6kpkwpsp1xrr4aa80nlh1jam"))))
+               (base32
+                "0l3mhpyym9m5iz09fz0rgiqxl2ym6kpkwpsp1xrr4aa80nlh1jam"))))
     (build-system gnu-build-system)
     (arguments
-     ;; The programmer kindly gives us a hook to turn off deprecation warnings ...
-     `(#:configure-flags '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
-                         ;; ... which they then completly ignore !!
-                         #:phases
-                         (alist-cons-before
-                          'configure 'ignore-deprecations
-                          (lambda _
-                            (substitute* "linc2/src/Makefile.in"
-                              (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
-                          %standard-phases)))
+     `(#:configure-flags
+       ;; The programmer kindly gives us a hook to turn off deprecation
+       ;; warnings ...
+       '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
+       ;; ... which they then completly ignore !!
+       #:phases
+       (alist-cons-before
+        'configure 'ignore-deprecations
+        (lambda _
+          (substitute* "linc2/src/Makefile.in"
+            (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
+        %standard-phases)))
     (inputs `(("glib" ,glib)
               ("libidl" ,libidl)))
     (native-inputs
@@ -944,9 +963,9 @@ functionality was designed to be as reusable and portable as possible.")
     (synopsis "CORBA 2.4-compliant Object Request Broker")
     (description  "ORBit2 is a CORBA 2.4-compliant Object Request Broker (orb)
 featuring mature C, C++ and Python bindings.")
-    ;; Licence notice is unclear.  The Web page simply say "GPL" without giving a version.
-    ;; SOME of the code files have licence notices for GPLv2+
-    ;; The tarball contains files of the text of GPLv2 and LGPLv2
+    ;; Licence notice is unclear.  The Web page simply say "GPL" without giving
+    ;; a version.  SOME of the code files have licence notices for GPLv2+.
+    ;; The tarball contains files of the text of GPLv2 and LGPLv2.
     (license license:gpl2+)))
 
 
@@ -1003,9 +1022,9 @@ use in GNOME applications, built on top of CORBA.")
     (version "3.2.6")
     (source (origin
               (method url-fetch)
-	      (uri
-	       (let ((upstream-name "GConf"))
-		 (string-append "mirror://gnome/sources/" upstream-name "/"
+              (uri
+               (let ((upstream-name "GConf"))
+                 (string-append "mirror://gnome/sources/" upstream-name "/"
                                 (version-major+minor version) "/"
                                 upstream-name "-" version ".tar.xz")))
               (sha256
@@ -1204,6 +1223,8 @@ creating interactive structured graphics.")
                (base32
                 "0679hcnpam2gkag2i63sm0wdm35gwvzafnz1354mg6j5gzwpfrcr"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("CXXFLAGS=-std=c++11"))) ; required by gtkmm
     (propagated-inputs `(("libgnomecanvas" ,libgnomecanvas)))
     (native-inputs
      `(("gtkmm-2" ,gtkmm-2)
@@ -1437,14 +1458,14 @@ Hints specification (EWMH).")
 (define-public goffice
   (package
     (name "goffice")
-    (version "0.10.14")
+    (version "0.10.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version)  "/"
                                   name "-" version ".tar.xz"))
               (sha256
-               (base32 "0kj0iwng6w4axm7yv2zy7myn5dhw5ilrlq2pzrjlm9i852ikqy60"))))
+               (base32 "0nmghi26dpjcw7knkviq031crhm0zjy4k650pv1jj3hb1fmhx9yd"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+)
@@ -1494,7 +1515,7 @@ Hints specification (EWMH).")
 (define-public gnumeric
   (package
     (name "gnumeric")
-    (version "1.12.17")
+    (version "1.12.24")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1502,31 +1523,36 @@ Hints specification (EWMH).")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "18bvc3phghr4p5440fp8hm6gvp53d3mqs9cyc637zpmk0b6bcp7c"))))
+                "0lcm8k0jb8rd5y4ii803f21nv8rx6gc3mmdlrj5h0rkkn9qm57f5"))))
     (build-system gnu-build-system)
     (arguments
      `(;; The gnumeric developers don't worry much about failing tests.
        ;; See https://bugzilla.gnome.org/show_bug.cgi?id=732387
        #:tests? #f
        #:phases
-       (alist-cons-before
-        'configure 'pre-conf
-        (lambda* (#:key outputs #:allow-other-keys)
-          ;; Make install tries to write into the directory of goffice
-          ;; I am informed that this only affects the possibility to embed a
-          ;; spreadsheet inside an Abiword document.   So presumably when we
-          ;; package Abiword we'll have to refer it to this directory.
-          (substitute* "configure"
-            (("^GOFFICE_PLUGINS_DIR=.*")
-             (string-append "GOFFICE_PLUGINS_DIR="
-                            (assoc-ref outputs "out") "/goffice/plugins"))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'pre-conf
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make install tries to write into the directory of goffice
+             ;; I am informed that this only affects the possibility to embed a
+             ;; spreadsheet inside an Abiword document.   So presumably when we
+             ;; package Abiword we'll have to refer it to this directory.
+             (substitute* "configure"
+               (("^GOFFICE_PLUGINS_DIR=.*")
+                (string-append "GOFFICE_PLUGINS_DIR="
+                               (assoc-ref outputs "out")
+                               "/goffice/plugins"))))))))
     (inputs
      `(("glib" ,glib)
        ("gtk+" ,gtk+)
        ("goffice" ,goffice)
        ("libgsf" ,libgsf)
+       ("librsvg" ,librsvg)
        ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("python" ,python-2)
+       ("python2-pygobject", python2-pygobject-2)
        ("zlib" ,zlib)))
     (native-inputs
      `(("intltool" ,intltool)
@@ -1547,9 +1573,7 @@ engineering.")
 (define-public gnome-themes-standard
   (package
     (name "gnome-themes-standard")
-    ;; The version of this package should be the same as the version of
-    ;; gnome-desktop.
-    (version (package-version gnome-desktop))
+    (version "3.18.0")
     (source
      (origin
        (method url-fetch)
@@ -1558,7 +1582,7 @@ engineering.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "17sbcpc9df1cnz84g3npvh1na65mkxaygqcdma6wvda4knjpkssr"))))
+         "1jxss8kxszhf66vic9n1sagczm5amm0mgxpzyxyjna15q82fnip6"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+)
@@ -1625,7 +1649,7 @@ passwords in the GNOME keyring.")
 (define-public vala
   (package
     (name "vala")
-    (version "0.28.0")
+    (version "0.30.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1633,14 +1657,16 @@ passwords in the GNOME keyring.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0zwpzhkhfk3piya14m7p2hl2vaabahprphppfm46ci91z39kp7hd"))))
+                "1pyyhfw3zzbhxfscbn8xz70dg6vx0kh8gshzikpxczhg01xk7w31"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-before 'check 'set-cc
+         (add-before 'check 'pre-check
                      (lambda _
                        (setenv "CC" "gcc")
+                       ;; For missing '/etc/machine-id'.
+                       (setenv "DBUS_FATAL_WARNINGS" "0")
                        #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1663,7 +1689,7 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.40.0")
+    (version "0.42.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1671,7 +1697,7 @@ libraries written in C.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0lnq0bgkmsixjwmfacb2ch9qfjqjxa8zkk1hiv3l29kgca0n3nal"))))
+                "0d4xzjq6mxrlhnh4i12a1yy90n41m03z8wf8g6wh4hjgx7ly404y"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1691,6 +1717,27 @@ GTK+, and a minimal sample application (vte) using that.  Vte is mainly used in
 gnome-terminal, but can also be used to embed a console/terminal in games,
 editors, IDEs, etc.")
     (license license:lgpl2.1+)))
+
+;; provides vte 2.90, required for some terminal emulators
+;; tilda bug: https://github.com/lanoxx/tilda/issues/94
+;; pantheon-terminal bug: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=788021
+;; roxterm bug: http://sourceforge.net/p/roxterm/bugs/107/
+;; pantheon-terminal, roxterm are not currently packaged
+(define-public vte-0.36
+  (package (inherit vte)
+    (name "vte")
+    (version "0.36.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1psfnqsmxx4qzc55qwvb8jai824ix4pqcdqhgxk0g2zh82bcxhn2"))))
+    (propagated-inputs
+     `(("gtk" ,gtk+)
+       ("ncurses" ,ncurses)))))
 
 ;; stable version for gtk2, required by xfce4-terminal.
 (define-public vte/gtk+-2
@@ -1771,7 +1818,7 @@ configuration storage systems.")
 (define-public json-glib
   (package
     (name "json-glib")
-    (version "1.0.2")
+    (version "1.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1779,7 +1826,14 @@ configuration storage systems.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "02k66lpc4cmgygj66n8zcy59bggy7yzm3v4hni9xqplgva9d2yw8"))))
+                "1k85vvb2prmk8aa8hmr2rp9rnbhffjgnmr18b13g24xxnqy5kww0"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Don't duplicate test names.
+               ;; <https://bugzilla.gnome.org/show_bug.cgi?id=755977>.
+               '(substitute* "json-glib/tests/builder.c"
+                  (("\"/builder/complex\", test_builder_empty")
+                   "\"/builder/empty\", test_builder_empty")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib" ,glib "bin")              ;for glib-mkenums and glib-genmarshal
@@ -1871,7 +1925,7 @@ library.")
 (define-public glib-networking
   (package
     (name "glib-networking")
-    (version "2.44.0")
+    (version "2.46.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/glib-networking/"
@@ -1879,7 +1933,7 @@ library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ij33bhvn7y5gagx4sbrw906dsjjjs9dllxn73pzv6x97c6k92lg"))
+                "1cchmi08jpjypgmm9i7xzh5qfg2q5k61kry9ns8mhw3z44a440ym"))
               (patches
                (list (search-patch "glib-networking-ssl-cert-file.patch")))))
     (build-system gnu-build-system)
@@ -1953,7 +2007,7 @@ libxml to ease remote use of the RESTful API.")
 (define-public libsoup
   (package
     (name "libsoup")
-    (version "2.50.0")
+    (version "2.52.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/libsoup/"
@@ -1961,18 +2015,14 @@ libxml to ease remote use of the RESTful API.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0yv61y5vfar1rfksa6f53zhfw9wcb39zjix8gqc1ff5gqid3c08y"))))
+                "0j6cnnpqqgnb9nj2r0j8j6898np4z503hrnpis7b4l5d8yhbq68f"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
-                            "/share/gtk-doc/html")
-             ;; To find GIO modules from glib-networking.
-             (string-append "GIO_EXTRA_MODULES="
-                            (assoc-ref %build-inputs "glib-networking")
-                            "/lib/gio/modules"))
+                            "/share/gtk-doc/html"))
        #:phases
        (modify-phases %standard-phases
          (add-before 'configure 'disable-unconnected-socket-test
@@ -1990,13 +2040,22 @@ libxml to ease remote use of the RESTful API.")
                        ;; The ca-certificates.crt is not available in the build
                        ;; environment.
                        (setenv "SSL_CERT_FILE" "/dev/null")
-                       #t)))))
+                       #t))
+         (replace 'install
+                  (lambda _
+                    (zero?
+                     (system* "make"
+                              ;; Install vala bindings into $out.
+                              (string-append "vapidir=" %output
+                                             "/share/vala/vapi")
+                              "install")))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("python" ,python-wrapper)
+       ("vala" ,vala)
        ;; These are needed for the tests.
        ;; FIXME: Add PHP once available.
        ("curl" ,curl)
@@ -2018,15 +2077,16 @@ and the GLib main loop, to integrate well with GNOME applications.")
 (define-public libsecret
   (package
     (name "libsecret")
-    (version "0.18")
+    (version "0.18.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://gnome/sources/libsecret/" version "/"
+                    "mirror://gnome/sources/libsecret/"
+                    (version-major+minor version) "/"
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1qq29c01xxjyx5sl6y5h22w8r0ff4c73bph3gfx3h7mx5mvalwqc"))))
+                "1jc4pw6pb5igwasj0ms1zx80w63c11myziz3ydj0cr5lb861vgzj"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -2210,6 +2270,7 @@ keyboard shortcuts.")
        ("lcms" ,lcms)))
     (inputs
      `(("dbus-glib" ,dbus-glib)
+       ("libgudev" ,libgudev)
        ("libusb" ,libusb)
        ("sqlite" ,sqlite)
        ("polkit" ,polkit)
@@ -2282,8 +2343,7 @@ permission from user.")
     (arguments
      `(;; The tests want to write to $HOME/.cache/geocode-glib, which doesn't
        ;; work for the builder.  Punt.
-       #:tests? #f
-       ))
+       #:tests? #f))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
@@ -2306,14 +2366,14 @@ faster results and to avoid unnecessary server load.")
 (define-public upower
   (package
     (name "upower")
-    (version "0.99.2")
+    (version "0.99.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://upower.freedesktop.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0vwlh20jmaf01m38kfn8yx2869a3clmkzlycrj99rf4nvwx4bp79"))
+                "0f6x9mi1jzgqdpycaikyhjljnw3aacsl3gxndyg0dfqkq6y9jwb9"))
               (patches (list (search-patch "upower-builddir.patch")))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -2336,7 +2396,8 @@ faster results and to avoid unnecessary server load.")
                        (substitute* "src/linux/integration-test"
                          (("/usr/bin/python3") (which "python3"))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
        ("python" ,python)))
     (inputs
@@ -2355,7 +2416,7 @@ service via the system message bus.")
 (define-public libgweather
   (package
     (name "libgweather")
-    (version "3.16.0")
+    (version "3.18.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2363,22 +2424,26 @@ service via the system message bus.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0x1z6wv7hdw2ivlkifcbd940zyrnvqvc4zh2drgvd2r6jmd7bjza"))))
+                "1l3sra84k5dnavbdbjyf1ar84xmjszpnnldih6mf45kniwpjkcll"))))
     (build-system gnu-build-system)
     (arguments
-     `(;; The tests want to write to $HOME/.cache/geocode-glib, which doesn't
-       ;; work for the builder.  Punt.
-       #:tests? #f
-       #:configure-flags
-       `(;; No introspection for now, as it wants to install to
-         ;; gobject-introspection's own directory and I don't know how to easily
-         ;; override this.
-         "--enable-introspection=no"
-         ,(string-append "--with-zoneinfo-dir="
-                            (assoc-ref %build-inputs "tzdata")
-                            "/share/zoneinfo"))))
+     `(#:configure-flags
+       `(,(string-append "--with-zoneinfo-dir="
+                         (assoc-ref %build-inputs "tzdata")
+                         "/share/zoneinfo"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'check 'pre-check
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "data/check-timezones.sh"
+              (("/usr/share/zoneinfo/zone.tab")
+               (string-append (assoc-ref inputs "tzdata")
+                              "/share/zoneinfo/zone.tab")))
+            #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (propagated-inputs
@@ -2555,7 +2620,7 @@ throughout GNOME for API documentation).")
 (define-public cogl
   (package
     (name "cogl")
-    (version "1.20.0")
+    (version "1.22.0")
     (source
      (origin
        (method url-fetch)
@@ -2564,7 +2629,7 @@ throughout GNOME for API documentation).")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0aqrj7gc0x7v536vdycgn2i23fj3nx3qwdd3mwgx7rr9b14kb7kj"))))
+         "14daxqrid5039xmq9yl4pk86awng1n9zgl6ysblhc4gw2ifzp7b8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")     ; for glib-mkenums
@@ -2622,7 +2687,7 @@ without stepping on each others toes.")
 (define-public clutter
   (package
     (name "clutter")
-    (version "1.22.2")
+    (version "1.24.2")
     (source
      (origin
        (method url-fetch)
@@ -2631,7 +2696,7 @@ without stepping on each others toes.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1b0ikh9q3c3qnny3kbvhqih35449q8ajcbh7zkm8k3kykwfx4scf"))))
+         "0qyd0cw17wi8gl6y9z2j2lh2gwghxskfmsdvw4ayrgxwnj6cjccn"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;9 MiB of gtk-doc HTML pages
@@ -3176,7 +3241,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
 (define-public gvfs
   (package
     (name "gvfs")
-    (version "1.24.1")
+    (version "1.26.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3184,7 +3249,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1ygiknnd24qgzds8wif3jns981mqr65lgjlxs5pw65cl3376g0yk"))))
+                "064dsjrdjcbi38zl38jhh4r9jcpiygg7x4c8s6s2rb757l7nwnv9"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f)) ; XXX: requiring `pidof'
@@ -3199,6 +3264,7 @@ part of udev-extras, then udev, then systemd.  It's now a project on its own.")
        ("docbook-xsl" ,docbook-xsl)
        ("dbus" ,dbus)
        ("fuse" ,fuse)
+       ("gcr" ,gcr)
        ("glib" ,glib)
        ("libarchive" ,libarchive)
        ("libbluray" ,libbluray)
@@ -3262,7 +3328,7 @@ DAV, and others.")
                       (and (zero? (system* "gtkdocize"))
                            (zero? (system* "autoreconf" "-vif"))))))))
     (home-page "https://github/hughsie/libgusb")
-    (synopsis "A GLib binding for libusb1")
+    (synopsis "GLib binding for libusb1")
     (description
      "GUsb is a GObject wrapper for libusb1 that makes it easy to do
 asynchronous control, bulk and interrupt transfers with proper cancellation
@@ -3659,3 +3725,537 @@ environment that allows users to view, unpack, and create compressed archives
 such as gzip tarballs.")
     (home-page "http://fileroller.sourceforge.net/")
     (license license:gpl2+)))
+
+(define-public gnome-session
+  (package
+    (name "gnome-session")
+    (version "3.18.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0icajbzqf5llvp5s8nafwkhwz6a6jmwn4hhs81bk0bpzawyq4zdk"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+       ("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("xsltproc" ,libxslt)))
+    (inputs
+     `(("gnome-desktop" ,gnome-desktop)
+       ("gtk+" ,gtk+)
+       ("json-glib" ,json-glib)
+       ("libsm" ,libsm)
+       ("libxcomposite" ,libxcomposite)
+       ("libxtst" ,libxtst)
+       ("mesa" ,mesa)
+       ("upower" ,upower)
+       ("xtrans" ,xtrans)))
+    (synopsis "Session manager for GNOME")
+    (description
+     "This package contains the GNOME session manager, as well as a
+configuration program to choose applications starting on login.")
+    (home-page "https://wiki.gnome.org/Projects/SessionManagement")
+    (license license:gpl2+)))
+
+(define-public gjs
+  (package
+    (name "gjs")
+    (version "1.44.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "106fgpr4y99sj68l72pnfa2za11ps4bn6p9z28fr79j7mpv61jc8"))
+              (modules '((guix build utils)))
+              (snippet '(substitute* "test/run-with-dbus"
+                          (("/bin/rm") "rm")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before
+          'check 'pre-check
+          (lambda _
+            ;; For the missing /etc/machine-id.
+            (setenv "DBUS_FATAL_WARNINGS" "0")
+            #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")       ; for glib-compile-resources
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)
+       ;; For testing
+       ("dbus-launch" ,dbus)
+       ("uuidgen" ,util-linux)
+       ("xvfb" ,xorg-server)))
+    (propagated-inputs
+     ;; These are all in the Requires.private field of gjs-1.0.pc.
+     `(("gobject-introspection" ,gobject-introspection)
+       ("mozjs" ,mozjs-24)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("readline" ,readline)))
+    (synopsis "Javascript bindings for GNOME")
+    (home-page "http://live.gnome.org/Gjs")
+    (description
+     "Gjs is a javascript binding for GNOME.  It's mainly based on spidermonkey
+javascript engine and the GObject introspection framework.")
+    (license license:gpl2+)))
+
+(define-public gedit
+  (package
+    (name "gedit")
+    (version "3.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1kb3hglcppap7fdy7i7w2wk746kfz77jzs2lq6vrna8a3fqaxmas"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'install 'wrap-gedit
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((out               (assoc-ref outputs "out"))
+                  (gtksourceview     (assoc-ref inputs "gtksourceview"))
+                  (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+              (wrap-program (string-append out "/bin/gedit")
+                `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
+                ;; For language-specs.
+                `("XDG_DATA_DIRS" ":" prefix (,(string-append gtksourceview
+                                                              "/share")))))
+            #t)))))
+    (propagated-inputs
+     `(("dconf" ,dconf)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("itstool", itstool)
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("libpeas" ,libpeas)
+       ("libxml2" ,libxml2)
+       ("enchant" ,enchant)
+       ("iso-codes" ,iso-codes)
+       ("python-pygobject" ,python-pygobject)
+       ("python" ,python)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("libx11" ,libx11)
+       ("vala" ,vala)
+       ("adwaita-icon-theme" ,adwaita-icon-theme)
+       ("libsoup" ,libsoup)
+       ("gnome-desktop" ,gnome-desktop)))
+    (home-page "https://wiki.gnome.org/Apps/Gedit")
+    (synopsis "GNOME text editor")
+    (description "While aiming at simplicity and ease of use, gedit is a
+powerful general purpose text editor.")
+    (license license:gpl2+)))
+
+(define-public zenity
+  (package
+    (name "zenity")
+    (version "3.18.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "02m88dfm1rziqk2ywakwib06wl1rxangbzih6cp8wllbyl1plcg6"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libnotify" ,libnotify)
+       ("webkitgtk" ,webkitgtk)))
+    (synopsis "Display graphical dialog boxes from shell scripts")
+    (home-page "http://www.gnome.org")
+    (description
+     "Zenity is a rewrite of gdialog, the GNOME port of dialog which allows you
+to display dialog boxes from the commandline and shell scripts.")
+    (license license:lgpl2.0+)))
+
+(define-public mutter
+  (package
+    (name "mutter")
+    (version "3.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1ab959z5fgi4rq0ifxdqvpdbv99a2b1lfgvj327s9crdvk4ygpjg"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       ;; XXX: build fails with [-Werror]:
+       ;;    backends/meta-cursor-renderer.c:112:5: error:
+       ;;      implicit declaration of function ?roundf?
+       '("--enable-compile-warnings=minimum")))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; libmutter.pc refers to all these.
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("clutter" ,clutter)))
+    (inputs
+     `(("gnome-desktop" ,gnome-desktop)
+       ("libcanberra-gtk" ,libcanberra)
+       ("libice" ,libice)
+       ("libsm" ,libsm)
+       ("libxkbcommon" ,libxkbcommon)
+       ("libxkbfile" ,libxkbfile)
+       ("mesa-headers" ,mesa-headers)
+       ("startup-notification" ,startup-notification)
+       ("upower-glib" ,upower)
+       ("xkeyboard-config" ,xkeyboard-config)
+       ("zenity" ,zenity)))
+    (synopsis "Window and compositing manager")
+    (home-page "http://www.gnome.org")
+    (description
+     "Mutter is a window and compositing manager that displays and manages your
+desktop via OpenGL.  Mutter combines a sophisticated display engine using the
+Clutter toolkit with solid window-management logic inherited from the Metacity
+window manager.")
+    (license license:gpl2+)))
+
+(define-public gnome-online-accounts
+  (package
+    (name "gnome-online-accounts")
+    (version "3.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1hn2fvkr1f4qh4gix03avnvk7pklvv5272ns8ws56v4kcq4nppkc"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("xsltproc" ,libxslt)))
+    (propagated-inputs
+     `(("glib" ,glib)           ; required by goa-1.0.pc
+       ("gtk+" ,gtk+)))         ; required by goa-backend-1.0.pc
+    (inputs
+     `(("docbook-xsl" ,docbook-xsl)
+       ("json-glib" ,json-glib)
+       ("libsecret" ,libsecret)
+       ("rest" ,rest)
+       ("telepathy-glib" ,telepathy-glib)
+       ("webkitgtk" ,webkitgtk)))
+    (synopsis "Single sign-on framework for GNOME")
+    (home-page "https://wiki.gnome.org/Projects/GnomeOnlineAccounts")
+    (description
+     "GNOME Online Accounts provides interfaces so that applications and
+libraries in GNOME can access the user's online accounts.  It has providers for
+Google, ownCloud, Facebook, Flickr, Windows Live, Pocket, Foursquare, Microsoft
+Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
+    (license license:lgpl2.0+)))
+
+(define-public evolution-data-server
+  (package
+    (name "evolution-data-server")
+    (version "3.18.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "16yfd2a00xqxikyf6pi2awfd0qfq4hwdhfar88axrb4mycfgqhjr"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(;; XXX: fails with:
+       ;;   /Fixture/Calendar0: cleaning up pid xxxx
+       ;;   t status: 139)
+       #:tests? #f
+       #:configure-flags
+       (let ((nss  (assoc-ref %build-inputs "nss"))
+             (nspr (assoc-ref %build-inputs "nspr")))
+         (list "--disable-uoa"    ; disable Ubuntu Online Accounts support
+               "--disable-google" ; disable Google Contacts support
+               (string-append "--with-nspr-includes=" nspr "/include/nspr")
+               (string-append "--with-nss-includes=" nss "/include/nss")
+               (string-append "--with-nss-libs=" nss "/lib/nss")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+          (lambda _
+            (substitute* "tests/test-server-utils/e-test-server-utils.c"
+              (("/bin/rm") (which "rm")))
+            #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("gperf" ,gperf)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
+    (propagated-inputs
+     ;; These are all in the Requires field of .pc files.
+     `(("gtk+" ,gtk+)
+       ("libical" ,libical)
+       ("libsecret" ,libsecret)
+       ("libsoup" ,libsoup)
+       ("nss" ,nss)
+       ("sqlite" ,sqlite)))
+    (inputs
+     `(("bdb" ,bdb)
+       ("gcr" ,gcr)
+       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("libgweather" ,libgweather)))
+    (synopsis "Store address books and calendars")
+    (home-page "https://wiki.gnome.org/Apps/Evolution")
+    (description
+     "This package provides a unified backend for programs that work with
+contacts, tasks, and calendar information.  It was originally developed for
+Evolution (hence the name), but is now used by other packages as well.")
+    (license license:lgpl2.0)))
+
+(define-public caribou
+  (package
+    (name "caribou")
+    (version "0.4.19")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0i2s2xy9ami3wslam15cajhggpcsj4c70qm7qddcz52z9k0x02rg"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before
+          'build 'pre-build
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              ;; Use absolute shared library path in Caribou-1.0.typelib.
+              (substitute* "libcaribou/Makefile"
+                (("--shared-library=libcaribou.so")
+                 (string-append "--shared-library="
+                                out "/lib/libcaribou.so")))
+              #t)))
+         (add-after 'install 'wrap-programs
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (python-path (getenv "PYTHONPATH"))
+                   (gi-typelib-path (getenv "GI_TYPELIB_PATH")))
+              (for-each
+               (lambda (prog)
+                 (wrap-program prog
+                   `("PYTHONPATH"      ":" prefix (,python-path))
+                   `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+               (list (string-append out "/bin/caribou-preferences")
+                     (string-append out "/libexec/antler-keyboard"))))
+            #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2) ; incompatible with Python 3 (print syntax)
+       ("vala" ,vala)
+       ("xsltproc" ,libxslt)))
+    (propagated-inputs
+     ;; caribou-1.0.pc refers to all these.
+     `(("libgee" ,libgee)
+       ("libxklavier" ,libxklavier)
+       ("libxtst" ,libxtst)
+       ("gtk+" ,gtk+)))
+    (inputs
+     `(("clutter" ,clutter)
+       ("dconf" ,dconf)
+       ("gtk+-2" ,gtk+-2)
+       ("python-pygobject" ,python2-pygobject)))
+    (synopsis "Text entry and UI navigation application")
+    (home-page "https://wiki.gnome.org/Projects/Caribou")
+    (description
+     "Caribou is an input assistive technology intended for switch and pointer
+users.")
+    (license license:lgpl2.1)))
+
+(define %network-manager-glib-duplicate-test-patch
+  (origin
+    (method url-fetch)
+    (uri (string-append
+          "http://cgit.freedesktop.org/NetworkManager/NetworkManager/"
+          "patch/libnm-core/tests/test-general.c"
+          "?id=874f455d6d47c5a34ed9861a6710f4b78202e0d6"))
+    (file-name "network-manager-glib-duplicate-test.patch")
+    (sha256
+     (base32
+      "1v0vpxzf0p0b1y5lmq8w7rjndp216gr60nbf2dpdz5rgxx3p3ml6"))))
+
+(define-public network-manager
+  (package
+    (name "network-manager")
+    (version "1.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/NetworkManager/"
+                                  (version-major+minor version) "/"
+                                  "NetworkManager-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1galh9j95yw33iv1jj8zz0h88ahx8gm5mqmam7zq9f730cj01siq"))
+              (patches (list %network-manager-glib-duplicate-test-patch))))
+    (build-system gnu-build-system)
+    (outputs '("out"
+               "doc")) ; 8 MiB of gtk-doc HTML
+    (arguments
+     '(#:configure-flags
+       (let ((out      (assoc-ref %outputs "out"))
+             (doc      (assoc-ref %outputs "doc"))
+             (dhclient (string-append (assoc-ref %build-inputs "isc-dhcp")
+                                      "/sbin/dhclient")))
+         (list "--with-crypto=gnutls"
+               "--disable-config-plugin-ibft"
+               "--sysconfdir=/etc"
+               "--localstatedir=/var"
+               (string-append "--with-udev-dir="
+                              out "/lib/udev")
+               (string-append "--with-dbus-sys-dir="
+                              out "/etc/dbus-1/system.d")
+               (string-append "--with-html-dir="
+                              doc "/share/gtk-doc/html")
+               (string-append "--with-dhclient=" dhclient)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; For the missing /etc/machine-id.
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             #t))
+         (replace 'install
+           (lambda _
+             (zero? (system* "make"
+                             "sysconfdir=/tmp"
+                             "localstatedir=/tmp"
+                             "install")))))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for gdbus-codegen
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ;; For testing.
+       ("python" ,python-wrapper)
+       ("python-dbus" ,python-dbus)
+       ("python-pygobject" ,python-pygobject)))
+    (inputs
+     `(("dbus-glib" ,dbus-glib)
+       ("dnsmasq" ,dnsmasq)
+       ("gnutls" ,gnutls)
+       ("iptables" ,iptables)
+       ("isc-dhcp" ,isc-dhcp)
+       ("libgcrypt" ,libgcrypt)
+       ("libgudev" ,libgudev)
+       ("libndp" ,libndp)
+       ("libnl" ,libnl)
+       ("libsoup" ,libsoup)
+       ("polkit" ,polkit)
+       ("ppp" ,ppp)
+       ("readline" ,readline)
+       ("util-linux" ,util-linux)))
+    (synopsis "Network connection manager")
+    (home-page "http://www.gnome.org/projects/NetworkManager/")
+    (description
+     "NetworkManager is a system network service that manages your network
+devices and connections, attempting to keep active network connectivity when
+available.  It manages ethernet, WiFi, mobile broadband (WWAN), and PPPoE
+devices, and provides VPN integration with a variety of different VPN
+services.")
+    (license license:gpl2+)))
+
+(define-public network-manager-applet
+  (package
+    (name "network-manager-applet")
+    (version "1.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1yj0m6fb9v12d0di0rfmk3hx1vmygjkiff2c476rf792sbh56kax"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments '(#:configure-flags '("--disable-migration")))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; libnm-gtk.pc refers to all these.
+     `(("dbus-glib" ,dbus-glib)
+       ("gtk+" ,gtk+)
+       ("network-manager" ,network-manager)))
+    (inputs
+     `(("iso-codes" ,iso-codes)
+       ("libgudev" ,libgudev)
+       ("libnotify" ,libnotify)
+       ("libsecret" ,libsecret)))
+    (synopsis "Applet for managing network connections")
+    (home-page "http://www.gnome.org/projects/NetworkManager/")
+    (description
+     "This package contains a systray applet for NetworkManager.  It displays
+the available networks and allows users to easily switch between them.")
+    (license license:gpl2+)))
+
+(define-public libxml++
+  (package
+    (name "libxml++")
+    (version "2.91.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0h4h7hhh9lg8h34py116517m3wqbzhd5v63k1c6pp1p2a43s18fs"))))
+    (build-system gnu-build-system)
+    ;; libxml++-3.0.pc refers to all these.
+    (propagated-inputs
+     `(("libxml2" ,libxml2)
+       ("glibmm" ,glibmm)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://libxmlplusplus.sourceforge.net/")
+    (synopsis "C++ wrapper for XML parser library libxml2")
+    (description
+     "This package provides a C++ wrapper for the XML parser library
+libxml2.")
+    (license license:lgpl2.1+)))

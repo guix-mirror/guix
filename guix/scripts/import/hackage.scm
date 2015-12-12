@@ -19,6 +19,7 @@
 (define-module (guix scripts import hackage)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix packages)
   #:use-module (guix scripts)
   #:use-module (guix import hackage)
   #:use-module (guix scripts import)
@@ -34,10 +35,13 @@
 ;;; Command-line options.
 ;;;
 
+(define ghc-default-version
+  (string-append "ghc-" (package-version (@ (gnu packages haskell) ghc))))
+
 (define %default-options
-  '((include-test-dependencies? . #t)
+  `((include-test-dependencies? . #t)
     (read-from-stdin? . #f)
-    ('cabal-environment . '())))
+    (cabal-environment . ,`(("impl" . ,ghc-default-version)))))
 
 (define (show-help)
   (display (_ "Usage: guix import hackage PACKAGE-NAME
@@ -55,7 +59,7 @@ version.\n"))
   (display (_ "
   -s, --stdin                  read from standard input"))
   (display (_ "
-  -t, --no-test-dependencies   don't include test only dependencies"))
+  -t, --no-test-dependencies   don't include test-only dependencies"))
   (display (_ "
   -V, --version                display version information and exit"))
   (newline)
@@ -134,9 +138,9 @@ from standard input~%")))))
           ((package-name)
            (run-importer package-name opts
                          (lambda ()
-                           (leave
-                            (_ "failed to download cabal file for package '~a'~%"))
-                           package-name)))
+                           (leave (_ "failed to download cabal file \
+for package '~a'~%")
+                                  package-name))))
           (()
            (leave (_ "too few arguments~%")))
           ((many ...)

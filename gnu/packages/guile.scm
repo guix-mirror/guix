@@ -29,6 +29,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages libunistring)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
@@ -38,8 +39,12 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages gettext)
-  #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages sdl)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages image)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -189,40 +194,15 @@ without requiring the source code to be rewritten.")
 (define-public guile-next
   (package (inherit guile-2.0)
     (name "guile-next")
-    (version "20150815.00884bb")
+    (version "2.1.1")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "git://git.sv.gnu.org/guile.git")
-                    (commit "00884bb79fff41fdf5f22f24a74e366a94a14c9b")))
+              (method url-fetch)
+              (uri (string-append "ftp://alpha.gnu.org/gnu/guile/guile-"
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "0qk8m9aq3i7pzw6npim58xmsvjqfz5kl1pkyb6b43awn2vydydi5"))))
-
-    (arguments
-     (substitute-keyword-arguments `(;; Tests aren't passing for now.
-                                     ;; Obviously we should re-enable this!
-                                     #:tests? #f
-                                     ,@(package-arguments guile-2.0))
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (add-after 'unpack 'autogen
-                      (lambda _
-                        (zero? (system* "sh" "autogen.sh"))))
-           (add-before 'autogen 'patch-/bin/sh
-                       (lambda _
-                         (substitute* "build-aux/git-version-gen"
-                           (("#!/bin/sh") (string-append "#!" (which "sh"))))
-                         #t))))))
-    (synopsis "Snapshot of what will become version 2.2 of GNU Guile")
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)
-       ("flex" ,flex)
-       ("texinfo" ,texinfo)
-       ("gettext" ,gnu-gettext)
-       ,@(package-native-inputs guile-2.0)))))
+                "0nixmx7as79g8rr8bvznh59pwcc2jd22cfk17v309p57zp2c255r"))))
+    (synopsis "Snapshot of what will become version 2.2 of GNU Guile")))
 
 (define-public guile-for-guile-emacs
   (package (inherit guile-next)
@@ -235,12 +215,85 @@ without requiring the source code to be rewritten.")
                     (commit "d8d9a8da05ec876acba81a559798eb5eeceb5a17")))
               (sha256
                (base32
-                "00sprsshy16y8pxjy126hr2adqcvvzzz96hjyjwgg8swva1qh6b0"))))))
+                "00sprsshy16y8pxjy126hr2adqcvvzzz96hjyjwgg8swva1qh6b0"))))
+    (arguments
+     (substitute-keyword-arguments `(;; Tests aren't passing for now.
+                                     ;; Obviously we should re-enable this!
+                                     #:tests? #f
+                                     ,@(package-arguments guile-next))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-after 'unpack 'autogen
+                      (lambda _
+                        (zero? (system* "sh" "autogen.sh"))))
+           (add-before 'autogen 'patch-/bin/sh
+                       (lambda _
+                         (substitute* "build-aux/git-version-gen"
+                           (("#!/bin/sh") (string-append "#!" (which "sh"))))
+                         #t))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("flex" ,flex)
+       ("texinfo" ,texinfo)
+       ("gettext" ,gnu-gettext)
+       ,@(package-native-inputs guile-next)))))
 
 
 ;;;
 ;;; Extensions.
 ;;;
+
+(define-public artanis
+  (package
+    (name "artanis")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://alpha.gnu.org/gnu/artanis/artanis-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1mc2zy6n9wnn4hzi3zp3jd6b5rlr0lv7fvh800xf4fyrxg0zia4g"))))
+    (build-system gnu-build-system)
+    ;; TODO: Add guile-dbi and guile-dbd optional dependencies.
+    (inputs `(("guile" ,guile-2.0)))
+    (native-inputs `(("bash"       ,bash)         ;for the `source' builtin
+                     ("pkgconfig"  ,pkg-config)
+                     ("util-linux" ,util-linux))) ;for the `script' command
+    (arguments
+     '(#:make-flags
+       ;; TODO: The documentation must be built with the `docs' target.
+       (let* ((out (assoc-ref %outputs "out"))
+              (dir (string-append out "/share/guile/site/2.0")))
+         ;; Don't use (%site-dir) for site paths.
+         (list (string-append "MOD_PATH=" dir)
+               (string-append "MOD_COMPILED_PATH=" dir)))
+       #:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'install 'substitute-root-dir
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out  (assoc-ref outputs "out")))
+              (substitute* "Makefile"   ;ignore the execution of bash.bashrc
+                ((" /etc/bash.bashrc") " /dev/null"))
+              (substitute* "Makefile"   ;set the root of config files to OUT
+                ((" /etc") (string-append " " out "/etc")))
+              (mkdir-p (string-append out "/bin")) ;for the `art' executable
+              #t))))))
+    (synopsis "Web application framework written in Guile")
+    (description "GNU Artanis is a web application framework written in Guile
+Scheme.  A web application framework (WAF) is a software framework that is
+designed to support the development of dynamic websites, web applications, web
+services and web resources.  The framework aims to alleviate the overhead
+associated with common activities performed in web development.  Artanis
+provides several tools for web development: database access, templating
+frameworks, session management, URL-remapping for RESTful, page caching, and
+more.")
+    (home-page "https://www.gnu.org/software/artanis/")
+    (license (list gpl3+ lgpl3+))))     ;dual license
 
 (define-public guile-reader
   (package
@@ -296,6 +349,10 @@ many readers as needed).")
                                (string-append "--with-guilesitedir="
                                               (assoc-ref %outputs "out")
                                               "/share/guile/site/2.0"))
+
+       ;; Work around <http://bugs.gnu.org/21677>.
+       #:make-flags '("XFAIL_TESTS=curses_034_util.test")
+
        #:phases (alist-cons-after
                  'install 'post-install
                  (lambda* (#:key outputs #:allow-other-keys)
@@ -412,6 +469,7 @@ http:://json.org specification.  These are the main features:
               (uri (git-reference
                     (url "https://github.com/ijp/minikanren.git")
                     (commit "e844d85512f8c055d3f96143ee506007389a25e3")))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "0r50jlpzi940jlmxyy3ddqqwmj5r12gb4bcv0ssini9v8km13xz6"))))
@@ -478,6 +536,84 @@ slightly from miniKanren mainline.
 See http://minikanren.org/ for more on miniKanren generally.")
     (license expat)))
 
+(define-public guile-irregex
+  (package
+    (name "guile-irregex")
+    (version "0.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://synthcode.com/scheme/irregex/irregex-"
+                    version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "1b8jl7bycyl2ssp6sb1j24pp9hvqyxm85ki9bmwd50glyyjs5zay"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build utils)
+                  (ice-9 match)
+                  (guix build gnu-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (delete 'check)
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (begin
+               (use-modules (guix build utils)
+                            (ice-9 match))
+               (let* ((out (assoc-ref outputs "out"))
+                      (module-dir (string-append out "/share/guile/site/2.0"))
+                      (source (assoc-ref inputs "source"))
+                      (doc (string-append out "/share/doc/guile-irregex/"))
+                      (guild (string-append (assoc-ref %build-inputs "guile")
+                                            "/bin/guild")))
+                 ;; Make installation directories.
+                 (mkdir-p (string-append module-dir "/rx/source"))
+                 (mkdir-p doc)
+
+                 ;; Compile .scm files and install.
+                 (setenv "GUILE_AUTO_COMPILE" "0")
+
+                 (for-each (lambda (copy-info)
+                             (match copy-info
+                               ((src-file dest-file-basis)
+                                (let* ((dest-file (string-append
+                                                   module-dir dest-file-basis
+                                                   ".scm"))
+                                       (go-file (string-append
+                                                 module-dir dest-file-basis
+                                                 ".go")))
+                                  ;; Install source module.
+                                  (copy-file src-file
+                                             dest-file)
+                                  ;; Install compiled module.
+                                  (unless (zero? (system* guild "compile"
+                                                          "-L" (getcwd)
+                                                          "-o" go-file
+                                                          src-file))
+                                    (error (format #f "Failed to compile ~s to ~s!"
+                                                   src-file dest-file)))))))
+                           '(("irregex-guile.scm" "/rx/irregex")
+                             ("irregex.scm" "/rx/source/irregex")
+                             ;; Not really reachable via guile's packaging system,
+                             ;; but nice to have around
+                             ("irregex-utils.scm" "/rx/source/irregex-utils")))
+
+                 ;; Also copy over the README.
+                 (install-file "irregex.html" doc)
+                 #t)))))))
+    (inputs
+     `(("guile" ,guile-2.0)))
+    (home-page "http://synthcode.com/scheme/irregex")
+    (synopsis "S-expression based regular expressions")
+    (description
+     "Irregex is an s-expression based alternative to your classic
+string-based regular expressions.  It implements SRFI 115 and is deeply
+inspired by the SCSH regular expression system.")
+    (license bsd-3)))
 
 ;; There are two guile-gdbm packages, one using the FFI and one with
 ;; direct C bindings, hence the verbose name.
@@ -491,6 +627,7 @@ See http://minikanren.org/ for more on miniKanren generally.")
               (uri (git-reference
                     (url "https://github.com/ijp/guile-gdbm.git")
                     (commit "fa1d5b6231d0e4d096687b378c025f2148c5f246")))
+              (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
                 "1j8wrsw7v9w6qkl47xz0rdikg50v16nn6kbs3lgzcymjzpa7babj"))))
@@ -663,10 +800,45 @@ key-value cache and store.")
     (inputs
      `(("guile" ,guile-2.0)
        ("python" ,python)))
-    (synopsis "wisp is a whitespace to lisp syntax for Guile")
-    (description "wisp is a syntax for Guile which provides a Python-like
+    (synopsis "Whitespace to lisp syntax for Guile")
+    (description "Wisp is a syntax for Guile which provides a Python-like
 whitespace-significant language.  It may be easier on the eyes for some
 users and in some situations.")
+    (license gpl3+)))
+
+(define-public guile-sly
+  (package
+    (name "guile-sly")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://files.dthompson.us/sly/sly-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1svzlbz2vripmyq2kjh0rig16bsrnbkwbsm558pjln9l65mcl4qq"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "--with-libfreeimage-prefix="
+                            (assoc-ref %build-inputs "freeimage"))
+             (string-append "--with-libgslcblas-prefix="
+                            (assoc-ref %build-inputs "gsl")))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("guile" ,guile-2.0)
+       ("guile-sdl" ,guile-sdl)
+       ("guile-opengl" ,guile-opengl)))
+    (inputs
+     `(("gsl" ,gsl)
+       ("freeimage" ,freeimage)
+       ("mesa" ,mesa)))
+    (synopsis "2D/3D game engine for GNU Guile")
+    (description "Sly is a 2D/3D game engine written in Guile Scheme.  Sly
+features a functional reactive programming interface and live coding
+capabilities.")
+    (home-page "http://dthompson.us/pages/software/sly.html")
     (license gpl3+)))
 
 ;;; guile.scm ends here

@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2015 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -34,3 +34,7 @@ then false; else true; fi
 
 # This one should succeed.
 guix download "file://$abs_top_srcdir/README"
+
+# This one should fail.
+if guix download "file:///does-not-exist" "file://$abs_top_srcdir/README"
+then false; else true; fi

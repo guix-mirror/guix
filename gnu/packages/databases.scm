@@ -55,6 +55,28 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match))
 
+(define-public gdbm
+  (package
+    (name "gdbm")
+    (version "1.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gdbm/gdbm-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1hz3jgh3pd4qzp6jy0l8pd8x01g9abw7csnrlnj1a2sxy122z4cd"))))
+    (arguments `(#:configure-flags '("--enable-libgdbm-compat")))
+    (build-system gnu-build-system)
+    (home-page "http://www.gnu.org/software/gdbm/")
+    (synopsis
+     "Hash library of database functions compatible with traditional dbm")
+    (description
+     "GDBM is a library for manipulating hashed databases.  It is used to
+store key/value pairs in a file in a manner similar to the Unix dbm library
+and provides interfaces to the traditional file format.")
+    (license gpl3+)))
+
 (define-public bdb
   (package
     (name "bdb")
@@ -600,6 +622,30 @@ columns, primary keys, unique constraints and relationships.")
     (home-page "http://search.cpan.org/dist/DBD-Pg")
     (synopsis "DBI PostgreSQL interface")
     (description "")
+    (license (package-license perl))))
+
+(define-public perl-dbd-mysql
+  (package
+    (name "perl-dbd-mysql")
+    (version "4.033")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/C/CA/CAPTTOFU/"
+                           "DBD-mysql-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0769xakykps0cx368g4vaips4w3bjk383rianiavq7sq6g6bp66c"))))
+    (build-system perl-build-system)
+    ;; Tests require running MySQL server
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("perl-dbi" ,perl-dbi)
+       ("mysql" ,mysql)))
+    (home-page "http://search.cpan.org/dist/DBD-mysql")
+    (synopsis "DBI MySQL interface")
+    (description "This package provides a MySQL driver for the Perl5
+@dfn{Database Interface} (DBI).")
     (license (package-license perl))))
 
 (define-public perl-dbd-sqlite

@@ -24,6 +24,8 @@
 
 ;;; Code:
 
+(require 'guix-utils)
+
 (defgroup guix-build-log nil
   "Settings for `guix-build-log-mode'."
   :group 'guix)
@@ -102,10 +104,13 @@
   "Face for the number of seconds for a phase."
   :group 'guix-build-log-faces)
 
-(defcustom guix-build-log-mode-hook
-  ;; Not using `compilation-minor-mode' because it rebinds some standard
-  ;; keys, including M-n/M-p.
-  '(compilation-shell-minor-mode view-mode)
+(defcustom guix-build-log-minor-mode-activate t
+  "If non-nil, then `guix-build-log-minor-mode' is automatically
+activated in `shell-mode' buffers."
+  :type 'boolean
+  :group 'guix-build-log)
+
+(defcustom guix-build-log-mode-hook '()
   "Hook run after `guix-build-log-mode' is entered."
   :type 'hook
   :group 'guix-build-log)
@@ -178,9 +183,8 @@ STATE is a symbol denoting how a build phase was ended.  It should be
      (3 'guix-build-log-phase-seconds prepend)))
   "A list of `font-lock-keywords' for `guix-build-log-mode'.")
 
-(defvar guix-build-log-mode-map
+(defvar guix-build-log-common-map
   (let ((map (make-sparse-keymap)))
-    (set-keymap-parent map special-mode-map)
     (define-key map (kbd "M-n") 'guix-build-log-next-phase)
     (define-key map (kbd "M-p") 'guix-build-log-previous-phase)
     (define-key map (kbd "TAB") 'guix-build-log-phase-toggle)
@@ -188,7 +192,25 @@ STATE is a symbol denoting how a build phase was ended.  It should be
     (define-key map (kbd "<backtab>") 'guix-build-log-phase-toggle-all)
     (define-key map [(shift tab)] 'guix-build-log-phase-toggle-all)
     map)
+  "Parent keymap for 'build-log' buffers.
+For `guix-build-log-mode' this map is used as is.
+For `guix-build-log-minor-mode' this map is prefixed with 'C-c'.")
+
+(defvar guix-build-log-mode-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent
+     map (make-composed-keymap (list guix-build-log-common-map)
+                               special-mode-map))
+    (define-key map (kbd "c") 'compilation-shell-minor-mode)
+    (define-key map (kbd "v") 'view-mode)
+    map)
   "Keymap for `guix-build-log-mode' buffers.")
+
+(defvar guix-build-log-minor-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c") guix-build-log-common-map)
+    map)
+  "Keymap for `guix-build-log-minor-mode' buffers.")
 
 (defun guix-build-log-phase-start (&optional with-header?)
   "Return the start point of the current build phase.
@@ -319,15 +341,37 @@ When Guix Build Log minor mode is enabled, it highlights build
 log in the current buffer.  This mode can be enabled
 programmatically using hooks:
 
-  (add-hook 'shell-mode-hook 'guix-build-log-minor-mode)"
+  (add-hook 'shell-mode-hook 'guix-build-log-minor-mode)
+
+\\{guix-build-log-minor-mode-map}"
   :init-value nil
   :lighter " Guix-Build-Log"
+  :keymap guix-build-log-minor-mode-map
   :group 'guix-build-log
   (if guix-build-log-minor-mode
       (font-lock-add-keywords nil guix-build-log-font-lock-keywords)
     (font-lock-remove-keywords nil guix-build-log-font-lock-keywords))
   (when font-lock-mode
     (font-lock-fontify-buffer)))
+
+;;;###autoload
+(defun guix-build-log-minor-mode-activate-maybe ()
+  "Activate `guix-build-log-minor-mode' depending on
+`guix-build-log-minor-mode-activate' variable."
+  (when guix-build-log-minor-mode-activate
+    (guix-build-log-minor-mode)))
+
+(defun guix-build-log-find-file (file-or-url)
+  "Open FILE-OR-URL in `guix-build-log-mode'."
+  (guix-find-file-or-url file-or-url)
+  (guix-build-log-mode))
+
+;;;###autoload
+(add-to-list 'auto-mode-alist
+             ;; Regexp for log files (usually placed in /var/log/guix/...)
+             (cons (rx "/guix/drvs/" (= 2 alnum) "/" (= 30 alnum)
+                       "-" (+ (any alnum "-+.")) ".drv" string-end)
+                   'guix-build-log-mode))
 
 (provide 'guix-build-log)
 

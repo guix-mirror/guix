@@ -135,7 +135,7 @@ is implemented.")
 (define-public ant
   (package
     (name "ant")
-    (version "1.9.4")
+    (version "1.9.6")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -143,7 +143,7 @@ is implemented.")
                     version "-src.tar.gz"))
               (sha256
                (base32
-                "09kf5s1ir0rdrclsy174bsvbdcbajza9fja490w4mmvcpkw3zpak"))))
+                "1396wflczyxjxl603dhxjvd559f289lha9y2f04f71c7hapjl3am"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -576,7 +576,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
     (license license:gpl2+)))
 
 (define-public icedtea7
-  (let* ((version "2.6.1")
+  (let* ((version "2.6.2")
          (drop (lambda (name hash)
                  (origin
                    (method url-fetch)
@@ -594,7 +594,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                       version ".tar.xz"))
                 (sha256
                  (base32
-                  "0s107vi1530a5dyxacysc4m64zshgg2d3xpndsc0ws99wz0zmr6c"))
+                  "0xi0w8gpxx3r68hyi7fb991hxb3rqfp7895nfsl4wj3sa1f5ds5y"))
                 (modules '((guix build utils)))
                 (snippet
                  '(substitute* "Makefile.in"
@@ -728,24 +728,24 @@ build process and its dependencies, whereas Make uses Makefile format.")
       (native-inputs
        `(("openjdk-drop"
           ,(drop "openjdk"
-                 "0gs6vbj5c09516r460r68i7vm652sb25h973kq9hfx749qbs0s01"))
+                 "0jabxc8iw7ciz6f2qshcpla66qniy686vnxnfx3h2yw7syvas4a9"))
          ("corba-drop"
           ,(drop "corba"
-                 "1y7nf6hqry1az28i3b6ln5cs82cww1jj4r61jk54ab8s2xydj0yd"))
+                 "1bw22djg8mfqqn8kp8mpbj9vi4pl8dk67qwwrny67d0fvirixylj"))
          ("jaxp-drop"
           ,(drop "jaxp"
-                 "1szs2w0p496k1qi3yl1fymj0g10lgq31am35zlalcz7pi4l4q360"))
+                 "1h3g2dwbj8ihicl73qbr4cvvc3i5bs5ckrpja1nx6g5b56xa7kcl"))
          ("jaxws-drop"
           ,(drop "jaxws"
-                 "17xfy9q2zdpap7m2prbf937x55jm3pwrqpp1fdlridraqrfzjprd"))
+                 "1m1h7455qn4pdhb5yamdl9965iz9260lzwl3njcs35vi14v7fihl"))
          ("jdk-drop"
           ,(drop "jdk"
-                 "0qskhwr4nml49zhbppnq8ldj0x001bl37mrcpxslbnsdw5skw258"))
+                 "1wcaxf2chnlpk34q04c23im6z32dy8fr6f9giz3ih65nyvah3n3s"))
          ("langtools-drop"
           ,(drop "langtools"
-                 "0hyxrrb0zrx1pq1s90bmim94hwfligr0ajzs1874da4gclbbvfbd"))
+                 "0da3cmm8nwz7dk2sqnywvidaa0kjnyzzi33p2lkdi4415f8yhgx5"))
          ("hotspot-drop"
           ,(drop "hotspot"
-                 "1cv8df2s89mnjzg4rja4i89d4fr8n0c3v5y2cqbww1ma1463n100"))
+                 "0fn3cjhqsgbkfzychkvvw6whxil2n9dr6q0196ywxzkinny1hjcq"))
          ,@(fold alist-delete (package-native-inputs icedtea6)
                  '("openjdk6-src")))))))

@@ -32,6 +32,7 @@
   #:use-module (guix scripts)
   #:use-module (guix gnu-maintenance)
   #:use-module (guix monads)
+  #:use-module (guix cve)
   #:use-module (gnu packages)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
@@ -61,6 +62,7 @@
             check-source
             check-source-file-name
             check-license
+            check-vulnerabilities
             check-formatting
             run-checkers
 
@@ -266,10 +268,13 @@ the synopsis")
      (check-start-with-package-name synopsis)
      (check-synopsis-length synopsis))))
 
-(define (probe-uri uri)
+(define* (probe-uri uri #:key timeout)
   "Probe URI, a URI object, and return two values: a symbol denoting the
 probing status, such as 'http-response' when we managed to get an HTTP
-response from URI, and additional details, such as the actual HTTP response."
+response from URI, and additional details, such as the actual HTTP response.
+
+TIMEOUT is the maximum number of seconds (possibly an inexact number) to wait
+for connections to complete; when TIMEOUT is #f, wait as long as needed."
   (define headers
     '((User-Agent . "GNU Guile")
       (Accept . "*/*")))
@@ -280,7 +285,7 @@ response from URI, and additional details, such as the actual HTTP response."
       ((or 'http 'https)
        (catch #t
          (lambda ()
-           (let ((port    (open-connection-for-uri uri))
+           (let ((port    (open-connection-for-uri uri #:timeout timeout))
                  (request (build-request uri #:headers headers)))
              (define response
                (dynamic-wind
@@ -313,7 +318,7 @@ response from URI, and additional details, such as the actual HTTP response."
       ('ftp
        (catch #t
          (lambda ()
-           (let ((conn (ftp-open (uri-host uri) 21)))
+           (let ((conn (ftp-open (uri-host uri) #:timeout timeout)))
              (define response
                (dynamic-wind
                  (const #f)
@@ -338,7 +343,7 @@ response from URI, and additional details, such as the actual HTTP response."
   "Return #t if the given URI can be reached, otherwise return #f and emit a
 warning for PACKAGE mentionning the FIELD."
   (let-values (((status argument)
-                (probe-uri uri)))
+                (probe-uri uri #:timeout 3)))     ;wait at most 3 seconds
     (case status
       ((http-response)
        (or (= 200 (response-code argument))
@@ -568,6 +573,53 @@ descriptions maintained upstream."
      (emit-warning package (_ "invalid license field")
                    'license))))
 
+(define (patch-file-name patch)
+  "Return the basename of PATCH's file name, or #f if the file name could not
+be determined."
+  (match patch
+    ((? string?)
+     (basename patch))
+    ((? origin?)
+     (and=> (origin-actual-file-name patch) basename))))
+
+(define (package-name->cpe-name name)
+  "Do a basic conversion of NAME, a Guix package name, to the corresponding
+Common Platform Enumeration (CPE) name."
+  (match name
+    ("icecat"   "firefox")                        ;or "firefox_esr"
+    ;; TODO: Add more.
+    (_          name)))
+
+(define package-vulnerabilities
+  (let ((lookup (delay (vulnerabilities->lookup-proc
+                        (current-vulnerabilities)))))
+    (lambda (package)
+      "Return a list of vulnerabilities affecting PACKAGE."
+      ((force lookup)
+       (package-name->cpe-name (package-name package))
+       (package-version package)))))
+
+(define (check-vulnerabilities package)
+  "Check for known vulnerabilities for PACKAGE."
+  (match (package-vulnerabilities package)
+    (()
+     #t)
+    ((vulnerabilities ...)
+     (let* ((patches   (filter-map patch-file-name
+                                   (or (and=> (package-source package)
+                                              origin-patches)
+                                       '())))
+            (unpatched (remove (lambda (vuln)
+                                 (find (cute string-contains
+                                         <> (vulnerability-id vuln))
+                                       patches))
+                               vulnerabilities)))
+       (unless (null? unpatched)
+         (emit-warning package
+                       (format #f (_ "probably vulnerable to ~a")
+                               (string-join (map vulnerability-id unpatched)
+                                            ", "))))))))
+
 
 ;;;
 ;;; Source code formatting.
@@ -705,6 +757,11 @@ or a list thereof")
      (name        'synopsis)
      (description "Validate package synopses")
      (check       check-synopsis-style))
+   (lint-checker
+     (name        'cve)
+     (description "Check the Common Vulnerabilities and Exposures\
+ (CVE) database")
+     (check       check-vulnerabilities))
    (lint-checker
      (name        'formatting)
      (description "Look for formatting issues in the source")

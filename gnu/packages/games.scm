@@ -1,17 +1,19 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
+;;; Copyright © 2014, 2015 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +36,11 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix svn-download)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
@@ -49,6 +55,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libunwind)
+  #:use-module (gnu packages haskell)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
@@ -78,6 +85,7 @@
   #:use-module (gnu packages fribidi)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system haskell)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial))
 
@@ -151,8 +159,8 @@ scriptable with Guile.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://abbaye-for-linux.googlecode.com/files/abbaye-for-linux-src-"
-                           version ".tar.gz"))
+       (uri (string-append "http://abbaye-for-linux.googlecode.com/files/"
+                           "abbaye-for-linux-src-" version ".tar.gz"))
        (sha256
         (base32
          "1wgvckgqa2084rbskxif58wbb83xbas8s1i8s7d57xbj08ryq8rk"))))
@@ -1048,6 +1056,48 @@ experience and advance levels, and are carried over from one scenario to the
 next campaign.")
     (license license:gpl2+)))
 
+(define-public dosbox
+  (package
+    (name "dosbox")
+    (version "0.74.svn3947")
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url "http://svn.code.sf.net/p/dosbox/code-0/dosbox/trunk/")
+                    (revision 3947)))
+              (file-name (string-append name "-" version "-checkout"))
+              ;; Use SVN head, since the last release (2010) is incompatible
+              ;; with GCC 4.8+ (see
+              ;; <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=624976>).
+              (sha256
+               (base32
+                "1p918j6090d1nkvgq7ifvmn506zrdmyi32y7p3ms40d5ssqjg8fj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after
+                   'unpack 'autogen.sh
+                   (lambda _
+                     (zero? (system* "sh" "autogen.sh")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("sdl" ,sdl)
+       ("libpng" ,libpng)
+       ("zlib" ,zlib)
+       ("alsa-lib" ,alsa-lib)
+       ("glu" ,glu)
+       ("mesa" ,mesa)))
+    (home-page "http://www.dosbox.com")
+    (synopsis "X86 emulator with CGA/EGA/VGA/etc. graphics and sound")
+    (description "DOSBox is a DOS-emulator that uses the SDL library.  DOSBox
+also emulates CPU:286/386 realmode/protected mode, Directory
+FileSystem/XMS/EMS, Tandy/Hercules/CGA/EGA/VGA/VESA graphics, a
+SoundBlaster/Gravis Ultra Sound card for excellent sound compatibility with
+older games.")
+    (license license:gpl2+)))
+
 (define-public gamine
   (package
     (name "gamine")
@@ -1094,10 +1144,43 @@ on the screen and keyboard to display letters.")
     ;; Most files under gpl2+ or gpl3+, but eat.wav under gpl3
     (license license:gpl3)))
 
+(define-public raincat
+  (package
+    (name "raincat")
+    (version "1.1.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://hackage.haskell.org/package/Raincat/Raincat-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1aalh68h6799mv4vyg30zpskl5jkn6x2j1jza7p4lrflyifxzar8"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-extensible-exceptions" ,ghc-extensible-exceptions)
+       ("ghc-mtl" ,ghc-mtl)
+       ("ghc-random" ,ghc-random)
+       ("ghc-glut" ,ghc-glut)
+       ("ghc-opengl" ,ghc-opengl)
+       ("ghc-sdl" ,ghc-sdl)
+       ("ghc-sdl-image" ,ghc-sdl-image)
+       ("ghc-sdl-mixer" ,ghc-sdl-mixer)))
+    (home-page "http://raincat.bysusanlin.com/")
+    (synopsis "Puzzle game with a cat in lead role")
+    (description "Project Raincat is a game developed by Carnegie Mellon
+students through GCS during the Fall 2008 semester.  Raincat features game
+play inspired from classics Lemmings and The Incredible Machine.  The project
+proved to be an excellent learning experience for the programmers.  Everything
+is programmed in Haskell.")
+    (license license:bsd-3)))
+
 (define-public manaplus
   (package
     (name "manaplus")
-    (version "1.5.9.26")
+    (version "1.5.12.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1105,7 +1188,7 @@ on the screen and keyboard to display letters.")
                     version "/manaplus-" version ".tar.xz"))
               (sha256
                (base32
-                "070ms1cv7q88284pqh66lfhacckgv7m9s8z9009k2laypibx7vs6"))))
+                "0kmd743q40v82221wj8b09n30lqiwl7096v3m7ki3ynsgszkm326"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1132,3 +1215,641 @@ world}, @uref{http://evolonline.org, Evol Online} and
     ;; "data/themes/{golden-delicious,jewelry}/*" are under CC-BY-SA.
     ;; The rest is under GPL2+.
     (license (list license:gpl2+ license:zlib license:cc-by-sa4.0))))
+
+(define-public mupen64plus-core
+  (package
+    (name "mupen64plus-core")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mupen64plus/mupen64plus-core/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0dg2hksm5qni2hcha93k7n4fqr92888p946f7phb0ndschzfh9kk"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("glu" ,glu)
+       ("libpng" ,libpng)
+       ("mesa" ,mesa)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The mupen64plus build system has no configure phase.
+         (delete 'configure)
+         ;; Makefile is in a subdirectory.
+         (add-before
+          'build 'cd-to-project-dir
+          (lambda _
+            (chdir "projects/unix"))))
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list "all" (string-append "PREFIX=" out)))
+       ;; There are no tests.
+       #:tests? #f))
+    ;; As per the Makefile (in projects/unix/Makefile):
+    (supported-systems '("i686-linux" "x86_64-linux"))
+    (home-page "http://www.mupen64plus.org/")
+    (synopsis "Nintendo 64 emulator core library")
+    (description
+     "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
+which is capable of accurately playing many games.  This package contains the
+core library.")
+    (license license:gpl2+)))
+
+(define-public mupen64plus-audio-sdl
+  (package
+    (name "mupen64plus-audio-sdl")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mupen64plus/mupen64plus-audio-sdl/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0ss6w92n2rpfnazhg9lbq0nvs3fqx93nliz3k3wjxdlx4dpi7h3a"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("mupen64plus-core" ,mupen64plus-core)
+       ("sdl2" ,sdl2)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The mupen64plus build system has no configure phase.
+         (delete 'configure)
+         ;; Makefile is in a subdirectory.
+         (add-before
+          'build 'cd-to-project-dir
+          (lambda _
+            (chdir "projects/unix"))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (m64p (assoc-ref %build-inputs "mupen64plus-core")))
+         (list "all"
+               (string-append "PREFIX=" out)
+               (string-append "APIDIR=" m64p "/include/mupen64plus")))
+       ;; There are no tests.
+       #:tests? #f))
+    (home-page "http://www.mupen64plus.org/")
+    (synopsis "Mupen64Plus SDL input plugin")
+    (description
+     "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
+which is capable of accurately playing many games.  This package contains the
+SDL audio plugin.")
+    (license license:gpl2+)))
+
+(define-public mupen64plus-input-sdl
+  (package
+    (name "mupen64plus-input-sdl")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mupen64plus/mupen64plus-input-sdl/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "11sj5dbalp2nrlmki34vy7wy28vc175pnnkdk65p8599hnyq37ri"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("which" ,which)))
+    (inputs
+     `(("mupen64plus-core" ,mupen64plus-core)
+       ("sdl2" ,sdl2)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The mupen64plus build system has no configure phase.
+         (delete 'configure)
+         ;; Makefile is in a subdirectory.
+         (add-before
+          'build 'cd-to-project-dir
+          (lambda _
+            (chdir "projects/unix"))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (m64p (assoc-ref %build-inputs "mupen64plus-core")))
+         (list "all"
+               (string-append "PREFIX=" out)
+               (string-append "APIDIR=" m64p "/include/mupen64plus")))
+       ;; There are no tests.
+       #:tests? #f))
+    (home-page "http://www.mupen64plus.org/")
+    (synopsis "Mupen64Plus SDL input plugin")
+    (description
+     "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
+which is capable of accurately playing many games.  This package contains the
+SDL input plugin.")
+    (license license:gpl2+)))
+
+(define-public mupen64plus-rsp-hle
+  (package
+    (name "mupen64plus-rsp-hle")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mupen64plus/mupen64plus-rsp-hle/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "15h7mgz6xd2zjzm6l3f96sbs8kwr3xvbwzgikhnka79m6c69hsxv"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("mupen64plus-core" ,mupen64plus-core)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The mupen64plus build system has no configure phase.
+         (delete 'configure)
+         ;; Makefile is in a subdirectory.
+         (add-before
+          'build 'cd-to-project-dir
+          (lambda _
+            (chdir "projects/unix"))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (m64p (assoc-ref %build-inputs "mupen64plus-core")))
+         (list "all"
+               (string-append "PREFIX=" out)
+               (string-append "APIDIR=" m64p "/include/mupen64plus")))
+       ;; There are no tests.
+       #:tests? #f))
+    (home-page "http://www.mupen64plus.org/")
+    (synopsis "Mupen64Plus SDL input plugin")
+    (description
+     "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
+which is capable of accurately playing many games.  This package contains the
+high-level emulation (HLE) RSP processor plugin.")
+    (license license:gpl2+)))
+
+(define-public mupen64plus-rsp-z64
+  (package
+    (name "mupen64plus-rsp-z64")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mupen64plus/mupen64plus-rsp-z64/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "10jz1w2dhx5slhyk4m8mdqlpsd6cshchslr1fckb2ayzb1ls3ghi"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("mupen64plus-core" ,mupen64plus-core)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The mupen64plus build system has no configure phase.
+         (delete 'configure)
+         ;; Makefile is in a subdirectory.
+         (add-before
+          'build 'cd-to-project-dir
+          (lambda _
+            (chdir "projects/unix"))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (m64p (assoc-ref %build-inputs "mupen64plus-core")))
+         (list "all"
+               (string-append "PREFIX=" out)
+               (string-append "APIDIR=" m64p "/include/mupen64plus")))
+       ;; There are no tests.
+       #:tests? #f))
+    (home-page "http://www.mupen64plus.org/")
+    (synopsis "Mupen64Plus SDL input plugin")
+    (description
+     "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
+which is capable of accurately playing many games.  This package contains the
+Z64 RSP processor plugin.")
+    (license license:gpl2+)))
+
+(define-public mupen64plus-video-arachnoid
+  (package
+    (name "mupen64plus-video-arachnoid")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mupen64plus/mupen64plus-video-arachnoid/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0jjwf144rihznm4lnqbhgigxw664v3v32wy94adaa6imk8z6gslh"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("mesa" ,mesa)
+       ("mupen64plus-core" ,mupen64plus-core)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The mupen64plus build system has no configure phase.
+         (delete 'configure)
+         ;; Makefile is in a subdirectory.
+         (add-before
+          'build 'cd-to-project-dir
+          (lambda _
+            (chdir "projects/unix"))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (m64p (assoc-ref %build-inputs "mupen64plus-core")))
+         (list "all"
+               (string-append "PREFIX=" out)
+               (string-append "APIDIR=" m64p "/include/mupen64plus")))
+       ;; There are no tests.
+       #:tests? #f))
+    (home-page "http://www.mupen64plus.org/")
+    (synopsis "Mupen64Plus Rice Video plugin")
+    (description
+     "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
+which is capable of accurately playing many games.  This package contains the
+Arachnoid video plugin.")
+    (license license:gpl2+)))
+
+(define-public mupen64plus-video-glide64
+  (package
+    (name "mupen64plus-video-glide64")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mupen64plus/mupen64plus-video-glide64/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1rm55dbf6xgsq1blbzs6swa2ajv0qkn38acbljj346abnk6s3dla"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("mesa" ,mesa)
+       ("mupen64plus-core" ,mupen64plus-core)
+       ("sdl2" ,sdl2)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The mupen64plus build system has no configure phase.
+         (delete 'configure)
+         ;; Makefile is in a subdirectory.
+         (add-before
+          'build 'cd-to-project-dir
+          (lambda _
+            (chdir "projects/unix")))
+         ;; XXX Should be unnecessary with the next release.
+         (add-before
+          'build 'use-sdl2
+          (lambda _
+            (substitute* "Makefile"
+              (("SDL_CONFIG = (.*)sdl-config" all prefix)
+               (string-append "SDL_CONFIG = " prefix "sdl2-config"))))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (m64p (assoc-ref %build-inputs "mupen64plus-core")))
+         (list "all"
+               (string-append "PREFIX=" out)
+               (string-append "APIDIR=" m64p "/include/mupen64plus")))
+       ;; There are no tests.
+       #:tests? #f))
+    (home-page "http://www.mupen64plus.org/")
+    (synopsis "Mupen64Plus Rice Video plugin")
+    (description
+     "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
+which is capable of accurately playing many games.  This package contains the
+Glide64 video plugin.")
+    (license license:gpl2+)))
+
+(define-public mupen64plus-video-glide64mk2
+  (package
+    (name "mupen64plus-video-glide64mk2")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mupen64plus/mupen64plus-video-glide64mk2/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1ihl4q293d6svba26b4mhapjcdg12p90gibz79b4mx423jlcxxj9"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("boost" ,boost)
+       ("libpng" ,libpng)
+       ("mesa" ,mesa)
+       ("mupen64plus-core" ,mupen64plus-core)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The mupen64plus build system has no configure phase.
+         (delete 'configure)
+         ;; Makefile is in a subdirectory.
+         (add-before
+          'build 'cd-to-project-dir
+          (lambda _
+            (chdir "projects/unix"))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (m64p (assoc-ref %build-inputs "mupen64plus-core")))
+         (list "all"
+               (string-append "PREFIX=" out)
+               (string-append "APIDIR=" m64p "/include/mupen64plus")))
+       ;; There are no tests.
+       #:tests? #f))
+    (home-page "http://www.mupen64plus.org/")
+    (synopsis "Mupen64Plus Rice Video plugin")
+    (description
+     "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
+which is capable of accurately playing many games.  This package contains the
+Glide64MK2 video plugin.")
+    (license license:gpl2+)))
+
+(define-public mupen64plus-video-rice
+  (package
+    (name "mupen64plus-video-rice")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mupen64plus/mupen64plus-video-rice/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0rd2scjmh285w61aj3mgx71whg5rqrjbry3cdgicczrnyvf8wdvk"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("libpng" ,libpng)
+       ("mesa" ,mesa)
+       ("mupen64plus-core" ,mupen64plus-core)
+       ("sdl2" ,sdl2)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The mupen64plus build system has no configure phase.
+         (delete 'configure)
+         ;; Makefile is in a subdirectory.
+         (add-before
+          'build 'cd-to-project-dir
+          (lambda _
+            (chdir "projects/unix"))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (m64p (assoc-ref %build-inputs "mupen64plus-core")))
+         (list "all"
+               (string-append "PREFIX=" out)
+               (string-append "APIDIR=" m64p "/include/mupen64plus")))
+       ;; There are no tests.
+       #:tests? #f))
+    (home-page "http://www.mupen64plus.org/")
+    (synopsis "Mupen64Plus Rice Video plugin")
+    (description
+     "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
+which is capable of accurately playing many games.  This package contains the
+Rice Video plugin.")
+    (license license:gpl2+)))
+
+(define-public mupen64plus-video-z64
+  (package
+    (name "mupen64plus-video-z64")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mupen64plus/mupen64plus-video-z64/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "1x7wsjs5gx2iwx20p4cjcbf696zsjlh31qxmghwv0ifrq8x58s1b"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("glew" ,glew)
+       ("mupen64plus-core" ,mupen64plus-core)
+       ("sdl2" ,sdl2)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The mupen64plus build system has no configure phase.
+         (delete 'configure)
+         ;; Makefile is in a subdirectory.
+         (add-before
+          'build 'cd-to-project-dir
+          (lambda _
+            (chdir "projects/unix")))
+         ;; XXX Should be unnecessary with the next release.
+         (add-before
+          'build 'use-sdl2
+          (lambda _
+            (substitute* "Makefile"
+              (("SDL_CONFIG = (.*)sdl-config" all prefix)
+               (string-append "SDL_CONFIG = " prefix "sdl2-config"))))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (m64p (assoc-ref %build-inputs "mupen64plus-core")))
+         (list "all"
+               (string-append "PREFIX=" out)
+               (string-append "APIDIR=" m64p "/include/mupen64plus")))
+       ;; There are no tests.
+       #:tests? #f))
+    (home-page "http://www.mupen64plus.org/")
+    (synopsis "Mupen64Plus Z64 video plugin")
+    (description
+     "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
+which is capable of accurately playing many games.  This package contains the
+Z64 video plugin.")
+    (license license:gpl2+)))
+
+(define-public mupen64plus-ui-console
+  (package
+    (name "mupen64plus-ui-console")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/mupen64plus/mupen64plus-ui-console/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "04qkpd8ic7xsgnqz7spl00wxdygf79m7d1k8rabbygjk5lg6p8z2"))
+       (patches
+        (list (search-patch "mupen64plus-ui-console-notice.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("which" ,which)))
+    (inputs
+     `(("sdl2" ,sdl2)))
+    ;; Mupen64Plus supports a single data directory and a single plugin
+    ;; directory in its configuration, yet we need data and plugin files from
+    ;; a variety of packages.  The best way to deal with this is to install
+    ;; all packages from which data and plugin files are needed into one's
+    ;; profile, and point the configuration there.  Hence, propagate the most
+    ;; important packages here to save the user from the bother.  The patch
+    ;; mupen64plus-ui-console-notice also gives users instructions on what
+    ;; they need to do in order to point the configuration to their profile.
+    (propagated-inputs
+     `(("mupen64plus-core" ,mupen64plus-core)
+       ("mupen64plus-audio-sdl" ,mupen64plus-audio-sdl)
+       ("mupen64plus-input-sdl" ,mupen64plus-input-sdl)
+       ("mupen64plus-rsp-hle" ,mupen64plus-rsp-hle)
+       ("mupen64plus-video-glide64" ,mupen64plus-video-glide64)
+       ("mupen64plus-video-glide64mk2" ,mupen64plus-video-glide64mk2)
+       ("mupen64plus-video-rice" ,mupen64plus-video-rice)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The mupen64plus build system has no configure phase.
+         (delete 'configure)
+         ;; Makefile is in a subdirectory.
+         (add-before
+          'build 'cd-to-project-dir
+          (lambda _
+            (chdir "projects/unix"))))
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out"))
+             (m64p (assoc-ref %build-inputs "mupen64plus-core")))
+         (list "all"
+               (string-append "PREFIX=" out)
+               (string-append "APIDIR=" m64p "/include/mupen64plus")
+               ;; Trailing slash matters here.
+               (string-append "COREDIR=" m64p "/lib/")))
+       ;; There are no tests.
+       #:tests? #f))
+    (home-page "http://www.mupen64plus.org/")
+    (synopsis "Mupen64Plus SDL input plugin")
+    (description
+     "Mupen64Plus is a cross-platform plugin-based Nintendo 64 (N64) emulator
+which is capable of accurately playing many games.  This package contains the
+command line user interface.  Installing this package is the easiest way
+towards a working Mupen64Plus for casual users.")
+    (license license:gpl2+)))
+
+(define-public nestopia-ue
+  (package
+    (name "nestopia-ue")
+    (version "1.46.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/rdanbrook/nestopia/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07h49xwvg61dx20rk5p4r3ax2ar5y0ppvm60cqwqljyi9rdfbh7p"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; We don't need libretro for the GNU/Linux build.
+                  (delete-file-recursively "libretro")
+                  ;; Use system zlib.
+                  (delete-file-recursively "source/zlib")
+                  (substitute* "source/core/NstZlib.cpp"
+                    (("#include \"../zlib/zlib.h\"") "#include <zlib.h>"))))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("ao" ,ao)
+       ("glu" ,glu)
+       ("gtk+" ,gtk+)
+       ("libarchive" ,libarchive)
+       ("mesa" ,mesa)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; The Nestopia build system consists solely of a Makefile.
+         (delete 'configure)
+         ;; XXX Should be unnecessary with the next release.
+         (add-before
+          'build 'patch-makefile
+          (lambda _
+            (substitute* "Makefile"
+              (("@mkdir \\$@") "@mkdir -p $@")
+              (("CC =") "CC ?=")
+              (("CXX =") "CXX ?=")
+              (("PREFIX =") "PREFIX ?=")
+              (("^install:\n$") "install:\n\tmkdir -p $(BINDIR)\n"))))
+         (add-before
+          'build 'remove-xdg-desktop-menu-call
+          (lambda _
+            (substitute* "Makefile"
+              (("xdg-desktop-menu install .*") "")))))
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list "CC=gcc" "CXX=g++" (string-append "PREFIX=" out)))
+       ;; There are no tests.
+       #:tests? #f))
+    (home-page "http://0ldsk00l.ca/nestopia/")
+    (synopsis "Nintendo Entertainment System (NES/Famicom) emulator")
+    (description
+     "Nestopia UE (Undead Edition) is a fork of the Nintendo Entertainment
+System (NES/Famicom) emulator Nestopia, with enhancements from members of the
+emulation community.  It provides highly accurate emulation.")
+    (license license:gpl2+)))
+
+(define-public emulation-station
+  (package
+    (name "emulation-station")
+    (version "2.0.1")
+    (source (origin
+              (method git-fetch) ; no tarball available
+              (uri (git-reference
+                    (url "https://github.com/Aloshi/EmulationStation.git")
+                    (commit "646bede"))) ; no version tag
+              (sha256
+               (base32
+                "0cm0sq2wri2l9cvab1l0g02za59q7klj0h3p028vr96n6njj4w9v"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f)) ; no tests
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("boost" ,boost)
+       ("curl" ,curl)
+       ("eigin" ,eigen)
+       ("freeimage" ,freeimage)
+       ("freetype" ,freetype)
+       ("mesa" ,mesa)
+       ("sdl2" ,sdl2)))
+    (synopsis "Video game console emulator front-end")
+    (description "EmulationStation provides a graphical front-end to a large
+number of video game console emulators.  It features an interface that is
+usable with any game controller that has at least 4 buttons, theming support,
+and a game metadata scraper.")
+    (home-page "http://www.emulationstation.org")
+    (license license:expat)))

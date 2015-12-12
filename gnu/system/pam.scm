@@ -16,7 +16,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu system linux)
+(define-module (gnu system pam)
   #:use-module (guix records)
   #:use-module (guix derivations)
   #:use-module (guix gexp)
@@ -36,8 +36,7 @@
 
 ;;; Commentary:
 ;;;
-;;; Configuration of Linux-related things, including pluggable authentication
-;;; modules (PAM).
+;;; Configuration of the pluggable authentication modules (PAM).
 ;;;
 ;;; Code:
 
@@ -129,7 +128,10 @@ dumped in /etc/pam.d/NAME, where NAME is the name of SERVICE."
 (define unix-pam-service
   (let ((unix (pam-entry
                (control "required")
-               (module "pam_unix.so"))))
+               (module "pam_unix.so")))
+        (env  (pam-entry ; to honor /etc/environment.
+               (control "required")
+               (module "pam_env.so"))))
     (lambda* (name #:key allow-empty-passwords? motd)
       "Return a standard Unix-style PAM service for NAME.  When
 ALLOW-EMPTY-PASSWORDS? is true, allow empty passwords.  When MOTD is true, it
@@ -151,13 +153,13 @@ should be a file-like object used as the message-of-the-day."
                           ;; Store SHA-512 encrypted passwords in /etc/shadow.
                           (arguments '("sha512" "shadow")))))
          (session (if motd
-                      (list unix
+                      (list env unix
                             (pam-entry
                              (control "optional")
                              (module "pam_motd.so")
                              (arguments
                               (list #~(string-append "motd=" #$motd)))))
-                      (list unix))))))))
+                      (list env unix))))))))
 
 (define (rootok-pam-service command)
   "Return a PAM service for COMMAND such that 'root' does not need to
@@ -182,8 +184,7 @@ authenticate to run COMMAND."
           ;; These programs are setuid-root.
           (map (cut unix-pam-service <>
                     #:allow-empty-passwords? allow-empty-passwords?)
-               '("su" "passwd" "sudo"
-                 "xlock" "xscreensaver"))
+               '("su" "passwd" "sudo"))
 
           ;; These programs are not setuid-root, and we want root to be able
           ;; to run them without having to authenticate (notably because

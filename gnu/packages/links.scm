@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright  2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xorg)
   #:use-module (guix download)
@@ -31,21 +33,21 @@
 (define-public links
   (package
     (name "links")
-    (version "2.8")
+    (version "2.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://links.twibright.com/download/"
                                   name "-" version ".tar.bz2"))
               (sha256
-               (base32 "15h07498z52jfdahzgvkphg1f7qvxnpbyfn2xmsls0d2dwwdll3r"))))
+               (base32 "0knq15yrp60s4jh92aacw8yfc2pcv3bqsw7dba7h5s6ivq8ihhcq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-replace
                  'configure
                  (lambda* (#:key outputs #:allow-other-keys)
-                   ;; The tarball uses a very old version of autconf. It doesn't understand
-                   ;; extra flags like `--enable-fast-install', so we need to
-                   ;; invoke it with just what it understand.
+                   ;; The tarball uses a very old version of autconf. It doesn't
+                   ;; understand extra flags like `--enable-fast-install', so
+                   ;; we need to invoke it with just what it understands.
                    (let ((out (assoc-ref outputs "out")))
                      ;; 'configure' doesn't understand '--host'.
                      ,@(if (%current-target-system)
@@ -55,28 +57,25 @@
                      (zero?
                       (system* "./configure"
                                (string-append "--prefix=" out)
-                               "--enable-graphics"
-                               ))))
+                               "--enable-graphics"))))
                  %standard-phases)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("zlib" ,zlib)
               ("openssl" ,openssl)
               ("libjpeg" ,libjpeg)
               ("libtiff" ,libtiff)
+              ("libevent" ,libevent)
               ("libpng" ,libpng)
               ("libxt" ,libxt)))
     (synopsis "Text and graphics mode web browser")
     (description "Links is a graphics and text mode web browser, with many
 features including, tables, builtin image display, bookmarks, SSL and more.")
     (home-page "http://links.twibright.com")
-    ;;   The distribution contains a copy of GPLv2
-    ;;   However, the copyright notices simply say: 
+    ;; The distribution contains a copy of GPLv2
+    ;; However, the copyright notices simply say:
     ;; "This file is a part of the Links program, released under GPL."
     ;; Therefore, under the provisions of Section 9, we can choose
-    ;; any version ever published by the FSF
-    ;;   One file (https.c) contains an exception permitting 
-    ;; linking of the program with openssl
-    (license license:gpl1+)))  
-
-
-
+    ;; any version ever published by the FSF.
+    ;; One file (https.c) contains an exception permitting
+    ;; linking of the program with openssl.
+    (license license:gpl1+)))

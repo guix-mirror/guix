@@ -306,6 +306,9 @@ You have been warned.  Thanks for being so brave.
           (console-font-service "tty5")
           (console-font-service "tty6")
 
+          ;; To facilitate copy/paste.
+          (gpm-service)
+
           ;; Since this is running on a USB stick with a unionfs as the root
           ;; file system, use an appropriate cache configuration.
           (nscd-service (nscd-configuration

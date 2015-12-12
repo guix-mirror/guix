@@ -670,6 +670,26 @@
                  (((? string? item))
                   (string=? item (derivation->output-path drv))))))))))
 
+(test-assert "derivation-prerequisites-to-build in 'check' mode"
+  (with-store store
+    (let* ((dep (build-expression->derivation store "dep"
+                                              `(begin ,(random-text)
+                                                      (mkdir %output))))
+           (drv (build-expression->derivation store "to-check"
+                                              '(mkdir %output)
+                                              #:inputs `(("dep" ,dep)))))
+      (build-derivations store (list drv))
+      (delete-paths store (list (derivation->output-path dep)))
+
+      ;; In 'check' mode, DEP must be rebuilt.
+      (and (null? (derivation-prerequisites-to-build store drv))
+           (match (derivation-prerequisites-to-build store drv
+                                                     #:mode (build-mode
+                                                             check))
+             ((input)
+              (string=? (derivation-input-path input)
+                        (derivation-file-name dep))))))))
+
 (test-assert "build-expression->derivation with expression returning #f"
   (let* ((builder  '(begin
                       (mkdir %output)

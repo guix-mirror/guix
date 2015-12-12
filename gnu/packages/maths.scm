@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -149,7 +150,7 @@ semiconductors.")
 (define-public gsl
   (package
     (name "gsl")
-    (version "1.16")
+    (version "2.1")
     (source
      (origin
       (method url-fetch)
@@ -157,24 +158,10 @@ semiconductors.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0lrgipi0z6559jqh82yx8n4xgnxkhzj46v96dl77hahdp58jzg3k"))
-      (patches (map search-patch '("gsl-poly-test-fix-pt1.patch"
-                                   "gsl-poly-test-fix-pt2.patch")))))
+        "0rhcia9jhr3p1f1wybwyllwqfs9bggz99i3mi5lpyqcpff1hdbar"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:parallel-tests? #f
-       #:phases
-        (alist-replace
-         'configure
-         (lambda* (#:key target system outputs #:allow-other-keys #:rest args)
-           (let ((configure (assoc-ref %standard-phases 'configure)))
-             ;; disable numerically unstable test on i686, see thread at
-             ;; http://lists.gnu.org/archive/html/bug-gsl/2011-11/msg00019.html
-             (if (string=? (or target system) "i686-linux")
-                 (substitute* "ode-initval2/Makefile.in"
-                   (("TESTS = \\$\\(check_PROGRAMS\\)") "TESTS =")))
-             (apply configure args)))
-         %standard-phases)))
+     `(#:parallel-tests? #f))
     (home-page "http://www.gnu.org/software/gsl/")
     (synopsis "Numerical library for C and C++")
     (description
@@ -188,7 +175,7 @@ numbers.")
 (define-public glpk
   (package
     (name "glpk")
-    (version "4.56")
+    (version "4.57")
     (source
      (origin
       (method url-fetch)
@@ -196,7 +183,7 @@ numbers.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0syzix6qvpn0fzp08c84c8snansf1cam5vd0dk2w91mz2c85d18h"))))
+        "0p17jj1ixd2m9lnsvx8nywmfmnplfk5gvw25r1gy84qzrjkv48vk"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)))
@@ -234,7 +221,7 @@ LP/MIP solver is included in the package.")
        ("pango" ,pango)
        ("readline" ,readline)
        ("gtk" ,gtk+-2)
-       ("gtksourceview" ,gtksourceview)
+       ("gtksourceview" ,gtksourceview-2)
        ("zlib" ,zlib)))
     (native-inputs
      `(("glib" ,glib "bin")             ;for glib-genmarshal
@@ -350,22 +337,24 @@ singular value problems.")
 (define-public gnuplot
   (package
     (name "gnuplot")
-    (version "4.6.3")
+    (version "5.0.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://sourceforge/gnuplot/gnuplot/"
-                                version "/gnuplot-" version ".tar.gz"))
+                          version "/gnuplot-" version ".tar.gz"))
       (sha256
        (base32
-        "1xd7gqdhlk7k1p9yyqf9vkk811nadc7m4si0q3nb6cpv4pxglpyz"))))
+        "0irwig94w3f8bn4a444hrjnp7w55vqwv8gqj42jiwn6zf5z5bg3w"))))
     (build-system gnu-build-system)
     (inputs `(("readline" ,readline)
               ("cairo" ,cairo)
               ("pango" ,pango)
               ("gd" ,gd)))
-    (native-inputs `(("texlive" ,texlive)
-                     ("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ;; Need 'tex', 'latex', 'pdflatex', 'kpsexand', and
+                     ;; 'texhash' binaries.
+                     ("texlive" ,texlive-bin)))
     (home-page "http://www.gnuplot.info")
     (synopsis "Command-line driven graphing utility")
     (description "Gnuplot is a portable command-line driven graphing
@@ -376,7 +365,7 @@ plotting engine by third-party applications like Octave.")
     ;;  X11 Style with the additional restriction that derived works may only be
     ;;  distributed as patches to the original.
     (license (license:fsf-free
-	      "http://gnuplot.cvs.sourceforge.net/gnuplot/gnuplot/Copyright"))))
+              "http://gnuplot.cvs.sourceforge.net/gnuplot/gnuplot/Copyright"))))
 
 (define-public hdf5
   (package
@@ -414,15 +403,15 @@ extremely large and complex data collections.")
 (define-public octave
   (package
     (name "octave")
-    (version "3.8.2")
+    (version "4.0.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/octave/octave-"
-			  version ".tar.gz"))
+                          version ".tar.gz"))
       (sha256
        (base32
-	"05slz8yx8k91fqlnfr1f0vni95iq9qmchz41c7nf4isn3b2fjn7j"))))
+        "101jr9yck798586jz4vkjcgk36zksmxf1pxrzvipgn2xgyay0zjc"))))
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
@@ -513,7 +502,7 @@ ASCII text files using Gmsh's own scripting language.")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.6.0")
+    (version "3.6.2")
     (source
      (origin
       (method url-fetch)
@@ -521,7 +510,7 @@ ASCII text files using Gmsh's own scripting language.")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "0lzhk1flgszks1wlhz2b92rnlx5np7bgad8vqy9fcqziz5b4pr26"))))
+       (base32 "13h0m5f9xsdpps4lsp59iz2m7zkapwavq2zfkfvs3ab6sndla0l9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)
@@ -638,7 +627,7 @@ scientific applications modeled by partial differential equations.")
 (define-public slepc
   (package
     (name "slepc")
-    (version "3.6.0")
+    (version "3.6.2")
     (source
      (origin
        (method url-fetch)
@@ -646,7 +635,7 @@ scientific applications modeled by partial differential equations.")
                            "filename=slepc-" version ".tar.gz"))
        (sha256
         (base32
-         "1ij8w864spzk4cq2mmkssqyj0mbckkkvxm0wpw9gywy2jgbj07jr"))))
+         "1pv5iqz2kc8sj49zsabyz4arnfpana8mjrhq31vzgk16xldk3d1a"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -659,7 +648,7 @@ scientific applications modeled by partial differential equations.")
      `(#:parallel-build? #f             ;build is parallel by default
        #:configure-flags
        `(,(string-append "--with-arpack-dir="
-                         (assoc-ref %build-inputs "arpack")))
+                         (assoc-ref %build-inputs "arpack") "/lib"))
        #:phases
        (modify-phases %standard-phases
          (replace
@@ -673,7 +662,7 @@ scientific applications modeled by partial differential equations.")
               (format #t "build directory: ~s~%" (getcwd))
               (format #t "configure flags: ~s~%" flags)
               (setenv "SLEPC_DIR" (getcwd))
-              (setenv "PETSC_DIR" (assoc-ref %build-inputs "petsc"))
+              (setenv "PETSC_DIR" (assoc-ref inputs "petsc"))
               (zero? (apply system* "./configure" flags)))))
          (add-after
           'install 'delete-doc
@@ -738,7 +727,7 @@ arising after the discretization of partial differential equations.")
 (define-public mumps
   (package
     (name "mumps")
-    (version "5.0.0")
+    (version "5.0.1")
     (source
      (origin
        (method url-fetch)
@@ -746,7 +735,7 @@ arising after the discretization of partial differential equations.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0690yp73sqk8zn2jnrzdr5swnjdyd7j0774s4xamjjwcxarw87hr"))
+         "1820jfp3mbl7n85765v5mp6p0gzqpgr4d2lrnhwj4gl7cwp5ndah"))
        (patches (list (search-patch "mumps-build-parallelism.patch")))))
     (build-system gnu-build-system)
     (inputs
@@ -1461,7 +1450,7 @@ constant parts of it.")
 (define-public openblas
   (package
     (name "openblas")
-    (version "0.2.14")
+    (version "0.2.15")
     (source
      (origin
        (method url-fetch)
@@ -1470,17 +1459,18 @@ constant parts of it.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0av3pd96j8rx5i65f652xv9wqfkaqn0w4ma1gvbyz73i6j2hi9db"))))
+         "1k5f6vjlk54qlplk5m7xkbaw6g2y7dl50lwwdv6xsbcsgsbxfcpy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ;no "check" target
-       ;; DYNAMIC_ARCH is only supported on x86.  When it is disabled,
-       ;; OpenBLAS will tune itself to the build host, so we need to disable
-       ;; substitutions.
+       ;; DYNAMIC_ARCH is only supported on x86.  When it is disabled and no
+       ;; TARGET is specified, OpenBLAS will tune itself to the build host, so
+       ;; we need to disable substitutions.
        #:substitutable?
         ,(let ((system (or (%current-target-system) (%current-system))))
            (or (string-prefix? "x86_64" system)
-               (string-prefix? "i686" system)))
+               (string-prefix? "i686" system)
+               (string-prefix? "mips" system)))
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "SHELL=bash"
@@ -1491,10 +1481,16 @@ constant parts of it.")
              ;; Unfortunately, this is not supported on non-x86 architectures,
              ;; where it leads to failed builds.
              ,@(let ((system (or (%current-target-system) (%current-system))))
-               (if (or (string-prefix? "x86_64" system)
+                 (cond
+                  ((or (string-prefix? "x86_64" system)
                        (string-prefix? "i686" system))
-                   '("DYNAMIC_ARCH=1")
-                   '())))
+                   '("DYNAMIC_ARCH=1"))
+                  ;; On MIPS we force the "SICORTEX" TARGET, as for the other
+                  ;; two available MIPS targets special extended instructions
+                  ;; for Loongson cores are used.
+                  ((string-prefix? "mips" system)
+                   '("TARGET=SICORTEX"))
+                  (else '()))))
        ;; no configure script
        #:phases (alist-delete 'configure %standard-phases)))
     (inputs
@@ -1968,3 +1964,30 @@ algorithm and optimum parameters depending on the dataset.
 FLANN is written in C++ and contains bindings for C, Octave and Python.")
     (license (license:non-copyleft "file://COPYING"
                                 "See COPYING in the distribution."))))
+
+(define-public wcalc
+  (package
+    (name "wcalc")
+    (version "2.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri
+          (string-append
+            "mirror://sourceforge/w-calc/wcalc-" version ".tar.bz2"))
+        (sha256
+          (base32
+            "1vi8dl6rccqiq1apmpwawyg2ywx6a1ic1d3cvkf2hlwk1z11fb0f"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("mpfr" ,mpfr)
+       ("readline" ,readline)))
+    (home-page "http://w-calc.sourceforge.net/index.php")
+    (synopsis "Flexible command-line scientific calculator")
+    (description "Wcalc is a very capable calculator.  It has standard functions
+(sin, asin, and sinh for example, in either radians or degrees), many
+pre-defined constants (pi, e, c, etc.), support for using variables, \"active\"
+variables, a command history, hex/octal/binary input and output, unit
+conversions, embedded comments, and an expandable expression entry field.  It
+evaluates expressions using the standard order of operations.")
+    (license license:gpl2+)))

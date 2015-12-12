@@ -128,6 +128,13 @@ subcommands, actions, etc. for this guix COMMAND."
    guix-help-parse-regexp-group
    "graph" "--list-types"))
 
+(guix-memoized-defun guix-pcomplete-refresh-updaters ()
+  "Return a list of all available refresh updater types."
+  (guix-pcomplete-run-guix-and-search
+   guix-help-parse-list-regexp
+   guix-help-parse-regexp-group
+   "refresh" "--list-updaters"))
+
 
 ;;; Completing
 
@@ -209,8 +216,8 @@ group - the argument.")
   "Complete argument for guix COMMAND."
   (cond
    ((member command
-            '("archive" "build" "graph" "edit" "environment"
-              "lint" "refresh" "size"))
+            '("archive" "build" "challenge" "edit" "environment"
+              "graph" "lint" "refresh" "size"))
     (while t
       (pcomplete-here (guix-pcomplete-all-packages))))
    (t (pcomplete-here* (pcomplete-entries)))))
@@ -287,9 +294,13 @@ INPUT is the current partially completed string."
            (option? "-u" "--user"))
       (complete* (pcmpl-unix-user-names)))
 
-     ((and (command? "refresh")
-           (option? "-s" "--select"))
-      (complete* guix-help-refresh-subsets))
+     ((command? "refresh")
+      (cond
+       ((option? "-s" "--select")
+        (complete* guix-help-refresh-subsets))
+       ((option? "-t" "--type")
+        (guix-pcomplete-complete-comma-args
+         (guix-pcomplete-refresh-updaters)))))
 
      ((and (command? "size")
            (option? "-m" "--map-file"))

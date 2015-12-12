@@ -50,6 +50,8 @@ MODULES =					\
   guix/gnu-maintenance.scm			\
   guix/upstream.scm				\
   guix/licenses.scm				\
+  guix/graph.scm				\
+  guix/cve.scm					\
   guix/build-system.scm				\
   guix/build-system/cmake.scm			\
   guix/build-system/emacs.scm			\
@@ -128,6 +130,8 @@ MODULES =					\
   guix/scripts/edit.scm				\
   guix/scripts/size.scm				\
   guix/scripts/graph.scm			\
+  guix/scripts/container.scm			\
+  guix/scripts/container/exec.scm		\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
 
@@ -195,6 +199,7 @@ SCM_TESTS =					\
   tests/pk-crypto.scm				\
   tests/pki.scm					\
   tests/sets.scm				\
+  tests/gnu-maintenance.scm			\
   tests/substitute.scm				\
   tests/builders.scm				\
   tests/derivations.scm				\
@@ -221,6 +226,7 @@ SCM_TESTS =					\
   tests/size.scm				\
   tests/graph.scm				\
   tests/challenge.scm				\
+  tests/cve.scm					\
   tests/file-systems.scm			\
   tests/services.scm				\
   tests/containers.scm
@@ -253,6 +259,7 @@ SH_TESTS =					\
   tests/guix-archive.sh				\
   tests/guix-authenticate.sh			\
   tests/guix-environment.sh			\
+  tests/guix-environment-container.sh		\
   tests/guix-graph.sh				\
   tests/guix-lint.sh
 
@@ -292,6 +299,7 @@ EXTRA_DIST =						\
   HACKING						\
   ROADMAP						\
   TODO							\
+  CODE-OF-CONDUCT					\
   .dir-locals.el					\
   build-aux/build-self.scm				\
   build-aux/hydra/gnu-system.scm			\
@@ -308,6 +316,7 @@ EXTRA_DIST =						\
   tests/test.drv					\
   tests/signing-key.pub					\
   tests/signing-key.sec					\
+  tests/cve-sample.xml					\
   build-aux/config.rpath				\
   bootstrap						\
   release.nix						\
@@ -336,6 +345,10 @@ AM_V_GUILEC = $(AM_V_GUILEC_$(V))
 AM_V_GUILEC_ = $(AM_V_GUILEC_$(AM_DEFAULT_VERBOSITY))
 AM_V_GUILEC_0 = @echo "  GUILEC" $@;
 
+# Flags passed to 'guild compile'.
+GUILD_COMPILE_FLAGS =				\
+  -Wformat -Wunbound-variable -Warity-mismatch
+
 # Unset 'GUILE_LOAD_COMPILED_PATH' altogether while compiling.  Otherwise, if
 # $GUILE_LOAD_COMPILED_PATH contains $(moduledir), we may find .go files in
 # there that are newer than the local .scm files (for instance because the
@@ -351,8 +364,7 @@ AM_V_GUILEC_0 = @echo "  GUILEC" $@;
 	LC_ALL=C							\
 	$(top_builddir)/pre-inst-env					\
 	$(GUILD) compile -L "$(top_builddir)" -L "$(top_srcdir)"	\
-	  -Wformat -Wunbound-variable -Warity-mismatch			\
-	  --target="$(host)"						\
+	  $(GUILD_COMPILE_FLAGS) --target="$(host)"			\
 	  -o "$@" "$<"
 
 SUFFIXES = .go

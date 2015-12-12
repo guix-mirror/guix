@@ -24,6 +24,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
@@ -35,11 +36,18 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ssh)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages zip)
+  #:use-module (srfi srfi-1))
 
 (define-public r
   (package
@@ -913,9 +921,9 @@ database.")
 times.")
     (license license:gpl2)))
 
-(define-public r-data.table
+(define-public r-data-table
   (package
-    (name "r-data.table")
+    (name "r-data-table")
     (version "1.9.6")
     (source (origin
               (method url-fetch)
@@ -929,7 +937,408 @@ times.")
     (home-page "https://github.com/Rdatatable/data.table/wiki")
     (synopsis "Enhanced version of data.frame R object")
     (description
-     "The R data.table package provides functions for fast aggregation of
-large data (e.g. 100GB in RAM), fast ordered joins, fast add/modify/delete of
-columns by group, column listing and fast file reading.")
+     "The R package @code{data.table} is an extension of @code{data.frame}
+providing functions for fast aggregation of large data (e.g. 100GB in RAM),
+fast ordered joins, fast add/modify/delete of columns by group, column listing
+and fast file reading.")
+    (license license:gpl3+)))
+
+(define-public python-patsy
+  (package
+    (name "python-patsy")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://pypi.python.org/packages/source/"
+                                  "p/patsy/patsy-" version ".zip"))
+              (sha256
+               (base32
+                "1kbs996xc2haxalmhd19rr1wh5fa4gbbxf81czkf5w4kam7h7wz4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check (lambda _ (zero? (system* "nosetests" "-v"))))
+         (add-after 'unpack 'prevent-generation-of-egg-archive
+          (lambda _
+            (substitute* "setup.py"
+              (("from setuptools import setup")
+               "from distutils.core import setup"))
+            #t)))))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-six" ,python-six)))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("unzip" ,unzip)))
+    (home-page "https://github.com/pydata/patsy")
+    (synopsis "Describe statistical models and build design matrices")
+    (description
+     "Patsy is a Python package for describing statistical models and for
+building design matrices.")
+    ;; The majority of the code is distributed under BSD-2.  The module
+    ;; patsy.compat contains code derived from the Python standard library,
+    ;; and is covered by the PSFL.
+    (license (list license:bsd-2 license:psfl))))
+
+(define-public python2-patsy
+  (let ((patsy (package-with-python2 python-patsy)))
+    (package (inherit patsy)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs patsy)))
+      (propagated-inputs
+       `(("python2-numpy" ,python2-numpy)
+         ("python2-scipy" ,python2-scipy)
+         ,@(alist-delete "python-numpy"
+                         (alist-delete "python-scipy"
+                                       (package-propagated-inputs patsy))))))))
+
+(define-public python-statsmodels
+  (package
+    (name "python-statsmodels")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/"
+                           "s/statsmodels/statsmodels-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xn67sqr0cc1lmlhzm71352hrb4hw7g318p5ff5q97pc98vl8kmy"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; tests must be run after installation
+         (delete 'check)
+         (add-after 'unpack 'set-matplotlib-backend-to-agg
+          (lambda _
+            ;; Set the matplotlib backend to Agg to avoid problems using the
+            ;; GTK backend without a display.
+            (substitute* (find-files "statsmodels/graphics/tests" "\\.py")
+              (("import matplotlib\\.pyplot as plt" line)
+               (string-append "import matplotlib;matplotlib.use('Agg');"
+                              line)))
+            #t))
+         (add-after 'install 'check
+          (lambda _
+            (with-directory-excursion "/tmp"
+              (zero? (system* "nosetests"
+                              "--stop"
+                              "-v" "statsmodels"))))))))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-pandas" ,python-pandas)
+       ("python-patsy" ,python-patsy)
+       ("python-matplotlib" ,python-matplotlib)))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)
+       ("python-sphinx" ,python-sphinx)))
+    (home-page "http://statsmodels.sourceforge.net/")
+    (synopsis "Statistical modeling and econometrics in Python")
+    (description
+     "Statsmodels is a Python package that provides a complement to scipy for
+statistical computations including descriptive statistics and estimation and
+inference for statistical models.")
+    (license license:bsd-3)))
+
+(define-public python2-statsmodels
+  (let ((stats (package-with-python2 python-statsmodels)))
+    (package (inherit stats)
+      (propagated-inputs
+       `(("python2-numpy" ,python2-numpy)
+         ("python2-scipy" ,python2-scipy)
+         ("python2-pandas" ,python2-pandas)
+         ("python2-patsy" ,python2-patsy)
+         ("python2-matplotlib" ,python2-matplotlib)))
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs stats))))))
+
+(define-public r-xml2
+  (package
+    (name "r-xml2")
+    (version "0.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "xml2" version))
+       (sha256
+        (base32
+         "0jjilz36h7vbdbkpvjnja1vgjf6d1imql3z4glqn2m2b74w5qm4c"))))
+    (build-system r-build-system)
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-bh" ,r-bh)))
+    (home-page "https://github.com/hadley/xml2")
+    (synopsis "Parse XML with R")
+    (description
+     "This package provides a simple, consistent interface to working with XML
+files in R.  It is built on top of the libxml2 C library.")
+    (license license:gpl2+)))
+
+(define-public r-rversions
+  (package
+    (name "r-rversions")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "rversions" version))
+              (sha256
+               (base32
+                "0xmi461g1rf5ngb7r1sri798jn6icld1xq25wj9jii2ca8j8xv68"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-xml2" ,r-xml2)))
+    (home-page "https://github.com/metacran/rversions")
+    (synopsis "Query R versions, including 'r-release' and 'r-oldrel'")
+    (description
+     "This package provides functions to query the main R repository to find
+the versions that @code{r-release} and @code{r-oldrel} refer to, and also all
+previous R versions and their release dates.")
+    (license license:expat)))
+
+(define-public r-whisker
+  (package
+    (name "r-whisker")
+    (version "0.3-2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "whisker" version))
+              (sha256
+               (base32
+                "0z4cn115gxcl086d6bnqr8afi67b6a7xqg6ivmk3l4ng1x8kcj28"))))
+    (build-system r-build-system)
+    (home-page "http://github.com/edwindj/whisker")
+    (synopsis "Logicless mustache templating for R")
+    (description
+     "This package provides logicless templating, with a syntax that is not
+limited to R.")
+    (license license:gpl3+)))
+
+(define-public r-brew
+  (package
+    (name "r-brew")
+    (version "1.0-6")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "brew" version))
+              (sha256
+               (base32
+                "1vghazbcha8gvkwwcdagjvzx6yl8zm7kgr0i9wxr4jng06d1l3fp"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/brew")
+    (synopsis "Templating framework for report generation")
+    (description
+     "The brew package implements a templating framework for mixing text and R
+code for report generation.  The template syntax is similar to PHP, Ruby's erb
+module, Java Server Pages, and Python's psp module.")
+    (license license:gpl2+)))
+
+(define-public r-roxygen2
+  (package
+    (name "r-roxygen2")
+    (version "5.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "roxygen2" version))
+              (sha256
+               (base32
+                "0xjdphjs7l1v71lylmqgp76cbcxzvm9z1a40jgkdwvz072nn08vr"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-brew" ,r-brew)
+       ("r-digest" ,r-digest)
+       ("r-rcpp" ,r-rcpp)
+       ("r-stringi" ,r-stringi)
+       ("r-stringr" ,r-stringr)))
+    (home-page "https://github.com/klutometis/roxygen")
+    (synopsis "In-source documentation system for R")
+    (description
+     "Roxygen2 is a Doxygen-like in-source documentation system for Rd,
+collation, and NAMESPACE files.")
+    (license license:gpl2+)))
+
+(define-public r-httr
+  (package
+    (name "r-httr")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "httr" version))
+              (sha256
+               (base32
+                "1yprw8p4g8026jhravgg1hdwj1g51cpdgycyr5a58jwm4i5f79cq"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-digest" ,r-digest)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-mime" ,r-mime)
+       ("r-r6" ,r-r6)
+       ("r-stringr" ,r-stringr)))
+    (home-page "https://github.com/hadley/httr")
+    (synopsis "Tools for working with URLs and HTTP")
+    (description
+     "The aim of httr is to provide a wrapper for RCurl customised to the
+demands of modern web APIs.  It provides useful tools for working with HTTP
+organised by HTTP verbs (@code{GET()}, @code{POST()}, etc).  Configuration
+functions make it easy to control additional request components.")
+    (license license:expat)))
+
+(define-public r-git2r
+  (package
+    (name "r-git2r")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "git2r" version))
+              (sha256
+               (base32
+                "1h5ag8sm512jsn2sp4yhiqspc7hjq5y8z0kqz24sdznxa3b7rpn9"))))
+    (build-system r-build-system)
+    ;; This R package contains modified sources of libgit2.  This modified
+    ;; version of libgit2 is built as the package is built.  Hence libgit2 is
+    ;; not among the inputs of this package.
+    (inputs
+     `(("libssh2" ,libssh2)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/ropensci/git2r")
+    (synopsis "Access Git repositories with R")
+    (description
+     "This package provides an R interface to the libgit2 library, which is a
+pure C implementation of the Git core methods.")
+    ;; GPLv2 only with linking exception.
+    (license license:gpl2)))
+
+(define-public r-rstudioapi
+  (package
+    (name "r-rstudioapi")
+    (version "0.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "rstudioapi" version))
+              (sha256
+               (base32
+                "0q7671d924nzqsqhs8d9p7l907bcam56wjwm7vvz44xgj0saj8bs"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/rstudioapi")
+    (synopsis "Safely access the RStudio API")
+    (description
+     "This package provides functions to access the RStudio API and provide
+informative error messages when it's not available.")
+    (license license:expat)))
+
+(define-public r-devtools
+  (package
+    (name "r-devtools")
+    (version "1.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "devtools" version))
+              (sha256
+               (base32
+                "10ycx3kkiz5x8nmgw31d9wa5hhlx2fhda2nqzxfrczqpz1jik6ci"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-digest" ,r-digest)
+       ("r-evaluate" ,r-evaluate)
+       ("r-git2r" ,r-git2r)
+       ("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-memoise" ,r-memoise)
+       ("r-roxygen2" ,r-roxygen2)
+       ("r-rstudioapi" ,r-rstudioapi)
+       ("r-rversions" ,r-rversions)
+       ("r-whisker" ,r-whisker)))
+    (home-page "https://github.com/hadley/devtools")
+    (synopsis "Tools to make developing R packages easier")
+    (description "The devtools package is a collection of package development
+tools to simplify the devolpment of R packages.")
+    (license license:gpl2+)))
+
+(define-public r-readr
+  (package
+    (name "r-readr")
+    (version "0.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "readr" version))
+              (sha256
+               (base32
+                "156422xwvskynna5kjc8h1qqnn50kxgjrihl2h2b7vm9sxxdyr2m"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-curl" ,r-curl)
+       ("r-rcpp" ,r-rcpp)
+       ("r-bh" ,r-bh)))
+    (home-page "https://github.com/hadley/readr")
+    (synopsis "Read tabular data")
+    (description
+     "This package provides functions to read flat or tabular text files from
+disk (or a connection).")
+    (license license:gpl2+)))
+
+(define-public r-plotrix
+  (package
+    (name "r-plotrix")
+    (version "3.6")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "plotrix" version))
+              (sha256
+               (base32
+                "0zn6k8azh40v0lg7q9yd4sy30a26bcc0fjvndn4z7k36avlw4i25"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/plotrix")
+    (synopsis "Various plotting functions")
+    (description
+     "This package provides lots of plotting, various labeling, axis and color
+scaling functions for R.")
+    (license license:gpl2+)))
+
+(define-public r-gridbase
+  (package
+    (name "r-gridbase")
+    (version "0.4-7")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "gridBase" version))
+              (sha256
+               (base32
+                "09jzw4rzwf2y5lcz7b16mb68pn0fqigv34ff7lr6w3yi9k91i1xy"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/gridBase")
+    (synopsis "Integration of base and grid graphics")
+    (description
+     "This package provides an integration of base and grid graphics for R.")
+    (license license:gpl2+)))
+
+(define-public r-lattice
+  (package
+    (name "r-lattice")
+    (version "0.20-33")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "lattice" version))
+              (sha256
+               (base32
+                "0car12x5vl9k180i9pc86lq3cvwqakdpqn3lgdf98k9n2h52cilg"))))
+    (build-system r-build-system)
+    (home-page "http://lattice.r-forge.r-project.org/")
+    (synopsis "High-level data visualization system")
+    (description
+     "The lattice package provides a powerful and elegant high-level data
+visualization system inspired by Trellis graphics, with an emphasis on
+multivariate data.  Lattice is sufficient for typical graphics needs, and is
+also flexible enough to handle most nonstandard requirements.")
     (license license:gpl2+)))

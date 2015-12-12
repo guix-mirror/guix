@@ -37,7 +37,8 @@
                                  version ".tar.gz"))
              (sha256
               (base32 "0b8034v1s82n4dg5rzcn12067ha3nxaylp2vdp8gg08kjsbzphhk"))
-             (patches (list (search-patch "lua-pkgconfig.patch")))))
+             (patches (list (search-patch "lua-pkgconfig.patch")
+                            (search-patch "lua52-liblua-so.patch")))))
     (build-system gnu-build-system)
     (inputs `(("readline", readline)))
     (arguments
@@ -89,8 +90,8 @@ for configuration, scripting, and rapid prototyping.")
                                   version ".tar.gz"))
               (sha256
                (base32 "0ydxpqkmsn2c341j4r2v6r5r0ig3kbwv3i9jran3iv81s6r6rgjm"))
-	      (patches (list (search-patch "luajit-symlinks.patch")
-			     (search-patch "luajit-no_ldconfig.patch")))))
+              (patches (list (search-patch "luajit-symlinks.patch")
+                             (search-patch "luajit-no_ldconfig.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ;luajit is distributed without tests

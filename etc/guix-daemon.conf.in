@@ -1,0 +1,12 @@
+# This is a "job" for the Upstart init system to launch 'guix-daemon'.
+# Drop it in /etc/init to have 'guix-daemon' automatically started.
+
+description "Build daemon for GNU Guix"
+
+start on runlevel [2345]
+
+stop on runlevel [016]
+
+task
+
+exec @bindir@/guix-daemon --build-users-group=guixbuild

@@ -45,6 +45,11 @@
             dmd-service-start
             dmd-service-stop
             dmd-service-auto-start?
+            dmd-service-modules
+            dmd-service-imported-modules
+
+            %default-imported-modules
+            %default-modules
 
             dmd-service-back-edges))
 
@@ -99,6 +104,18 @@ service that extends DMD-ROOT-SERVICE-TYPE and nothing else."
     (list (service-extension dmd-root-service-type
                              (compose list proc))))))
 
+(define %default-imported-modules
+  ;; Default set of modules imported for a service's consumption.
+  '((guix build utils)
+    (guix build syscalls)))
+
+(define %default-modules
+  ;; Default set of modules visible in a service's file.
+  `((dmd service)
+    (oop goops)
+    (guix build utils)
+    (guix build syscalls)))
+
 (define-record-type* <dmd-service>
   dmd-service make-dmd-service
   dmd-service?
@@ -113,64 +130,106 @@ service that extends DMD-ROOT-SERVICE-TYPE and nothing else."
   (stop          dmd-service-stop                 ;g-expression (procedure)
                  (default #~(const #f)))
   (auto-start?   dmd-service-auto-start?          ;Boolean
-                 (default #t)))
+                 (default #t))
+  (modules       dmd-service-modules              ;list of module names
+                 (default %default-modules))
+  (imported-modules dmd-service-imported-modules  ;list of module names
+                    (default %default-imported-modules)))
 
 
-(define (assert-no-duplicates services)
-  "Raise an error if SERVICES provide the same dmd service more than once.
+(define (assert-valid-graph services)
+  "Raise an error if SERVICES does not define a valid dmd service graph, for
+instance if a service requires a nonexistent service, or if more than one
+service uses a given name.
 
-This is a constraint that dmd's 'register-service' verifies but we'd better
-verify it here statically than wait until PID 1 halts with an assertion
+These are constraints that dmd's 'register-service' verifies but we'd better
+verify them here statically than wait until PID 1 halts with an assertion
 failure."
-  (fold (lambda (service set)
-          (define (assert-unique symbol)
-            (when (set-contains? set symbol)
-              (raise (condition
-                      (&message
-                       (message
-                        (format #f (_ "service '~a' provided more than once")
-                                symbol)))))))
+  (define provisions
+    ;; The set of provisions (symbols).  Bail out if a symbol is given more
+    ;; than once.
+    (fold (lambda (service set)
+            (define (assert-unique symbol)
+              (when (set-contains? set symbol)
+                (raise (condition
+                        (&message
+                         (message
+                          (format #f (_ "service '~a' provided more than once")
+                                  symbol)))))))
 
-          (for-each assert-unique (dmd-service-provision service))
-          (fold set-insert set (dmd-service-provision service)))
-        (setq)
-        services))
+            (for-each assert-unique (dmd-service-provision service))
+            (fold set-insert set (dmd-service-provision service)))
+          (setq 'dmd)
+          services))
+
+  (define (assert-satisfied-requirements service)
+    ;; Bail out if the requirements of SERVICE aren't satisfied.
+    (for-each (lambda (requirement)
+                (unless (set-contains? provisions requirement)
+                  (raise (condition
+                          (&message
+                           (message
+                            (format #f (_ "service '~a' requires '~a', \
+which is undefined")
+                                    (match (dmd-service-provision service)
+                                      ((head . _) head)
+                                      (_          service))
+                                    requirement)))))))
+              (dmd-service-requirement service)))
+
+  (for-each assert-satisfied-requirements services))
+
+(define (dmd-service-file-name service)
+  "Return the file name where the initialization code for SERVICE is to be
+stored."
+  (let ((provisions (string-join (map symbol->string
+                                      (dmd-service-provision service)))))
+    (string-append "dmd-"
+                   (string-map (match-lambda
+                                 (#\/ #\-)
+                                 (chr chr))
+                               provisions)
+                   ".scm")))
+
+(define (dmd-service-file service)
+  "Return a file defining SERVICE."
+  (gexp->file (dmd-service-file-name service)
+              #~(begin
+                  (use-modules #$@(dmd-service-modules service))
+
+                  (make <service>
+                    #:docstring '#$(dmd-service-documentation service)
+                    #:provides '#$(dmd-service-provision service)
+                    #:requires '#$(dmd-service-requirement service)
+                    #:respawn? '#$(dmd-service-respawn? service)
+                    #:start #$(dmd-service-start service)
+                    #:stop #$(dmd-service-stop service)))))
 
 (define (dmd-configuration-file services)
   "Return the dmd configuration file for SERVICES."
   (define modules
-    ;; Extra modules visible to dmd.conf.
-    '((guix build syscalls)
-      (gnu build file-systems)
-      (guix build utils)))
+    (delete-duplicates
+     (append-map dmd-service-imported-modules services)))
 
-  (assert-no-duplicates services)
+  (assert-valid-graph services)
 
   (mlet %store-monad ((modules  (imported-modules modules))
-                      (compiled (compiled-modules modules)))
+                      (compiled (compiled-modules modules))
+                      (files    (mapm %store-monad dmd-service-file services)))
     (define config
       #~(begin
           (eval-when (expand load eval)
             (set! %load-path (cons #$modules %load-path))
             (set! %load-compiled-path
-                  (cons #$compiled %load-compiled-path)))
+              (cons #$compiled %load-compiled-path)))
 
-          (use-modules (ice-9 ftw)
-                       (guix build syscalls)
-                       (guix build utils)
-                       ((gnu build file-systems)
-                        #:select (check-file-system canonicalize-device-spec)))
+          (use-modules (system repl error-handling))
 
-          (register-services
-           #$@(map (lambda (service)
-                     #~(make <service>
-                         #:docstring '#$(dmd-service-documentation service)
-                         #:provides '#$(dmd-service-provision service)
-                         #:requires '#$(dmd-service-requirement service)
-                         #:respawn? '#$(dmd-service-respawn? service)
-                         #:start #$(dmd-service-start service)
-                         #:stop #$(dmd-service-stop service)))
-                   services))
+          ;; Arrange to spawn a REPL if loading one of FILES fails.  This is
+          ;; better than a kernel panic.
+          (call-with-error-handling
+            (lambda ()
+              (apply register-services (map primitive-load '#$files))))
 
           ;; guix-daemon 0.6 aborts if 'PATH' is undefined, so work around it.
           (setenv "PATH" "/run/current-system/profile/bin")

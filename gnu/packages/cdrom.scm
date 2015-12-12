@@ -2,6 +2,8 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -124,14 +126,14 @@ libcdio.")
 (define-public xorriso
   (package
     (name "xorriso")
-    (version "1.4.0")
+    (version "1.4.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/xorriso/xorriso-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0mhfxn2idkrw1i65a5y4gnb1fig85zpnszb9ax7w4a2v062y1l8b"))))
+               "1cq4a0904lnz6nygbgarnlq49cz4qnfdyvz90s3nfk5as7gbwhr8"))))
     (build-system gnu-build-system)
     (inputs
      `(("acl" ,acl)
@@ -156,7 +158,8 @@ files.")
     (version "10.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://downloads.xiph.org/releases/cdparanoia/cdparanoia-III-"
+             (uri (string-append "http://downloads.xiph.org/releases/"
+                                 "cdparanoia/cdparanoia-III-"
                                  version ".src.tgz"))
              (sha256
               (base32
@@ -229,6 +232,25 @@ data is either added to the medium or kept in separate error correction
 files.  Dvdisaster works at the image level so that the recovery does not
 depend on the file system of the medium.  The maximum error correction
 capacity is user-selectable.")
+    (license gpl2+)))
+
+(define-public libcue
+  (package
+    (name "libcue")
+    (version "1.4.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/libcue/libcue-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "17kjd7rjz1bvfn44n3n2bjb7a1ywd0yc0g4sqp5ihf9b5bn7cwlb"))))
+    (build-system gnu-build-system)
+    (home-page "http://libcue.sourceforge.net/")
+    (synopsis "C library to parse cue sheets")
+    (description "Libcue is a C library to parse so-called @dfn{cue sheets}
+which contain meta-data for CD/DVD tracks.  It provides an API to manipulate
+the data.")
     (license gpl2+)))
 
 (define-public cd-discid

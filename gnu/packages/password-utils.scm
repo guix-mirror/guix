@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015 Aljosha Papsch <misc@rpapsch.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,9 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg))
@@ -53,15 +57,14 @@ human.")
 (define-public keepassx
   (package
     (name "keepassx")
-    (version "2.0-beta2")
+    (version "2.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/keepassx/keepassx/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append "https://www.keepassx.org/releases/" version
+                           "/keepassx-" version ".tar.gz"))
        (sha256
-        (base32 "0ljf9ws3wh62zd0gyb0vk2qw6pqsmxrlybrfs5mqahf44q92ca2q"))))
+        (base32 "1ri2r1sldc62hbg74m4pmci0nrjwvv38rqhyzhyjin247an0zd0f"))))
     (build-system cmake-build-system)
     (inputs
      `(("libgcrypt" ,libgcrypt)
@@ -103,4 +106,32 @@ key/value pairs, making Shroud suitable for more than just password storage.
 For copying and pasting secrets into web browsers and other graphical
 applications, there is xclip integration." )
     (home-page "http://dthompson.us/pages/software/shroud.html")
+    (license license:gpl3+)))
+
+(define-public yapet
+  (package
+    (name "yapet")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.guengel.ch/myapps/yapet/downloads/yapet-"
+                                  version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "0ydbnqw6icdh07pnv2w6dhvq501bdfvrklv4xmyr8znca9d753if"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("openssl" ,openssl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Yet Another Password Encryption Tool")
+    (description "YAPET is a text based password manager using the Blowfish
+encryption algorithm.  Because of its small footprint and very few library
+dependencies, it is suited for installing on desktop and server systems alike.
+The text based user interface allows you to run YAPET easily in a Secure Shell
+session.  Two companion utilities enable users to convert CSV files to YAPET
+and vice versa.")
+    (home-page "http://www.guengel.ch/myapps/yapet/")
     (license license:gpl3+)))

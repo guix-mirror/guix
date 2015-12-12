@@ -28,8 +28,9 @@
 
 ;; Skip these tests unless user namespaces are available and the setgroups
 ;; file (introduced in Linux 3.19 to address a security issue) exists.
-(unless (and (file-exists? "/proc/self/ns/user")
-             (file-exists? "/proc/self/setgroups"))
+(unless (and (user-namespace-supported?)
+             (unprivileged-user-namespace-supported?)
+             (setgroups-supported?))
   (exit 77))
 
 (test-begin "containers")

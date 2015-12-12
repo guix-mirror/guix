@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright � 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
+;;; Copyright © 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,7 @@
 ;; TODO: Add ruby
 
 (define-module (gnu packages weechat)
+  #:use-module (gnu packages)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages base)
   #:use-module (gnu packages gettext)
@@ -47,11 +49,13 @@
     (name "weechat")
     (version "1.3")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "http://weechat.org/files/src/weechat-"
+              (method url-fetch)
+              (uri (string-append "http://weechat.org/files/src/weechat-"
                                   version ".tar.gz"))
-             (sha256
-              (base32 "13b7dfs3sn71c51fi0bli5rzlsppil6gg1lzik3k8l43yhhqyv2w"))))
+              (sha256
+               (base32
+                "13b7dfs3sn71c51fi0bli5rzlsppil6gg1lzik3k8l43yhhqyv2w"))
+              (patches (list (search-patch "weechat-python.patch")))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("pkg-config" ,pkg-config)
@@ -75,20 +79,22 @@
               ("python" ,python-2)
               ("perl" ,perl)
               ("tcl" ,tcl)))
-    (arguments `(#:configure-flags (list
-                                    (string-append
-                                     "--with-tclconfig="
-                                     (assoc-ref %build-inputs "tcl") "/lib"))
-                 #:phases (alist-cons-after
-                           'autogen 'fix-file
-                           (lambda _
-                             (substitute* "configure"
-                               (("/usr/bin/file") (which "file"))))
-                           (alist-cons-before
-                            'configure 'autogen
-                            (lambda _
-                              (zero? (system* "./autogen.sh")))
-                            %standard-phases))))
+    (arguments
+     `(#:configure-flags (list (string-append
+                                "--with-tclconfig="
+                                (assoc-ref %build-inputs "tcl") "/lib"))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'autogen
+                    (lambda _
+                      (zero? (system* "./autogen.sh"))))
+                  (add-before 'build 'set-python-file-name
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (substitute* "src/plugins/python/weechat-python.c"
+                        (("python2_bin = weechat_python_get_python2_bin.*;")
+                         (string-append "python2_bin = strdup (\""
+                                        (assoc-ref inputs "python")
+                                        "/bin/python\");\n")))
+                      #t)))))
     (synopsis "Extensible chat client")
     (description "WeeChat (Wee Enhanced Environment for Chat) is an
 Internet Relay Chat client, which is designed to be light and fast.

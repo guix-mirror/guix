@@ -6,6 +6,8 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +37,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build utils)
   #:use-module (gnu packages apr)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages asciidoc)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
@@ -105,14 +108,14 @@ as well as the classic centralized workflow.")
   ;; Keep in sync with 'git-manpages'!
   (package
    (name "git")
-   (version "2.5.0")
+   (version "2.6.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0p747j94kynrx71qaamc9i0dkq5vqpv66a47b68pmin1qsxb2nfc"))))
+              "18vxb5fmwmrps504m23a4xdl29m7ibca3hmz0mn9jc38sz9y95yn"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -279,7 +282,7 @@ everything from small to very large projects with speed and efficiency.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1spnqxzl53ic7bv1x7c6lwscdh581scqm5zh98wfp4qn1ciafvhs"))))
+                "1d7jb4pyln0prgxpxkfiy2l6ragsjzsyqyxbssbchdvl145gj8xf"))))
     (build-system trivial-build-system)
     (arguments
      '(#:modules ((guix build utils))
@@ -672,7 +675,8 @@ machine.")
     (build-system gnu-build-system)
     (arguments
      ;; XXX: The test suite looks flawed, and the package is obsolete anyway.
-     '(#:tests? #f))
+     '(#:tests? #f
+       #:configure-flags (list "--with-external-zlib")))
     (inputs `(("zlib" ,zlib)
               ("nano" ,nano)))                    ; the default editor
     (home-page "http://cvs.nongnu.org")
@@ -901,7 +905,7 @@ any project with more than one developer, is one of Aegis's major functions.")
 (define-public tig
   (package
     (name "tig")
-    (version "2.1")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -909,16 +913,73 @@ any project with more than one developer, is one of Aegis's major functions.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1c1w6w39a1dwx4whrg0ga1mhrlz095hz875z7ajn6xgmhkv8fqih"))))
+                "0bw5wivswwh7vx897q8xc2cqgkqhdzk8gh6fnav2kf34sngigiah"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)))
     (arguments
-     `(#:tests? #f)) ; no tests implemented
+     `(#:tests? #f)) ; tests require access to /dev/tty
+     ;;`(#:test-target "test"))
     (home-page "http://jonas.nitro.dk/tig/")
     (synopsis "Ncurses-based text user interface for Git")
     (description
      "Tig is an ncurses text user interface for Git, primarily intended as
 a history browser.  It can also stage hunks for commit, or colorize the
 output of the 'git' command.")
+    (license gpl2+)))
+
+(define-public findnewest
+  (package
+    (name "findnewest")
+    (version "0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/0-wiz-0/findnewest/archive/findnewest-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0zlflad568y203yc5ynf1nxi2szn2pmbf1lvz6yk77kjyrpw7zxg"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'bootstrap
+                    (lambda _
+                      (zero? (system* "autoreconf" "-vfi")))))))
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)))
+    (home-page "https://github.com/0-wiz-0/findnewest/releases")
+    (synopsis "Print the modification time of the latest file")
+    (description
+     "Recursively find the newest file in a file tree and print its
+modification time.")
+    (license bsd-2)))
+
+(define-public myrepos
+  (package
+    (name "myrepos")
+    (version "1.20151022")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/joeyh/myrepos/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0c93lqsngpsxsca7nygk4qhidr40ijgih86q81x1mfcwbs0gbds8"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("perl" ,perl)))
+    (arguments
+     `(#:test-target "test"
+       #:phases (alist-delete 'configure %standard-phases)
+       #:make-flags (list (string-append "PREFIX=" %output))))
+    (home-page "http://myrepos.branchable.com/")
+    (synopsis "Multiple repository management tool")
+    (description
+     "Myrepos provides the @code{mr} command, which maps an operation (e.g.,
+fetching updates) over a collection of version control repositories.  It
+supports a large number of version control systems: Git, Subversion,
+Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
     (license gpl2+)))

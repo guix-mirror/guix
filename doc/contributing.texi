@@ -7,6 +7,14 @@ grow!  Please get in touch with us on @email{guix-devel@@gnu.org} and
 reports, patches, and anything that may be helpful to the project.  We
 particularly welcome help on packaging (@pxref{Packaging Guidelines}).
 
+@cindex code of conduct, of contributors
+@cindex contributor covenant
+We want to provide a warm, friendly, and harassment-free environment, so
+that anyone can contribute to the best of their abilities.  To this end
+our project uses a ``Contributor Covenant'', which was adapted from
+@url{http://contributor-covenant.org/}.  You can find a local version in
+the @file{CODE-OF-CONDUCT} file in the source tree.
+
 @menu
 * Building from Git::           The latest and greatest.
 * Running Guix Before It Is Installed::  Hacker tricks.
@@ -27,33 +35,47 @@ the installation instructions (@pxref{Requirements}).
 @item @url{http://gnu.org/software/autoconf/, GNU Autoconf};
 @item @url{http://gnu.org/software/automake/, GNU Automake};
 @item @url{http://gnu.org/software/gettext/, GNU Gettext};
+@item @url{http://gnu.org/software/texinfo/, GNU Texinfo};
 @item @url{http://www.graphviz.org/, Graphviz};
 @item @url{http://www.gnu.org/software/help2man/, GNU Help2man (optional)}.
 @end itemize
 
-Run @command{./bootstrap} to download the Nix daemon source code and to
-generate the build system infrastructure using autoconf.  It reports an
-error if an inappropriate version of the above packages is being used.
+The easiest way to set up a development environment for Guix is, of
+course, by using Guix!  The following command starts a new shell where
+all the dependencies and appropriate environment variables are set up to
+hack on Guix:
 
-@noindent
-If you get an error like this one:
+@example
+guix environment guix
+@end example
+
+@xref{Invoking guix environment}, for more information on that command.
+Extra dependencies can be added with @option{--ad-hoc}:
+
+@example
+guix environment guix --ad-hoc help2man git strace
+@end example
+
+Run @command{./bootstrap} to generate the build system infrastructure
+using Autoconf and Automake.  If you get an error like this one:
 
 @example
 configure.ac:46: error: possibly undefined macro: PKG_CHECK_MODULES
 @end example
 
+@noindent
 it probably means that Autoconf couldn’t find @file{pkg.m4}, which is
-provided by @command{pkg-config}.  Make sure that @file{pkg.m4} is
-available.  For instance, if you installed Automake in
-@file{/usr/local}, it wouldn’t look for @file{.m4} files in
-@file{/usr/share}.  So you have to invoke the following command in that
-case
+provided by pkg-config.  Make sure that @file{pkg.m4} is available.  The
+same holds for the @file{guile.m4} set of macros provided by Guile.  For
+instance, if you installed Automake in @file{/usr/local}, it wouldn’t
+look for @file{.m4} files in @file{/usr/share}.  In that case, you have
+to invoke the following command:
 
 @example
 export ACLOCAL_PATH=/usr/share/aclocal
 @end example
 
-See @pxref{Macro Search Path,,, automake, The GNU Automake Manual} for
+@xref{Macro Search Path,,, automake, The GNU Automake Manual}, for
 more information.
 
 Then, run @command{./configure} as usual.
@@ -86,10 +108,39 @@ Similarly, for a Guile session using the Guix modules:
 
 @example
 $ ./pre-inst-env guile -c '(use-modules (guix utils)) (pk (%current-system))'
+
+;;; ("x86_64-linux")
+@end example
+
+@noindent
+@cindex REPL
+@cindex read-eval-print loop
+@dots{} and for a REPL (@pxref{Using Guile Interactively,,, guile, Guile
+Reference Manual}):
+
+@example
+$ ./pre-inst-env guile
+scheme@@(guile-user)> ,use(guix)
+scheme@@(guile-user)> ,use(gnu)
+scheme@@(guile-user)> (define snakes
+                       (fold-packages
+                         (lambda (package lst)
+                           (if (string-prefix? "python"
+                                               (package-name package))
+                               (cons package lst)
+                               lst))
+                         '()))
+scheme@@(guile-user)> (length snakes)
+$1 = 361
 @end example
 
 The @command{pre-inst-env} script sets up all the environment variables
 necessary to support this, including @env{PATH} and @env{GUILE_LOAD_PATH}.
+
+Note that @command{./pre-inst-env guix pull} does @emph{not} upgrade the
+local source tree; it simply updates the @file{~/.config/guix/latest}
+symlink (@pxref{Invoking guix pull}).  Run @command{git pull} instead if
+you want to upgrade your local source tree.
 
 
 @node The Perfect Setup
@@ -111,7 +162,8 @@ that it finds source files from your checkout:
 
 @lisp
 ;; @r{Assuming the Guix checkout is in ~/src/guix.}
-(add-to-list 'geiser-guile-load-path "~/src/guix")
+(with-eval-after-load 'geiser-guile
+  (add-to-list 'geiser-guile-load-path "~/src/guix"))
 @end lisp
 
 To actually edit the code, Emacs already has a neat Scheme mode.  But in
@@ -235,15 +287,31 @@ not affected by the change; @code{guix refresh --list-dependent
 @var{package}} will help you do that (@pxref{Invoking guix refresh}).
 
 @item
+@cindex determinism, of build processes
+@cindex reproducible builds, checking
 Check whether the package's build process is deterministic.  This
 typically means checking whether an independent build of the package
 yields the exact same result that you obtained, bit for bit.
 
-A simple way to do that is with @command{guix challenge}
-(@pxref{Invoking guix challenge}).  You may run it once the package has
-been committed and built by @code{hydra.gnu.org} to check whether it
-obtains the same result as you did.  Better yet: Find another machine
-that can build it and run @command{guix publish}.
+A simple way to do that is by building the same package several times in
+a row on your machine (@pxref{Invoking guix build}):
+
+@example
+guix build --rounds=2 my-package
+@end example
+
+This is enough to catch a class of common non-determinism issues, such
+as timestamps or randomly-generated output in the build result.
+
+Another option is to use @command{guix challenge} (@pxref{Invoking guix
+challenge}).  You may run it once the package has been committed and
+built by @code{hydra.gnu.org} to check whether it obtains the same
+result as you did.  Better yet: Find another machine that can build it
+and run @command{guix publish}.  Since the remote build machine is
+likely different from yours, this can catch non-determinism issues
+related to the hardware---e.g., use of different instruction set
+extensions---or to the operating system kernel---e.g., reliance on
+@code{uname} or @file{/proc} files.
 
 @end enumerate
 

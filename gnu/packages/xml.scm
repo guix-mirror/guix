@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,14 +64,14 @@ things the parser might find in the XML document (like start tags).")
 (define-public libxml2
   (package
     (name "libxml2")
-    (version "2.9.2")
+    (version "2.9.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1g6mf03xcabmk5ing1lwqmasr803616gb2xhn7pll10x2l5w6y2i"))))
+               "0bd17g6znn2r98gzpjppsqjg33iraky4px923j3k8kdl8qgy7sad"))))
     (build-system gnu-build-system)
     (home-page "http://www.xmlsoft.org/")
     (synopsis "C parser for XML")
@@ -129,7 +130,8 @@ project (but it is usable outside of the Gnome platform).")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "13029baw9kkyjgr7q3jccw2mz38amq7mmpr5p3bh775qawd1bisz"))))
+               "13029baw9kkyjgr7q3jccw2mz38amq7mmpr5p3bh775qawd1bisz"))
+             (patches (list (search-patch "libxslt-CVE-2015-7995.patch")))))
     (build-system gnu-build-system)
     (home-page "http://xmlsoft.org/XSLT/index.html")
     (synopsis "C library for applying XSLT stylesheets to XML documents")
@@ -410,7 +412,7 @@ parsing/saving.")
 (define-public xmlto
   (package
     (name "xmlto")
-    (version "0.0.25")
+    (version "0.0.28")
     (source
      (origin
       (method url-fetch)
@@ -419,7 +421,7 @@ parsing/saving.")
             version ".tar.bz2"))
       (sha256
        (base32
-        "0dp5nxq491gymq806za0dk4hngfmq65ysrqbn0ypajqbbl6vf71n"))))
+        "0xhj8b2pwp4vhl9y16v3dpxpsakkflfamr191mprzsspg4xdyc0i"))))
     (build-system gnu-build-system)
     (arguments
      ;; Make sure the reference to util-linux's 'getopt' is kept in 'xmlto'.
@@ -489,3 +491,72 @@ Libxml2).")
 UTF-8 and UTF-16 encoding.")
     ;; LGPL 2.0+ with additional exceptions for static linking
     (license license:lgpl2.0+)))
+
+;; TinyXML is an unmaintained piece of software, so the patches and build
+;; system massaging have no upstream potential.
+(define-public tinyxml
+  (package
+    (name "tinyxml")
+    (version "2.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/tinyxml/tinyxml_"
+                                  (string-join (string-split version #\.) "_")
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "14smciid19lvkxqznfig77jxn5s4iq3jpb47vh5a6zcaqp7gvg8m"))
+              (patches (list (search-patch "tinyxml-use-stl.patch")))))
+    (build-system gnu-build-system)
+    ;; This library is missing *a lot* of the steps to make it usable, so we
+    ;; have to add them here, like every other distro must do.
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'build 'build-shared-library
+           (lambda _
+             (zero? (system* "g++" "-Wall" "-O2" "-shared" "-fpic"
+                             "tinyxml.cpp" "tinyxmlerror.cpp"
+                             "tinyxmlparser.cpp" "tinystr.cpp"
+                             "-o" "libtinyxml.so"))))
+         (replace 'check
+           (lambda _ (zero? (system "./xmltest"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (include (string-append out "/include"))
+                    (lib (string-append out "/lib"))
+                    (pkgconfig (string-append out "/lib/pkgconfig"))
+                    (doc (string-append out "/share/doc")))
+               ;; Install libs and headers.
+               (install-file "libtinyxml.so" lib)
+               (install-file "tinystr.h" include)
+               (install-file "tinyxml.h" include)
+               ;; Generate and install pkg-config file.
+               (mkdir-p pkgconfig)
+               ;; Software such as Kodi expect this file to be present, but
+               ;; it's not provided in the source code.
+               (call-with-output-file (string-append pkgconfig "/tinyxml.pc")
+                 (lambda (port)
+                   (format port "prefix=~a
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: TinyXML
+Description: A simple, small, C++ XML parser
+Version: ~a
+Libs: -L${libdir} -ltinyxml
+Cflags: -I${includedir}
+"
+                           out ,version)))
+               ;; Install docs.
+               (mkdir-p doc)
+               (copy-recursively "docs" (string-append doc "tinyxml"))
+               #t))))))
+    (synopsis "Small XML parser for C++")
+    (description "TinyXML is a small and simple XML parsing library for the
+C++ programming langauge.")
+    (home-page "http://www.grinninglizard.com/tinyxml/index.html")
+    (license license:zlib)))

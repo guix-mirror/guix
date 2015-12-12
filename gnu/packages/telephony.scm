@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,20 +60,20 @@ reimplementation.")
 (define-public ucommon
   (package
    (name "ucommon")
-   (version "6.6.0")
+   (version "6.6.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/commoncpp/" name "-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "09y6rs51wl2851xp5zlxlqqb97xfi39v0yna3njb62swwr1n1ky1"))))
+                     "16haqzq97axiyhgpca95rhr5y5s7fl8b65if5vil7v4lcqxp3hqn"))))
    (build-system gnu-build-system)
    (synopsis "Common C++ framework for threaded applications")
    (description "GNU uCommon C++ is meant as a very light-weight C++ library
 to facilitate using C++ design patterns even for very deeply embedded
 applications, such as for systems using uclibc along with posix threading
 support.")
-   (license gpl2+) ; plus runtime exception
+   (license gpl3+)
    (home-page "http://www.gnu.org/software/commoncpp")))
 
 (define-public ccrtp
@@ -145,13 +146,13 @@ multiplayer games.")
 (define-public sipwitch
   (package
    (name "sipwitch")
-   (version "1.9.10")
+   (version "1.9.14")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/sipwitch/sipwitch-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "1ljvg66v1ms3zc81mbg4x5k0pjb2flx35h70msfiajidlcna5xhz"))))
+                     "1mrzl5nakiz613v3ch27k5dj2ykm88dlcr22lqny6dnjyfa9n2ki"))))
    (build-system gnu-build-system)
    ;; The configure.ac uses pkg-config but in a kludgy way which breaks when
    ;; cross-compiling.  Among other issues there the program name "pkg-config"

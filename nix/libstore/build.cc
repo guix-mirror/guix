@@ -51,7 +51,7 @@
 #include <linux/fs.h>
 #endif
 
-#define CHROOT_ENABLED HAVE_CHROOT && HAVE_UNSHARE && HAVE_SYS_MOUNT_H && defined(MS_BIND) && defined(MS_PRIVATE) && defined(CLONE_NEWNS) && defined(SYS_pivot_root)
+#define CHROOT_ENABLED HAVE_CHROOT && HAVE_SYS_MOUNT_H && defined(MS_BIND) && defined(MS_PRIVATE) && defined(CLONE_NEWNS) && defined(SYS_pivot_root)
 
 #if CHROOT_ENABLED
 #include <sys/socket.h>
@@ -736,6 +736,9 @@ private:
     /* The temporary directory. */
     Path tmpDir;
 
+    /* The path of the temporary directory in the sandbox. */
+    Path tmpDirInSandbox;
+
     /* File descriptor for the log file. */
     FILE * fLogFile;
     BZFILE * bzLogFile;
@@ -785,10 +788,16 @@ private:
        temporary paths. */
     PathSet redirectedBadOutputs;
 
-    /* Set of inodes seen during calls to canonicalisePathMetaData()
-       for this build's outputs.  This needs to be shared between
-       outputs to allow hard links between outputs. */
-    InodesSeen inodesSeen;
+    /* The current round, if we're building multiple times. */
+    unsigned int curRound = 1;
+
+    unsigned int nrRounds;
+
+    /* Path registration info from the previous round, if we're
+       building multiple times. Since this contains the hash, it
+       allows us to compare whether two rounds produced the same
+       result. */
+    ValidPathInfos prevInfos;
 
 public:
     DerivationGoal(const Path & drvPath, const StringSet & wantedOutputs, Worker & worker, BuildMode buildMode = bmNormal);
@@ -882,6 +891,10 @@ DerivationGoal::DerivationGoal(const Path & drvPath, const StringSet & wantedOut
     state = &DerivationGoal::init;
     name = (format("building of `%1%'") % drvPath).str();
     trace("created");
+
+    /* Prevent the .chroot directory from being
+       garbage-collected. (See isActiveTempFile() in gc.cc.) */
+    worker.store.addTempRoot(drvPath);
 }
 
 
@@ -1190,8 +1203,12 @@ void DerivationGoal::inputsRealised()
 
     /* Is this a fixed-output derivation? */
     fixedOutput = true;
-    foreach (DerivationOutputs::iterator, i, drv.outputs)
-        if (i->second.hash == "") fixedOutput = false;
+    for (auto & i : drv.outputs)
+	if (i.second.hash == "") fixedOutput = false;
+
+    /* Don't repeat fixed-output derivations since they're already
+       verified by their output hash.*/
+    nrRounds = fixedOutput ? 1 : settings.get("build-repeat", 0) + 1;
 
     /* Okay, try to build.  Note that here we don't wait for a build
        slot to become available, since we don't need one if there is a
@@ -1367,6 +1384,9 @@ void replaceValidPath(const Path & storePath, const Path tmpPath)
 }
 
 
+MakeError(NotDeterministic, BuildError)
+
+
 void DerivationGoal::buildDone()
 {
     trace("build done");
@@ -1465,6 +1485,15 @@ void DerivationGoal::buildDone()
         autoDelChroot.reset(); /* this runs the destructor */
 
         deleteTmpDir(true);
+
+        /* Repeat the build if necessary. */
+        if (curRound++ < nrRounds) {
+            outputLocks.unlock();
+            buildUser.release();
+            state = &DerivationGoal::tryToBuild;
+            worker.wakeUp(shared_from_this());
+            return;
+        }
 
         /* It is now safe to delete the lock files, since all future
            lockers will see that the output paths are valid; they will
@@ -1619,10 +1648,13 @@ int childEntry(void * arg)
 
 void DerivationGoal::startBuilder()
 {
-    startNest(nest, lvlInfo, format(
-            buildMode == bmRepair ? "repairing path(s) %1%" :
-            buildMode == bmCheck ? "checking path(s) %1%" :
-            "building path(s) %1%") % showPaths(missingPaths));
+    auto f = format(
+        buildMode == bmRepair ? "repairing path(s) %1%" :
+        buildMode == bmCheck ? "checking path(s) %1%" :
+        nrRounds > 1 ? "building path(s) %1% (round %2%/%3%)" :
+        "building path(s) %1%");
+    f.exceptions(boost::io::all_error_bits ^ boost::io::too_many_args_bit);
+    startNest(nest, lvlInfo, f % showPaths(missingPaths) % curRound % nrRounds);
 
     /* Right platform? */
     if (!canBuildLocally(drv.platform)) {
@@ -1633,7 +1665,10 @@ void DerivationGoal::startBuilder()
             % drv.platform % settings.thisSystem % drvPath);
     }
 
+    useChroot = settings.useChroot;
+
     /* Construct the environment passed to the builder. */
+    env.clear();
 
     /* Most shells initialise PATH to some default (/bin:/usr/bin:...) when
        PATH is not set.  We don't want this, so we fill it in with some dummy
@@ -1664,20 +1699,25 @@ void DerivationGoal::startBuilder()
 
     /* Create a temporary directory where the build will take
        place. */
-    tmpDir = createTempDir("", "nix-build-" + storePathToName(drvPath), false, false, 0700);
+    auto drvName = storePathToName(drvPath);
+    tmpDir = createTempDir("", "nix-build-" + drvName, false, false, 0700);
+
+    /* In a sandbox, for determinism, always use the same temporary
+       directory. */
+    tmpDirInSandbox = useChroot ? "/tmp/nix-build-" + drvName + "-0" : tmpDir;
 
     /* For convenience, set an environment pointing to the top build
        directory. */
-    env["NIX_BUILD_TOP"] = tmpDir;
+    env["NIX_BUILD_TOP"] = tmpDirInSandbox;
 
     /* Also set TMPDIR and variants to point to this directory. */
-    env["TMPDIR"] = env["TEMPDIR"] = env["TMP"] = env["TEMP"] = tmpDir;
+    env["TMPDIR"] = env["TEMPDIR"] = env["TMP"] = env["TEMP"] = tmpDirInSandbox;
 
     /* Explicitly set PWD to prevent problems with chroot builds.  In
        particular, dietlibc cannot figure out the cwd because the
        inode of the current directory doesn't appear in .. (because
        getdents returns the inode of the mount point). */
-    env["PWD"] = tmpDir;
+    env["PWD"] = tmpDirInSandbox;
 
     /* Compatibility hack with Nix <= 0.7: if this is a fixed-output
        derivation, tell the builder, so that for instance `fetchurl'
@@ -1762,8 +1802,6 @@ void DerivationGoal::startBuilder()
             throw SysError(format("cannot change ownership of '%1%'") % tmpDir);
     }
 
-    useChroot = settings.useChroot;
-
     if (useChroot) {
 #if CHROOT_ENABLED
         /* Create a temporary directory in which we set up the chroot
@@ -1825,7 +1863,7 @@ void DerivationGoal::startBuilder()
             else
                 dirsInChroot[string(i, 0, p)] = string(i, p + 1);
         }
-        dirsInChroot[tmpDir] = tmpDir;
+        dirsInChroot[tmpDirInSandbox] = tmpDir;
 
         /* Make the closure of the inputs available in the chroot,
            rather than the whole Nix store.  This prevents any access
@@ -1866,13 +1904,13 @@ void DerivationGoal::startBuilder()
             }
         }
 
-        /* If we're repairing or checking, it's possible that we're
+        /* If we're repairing, checking or rebuilding part of a
+           multiple-outputs derivation, it's possible that we're
            rebuilding a path that is in settings.dirsInChroot
            (typically the dependencies of /bin/sh).  Throw them
            out. */
-        if (buildMode != bmNormal)
-            foreach (DerivationOutputs::iterator, i, drv.outputs)
-                dirsInChroot.erase(i->second.path);
+        for (auto & i : drv.outputs)
+            dirsInChroot.erase(i.second.path);
 
 #else
         throw Error("chroot builds are not supported on this platform");
@@ -2143,7 +2181,7 @@ void DerivationGoal::runChild()
         }
 #endif
 
-        if (chdir(tmpDir.c_str()) == -1)
+        if (chdir(tmpDirInSandbox.c_str()) == -1)
             throw SysError(format("changing into `%1%'") % tmpDir);
 
         /* Close all other file descriptors. */
@@ -2262,6 +2300,11 @@ void DerivationGoal::registerOutputs()
     }
 
     ValidPathInfos infos;
+
+    /* Set of inodes seen during calls to canonicalisePathMetaData()
+       for this build's outputs.  This needs to be shared between
+       outputs to allow hard links between outputs. */
+    InodesSeen inodesSeen;
 
     /* Check whether the output paths were created, and grep each
        output path to determine what other paths it references.  Also make all
@@ -2433,6 +2476,16 @@ void DerivationGoal::registerOutputs()
     }
 
     if (buildMode == bmCheck) return;
+
+    if (curRound > 1 && prevInfos != infos)
+        throw NotDeterministic(
+            format("result of ‘%1%’ differs from previous round; rejecting as non-deterministic")
+            % drvPath);
+
+    if (curRound < nrRounds) {
+        prevInfos = infos;
+        return;
+    }
 
     /* Register each output path as valid, and register the sets of
        paths referenced by each of them.  If there are cycles in the

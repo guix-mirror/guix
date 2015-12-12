@@ -33,9 +33,10 @@
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/barcode/barcode-"
-                          version ".tar.xz"))
-              (sha256 (base32
-                       "1indapql5fjz0bysyc88cmc54y8phqrbi7c76p71fgjp45jcyzp8"))))
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1indapql5fjz0bysyc88cmc54y8phqrbi7c76p71fgjp45jcyzp8"))))
     (build-system gnu-build-system)
     (synopsis "Convert text strings to printed bars in various standards")
     (description "GNU Barcode is a flexible tool to produce printed barcodes
@@ -53,7 +54,7 @@ formats.")
               (method url-fetch)
               (uri (string-append
                     "http://fukuchi.org/works/qrencode/qrencode-" version
-                    ".tar.bz2")) 
+                    ".tar.bz2"))
               (sha256 (base32
                        "163sb580p570p27imc6jhkfdw15kzp8vy1jq92nip1rwa63i9myz"))))
     (build-system gnu-build-system)

@@ -433,7 +433,7 @@ Nest::~Nest()
 
 static string escVerbosity(Verbosity level)
 {
-    return int2String((int) level);
+    return std::to_string((int) level);
 }
 
 

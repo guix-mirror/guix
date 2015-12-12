@@ -198,6 +198,7 @@ to find 'modify-phases' keywords."
     "mbegin"
     "mlet"
     "mlet*"
+    "modify-services"
     "munless"
     "mwhen"
     "run-with-state"
@@ -288,6 +289,7 @@ Each rule should have a form (SYMBOL VALUE).  See `put' for details."
   (mlet 2)
   (mlet* 2)
   (modify-phases 1)
+  (modify-services 1)
   (munless 1)
   (mwhen 1)
   (operating-system 0)

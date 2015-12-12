@@ -905,7 +905,7 @@ OUTPUTS is a list of package outputs (may be an empty list)."
                                     "~a packages in profile~%"
                                     count)
                              count)
-                     (display-search-paths entries profile))))))))))
+                     (display-search-paths entries (list profile)))))))))))
 
 (define (delete-generations* profile generations)
   "Delete GENERATIONS from PROFILE.
@@ -990,6 +990,11 @@ Return #t if the shell command was executed successfully."
 (define (graph-type-names)
   "Return a list of names of available graph node types."
   (map node-type-name %node-types))
+
+(define (refresh-updater-names)
+  "Return a list of names of available refresh updater types."
+  (map (@ (guix upstream) upstream-updater-name)
+       (@ (guix scripts refresh) %updaters)))
 
 (define (lint-checker-names)
   "Return a list of names of available lint checkers."

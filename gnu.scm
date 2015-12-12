@@ -34,7 +34,7 @@
       '((gnu system)
         (gnu system file-systems)
         (gnu system grub)                         ; 'grub-configuration'
-        (gnu system linux)                        ; 'base-pam-services'
+        (gnu system pam)
         (gnu system shadow)                       ; 'user-account'
         (gnu system linux-initrd)
         (gnu system nss)

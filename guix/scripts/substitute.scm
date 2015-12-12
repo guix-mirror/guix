@@ -72,6 +72,7 @@
             assert-valid-narinfo
 
             lookup-narinfos
+            lookup-narinfos/diverse
             read-narinfo
             write-narinfo
             guix-substitute))
@@ -474,12 +475,13 @@ may be #f, in which case it indicates that PATH is unavailable at CACHE-URL."
                             ".narinfo")))
     (build-request (string->uri url) #:method 'GET)))
 
-(define (http-multiple-get base-url requests proc)
+(define (http-multiple-get base-url proc seed requests)
   "Send all of REQUESTS to the server at BASE-URL.  Call PROC for each
-response, passing it the request object, the response, and a port from which
-to read the response body.  Return the list of results."
+response, passing it the request object, the response, a port from which to
+read the response body, and the previous result, starting with SEED, à la
+'fold'.  Return the final result."
   (let connect ((requests requests)
-                (result   '()))
+                (result   seed))
     ;; (format (current-error-port) "connecting (~a requests left)..."
     ;;         (length requests))
     (let ((p (open-socket-for-uri base-url)))
@@ -497,7 +499,7 @@ to read the response body.  Return the list of results."
           ((head tail ...)
            (let* ((resp   (read-response p))
                   (body   (response-body-port resp))
-                  (result (cons (proc head resp body) result)))
+                  (result (proc head resp body result)))
              ;; The server can choose to stop responding at any time, in which
              ;; case we have to try again.  Check whether that is the case.
              ;; Note that even upon "Connection: close", we can read from BODY.
@@ -536,7 +538,7 @@ if file doesn't exist, and the narinfo otherwise."
                 url (* 100. (/ done (length paths))))
         (set! done (+ 1 done)))))
 
-  (define (handle-narinfo-response request response port)
+  (define (handle-narinfo-response request response port result)
     (let ((len (response-content-length response)))
       ;; Make sure to read no more than LEN bytes since subsequent bytes may
       ;; belong to the next response.
@@ -545,7 +547,7 @@ if file doesn't exist, and the narinfo otherwise."
          (let ((narinfo (read-narinfo port url #:size len)))
            (cache-narinfo! url (narinfo-path narinfo) narinfo)
            (update-progress!)
-           narinfo))
+           (cons narinfo result)))
         ((404)                                     ; failure
          (let* ((path      (uri-path (request-uri request)))
                 (hash-part (string-drop-right path 8))) ; drop ".narinfo"
@@ -555,38 +557,45 @@ if file doesn't exist, and the narinfo otherwise."
            (cache-narinfo! url
                            (find (cut string-contains <> hash-part) paths)
                            #f)
-           (update-progress!))
-         #f)
+           (update-progress!)
+           result))
         (else                                      ; transient failure
          (if len
              (get-bytevector-n port len)
              (read-to-eof port))
-         #f))))
+         result))))
+
+  (define (do-fetch uri)
+    (case (and=> uri uri-scheme)
+      ((http)
+       (let ((requests (map (cut narinfo-request url <>) paths)))
+         (update-progress!)
+         (let ((result (http-multiple-get url
+                                          handle-narinfo-response '()
+                                          requests)))
+           (newline (current-error-port))
+           result)))
+      ((file #f)
+       (let* ((base  (string-append (uri-path uri) "/"))
+              (files (map (compose (cut string-append base <> ".narinfo")
+                                   store-path-hash-part)
+                          paths)))
+         (filter-map (cut narinfo-from-file <> url) files)))
+      (else
+       (leave (_ "~s: unsupported server URI scheme~%")
+              (if uri (uri-scheme uri) url)))))
 
   (define cache-info
     (download-cache-info url))
 
   (and cache-info
-       (string=? (cache-info-store-directory cache-info)
-                 (%store-prefix))
-       (let ((uri (string->uri url)))
-         (case (and=> uri uri-scheme)
-           ((http)
-            (let ((requests (map (cut narinfo-request url <>) paths)))
-              (update-progress!)
-              (let ((result (http-multiple-get url requests
-                                               handle-narinfo-response)))
-                (newline (current-error-port))
-                result)))
-           ((file #f)
-            (let* ((base  (string-append (uri-path uri) "/"))
-                   (files (map (compose (cut string-append base <> ".narinfo")
-                                        store-path-hash-part)
-                               paths)))
-              (filter-map (cut narinfo-from-file <> url) files)))
-           (else
-            (leave (_ "~s: unsupported server URI scheme~%")
-                   (if uri (uri-scheme uri) url)))))))
+       (if (string=? (cache-info-store-directory cache-info)
+                     (%store-prefix))
+           (do-fetch (string->uri url))
+           (begin
+             (warning (_ "'~a' uses different store '~a'; ignoring it~%")
+                      url (cache-info-store-directory cache-info))
+             #f))))
 
 (define (lookup-narinfos cache paths)
   "Return the narinfos for PATHS, invoking the server at CACHE when no
@@ -596,7 +605,9 @@ information is available locally."
                          (let-values (((valid? value)
                                        (cached-narinfo cache path)))
                            (if valid?
-                               (values (cons value cached) missing)
+                               (if value
+                                   (values (cons value cached) missing)
+                                   (values cached missing))
                                (values cached (cons path missing)))))
                        '()
                        '()
@@ -606,11 +617,32 @@ information is available locally."
         (let ((missing (fetch-narinfos cache missing)))
           (append cached (or missing '()))))))
 
-(define (lookup-narinfo cache path)
-  "Return the narinfo for PATH in CACHE, or #f when no substitute for PATH was
-found."
-  (match (lookup-narinfos cache (list path))
-    ((answer) answer)))
+(define (lookup-narinfos/diverse caches paths)
+  "Look up narinfos for PATHS on all of CACHES, a list of URLS, in that order.
+That is, when a cache lacks a narinfo, look it up in the next cache, and so
+on.  Return a list of narinfos for PATHS or a subset thereof."
+  (let loop ((caches caches)
+             (paths  paths)
+             (result '()))
+    (match paths
+      (()                                         ;we're done
+       result)
+      (_
+       (match caches
+         ((cache rest ...)
+          (let* ((narinfos (lookup-narinfos cache paths))
+                 (hits     (map narinfo-path narinfos))
+                 (missing  (lset-difference string=? paths hits))) ;XXX: perf
+            (loop rest missing (append narinfos result))))
+         (()                                      ;that's it
+          result))))))
+
+(define (lookup-narinfo caches path)
+  "Return the narinfo for PATH in CACHES, or #f when no substitute for PATH
+was found."
+  (match (lookup-narinfos/diverse caches (list path))
+    ((answer) answer)
+    (_        #f)))
 
 (define (remove-expired-cached-narinfos directory)
   "Remove expired narinfo entries from DIRECTORY.  The sole purpose of this
@@ -752,34 +784,34 @@ expected by the daemon."
           (or (narinfo-size narinfo) 0)))
 
 (define* (process-query command
-                        #:key cache-url acl)
+                        #:key cache-urls acl)
   "Reply to COMMAND, a query as written by the daemon to this process's
 standard input.  Use ACL as the access-control list against which to check
 authorized substitutes."
   (define (valid? obj)
-    (and (narinfo? obj) (valid-narinfo? obj acl)))
+    (valid-narinfo? obj acl))
 
   (match (string-tokenize command)
     (("have" paths ..1)
-     ;; Return the subset of PATHS available in CACHE-URL.
-     (let ((substitutable (lookup-narinfos cache-url paths)))
+     ;; Return the subset of PATHS available in CACHE-URLS.
+     (let ((substitutable (lookup-narinfos/diverse cache-urls paths)))
        (for-each (lambda (narinfo)
                    (format #t "~a~%" (narinfo-path narinfo)))
                  (filter valid? substitutable))
        (newline)))
     (("info" paths ..1)
-     ;; Reply info about PATHS if it's in CACHE-URL.
-     (let ((substitutable (lookup-narinfos cache-url paths)))
+     ;; Reply info about PATHS if it's in CACHE-URLS.
+     (let ((substitutable (lookup-narinfos/diverse cache-urls paths)))
        (for-each display-narinfo-data (filter valid? substitutable))
        (newline)))
     (wtf
      (error "unknown `--query' command" wtf))))
 
 (define* (process-substitution store-item destination
-                               #:key cache-url acl)
-  "Substitute STORE-ITEM (a store file name) from CACHE-URL, and write it to
+                               #:key cache-urls acl)
+  "Substitute STORE-ITEM (a store file name) from CACHE-URLS, and write it to
 DESTINATION as a nar file.  Verify the substitute against ACL."
-  (let* ((narinfo (lookup-narinfo cache-url store-item))
+  (let* ((narinfo (lookup-narinfo cache-urls store-item))
          (uri     (narinfo-uri narinfo)))
     ;; Make sure it is signed and everything.
     (assert-valid-narinfo narinfo acl)
@@ -876,21 +908,16 @@ found."
         b
         first)))
 
-(define %cache-url
+(define %cache-urls
   (match (and=> (or* (find-daemon-option "untrusted-substitute-urls") ;client
                      (find-daemon-option "substitute-urls"))          ;admin
                 string-tokenize)
-    ((url)
-     url)
-    ((head tail ..1)
-     ;; Currently we don't handle multiple substitute URLs.
-     (warning (_ "these substitute URLs will not be used:~{ ~a~}~%")
-              tail)
-     head)
+    ((urls ...)
+     urls)
     (#f
      ;; This can only happen when this script is not invoked by the
      ;; daemon.
-     "http://hydra.gnu.org")))
+     '("http://hydra.gnu.org"))))
 
 (define (guix-substitute . args)
   "Implement the build daemon's substituter protocol."
@@ -901,20 +928,8 @@ found."
   ;; Starting from commit 22144afa in Nix, we are allowed to bail out directly
   ;; when we know we cannot substitute, but we must emit a newline on stdout
   ;; when everything is alright.
-  (let ((uri (string->uri %cache-url)))
-    (case (uri-scheme uri)
-      ((http)
-       ;; Exit gracefully if there's no network access.
-       (let ((host (uri-host uri)))
-         (catch 'getaddrinfo-error
-           (lambda ()
-             (getaddrinfo host))
-           (lambda (key error)
-             (warning (_ "failed to look up host '~a' (~a), \
-substituter disabled~%")
-                      host (gai-strerror error))
-             (exit 0)))))
-      (else #t)))
+  (when (null? %cache-urls)
+    (exit 0))
 
   ;; Say hello (see above.)
   (newline)
@@ -929,13 +944,13 @@ substituter disabled~%")
             (or (eof-object? command)
                 (begin
                   (process-query command
-                                 #:cache-url %cache-url
+                                 #:cache-urls %cache-urls
                                  #:acl acl)
                   (loop (read-line)))))))
        (("--substitute" store-path destination)
         ;; Download STORE-PATH and add store it as a Nar in file DESTINATION.
         (process-substitution store-path destination
-                              #:cache-url %cache-url
+                              #:cache-urls %cache-urls
                               #:acl (current-acl)))
        (("--version")
         (show-version-and-exit "guix substitute"))

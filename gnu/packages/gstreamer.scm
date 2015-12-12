@@ -83,20 +83,20 @@ arrays of data.")
 (define-public gstreamer
   (package
     (name "gstreamer")
-    (version "1.4.5")
+    (version "1.6.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-"
-                          version ".tar.xz"))
+      (uri (string-append
+            "http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-"
+            version ".tar.xz"))
       (sha256
        (base32
-        "1bmhbhak6i5wmmb6w86jyyv8lax4gdq983la4lk4a0krz6kim020"))))
+        "172w1bpnkn6mm1wi37n03apdbb6cdkykhzjf1vfxchcd7hhkyflp"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
-     `(#:make-flags '("CC=gcc") ; for g-ir-scanner.
-       #:configure-flags
+     `(#:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
                             "/share/gtk-doc/html"))))
@@ -131,15 +131,15 @@ This package provides the core library and elements.")
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
-    (version "1.4.5")
+    (version "1.6.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-"
-                          version ".tar.xz"))
+      (uri (string-append "http://gstreamer.freedesktop.org/src/" name "/"
+                          name "-" version ".tar.xz"))
       (sha256
        (base32
-        "07ampnfa6p41s0lhia62l9h8bdx3c7vxvdz93pbx64m3wycq3gbp"))))
+        "18sbyjcp281zb3bsqji3pglsdsxi0s6ai7rx90sx8cpflkxdqcwm"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs
@@ -162,7 +162,8 @@ This package provides the core library and elements.")
         ("gobject-introspection" ,gobject-introspection)
         ("python-wrapper" ,python-wrapper)))
     (arguments
-     `(#:configure-flags
+     `(#:parallel-tests? #f ; 'pipelines/tcp' fails in parallel
+       #:configure-flags
        (list (string-append "--with-html-dir="
                             (assoc-ref %outputs "doc")
                             "/share/gtk-doc/html"))
@@ -171,9 +172,7 @@ This package provides the core library and elements.")
         'configure 'patch
         (lambda _
           (substitute* "tests/check/libs/pbutils.c"
-            (("/bin/sh") (which "sh")))
-          ;; for g-ir-scanner.
-          (setenv "CC" "gcc"))
+            (("/bin/sh") (which "sh"))))
         %standard-phases)))
     (home-page "http://gstreamer.freedesktop.org/")
     (synopsis
@@ -186,7 +185,7 @@ for the GStreamer multimedia library.")
 (define-public gst-plugins-good
   (package
     (name "gst-plugins-good")
-    (version "1.4.5")
+    (version "1.6.1")
     (source
      (origin
       (method url-fetch)
@@ -195,7 +194,7 @@ for the GStreamer multimedia library.")
             version ".tar.xz"))
       (sha256
        (base32
-        "0hg6qzdpib9nwn3hdxv0d4rvivi1c4bmxsq2a9hqmamwyzrvbcbr"))))
+        "0darc3058kbnql3mnlpizl0sq0hhli7vkm0rpqb7nywz14abim46"))))
     (build-system gnu-build-system)
     (inputs
      `(("aalib" ,aalib)
@@ -229,7 +228,7 @@ for the GStreamer multimedia library.")
           'unpack 'disable-failing-rtprtx-tests
           (lambda _
             ;; Disable rtprtx tests that frequently fail.
-            ;; XXX FIXME: Try removing this for version > 1.4.5.
+            ;; XXX FIXME: Try removing this for version > 1.6.1.
             (substitute* "tests/check/elements/rtprtx.c"
               (("tcase_add_test \\(tc_chain,\
  (test_rtxsender_max_size_packets|test_rtxreceive_data_reconstruction)\\);" all)
@@ -246,7 +245,7 @@ developers consider to have good quality code and correct functionality.")
 (define-public gst-plugins-ugly
   (package
     (name "gst-plugins-ugly")
-    (version "1.4.5")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
@@ -254,7 +253,7 @@ developers consider to have good quality code and correct functionality.")
                            name "/" name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0rwhljn3f8mp2pfchzfcx4pvps1546dndw9mr56lz50qyqffimaw"))))
+         "0mvasl1pwq70w2kmrkcrg77kggl5q7jqybi7fkvy3vr28c7gkhqc"))))
     (build-system gnu-build-system)
     (inputs
      `(("gst-plugins-base" ,gst-plugins-base)
@@ -284,7 +283,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
 (define-public gst-libav
   (package
     (name "gst-libav")
-    (version "1.4.5")
+    (version "1.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -292,7 +291,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1g7vg9amh3cc3nmc415h6g2rqxqi4wgwqi08hxfbpwq48ri64p30"))))
+                "1a9pc7zp5rg0cvpx8gqkr21w73i6p9xa505a34day9f8p3lfim94"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-system-libav")

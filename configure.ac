@@ -90,6 +90,14 @@ GUIX_CHECK_LIBC_MOUNT
 AM_CONDITIONAL([BUILD_SYSCALLS_MODULE],
   [test "x$guix_cv_libc_has_mount" = "xyes"])
 
+dnl Decompressors, for use by the substituter and other modules.
+AC_PATH_PROG([GZIP], [gzip])
+AC_PATH_PROG([BZIP2], [bzip2])
+AC_PATH_PROG([XZ], [xz])
+AC_SUBST([GZIP])
+AC_SUBST([BZIP2])
+AC_SUBST([XZ])
+
 AC_ARG_WITH([nix-prefix],
   [AS_HELP_STRING([--with-nix-prefix=DIR],
     [search for Nix in DIR (for testing purposes and '--disable-daemon' builds)])],

@@ -46,9 +46,10 @@ fi
 
 
 profile="t-profile-$$"
+profile_alt="t-profile-alt-$$"
 rm -f "$profile"
 
-trap 'rm -f "$profile" "$profile-"[0-9]* ; rm -rf t-home-'"$$" EXIT
+trap 'rm -f "$profile" "$profile_alt" "$profile-"[0-9]* ; rm -rf t-home-'"$$" EXIT
 
 
 guix package --bootstrap -p "$profile" -i guile-bootstrap
@@ -156,6 +157,15 @@ guix package -p "$profile" --switch-generation=2
 guix package -p "$profile" --delete-generations=3
 test -z "`guix package -p "$profile" -l 3`"
 
+# Search path of combined profiles.  'LIBRARY_PATH' should show up only in the
+# combination, not in the individual profiles.
+rm "$profile"
+guix package --bootstrap -p "$profile" -i guile-bootstrap
+guix package --bootstrap -p "$profile_alt" -i gcc-bootstrap
+if guix package -p "$profile" --search-paths | grep LIBRARY_PATH
+then false; fi
+guix package -p "$profile" -p "$profile_alt" --search-paths \
+     | grep "LIBRARY_PATH.*$profile/lib"
 
 #
 # Try with the default profile.

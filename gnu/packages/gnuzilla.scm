@@ -92,10 +92,48 @@
 in C/C++.")
     (license license:mpl2.0))) ; and others for some files
 
+(define-public mozjs-24
+  (package (inherit mozjs)
+    (name "mozjs")
+    (version "24.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://ftp.mozilla.org/pub/mozilla.org/js/"
+                    name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1n1phk8r3l8icqrrap4czplnylawa0ddc2cc4cgdz46x3lrkybz6"))))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace
+          'configure
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (chdir "js/src")
+              ;; configure fails if it is follwed by SHELL and CONFIG_SHELL
+              (setenv "SHELL" (which "sh"))
+              (setenv "CONFIG_SHELL" (which "sh"))
+              (zero? (system* "./configure"
+                              (string-append "--prefix=" out)
+                              "--with-system-nspr"
+                              "--enable-system-ffi"
+                              "--enable-threadsafe"))))))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)))
+    (propagated-inputs
+     `(("nspr" ,nspr))) ; in the Requires.private field of mozjs-24.pc
+    (inputs
+     `(("libffi" ,libffi)
+       ("zlib" ,zlib)))))
+
 (define-public nspr
   (package
     (name "nspr")
-    (version "4.10.8")
+    (version "4.10.10")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -103,7 +141,7 @@ in C/C++.")
                    version "/src/nspr-" version ".tar.gz"))
              (sha256
               (base32
-               "05aaakz24ba2hdzlqx8qamwrsp7gni1acms8mr6m432wa9yaazjh"))))
+               "01ria9wk6329hxqsy75p9dkxiqkq4nkz0jjzll7hslih3jbi8dil"))))
     (build-system gnu-build-system)
     (native-inputs
       `(("perl", perl)))
@@ -129,18 +167,18 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.19.2")
+    (version "3.20.1")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
                           (string-join (string-split version #\.) "_")))
                      (string-append
-                      "ftp://ftp.mozilla.org/pub/mozilla.org/security/nss/"
+                      "https://ftp.mozilla.org/pub/mozilla.org/security/nss/"
                       "releases/NSS_" version-with-underscores "_RTM/src/"
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "1bn9wbf52z4423134hpkyvcxq1568fvzmkybv2d49n31iwz6c1hk"))
+                "15wcbqd2b911hxafbjfn63zd1gf2yxg0s5560hnhqmyrvw8qyg5d"))
               ;; Create nss.pc and nss-config.
               (patches (list (search-patch "nss-pkgconfig.patch")))))
     (build-system gnu-build-system)
@@ -228,7 +266,7 @@ standards.")
 (define-public icecat
   (package
     (name "icecat")
-    (version "38.3.0-gnu1")
+    (version "38.4.0-gnu1")
     (source
      (origin
       (method url-fetch)
@@ -237,7 +275,7 @@ standards.")
                           name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "0vm6f7f1i5vkq2713mgzjdfnm8rpz9l0q8sv4s123vsam0j9gzh8"))
+        "0rcaa19rfgclwd2qvcz8798m57jjzra6kaxg5dniysajvx7qndfp"))
       (patches (map search-patch '("icecat-avoid-bundled-includes.patch"
                                    "icecat-freetype-2.6.patch")))
       (modules '((guix build utils)))

@@ -33,12 +33,14 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages linux)               ;alsa-lib
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system cmake))
 
 (define-public libmad
@@ -169,7 +171,8 @@ Speex, WavPack TrueAudio, WAV, AIFF, MP4 and ASF files.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "ftp://ftp.ibiblio.org/pub/linux/apps/sound/mp3-utils/mp3info/mp3info-"
+                    "http://ibiblio.org"
+                    "/pub/linux/apps/sound/mp3-utils/mp3info/mp3info-"
                     version ".tgz"))
               (sha256
                (base32
@@ -449,4 +452,33 @@ format.")
     (description
      "Mpc123 is a command-line player for files in the Musepack audio
 compression format (.mpc files).")
+    (license license:gpl2+)))
+
+(define-public eyed3
+  (package
+    (name "eyed3")
+    (version "0.7.8")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                  "http://eyed3.nicfit.net/releases/eyeD3-"
+                  version ".tar.gz"))
+             (sha256
+              (base32
+               "1nv7nhfn1d0qm7rgkzksbccgqisng8klf97np0nwaqwd5dbmdf86"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)
+       ("python2-nose" ,python2-nose)
+       ("python2-sphinx" ,python2-sphinx)
+       ("python2-coverage" ,python2-coverage)))
+    (synopsis "MP3 tag ID3 metadata editor")
+    (description "eyeD3 is a Python tool for working with audio files,
+specifically mp3 files containing ID3 metadata (i.e. song info).  It provides a
+command-line tool (eyeD3) and a Python library (import eyed3) that can be used
+to write your own applications or plugins that are callable from the
+command-line tool.")
+    (home-page "http://eyed3.nicfit.net/")
     (license license:gpl2+)))

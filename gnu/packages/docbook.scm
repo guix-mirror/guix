@@ -134,8 +134,9 @@ by no means limited to these applications.)  This package provides XML DTDs.")
                                        (string-append xsl "/" name-version))
 
                      (substitute* (string-append xsl "/" name-version "/catalog.xml")
-                       (("rewritePrefix=\"./") 
-                        (string-append "rewritePrefix=\"file://" xsl "/" name-version "/")))))
+                       (("rewritePrefix=\"./")
+                        (string-append "rewritePrefix=\"file://" xsl "/"
+                                       name-version "/")))))
                  #:modules ((guix build utils))))
     (native-inputs `(("bzip2" ,bzip2)
                      ("tar" ,tar)))

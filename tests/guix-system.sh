@@ -71,13 +71,7 @@ else
     grep "$tmpfile:9:.*[Uu]nbound variable.*GRUB-config" "$errorfile"
 fi
 
-# Reporting of duplicate service identifiers.
-
-cat > "$tmpfile" <<EOF
-(use-modules (gnu))
-(use-service-modules networking)
-
-(operating-system
+OS_BASE='
   (host-name "antelope")
   (timezone "Europe/Paris")
   (locale "en_US.UTF-8")
@@ -85,11 +79,20 @@ cat > "$tmpfile" <<EOF
   (bootloader (grub-configuration (device "/dev/sdX")))
   (file-systems (cons (file-system
                         (device "root")
-                        (title 'label)
+                        (title (string->symbol "label"))
                         (mount-point "/")
                         (type "ext4"))
                       %base-file-systems))
+'
 
+# Reporting of duplicate service identifiers.
+
+cat > "$tmpfile" <<EOF
+(use-modules (gnu))
+(use-service-modules networking)
+
+(operating-system
+  $OS_BASE
   (services (cons* (dhcp-client-service)
                    (dhcp-client-service) ;twice!
                    %base-services)))
@@ -102,6 +105,36 @@ then
 else
     grep "service 'networking'.*more than once" "$errorfile"
 fi
+
+# Reporting unmet dmd requirements.
+
+cat > "$tmpfile" <<EOF
+(use-modules (gnu) (gnu services dmd))
+(use-service-modules networking)
+
+(define buggy-service-type
+  (dmd-service-type
+    'buggy
+    (lambda _
+      (dmd-service
+        (provision '(buggy!))
+        (requirement '(does-not-exist))
+        (start #t)))))
+
+(operating-system
+  $OS_BASE
+  (services (cons (service buggy-service-type #t)
+                  %base-services)))
+EOF
+
+if guix system build "$tmpfile" 2> "$errorfile"
+then
+    exit 1
+else
+    grep "service 'buggy!'.*'does-not-exist'.*undefined" "$errorfile"
+fi
+
+# Reporting inconsistent user accounts.
 
 make_user_config ()
 {

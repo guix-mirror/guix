@@ -32,7 +32,7 @@
 (define-public gnumach-headers
   (package
     (name "gnumach-headers")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
       (method url-fetch)
@@ -40,7 +40,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0wsf57q4h6xl2jn28d423qx7zplmhpnf9ssm4f1c0sf8513xm81j"))))
+        "1m7xwsrv6x6gk9xi5phs104rdn9q3lr63p348vyv0dzd6r3zyncb"))))
     (build-system gnu-build-system)
     (arguments
     `(#:phases (alist-replace
@@ -66,7 +66,7 @@
 (define-public mig
   (package
     (name "mig")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
       (method url-fetch)
@@ -74,7 +74,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "13r1pg8icyc0pl082z7k36i440pr1f3nr7ahig3rrc0r7qndqmk9"))))
+        "1i9qd6j5g8wsv9k9n6vpdqflyw0284wyayb2s2h7pp4yyi2jsksk"))))
     (build-system gnu-build-system)
     ;; Flex is needed both at build and run time.
     (inputs `(("gnumach-headers" ,gnumach-headers)
@@ -97,14 +97,14 @@ communication.")
 (define-public hurd-headers
   (package
     (name "hurd-headers")
-    (version "0.6")
+    (version "0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/hurd/hurd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "059lbspbpcjpcq5jf98f47jw9sm0ngs3x6phxax53m3rwca1fk7y"))))
+                "1q2pyc16vb5plqi8hlwnnc9jk8zlifm91cavz6x7vhbwy0nh2yvh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; Autoconf shouldn't be necessary but there seems to be a bug in the
@@ -182,6 +182,6 @@ Library and other user programs.")
     (home-page "http://www.gnu.org/software/hurd/hurd.html")
     (synopsis "GNU Hurd libraries")
     (description
-     "This package provides libihash, needed to build the GNU C 
+     "This package provides libihash, needed to build the GNU C
 Library for GNU/Hurd.")
     (license gpl2+)))

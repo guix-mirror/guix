@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,10 +20,11 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages qt)
-  #:use-module ((guix licenses) #:select (gpl2 gpl3 lgpl2.1 x11-style))
+  #:use-module ((guix licenses) #:select (bsd-3 gpl2 gpl3 lgpl2.1 x11-style))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build utils)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -95,7 +97,7 @@ X11 (yet).")
 (define-public qt
   (package
     (name "qt")
-    (version "5.5.0")
+    (version "5.5.1")
     (source (origin
              (method url-fetch)
              (uri
@@ -107,7 +109,7 @@ X11 (yet).")
                  version ".tar.xz"))
              (sha256
                (base32
-                 "1by2l8wxbqwvs7anb5ggmqhn2cfmhyw3a23bp1yyd240rdpa38ky"))
+                 "0615cn4n3n78v48lnmapqz2jizm2pzrjwvsjlnsf4awrsiiqw0kg"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -518,3 +520,35 @@ contain over 620 classes.")
        ("qt" ,qt-4)))
     (inputs
      `(("python" ,python-2)))))
+
+(define-public qtkeychain
+  (package
+    (name "qtkeychain")
+    (version "0.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/frankosterfeld/qtkeychain/"
+                            "archive/v" version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "055mkd4pz6cyff4cw0784wjc1w92m8x223sxi96ph15fr3lplbg6"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("qt", qt)))
+    (arguments
+     `(#:tests? #f ; No tests included
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-qt-trans-dir
+           (lambda _
+             (substitute* "CMakeLists.txt"
+              (("\\$\\{qt_translations_dir\\}")
+               "${CMAKE_INSTALL_PREFIX}/share/qt/translations")))))))
+    (home-page "https://github.com/frankosterfeld/qtkeychain")
+    (synopsis "Qt API to store passwords")
+    (description
+      "QtKeychain is a Qt library to store passwords and other secret data
+securely.  It will not store any data unencrypted unless explicitly requested.")
+    (license bsd-3)))

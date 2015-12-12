@@ -23,6 +23,7 @@
    (eval . (put 'lambda* 'scheme-indent-function 1))
    (eval . (put 'substitute* 'scheme-indent-function 1))
    (eval . (put 'modify-phases 'scheme-indent-function 1))
+   (eval . (put 'modify-services 'scheme-indent-function 1))
    (eval . (put 'with-directory-excursion 'scheme-indent-function 1))
    (eval . (put 'package 'scheme-indent-function 0))
    (eval . (put 'origin 'scheme-indent-function 0))

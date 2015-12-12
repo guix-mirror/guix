@@ -137,6 +137,12 @@ keywords are available:
  :single-prompt "Refresh subset: ")
 
 (guix-define-readers
+ :completions-getter guix-refresh-updater-names
+ :multiple-reader guix-read-refresh-updater-names
+ :multiple-prompt "Refresh updater,s: "
+ :multiple-separator ",")
+
+(guix-define-readers
  :completions-var guix-help-key-policies
  :single-reader guix-read-key-policy
  :single-prompt "Key policy: ")

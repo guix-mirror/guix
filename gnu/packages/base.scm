@@ -632,6 +632,21 @@ with the Linux kernel.")
    (license lgpl2.0+)
    (home-page "http://www.gnu.org/software/libc/")))
 
+(define-public glibc-2.21
+  ;; The old libc, which we use mostly to build locale data in the old format
+  ;; (which the new libc can cope with.)
+  (package
+    (inherit glibc)
+    (version "2.21")
+    (source (origin
+              (inherit (package-source glibc))
+              (uri (string-append "mirror://gnu/glibc/glibc-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1f135546j34s9bfkydmx2nhh9vwxlx60jldi80zmsnln6wj3dsxf"))
+              (patches (list (search-patch "glibc-ldd-x86_64.patch")))))))
+
 (define-public glibc-locales
   (package
     (inherit glibc)

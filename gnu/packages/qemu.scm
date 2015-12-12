@@ -38,12 +38,34 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages sdl)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages perl)
+  #:use-module (srfi srfi-1))
 
-(define-public qemu-headless
-  ;; This is QEMU without GUI support.
+(define (qemu-patch commit file-name sha256)
+  "Return an origin for COMMIT."
+  (origin
+    (method url-fetch)
+    (uri (string-append
+          "http://git.qemu.org/?p=qemu.git;a=commitdiff_plain;h="
+          commit))
+    (sha256 sha256)
+    (file-name file-name)))
+
+(define %glib-memory-vtable-patch
+  (qemu-patch "deb847bf"
+              "qemu-glib-memory-vtable.patch"
+              (base32
+               "0afb7rvxy14104jxmhr7m02w5baiz0c7vhq3h642h09jgxrcmzzi")))
+
+(define %glib-duplicate-test-patch
+  (qemu-patch "98cf48f6"
+              "qemu-glib-duplicate-test.patch"
+              (base32
+               "1aicbplzdj5s5y13jmqyvfajay05x9dnkzd197waz8v6kha7d9d5")))
+
+(define-public qemu
   (package
-    (name "qemu-headless")
+    (name "qemu")
     (version "2.4.0.1")
     (source (origin
              (method url-fetch)
@@ -52,7 +74,12 @@
              (sha256
               (base32
                "1nqv5p94zpnhcaqkifnn83ap7dd0qrb0qiicswbyhhby0f48pzpc"))
-             (patches (map search-patch '("qemu-CVE-2015-6855.patch")))))
+             (patches (list (search-patch "qemu-CVE-2015-6855.patch")
+
+                            ;; These two patches allow QEMU's tests to run
+                            ;; correctly with 'gtester' from the latest GLib.
+                            %glib-memory-vtable-patch
+                            %glib-duplicate-test-patch))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
@@ -96,7 +123,11 @@
                   %standard-phases))))
 
     (inputs                                       ; TODO: Add optional inputs.
-     `(;; ("libaio" ,libaio)
+     `(("sdl" ,sdl)
+       ("mesa" ,mesa)
+       ("libusb" ,libusb)                         ;USB pass-through support
+
+       ;; ("libaio" ,libaio)
        ("glib" ,glib)
        ("ncurses" ,ncurses)
        ("libpng" ,libpng)
@@ -116,7 +147,7 @@
                      ("texinfo" ,texinfo)
                      ("perl" ,perl)))
     (home-page "http://www.qemu-project.org")
-    (synopsis "Machine emulator and virtualizer (without GUI)")
+    (synopsis "Machine emulator and virtualizer")
     (description
      "QEMU is a generic machine emulator and virtualizer.
 
@@ -136,12 +167,17 @@ server and embedded PowerPC, and S390 guests.")
     ;; Several tests fail on MIPS; see <http://hydra.gnu.org/build/117914>.
     (supported-systems (delete "mips64el-linux" %supported-systems))))
 
-(define-public qemu
-  ;; QEMU with GUI support.
-  (package (inherit qemu-headless)
-    (name "qemu")
-    (synopsis "Machine emulator and virtualizer")
-    (inputs `(("sdl" ,sdl)
-              ("mesa" ,mesa)
-              ("libusb" ,libusb)                  ;USB pass-through support
-              ,@(package-inputs qemu-headless)))))
+(define-public qemu-minimal
+  ;; QEMU without GUI support.
+  (package (inherit qemu)
+    (name "qemu-minimal")
+    (synopsis "Machine emulator and virtualizer (without GUI)")
+    (arguments
+     `(#:configure-flags
+       ;; Restrict to the targets supported by Guix.
+       '("--target-list=i386-softmmu,x86_64-softmmu,mips64el-softmmu,arm-softmmu")
+       ,@(package-arguments qemu)))
+
+    ;; Remove dependencies on optional libraries, notably GUI libraries.
+    (inputs (fold alist-delete (package-inputs qemu)
+                  '("sdl" "mesa" "libusb")))))

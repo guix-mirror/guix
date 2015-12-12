@@ -21,6 +21,7 @@
   #:use-module (guix monads)
   #:use-module (guix store)
   #:use-module (guix records)
+  #:use-module (guix profiles)
   #:use-module (guix sets)
   #:use-module (guix ui)
   #:use-module (gnu packages base)
@@ -48,6 +49,7 @@
             service-kind
             service-parameters
 
+            modify-services
             service-back-edges
             fold-services
 
@@ -59,12 +61,15 @@
             ambiguous-target-service-error-service
             ambiguous-target-service-error-target-type
 
+            system-service-type
             boot-service-type
             activation-service-type
             activation-service->script
+            %linux-bare-metal-service
             etc-service-type
             etc-directory
             setuid-program-service-type
+            profile-service-type
             firmware-service-type
 
             %boot-service
@@ -87,9 +92,10 @@
 ;;; by providing one procedure to compose extensions, and one procedure to
 ;;; extend itself.
 ;;;
-;;; A notable service type is BOOT-SERVICE-TYPE, which has a single instance,
-;;; %BOOT-SERVICE.  %BOOT-SERVICE constitutes the root of the service DAG.  It
-;;; produces the boot script that the initrd loads.
+;;; A notable service type is SYSTEM-SERVICE-TYPE, which has a single
+;;; instance, which is the root of the service DAG.  Its value is the
+;;; derivation that produces the 'system' directory as returned by
+;;; 'operating-system-derivation'.
 ;;;
 ;;; The 'fold-services' procedure can be passed a list of procedures, which it
 ;;; "folds" by propagating extensions down the graph; it returns the root
@@ -133,13 +139,73 @@
   (parameters service-parameters))
 
 
+(define-syntax %modify-service
+  (syntax-rules (=>)
+    ((_ service)
+     service)
+    ((_ svc (kind param => exp ...) clauses ...)
+     (if (eq? (service-kind svc) kind)
+         (let ((param (service-parameters svc)))
+           (service (service-kind svc)
+                    (begin exp ...)))
+         (%modify-service svc clauses ...)))))
+
+(define-syntax modify-services
+  (syntax-rules ()
+    "Modify the services listed in SERVICES according to CLAUSES.  Each clause
+must have the form:
+
+  (TYPE VARIABLE => BODY)
+
+where TYPE is a service type, such as 'guix-service-type', and VARIABLE is an
+identifier that is bound within BODY to the value of the service of that
+TYPE.  Consider this example:
+
+  (modify-services %base-services
+    (guix-service-type config =>
+                       (guix-configuration
+                        (inherit config)
+                        (use-substitutes? #f)
+                        (extra-options '(\"--gc-keep-derivations\"))))
+    (mingetty-service-type config =>
+                           (mingetty-configuration
+                            (inherit config)
+                            (motd (plain-file \"motd\" \"Hi there!\")))))
+
+It changes the configuration of the GUIX-SERVICE-TYPE instance, and that of
+all the MINGETTY-SERVICE-TYPE instances.
+
+This is a shorthand for (map (lambda (svc) ...) %base-services)."
+    ((_ services clauses ...)
+     (map (lambda (service)
+            (%modify-service service clauses ...))
+          services))))
 
 
 ;;;
 ;;; Core services.
 ;;;
 
-(define (compute-boot-script mexps)
+(define (system-derivation mentries mextensions)
+  "Return as a monadic value the derivation of the 'system' directory
+containing the given entries."
+  (mlet %store-monad ((entries    mentries)
+                      (extensions (sequence %store-monad mextensions)))
+    (lower-object
+     (file-union "system"
+                 (append entries (concatenate extensions))))))
+
+(define system-service-type
+  ;; This is the ultimate service type, the root of the service DAG.  The
+  ;; service of this type is extended by monadic name/item pairs.  These items
+  ;; end up in the "system directory" as returned by
+  ;; 'operating-system-derivation'.
+  (service-type (name 'system)
+                (extensions '())
+                (compose identity)
+                (extend system-derivation)))
+
+(define (compute-boot-script _ mexps)
   (mlet %store-monad ((gexps (sequence %store-monad mexps)))
     (gexp->file "boot"
                 #~(begin
@@ -160,19 +226,25 @@
                     ;; Activate the system and spawn dmd.
                     #$@gexps))))
 
-(define (second-argument a b) b)
+(define (boot-script-entry mboot)
+  "Return, as a monadic value, an entry for the boot script in the system
+directory."
+  (mlet %store-monad ((boot mboot))
+    (return `(("boot" ,boot)))))
 
 (define boot-service-type
   ;; The service of this type is extended by being passed gexps as monadic
   ;; values.  It aggregates them in a single script, as a monadic value, which
   ;; becomes its 'parameters'.  It is the only service that extends nothing.
   (service-type (name 'boot)
-                (extensions '())
-                (compose compute-boot-script)
-                (extend second-argument)))
+                (extensions
+                 (list (service-extension system-service-type
+                                          boot-script-entry)))
+                (compose append)
+                (extend compute-boot-script)))
 
 (define %boot-service
-  ;; This is the ultimate service, the root of the service DAG.
+  ;; The service that produces the boot script.
   (service boot-service-type #t))
 
 (define* (file-union name files)                  ;FIXME: Factorize.
@@ -202,20 +274,6 @@ file."
                         (union-build #$output '#$things))
                     #:modules '((guix build union))))))
 
-(define (modprobe-wrapper)
-  "Return a wrapper for the 'modprobe' command that knows where modules live.
-
-This wrapper is typically invoked by the Linux kernel ('call_modprobe', in
-kernel/kmod.c), a situation where the 'LINUX_MODULE_DIRECTORY' environment
-variable is not set---hence the need for this wrapper."
-  (let ((modprobe "/run/current-system/profile/bin/modprobe"))
-    (gexp->script "modprobe"
-                  #~(begin
-                      (setenv "LINUX_MODULE_DIRECTORY"
-                              "/run/booted-system/kernel/lib/modules")
-                      (apply execl #$modprobe
-                             (cons #$modprobe (cdr (command-line))))))))
-
 (define* (activation-service->script service)
   "Return as a monadic value the activation script for SERVICE, a service of
 ACTIVATION-SCRIPT-TYPE."
@@ -240,8 +298,7 @@ ACTIVATION-SCRIPT-TYPE."
 
   (mlet* %store-monad ((actions  (service-activations))
                        (modules  (imported-modules %modules))
-                       (compiled (compiled-modules %modules))
-                       (modprobe (modprobe-wrapper)))
+                       (compiled (compiled-modules %modules)))
     (gexp->file "activate"
                 #~(begin
                     (eval-when (expand load eval)
@@ -256,12 +313,6 @@ ACTIVATION-SCRIPT-TYPE."
                     (activate-/bin/sh
                      (string-append #$(canonical-package bash) "/bin/sh"))
 
-                    ;; Tell the kernel to use our 'modprobe' command.
-                    (activate-modprobe #$modprobe)
-
-                    ;; Let users debug their own processes!
-                    (activate-ptrace-attach)
-
                     ;; Run the services' activation snippets.
                     ;; TODO: Use 'load-compiled'.
                     (for-each primitive-load '#$actions)
@@ -273,6 +324,8 @@ ACTIVATION-SCRIPT-TYPE."
   "Return a gexp that runs the activation script containing GEXPS."
   (mlet %store-monad ((script (activation-script gexps)))
     (return #~(primitive-load #$script))))
+
+(define (second-argument a b) b)
 
 (define activation-service-type
   (service-type (name 'activate)
@@ -287,12 +340,53 @@ ACTIVATION-SCRIPT-TYPE."
   ;; receives.
   (service activation-service-type #t))
 
+(define %modprobe-wrapper
+  ;; Wrapper for the 'modprobe' command that knows where modules live.
+  ;;
+  ;; This wrapper is typically invoked by the Linux kernel ('call_modprobe',
+  ;; in kernel/kmod.c), a situation where the 'LINUX_MODULE_DIRECTORY'
+  ;; environment variable is not set---hence the need for this wrapper.
+  (let ((modprobe "/run/current-system/profile/bin/modprobe"))
+    (program-file "modprobe"
+                  #~(begin
+                      (setenv "LINUX_MODULE_DIRECTORY"
+                              "/run/booted-system/kernel/lib/modules")
+                      (apply execl #$modprobe
+                             (cons #$modprobe (cdr (command-line))))))))
+
+(define %linux-kernel-activation
+  ;; Activation of the Linux kernel running on the bare metal (as opposed to
+  ;; running in a container.)
+  #~(begin
+      ;; Tell the kernel to use our 'modprobe' command.
+      (activate-modprobe #$%modprobe-wrapper)
+
+      ;; Let users debug their own processes!
+      (activate-ptrace-attach)))
+
+(define linux-bare-metal-service-type
+  (service-type (name 'linux-bare-metal)
+                (extensions
+                 (list (service-extension activation-service-type
+                                          (const %linux-kernel-activation))))))
+
+(define %linux-bare-metal-service
+  ;; The service that does things that are needed on the "bare metal", but not
+  ;; necessary or impossible in a container.
+  (service linux-bare-metal-service-type #f))
+
 (define (etc-directory service)
   "Return the directory for SERVICE, a service of type ETC-SERVICE-TYPE."
   (files->etc-directory (service-parameters service)))
 
 (define (files->etc-directory files)
   (file-union "etc" files))
+
+(define (etc-entry files)
+  "Return an entry for the /etc directory consisting of FILES in the system
+directory."
+  (with-monad %store-monad
+    (return `(("etc" ,(files->etc-directory files))))))
 
 (define etc-service-type
   (service-type (name 'etc)
@@ -302,7 +396,8 @@ ACTIVATION-SCRIPT-TYPE."
                                      (lambda (files)
                                        (let ((etc
                                               (files->etc-directory files)))
-                                         #~(activate-etc #$etc))))))
+                                         #~(activate-etc #$etc))))
+                  (service-extension system-service-type etc-entry)))
                 (compose concatenate)
                 (extend append)))
 
@@ -318,6 +413,23 @@ FILES must be a list of name/file-like object pairs."
                                           (lambda (programs)
                                             #~(activate-setuid-programs
                                                (list #$@programs))))))
+                (compose concatenate)
+                (extend append)))
+
+(define (packages->profile-entry packages)
+  "Return a system entry for the profile containing PACKAGES."
+  (mlet %store-monad ((profile (profile-derivation
+                                (manifest (map package->manifest-entry
+                                               (delete-duplicates packages eq?))))))
+    (return `(("profile" ,profile)))))
+
+(define profile-service-type
+  ;; The service that populates the system's profile---i.e.,
+  ;; /run/current-system/profile.  It is extended by package lists.
+  (service-type (name 'profile)
+                (extensions
+                 (list (service-extension system-service-type
+                                          packages->profile-entry)))
                 (compose concatenate)
                 (extend append)))
 
@@ -393,7 +505,8 @@ kernel."
     (lambda (node)
       (reverse (vhash-foldq* cons '() node edges)))))
 
-(define* (fold-services services #:key (target-type boot-service-type))
+(define* (fold-services services
+                        #:key (target-type system-service-type))
   "Fold SERVICES by propagating their extensions down to the root of type
 TARGET-TYPE; return the root service adjusted accordingly."
   (define dependents

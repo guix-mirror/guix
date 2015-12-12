@@ -30,9 +30,12 @@
   #:use-module (gnu packages acl)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gperf)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages nettle)
@@ -148,6 +151,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
               (search-patch "libarchive-CVE-2013-0211.patch")
               (search-patch "libarchive-bsdtar-test.patch")))))
     (build-system gnu-build-system)
+    ;; TODO: Add -L/path/to/nettle in libarchive.pc.
     (inputs
      `(("zlib" ,zlib)
        ("nettle" ,nettle)
@@ -353,3 +357,44 @@ deduplication technique used makes Attic suitable for daily backups since only
 changes are stored.")
     (home-page "https://attic-backup.org/")
     (license license:bsd-3)))
+
+(define-public libchop
+  (package
+    (name "libchop")
+    (version "0.5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/libchop/libchop-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0fpdyxww41ba52d98blvnf543xvirq1v9xz1i3x1gm9lzlzpmc2g"))
+              (patches
+               (list (search-patch "diffutils-gets-undeclared.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("guile" ,guile-2.0)
+       ("gperf" ,gperf)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.0)
+       ("util-linux" ,util-linux)
+       ("gnutls" ,gnutls)
+       ("tdb" ,tdb)
+       ("bdb" ,bdb)
+       ("gdbm" ,gdbm)
+       ("libgcrypt" ,libgcrypt)
+       ("lzo" ,lzo)
+       ("bzip2" ,bzip2)
+       ("zlib" ,zlib)))
+    (home-page "http://nongnu.org/libchop/")
+    (synopsis "Tools & library for data backup and distributed storage")
+    (description
+     "Libchop is a set of utilities and library for data backup and
+distributed storage.  Its main application is @command{chop-backup}, an
+encrypted backup program that supports data integrity checks, versioning,
+distribution among several sites, selective sharing of stored data, adaptive
+compression, and more.  The library itself implements storage techniques such
+as content-addressable storage, content hash keys, Merkle trees, similarity
+detection, and lossless compression.")
+    (license license:gpl3+)))

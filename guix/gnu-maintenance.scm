@@ -50,12 +50,14 @@
             find-packages
             gnu-package?
 
+            release-file?
             releases
             latest-release
             gnu-release-archive-types
             gnu-package-name->name+version
 
-            %gnu-updater))
+            %gnu-updater
+            %gnome-updater))
 
 ;;; Commentary:
 ;;;
@@ -220,8 +222,10 @@ stored."
       ("mit-scheme"   "ftp.gnu.org" "/gnu/mit-scheme/stable.pkg")
       ("icecat"       "ftp.gnu.org" "/gnu/gnuzilla")
       ("source-highlight" "ftp.gnu.org" "/gnu/src-highlite")
-      ("glib"         "ftp.gnome.org" "/pub/gnome/sources/glib")
       ("gnutls"       "ftp.gnutls.org" "/gcrypt/gnutls")
+
+      ;; FIXME: ftp.texmacs.org is currently outdated; texmacs.org refers to
+      ;; its own http URL instead.
       ("TeXmacs"      "ftp.texmacs.org" "/TeXmacs/targz")))
 
   (match (assoc project quirks)
@@ -237,8 +241,10 @@ stored."
     (substring tarball 0 end)))
 
 (define %tarball-rx
-  ;; Note: .zip files are notably used for freefont-ttf.
-  (make-regexp "^(.+)-([0-9]|[^-])*(-src)?\\.(tar\\.|zip$)"))
+  ;; The .zip extensions is notably used for freefont-ttf.
+  ;; The "-src" pattern is for "TeXmacs-1.0.7.9-src.tar.gz".
+  ;; The "-gnu[0-9]" pattern is for "icecat-38.4.0-gnu1.tar.bz2".
+  (make-regexp "^([^.]+)-([0-9]|[^-])+(-(src|gnu[0-9]))?\\.(tar\\.|zip$)"))
 
 (define %alpha-tarball-rx
   (make-regexp "^.*-.*[0-9](-|~)?(alpha|beta|rc|cvs|svn|git)-?[0-9\\.]*\\.tar\\."))
@@ -250,7 +256,10 @@ true."
        (and=> (regexp-exec %tarball-rx file)
               (lambda (match)
                 ;; Filter out unrelated files, like `guile-www-1.1.1'.
-                (equal? project (match:substring match 1))))
+                ;; Case-insensitive for things like "TeXmacs" vs. "texmacs".
+                (and=> (match:substring match 1)
+                       (lambda (name)
+                         (string-ci=? name project)))))
        (not (regexp-exec %alpha-tarball-rx file))
        (let ((s (sans-extension file)))
          (regexp-exec %package-name-rx s))))
@@ -308,10 +317,22 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
                               files)
                   result))))))))
 
-(define* (latest-release project
-                         #:key (ftp-open ftp-open) (ftp-close ftp-close))
-  "Return (\"FOO-X.Y\" . \"/bar/foo\") or #f.  Use FTP-OPEN and FTP-CLOSE to
-open (resp. close) FTP connections; this can be useful to reuse connections."
+(define* (latest-ftp-release project
+                             #:key
+                             (server "ftp.gnu.org")
+                             (directory (string-append "/gnu/" project))
+                             (keep-file? (const #t))
+                             (file->signature (cut string-append <> ".sig"))
+                             (ftp-open ftp-open) (ftp-close ftp-close))
+  "Return an <upstream-source> for the latest release of PROJECT on SERVER
+under DIRECTORY, or #f.  Use FTP-OPEN and FTP-CLOSE to open (resp. close) FTP
+connections; this can be useful to reuse connections.
+
+KEEP-FILE? is a predicate to decide whether to enter a directory and to
+consider a given file (source tarball) as a valid candidate based on its name.
+
+FILE->SIGNATURE must be a procedure; it is passed a source file URL and must
+return the corresponding signature URL, or #f it signatures are unavailable."
   (define (latest a b)
     (if (version>? a b) a b))
 
@@ -326,73 +347,93 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
     ;; Return #t for patch directory names such as 'bash-4.2-patches'.
     (cut string-suffix? "patches" <>))
 
-  (let-values (((server directory) (ftp-server/directory project)))
-    (define conn (ftp-open server))
+  (define conn (ftp-open server))
 
-    (define (file->url file)
-      (string-append "ftp://" server directory "/" file))
+  (define (file->url directory file)
+    (string-append "ftp://" server directory "/" file))
 
-    (define (file->source file)
-      (let ((url (file->url file)))
-        (upstream-source
-         (package project)
-         (version (tarball->version file))
-         (urls (list url))
-         (signature-urls (list (string-append url ".sig"))))))
+  (define (file->source directory file)
+    (let ((url (file->url directory file)))
+      (upstream-source
+       (package project)
+       (version (tarball->version file))
+       (urls (list url))
+       (signature-urls (match (file->signature url)
+                         (#f #f)
+                         (sig (list sig)))))))
 
-    (let loop ((directory directory)
-               (result    #f))
-      (let* ((entries (ftp-list conn directory))
+  (let loop ((directory directory)
+             (result    #f))
+    (let* ((entries (ftp-list conn directory))
 
-             ;; Filter out sub-directories that do not contain digits---e.g.,
-             ;; /gnuzilla/lang and /gnupg/patches.
-             (subdirs (filter-map (match-lambda
-                                    (((? patch-directory-name? dir)
-                                      'directory . _)
-                                     #f)
-                                    (((? contains-digit? dir) 'directory . _)
-                                     dir)
-                                    (_ #f))
-                                  entries))
+           ;; Filter out sub-directories that do not contain digits---e.g.,
+           ;; /gnuzilla/lang and /gnupg/patches.  Filter out "w32"
+           ;; directories as found on ftp.gnutls.org.
+           (subdirs (filter-map (match-lambda
+                                  (((? patch-directory-name? dir)
+                                    'directory . _)
+                                   #f)
+                                  (("w32" 'directory . _)
+                                   #f)
+                                  (((? contains-digit? dir) 'directory . _)
+                                   (and (keep-file? dir) dir))
+                                  (_ #f))
+                                entries))
 
-             ;; Whether or not SUBDIRS is empty, compute the latest releases
-             ;; for the current directory.  This is necessary for packages
-             ;; such as 'sharutils' that have a sub-directory that contains
-             ;; only an older release.
-             (releases (filter-map (match-lambda
-                                     ((file 'file . _)
-                                      (and (release-file? project file)
-                                           (file->source file)))
-                                     (_ #f))
-                                   entries)))
+           ;; Whether or not SUBDIRS is empty, compute the latest releases
+           ;; for the current directory.  This is necessary for packages
+           ;; such as 'sharutils' that have a sub-directory that contains
+           ;; only an older release.
+           (releases (filter-map (match-lambda
+                                   ((file 'file . _)
+                                    (and (release-file? project file)
+                                         (keep-file? file)
+                                         (file->source directory file)))
+                                   (_ #f))
+                                 entries)))
 
-        ;; Assume that SUBDIRS correspond to versions, and jump into the
-        ;; one with the highest version number.
-        (let* ((release  (reduce latest-release #f
-                                 (coalesce-sources releases)))
-               (result   (if (and result release)
-                             (latest-release release result)
-                             (or release result)))
-               (target   (reduce latest #f subdirs)))
-          (if target
-              (loop (string-append directory "/" target)
-                    result)
-              (begin
-                (ftp-close conn)
-                result)))))))
+      ;; Assume that SUBDIRS correspond to versions, and jump into the
+      ;; one with the highest version number.
+      (let* ((release  (reduce latest-release #f
+                               (coalesce-sources releases)))
+             (result   (if (and result release)
+                           (latest-release release result)
+                           (or release result)))
+             (target   (reduce latest #f subdirs)))
+        (if target
+            (loop (string-append directory "/" target)
+                  result)
+            (begin
+              (ftp-close conn)
+              result))))))
 
-(define (latest-release* package)
-  "Like 'latest-release', but ignore FTP errors that might occur when PACKAGE
-is not actually a GNU package, or not hosted on ftp.gnu.org, or not under that
-name (this is the case for \"emacs-auctex\", for instance.)"
+(define (latest-release package . rest)
+  "Return the <upstream-source> for the latest version of PACKAGE or #f.
+PACKAGE is the name of a GNU package.  This procedure automatically uses the
+right FTP server and directory for PACKAGE."
+  (let-values (((server directory) (ftp-server/directory package)))
+    (apply latest-ftp-release package
+           #:server server
+           #:directory directory
+           rest)))
+
+(define-syntax-rule (false-if-ftp-error exp)
+  "Return #f if an FTP error is raise while evaluating EXP; return the result
+of EXP otherwise."
   (catch 'ftp-error
     (lambda ()
-      (latest-release package))
+      exp)
     (lambda (key port . rest)
       (if (ftp-connection? port)
           (ftp-close port)
           (close-port port))
       #f)))
+
+(define (latest-release* package)
+  "Like 'latest-release', but ignore FTP errors that might occur when PACKAGE
+is not actually a GNU package, or not hosted on ftp.gnu.org, or not under that
+name (this is the case for \"emacs-auctex\", for instance.)"
+  (false-if-ftp-error (latest-release package)))
 
 (define %package-name-rx
   ;; Regexp for a package name, e.g., "foo-X.Y".  Since TeXmacs uses
@@ -406,15 +447,79 @@ name (this is the case for \"emacs-auctex\", for instance.)"
         (values name+version #f)
         (values (match:substring match 1) (match:substring match 2)))))
 
-(define (non-emacs-gnu-package? package)
-  "Return true if PACKAGE is a non-Emacs GNU package.  This excludes AucTeX,
-for instance, whose releases are now uploaded to elpa.gnu.org."
+(define (pure-gnu-package? package)
+  "Return true if PACKAGE is a non-Emacs and non-GNOME GNU package.  This
+excludes AucTeX, for instance, whose releases are now uploaded to
+elpa.gnu.org, and all the GNOME packages."
   (and (not (string-prefix? "emacs-" (package-name package)))
+       (not (gnome-package? package))
        (gnu-package? package)))
 
+(define (gnome-package? package)
+  "Return true if PACKAGE is a GNOME package, hosted on gnome.org."
+  (define gnome-uri?
+    (match-lambda
+      ((? string? uri)
+       (string-prefix? "mirror://gnome/" uri))
+      (_
+       #f)))
+
+  (match (package-source package)
+    ((? origin? origin)
+     (match (origin-uri origin)
+       ((? gnome-uri?) #t)
+       (_              #f)))
+    (_ #f)))
+
+(define (latest-gnome-release package)
+  "Return the latest release of PACKAGE, the name of a GNOME package."
+  (define %not-dot
+    (char-set-complement (char-set #\.)))
+
+  (define (even-minor-version? version)
+    (match (string-tokenize version %not-dot)
+      (((= string->number major) (= string->number minor) . rest)
+       (and minor (even? minor)))
+      (_
+       #t)))                                      ;cross fingers
+
+  (define (even-numbered? file)
+    ;; Return true if FILE somehow denotes an even-numbered file name.  The
+    ;; trick here is that we want this to match both directories such as
+    ;; "3.18.6" and actual file names such as "gtk+-3.18.6.tar.bz2".
+    (let-values (((name version) (package-name->name+version file)))
+      (even-minor-version? (or version name))))
+
+  (false-if-ftp-error
+   (latest-ftp-release package
+                       #:server "ftp.gnome.org"
+                       #:directory (string-append "/pub/gnome/sources/"
+                                                  (match package
+                                                    ("gconf" "GConf")
+                                                    (x       x)))
+
+
+                       ;; <https://www.gnome.org/gnome-3/source/> explains
+                       ;; that odd minor version numbers represent development
+                       ;; releases, which we are usually not interested in.
+                       #:keep-file? even-numbered?
+
+                       ;; ftp.gnome.org provides no signatures, only
+                       ;; checksums.
+                       #:file->signature (const #f))))
+
 (define %gnu-updater
-  (upstream-updater 'gnu
-                    non-emacs-gnu-package?
-                    latest-release*))
+  (upstream-updater
+   (name 'gnu)
+   (description "Updater for GNU packages")
+   (pred pure-gnu-package?)
+   (latest latest-release*)))
+
+(define %gnome-updater
+  (upstream-updater
+   (name 'gnome)
+   (description "Updater for GNOME packages")
+   (pred gnome-package?)
+   (latest latest-gnome-release)))
 
 ;;; gnu-maintenance.scm ends here

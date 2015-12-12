@@ -42,6 +42,8 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages fltk)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -58,6 +60,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -128,7 +131,7 @@ Filter) modules follow the convention of 1V / Octave.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://aubio.org/")
-    (synopsis "A library for audio labelling")
+    (synopsis "Library for audio labelling")
     (description
      "aubio is a tool designed for the extraction of annotations from audio
 signals.  Its features include segmenting a sound file before each of its
@@ -152,13 +155,11 @@ streams from live audio.")
                          libdir "/vamp" "\"]"))))
      #t))
 
-(define-public ardour-3
+(define-public ardour
   (package
     (name "ardour")
-    (version "3.5.403")
+    (version "4.4")
     (source (origin
-              ;; The project only provides tarballs upon individual request
-              ;; (or after payment) so we take the code from git.
               (method git-fetch)
               (uri (git-reference
                     (url "git://git.ardour.org/ardour/ardour.git")
@@ -171,14 +172,15 @@ streams from live audio.")
                     "libs/ardour/revision.cc"
                   (lambda (port)
                     (format port "#include \"ardour/revision.h\"
-namespace ARDOUR { const char* revision = \"3.5-403-gec2cb31\" ; }"))))
+namespace ARDOUR { const char* revision = \"4.4-210-ga4daf93\" ; }"))))
               (sha256
                (base32
-                "01b0wxh0wlxjfz5j8gcwwqhxc6q2kn4njz2fcmzv9fr3xaya5dbp"))
+                "1gnrcnq2ksnh7fsa301v1c4p5dqrbqpjylf02rg3za3ab58wxi7l"))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("--cxx11") ; required by gtkmm
+       #:phases
        (modify-phases %standard-phases
          (add-after
           'unpack 'set-rpath-in-LDFLAGS
@@ -230,35 +232,6 @@ record, edit, mix and master audio and MIDI projects.  It is targeted at audio
 engineers, musicians, soundtrack editors and composers.")
     (license license:gpl2+)))
 
-(define-public ardour
-  (package (inherit ardour-3)
-    (name "ardour")
-    (version "4.2")
-    (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "git://git.ardour.org/ardour/ardour.git")
-                    (commit version)))
-              (snippet
-               ;; Ardour expects this file to exist at build time.  It can be
-               ;; created from a git checkout with:
-               ;;   ./waf create_stored_revision
-               '(call-with-output-file
-                    "libs/ardour/revision.cc"
-                  (lambda (port)
-                    (format port "#include \"ardour/revision.h\"
-namespace ARDOUR { const char* revision = \"4.2\" ; }"))))
-              (sha256
-               (base32
-                "1j8zw0bvh16qwyy8qrqynpak9nghl9j3qhjjcdl7wh9raafjqc00"))
-              (file-name (string-append name "-" version))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments ardour-3)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'set-rpath-in-LDFLAGS
-                    ,(ardour-rpath-phase (version-prefix version 1)))))))))
-
 (define-public azr3
   (package
     (name "azr3")
@@ -301,9 +274,8 @@ plugins are provided.")
     (version "0.0.60")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/calf/calf/"
-                    version "/calf-" version ".tar.gz"))
+              (uri (string-append "http://calf-studio-gear.org/files/calf-"
+                                  version ".tar.gz"))
               (sha256
                (base32
                 "019fwg00jv217a5r767z7szh7vdrarybac0pr2sk26xp81kibrx9"))))
@@ -350,6 +322,12 @@ tools (analyzer, mono/stereo tools, crossovers).")
                (base32
                 "0a1sni6lr7qpwywpggbkp0ia3h9bwwgf9i87gsag8ra2h30v82hd"))))
     (build-system cmake-build-system)
+    (arguments
+     ;; Work around this error on x86_64 with libc 2.22+:
+     ;;    libmvec.so.1: error adding symbols: DSO missing from command line
+     (if (string-prefix? "x86_64" (or (%current-target-system) (%current-system)))
+         '(#:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-lmvec"))
+         '()))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("boost" ,boost)
@@ -558,7 +536,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
 (define-public guitarix
   (package
     (name "guitarix")
-    (version "0.33.0")
+    (version "0.34.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -566,7 +544,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "1w6dg2n0alfjsx1iy6s53783invygwxk11p1i65cc3nq3zlidcgx"))))
+               "0pamaq8iybsaglq6y1m1rlmz4wgbs2r6m24bj7x4fwg4grjvzjl8"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -574,7 +552,8 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
        #:configure-flags
        (list
         ;; Add the output lib directory to the RUNPATH.
-        (string-append "--ldflags=-Wl,-rpath=" %output "/lib"))))
+        (string-append "--ldflags=-Wl,-rpath=" %output "/lib")
+        "--cxxflags=-std=c++11")))
     (inputs
      `(("libsndfile" ,libsndfile)
        ("boost" ,boost)
@@ -586,6 +565,7 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
        ("jack" ,jack-1)
        ("gtkmm" ,gtkmm-2)
        ("gtk+" ,gtk+-2)
+       ("webkitgtk/gtk+-2" ,webkitgtk/gtk+-2)
        ("fftwf" ,fftwf)
        ("lrdf" ,lrdf)
        ("zita-resampler" ,zita-resampler)
@@ -610,6 +590,56 @@ fill the rack with effects from more than 25 built-in modules including stuff
 from a simple noise gate to modulation effects like flanger, phaser or
 auto-wah.")
     (license license:gpl2+)))
+
+(define-public rakarrack
+  (package
+    (name "rakarrack")
+    (version "0.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/rakarrack/rakarrack/"
+                                  "rakarrack-" version "/rakarrack-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1rpf63pdn54c4yg13k7cb1w1c7zsvl97c4qxcpz41c8l91xd55kn"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (substitute* '("src/process.C"
+                                 "src/global.h")
+                    (("#include <Fl/") "#include <FL/"))
+                  #t))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("alsa-utils" ,alsa-utils)
+       ("fltk" ,fltk)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxfixes" ,libxfixes)
+       ("libxft" ,libxft)
+       ("libxrender" ,libxrender)
+       ("libxpm" ,libxpm)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("jack" ,jack-1)
+       ("alsa-lib" ,alsa-lib)
+       ("libsndfile" ,libsndfile)
+       ("libsamplerate" ,libsamplerate)
+       ("zlib" ,zlib)))
+    (home-page "http://rakarrack.sourceforge.net/")
+    (synopsis "Audio effects processor")
+    (description
+     "Rakarrack is a richly featured multi-effects processor emulating a
+guitar effects pedalboard.  Effects include compressor, expander, noise gate,
+equalizers, exciter, flangers, chorus, various delay and reverb effects,
+distortion modules and many more.  Most of the effects engine is built from
+modules found in the excellent software synthesizer ZynAddSubFX.  Presets and
+user interface are optimized for guitar, but Rakarrack processes signals in
+stereo while it does not apply internal band-limiting filtering, and thus is
+well suited to all musical instruments and vocals.")
+    ;; The code is explicitly licensed under the GPL version 2 only.
+    (license license:gpl2)))
 
 (define-public ir
   (package
@@ -707,7 +737,8 @@ synchronous execution of all clients, and low latency operation.")
                "03b0iiyk3ng3vh5s8gaqwn565vik7910p56mlbk512bw3dhbdwc8"))))
     (build-system waf-build-system)
     (arguments
-     `(#:tests? #f  ; no check target
+     `(#:python ,python-2
+       #:tests? #f  ; no check target
        #:configure-flags '("--dbus"
                            "--alsa")
        #:phases
@@ -720,13 +751,22 @@ synchronous execution of all clients, and low latency operation.")
               ((".*CFLAGS.*-Wall.*" m)
                (string-append m
                               "    conf.env.append_unique('LINKFLAGS',"
-                              "'-Wl,-rpath=" %output "/lib')\n"))))))))
+                              "'-Wl,-rpath=" %output "/lib')\n")))))
+         (add-after 'install 'wrap-python-scripts
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            ;; Make sure 'jack_control' runs with the correct PYTHONPATH.
+            (let* ((out (assoc-ref outputs "out"))
+                   (path (getenv "PYTHONPATH")))
+              (wrap-program (string-append out "/bin/jack_control")
+                `("PYTHONPATH" ":" prefix (,path))))
+            #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("dbus" ,dbus)
        ("expat" ,expat)
        ("libsamplerate" ,libsamplerate)
        ("opus" ,opus)
+       ("python2-dbus" ,python2-dbus)
        ("readline" ,readline)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -745,7 +785,16 @@ synchronous execution of all clients, and low latency operation.")
                (base32
                 "1f1hcq74n3ziw8bk97mn5a1vgw028dxikv3fchaxd430pbbhqgl9"))))
     (build-system waf-build-system)
-    (arguments `(#:tests? #f)) ; no check target
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'set-flags
+          (lambda _
+            ;; Compile with C++11, required by gtkmm.
+            (setenv "CXXFLAGS" "-std=c++11")
+            #t)))))
     (inputs
      `(("lv2" ,lv2)
        ("lilv" ,lilv)

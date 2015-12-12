@@ -153,8 +153,8 @@ void printMsg_(Verbosity level, const FormatOrString & fs);
 
 #define printMsg(level, f) \
     do { \
-        if (level <= verbosity) { \
-            printMsg_(level, (f)); \
+        if (level <= nix::verbosity) { \
+            nix::printMsg_(level, (f)); \
         } \
     } while (0)
 
@@ -335,13 +335,6 @@ template<class N> bool string2Int(const string & s, N & n)
     std::istringstream str(s);
     str >> n;
     return str && str.get() == EOF;
-}
-
-template<class N> string int2String(N n)
-{
-    std::ostringstream str;
-    str << n;
-    return str.str();
 }
 
 

@@ -186,6 +186,10 @@ For the meaning of location, see `guix-find-location'."
   "Return a list of names of available graph node types."
   (guix-eval-read (guix-make-guile-expression 'graph-type-names)))
 
+(guix-memoized-defun guix-refresh-updater-names ()
+  "Return a list of names of available refresh updater types."
+  (guix-eval-read (guix-make-guile-expression 'refresh-updater-names)))
+
 (guix-memoized-defun guix-lint-checker-names ()
   "Return a list of names of available lint checkers."
   (guix-eval-read (guix-make-guile-expression 'lint-checker-names)))
@@ -1035,7 +1039,7 @@ Each element from GENERATIONS is a generation number."
                               profile generation)))
     (guix-eval-in-repl
      (guix-make-guile-expression
-      'switch-to-generation profile generation)
+      'switch-to-generation* profile generation)
      operation-buffer)))
 
 (defun guix-package-source-path (package-id)
@@ -1083,9 +1087,10 @@ FILE.  With a prefix argument, also prompt for PROFILE."
                               file profile)))
     (guix-eval-in-repl
      (guix-make-guile-expression
-      'guix-package
-      (concat "--profile=" profile)
-      (concat "--manifest=" file))
+      'guix-command
+      "package"
+      (concat "--profile="  (expand-file-name profile))
+      (concat "--manifest=" (expand-file-name file)))
      operation-buffer)))
 
 
@@ -1181,10 +1186,11 @@ The function is called with a single argument - a command line string."
 (defun guix-pull (&optional verbose)
   "Run Guix pull operation.
 If VERBOSE is non-nil (with prefix argument), produce verbose output."
-  (interactive)
+  (interactive "P")
   (let ((args (and verbose '("--verbose"))))
     (guix-eval-in-repl
-     (apply #'guix-make-guile-expression 'guix-pull args)
+     (apply #'guix-make-guile-expression
+            'guix-command "pull" args)
      nil 'pull)))
 
 (provide 'guix-base)

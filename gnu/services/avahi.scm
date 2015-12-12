@@ -107,19 +107,24 @@
            (stop #~(make-kill-destructor))))))
 
 (define avahi-service-type
-  (service-type (name 'avahi)
-                (extensions
-                 (list (service-extension dmd-root-service-type
-                                          avahi-dmd-service)
-                       (service-extension dbus-root-service-type
-                                          (compose list
-                                                   avahi-configuration-avahi))
-                       (service-extension account-service-type
-                                          (const %avahi-accounts))
-                       (service-extension activation-service-type
-                                          (const %avahi-activation))
-                       (service-extension nscd-service-type
-                                          (const (list nss-mdns)))))))
+  (let ((avahi-package (compose list avahi-configuration-avahi)))
+    (service-type (name 'avahi)
+                  (extensions
+                   (list (service-extension dmd-root-service-type
+                                            avahi-dmd-service)
+                         (service-extension dbus-root-service-type
+                                            avahi-package)
+                         (service-extension account-service-type
+                                            (const %avahi-accounts))
+                         (service-extension activation-service-type
+                                            (const %avahi-activation))
+                         (service-extension nscd-service-type
+                                            (const (list nss-mdns)))
+
+                         ;; Provide 'avahi-browse', 'avahi-resolve', etc. in
+                         ;; the system profile.
+                         (service-extension profile-service-type
+                                            avahi-package))))))
 
 (define* (avahi-service #:key (avahi avahi)
                         host-name
@@ -132,7 +137,9 @@ mDNS/DNS-SD responder that allows for service discovery and
 \"zero-configuration\" host name lookups (see @uref{http://avahi.org/}), and
 extends the name service cache daemon (nscd) so that it can resolve
 @code{.local} host names using
-@uref{http://0pointer.de/lennart/projects/nss-mdns/, nss-mdns}.
+@uref{http://0pointer.de/lennart/projects/nss-mdns/, nss-mdns}.  Additionally,
+add the @var{avahi} package to the system profile so that commands such as
+@command{avahi-browse} are directly usable.
 
 If @var{host-name} is different from @code{#f}, use that as the host name to
 publish for this machine; otherwise, use the machine's actual host name.

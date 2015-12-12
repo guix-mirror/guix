@@ -20,6 +20,7 @@
   #:use-module (guix tests)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix monads)
   #:use-module (guix hash)
   #:use-module (guix base32)
   #:use-module (guix packages)
@@ -592,6 +593,72 @@
            (equal? (list file0) (references %store file1))
            (equal? (list file1) (references %store file2))))))
 
+(test-assert "write-file & export-path yield the same result"
+  ;; Here we compare 'write-file' and the daemon's own implementation.
+  ;; 'write-file' is the reference because we know it sorts file
+  ;; deterministically.  Conversely, the daemon uses 'readdir' and the entries
+  ;; currently happen to be sorted as a side-effect of some unrelated
+  ;; operation (search for 'unhacked' in archive.cc.)  Make sure we detect any
+  ;; changes there.
+  (run-with-store %store
+    (mlet* %store-monad ((drv1 (package->derivation %bootstrap-guile))
+                         (out1 -> (derivation->output-path drv1))
+                         (data -> (unfold (cut >= <> 26)
+                                          (lambda (i)
+                                            (random-bytevector 128))
+                                          1+ 0))
+                         (build
+                          -> #~(begin
+                                 (use-modules (rnrs io ports) (srfi srfi-1))
+                                 (let ()
+                                   (define letters
+                                     (map (lambda (i)
+                                            (string
+                                             (integer->char
+                                              (+ i (char->integer #\a)))))
+                                          (iota 26)))
+                                   (define (touch file data)
+                                     (call-with-output-file file
+                                       (lambda (port)
+                                         (put-bytevector port data))))
+
+                                   (mkdir #$output)
+                                   (chdir #$output)
+
+                                   ;; The files must be different so they have
+                                   ;; different inode numbers, and the inode
+                                   ;; order must differ from the lexicographic
+                                   ;; order.
+                                   (for-each touch
+                                             (append (drop letters 10)
+                                                     (take letters 10))
+                                             (list #$@data))
+                                   #t)))
+                         (drv2 (gexp->derivation "bunch" build))
+                         (out2 -> (derivation->output-path drv2))
+                         (item-info -> (store-lift query-path-info)))
+      (mbegin %store-monad
+        (built-derivations (list drv1 drv2))
+        (foldm %store-monad
+               (lambda (item result)
+                 (define ref-hash
+                   (let-values (((port get) (open-sha256-port)))
+                     (write-file item port)
+                     (close-port port)
+                     (get)))
+
+                 ;; 'query-path-info' returns a hash produced by using the
+                 ;; daemon's C++ 'dump' function, which is the implementation
+                 ;; under test.
+                 (>>= (item-info item)
+                      (lambda (info)
+                        (return
+                         (and result
+                              (bytevector=? (path-info-hash info) ref-hash))))))
+               #t
+               (list out1 out2))))
+    #:guile-for-build (%guile-for-build)))
+
 (test-assert "import corrupt path"
   (let* ((text (random-text))
          (file (add-text-to-store %store "text" text))
@@ -688,6 +755,81 @@
 
              ;; Delete the corrupt item to leave the store in a clean state.
              (delete-paths s (list file)))))))
+
+(test-assert "build-things, check mode"
+  (with-store store
+    (call-with-temporary-output-file
+     (lambda (entropy entropy-port)
+       (write (random-text) entropy-port)
+       (force-output entropy-port)
+       (let* ((drv  (build-expression->derivation
+                     store "non-deterministic"
+                     `(begin
+                        (use-modules (rnrs io ports))
+                        (let ((out (assoc-ref %outputs "out")))
+                          (call-with-output-file out
+                            (lambda (port)
+                              ;; Rely on the fact that tests do not use the
+                              ;; chroot, and thus ENTROPY is readable.
+                              (display (call-with-input-file ,entropy
+                                         get-string-all)
+                                       port)))
+                          #t))
+                     #:guile-for-build
+                     (package-derivation store %bootstrap-guile (%current-system))))
+              (file (derivation->output-path drv)))
+         (and (build-things store (list (derivation-file-name drv)))
+              (begin
+                (write (random-text) entropy-port)
+                (force-output entropy-port)
+                (guard (c ((nix-protocol-error? c)
+                           (pk 'determinism-exception c)
+                           (and (not (zero? (nix-protocol-error-status c)))
+                                (string-contains (nix-protocol-error-message c)
+                                                 "deterministic"))))
+                  ;; This one will produce a different result.  Since we're in
+                  ;; 'check' mode, this must fail.
+                  (build-things store (list (derivation-file-name drv))
+                                (build-mode check))
+                  #f))))))))
+
+(test-assert "build multiple times"
+  (with-store store
+    ;; Ask to build twice.
+    (set-build-options store #:rounds 2 #:use-substitutes? #f)
+
+    (call-with-temporary-output-file
+     (lambda (entropy entropy-port)
+       (write (random-text) entropy-port)
+       (force-output entropy-port)
+       (let* ((drv  (build-expression->derivation
+                     store "non-deterministic"
+                     `(begin
+                        (use-modules (rnrs io ports))
+                        (let ((out (assoc-ref %outputs "out")))
+                          (call-with-output-file out
+                            (lambda (port)
+                              ;; Rely on the fact that tests do not use the
+                              ;; chroot, and thus ENTROPY is accessible.
+                              (display (call-with-input-file ,entropy
+                                         get-string-all)
+                                       port)
+                              (call-with-output-file ,entropy
+                                (lambda (port)
+                                  (write 'foobar port)))))
+                          #t))
+                     #:guile-for-build
+                     (package-derivation store %bootstrap-guile (%current-system))))
+              (file (derivation->output-path drv)))
+         (guard (c ((nix-protocol-error? c)
+                    (pk 'multiple-build c)
+                    (and (not (zero? (nix-protocol-error-status c)))
+                         (string-contains (nix-protocol-error-message c)
+                                          "deterministic"))))
+           ;; This one will produce a different result on the second run.
+           (current-build-output-port (current-error-port))
+           (build-things store (list (derivation-file-name drv)))
+           #f))))))
 
 (test-equal "store-lower"
   "Lowered."

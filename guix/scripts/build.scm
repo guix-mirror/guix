@@ -171,6 +171,8 @@ options handled by 'set-build-options-from-command-line', and listed in
   (display (_ "
       --verbosity=LEVEL  use the given verbosity LEVEL"))
   (display (_ "
+      --rounds=N         build N times in a row to detect non-determinism"))
+  (display (_ "
   -c, --cores=N          allow the use of up to N CPU cores for the build"))
   (display (_ "
   -M, --max-jobs=N       allow at most N build jobs")))
@@ -181,12 +183,12 @@ options handled by 'set-build-options-from-command-line', and listed in
   ;; TODO: Add more options.
   (set-build-options store
                      #:keep-failed? (assoc-ref opts 'keep-failed?)
+                     #:rounds (assoc-ref opts 'rounds)
                      #:build-cores (or (assoc-ref opts 'cores) 0)
                      #:max-build-jobs (or (assoc-ref opts 'max-jobs) 1)
                      #:fallback? (assoc-ref opts 'fallback?)
                      #:use-substitutes? (assoc-ref opts 'substitutes?)
-                     #:substitute-urls (or (assoc-ref opts 'substitute-urls)
-                                           %default-substitute-urls)
+                     #:substitute-urls (assoc-ref opts 'substitute-urls)
                      #:use-build-hook? (assoc-ref opts 'build-hook?)
                      #:max-silent-time (assoc-ref opts 'max-silent-time)
                      #:timeout (assoc-ref opts 'timeout)
@@ -210,6 +212,12 @@ options handled by 'set-build-options-from-command-line', and listed in
                 (lambda (opt name arg result . rest)
                   (apply values
                          (alist-cons 'keep-failed? #t result)
+                         rest)))
+        (option '("rounds") #t #f
+                (lambda (opt name arg result . rest)
+                  (apply values
+                         (alist-cons 'rounds (string->number* arg)
+                                     result)
                          rest)))
         (option '("fallback") #f #f
                 (lambda (opt name arg result . rest)
@@ -277,6 +285,7 @@ options handled by 'set-build-options-from-command-line', and listed in
 (define %default-options
   ;; Alist of default option values.
   `((system . ,(%current-system))
+    (build-mode . ,(build-mode normal))
     (graft? . #t)
     (substitutes? . #t)
     (build-hook? . #t)
@@ -289,6 +298,9 @@ options handled by 'set-build-options-from-command-line', and listed in
 Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   (display (_ "
   -e, --expression=EXPR  build the package or derivation EXPR evaluates to"))
+  (display (_ "
+  -f, --file=FILE        build the package or derivation that the code within
+                         FILE evaluates to"))
   (display (_ "
   -S, --source           build the packages' source derivations"))
   (display (_ "
@@ -305,6 +317,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
       --no-grafts        do not graft packages"))
   (display (_ "
   -d, --derivations      return the derivation paths of the given packages"))
+  (display (_ "
+      --check            rebuild items to check for non-determinism issues"))
   (display (_ "
   -r, --root=FILE        make FILE a symlink to the result, and register it
                          as a garbage collector root"))
@@ -345,6 +359,12 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                       (leave (_ "invalid argument: '~a' option argument: ~a, ~
 must be one of 'package', 'all', or 'transitive'~%")
                              name arg)))))
+        (option '("check") #f #f
+                (lambda (opt name arg result . rest)
+                  (apply values
+                         (alist-cons 'build-mode (build-mode check)
+                                     result)
+                         rest)))
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
@@ -359,6 +379,9 @@ must be one of 'package', 'all', or 'transitive'~%")
          (option '(#\e "expression") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'expression arg result)))
+         (option '(#\f "file") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'file arg result)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t result)))
@@ -378,9 +401,40 @@ must be one of 'package', 'all', or 'transitive'~%")
 
          %standard-build-options))
 
+(define (options->things-to-build opts)
+  "Read the arguments from OPTS and return a list of high-level objects to
+build---packages, gexps, derivations, and so on."
+  (define ensure-list
+    (match-lambda
+      ((x ...) x)
+      (x       (list x))))
+
+  (append-map (match-lambda
+                (('argument . (? string? spec))
+                 (cond ((derivation-path? spec)
+                        (list (call-with-input-file spec read-derivation)))
+                       ((store-path? spec)
+                        ;; Nothing to do; maybe for --log-file.
+                        '())
+                       (else
+                        (list (specification->package spec)))))
+                (('file . file)
+                 (ensure-list (load* file (make-user-module '()))))
+                (('expression . str)
+                 (ensure-list (read/eval str)))
+                (('argument . (? derivation? drv))
+                 drv)
+                (('argument . (? derivation-path? drv))
+                 (list ))
+                (_ '()))
+              opts))
+
 (define (options->derivations store opts)
   "Given OPTS, the result of 'args-fold', return a list of derivations to
 build."
+  (define transform
+    (options->transformation opts))
+
   (define package->derivation
     (match (assoc-ref opts 'target)
       (#f package-derivation)
@@ -388,101 +442,99 @@ build."
        (cut package-cross-derivation <> <> triplet <>))))
 
   (define src    (assoc-ref opts 'source))
-  (define sys    (assoc-ref opts 'system))
+  (define system (assoc-ref opts 'system))
   (define graft? (assoc-ref opts 'graft?))
 
   (parameterize ((%graft? graft?))
-    (let ((opts (options/with-source store
-                                     (options/resolve-packages store opts))))
-      (concatenate
-       (filter-map (match-lambda
-                    (('argument . (? package? p))
-                     (match src
-                       (#f
-                        (list (package->derivation store p sys)))
-                       (#t
-                        (let ((s (package-source p)))
-                          (list (package-source-derivation store s))))
-                       (proc
-                        (map (cut package-source-derivation store <>)
-                             (proc p)))))
-                    (('argument . (? derivation? drv))
-                     (list drv))
-                    (('argument . (? derivation-path? drv))
-                     (list (call-with-input-file drv read-derivation)))
-                    (('argument . (? store-path?))
-                     ;; Nothing to do; maybe for --log-file.
-                     #f)
-                    (_ #f))
-                   opts)))))
+    (append-map (match-lambda
+                  ((? package? p)
+                   (match src
+                     (#f
+                      (list (package->derivation store p system)))
+                     (#t
+                      (let ((s (package-source p)))
+                        (list (package-source-derivation store s))))
+                     (proc
+                      (map (cut package-source-derivation store <>)
+                           (proc p)))))
+                  ((? derivation? drv)
+                   (list drv))
+                  ((? procedure? proc)
+                   (list (run-with-store store
+                           (mbegin %store-monad
+                             (set-guile-for-build (default-guile))
+                             (proc))
+                           #:system system)))
+                  ((? gexp? gexp)
+                   (list (run-with-store store
+                           (mbegin %store-monad
+                             (set-guile-for-build (default-guile))
+                             (gexp->derivation "gexp" gexp
+                                               #:system system))))))
+                (transform store (options->things-to-build opts)))))
 
-(define (options/resolve-packages store opts)
-  "Return OPTS with package specification strings replaced by actual
-packages."
-  (define system
-    (or (assoc-ref opts 'system) (%current-system)))
-
-  (map (match-lambda
-        (('argument . (? string? spec))
-         (if (store-path? spec)
-             `(argument . ,spec)
-             `(argument . ,(specification->package spec))))
-        (('expression . str)
-         (match (read/eval str)
-           ((? package? p)
-            `(argument . ,p))
-           ((? procedure? proc)
-            (let ((drv (run-with-store store
-                         (mbegin %store-monad
-                           (set-guile-for-build (default-guile))
-                           (proc))
-                         #:system system)))
-              `(argument . ,drv)))
-           ((? gexp? gexp)
-            (let ((drv (run-with-store store
-                         (mbegin %store-monad
-                           (set-guile-for-build (default-guile))
-                           (gexp->derivation "gexp" gexp
-                                             #:system system)))))
-              `(argument . ,drv)))))
-        (opt opt))
-       opts))
-
-(define (options/with-source store opts)
-  "Process with 'with-source' options in OPTS, replacing the relevant package
-arguments with packages that use the specified source."
+(define (transform-package-source sources)
+  "Return a transformation procedure that uses replaces package sources with
+the matching URIs given in SOURCES."
   (define new-sources
-    (filter-map (match-lambda
-                 (('with-source . uri)
-                  (cons (package-name->name+version (basename uri))
-                        uri))
-                 (_ #f))
-                opts))
+    (map (lambda (uri)
+           (cons (package-name->name+version (basename uri))
+                 uri))
+         sources))
 
-  (let loop ((opts    opts)
-             (sources new-sources)
-             (result  '()))
-    (match opts
-      (()
-       (unless (null? sources)
-         (warning (_ "sources do not match any package:~{ ~a~}~%")
-                  (match sources
-                    (((name . uri) ...)
-                     uri))))
-       (reverse result))
-      ((('argument . (? package? p)) tail ...)
-       (let ((source (assoc-ref sources (package-name p))))
-         (loop tail
-               (alist-delete (package-name p) sources)
-               (alist-cons 'argument
-                           (if source
-                               (package-with-source store p source)
-                               p)
-                           result))))
-      ((('with-source . _) tail ...)
-       (loop tail sources result))
-      ((head tail ...)
-       (loop tail sources (cons head result))))))
+  (lambda (store packages)
+    (let loop ((packages packages)
+               (sources  new-sources)
+               (result   '()))
+      (match packages
+        (()
+         (unless (null? sources)
+           (warning (_ "sources do not match any package:~{ ~a~}~%")
+                    (match sources
+                      (((name . uri) ...)
+                       uri))))
+         (reverse result))
+        (((? package? p) tail ...)
+         (let ((source (assoc-ref sources (package-name p))))
+           (loop tail
+                 (alist-delete (package-name p) sources)
+                 (cons (if source
+                           (package-with-source store p source)
+                           p)
+                       result))))
+        ((thing tail ...)
+         (loop tail sources result))))))
+
+(define %transformations
+  ;; Transformations that can be applied to things to build.  The car is the
+  ;; key used in the option alist, and the cdr is the transformation
+  ;; procedure; it is called with two arguments: the store, and a list of
+  ;; things to build.
+  `((with-source . ,transform-package-source)))
+
+(define (options->transformation opts)
+  "Return a procedure that, when passed a list of things to build (packages,
+derivations, etc.), applies the transformations specified by OPTS."
+  (apply compose
+         (map (match-lambda
+                ((key . transform)
+                 (let ((args (filter-map (match-lambda
+                                           ((k . arg)
+                                            (and (eq? k key) arg)))
+                                         opts)))
+                   (if (null? args)
+                       (lambda (store things) things)
+                       (transform args)))))
+              %transformations)))
+
+(define (show-build-log store file urls)
+  "Show the build log for FILE, falling back to remote logs from URLS if
+needed."
+  (let ((log (or (log-file store file)
+                 (log-url store file #:base-urls urls))))
+    (if log
+        (format #t "~a~%" log)
+        (leave (_ "no build log for '~a'~%") file))))
 
 
 ;;;
@@ -497,47 +549,44 @@ arguments with packages that use the specified source."
       (let* ((opts  (parse-command-line args %options
                                         (list %default-options)))
              (store (open-connection))
+             (mode  (assoc-ref opts 'build-mode))
              (drv   (options->derivations store opts))
              (urls  (map (cut string-append <> "/log")
                          (if (assoc-ref opts 'substitutes?)
                              (or (assoc-ref opts 'substitute-urls)
+                                 ;; XXX: This does not necessarily match the
+                                 ;; daemon's substitute URLs.
                                  %default-substitute-urls)
                              '())))
+             (items (filter-map (match-lambda
+                                  (('argument . (? store-path? file))
+                                   file)
+                                  (_ #f))
+                                opts))
              (roots (filter-map (match-lambda
-                                 (('gc-root . root) root)
-                                 (_ #f))
+                                  (('gc-root . root) root)
+                                  (_ #f))
                                 opts)))
 
         (set-build-options-from-command-line store opts)
         (unless (assoc-ref opts 'log-file?)
           (show-what-to-build store drv
                               #:use-substitutes? (assoc-ref opts 'substitutes?)
-                              #:dry-run? (assoc-ref opts 'dry-run?)))
+                              #:dry-run? (assoc-ref opts 'dry-run?)
+                              #:mode mode))
 
         (cond ((assoc-ref opts 'log-file?)
-               (for-each (lambda (file)
-                           (let ((log (or (log-file store file)
-                                          (log-url store file
-                                                   #:base-urls urls))))
-                             (if log
-                                 (format #t "~a~%" log)
-                                 (leave (_ "no build log for '~a'~%")
-                                        file))))
+               (for-each (cut show-build-log store <> urls)
                          (delete-duplicates
                           (append (map derivation-file-name drv)
-                                  (filter-map (match-lambda
-                                               (('argument
-                                                 . (? store-path? file))
-                                                file)
-                                               (_ #f))
-                                              opts)))))
+                                  items))))
               ((assoc-ref opts 'derivations-only?)
                (format #t "~{~a~%~}" (map derivation-file-name drv))
                (for-each (cut register-root store <> <>)
                          (map (compose list derivation-file-name) drv)
                          roots))
               ((not (assoc-ref opts 'dry-run?))
-               (and (build-derivations store drv)
+               (and (build-derivations store drv mode)
                     (for-each show-derivation-outputs drv)
                     (for-each (cut register-root store <> <>)
                               (map (lambda (drv)

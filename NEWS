@@ -10,6 +10,265 @@ Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 
 Please send Guix bug reports to bug-guix@gnu.org.
 
+* Changes in 0.9.0 (since 0.8.3)
+
+** Package management
+
+*** New ‘guix graph’ command, to draw package graphs
+*** New ‘guix challenge’ command, to challenge the authenticity of binaries
+*** ‘guix environment’ has a new ‘--container’ option
+*** ‘guix substitute’ now honors all the specified substitute URLs
+*** New ‘guix import cran’ command, to import R packages from CRAN
+*** Package descriptions can now include Texinfo markup rendered on the fly
+*** ‘guix package’ has a new ‘--install-from-file’ option
+*** ‘guix package --search’ shows package outputs
+*** ‘guix refresh’ can refresh selected non-GNU package definitions
+*** The ‘--ad-hoc’ option of ‘guix environment’ is now positional
+*** The ‘--exec’ option of ‘guix environment’ is deprecated; use ‘--’ instead
+*** ‘guix build’ has a new ‘--file’ option
+*** ‘guix build --log-file’ can now return URLs
+*** ‘guix size’ now has a ‘--substitute-urls’ option and is much faster
+*** New ‘guix lint’ checkers: ‘formatting’, ‘license’, ‘source-file-name’
+*** Download progress report has been improved
+*** Emacs shell-mode completions for ‘guix’ commands updated
+*** Emacs: New ‘M-x guix’ popup interface
+*** Emacs: modes for viewing build logs (‘guix-build-log-mode’)
+
+** Distribution
+
+*** New extensible service composition API
+
+The operating system service API in (gnu services) has been completely
+rewritten, significantly improving extensibility and modularity, while
+providing a framework that makes it easy to reason about service composition.
+Consequently, several sources of redundancy and confusion in
+‘operating-system’ declarations have been eliminated.  See “Service
+Composition” in the manual.
+
+*** New ‘extension-graph’ and ‘dmd-graph’ sub-commands for ‘guix system’
+*** New ‘container’ sub-command for ‘guix system’
+*** New ‘guix container’ command, to deal with GuixSD containers
+*** New ‘list-generations’ sub-command for ‘guix system’
+*** ‘operating-system’ has a new ‘locale-libcs’ field
+*** New services: ‘nginx-service’, ‘udisks-service’, ‘guix-publish-service’
+*** ‘%desktop-services’ now includes Polkit, GeoClue, elogind, UDisks, and more
+*** ‘dbus-daemon’ now has proper support for lazy service activation
+*** ‘wicd-service’ automatically adds Wicd to the system profile
+*** ‘slim-service’ automatically adds xterm to the system profile
+*** hydra.gnu.org now provides substitutes for ‘armhf-linux’
+*** /run/systemd is mounted as tmpfs by default, for use by elogind
+*** ‘glibc’ package no longer contains Bash in its bin/ directory
+*** libc now looks for locale data in a versioned sub-directory
+*** libc honors the new ‘GUIX_LOCPATH’ environment variable
+*** Xfce now defaults to the GNOME icon theme
+*** 543 new packages
+
+abduco, accountsservice, american-fuzzy-lop, ansible, arandr, attic,
+autobuild, bash-minimal, bash-static, bio-blastxmlparser, bio-locus,
+bioperl-minimal, bioruby, bitcoin-core, bspwm, byobu, cabal-install, cityhash,
+clang-runtime, clang-runtime, cm, cmus, conky, coreutils-minimal, cpphs,
+cvs-fast-export, d-feet, deeptools, diffoscope, dosbox, dvtm, emacs-butler,
+emacs-dash, emacs-debbugs, emacs-deferred, emacs-f, emacs-flycheck,
+emacs-let-alist, emacs-ob-ipython, emacs-s, emacs-typo, enblend-enfuse,
+epiphany, esmtp, ethtool, evilwm, exfat-utils, express-beta-diversity,
+extra-cmake-modules, extundelete, fastcap, fasthenry, figlet, file-roller,
+flann, font-anonymous-pro, font-gnu-unifont, font-inconsolata, font-tex-gyre,
+font-ubuntu, frescobaldi, fuse-exfat, gajim, gamine, gerbv, gexiv2,
+ghc-adjunctions, ghc-aeson, ghc-alex, ghc-annotated-wl-pprint,
+ghc-ansi-terminal, ghc-ansi-wl-pprint, ghc-appar, ghc-async, ghc-attoparsec,
+ghc-auto-update, ghc-base-compat, ghc-base-orphans, ghc-base64-bytestring,
+ghc-bifunctors, ghc-blaze-builder, ghc-blaze-html, ghc-blaze-markup,
+ghc-byteorder, ghc-bytestring-builder, ghc-cereal, ghc-cgi, ghc-charset,
+ghc-cheapskate, ghc-clock, ghc-cmdargs, ghc-comonad, ghc-contravariant,
+ghc-cookie, ghc-css-text, ghc-data-default, ghc-data-default-class,
+ghc-data-default-instances-base, ghc-data-default-instances-containers,
+ghc-data-default-instances-dlist, ghc-data-default-instances-old-locale,
+ghc-digest, ghc-distributive, ghc-dlist, ghc-doctest, ghc-easy-file,
+ghc-exceptions, ghc-extensible-exceptions, ghc-extra, ghc-fast-logger,
+ghc-fingertree, ghc-free, ghc-generic-deriving, ghc-gluraw, ghc-glut,
+ghc-haddock, ghc-haddock-api, ghc-haddock-library, ghc-half, ghc-happy,
+ghc-haskell-src, ghc-haskell-src-exts, ghc-hspec, ghc-hspec-core,
+ghc-hspec-expectations, ghc-hspec-meta, ghc-html, ghc-http-types, ghc-iproute,
+ghc-kan-extensions, ghc-lens, ghc-lifted-base, ghc-logict, ghc-mmorph,
+ghc-monad-control, ghc-multipart, ghc-nats, ghc-objectname, ghc-old-locale,
+ghc-old-time, ghc-opengl, ghc-openglraw, ghc-optparse-applicative,
+ghc-parsers, ghc-pcre-light, ghc-polyparse, ghc-prelude-extras,
+ghc-profunctors, ghc-quickcheck-instances, ghc-quickcheck-io,
+ghc-quickcheck-unicode, ghc-reducers, ghc-reflection, ghc-regex-base,
+ghc-regex-compat, ghc-regex-posix, ghc-regex-tdfa-rc, ghc-resourcet, ghc-safe,
+ghc-scientific, ghc-sdl, ghc-sdl-image, ghc-sdl-mixer, ghc-semigroupoids,
+ghc-semigroups, ghc-setenv, ghc-silently, ghc-simple-reflect, ghc-smallcheck,
+ghc-statevar, ghc-streaming-commons, ghc-stringbuilder, ghc-stringsearch,
+ghc-tagged, ghc-tagsoup, ghc-tasty, ghc-tasty-ant-xml, ghc-tasty-golden,
+ghc-tasty-hunit, ghc-tasty-quickcheck, ghc-tasty-smallcheck, ghc-temporary,
+ghc-temporary-rc, ghc-transformers-base, ghc-transformers-compat,
+ghc-trifecta, ghc-unbounded-delays, ghc-uniplate, ghc-unix-compat,
+ghc-unix-time, ghc-utf8-string, ghc-vault, ghc-vector-binary-instances,
+ghc-void, ghc-wai, ghc-wai-extra, ghc-wai-logger, ghc-word8, ghc-x11,
+ghc-x11-xft, ghc-xhtml, ghc-xml, ghc-xmonad-contrib, ghc-xss-sanitize,
+ghc-zip-archive, glibc-hurd, glibc-hurd-headers, gmtp, graphios, gtk-doc,
+guile-next, guile-present, guile-redis, guile-rsvg, guile-wisp, gusb, gvfs,
+gzochi, haunt, hlint, hscolour, hspec-discover, hurd-minimal, i3-wm, i3status,
+ibus-libpinyin, idris, ifstatus, keepassx, klick, kwindowsystem, lablgtk,
+libatasmart, libchamplain, libchop, libconfuse, libcue, libesmtp, libev,
+libfm, libfm-extra, libgee, libgudev, liblxqt, libndp, libpano13, libpinyin,
+libraw, libusb-compat, libyajl, lxqt-common, lxqt-session, lxrandr, lxtask,
+lxterminal, lz4, mafft, manaplus, mars, menu-cache, minixml, mosaik,
+nestopia-ue, newt, non-sequencer, ntk, openimageio, opusfile, patches, pbzip2,
+pcmanfm, pcre2, pd, pelican, perl-czplib, perl-date-manip, perl-finance-quote,
+perl-html-element-extended, perl-html-tableextract, perl-pod-simple, physfs,
+pidgin, pidgin-otr, pigz, po4a, poppler-qt4, pwgen, python-appdirs,
+python-bandit, python-blinker, python-ccm, python-chardet,
+python-cryptography, python-cryptography-vectors, python-debian,
+python-debtcollector, python-ecdsa, python-file, python-fonttools,
+python-gnupg, python-hacking, python-httplib2, python-idna,
+python-ipython-genutils, python-iso8601, python-joblib, python-libarchive-c,
+python-llfuse, python-ly, python-minimal, python-minimal, python-mistune,
+python-monotonic, python-mox3, python-msgpack, python-nbxmpp, python-netaddr,
+python-numexpr, python-os-client-config, python-os-testr, python-oslo.config,
+python-oslo.context, python-oslo.i18n, python-oslo.log,
+python-oslo.serialization, python-oslo.utils, python-oslosphinx,
+python-oslotest, python-paramiko, python-passlib, python-pathpy, python-patsy,
+python-pbr, python-pbr, python-pexpect, python-pickleshare, python-pip,
+python-poppler-qt4, python-pretend, python-prettytable, python-ptyprocess,
+python-py-bcrypt, python-pyasn1, python-pyopenssl, python-pytest-runner,
+python-requests-mock, python-setuptools-scm, python-simplegeneric,
+python-statsmodels, python-stevedore, python-tempest-lib, python-terminado,
+python-tlsh, python-traitlets, python-webob, python-wrapt, python-xlrd,
+python2-appdirs, python2-bandit, python2-blinker, python2-ccm,
+python2-chardet, python2-cryptography, python2-cryptography-vectors,
+python2-debian, python2-debtcollector, python2-ecdsa, python2-file,
+python2-fonttools, python2-gnupg, python2-hacking, python2-httplib2,
+python2-idna, python2-ipaddress, python2-ipython-genutils, python2-iso8601,
+python2-joblib, python2-keyring, python2-libarchive-c, python2-llfuse,
+python2-mistune, python2-monotonic, python2-mox3, python2-msgpack,
+python2-nbxmpp, python2-netaddr, python2-notmuch, python2-numexpr,
+python2-os-client-config, python2-os-testr, python2-oslo.config,
+python2-oslo.context, python2-oslo.i18n, python2-oslo.log,
+python2-oslo.serialization, python2-oslo.utils, python2-oslosphinx,
+python2-oslotest, python2-paramiko, python2-passlib, python2-pathpy,
+python2-patsy, python2-pbr, python2-pbr, python2-pexpect, python2-pickleshare,
+python2-pip, python2-pretend, python2-prettytable, python2-ptyprocess,
+python2-py-bcrypt, python2-pyasn1, python2-pycrypto, python2-pyopenssl,
+python2-pytest-runner, python2-requests-mock, python2-setuptools-scm,
+python2-simplegeneric, python2-statsmodels, python2-stevedore,
+python2-tempest-lib, python2-terminado, python2-tlsh, python2-traitlets,
+python2-webob, python2-wrapt, python2-xlrd, r-assertthat, r-bh, r-chron,
+r-codetools, r-colorspace, r-crayon, r-data.table, r-dbi, r-dichromat,
+r-digest, r-dplyr, r-evaluate, r-formatr, r-ggplot2, r-gtable, r-highr,
+r-htmltools, r-htmlwidgets, r-httpuv, r-jsonlite, r-knitr, r-labeling,
+r-lazyeval, r-magrittr, r-markdown, r-memoise, r-microbenchmark, r-mime,
+r-munsell, r-plyr, r-proto, r-pryr, r-qtl, r-r6, r-rcolorbrewer, r-rcpp,
+r-reshape2, r-scales, r-servr, r-stringi, r-stringr, r-testthat, r-yaml, rage,
+raincat, redis, rest, rfkill, rpm, ruby-activesupport, ruby-atoulme-antwrap,
+ruby-bio-logger, ruby-builder, ruby-byebug, ruby-coderay, ruby-cucumber-core,
+ruby-diff-lcs, ruby-docile, ruby-ffi, ruby-formatador, ruby-gherkin3,
+ruby-json, ruby-libxml, ruby-listen, ruby-log4r, ruby-lumberjack,
+ruby-method-source, ruby-mini-portile, ruby-minitar, ruby-nenv, ruby-nokogiri,
+ruby-notiffany, ruby-orderedhash, ruby-ox, ruby-permutation, ruby-pg,
+ruby-pry, ruby-rack, ruby-rb-inotify, ruby-rjb, ruby-rubygems-tasks,
+ruby-shellany, ruby-shindo, ruby-simplecov-html, ruby-thor, ruby-thread-safe,
+ruby-tzinfo, ruby-xml-simple, ruby-yard, sassc, scmutils, seqmagick, shotwell,
+shroud, simple-scan, squashfs-tools, sxhkd, tinc, udisks, unison, vsearch,
+webkitgtk-gtk2, wesnoth, wpa-supplicant-minimal, xcb-util-cursor, xcompmgr,
+xfce4-pulseaudio-plugin, xjackfreak, xlsfonts, xmonad, yapet, yelp,
+yelp-tools, yelp-xsl, znc, zynaddsubfx
+
+*** 268 package updates
+
+abcde-2.7, arb-2.7.0, ardour-4.2, at-spi2-atk-2.18.1, at-spi2-core-2.18.1,
+ath9k-htc-firmware-1.4.0, atk-2.18.0, atkmm-2.24.1, autogen-5.18.6,
+avidemux-2.6.10, bedtools-2.24.0, binutils-2.25.1,
+binutils-static-stripped-tarball-2.25.1, bison-3.0.4, bluez-5.35,
+bundler-1.10.6, c-reduce-2.3.0, cairomm-1.12.0, calcurse-4.0.0,
+calibre-2.41.0, camlp5-6.14, cgal-4.6.3, chess-6.2.2, clang-3.6.2,
+claws-mail-3.13.0, cmake-3.3.2, complexity-1.3, conkeror-1.0pre1.20150730,
+cpio-2.12, crossmap-0.2.1, csound-6.05, cups-2.1.0, cups-filters-1.0.75,
+cups-minimal-2.1.0, curl-7.45.0, dbus-1.10.0, dbus-1.10.0.a, ddrescue-1.20,
+dmd-0.2.01, docbook-xml-4.4, docbook-xml-4.5, dosfstools-3.0.28,
+e2fsck-static-1.42.13, e2fsprogs-1.42.13, efl-1.15.2, eigen-3.2.6,
+elementary-1.15.2, emotion-generic-players-1.15.0, enlightenment-0.19.12,
+eudev-3.1.5, evas-generic-loaders-1.15.0, feh-2.14, ffmpeg-2.8, fish-2.2.0,
+flint-2.5.2, fontconfig-2.11.94, freeglut-3.0.0, freeimage-3.17.0,
+freeipmi-1.4.11, gcc-4.9.3, gcc-4.9.3, gcc-4.9.3, gcc-5.2.0,
+gcc-toolchain-5.2.0, gcj-4.9.3, gdb-7.10, gdk-pixbuf-2.32.1, geiser-0.8.1,
+gettext-0.19.6, ghc-7.10.2, ghc-hashable-1.2.3.3, ghc-http-4000.2.20,
+ghc-mtl-2.2.1, ghc-network-2.6.2.1, ghc-network-uri-2.6.0.3,
+ghc-primitive-0.6.1.0, ghc-quickcheck-2.8.1, ghc-syb-0.6, ghc-text-1.2.1.3,
+ghc-vector-0.11.0.0, giflib-5.1.1, git-2.5.0, git-manpages-2.5.0,
+git-modes-1.2.0, glib-2.46.1, glib-networking-2.46.1, glibc-2.22,
+glibc-locales-2.22, glibc-stripped-tarball-2.22, glibc-utf8-locales-2.22,
+glibmm-2.46.1, global-6.5.1, glpk-4.56, gnome-desktop-3.16.2,
+gnome-themes-standard-3.16.2, gnu-pw-mgr-1.6, gnumach-headers-1.6,
+gnupg-2.1.9, gnurl-7.45.0, gnutls-3.4.5, gobject-introspection-1.46.0,
+gp2c-0.0.9pl3, graphite2-1.3.3, graphviz-2.38.0,
+gsettings-desktop-schemas-3.18.0, gsl-2.0, gst-libav-1.6.1,
+gst-plugins-base-1.6.1, gst-plugins-good-1.6.1, gst-plugins-ugly-1.6.1,
+gstreamer-1.6.1, gtk+-3.18.2, gtkmm-3.18.0, guile-ssh-0.8.0, guitarix-0.33.0,
+guix-0.8.3, guix-0.8.3.b485f75, harfbuzz-1.0.5, help2man-1.47.2,
+hurd-headers-0.7, ibus-1.5.11, icecat-38.3.0-gnu1, icedtea6-1.13.8,
+icedtea7-2.6.2, imagemagick-6.9.2-1, intltool-0.51.0, json-glib-1.0.4,
+leptonica-1.72, less-481, libbluray-0.9.0, libcap-2.24, libdrm-2.4.65,
+libdvdcss-1.3.99, libedit-20150325-3.1, libgcrypt-1.6.3, libgsf-1.14.34,
+libidn-1.32, libinput-0.21.0, libmicrohttpd-0.9.45, libmtp-1.1.9,
+libotr-4.1.0, libpcap-1.7.4, libpciaccess-0.13.4, libqtxdg-1.2.0,
+librsvg-2.40.11, libsigc++-2.6.1, libsoup-2.52.1, libssh-0.6.5, libtiff-4.0.5,
+libtorrent-0.13.6, libva-1.6.1, lilypond-2.19.27, links-2.12,
+linux-libre-4.2.5, linux-pam-1.2.1, lirc-0.9.3, llvm-3.6.2, lua-5.2.3,
+lzo-2.09, magit-2.3.0, mesa-11.0.3, mesa-headers-11.0.3, mig-1.6,
+minetest-0.4.13, mosh-1.2.5, mpg123-1.22.4, mplayer-1.2, mpv-0.11.0,
+mu-0.9.13, mutt-1.5.24, ncdu-1.11, ncmpcpp-0.6.7, ncurses-6.0, node-0.12.7,
+notmuch-0.20.2, ntp-4.2.8p4, ocaml-4.02.3, offlineimap-6.5.7, openblas-0.2.15,
+openjpeg-2.1.0, openldap-2.4.42, openssh-7.0p1, orc-0.4.24, pango-1.38.1,
+pangomm-2.38.1, parallel-20151022, pavucontrol-3.0,
+pbtranscript-tofu-2.2.3.8f5467fe6, pciutils-3.3.1, perf-4.2.5,
+perl-xml-parser-2.44, pixman-0.32.8, poppler-0.37.0, powertop-2.7,
+python-cffi-1.2.1, python-dateutil-2.2, python-fixtures-1.3.1,
+python-ipython-3.2.1, python-pyflakes-0.9.2, python-pygobject-3.18.0,
+python-pyqt-4.11.4, python-pyqt-5.5, python-requests-2.8.0,
+python-scipy-0.16.0, python-setuptools-18.3.1, python-sip-4.16.9,
+python-six-1.9.0, python2-cffi-1.2.1, python2-dateutil-2.2,
+python2-fixtures-1.3.1, python2-ipython-3.2.1, python2-pygobject-3.18.0,
+python2-pyqt-4.11.4, python2-pyqt-5.5, python2-requests-2.8.0,
+python2-scipy-0.16.0, python2-setuptools-18.3.1, python2-sip-4.16.9,
+python2-six-1.9.0, qemu-2.4.0.1, qemu-headless-2.4.0.1, qpdf-5.1.3,
+qsynth-0.4.0, qt-5.5.1, r-3.2.2, racket-6.2.1, ratpoison-1.4.8, readline-6.3,
+retroarch-1.2.2, ripperx-2.8.0, rtorrent-0.9.6, ruby-2.2.3, ruby-arel-6.0.3,
+ruby-bacon-1.2.0, ruby-i18n-0.7.0, samtools-1.2, sfarklib-2.24, sfml-2.3.2,
+shadow-4.2.1, sipwitch-1.9.14, sqlite-3.8.11.1, subversion-1.8.14,
+synergy-1.7.4, tcl-8.6.4, tcpdump-4.7.4, teckit-2.5.4, terminology-0.9.1,
+texlive-2015, texlive-bin-2015, texlive-texmf-2015, tiled-0.13.1, tk-8.6.4,
+tmux-2.0, tor-0.2.6.10, ucommon-6.6.2, units-2.12, util-linux-2.27,
+vala-0.30.0, valgrind-3.11.0, vlc-2.2.1, webkitgtk-2.8.5, weechat-1.3,
+wine-1.7.52, wpa-supplicant-2.5, xapian-1.2.21, xterm-320,
+youtube-dl-2015.11.01, zsh-5.1.1
+
+** Programming interfaces
+
+*** Rewritten (gnu services) module; (gnu services …) modules adjusted
+*** New Emacs development tools, see “Development” in the manual
+*** (guix gexp) provides the declarative ‘computed-file’, ‘program-file’, etc.
+*** New (guix upstream) module, for generalized upstream release tracking
+
+** Noteworthy bug fixes
+
+*** Passwords in /etc/shadow are SHA512-hashed (http://bugs.gnu.org/21318)
+*** daemon: Require a signature for imports made by root
+    (http://bugs.gnu.org/21354)
+*** emacs: Fix guix-guile-program default value (http://bugs.gnu.org/21127)
+*** Compressed initrds no longer include timestamps
+*** Partly fix handling of encrypted root partitions
+    (http://bugs.gnu.org/19190)
+*** Python now includes tkinter (http://bugs.gnu.org/20889)
+*** Memoize the results of ‘package-with-python2’ (http://bugs.gnu.org/21675)
+*** Use the daemon's substitute URLs by default (http://bugs.gnu.org/20217)
+*** ‘guix system --no-grub’ works correctly for ‘init’ and ‘reconfigure’
+    (http://bugs.gnu.org/21068)
+
+** Native language support
+
+*** Updated translations: da
+
 * Changes in 0.8.3 (since 0.8.2)
 
 ** Package management

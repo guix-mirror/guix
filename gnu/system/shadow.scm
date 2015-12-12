@@ -280,11 +280,33 @@ group."
       (activate-users+groups (list #$@user-specs)
                              (list #$@group-specs))))
 
-(define (etc-skel arguments)
+(define (shells-file shells)
+  "Return a file-like object that builds a shell list for use as /etc/shells
+based on SHELLS.  /etc/shells is used by xterm, polkit, and other programs."
+  (computed-file "shells"
+                 #~(begin
+                     (use-modules (srfi srfi-1))
+
+                     (define shells
+                       (delete-duplicates (list #$@shells)))
+
+                     (call-with-output-file #$output
+                       (lambda (port)
+                         (display "\
+/bin/sh
+/run/current-system/profile/bin/sh
+/run/current-system/profile/bin/bash\n" port)
+                         (for-each (lambda (shell)
+                                     (display shell port)
+                                     (newline port))
+                                   shells))))))
+(define (etc-files arguments)
   "Filter out among ARGUMENTS things corresponding to skeletons, and return
 the /etc/skel directory for those."
-  (let ((skels (filter pair? arguments)))
-    `(("skel" ,(skeleton-directory skels)))))
+  (let ((skels (filter pair? arguments))
+        (users (filter user-account? arguments)))
+    `(("skel" ,(skeleton-directory skels))
+      ("shells" ,(shells-file (map user-account-shell users))))))
 
 (define account-service-type
   (service-type (name 'account)
@@ -298,7 +320,7 @@ the /etc/skel directory for those."
                  (list (service-extension activation-service-type
                                           account-activation)
                        (service-extension etc-service-type
-                                          etc-skel)))))
+                                          etc-files)))))
 
 (define (account-service accounts+groups skeletons)
   "Return a <service> that takes care of user accounts and user groups, with

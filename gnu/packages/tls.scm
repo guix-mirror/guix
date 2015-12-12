@@ -3,6 +3,8 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,14 +28,17 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libidn)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages base))
 
@@ -187,14 +192,14 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (version "1.0.2d")
+   (version "1.0.2e")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.openssl.org/source/openssl-" version
                                 ".tar.gz"))
             (sha256
              (base32
-              "1j58r7rdj9fz2lanir8ajbx4bspb5jnm5ikl6dq8lql5fx43c737"))
+              "1zqb1rff1wikc62a7vj5qxd1k191m8qif5d05mwdxz2wnzywlg72"))
             (patches (map search-patch
                           '("openssl-runpath.patch"
                             "openssl-c-rehash.patch")))))
@@ -207,10 +212,11 @@ required structures.")
       #:phases
       (modify-phases %standard-phases
         (add-before
-         'configure 'fix-man-dir
+         'configure 'patch-Makefile.org
          (lambda* (#:key outputs #:allow-other-keys)
            ;; The default MANDIR is some unusual place.  Fix that.
            (let ((out (assoc-ref outputs "out")))
+             (patch-makefile-SHELL "Makefile.org")
              (substitute* "Makefile.org"
                (("^MANDIR[[:blank:]]*=.*$")
                 (string-append "MANDIR = " out "/share/man\n")))
@@ -249,6 +255,27 @@ required structures.")
                        (find-files (string-append out "/lib")
                                    "\\.so"))
              #t)))
+        (add-after
+         'unpack 'fix-broken-symlinks
+         (lambda _
+           ;; Repair the broken symlinks in the openssl-1.0.2e tarball.
+           (let* ((link-prefix "openssl-1.0.2e/")
+                  (link-prefix-length (string-length link-prefix))
+                  (broken-links
+                   (find-files "." (lambda (file stat)
+                                     (and (eq? 'symlink (stat:type stat))
+                                          (string-prefix? link-prefix
+                                                          (readlink file)))))))
+             (when (null? broken-links)
+               (error "The 'fix-broken-symlinks' phase is obsolete; remove it"))
+             (for-each (lambda (file)
+                         (let* ((old-target (readlink file))
+                                (new-target (string-drop old-target
+                                                         link-prefix-length)))
+                           (delete-file file)
+                           (symlink new-target file)))
+                       broken-links)
+             #t)))
         (add-before
          'patch-source-shebangs 'patch-tests
          (lambda* (#:key inputs native-inputs #:allow-other-keys)
@@ -257,7 +284,8 @@ required structures.")
                (("/bin/sh")
                 (string-append bash "/bin/bash"))
                (("/bin/rm")
-                "rm")))))
+                "rm"))
+             #t)))
         (add-after
          'install 'remove-miscellany
          (lambda* (#:key outputs #:allow-other-keys)
@@ -319,6 +347,78 @@ security, and applying best practice development processes.")
                    (license:non-copyleft
                      "file://COPYING"
                      "See COPYING in the distribution.")))))
+
+(define-public acme
+  (package
+    (name "acme")
+    (version "0.1.0")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/a/acme/acme-"
+                          version ".tar.gz"))
+      (sha256
+        (base32
+          "0fj0m04zzdxx23vazl00ilqyl3jxqq9c9p4x61pfz1zps7nbzsy3"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    ;; TODO: Add optional inputs for testing and building documentation.
+    (native-inputs
+     `(("python2-mock" ,python2-mock)
+       ("python2-setuptools" ,python2-setuptools)))
+    (propagated-inputs
+     `(("python2-ndg-httpsclient" ,python2-ndg-httpsclient)
+       ("python2-werkzeug" ,python2-werkzeug)
+       ("python2-six" ,python2-six)
+       ("python2-requests" ,python2-requests)
+       ("python2-pytz" ,python2-pytz)
+       ("python2-pyrfc3339" ,python2-pyrfc3339)
+       ("python2-pyasn1" ,python2-pyasn1)
+       ("python2-cryptography" ,python2-cryptography)
+       ("python2-pyopenssl" ,python2-pyopenssl)))
+    (home-page "https://github.com/letsencrypt/letsencrypt")
+    (synopsis "ACME protocol implementation in Python")
+    (description "ACME protocol implementation in Python")
+    (license license:asl2.0)))
+
+(define-public letsencrypt
+  (package
+    (name "letsencrypt")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://pypi.python.org/packages/source/l/"
+                                  "letsencrypt/letsencrypt-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1zb96xz32k6ai41h5m1l22qi47y71dq69dcmbz7vfm6jfrhjgxl1"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2))
+    ;; TODO: Add optional inputs for testing building documentation.
+    (native-inputs
+     `(("python2-nose" ,python2-nose)
+       ("python2-mock" ,python2-mock)))
+    (propagated-inputs
+     `(("acme" ,acme)
+       ("python2-zope-interface" ,python2-zope-interface)
+       ("python2-pythondialog" ,python2-pythondialog)
+       ("python2-pyrfc3339" ,python2-pyrfc3339)
+       ("python2-pyopenssl" ,python2-pyopenssl)
+       ("python2-configobj" ,python2-configobj)
+       ("python2-configargparse" ,python2-configargparse)
+       ("python2-zope-component" ,python2-zope-component)
+       ("python2-parsedatetime" ,python2-parsedatetime)
+       ("python2-six" ,python2-six)
+       ("python2-psutil" ,python2-psutil)
+       ("python2-requests" ,python2-requests)
+       ("python2-pytz" ,python2-pytz)))
+    (synopsis "Let's Encrypt client")
+    (description "Tool to automatically receive and install X.509 certificates
+to enable TLS on servers.  The client will interoperate with the Let’s Encrypt CA which
+will be issuing browser-trusted certificates for free.")
+    (home-page "https://letsencrypt.org/")
+    (license license:asl2.0)))
 
 (define-public perl-net-ssleay
   (package

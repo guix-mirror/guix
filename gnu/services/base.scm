@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,12 +24,12 @@
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
   #:use-module (gnu services networking)
+  #:use-module (gnu system pam)
   #:use-module (gnu system shadow)                ; 'user-account', etc.
-  #:use-module (gnu system linux)                 ; 'pam-service', etc.
   #:use-module (gnu system file-systems)          ; 'file-system', etc.
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
-                #:select (eudev kbd e2fsprogs lvm2 fuse alsa-utils crda))
+                #:select (eudev kbd e2fsprogs lvm2 fuse alsa-utils crda gpm))
   #:use-module ((gnu packages base)
                 #:select (canonical-package glibc))
   #:use-module (gnu packages package-management)
@@ -48,15 +49,23 @@
             device-mapping-service
             swap-service
             user-processes-service
+            session-environment-service
+            session-environment-service-type
             host-name-service
             console-keymap-service
             console-font-service
+
+            udev-configuration
+            udev-configuration?
+            udev-configuration-rules
             udev-service-type
             udev-service
+            udev-rule
 
             mingetty-configuration
             mingetty-configuration?
             mingetty-service
+            mingetty-service-type
 
             %nscd-default-caches
             %nscd-default-configuration
@@ -74,6 +83,13 @@
             guix-configuration
             guix-configuration?
             guix-service
+            guix-service-type
+            guix-publish-configuration
+            guix-publish-configuration?
+            guix-publish-service
+            guix-publish-service-type
+            gpm-service-type
+            gpm-service
 
             %base-services))
 
@@ -142,6 +158,18 @@ FILE-SYSTEM."
   (symbol-append 'file-system-
                  (string->symbol (file-system-mount-point file-system))))
 
+(define (mapped-device->dmd-service-name md)
+  "Return the symbol that denotes the dmd service of MD, a <mapped-device>."
+  (symbol-append 'device-mapping-
+                 (string->symbol (mapped-device-target md))))
+
+(define dependency->dmd-service-name
+  (match-lambda
+    ((? mapped-device? md)
+     (mapped-device->dmd-service-name md))
+    ((? file-system? fs)
+     (file-system->dmd-service-name fs))))
+
 (define file-system-service-type
   ;; TODO(?): Make this an extensible service that takes <file-system> objects
   ;; and returns a list of <dmd-service>.
@@ -158,7 +186,7 @@ FILE-SYSTEM."
        (dmd-service
         (provision (list (file-system->dmd-service-name file-system)))
         (requirement `(root-file-system
-                       ,@(map file-system->dmd-service-name dependencies)))
+                       ,@(map dependency->dmd-service-name dependencies)))
         (documentation "Check, mount, and unmount the given file system.")
         (start #~(lambda args
                    ;; FIXME: Use or factorize with 'mount-file-system'.
@@ -198,7 +226,14 @@ FILE-SYSTEM."
                   (chdir "/")
 
                   (umount #$target)
-                  #f)))))))
+                  #f))
+
+        ;; We need an additional module.
+        (modules `(((gnu build file-systems)
+                    #:select (check-file-system canonicalize-device-spec))
+                   ,@%default-modules))
+        (imported-modules `((gnu build file-systems)
+                            ,@%default-imported-modules)))))))
 
 (define* (file-system-service file-system)
   "Return a service that mounts @var{file-system}, a @code{<file-system>}
@@ -333,6 +368,39 @@ All the services that spawn processes must depend on this one so that they are
 stopped before 'kill' is called."
   (service user-processes-service-type
            (list file-systems grace-delay)))
+
+
+;;;
+;;; System-wide environment variables.
+;;;
+
+(define (environment-variables->environment-file vars)
+  "Return a file for pam_env(8) that contains environment variables VARS."
+  (apply mixed-text-file "environment"
+         (append-map (match-lambda
+                       ((key . value)
+                        (list key "=" value "\n")))
+                     vars)))
+
+(define session-environment-service-type
+  (service-type
+   (name 'session-environment)
+   (extensions
+    (list (service-extension
+           etc-service-type
+           (lambda (vars)
+             (list `("environment"
+                     ,(environment-variables->environment-file vars)))))))
+   (compose concatenate)
+   (extend append)))
+
+(define (session-environment-service vars)
+  "Return a service that builds the @file{/etc/environment}, which can be read
+by PAM-aware applications to set environment variables for sessions.
+
+VARS should be an association list in which both the keys and the values are
+strings or string-valued gexps."
+  (service session-environment-service-type vars))
 
 
 ;;;
@@ -691,6 +759,11 @@ If configuration file name @var{config-file} is not specified, use some
 reasonable default settings."
   (service syslog-service-type config-file))
 
+
+;;;
+;;; Guix services.
+;;;
+
 (define* (guix-build-accounts count #:key
                               (group "guixbuild")
                               (first-uid 30001)
@@ -751,6 +824,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                     (default #t))
   (use-substitutes? guix-configuration-use-substitutes? ;Boolean
                     (default #t))
+  (substitute-urls  guix-configuration-substitute-urls ;list of strings
+                    (default %default-substitute-urls))
   (extra-options    guix-configuration-extra-options ;list of strings
                     (default '()))
   (lsof             guix-configuration-lsof       ;<package>
@@ -765,7 +840,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
   "Return a <dmd-service> for the Guix daemon service with CONFIG."
   (match config
     (($ <guix-configuration> guix build-group build-accounts authorize-key?
-                             use-substitutes? extra-options lsof lsh)
+                             use-substitutes? substitute-urls extra-options
+                             lsof lsh)
      (list (dmd-service
             (documentation "Run the Guix daemon.")
             (provision '(guix-daemon))
@@ -777,6 +853,7 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
                       #$@(if use-substitutes?
                              '()
                              '("--no-substitutes"))
+                      "--substitute-urls" #$(string-join substitute-urls)
                       #$@extra-options)
 
                 ;; Add 'lsof' (for the GC) and 'lsh' (for offloading) to the
@@ -824,6 +901,58 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
 @var{config}."
   (service guix-service-type config))
 
+
+(define-record-type* <guix-publish-configuration>
+  guix-publish-configuration make-guix-publish-configuration
+  guix-publish-configuration?
+  (guix    guix-publish-configuration-guix        ;package
+           (default guix))
+  (port    guix-publish-configuration-port        ;number
+           (default 80))
+  (host    guix-publish-configuration-host        ;string
+           (default "localhost")))
+
+(define guix-publish-dmd-service
+  (match-lambda
+    (($ <guix-publish-configuration> guix port host)
+     (list (dmd-service
+            (provision '(guix-publish))
+            (requirement '(guix-daemon))
+            (start #~(make-forkexec-constructor
+                      (list (string-append #$guix "/bin/guix")
+                            "publish" "-u" "guix-publish"
+                            "-p" #$(number->string port)
+                            (string-append "--listen=" #$host))))
+            (stop #~(make-kill-destructor)))))))
+
+(define %guix-publish-accounts
+  (list (user-group (name "guix-publish") (system? #t))
+        (user-account
+         (name "guix-publish")
+         (group "guix-publish")
+         (system? #t)
+         (comment "guix publish user")
+         (home-directory "/var/empty")
+         (shell #~(string-append #$shadow "/sbin/nologin")))))
+
+(define guix-publish-service-type
+  (service-type (name 'guix-publish)
+                (extensions
+                 (list (service-extension dmd-root-service-type
+                                          guix-publish-dmd-service)
+                       (service-extension account-service-type
+                                          (const %guix-publish-accounts))))))
+
+(define* (guix-publish-service #:key (guix guix) (port 80) (host "localhost"))
+  "Return a service that runs @command{guix publish} listening on @var{host}
+and @var{port} (@pxref{Invoking guix publish}).
+
+This assumes that @file{/etc/guix} already contains a signing key pair as
+created by @command{guix archive --generate-key} (@pxref{Invoking guix
+archive}).  If that is not the case, the service will fail to start."
+  (service guix-publish-service-type
+           (guix-publish-configuration (guix guix) (port port) (host host))))
+
 
 ;;;
 ;;; Udev.
@@ -864,12 +993,9 @@ item of @var{packages}."
                  #:modules '((guix build union)
                              (guix build utils))))
 
-(define* (kvm-udev-rule)
-  "Return a directory with a udev rule that changes the group of
-@file{/dev/kvm} to \"kvm\" and makes it #o660."
-  ;; Apparently QEMU-KVM used to ship this rule, but now we have to add it by
-  ;; ourselves.
-  (computed-file "kvm-udev-rules"
+(define (udev-rule file-name contents)
+  "Return a directory with a udev rule file FILE-NAME containing CONTENTS."
+  (computed-file file-name
                  #~(begin
                      (use-modules (guix build utils))
 
@@ -878,20 +1004,26 @@ item of @var{packages}."
 
                      (mkdir-p rules.d)
                      (call-with-output-file
-                         (string-append rules.d "/90-kvm.rules")
+                         (string-append rules.d "/" #$file-name)
                        (lambda (port)
-                         ;; Build users are part of the "kvm" group, so we
-                         ;; can fearlessly make /dev/kvm 660 (see
-                         ;; <http://bugs.gnu.org/18994>, for background.)
-                         (display "\
-KERNEL==\"kvm\", GROUP=\"kvm\", MODE=\"0660\"\n" port))))
+                         (display #$contents port))))
                  #:modules '((guix build utils))))
+
+(define kvm-udev-rule
+  ;; Return a directory with a udev rule that changes the group of /dev/kvm to
+  ;; "kvm" and makes it #o660.  Apparently QEMU-KVM used to ship this rule,
+  ;; but now we have to add it by ourselves.
+
+  ;; Build users are part of the "kvm" group, so we can fearlessly make
+  ;; /dev/kvm 660 (see <http://bugs.gnu.org/18994>, for background.)
+  (udev-rule "90-kvm.rules"
+             "KERNEL==\"kvm\", GROUP=\"kvm\", MODE=\"0660\"\n"))
 
 (define udev-dmd-service
   ;; Return a <dmd-service> for UDEV with RULES.
   (match-lambda
     (($ <udev-configuration> udev rules)
-     (let* ((rules     (udev-rules-union (cons* udev (kvm-udev-rule) rules)))
+     (let* ((rules     (udev-rules-union (cons* udev kvm-udev-rule rules)))
             (udev.conf (computed-file "udev.conf"
                                       #~(call-with-output-file #$output
                                           (lambda (port)
@@ -1034,6 +1166,60 @@ gexp, to open it, and evaluate @var{close} to close it."
   "Return a service that uses @var{device} as a swap device."
   (service swap-service-type device))
 
+
+(define-record-type* <gpm-configuration>
+  gpm-configuration make-gpm-configuration gpm-configuration?
+  (gpm      gpm-configuration-gpm)                ;package
+  (options  gpm-configuration-options))           ;list of strings
+
+(define gpm-dmd-service
+  (match-lambda
+    (($ <gpm-configuration> gpm options)
+     (list (dmd-service
+            (requirement '(udev))
+            (provision '(gpm))
+            (start #~(lambda ()
+                       ;; 'gpm' runs in the background and sets a PID file.
+                       ;; Note that it requires running as "root".
+                       (false-if-exception (delete-file "/var/run/gpm.pid"))
+                       (fork+exec-command (list (string-append #$gpm "/sbin/gpm")
+                                                #$@options))
+
+                       ;; Wait for the PID file to appear; declare failure if
+                       ;; it doesn't show up.
+                       (let loop ((i 3))
+                         (or (file-exists? "/var/run/gpm.pid")
+                             (if (zero? i)
+                                 #f
+                                 (begin
+                                   (sleep 1)
+                                   (loop (1- i))))))))
+
+            (stop #~(lambda (_)
+                      ;; Return #f if successfully stopped.
+                      (not (zero? (system* (string-append #$gpm "/sbin/gpm")
+                                           "-k"))))))))))
+
+(define gpm-service-type
+  (service-type (name 'gpm)
+                (extensions
+                 (list (service-extension dmd-root-service-type
+                                          gpm-dmd-service)))))
+
+(define* (gpm-service #:key (gpm gpm)
+                      (options '("-m" "/dev/input/mice" "-t" "ps2")))
+  "Run @var{gpm}, the general-purpose mouse daemon, with the given
+command-line @var{options}.  GPM allows users to use the mouse in the console,
+notably to select, copy, and paste text.  The default value of @var{options}
+uses the @code{ps2} protocol, which works for both USB and PS/2 mice.
+
+This service is not part of @var{%base-services}."
+  ;; To test in QEMU, use "-usbdevice mouse" and then, in the monitor, use
+  ;; "info mice" and "mouse_set X" to use the right mouse.
+  (service gpm-service-type
+           (gpm-configuration (gpm gpm) (options options))))
+
+
 (define %base-services
   ;; Convenience variable holding the basic services.
   (let ((motd (plain-file "motd" "

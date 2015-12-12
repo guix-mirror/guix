@@ -141,6 +141,24 @@ intended for use by people who discover and report bugs in compilers and other
 tools that process C/C++ code.")
     (license ncsa)))
 
+(define qemu-2.3.0
+  (package
+    (inherit qemu-minimal)
+    (version "2.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://wiki.qemu-project.org/download/qemu-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "120m53c3p28qxmfzllicjzr8syjv6v4d9rsyrgkp7gnmcgvvgfmn"))))
+    (arguments
+     ;; XXX: Disable tests because of GTester's rejection of duplicate test
+     ;; names, which wasn't addressed in this version of QEMU.
+     `(#:tests? #f
+       ,@(package-arguments qemu-minimal)))))
+
 (define-public american-fuzzy-lop
   (let ((machine (match (or (%current-target-system)
                             (%current-system))
@@ -164,11 +182,11 @@ tools that process C/C++ code.")
       (inputs
        `(("custom-qemu"
           ;; The afl-qemu tool builds qemu 2.3.0 with a few patches applied.
-          ,(package (inherit qemu-headless)
+          ,(package (inherit qemu-2.3.0)
              (name "afl-qemu")
              (inputs
               `(("afl-src" ,source)
-                ,@(package-inputs qemu-headless)))
+                ,@(package-inputs qemu-2.3.0)))
              ;; afl only supports using a single afl-qemu-trace executable, so
              ;; we only build qemu for the native target.
              (arguments
@@ -176,7 +194,7 @@ tools that process C/C++ code.")
                 (list (string-append "--target-list=" ,machine "-linux-user"))
                 #:modules ((srfi srfi-1)
                            ,@%gnu-build-system-modules)
-                ,@(substitute-keyword-arguments (package-arguments qemu-headless)
+                ,@(substitute-keyword-arguments (package-arguments qemu-2.3.0)
                     ((#:phases qemu-phases)
                      `(modify-phases ,qemu-phases
                         (add-after

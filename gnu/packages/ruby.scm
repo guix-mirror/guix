@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Pjotr Prins <pjotr.guix@thebird.nl>
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
@@ -30,7 +30,6 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
-  #:use-module (gnu packages gdbm)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (guix packages)
@@ -519,6 +518,59 @@ script.")
     (home-page "http://rubyforge.org/projects/antwrap/")
     (license license:expat)))
 
+(define-public ruby-atoulme-saikuro
+  (package
+    (name "ruby-atoulme-saikuro")
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "atoulme-Saikuro" version))
+              (sha256
+               (base32
+                "0kvd2nsxffbza61d3q4j94wrbnbv50r1zy3a7q26f6k706fw1f19"))))
+    (build-system ruby-build-system)
+    ;; FIXME: There are no unit tests.  The tests are demonstrations of the
+    ;; "saikuro" tool.
+    (arguments `(#:tests? #f))
+    (synopsis "Cyclomatic complexity analyzer")
+    (description "Saikuro is a Ruby cyclomatic complexity analyzer.  When
+given Ruby source code Saikuro will generate a report listing the cyclomatic
+complexity of each method found.  In addition, Saikuro counts the number of
+lines per method and can generate a listing of the number of tokens on each
+line of code.")
+    (home-page "http://www.github.com/atoulme/Saikuro")
+    ;; File headers contain the BSD-3 license and the README.rdoc says that
+    ;; "Saikuro uses the BSD license", but the LICENSE file contains the text
+    ;; of the Expat license.
+    (license license:bsd-3)))
+
+(define-public ruby-ci-reporter
+  (package
+    (name "ruby-ci-reporter")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "ci_reporter" version))
+              (sha256
+               (base32
+                "17fm20jmw3ajdryhkkxpjahcfx7bgswqzxrskivlkns2718ayyyg"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "rspec"))
+    (propagated-inputs
+     `(("ruby-builder" ,ruby-builder)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Generate XML reports of runs test")
+    (description
+     "@code{CI::Reporter} is an add-on to Ruby testing frameworks that allows
+you to generate XML reports of your test runs.  The resulting files can be
+read by a continuous integration system that understands Ant's JUnit report
+format.")
+    (home-page "https://github.com/nicksieger/ci_reporter")
+    (license license:expat)))
+
 (define-public ruby-orderedhash
   (package
     (name "ruby-orderedhash")
@@ -650,6 +702,36 @@ and inspect the environment.")
     (home-page "https://github.com/e2/nenv")
     (license license:expat)))
 
+(define-public ruby-permutation
+  (package
+    (name "ruby-permutation")
+    (version "0.1.8")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "permutation" version))
+              (sha256
+               (base32
+                "13crwk2vfbzv99czva7881027dbcnidihmvx2jc58z2vm3bp9sl8"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-rakefile
+          (lambda _
+            (substitute* "Rakefile"
+              (("require 'rake/gempackagetask'")
+               "require 'rubygems/package_task'")
+              (("include Config") ""))
+            #t))
+         (replace 'check
+          (lambda _
+            (zero? (system* "ruby" "-Ilib" "test/test.rb")))))))
+    (synopsis "Library to perform operations with sequence permutations")
+    (description "This package provides a Ruby library to perform different
+operations with permutations of sequences, such as strings and arrays.")
+    (home-page "http://flori.github.io/permutation")
+    (license license:gpl2))) ; GPL 2 only
+
 (define-public ruby-shellany
   (package
     (name "ruby-shellany")
@@ -753,6 +835,103 @@ standard output stream.")
     (home-page "https://github.com/geemus/shindo")
     (license license:expat)))
 
+(define-public ruby-rubygems-tasks
+  (package
+    (name "ruby-rubygems-tasks")
+    (version "0.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rubygems-tasks" version))
+              (sha256
+               (base32
+                "16cp45qlbcglnqdm4f1vj3diywdz4v024saqpgrz6palf0wmgz2j"))))
+    (build-system ruby-build-system)
+    ;; Tests need Internet access.
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("ruby-yard" ,ruby-yard)))
+    (synopsis "Rake tasks for managing and releasing Ruby Gems")
+    (description "Rubygems-task provides Rake tasks for managing and releasing
+Ruby Gems.")
+    (home-page "https://github.com/postmodern/rubygems-tasks")
+    (license license:expat)))
+
+(define-public ruby-ffi
+  (package
+    (name "ruby-ffi")
+    (version "1.9.10")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "ffi" version))
+              (sha256
+               (base32
+                "1m5mprppw0xcrv2mkim5zsk70v089ajzqiq5hpyb0xg96fcyzyxj"))))
+    (build-system ruby-build-system)
+    ;; FIXME: Before running tests the build system attempts to build libffi
+    ;; from sources.
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("ruby-rake-compiler" ,ruby-rake-compiler)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
+    (inputs
+     `(("libffi" ,libffi)))
+    (synopsis "Ruby foreign function interface library")
+    (description "Ruby-FFI is a Ruby extension for programmatically loading
+dynamic libraries, binding functions within them, and calling those functions
+from Ruby code.  Moreover, a Ruby-FFI extension works without changes on Ruby
+and JRuby.")
+    (home-page "http://wiki.github.com/ffi/ffi")
+    (license license:bsd-3)))
+
+(define-public ruby-simplecov-html
+  (package
+    (name "ruby-simplecov-html")
+    (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "simplecov-html" version))
+              (sha256
+               (base32
+                "1qni8g0xxglkx25w54qcfbi4wjkpvmb28cb7rj5zk3iqynjcdrqf"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f)) ; there are no tests
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Default HTML formatter for SimpleCov code coverage tool")
+    (description "This package provides the default HTML formatter for
+the SimpleCov code coverage tool for Ruby version 1.9 and above.")
+    (home-page "https://github.com/colszowka/simplecov-html")
+    (license license:expat)))
+
+(define-public ruby-simplecov
+  (package
+    (name "ruby-simplecov")
+    (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "simplecov" version))
+              (sha256
+               (base32
+                "1q2iq2vgrdvvla5y907gkmqx6ry2qvnvc7a90hlcbwgp1w0sv6z4"))))
+    (build-system ruby-build-system)
+    ;; Simplecov depends on rubocop for code style checking at build time.
+    ;; Rubocop needs simplecov at build time.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-json" ,ruby-json)
+       ("ruby-docile" ,ruby-docile)
+       ("ruby-simplecov-html" ,ruby-simplecov-html)))
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Code coverage framework for Ruby")
+    (description "SimpleCov is a code coverage framework for Ruby with a
+powerful configuration library and automatic merging of coverage across test
+suites.")
+    (home-page "http://github.com/colszowka/simplecov")
+    (license license:expat)))
+
 (define-public ruby-useragent
   (package
     (name "ruby-useragent")
@@ -846,6 +1025,392 @@ interface for Ruby programs.")
     (description "Net::HTTP::Persistent manages persistent HTTP connections
 using Net::HTTP, supporting reconnection and retry according to RFC 2616.")
     (home-page "https://github.com/drbrain/net-http-persistent")
+    (license license:expat)))
+
+(define-public ruby-power-assert
+  (package
+    (name "ruby-power-assert")
+    (version "0.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "power_assert" version))
+              (sha256
+               (base32
+                "0gbj379jhnff8rbb6m3kzdm282szjz1a021xzxa38d1bnswj2jx3"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Assert library with descriptive assertion messages")
+    (description "Power-assert is an assertion library providing descriptive
+assertion messages for tests.")
+    (home-page "https://github.com/k-tsj/power_assert")
+    (license (list license:bsd-2 license:ruby))))
+
+(define-public ruby-locale
+  (package
+    (name "ruby-locale")
+    (version "2.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "locale" version))
+              (sha256
+               (base32
+                "1sls9bq4krx0fmnzmlbn64dw23c4d6pz46ynjzrn9k8zyassdd0x"))))
+    (build-system ruby-build-system)
+    ;; ruby-test-unit is required to run tests, but that needs ruby-packnga,
+    ;; which needs ruby-gettext, which needs ruby-locale.  To break the
+    ;; dependency cycle we disable tests.
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-yard" ,ruby-yard)))
+    (synopsis "Ruby library providing basic localization APIs")
+    (description
+     "Ruby-Locale is the pure ruby library which provides basic APIs for
+localization.")
+    (home-page "https://github.com/ruby-gettext/locale")
+    (license (list license:lgpl3+ license:ruby))))
+
+(define-public ruby-text
+  (package
+    (name "ruby-text")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "text" version))
+              (sha256
+               (base32
+                "1x6kkmsr49y3rnrin91rv8mpc3dhrf3ql08kbccw8yffq61brfrg"))))
+    (build-system ruby-build-system)
+    (synopsis "Collection of text algorithms for Ruby")
+    (description
+     "This package provides a collection of text algorithms: Levenshtein,
+Soundex, Metaphone, Double Metaphone, Porter Stemming.")
+    (home-page "http://github.com/threedaymonk/text")
+    (license license:expat)))
+
+(define-public ruby-gettext
+  (package
+    (name "ruby-gettext")
+    (version "3.1.7")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "gettext" version))
+              (sha256
+               (base32
+                "1hg9islkm324mb4sd4za1fgafj1hqnm3bdvzj3k4fqpnzqnbcfiq"))))
+    (build-system ruby-build-system)
+    ;; ruby-test-unit is required to run tests, but that needs ruby-packnga,
+    ;; which needs ruby-gettext.  To break the dependency cycle we disable
+    ;; tests.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-locale" ,ruby-locale)
+       ("ruby-text" ,ruby-text)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-yard" ,ruby-yard)))
+    (synopsis "GNU gettext-like program for Ruby")
+    (description
+     "Gettext is a GNU gettext-like program for Ruby.  The catalog
+file (po-file) used is the same as that used by GNU gettext, allowing you to
+use GNU gettext tools for maintenance.")
+    (home-page "http://ruby-gettext.github.com/")
+    (license (list license:lgpl3+ license:ruby))))
+
+(define-public ruby-packnga
+  (package
+    (name "ruby-packnga")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "packnga" version))
+              (sha256
+               (base32
+                "1i71yhvlkvi5fp3m8jl9317cnddkbnrcy0syrmiw4y1lrq0cbncj"))))
+    (build-system ruby-build-system)
+    ;; ruby-test-unit is required to run tests, but that needs ruby-packnga.
+    ;; To break the dependency cycle we disable tests.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-gettext" ,ruby-gettext)
+       ("ruby-yard" ,ruby-yard)))
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Utility library to package internationalized libraries")
+    (description
+     "Packnga is a library to translate to many languages using YARD.")
+    (home-page "http://ranguba.org/packnga/")
+    (license license:lgpl2.0+)))
+
+(define-public ruby-test-unit
+  (package
+    (name "ruby-test-unit")
+    (version "3.1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "test-unit" version))
+              (sha256
+               (base32
+                "0jxznjzwmrlp8wqjxsd06qbiddffn68pdhz6nrqpjbiln1z3af4w"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-power-assert" ,ruby-power-assert)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-packnga" ,ruby-packnga)
+       ("ruby-yard" ,ruby-yard)))
+    (synopsis "Unit testing framework for Ruby")
+    (description "@code{Test::Unit} is unit testing framework for Ruby, based
+on xUnit principles.  These were originally designed by Kent Beck, creator of
+extreme programming software development methodology, for Smalltalk's SUnit.
+It allows writing tests, checking results and automated testing in Ruby.")
+    (home-page "http://test-unit.github.io/")
+    (license (list license:psfl license:ruby))))
+
+(define-public ruby-metaclass
+  (package
+    (name "ruby-metaclass")
+    (version "0.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "metaclass" version))
+              (sha256
+               (base32
+                "0hp99y2b1nh0nr8pc398n3f8lakgci6pkrg4bf2b2211j1f6hsc5"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'add-test-unit-to-search-path
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "Rakefile"
+              (("t\\.libs << \"test\"" line)
+               (string-append line "; t.libs << \""
+                              (assoc-ref inputs "ruby-test-unit")
+                              "/lib/ruby/gems/2.2.0/gems/test-unit-"
+                              ,(package-version ruby-test-unit)
+                              "/lib\"")))
+            #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-test-unit" ,ruby-test-unit)))
+    (synopsis "Ruby library adding metaclass method to all objects")
+    (description
+     "Metaclass is a Ruby library adding a @code{metaclass} method to all Ruby
+objects.")
+    (home-page "http://github.com/floehopper/metaclass")
+    (license license:expat)))
+
+(define-public ruby-blankslate
+  (package
+    (name "ruby-blankslate")
+    (version "3.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "blankslate" version))
+              (sha256
+               (base32
+                "0fwkb4d1j9gc7vdwn2nxvwgy2g5wlag4c4bp7bl85jvq0kgp6cyx"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+          (lambda _ (zero? (system* "rspec" "spec/")))))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Abstract base class with no predefined methods")
+    (description
+     "BlankSlate provides an abstract base class with no predefined
+methods (except for @code{__send__} and @code{__id__}).  BlankSlate is useful
+as a base class when writing classes that depend upon
+@code{method_missing} (e.g. dynamic proxies).")
+    (home-page "http://github.com/masover/blankslate")
+    (license license:expat)))
+
+(define-public ruby-instantiator
+  (package
+    (name "ruby-instantiator")
+    (version "0.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "instantiator" version))
+              (sha256
+               (base32
+                "0mfmqhg9xrv9i8i1kmphf15ywddhivyh2z3ccl0xjw8qy54zr21i"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'add-test-unit-to-search-path
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "Rakefile"
+              (("t\\.libs << \"test\"" line)
+               (string-append line "; t.libs << \""
+                              (assoc-ref inputs "ruby-test-unit")
+                              "/lib/ruby/gems/2.2.0/gems/test-unit-"
+                              ,(package-version ruby-test-unit)
+                              "/lib\"")))
+            #t)))))
+    (propagated-inputs
+     `(("ruby-blankslate" ,ruby-blankslate)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-test-unit" ,ruby-test-unit)))
+    (synopsis "Instantiate an arbitrary Ruby class")
+    (description
+     "Instantiator lets you instantiate an arbitrary Ruby class without
+knowing anything about the constructor.")
+    (home-page "https://github.com/floehopper/instantiator")
+    (license license:expat)))
+
+(define-public ruby-introspection
+  (package
+    (name "ruby-introspection")
+    (version "0.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "introspection" version))
+              (sha256
+               (base32
+                "0g1j71sqfxbqk32wj7d0bkd3dlayfqzprfq3dbr0rq107xbxjcrr"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'add-test-unit-to-search-path
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "Rakefile"
+              (("t\\.libs << \"test\"" line)
+               (string-append line "; t.libs << \""
+                              (assoc-ref inputs "ruby-test-unit")
+                              "/lib/ruby/gems/2.2.0/gems/test-unit-"
+                              ,(package-version ruby-test-unit)
+                              "/lib\"")))
+            #t)))))
+    (propagated-inputs
+     `(("ruby-instantiator" ,ruby-instantiator)
+       ("ruby-metaclass" ,ruby-metaclass)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-blankslate" ,ruby-blankslate)
+       ("ruby-test-unit" ,ruby-test-unit)))
+    (synopsis "Dynamic inspection of the method hierarchy on a Ruby object")
+    (description
+     "Introspection provides tools to inspect the hierarchy of method
+definitions on a Ruby object.")
+    (home-page "https://github.com/floehopper/introspection")
+    (license license:expat)))
+
+(define-public ruby-redcarpet
+  (package
+    (name "ruby-redcarpet")
+    (version "3.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "redcarpet" version))
+              (sha256
+               (base32
+                "14i3wypp97bpk20679d1csy88q4hsgfqbnqw6mryl77m2g0d09pk"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; The gem archive does not include the conformance tests.
+         (add-after 'unpack 'disable-conformance-tests
+          (lambda _
+            (substitute* "Rakefile"
+              (("task :test => %w\\[test:unit test:conformance\\]")
+               "task :test => %w[test:unit]"))
+            #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-test-unit" ,ruby-test-unit)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (synopsis "Extensible Markdown to (X)HTML converter")
+    (description
+     "Redcarpet is an extensible Ruby library for Markdown processing and
+conversion to (X)HTML.")
+    (home-page "http://github.com/vmg/redcarpet")
+    (license license:expat)))
+
+(define-public ruby-mocha
+  (package
+    (name "ruby-mocha")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "mocha" version))
+              (sha256
+               (base32
+                "107nmnngbv8lq2g7hbjpn5kplb4v2c8gs9lxrg6vs8gdbddkilzi"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'add-test-unit-to-search-path
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "Rakefile"
+              (("t\\.libs << 'test'" line)
+               (string-append line "; t.libs << \""
+                              (assoc-ref inputs "ruby-test-unit")
+                              "/lib/ruby/gems/2.2.0/gems/test-unit-"
+                              ,(package-version ruby-test-unit)
+                              "/lib\"")))
+            #t))
+         (add-before 'check 'use-latest-redcarpet
+          (lambda _
+            (substitute* "mocha.gemspec"
+              (("<redcarpet>, \\[\"~> 1\"\\]")
+               "<redcarpet>, [\">= 3\"]"))
+            #t))
+         (add-before 'check 'hardcode-version
+          (lambda _
+            ;; Mocha is undefined at build time
+            (substitute* "Rakefile"
+              (("#\\{Mocha::VERSION\\}") ,version))
+            #t))
+         (add-before 'check 'remove-failing-test
+          ;; FIXME: This test fails for reasons unrelated to Guix packaging.
+          (lambda _
+            (delete-file "test/acceptance/stubbing_nil_test.rb")
+            #t)))))
+    (propagated-inputs
+     `(("ruby-metaclass" ,ruby-metaclass)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-yard" ,ruby-yard)
+       ("ruby-introspection" ,ruby-introspection)
+       ("ruby-test-unit" ,ruby-test-unit)
+       ("ruby-redcarpet" ,ruby-redcarpet)))
+    (synopsis "Mocking and stubbing library for Ruby")
+    (description
+     "Mocha is a mocking and stubbing library with JMock/SchMock syntax, which
+allows mocking and stubbing of methods on real (non-mock) classes.")
+    (home-page "http://gofreerange.com/mocha/docs")
+    (license license:expat)))
+
+(define-public ruby-net-ssh
+  (package
+    (name "ruby-net-ssh")
+    (version "3.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "net-ssh" version))
+              (sha256
+               (base32
+                "1dzqkgwi9xm6mbfk1rkk17rzmz8m5xakqi21w1b97ybng6kkw0hf"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-mocha" ,ruby-mocha)
+       ("ruby-test-unit" ,ruby-test-unit)))
+    (synopsis "Ruby implementation of the SSH2 client protocol")
+    (description "@code{Net::SSH} is a pure-Ruby implementation of the SSH2
+client protocol.  It allows you to write programs that invoke and interact
+with processes on remote servers, via SSH2.")
+    (home-page "https://github.com/net-ssh/net-ssh")
     (license license:expat)))
 
 (define-public ruby-minitest
@@ -1211,6 +1776,122 @@ aware transformations between times in different time zones.")
     (home-page "http://tzinfo.github.io")
     (license license:expat)))
 
+(define-public ruby-rb-inotify
+  (package
+    (name "ruby-rb-inotify")
+    (version "0.9.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rb-inotify" version))
+       (sha256
+        (base32
+         "0kddx2ia0qylw3r52nhg83irkaclvrncgy2m1ywpbhlhsz1rymb9"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         ;; Building the gemspec with rake is not working here since it is
+         ;; generated with Jeweler.  It is also unnecessary because the
+         ;; existing gemspec does not use any development tools to generate a
+         ;; list of files.
+         (replace 'build
+          (lambda _
+            (zero? (system* "gem" "build" "rb-inotify.gemspec")))))))
+    (propagated-inputs
+     `(("ruby-ffi" ,ruby-ffi)))
+    (native-inputs
+     `(("ruby-yard" ,ruby-yard)))
+    (synopsis "Ruby wrapper for Linux's inotify")
+    (description "rb-inotify is a simple wrapper over the @code{inotify} Linux
+kernel subsystem for monitoring changes to files and directories.")
+    (home-page "https://github.com/nex3/rb-inotify")
+    (license license:expat)))
+
+(define-public ruby-pry-editline
+  (package
+    (name "ruby-pry-editline")
+    (version "1.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "pry-editline" version))
+              (sha256
+               (base32
+                "1pjxyvdxvw41xw3yyl18pwzix8hbvn6lgics7qcfhjfsf1zs8x1z"))))
+    (build-system ruby-build-system)
+    (arguments `(#:tests? #f)) ; no tests included
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Open the current REPL line in an editor")
+    (description
+     "This gem provides a plugin for the Ruby REPL to enable opening the
+current line in an external editor.")
+    (home-page "https://github.com/tpope/pry-editline")
+    (license license:expat)))
+
+(define-public ruby-sdoc
+  (package
+    (name "ruby-sdoc")
+    (version "0.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "sdoc" version))
+              (sha256
+               (base32
+                "16xyfair1j4irfkd6sxvmdcak957z71lwkvhglrznfpkalfnqyqp"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'relax-minitest-requirement
+          (lambda _
+            (substitute* "sdoc.gemspec"
+              (("<minitest>, \\[\"~> 4\\.0\"\\]")
+               "<minitest>, [\">= 4.0\"]"))
+            #t)))))
+    (propagated-inputs
+     `(("ruby-json" ,ruby-json)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-minitest" ,ruby-minitest)))
+    (synopsis "Generate searchable RDoc documentation")
+    (description
+     "SDoc is an RDoc documentation generator to build searchable HTML
+documentation for Ruby code.")
+    (home-page "http://github.com/voloko/sdoc")
+    (license license:expat)))
+
+(define-public ruby-tins
+  (package
+    (name "ruby-tins")
+    (version "1.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "tins" version))
+              (sha256
+               (base32
+                "1060h8dgnjl9az0sv1b74yrni8d4mh3x858wq6yfbfdf5dxrfl0a"))))
+    (build-system ruby-build-system)
+    ;; This gem needs gem-hadar at development time, but gem-hadar needs tins
+    ;; at runtime.  To avoid the dependency on gem-hadar we disable rebuilding
+    ;; the gemspec.
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+          (lambda _
+            ;; "lib/spruz" is a symlink.  Leaving it in the gemspec file
+            ;; causes an error.
+            (substitute* "tins.gemspec"
+              (("\"lib/spruz\", ") ""))
+            (zero? (system* "gem" "build" "tins.gemspec")))))))
+    (synopsis "Assorted tools for Ruby")
+    (description "Tins is a Ruby library providing assorted tools.")
+    (home-page "https://github.com/flori/tins")
+    (license license:expat)))
+
 (define-public ruby-json
   (package
     (name "ruby-json")
@@ -1229,6 +1910,28 @@ aware transformations between times in different time zones.")
 a native C extension.")
     (home-page "http://json-jruby.rubyforge.org/")
     (license (list license:ruby license:gpl2)))) ; GPL2 only
+
+(define-public ruby-listen
+  (package
+    (name "ruby-listen")
+    (version "3.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "listen" version))
+       (sha256
+        (base32
+         "10lhshjklxlrkw7999j0xl6sdxd4x32kiy8rp88jwr68kis5vq2b"))))
+    (build-system ruby-build-system)
+    (arguments '(#:tests? #f)) ; no tests
+    (propagated-inputs
+     ;; FIXME: omitting "ruby-rb-fsevent" which is only for MacOS.
+     `(("ruby-rb-inotify" ,ruby-rb-inotify)))
+    (synopsis "Listen to file modifications")
+    (description "The Listen gem listens to file modifications and notifies
+you about the changes.")
+    (home-page "https://github.com/guard/listen")
+    (license license:expat)))
 
 (define-public ruby-activesupport
   (package
@@ -1496,3 +2199,28 @@ that can be exported to a number of formats very easily, and also supports
 extending for custom Ruby constructs such as custom class level definitions.")
     (home-page "http://yardoc.org")
     (license license:expat)))
+
+(define-public ruby-eventmachine
+  (package
+    (name "ruby-eventmachine")
+    (version "1.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "eventmachine" version))
+       (sha256
+        (base32
+         "1frvpk3p73xc64qkn0ymll3flvn4xcycq5yx8a43zd3gyzc1ifjp"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; test suite tries to connect to google.com
+    (native-inputs
+     `(("ruby-rake-compiler" ,ruby-rake-compiler)))
+    (synopsis "Single-threaded network event framework for Ruby")
+    (description
+     "EventMachine implements a single-threaded engine for arbitrary network
+communications.  EventMachine wraps all interactions with sockets, allowing
+programs to concentrate on the implementation of network protocols.  It can be
+used to create both network servers and clients.")
+    (home-page "http://rubyeventmachine.com")
+    (license (list license:ruby license:gpl3)))) ; GPLv3 only AFAICT

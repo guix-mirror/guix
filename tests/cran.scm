@@ -19,120 +19,84 @@
 (define-module (test-cran)
   #:use-module (guix import cran)
   #:use-module (guix tests)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64)
+  #:use-module (srfi srfi-26)
   #:use-module (ice-9 match))
 
-(define sxml
-  '(*TOP* (xhtml:html
-           (xhtml:head
-            (xhtml:title "CRAN - Package my-example-sxml"))
-           (xhtml:body
-            (xhtml:h2 "my-example-sxml: Short description")
-            (xhtml:p "Long description")
-            (xhtml:table
-             (@ (summary "Package my-example-sxml summary"))
-             (xhtml:tr
-              (xhtml:td "Version:")
-              (xhtml:td "1.2.3"))
-             (xhtml:tr
-              (xhtml:td "Depends:")
-              (xhtml:td "R (>= 3.1.0)"))
-             (xhtml:tr
-              (xhtml:td "SystemRequirements:")
-              (xhtml:td "cairo (>= 1.2 http://www.cairographics.org/)"))
-             (xhtml:tr
-              (xhtml:td "Imports:")
-              (xhtml:td
-               (xhtml:a (@ (href "../scales/index.html"))
-                        "scales")
-               " (>= 0.2.3), "
-               (xhtml:a (@ (href "../proto/index.html"))
-                        "proto")
-               ", "
-               (xhtml:a (@ (href "../Rcpp/index.html")) "Rcpp")
-               " (>= 0.11.0)"))
-             (xhtml:tr
-              (xhtml:td "Suggests:")
-              (xhtml:td
-               (xhtml:a (@ (href "../some/index.html"))
-                        "some")
-               ", "
-               (xhtml:a (@ (href "../suggestions/index.html"))
-                        "suggestions")))
-             (xhtml:tr
-              (xhtml:td "License:")
-              (xhtml:td
-               (xhtml:a (@ (href "../../licenses/MIT")) "MIT")))
-             (xhtml:tr
-              (xhtml:td "URL:")
-              (xhtml:td
-               (xhtml:a (@ (href "http://gnu.org/s/my-example-sxml"))
-                        "http://gnu.org/s/my-example-sxml")
-               ", "
-               (xhtml:a (@ (href "http://alternative/home/page"))
-                        "http://alternative/home/page"))))
-            (xhtml:h4 "Downloads:")
-            (xhtml:table
-             (@ (summary "Package my-example-sxml downloads"))
-             (xhtml:tr
-              (xhtml:td " Reference manual: ")
-              (xhtml:td
-               (xhtml:a (@ (href "my-example-sxml.pdf"))
-                        " my-example-sxml.pdf ")))
-             (xhtml:tr
-              (xhtml:td " Package source: ")
-              (xhtml:td
-               (xhtml:a
-                (@ (href "../../../src/contrib/my-example-sxml_1.2.3.tar.gz"))
-                " my-example-sxml_1.2.3.tar.gz "))))
-            (xhtml:h4 "Reverse dependencies:")
-            (xhtml:table
-             (@ (summary "Package my-example-sxml reverse dependencies"))
-             (xhtml:tr
-              (xhtml:td "Reverse depends:")
-              (xhtml:td "Too many."))
-             (xhtml:tr
-              (xhtml:td "Reverse imports:")
-              (xhtml:td "Likewise."))
-             (xhtml:tr
-              (xhtml:td "Reverse suggests:")
-              (xhtml:td "Uncountable.")))))))
+(define description "
+Package: My-Example
+Type: Package
+Title: Example package
+Version: 1.2.3
+Date: 2015-12-10
+Author: Ricardo Wurmus
+Maintainer: Guix Schmeeks <guix@gnu.org>
+URL: http://gnu.org/s/my-example
+Description: This is a long description
+spanning multiple lines: and it could confuse the parser that
+there is a colon : on the lines.
+  And: this line continues the description.
+biocViews: 0
+SystemRequirements: Cairo (>= 0)
+Depends: A C++11 compiler. Version 4.6.* of g++ (as
+	currently in Rtools) is insufficient; versions 4.8.*, 4.9.* or
+	later will be fine.
+License: GPL (>= 3)
+Imports: Rcpp (>= 0.11.5), proto, Scales
+LinkingTo: Rcpp, BH
+NeedsCompilation: yes
+Repository: CRAN
+Date/Publication: 2015-07-14 14:15:16
+")
 
-(define simple-table
-  '(xhtml:table
-    (xhtml:tr
-     (xhtml:td "Numbers")
-     (xhtml:td "123"))
-    (xhtml:tr
-     (@ (class "whatever"))
-     (xhtml:td (@ (class "unimportant")) "Letters")
-     (xhtml:td "abc"))
-    (xhtml:tr
-     (xhtml:td "Letters")
-     (xhtml:td "xyz"))
-    (xhtml:tr
-     (xhtml:td "Single"))
-    (xhtml:tr
-     (xhtml:td "not a value")
-     (xhtml:td "not a label")
-     (xhtml:td "also not a label"))))
+(define description-alist
+  ((@@ (guix import cran) description->alist) description))
+
+(define simple-alist
+  '(("Key"        . "Value")
+    ("SimpleList" . "R, Rcpp, something, whatever")
+    ("BadList"    . "This is not a real list, you know?")
+    ("List"       . "R (>= 2.2), BH (for no reason), GenomicRanges")))
 
 (test-begin "cran")
 
-(test-equal "table-datum: return list of first table cell matching label"
-  '((xhtml:td "abc"))
-  ((@@ (guix import cran) table-datum) simple-table "Letters"))
+(test-assert "description->alist: contains all valid keys"
+  (let ((keys '("Package" "Type" "Title" "Version" "Date"
+                "Author" "Maintainer" "URL" "Description"
+                "SystemRequirements" "Depends" "License"
+                "Imports" "biocViews" "LinkingTo"
+                "NeedsCompilation" "Repository"
+                "Date/Publication")))
+    (lset= string=? keys (map car description-alist))))
 
-(test-equal "table-datum: return empty list if no match"
+(test-equal "listify: return empty list if key cannot be found"
   '()
-  ((@@ (guix import cran) table-datum) simple-table "Astronauts"))
+  ((@@ (guix import cran) listify) simple-alist "Letters"))
 
-(test-equal "table-datum: only consider the first cell as a label cell"
+(test-equal "listify: split comma-separated value into elements"
+  '("R" "Rcpp" "something" "whatever")
+  ((@@ (guix import cran) listify) simple-alist "SimpleList"))
+
+(test-equal "listify: strip off parentheses"
+  '("R" "BH" "GenomicRanges")
+  ((@@ (guix import cran) listify) simple-alist "List"))
+
+(test-equal "listify: ignore values that are no lists"
   '()
-  ((@@ (guix import cran) table-datum) simple-table "not a label"))
+  ((@@ (guix import cran) listify) simple-alist "BadList"))
 
+(test-equal "beautify-description: use double spacing"
+  "This is a package.  It is great.  Trust me Mr.  Hendrix."
+  ((@@ (guix import cran) beautify-description)
+   "This is a package. It is great. Trust me Mr. Hendrix."))
 
-(test-assert "cran-sxml->sexp"
+(test-equal "beautify-description: transform fragment into sentence"
+  "This package provides a function to establish world peace"
+  ((@@ (guix import cran) beautify-description)
+   "A function to establish world peace"))
+
+(test-assert "description->package"
   ;; Replace network resources with sample data.
   (mock ((guix build download) url-fetch
          (lambda* (url file-name #:key (mirrors '()))
@@ -140,32 +104,37 @@
              (lambda ()
                (display
                 (match url
-                  ("mirror://cran/src/contrib/my-example-sxml_1.2.3.tar.gz"
+                  ("mirror://cran/src/contrib/My-Example_1.2.3.tar.gz"
                    "source")
                   (_ (error "Unexpected URL: " url))))))))
-    (match ((@@ (guix import cran) cran-sxml->sexp) sxml)
+    (match ((@@ (guix import cran) description->package) description-alist)
       (('package
-         ('name "r-my-example-sxml")
+         ('name "r-my-example")
          ('version "1.2.3")
          ('source ('origin
                     ('method 'url-fetch)
-                    ('uri ('cran-uri "my-example-sxml" 'version))
+                    ('uri ('cran-uri "My-Example" 'version))
                     ('sha256
                      ('base32
                       (? string? hash)))))
+         ('properties ('quasiquote (('upstream-name . "My-Example"))))
          ('build-system 'r-build-system)
          ('inputs
           ('quasiquote
            (("cairo" ('unquote 'cairo)))))
          ('propagated-inputs
           ('quasiquote
-           (("r-proto" ('unquote 'r-proto))
+           (("r-bh" ('unquote 'r-bh))
+            ("r-proto" ('unquote 'r-proto))
             ("r-rcpp" ('unquote 'r-rcpp))
             ("r-scales" ('unquote 'r-scales)))))
-         ('home-page "http://gnu.org/s/my-example-sxml")
-         ('synopsis "Short description")
-         ('description "Long description")
-         ('license 'x11)))
+         ('home-page "http://gnu.org/s/my-example")
+         ('synopsis "Example package")
+         ('description
+          "This is a long description spanning multiple lines: \
+and it could confuse the parser that there is a colon : on the \
+lines.  And: this line continues the description.")
+         ('license 'gpl3+)))
       (x
        (begin
          (format #t "~s\n" x)

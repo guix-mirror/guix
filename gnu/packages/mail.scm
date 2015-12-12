@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,13 +31,13 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages enchant)
-  #:use-module (gnu packages gdbm)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -44,11 +45,11 @@
   #:use-module (gnu packages gsasl)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
-  #:use-module (gnu packages databases)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -70,6 +71,7 @@
                           (expat . license:expat)))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
@@ -207,7 +209,7 @@ operating systems.")
 (define-public gmime
   (package
     (name "gmime")
-    (version "2.6.19")
+    (version "2.6.20")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gmime/"
@@ -215,7 +217,7 @@ operating systems.")
                                   "/gmime-" version ".tar.xz"))
               (sha256
                (base32
-                "0jm1fgbjgh496rsc0il2y46qd4bqq2ln9168p4zzh68mk4ml1yxg"))))
+                "0rfzbgsh8ira5p76kdghygl5i3fvmmx4wbw5rp7f8ajc4vxp18g0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -225,20 +227,21 @@ operating systems.")
               ("zlib" ,zlib)))
     (arguments
      `(#:phases
-       (alist-cons-after
-        'unpack 'patch-paths-in-tests
-        (lambda _
-          ;; The test programs run several programs using 'system' with
-          ;; hard-coded paths.  Here we patch them all.  We also change "gpg"
-          ;; to "gpg2".  We use ISO-8859-1 here because test-iconv.c contains
-          ;; raw byte sequences in several different encodings.
-          (with-fluids ((%default-port-encoding #f))
-            (substitute* (find-files "tests" "\\.c$")
-              (("(system *\\(\")(/[^ ]*)" all pre prog-path)
-               (let* ((base (basename prog-path))
-                      (prog (which (if (string=? base "gpg") "gpg2" base))))
-                 (string-append pre (or prog (error "not found: " base))))))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'patch-paths-in-tests
+          (lambda _
+            ;; The test programs run several programs using 'system' with
+            ;; hard-coded paths.  Here we patch them all.  We also change "gpg"
+            ;; to "gpg2".  We use ISO-8859-1 here because test-iconv.c contains
+            ;; raw byte sequences in several different encodings.
+            (with-fluids ((%default-port-encoding #f))
+              (substitute* (find-files "tests" "\\.c$")
+                (("(system *\\(\")(/[^ ]*)" all pre prog-path)
+                 (let* ((base (basename prog-path))
+                        (prog (which (if (string=? base "gpg") "gpg2" base))))
+                   (string-append pre
+                                  (or prog (error "not found: " base))))))))))))
     (home-page "http://spruce.sourceforge.net/gmime/")
     (synopsis "MIME message parser and creator library")
     (description
@@ -306,6 +309,15 @@ can read the same mailbox from multiple computers.  It supports IMAP as REMOTE
 repository and Maildir/IMAP as LOCAL repository.")
     (license gpl2+)))
 
+(define %mu-gtester-patch
+  ;; Ensure tests have unique names, to placate GLib 2.6's gtester.
+  (origin
+    (method url-fetch)
+    (uri "https://github.com/djcb/mu/commit/b44039ed.patch")
+    (sha256
+     (base32
+      "165hryqqhx3wah8a4f5jaq465azx1pm9r4jid7880pys9gd88qlv"))))
+
 (define-public mu
   (package
     (name "mu")
@@ -317,7 +329,8 @@ repository and Maildir/IMAP as LOCAL repository.")
               (file-name (string-append "mu-" version ".tar.gz"))
               (sha256
                (base32
-                "0wj33pma8xgjvn2akk7khzbycwn4c9sshxvzdph9dnpy7gyqxj51"))))
+                "0wj33pma8xgjvn2akk7khzbycwn4c9sshxvzdph9dnpy7gyqxj51"))
+              (patches (list %mu-gtester-patch))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -505,14 +518,14 @@ MailCore 2.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.11.1")
+    (version "3.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://sourceforge/claws-mail/claws-mail-" version
+                    "http://www.claws-mail.org/releases/" name "-" version
                     ".tar.xz"))
               (sha256
-               (base32 "0cyixz1jgfpi8abh9fbb8ylx9mcvw4jqj81cms666wpqr6v828yp"))))
+               (base32 "0fpr9gdgrs5yggm61a6135ca06x0cflddsh8dwfqmpb3dj07cl1n"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)
@@ -550,14 +563,14 @@ which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.4.32")
+    (version "1.6.2")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://sourceforge/msmtp/msmtp-" version ".tar.bz2"))
+             "mirror://sourceforge/msmtp/msmtp-" version ".tar.xz"))
        (sha256 (base32
-                "122z38pv4q03w3mbnhrhg4w85a51258sfdg2ips0b6cgwz3wbw1b"))))
+                "12c7ljahb06pgn8yvvw526xvr11vnr6d4nr0apylixddpxycsvig"))))
     (build-system gnu-build-system)
     (inputs
      `(("libidn" ,libidn)
@@ -570,7 +583,7 @@ which can add many functionalities to the base client.")
     (arguments
      `(#:configure-flags (list "--with-libgsasl"
                                "--with-libidn"
-                               "--with-ssl=gnutls")))
+                               "--with-tls=gnutls")))
     (synopsis
      "Simple and easy to use SMTP client with decent sendmail compatibility")
     (description
@@ -667,7 +680,7 @@ facilities for checking incoming mail.")
 (define-public dovecot
   (package
     (name "dovecot")
-    (version "2.2.16")
+    (version "2.2.19")
     (source
      (origin
        (method url-fetch)
@@ -675,7 +688,7 @@ facilities for checking incoming mail.")
                            (version-major+minor version) "/"
                            name "-" version ".tar.gz"))
        (sha256 (base32
-                "1w6gg4h9mxg3i8faqpmgj19imzyy001b0v8ihch8ma3zl63i5kjn"))))
+                "17sf5aancad4pg1vx1606k99389wg76blpqzmnmxlz4hklzix7km"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -930,5 +943,67 @@ Email::Send library.")
     (description "Email::Simple provides simple parsing of RFC 2822 message
 format and headers.")
     (license (package-license perl))))
+
+(define-public libesmtp
+  (package
+    (name "libesmtp")
+    (version "1.0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.stafford.uklinux.net/libesmtp/libesmtp-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "02zbniyz7qys1jmx3ghx21kxmns1wc3hmv80gp7ag7yra9f1m9nh"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("openssl" ,openssl)))
+    (home-page "http://www.stafford.uklinux.net/libesmtp/")
+    (synopsis "Library for sending mail via remote hosts using SMTP")
+    (description "libESMTP is an SMTP client which manages posting (or
+submission of) electronic mail via a preconfigured Mail Transport Agent (MTA).
+It may be used as part of a Mail User Agent (MUA) or other program that must
+be able to post electronic mail where mail functionality may not be that
+program's primary purpose.")
+    (license (list lgpl2.1+ gpl2+))))
+
+(define-public esmtp
+  (package
+    (name "esmtp")
+    (version "1.2")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/andywingo/esmtp.git")
+             (commit "01bf9fc")))
+       (sha256
+        (base32
+         "1ay282rrl92h0m0m8z5zzjnwiiagi7c78aq2qvhia5mw7prwfyw2"))
+       (file-name (string-append name "-" version "-checkout"))))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before
+                   'configure 'autoconf
+                   (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (inputs
+     `(("libesmtp" ,libesmtp)))
+    (home-page "http://sourceforge.net/projects/esmtp/")
+    (synopsis "Relay-only mail transfer agent (MTA)")
+    (description "Esmtp is a simple relay-only mail transfer agent built using
+libESMTP.  It sends e-mail via a remote SMTP server using credentials from the
+user's @file{$HOME/.esmtprc} configuration file; see the @command{esmtprc} man
+page for more on configuration.  This package also provides minimal
+compatibility shims for the @command{sendmail}, @command{mailq}, and
+@command{newaliases} commands.")
+    (license gpl2+)))
 
 ;;; mail.scm ends here

@@ -29,6 +29,10 @@ trap 'rm -r "$tmpdir"' EXIT
 
 mkdir "$tmpdir"
 
+# 'guix environment' launches /bin/sh if 'SHELL' is unset, so export 'SHELL'
+# since we know it's valid (build environments lack /bin/sh.)
+export SHELL
+
 # Check the environment variables for the bootstrap Guile.
 guix environment --ad-hoc guile-bootstrap --pure --search-paths > "$tmpdir/a"
 guix environment --ad-hoc guile-bootstrap:out --pure --search-paths > "$tmpdir/b"
@@ -97,4 +101,29 @@ then
 
     # Make sure the "debug" output is not listed.
     if grep -E "$make_boot0_debug" "$tmpdir/a"; then false; else true; fi
+
+    # Compute the build environment for the initial GNU Make, but add in the
+    # bootstrap Guile as an ad-hoc addition.
+    guix environment -e '(@@ (gnu packages commencement) gnu-make-boot0)' \
+         --ad-hoc guile-bootstrap --no-substitutes --search-paths \
+         --pure > "$tmpdir/a"
+
+    # Make sure the bootstrap binaries are all listed where they belong.
+    cat $tmpdir/a
+    grep -E '^export PATH=.*-bootstrap-binaries-0/bin'      "$tmpdir/a"
+    grep -E '^export PATH=.*-guile-bootstrap-2.0/bin'       "$tmpdir/a"
+    grep -E '^export CPATH=.*-gcc-bootstrap-0/include'      "$tmpdir/a"
+    grep -E '^export CPATH=.*-glibc-bootstrap-0/include'    "$tmpdir/a"
+    grep -E '^export LIBRARY_PATH=.*-glibc-bootstrap-0/lib' "$tmpdir/a"
+
+    # Make sure a package list can be used with -e.
+    expr_list_test_code="
+(list (@@ (gnu packages commencement) gnu-make-boot0)
+      (@ (gnu packages bootstrap) %bootstrap-guile))"
+
+    guix environment --ad-hoc --no-substitutes --search-paths --pure \
+         -e "$expr_list_test_code" > "$tmpdir/a"
+
+    grep -E '^export PATH=.*-make-boot0-4.1/bin'      "$tmpdir/a"
+    grep -E '^export PATH=.*-guile-bootstrap-2.0/bin' "$tmpdir/a"
 fi

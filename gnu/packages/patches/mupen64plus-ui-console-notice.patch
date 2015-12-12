@@ -1,0 +1,34 @@
+Mupen64Plus supports a single data directory and a single plugin directory in
+its configuration, yet we need data and plugin files from a variety of
+packages.  The best way to deal with this is to install all packages from
+which data and plugin files are needed into one's profile, and point the
+configuration there.  Hence, the ui-console package provides propagated inputs
+for packages with the most important data and plugin files, and this patch
+provides the user instructions on what needs to be done in order to have
+Mupen64Plus find the relevant data and plugins.
+
+--- a/src/plugin.c
++++ b/src/plugin.c
+@@ -122,6 +122,22 @@ m64p_error PluginSearchLoad(m64p_handle ConfigUI)
+     {
+         const char *plugindir = (*ConfigGetParamString)(ConfigUI, "PluginDir");
+         lib_filelist = osal_library_search(plugindir);
++        /* Guix specific */
++        if (lib_filelist == NULL)
++        {
++            DebugMessage(M64MSG_ERROR, "No plugins found in PluginDir path: %s", plugindir);
++            DebugMessage(M64MSG_ERROR,
++                         "\n\n"
++                         "*********************************\n"
++                         "*** Notice for GNU Guix users ***\n"
++                         "*********************************\n"
++                         "\n"
++                         "You might want to edit your mupen64plus.cfg (in $XDG_CONFIG_HOME by default)\n"
++                         "and set SharedDataPath to /path/to/my_guix_profile/share/mupen64plus and\n"
++                         "PluginDir to /path/to/my_guix_profile/lib/mupen64plus so that data and plugins\n"
++                         "are found.\n"
++                         "\n");
++        }
+     }
+ 
+     /* if still no plugins found, search some common system folders */

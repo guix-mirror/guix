@@ -140,7 +140,7 @@ plans and designs.")
     (home-page "http://geda-project.org/")
     (synopsis "Schematic capture, netlister, symbols, symbol checker, and utils")
     (description
-     "gaf stands for “gschem and friends”.  It is a subset of the entire tool
+     "Gaf stands for “gschem and friends”.  It is a subset of the entire tool
 suite grouped together under the gEDA name.  gEDA/gaf is a collection of tools
 which currently includes: gschem, a schematic capture program; gnetlist, a
 netlist generation program; gsymcheck, a syntax checker for schematic symbols;

@@ -26,6 +26,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages xorg)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -114,7 +115,7 @@ solve the shortest vector problem.")
 (define-public pari-gp
   (package
    (name "pari-gp")
-   (version "2.7.4")
+   (version "2.7.5")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -122,9 +123,10 @@ solve the shortest vector problem.")
                   version ".tar.gz"))
             (sha256
               (base32
-                "0k1qqagfl6zn7gvwmsqffj6g9yrzqvszwh2mblhmxpjlw1pigfh8"))))
+                "0c8l83a0gjq73r9hndsrzkypwxvnnm4pxkkzbg6jm95m80nzwh11"))))
    (build-system gnu-build-system)
    (inputs `(("gmp" ,gmp)
+             ("libx11" ,libx11)
              ("perl" ,perl)
              ("readline" ,readline)))
    (arguments
@@ -155,7 +157,7 @@ PARI is also available as a C library to allow for faster computations.")
 (define-public gp2c
   (package
    (name "gp2c")
-   (version "0.0.9pl3")
+   (version "0.0.9pl4")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -163,7 +165,7 @@ PARI is also available as a C library to allow for faster computations.")
                   version ".tar.gz"))
             (sha256
               (base32
-                "0wbghihwlcx3w4j1la3bjf5gcrkk6lp9syw6iimqndq1f73ijlq3"))))
+                "079qq4yyxpc53a2kn08gg9pcfgdyffbl14c2hqsic11q8pnsr08z"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (inputs `(("pari-gp" ,pari-gp)))
@@ -381,14 +383,15 @@ cosine/ sine transforms or DCT/DST).")
 (define-public eigen
   (package
     (name "eigen")
-    (version "3.2.6")
+    (version "3.2.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/eigen/eigen/get/"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0gil5ksmgcg6v3nw0v613mvpzz4n33xhawqs8l7fj7rnlpwm4cwa"))
+                "0gigbjjdlw2q0gvcnyiwc6in314a647rkidk6977bwiwn88im3p5"))
+              (file-name (string-append name "-" version ".tar.bz2"))
               (modules '((guix build utils)))
               (snippet
                ;; There are 3 test failures in the "unsupported" directory,
@@ -396,29 +399,28 @@ cosine/ sine transforms or DCT/DST).")
                ;; anyway, so just skip them.
                '(substitute* "CMakeLists.txt"
                   (("add_subdirectory\\(unsupported\\)")
-                   "# Do not build the tests for unsupported features.\n")))))
+                   "# Do not build the tests for unsupported features.\n")
+                  ;; Work around
+                  ;; <http://eigen.tuxfamily.org/bz/show_bug.cgi?id=1114>.
+                  (("\"include/eigen3\"")
+                   "\"${CMAKE_INSTALL_PREFIX}/include/eigen3\"")))))
     (build-system cmake-build-system)
     (arguments
      '(;; Turn off debugging symbols to save space.
        #:build-type "Release"
 
-       ;; Use 'make check', as per
-       ;; <http://eigen.tuxfamily.org/index.php?title=Tests>.
-       #:test-target "check"
+       #:phases (modify-phases %standard-phases
+                  (replace 'check
+                    (lambda _
+                      (let* ((cores  (parallel-job-count))
+                             (dash-j (format #f "-j~a" cores)))
+                        ;; First build the tests, in parallel.  See
+                        ;; <http://eigen.tuxfamily.org/index.php?title=Tests>.
+                        (and (zero? (system* "make" "buildtests" dash-j))
 
-       #:phases (alist-cons-before
-                 'check 'build-tests
-                 (lambda _
-                   ;; First build the tests, in parallel.
-                   ;; See <http://eigen.tuxfamily.org/index.php?title=Tests>.
-                   (let* ((cores  (parallel-job-count))
-                          (dash-j (format #f "-j~a" cores)))
-                     ;; These variables are supposed to be honored.
-                     (setenv "EIGEN_MAKE_ARGS" dash-j)
-                     (setenv "EIGEN_CTEST_ARGS" dash-j)
-
-                     (zero? (system* "make" "buildtests" dash-j))))
-                 %standard-phases)))
+                             ;; Then run 'CTest' with -V so we get more
+                             ;; details upon failure.
+                             (zero? (system* "ctest" "-V" dash-j)))))))))
     (home-page "http://eigen.tuxfamily.org")
     (synopsis "C++ template library for linear algebra")
     (description

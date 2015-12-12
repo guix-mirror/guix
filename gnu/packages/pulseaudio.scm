@@ -27,7 +27,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages check)
-  #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libcanberra)
@@ -50,7 +50,10 @@
                                  version ".tar.gz"))
              (sha256
               (base32
-               "10j8mbb65xkyl0kfy0hpzpmrp0jkr12c7mfycqipxgka6ayns0ar"))))
+               "10j8mbb65xkyl0kfy0hpzpmrp0jkr12c7mfycqipxgka6ayns0ar"))
+             (patches
+              (map search-patch '("libsndfile-CVE-2014-9496.patch"
+                                  "libsndfile-CVE-2015-7805.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("libvorbis" ,libvorbis)
@@ -202,6 +205,8 @@ sound server.")
               (base32
                "14486c6lmmirkhscbfygz114f6yzf97h35n3h3pdr27w4mdfmlmk"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("CXXFLAGS=-std=c++11"))) ; required by gtkmm
     (inputs
      `(("libcanberra" ,libcanberra)
        ("gtkmm" ,gtkmm)

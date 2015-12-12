@@ -65,18 +65,16 @@
                  (substitute* "src/polkitbackend/polkitbackendjsauthority.c"
                    (("systemd") "elogind"))
 
-                 (substitute* "src/polkitagent/polkitagentsession.c"
-                   (("PACKAGE_PREFIX \"/lib/polkit-1/polkit-agent-helper-1\"")
-                    "\"/run/setuid-programs/polkit-agent-helper-1\""))
+                 ;; GuixSD's polkit service stores actions under
+                 ;; /etc/polkit-1/actions.
                  (substitute* "src/polkitbackend/polkitbackendinteractiveauthority.c"
                    (("PACKAGE_DATA_DIR \"/polkit-1/actions\"")
-                    "\"/run/current-system/profile/share/polkit-1/actions\""))
-                 (substitute* "src/polkitbackend/polkitbackendjsauthority.c"
-                   (("PACKAGE_SYSCONF_DIR \"/polkit-1/rules.d\"")
-                    "\"/run/current-system/profile/etc/polkit-1/rules.d\""))
-                 (substitute* "src/polkitbackend/polkitbackendjsauthority.c"
-                   (("PACKAGE_DATA_DIR \"/polkit-1/rules.d\"")
-                    "\"/run/current-system/profile/share/polkit-1/rules.d\""))))))
+                    "PACKAGE_SYSCONF_DIR \"/polkit-1/actions\""))
+
+                 ;; Set the setuid helper's real location.
+                 (substitute* "src/polkitagent/polkitagentsession.c"
+                   (("PACKAGE_PREFIX \"/lib/polkit-1/polkit-agent-helper-1\"")
+                    "\"/run/setuid-programs/polkit-agent-helper-1\""))))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)

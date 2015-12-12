@@ -36,15 +36,15 @@
 (define-public cmake
   (package
     (name "cmake")
-    (version "3.3.1")
+    (version "3.3.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "http://www.cmake.org/files/v"
-                   (version-major+minor version)
-                   "/cmake-" version ".tar.gz"))
+             (uri (string-append "https://www.cmake.org/files/v"
+                                 (version-major+minor version)
+                                 "/cmake-" version ".tar.gz"))
              (sha256
-              (base32 "1mp32dqywk4dfw7zmpgp31axszv7h74yk69g273z21q7d8n04rfd"))
+              (base32
+               "08pwy9ip9cgwgynhn5vrjw8drw29gijy1rmziq22n65zds6ifnp7"))
              (patches (list (search-patch "cmake-fix-tests.patch")))))
     (build-system gnu-build-system)
     (arguments
@@ -66,7 +66,8 @@
                          "Source/cmExecProgramCommand.cxx"
                          "Utilities/cmbzip2/Makefile-libbz2_so"
                          "Utilities/Release/release_cmake.cmake"
-                         "Utilities/cmlibarchive/libarchive/archive_write_set_format_shar.c"
+                         "Utilities/cmlibarchive/libarchive/\
+archive_write_set_format_shar.c"
                          "Tests/CMakeLists.txt"
                          "Tests/RunCMake/File_Generate/RunCMakeTest.cmake")
                      (("/bin/sh") (which "sh"))))

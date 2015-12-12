@@ -44,6 +44,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages mpi)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -347,15 +348,14 @@ provide a coordinated and extensible framework to do computational biology.")
 (define-public python-biopython
   (package
     (name "python-biopython")
-    (version "1.65")
+    (version "1.66")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "http://biopython.org/DIST/biopython-"
-                    version ".tar.gz"))
+              ;; use PyPi rather than biopython.org to ease updating
+              (uri (pypi-uri "biopython" version))
               (sha256
                (base32
-                "13m8s9jkrw40zvdp1rl709n6lmgdh4f52aann7gzr6sfp0fwhg26"))))
+                "1gdv92593klimg22icf5j9by7xiq86jnwzkpz4abaa05ylkdf6hp"))))
     (build-system python-build-system)
     (inputs
      `(("python-numpy" ,python-numpy)))
@@ -523,6 +523,89 @@ confidence to have in an alignment.")
                    license:boost1.0
                    license:lgpl2.0+
                    license:asl2.0))))
+
+(define-public bless
+  (package
+    (name "bless")
+    (version "1p02")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/bless-ec/bless.v"
+                                  version ".tgz"))
+              (sha256
+               (base32
+                "0rm0gw2s18dqwzzpl3c2x1z05ni2v0xz5dmfk3d33j6g4cgrlrdd"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
+                  ;; Remove bundled boost, pigz, zlib, and .git directory
+                  ;; FIXME: also remove bundled sources for google-sparsehash,
+                  ;; murmurhash3, kmc once packaged.
+                  (delete-file-recursively "boost")
+                  (delete-file-recursively "pigz")
+                  (delete-file-recursively "zlib")
+                  (delete-file-recursively ".git")
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ;no "check" target
+       #:make-flags
+       (list (string-append "ZLIB="
+                            (assoc-ref %build-inputs "zlib")
+                            "/lib/libz.a")
+             (string-append "LDFLAGS="
+                            (string-join '("-lboost_filesystem"
+                                           "-lboost_system"
+                                           "-lboost_iostreams"
+                                           "-lz"
+                                           "-fopenmp"
+                                           "-std=c++11"))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'do-not-build-bundled-pigz
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (substitute* "Makefile"
+              (("cd pigz/pigz-2.3.3; make") ""))
+            #t))
+         (add-after 'unpack 'patch-paths-to-executables
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (substitute* "parse_args.cpp"
+              (("kmc_binary = .*")
+               (string-append "kmc_binary = \""
+                              (assoc-ref outputs "out")
+                              "/bin/kmc\";"))
+              (("pigz_binary = .*")
+               (string-append "pigz_binary = \""
+                              (assoc-ref inputs "pigz")
+                              "/bin/pigz\";")))
+            #t))
+         (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+              (for-each (lambda (file)
+                          (install-file file bin))
+                        '("bless" "kmc/bin/kmc"))
+              #t)))
+         (delete 'configure))))
+    (native-inputs
+     `(("perl" ,perl)))
+    (inputs
+     `(("openmpi" ,openmpi)
+       ("boost" ,boost)
+       ("pigz" ,pigz)
+       ("zlib" ,zlib)))
+    (supported-systems '("x86_64-linux"))
+    (home-page "http://sourceforge.net/p/bless-ec/wiki/Home/")
+    (synopsis "Bloom-filter-based error correction tool for NGS reads")
+    (description
+     "@dfn{Bloom-filter-based error correction solution for high-throughput
+sequencing reads} (BLESS) uses a single minimum-sized bloom filter is a
+correction tool for genomic reads produced by @dfn{Next-generation
+sequencing} (NGS).  BLESS produces accurate correction results with much less
+memory compared with previous solutions and is also able to tolerate a higher
+false-positive rate.  BLESS can extend reads like DNA assemblers to correct
+errors at the end of reads.")
+    (license license:gpl3+)))
 
 (define-public bowtie
   (package
@@ -805,15 +888,16 @@ time.")
 (define-public crossmap
   (package
     (name "crossmap")
-    (version "0.1.6")
+    (version "0.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/crossmap/CrossMap-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "163hi5gjgij6cndxlvbkp5jjwr0k4wbm9im6d2210278q7k9kpnp"))
-              ;; patch has been sent upstream already
+                "07y179f63d7qnzdvkqcziwk9bs3k4zhp81q392fp1hwszjdvy22f"))
+              ;; This patch has been sent upstream already and is available
+              ;; for download from Sourceforge, but it has not been merged.
               (patches (list
                         (search-patch "crossmap-allow-system-pysam.patch")))
               (modules '((guix build utils)))
@@ -1028,7 +1112,7 @@ data and settings.")
        ("perl" ,perl)))
     (native-inputs
      `(("unzip" ,unzip)))
-    (home-page "http://www.ncbi.nlm.nih.gov/books/NBK179288")
+    (home-page "http://www.ncbi.nlm.nih.gov/books/NBK179288/")
     (synopsis "Tools for accessing the NCBI's set of databases")
     (description
      "Entrez Direct (EDirect) is a method for accessing the National Center
@@ -1088,6 +1172,51 @@ transcript-level RNA-Seq quantification, allele-specific/haplotype expression
 analysis (from RNA-Seq), transcription factor binding quantification in
 ChIP-Seq, and analysis of metagenomic data.")
     (license license:artistic2.0)))
+
+(define-public express-beta-diversity
+  (package
+   (name "express-beta-diversity")
+   (version "1.0.7")
+   (source (origin
+             (method url-fetch)
+             (uri
+              (string-append
+               "https://github.com/dparks1134/ExpressBetaDiversity/archive/v"
+               version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1djvdlmqvjf6h0zq7w36y8cl5cli6rgj86x65znl48agnwmzxfxr"))))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (delete 'configure)
+        (add-before 'build 'enter-source (lambda _ (chdir "source") #t))
+        (replace 'check
+                 (lambda _ (zero? (system* "../bin/ExpressBetaDiversity"
+                                           "-u"))))
+        (add-after 'check 'exit-source (lambda _ (chdir "..") #t))
+        (replace 'install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((bin (string-append (assoc-ref outputs "out")
+                                             "/bin")))
+                     (mkdir-p bin)
+                     (copy-file "scripts/convertToEBD.py"
+                                (string-append bin "/convertToEBD.py"))
+                     (copy-file "bin/ExpressBetaDiversity"
+                                (string-append bin "/ExpressBetaDiversity"))
+                     #t))))))
+   (inputs
+    `(("python" ,python-2)))
+   (home-page "http://kiwi.cs.dal.ca/Software/ExpressBetaDiversity")
+   (synopsis "Taxon- and phylogenetic-based beta diversity measures")
+   (description
+    "Express Beta Diversity (EBD) calculates ecological beta diversity
+(dissimilarity) measures between biological communities.  EBD implements a
+variety of diversity measures including those that make use of phylogenetic
+similarity of community members.")
+   (license license:gpl3+)))
 
 (define-public fasttree
   (package
@@ -1328,6 +1457,9 @@ estimates transcript expression.")
      `(("perl" ,perl)
        ("python" ,python)
        ("zlib" ,zlib)))
+    ;; Non-portable SSE instructions are used so building fails on platforms
+    ;; other than x86_64.
+    (supported-systems '("x86_64-linux"))
     (home-page "http://ccb.jhu.edu/software/hisat/index.shtml")
     (synopsis "Hierarchical indexing for spliced alignment of transcripts")
     (description
@@ -1382,9 +1514,11 @@ HMMs).")
                 "1i85ppf2j2lj12m0x690qq5nn17xxk23pbbx2c83r8ayb5wngzwv"))))
     (build-system python-build-system)
     (arguments `(#:python ,python-2)) ; only Python 2 is supported
-    (inputs
-     `(("python-numpy" ,python2-numpy)
-       ("python-setuptools" ,python2-setuptools)))
+    ;; Numpy needs to be propagated when htseq is used as a Python library.
+    (propagated-inputs
+     `(("python-numpy" ,python2-numpy)))
+    (native-inputs
+     `(("python-setuptools" ,python2-setuptools)))
     (home-page "http://www-huber.embl.de/users/anders/HTSeq/")
     (synopsis "Analysing high-throughput sequencing data with Python")
     (description
@@ -1838,19 +1972,25 @@ the phenotype as it models the data.")
     (license license:asl2.0)))
 
 (define-public pbtranscript-tofu
-  (let ((commit "c7bbd5472"))
+  (let ((commit "8f5467fe6"))
     (package
       (name "pbtranscript-tofu")
-      (version (string-append "0.4.1." commit))
+      (version (string-append "2.2.3." commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
                       (url "https://github.com/PacificBiosciences/cDNA_primer.git")
                       (commit commit)))
-                (file-name (string-append name "-" version ".tar.gz"))
+                (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "148xkzi689c49g6fdhckp6mnmj2qhjdf1j4wifm6ja7ij95d7fxx"))))
+                  "1lgnpi35ihay42qx0b6yl3kkgra723i413j33kvs0kvs61h82w0f"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(begin
+                    ;; remove bundled Cython sources
+                    (delete-file "pbtranscript-tofu/pbtranscript/Cython-0.20.1.tar.gz")
+                    #t))))
       (build-system python-build-system)
       (arguments
        `(#:python ,python-2
@@ -1860,34 +2000,29 @@ the phenotype as it models the data.")
          #:configure-flags '("--single-version-externally-managed"
                              "--record=pbtranscript-tofu.txt")
          #:phases
-         (alist-cons-after
-          'unpack 'enter-directory-and-clean-up
-          (lambda _
-            (chdir "pbtranscript-tofu/pbtranscript/")
-            ;; Delete clutter
-            (delete-file-recursively "dist/")
-            (delete-file-recursively "build/")
-            (delete-file-recursively "setuptools_cython-0.2.1-py2.6.egg/")
-            (delete-file-recursively "pbtools.pbtranscript.egg-info")
-            (delete-file "Cython-0.20.1.tar.gz")
-            (delete-file "setuptools_cython-0.2.1-py2.7.egg")
-            (delete-file "setuptools_cython-0.2.1.tar.gz")
-            (delete-file "setup.cfg")
-            (for-each delete-file
-                      (find-files "." "\\.so$"))
-            ;; files should be writable for install phase
-            (for-each (lambda (f) (chmod f #o755))
-                      (find-files "." "\\.py$")))
-          %standard-phases)))
+         (modify-phases %standard-phases
+           (add-after 'unpack 'enter-directory
+            (lambda _
+              (chdir "pbtranscript-tofu/pbtranscript/")
+              #t))
+           ;; With setuptools version 18.0 and later this setup.py hack causes
+           ;; a build error, so we disable it.
+           (add-after 'enter-directory 'patch-setuppy
+            (lambda _
+              (substitute* "setup.py"
+                (("if 'setuptools.extension' in sys.modules:")
+                 "if False:"))
+              #t)))))
       (inputs
-       `(("python-cython" ,python2-cython)
-         ("python-numpy" ,python2-numpy)
+       `(("python-numpy" ,python2-numpy)
          ("python-bx-python" ,python2-bx-python)
          ("python-networkx" ,python2-networkx)
          ("python-scipy" ,python2-scipy)
-         ("python-pbcore" ,python2-pbcore)))
+         ("python-pbcore" ,python2-pbcore)
+         ("python-h5py" ,python2-h5py)))
       (native-inputs
-       `(("python-nose" ,python2-nose)
+       `(("python-cython" ,python2-cython)
+         ("python-nose" ,python2-nose)
          ("python-setuptools" ,python2-setuptools)))
       (home-page "https://github.com/PacificBiosciences/cDNA_primer")
       (synopsis "Analyze transcriptome data generated with the Iso-Seq protocol")
@@ -2149,10 +2284,57 @@ viewer.")
                                    (string-append bin "/samtools")))))
            (delete 'patch-tests)))))))
 
+(define-public mosaik
+  (let ((commit "5c25216d"))
+    (package
+      (name "mosaik")
+      (version "2.2.30")
+      (source (origin
+                ;; There are no release tarballs nor tags.
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/wanpinglee/MOSAIK.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version))
+                (sha256
+                 (base32
+                  "17gj3s07cm77r41z92awh0bim7w7q7fbn0sf5nkqmcm1vw052qgw"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; no tests
+         #:make-flags (list "CC=gcc")
+         #:phases
+         (modify-phases %standard-phases
+           (replace 'configure
+                    (lambda _ (chdir "src") #t))
+           (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((bin (string-append (assoc-ref outputs "out")
+                                                "/bin")))
+                        (mkdir-p bin)
+                        (copy-recursively "../bin" bin)
+                        #t))))))
+      (inputs
+       `(("perl" ,perl)
+         ("zlib" ,zlib)))
+      (supported-systems '("x86_64-linux"))
+      (home-page "https://code.google.com/p/mosaik-aligner/")
+      (synopsis "Map nucleotide sequence reads to reference genomes")
+      (description
+       "MOSAIK is a program for mapping second and third-generation sequencing
+reads to a reference genome.  MOSAIK can align reads generated by all the
+major sequencing technologies, including Illumina, Applied Biosystems SOLiD,
+Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
+      ;; MOSAIK is released under the GPLv2+ with the exception of third-party
+      ;; code released into the public domain:
+      ;; 1. fastlz by Ariya Hidayat - http://www.fastlz.org/
+      ;; 2. MD5 implementation - RSA Data Security, RFC 1321
+      (license (list license:gpl2+ license:public-domain)))))
+
 (define-public ngs-sdk
   (package
     (name "ngs-sdk")
-    (version "1.1.1")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
@@ -2162,7 +2344,7 @@ viewer.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1x58gpm574n0xmk2a98gmikbgycq78ia0bvnb42k5ck34fmd5v8y"))))
+         "0rvq61zfw2h9jcz6a33b9xrl20r7s5a9rldvv6rs2qy42khpmf5j"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
@@ -2206,26 +2388,8 @@ simultaneously.")
                           (srfi srfi-26))
                          ,@(package-arguments ngs-sdk))
            ((#:phases phases)
-            `(alist-cons-after
-              'enter-dir 'fix-java-symlink-installation
-              (lambda _
-                ;; Only replace the version suffix, not the version number in
-                ;; the directory name.  Reported here:
-                ;; https://github.com/ncbi/ngs/pull/4
-                (substitute* "Makefile.java"
-                  (((string-append "\\$\\(subst "
-                                   "(\\$\\(VERSION[^\\)]*\\)),"
-                                   "(\\$\\([^\\)]+\\)),"
-                                   "(\\$\\([^\\)]+\\)|\\$\\@)"
-                                   "\\)")
-                    _ pattern replacement target)
-                   (string-append "$(patsubst "
-                                  "%" pattern ","
-                                  "%" replacement ","
-                                  target ")"))))
-              (alist-replace
-               'enter-dir (lambda _ (chdir "ngs-java") #t)
-               ,phases))))))
+            `(modify-phases ,phases
+               (replace 'enter-dir (lambda _ (chdir "ngs-java") #t)))))))
     (inputs
      `(("jdk" ,icedtea6 "jdk")
        ("ngs-sdk" ,ngs-sdk)))
@@ -2234,7 +2398,7 @@ simultaneously.")
 (define-public ncbi-vdb
   (package
     (name "ncbi-vdb")
-    (version "2.4.5-5")
+    (version "2.5.4")
     (source
      (origin
        (method url-fetch)
@@ -2244,7 +2408,7 @@ simultaneously.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1cj8nk6if8sqagv20vx36v566fdvhcaadf0x1ycnbgql6chbs6vy"))))
+         "1rcnyc4xkdfcjww2i0s0qrbapys0cxbjcx2sy3qkpslf9f400fgj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
@@ -2254,20 +2418,6 @@ simultaneously.")
         'configure
         (lambda* (#:key inputs outputs #:allow-other-keys)
           (let ((out (assoc-ref outputs "out")))
-            ;; Only replace the version suffix, not the version number in the
-            ;; directory name; fixed in commit 4dbba5c6a809 (no release yet).
-            (substitute* "setup/konfigure.perl"
-              (((string-append "\\$\\(subst "
-                               "(\\$\\(VERSION[^\\)]*\\)),"
-                               "(\\$\\([^\\)]+\\)),"
-                               "(\\$\\([^\\)]+\\)|\\$\\@)"
-                               "\\)")
-                _ pattern replacement target)
-               (string-append "$(patsubst "
-                              "%" pattern ","
-                              "%" replacement ","
-                              target ")")))
-
             ;; Override include path for libmagic
             (substitute* "setup/package.prl"
               (("name => 'magic', Include => '/usr/include'")
@@ -2383,49 +2533,95 @@ subsequent visualization, annotation and storage of results.")
     ;; LGPLv2.1+
     (license (list license:gpl2 license:lgpl2.1+))))
 
+(define-public smithlab-cpp
+  (let ((revision "1")
+        (commit "728a097"))
+    (package
+      (name "smithlab-cpp")
+      (version (string-append "0." revision "." commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/smithlabcode/smithlab_cpp.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0d476lmj312xk77kr9fzrv7z1bv96yfyx0w7y62ycmnfbx32ll74"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (srfi srfi-26))
+         #:tests? #f ;no "check" target
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'use-samtools-headers
+            (lambda _
+              (substitute* '("SAM.cpp"
+                             "SAM.hpp")
+                (("sam.h") "samtools/sam.h"))
+              #t))
+           (replace 'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out     (assoc-ref outputs "out"))
+                     (lib     (string-append out "/lib"))
+                     (include (string-append out "/include/smithlab-cpp")))
+                (mkdir-p lib)
+                (mkdir-p include)
+                (for-each (cut install-file <> lib)
+                          (find-files "." "\\.o$"))
+                (for-each (cut install-file <> include)
+                          (find-files "." "\\.hpp$")))
+              #t))
+           (delete 'configure))))
+      (inputs
+       `(("samtools" ,samtools-0.1)
+         ("zlib" ,zlib)))
+      (home-page "https://github.com/smithlabcode/smithlab_cpp")
+      (synopsis "C++ helper library for functions used in Smith lab projects")
+      (description
+       "Smithlab CPP is a C++ library that includes functions used in many of
+the Smith lab bioinformatics projects, such as a wrapper around Samtools data
+structures, classes for genomic regions, mapped sequencing reads, etc.")
+      (license license:gpl3+))))
+
 (define-public preseq
   (package
     (name "preseq")
-    (version "1.0.2")
+    (version "2.0")
     (source (origin
               (method url-fetch)
-              (uri
-               (string-append "http://smithlabresearch.org/downloads/preseq-"
-                              version ".tar.bz2"))
+              (uri (string-append "https://github.com/smithlabcode/"
+                                  "preseq/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
-               (base32 "0r7sw07p6nv8ygvc17gd78lisbw5336v3vhs86b5wv8mw3pwqksc"))
-              (patches (list (search-patch "preseq-1.0.2-install-to-PREFIX.patch")
-                             (search-patch "preseq-1.0.2-link-with-libbam.patch")))
+               (base32 "08r684l50pnxjpvmhzjgqq56yv9rfw90k8vx0nsrnrzk8mf9hsdq"))
               (modules '((guix build utils)))
               (snippet
                ;; Remove bundled samtools.
-               '(delete-file-recursively "preseq-master/samtools"))))
+               '(delete-file-recursively "samtools"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
        #:phases
        (modify-phases %standard-phases
-         (add-after
-          'unpack 'enter-dir
-          (lambda _
-            (chdir "preseq-master")
-            #t))
-         (add-after
-          'enter-dir 'use-samtools-headers
-          (lambda _
-            (substitute* '("smithlab_cpp/SAM.cpp"
-                           "smithlab_cpp/SAM.hpp")
-              (("sam.h") "samtools/sam.h"))
-            #t))
          (delete 'configure))
-       #:make-flags (list (string-append "PREFIX="
-                                         (assoc-ref %outputs "out"))
-                          (string-append "LIBBAM="
-                                         (assoc-ref %build-inputs "samtools")
-                                         "/lib/libbam.a"))))
+       #:make-flags
+       (list (string-append "PREFIX="
+                            (assoc-ref %outputs "out"))
+             (string-append "LIBBAM="
+                            (assoc-ref %build-inputs "samtools")
+                            "/lib/libbam.a")
+             (string-append "SMITHLAB_CPP="
+                            (assoc-ref %build-inputs "smithlab-cpp")
+                            "/lib")
+             "PROGS=preseq"
+             "INCLUDEDIRS=$(SMITHLAB_CPP)/../include/smithlab-cpp $(SAMTOOLS_DIR)")))
     (inputs
      `(("gsl" ,gsl)
        ("samtools" ,samtools-0.1)
+       ("smithlab-cpp" ,smithlab-cpp)
        ("zlib" ,zlib)))
     (home-page "http://smithlabresearch.org/software/preseq/")
     (synopsis "Program for analyzing library complexity")
@@ -2442,7 +2638,7 @@ complexity samples.")
 (define-public sra-tools
   (package
     (name "sra-tools")
-    (version "2.4.5-5")
+    (version "2.5.4")
     (source
      (origin
        (method url-fetch)
@@ -2452,7 +2648,7 @@ complexity samples.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "11nrnvz7a012f4iryf0wiwrid0h111grsfxbxa9j51h3f2xbvgns"))))
+         "1rxxc8a34g70jcaa2j8sys2x93amlbc24k7az39wldhkzgi96825"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
@@ -2595,6 +2791,43 @@ BioPython in a convenient way.  Instead of having a big mess of scripts, there
 is one that takes arguments.")
     (license license:gpl3)))
 
+(define-public snap-aligner
+  (package
+    (name "snap-aligner")
+    (version "1.0beta.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/amplab/snap/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vnsjwv007k1fl1q7d681kbwn6bc66cgw6h16hym6gvyy71qv2ly"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'check (lambda _ (zero? (system* "./unit_tests"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (mkdir-p bin)
+               (install-file "snap-aligner" bin)
+               (install-file "SNAPCommand" bin)
+               #t))))))
+    (native-inputs
+     `(("zlib" ,zlib)))
+    (home-page "http://snap.cs.berkeley.edu/")
+    (synopsis "Short read DNA sequence aligner")
+    (description
+     "SNAP is a fast and accurate aligner for short DNA reads.  It is
+optimized for modern read lengths of 100 bases or higher, and takes advantage
+of these reads to align data quickly through a hash-based indexing scheme.")
+    (license license:asl2.0)))
+
 (define-public star
   (package
     (name "star")
@@ -2657,7 +2890,24 @@ sequences.")
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
-       #:make-flags '("-f" "Makefile.Linux")
+      ;; The CC and CCFLAGS variables are set to contain a lot of x86_64
+      ;; optimizations by default, so we override these flags such that x86_64
+      ;; flags are only added when the build target is an x86_64 system.
+       #:make-flags
+       (list (let ((system ,(or (%current-target-system)
+                                (%current-system)))
+                   (flags '("-ggdb" "-fomit-frame-pointer"
+                            "-ffast-math" "-funroll-loops"
+                            "-fmessage-length=0"
+                            "-O9" "-Wall" "-DMAKE_FOR_EXON"
+                            "-DMAKE_STANDALONE"
+                            "-DSUBREAD_VERSION=\\\"${SUBREAD_VERSION}\\\""))
+                   (flags64 '("-mmmx" "-msse" "-msse2" "-msse3")))
+               (if (string-prefix? "x86_64" system)
+                   (string-append "CCFLAGS=" (string-join (append flags flags64)))
+                   (string-append "CCFLAGS=" (string-join flags))))
+             "-f" "Makefile.Linux"
+             "CC=gcc ${CCFLAGS}")
        #:phases
        (alist-cons-after
         'unpack 'enter-dir

@@ -227,13 +227,14 @@ metadata.")
 (define-public paredit
   (package
     (name "paredit")
-    (version "23")
+    (version "24")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "http://mumble.net/~campbell/emacs/paredit-"
-                                 version ".el"))
-             (sha256
-              (base32 "1np882jzvxckljx3cjz4absyzmc5hw65cs21sjmbic82163m9lf8"))))
+              (method url-fetch)
+              (uri (string-append "http://mumble.net/~campbell/emacs/paredit-"
+                                  version ".el"))
+              (sha256
+               (base32
+                "0pp3n8q6kc70blqsaw0zlzp6bc327dpgdrjr0cnh7hqg1lras7ka"))))
     (build-system trivial-build-system)
     (inputs `(("emacs" ,emacs-no-x)))
     (arguments
@@ -317,7 +318,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public magit
   (package
     (name "magit")
-    (version "2.2.2")
+    (version "2.3.1")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -325,7 +326,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
                    version "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1imkj4prprnivhbpdn1mdpiryxkckzy5hbnqaahv7gixwac1irh8"))))
+               "1wnx034adkwhbsydd10il2099hpzz351kp39sri8s1yd43f795gf"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-no-x)))
@@ -373,7 +374,7 @@ operations.")
 (define-public magit-svn
   (package
     (name "magit-svn")
-    (version "2.1.0")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -382,7 +383,7 @@ operations.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "09sz93g7x7g9q75jsw8bdh7yr4jr1igfb4fpg5i302a7l2ahxfr8"))))
+                "04y88j7q9h8xjbx5dbick6n5nr1522sn9i1znp0qwk3vjb4b5mzz"))))
     (build-system trivial-build-system)
     (native-inputs `(("emacs" ,emacs-no-x)
                      ("tar" ,tar)
@@ -574,13 +575,14 @@ provides an optional IDE-like error list.")
 (define-public emacs-w3m
   (package
     (name "emacs-w3m")
-    (version "1.4.483+0.20120614")
+    (version "1.4.538+0.20141022")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://debian/pool/main/w/w3m-el/w3m-el_"
                                  version ".orig.tar.gz"))
              (sha256
-              (base32 "0ms181gjavnfk79hhv5xl9llik4c6kj0w3c04kgyif8lcy2sxljx"))))
+              (base32
+               "0zfxmq86pwk64yv0426gnjrvhjrgrjqn08sdcdhmmjmfpmqvm79y"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)))
     (inputs `(("w3m" ,w3m)
@@ -597,43 +599,46 @@ provides an optional IDE-like error list.")
          (list (string-append "--with-lispdir="
                               out "/share/emacs/site-lisp")
                (string-append "--with-icondir="
-                              out "/share/images/emacs-w3m")))
+                              out "/share/images/emacs-w3m")
+               ;; Leave .el files uncompressed, otherwise GC can't
+               ;; identify run-time dependencies.  See
+               ;; <http://lists.gnu.org/archive/html/guix-devel/2015-12/msg00208.html>
+               "--without-compress-install"))
        #:tests? #f  ; no check target
        #:phases
-       (alist-cons-after
-        'unpack 'autoconf
-        (lambda _
-          (zero? (system* "autoconf")))
-        (alist-cons-before
-         'build 'patch-exec-paths
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out"))
-                (w3m (assoc-ref inputs "w3m"))
-                (imagemagick (assoc-ref inputs "imagemagick"))
-                (coreutils (assoc-ref inputs "coreutils")))
-            (emacs-substitute-variables "w3m.el"
-              ("w3m-command" (string-append w3m "/bin/w3m"))
-              ("w3m-touch-command" (string-append coreutils "/bin/touch"))
-              ("w3m-image-viewer" (string-append imagemagick "/bin/display"))
-              ("w3m-icon-directory" (string-append out
-                                                   "/share/images/emacs-w3m")))
-            (emacs-substitute-variables "w3m-image.el"
-              ("w3m-imagick-convert-program" (string-append imagemagick
-                                                            "/bin/convert"))
-              ("w3m-imagick-identify-program" (string-append imagemagick
-                                                             "/bin/identify")))
-            #t))
-         (alist-replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (and (zero? (system* "make" "install" "install-icons"))
-                 (with-directory-excursion
-                     (string-append (assoc-ref outputs "out")
-                                    "/share/emacs/site-lisp")
-                   (for-each delete-file '("ChangeLog" "ChangeLog.1"))
-                   (symlink "w3m-load.el" "w3m-autoloads.el")
-                   #t)))
-          %standard-phases)))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _
+             (zero? (system* "autoconf"))))
+         (add-before 'build 'patch-exec-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (w3m (assoc-ref inputs "w3m"))
+                   (imagemagick (assoc-ref inputs "imagemagick"))
+                   (coreutils (assoc-ref inputs "coreutils")))
+               (emacs-substitute-variables "w3m.el"
+                 ("w3m-command" (string-append w3m "/bin/w3m"))
+                 ("w3m-touch-command"
+                  (string-append coreutils "/bin/touch"))
+                 ("w3m-image-viewer"
+                  (string-append imagemagick "/bin/display"))
+                 ("w3m-icon-directory"
+                  (string-append out "/share/images/emacs-w3m")))
+               (emacs-substitute-variables "w3m-image.el"
+                 ("w3m-imagick-convert-program"
+                  (string-append imagemagick "/bin/convert"))
+                 ("w3m-imagick-identify-program"
+                  (string-append imagemagick "/bin/identify")))
+               #t)))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (and (zero? (system* "make" "install" "install-icons"))
+                  (with-directory-excursion
+                      (string-append (assoc-ref outputs "out")
+                                     "/share/emacs/site-lisp")
+                    (for-each delete-file '("ChangeLog" "ChangeLog.1"))
+                    (symlink "w3m-load.el" "w3m-autoloads.el")
+                    #t)))))))
     (home-page "http://emacs-w3m.namazu.org/")
     (synopsis "Simple Web browser for Emacs based on w3m")
     (description
@@ -912,7 +917,7 @@ single buffer.")
 (define-public emacs-pdf-tools
   (package
     (name "emacs-pdf-tools")
-    (version "0.60")
+    (version "0.70")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -921,7 +926,7 @@ single buffer.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1y8k5n2jbyaxby0j6f4m9xbm0ddpmbkrfj6rp6ll5sb97lcg3vrx"))))
+                "1m0api6wiawswyk46bdsyk6r5rg3b86a4paar6nassm6x6c6vr77"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; there are no tests
@@ -981,7 +986,7 @@ and stored in memory.")
 (define-public emacs-dash
   (package
     (name "emacs-dash")
-    (version "2.11.0")
+    (version "2.12.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -990,7 +995,7 @@ and stored in memory.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1piwcwilkxcbjxx832mhb7q3pz1fgwp203r581bpqcw6kd5x726q"))))
+                "082jl7mp4x063bpj5ad2pc5125k0d6p7rb89gcj7ny3lma9h2ij1"))))
     (build-system emacs-build-system)
     (arguments
      `(#:phases
@@ -1024,7 +1029,7 @@ and stored in memory.")
                      (lambda _
                        (zero? (system* "./run-tests.sh")))))))
     (home-page "https://github.com/magnars/s.el")
-    (synopsis "Emacs string manipulation library.")
+    (synopsis "Emacs string manipulation library")
     (description "This package provides an Emacs library for manipulating
 strings.")
     (license license:gpl3+)))

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,16 +69,14 @@ all the files it generates a report.")
 (define-public python-debtcollector
   (package
     (name "python-debtcollector")
-    (version "0.5.0")
+    (version "1.0.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/d/debtcollector/"
-               "debtcollector-" version ".tar.gz"))
+        (uri (pypi-uri "debtcollector" version))
         (sha256
           (base32
-            "0amlcg5f98lk2mfzdg44slh1nsi2y4ds123g5d57376fjk2b3njd"))))
+           "0g4dfskaiy47rhsh4gh66l5vmdsrgq0qk68pl3ix1cj3ffvfndzv"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
@@ -100,20 +99,51 @@ manner.")
 (define-public python2-debtcollector
   (package-with-python2 python-debtcollector))
 
+(define-public python-hacking
+  (package
+    (name "python-hacking")
+    (version "0.10.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "hacking" version))
+       (sha256
+        (base32
+         "1a310k3dv04jg7zvmk37h2ql7y9kf4hvdxb74bjlwdxgmy6h4wap"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-flake8-2.2.4" ,python-flake8-2.2.4)
+        ("python-mccabe-0.2.1" ,python-mccabe-0.2.1)
+        ("python-pbr" ,python-pbr)
+        ("python-pep8-1.5.7" ,python-pep8-1.5.7)
+        ("python-pyflakes-0.8.1" ,python-pyflakes-0.8.1)
+        ("python-six" ,python-six)))
+    (inputs
+      `(("python-setuptools" ,python-setuptools)
+        ;; Tests
+        ("python-testscenarios" ,python-testscenarios)))
+    (home-page "http://github.com/openstack-dev/hacking")
+    (synopsis "OpenStack hacking guideline enforcement")
+    (description
+      "Python-hacking is a set of flake8 plugins that test and enforce the
+@uref{http://docs.openstack.org/developer/hacking/, OpenStack style
+guidelines}.")
+    (license asl2.0)))
+
+(define-public python2-hacking
+  (package-with-python2 python-hacking))
+
 (define-public python-mox3
   (package
     (name "python-mox3")
-    (version "0.8.0")
+    (version "0.12.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/m/mox3/mox3-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "mox3" version))
         (sha256
           (base32
-            "1dwj9lkifdqvrcympqa47bj55l0n0j9jhzv2gj03h0dpzg6mgfkj"))))
+           "1pwz98q098cb8xxf8yryq21nvklc7hla880bsrq4y3j6bprw3iaj"))))
     (build-system python-build-system)
     (inputs
       `(("python-fixtures" ,python-fixtures)
@@ -133,17 +163,14 @@ tested on Python version 3.2, 2.7 and 2.6.")
 (define-public python-os-client-config
   (package
     (name "python-os-client-config")
-    (version "1.4.0")
+    (version "1.12.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/o/os-client-config/os-client-config-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "os-client-config" version))
         (sha256
           (base32
-            "14png6ml3zbbilh8bihav24f8vig9lyijwynnjcvazdxxrzvwq9j"))))
+           "1vjn7667pswnmpqv6ngwyqm2xn46w90hi5b4pv2grwfz751cn1lf"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ;; Circular dependency with python-oslotest
@@ -172,10 +199,44 @@ tested on Python version 3.2, 2.7 and 2.6.")
 (define-public python2-mox3
   (package-with-python2 python-mox3))
 
+(define-public python-os-testr
+  (package
+    (name "python-os-testr")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "os-testr" version))
+       (sha256
+        (base32
+         "0474z0mxb7y3vfk4s097wf1mzji5d135vh27cvlh9q17rq3x9r3w"))))
+    (build-system python-build-system)
+    (arguments
+     ;; os-testr uses itself to run the tests. It seems like pbr writes the
+     ;; exectuable in the virtualenv when using tox. Not sure how to do this
+     ;; when building the package. Skip the tests for now.
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-pbr" ,python-pbr)
+       ("python-subunit" ,python-subunit)
+       ("python-testtools" ,python-testtools)))
+    (inputs
+      `(("python-babel" ,python-babel)
+        ("python-setuptools" ,python-setuptools)))
+    (home-page "http://www.openstack.org/")
+    (synopsis "Testr wrapper to provide functionality for OpenStack projects")
+    (description
+      "Os-testr provides developers with a testr wrapper and an output filter
+  for subunit.")
+    (license asl2.0)))
+
+(define-public python2-os-testr
+  (package-with-python2 python-os-testr))
+
 (define-public python-pbr
   (package
     (name "python-pbr")
-    (version "1.6.0")
+    (version "1.8.1")
     (source
       (origin
         (method url-fetch)
@@ -185,7 +246,7 @@ tested on Python version 3.2, 2.7 and 2.6.")
                ".tar.gz"))
         (sha256
           (base32
-            "1lg1klrczvzfan89y3bl9ykrknl3nb01vvai37fkww24apzyibjf"))))
+            "0jcny36cf3s8ar5r4a575npz080hndnrfs4np1fqhv0ym4k7c4p2"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f)) ;; Most tests seem to use the Internet.
@@ -217,16 +278,14 @@ and sensible default behaviors into your setuptools run.")
 (define-public python-requests-mock
   (package
     (name "python-requests-mock")
-    (version "0.6.0")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/r/requests-mock/"
-             "requests-mock-" version ".tar.gz"))
+       (uri (pypi-uri "requests-mock" version))
        (sha256
         (base32
-         "0gmd88c224y53b1ai8cfsrcxm9kw3gdqzysclmnaqspg7zjhxwd1"))))
+         "0s6mrpiv2w0km39qvl1pq2d56xblnm57p369qdp5j1a55ncica7f"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-requests" ,python-requests)
@@ -248,17 +307,14 @@ portions of your testing code.")
 (define-public python-stevedore
   (package
     (name "python-stevedore")
-    (version "1.7.0")
+    (version "1.9.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/s/stevedore/stevedore-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "stevedore" version))
        (sha256
          (base32
-          "149pjc0c3z6khjisn4yil3f94qjnzwafz093wc8rrzbw828qdkv8"))))
+          "01pcrdqsb6ca7hmqwm11b3baj6ml8yz9pxawrgvxb3j9824906fc"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-six" ,python-six)))
@@ -285,6 +341,51 @@ extensions.")
 
 (define-public python2-stevedore
   (package-with-python2 python-stevedore))
+
+(define-public python-tempest-lib
+  (package
+    (name "python-tempest-lib")
+    (version "0.11.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "tempest-lib" version))
+      (sha256
+       (base32
+        "1q4wpqcg0yv99mr5gc43wsfirlqdjz90npyghy3mn5f6lby2yikg"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before
+          'check 'pre-check
+          (lambda _
+            (substitute* "tempest_lib/tests/cli/test_execute.py"
+              (("/bin/ls") (which "ls"))))))))
+    (propagated-inputs
+      `(("python-fixtures" ,python-fixtures)
+        ("python-httplib2" ,python-httplib2)
+        ("python-iso8601" ,python-iso8601)
+        ("python-jsonschema" ,python-jsonschema)
+        ("python-oslo.log" ,python-oslo.log)
+        ("python-paramiko" ,python-paramiko)
+        ("python-pbr" ,python-pbr)
+        ("python-six" ,python-six)))
+    (inputs
+      `(("python-babel" ,python-babel)
+        ("python-mock" ,python-mock)
+        ("python-os-testr" ,python-os-testr)
+        ("python-oslotest" ,python-oslotest)
+        ("python-setuptools" ,python-setuptools)))
+    (home-page "http://www.openstack.org/")
+    (synopsis "OpenStack functional testing library")
+    (description
+      "Tempest-lib is a functional testing library for OpenStack.  It provides
+common features used in Tempest.")
+    (license asl2.0)))
+
+(define-public python2-tempest-lib
+  (package-with-python2 python-tempest-lib))
 
 ;; Packages from the Oslo library
 (define-public python-oslo.config
@@ -327,16 +428,14 @@ extensions.")
 (define-public python-oslo.context
   (package
     (name "python-oslo.context")
-    (version "0.6.0")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/o/oslo.context/"
-             "oslo.context-" version ".tar.gz"))
+       (uri (pypi-uri "oslo.context" version))
        (sha256
         (base32
-         "16wr9qrkc3lb94ssb14qid4liza66x316fvzjw0izg67h1a0fm86"))))
+         "0kvha0rs9295njyl2z6n6zm5dapi5mrl5zwjm0m6ldqrvccyf8c3"))))
     (build-system python-build-system)
     (inputs
       `(("python-babel" ,python-babel)
@@ -358,17 +457,14 @@ pipeline and used by various modules such as logging.")
 (define-public python-oslo.i18n
   (package
     (name "python-oslo.i18n")
-    (version "2.5.0")
+    (version "3.0.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/o/oslo.i18n/oslo.i18n-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "oslo.i18n" version))
         (sha256
           (base32
-            "1kg72mqldlri3x0bhxai7j979czrd7mf8s3iflvvv0x9kn9ah4cw"))))
+           "0bpb1c20sm8my650gl824nzaip83bfn8hr91s65k5ncmyh8hb6pl"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-babel" ,python-babel)
@@ -392,19 +488,58 @@ in an application or library.")
 (define-public python2-oslo.i18n
   (package-with-python2 python-oslo.i18n))
 
+(define-public python-oslo.log
+  (package
+  (name "python-oslo.log")
+  (version "1.6.0")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "https://pypi.python.org/packages/source/o/oslo.log/oslo.log-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "1fhy6yvbd565nv4x4i3ppyrlbmz3yy9d0xsvw5nkqsa7g43nmf8z"))))
+  (build-system python-build-system)
+  (propagated-inputs
+   `(("python-debtcollector" ,python-debtcollector)
+     ("python-oslo.config" ,python-oslo.config)
+     ("python-oslo.context" ,python-oslo.context)
+     ("python-oslo.i18n" ,python-oslo.i18n)
+     ("python-oslo.utils" ,python-oslo.utils)
+     ("python-oslo.serialization" ,python-oslo.serialization)
+     ("python-six" ,python-six)))
+  (inputs
+    `(("python-babel" ,python-babel)
+      ("python-iso8601" ,python-iso8601)
+      ("python-mock" ,python-mock)
+      ("python-oslotest" ,python-oslotest)
+      ("python-pbr" ,python-pbr)
+      ("python-setuptools" ,python-setuptools)))
+  (home-page "http://launchpad.net/oslo")
+  (synopsis "Python logging library of the Oslo project")
+  (description
+    "The oslo.log (logging) configuration library provides standardized
+configuration for all OpenStack projects.  It also provides custom formatters,
+handlers and support for context specific logging (like resource id’s etc).")
+  (license asl2.0)))
+
+(define-public python2-oslo.log
+  (package-with-python2 python-oslo.log))
+
 (define-public python-oslo.serialization
   (package
     (name "python-oslo.serialization")
-    (version "1.9.0")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/o/oslo.serialization/"
-             "oslo.serialization-" version ".tar.gz"))
+       (uri (pypi-uri "oslo.serialization" version))
        (sha256
         (base32
-         "00qaxg155s61ylh4fqc7m5fh0gijf33khhai9xvcsc9k106i3c9c"))))
+         "1hnkc69sa4r1qhx6hdwlrk2ng7wypgwr063iq5r815a0bv0qr1ad"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-iso8601" ,python-iso8601)
@@ -431,6 +566,36 @@ in transmittable and storable formats, such as JSON and MessagePack.")
 (define-public python2-oslo.serialization
   (package-with-python2 python-oslo.serialization))
 
+(define-public python-oslosphinx
+  (package
+    (name "python-oslosphinx")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "oslosphinx" version))
+       (sha256
+        (base32
+         "0zcshdc9s1f7hnvg0fm2ps5rak3dpnm8kqg4i21lknhmsvb7p5cb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+      `(("python-requests" ,python-requests)))
+    (inputs
+      `(("python-pbr" ,python-pbr)
+        ("python-docutils" ,python-docutils)
+        ("python-hacking" ,python-hacking)
+        ("python-setuptools" ,python-setuptools)
+        ("python-sphinx" ,python-sphinx)))
+    (home-page "http://www.openstack.org/")
+    (synopsis "OpenStack sphinx extensions and theme")
+    (description
+      "This package provides themes and extensions for Sphinx documentation
+from the OpenStack project.")
+    (license asl2.0)))
+
+(define-public python2-oslosphinx
+  (package-with-python2 python-oslosphinx))
+
 (define-public python-oslotest
   (package
     (name "python-oslotest")
@@ -449,10 +614,10 @@ in transmittable and storable formats, such as JSON and MessagePack.")
     (propagated-inputs
       `(("python-fixtures" ,python-fixtures)
         ("python-mock" ,python-mock)
+        ("python-mox3" ,python-mox3)
         ("python-six" ,python-six)))
     (inputs
       `(("python-pbr" ,python-pbr)
-        ("python-mox3" ,python-mox3)
         ("python-os-client-config" ,python-os-client-config)
         ("python-setuptools" ,python-setuptools)
         ("python-subunit" ,python-subunit)
@@ -472,17 +637,14 @@ and better support for mocking results.")
 (define-public python-oslo.utils
   (package
     (name "python-oslo.utils")
-    (version "2.5.0")
+    (version "3.0.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/o/oslo.utils/oslo.utils-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "oslo.utils" version))
         (sha256
           (base32
-            "11b073gblhzkxhi1j6sqk3apq2ll8xhi9h9g9kxzx9dycqdq0qp0"))
+           "1c4jrbvfs4hs37fics8frqlyhmsv7v92ncv2cpbm0av9x0ic6pnj"))
         (snippet
          '(begin
             ;; FIXME: setuptools fails to import this file during the test

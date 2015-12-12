@@ -600,7 +600,7 @@
 
 ;; If we're going to hit the silly shebang limit (128 chars on Linux-based
 ;; systems), then skip the following test.
-(test-skip (if (> (string-length shebang) 127) 1 0))
+(test-skip (if (> (string-length shebang) 127) 2 0))
 
 (test-assertm "gexp->script"
   (mlet* %store-monad ((n ->   (random (expt 2 50)))

@@ -18,14 +18,19 @@
 
 (define-module (test-graph)
   #:use-module (guix tests)
+  #:use-module (guix graph)
   #:use-module (guix scripts graph)
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (guix gexp)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -110,7 +115,7 @@ edges."
                                    ".drv")))
                           implicit)))))))
 
-(test-assert "bag DAG"
+(test-assert "bag DAG"                            ;a big town in Iraq
   (let-values (((backend nodes+edges) (make-recording-backend)))
     (let ((p (dummy-package "p")))
       (run-with-store %store
@@ -128,6 +133,32 @@ edges."
                (match %bootstrap-inputs
                  (((labels packages) ...)
                   (map package-full-name packages))))))))
+
+(test-assert "bag DAG, including origins"
+  (let-values (((backend nodes+edges) (make-recording-backend)))
+    (let* ((m (lambda* (uri hash-type hash name #:key system)
+                (text-file "foo-1.2.3.tar.gz" "This is a fake!")))
+           (o (origin (method m) (uri "the-uri") (sha256 #vu8(0 1 2))))
+           (p (dummy-package "p" (source o))))
+      (run-with-store %store
+        (export-graph (list p) 'port
+                      #:node-type %bag-with-origins-node-type
+                      #:backend backend))
+      ;; We should see O among the nodes, with an edge coming from P.
+      (let-values (((nodes edges) (nodes+edges)))
+        (run-with-store %store
+          (mlet %store-monad ((o* (lower-object o))
+                              (p* (lower-object p)))
+            (return
+             (and (find (match-lambda
+                          ((file "the-uri") #t)
+                          (_                #f))
+                        nodes)
+                  (find (match-lambda
+                          ((source target)
+                           (and (string=? source (derivation-file-name p*))
+                                (string=? target o*))))
+                        edges)))))))))
 
 (test-assert "derivation DAG"
   (let-values (((backend nodes+edges) (make-recording-backend)))
@@ -186,6 +217,38 @@ edges."
                              ids))
                           (list out txt))
                   (equal? edges `((,out ,txt)))))))))))
+
+(test-assert "node-edges"
+  (run-with-store %store
+    (let ((packages (fold-packages cons '())))
+      (mlet %store-monad ((edges (node-edges %package-node-type packages)))
+        (return (and (null? (edges grep))
+                     (lset= eq?
+                            (edges guile-2.0)
+                            (match (package-direct-inputs guile-2.0)
+                              (((labels packages _ ...) ...)
+                               packages)))))))))
+
+(test-assert "node-transitive-edges + node-back-edges"
+  (run-with-store %store
+    (let ((packages   (fold-packages cons '()))
+          (bootstrap? (lambda (package)
+                        (string-contains
+                         (location-file (package-location package))
+                         "bootstrap.scm")))
+          (trivial?   (lambda (package)
+                        (eq? (package-build-system package)
+                             trivial-build-system))))
+      (mlet %store-monad ((edges (node-back-edges %bag-node-type packages)))
+        (let* ((glibc      (canonical-package glibc))
+               (dependents (node-transitive-edges (list glibc) edges))
+               (diff       (lset-difference eq? packages dependents)))
+          ;; All the packages depend on libc, except bootstrap packages and
+          ;; some that use TRIVIAL-BUILD-SYSTEM.
+          (return (null? (remove (lambda (package)
+                                   (or (trivial? package)
+                                       (bootstrap? package)))
+                                 diff))))))))
 
 (test-end "graph")
 

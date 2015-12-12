@@ -3,6 +3,9 @@
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -222,7 +225,7 @@ H.264 (MPEG-4 AVC) video streams.")
 (define-public libass
   (package
     (name "libass")
-    (version "0.12.1")
+    (version "0.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -230,7 +233,7 @@ H.264 (MPEG-4 AVC) video streams.")
                     version "/libass-" version ".tar.xz"))
               (sha256
                (base32
-                "1mwj2nk9g6cq6f8m1hf0ijg1299rghhy9naahqq43sc2whblb1l7"))))
+                "1rrz6is2blx8jqyydcz71y2f5f948blgx14jzi3an756fqc6p8sa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -320,7 +323,7 @@ SMPTE 314M.")
 (define-public libva
   (package
     (name "libva")
-    (version "1.5.1")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
@@ -328,7 +331,7 @@ SMPTE 314M.")
              "http://www.freedesktop.org/software/vaapi/releases/libva/libva-"
              version".tar.bz2"))
        (sha256
-        (base32 "01d01mm9fgpwzqycmjjcj3in3vvzcibi3f64icsw2sksmmgb4495"))))
+        (base32 "0bjfb5s8dk3lql843l91ffxzlq47isqks5sj19cxh7j3nhzw58kz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -370,18 +373,19 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "2.8")
+    (version "2.8.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "10l1iwc01k1algk2v4vzsrahdvqjmjfi3qazm2cwism0d8hsfg4r"))))
+               "0jkhyv68aa7h3hf905ganwqbrflams3hs74in7ygxdfkcqw2xqhq"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
+       ("gnutls" ,gnutls)
        ("opus" ,opus)
        ("ladspa" ,ladspa)
        ("lame" ,lame)
@@ -411,6 +415,89 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("yasm" ,yasm)))
     (arguments
      `(#:test-target "fate"
+       #:configure-flags
+       ;; possible additional inputs:
+       ;;   --enable-avisynth        enable reading of AviSynth script
+       ;;                            files [no]
+       ;;   --enable-frei0r          enable frei0r video filtering
+       ;;   --enable-libaacplus      enable AAC+ encoding via libaacplus [no]
+       ;;   --enable-libcelt         enable CELT decoding via libcelt [no]
+       ;;   --enable-libdc1394       enable IIDC-1394 grabbing using libdc1394
+       ;;                            and libraw1394 [no]
+       ;;   --enable-libfaac         enable AAC encoding via libfaac [no]
+       ;;   --enable-libfdk-aac      enable AAC de/encoding via libfdk-aac [no]
+       ;;   --enable-libflite        enable flite (voice synthesis) support via
+       ;;                            libflite [no]
+       ;;   --enable-libgme          enable Game Music Emu via libgme [no]
+       ;;   --enable-libgsm          enable GSM de/encoding via libgsm [no]
+       ;;   --enable-libiec61883     enable iec61883 via libiec61883 [no]
+       ;;   --enable-libilbc         enable iLBC de/encoding via libilbc [no]
+       ;;   --enable-libmodplug      enable ModPlug via libmodplug [no]
+       ;;   --enable-libnut          enable NUT (de)muxing via libnut,
+       ;;                            native (de)muxer exists [no]
+       ;;   --enable-libopencore-amrnb    enable AMR-NB de/encoding via
+       ;;                                 libopencore-amrnb [no]
+       ;;   --enable-libopencore-amrwb    enable AMR-WB decoding via
+       ;;                                 libopencore-amrwb [no]
+       ;;   --enable-libopencv       enable video filtering via libopencv [no]
+       ;;   --enable-libopenjpeg     enable JPEG 2000 de/encoding via
+       ;;                            OpenJPEG [no]
+       ;;   --enable-librtmp         enable RTMP[E] support via librtmp [no]
+       ;;   --enable-libschroedinger enable Dirac de/encoding via
+       ;;                            libschroedinger [no]
+       ;;   --enable-libshine        enable fixed-point MP3 encoding via
+       ;;                            libshine [no]
+       ;;   --enable-libssh          enable SFTP protocol via libssh [no]
+       ;;                            (libssh2 does not work)
+       ;;   --enable-libstagefright-h264  enable H.264 decoding via
+       ;;                                 libstagefright [no]
+       ;;   --enable-libutvideo      enable Ut Video encoding and decoding via
+       ;;                            libutvideo [no]
+       ;;   --enable-libv4l2         enable libv4l2/v4l-utils [no]
+       ;;   --enable-libvidstab      enable video stabilization using
+       ;;                            vid.stab [no]
+       ;;   --enable-libvo-aacenc    enable AAC encoding via libvo-aacenc [no]
+       ;;   --enable-libvo-amrwbenc  enable AMR-WB encoding via
+       ;;                            libvo-amrwbenc [no]
+       ;;   --enable-libwavpack      enable wavpack encoding via libwavpack [no]
+       ;;   --enable-libxavs         enable AVS encoding via xavs [no]
+       ;;   --enable-libzmq          enable message passing via libzmq [no]
+       ;;   --enable-libzvbi         enable teletext support via libzvbi [no]
+       ;;   --enable-opencl          enable OpenCL code
+       ;;   --enable-x11grab         enable X11 grabbing [no]
+       '("--enable-avresample"
+         "--enable-gpl" ; enable optional gpl licensed parts
+         "--enable-shared"
+         "--enable-fontconfig"
+         "--enable-gnutls"
+         "--enable-ladspa"
+         "--enable-libass"
+         "--enable-libbluray"
+         "--enable-libcaca"
+         "--enable-libcdio"
+         "--enable-libfreetype"
+         "--enable-libmp3lame"
+         "--enable-libopus"
+         "--enable-libpulse"
+         "--enable-libquvi"
+         "--enable-libsoxr"
+         "--enable-libspeex"
+         "--enable-libtheora"
+         "--enable-libtwolame"
+         "--enable-libvorbis"
+         "--enable-libvpx"
+         "--enable-libxvid"
+         "--enable-libx264"
+         "--enable-openal"
+
+         "--enable-runtime-cpudetect"
+
+         ;; Runtime cpu detection is not implemented on
+         ;; MIPS, so we disable some features.
+         "--disable-mips32r2"
+         "--disable-mipsdspr1"
+         "--disable-mipsdspr2"
+         "--disable-mipsfpu")
        #:phases
        (modify-phases %standard-phases
          (replace
@@ -423,83 +510,13 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
                 (("#! /bin/sh") (string-append "#!" (which "bash"))))
               (setenv "SHELL" (which "bash"))
               (setenv "CONFIG_SHELL" (which "bash"))
-              ;; possible additional inputs:
-              ;;   --enable-avisynth        enable reading of AviSynth script files [no]
-              ;;   --enable-frei0r          enable frei0r video filtering
-              ;;   --enable-libaacplus      enable AAC+ encoding via libaacplus [no]
-              ;;   --enable-libcelt         enable CELT decoding via libcelt [no]
-              ;;   --enable-libdc1394       enable IIDC-1394 grabbing using libdc1394
-              ;;                            and libraw1394 [no]
-              ;;   --enable-libfaac         enable AAC encoding via libfaac [no]
-              ;;   --enable-libfdk-aac      enable AAC de/encoding via libfdk-aac [no]
-              ;;   --enable-libflite        enable flite (voice synthesis) support via libflite [no]
-              ;;   --enable-libgme          enable Game Music Emu via libgme [no]
-              ;;   --enable-libgsm          enable GSM de/encoding via libgsm [no]
-              ;;   --enable-libiec61883     enable iec61883 via libiec61883 [no]
-              ;;   --enable-libilbc         enable iLBC de/encoding via libilbc [no]
-              ;;   --enable-libmodplug      enable ModPlug via libmodplug [no]
-              ;;   --enable-libnut          enable NUT (de)muxing via libnut,
-              ;;                            native (de)muxer exists [no]
-              ;;   --enable-libopencore-amrnb enable AMR-NB de/encoding via libopencore-amrnb [no]
-              ;;   --enable-libopencore-amrwb enable AMR-WB decoding via libopencore-amrwb [no]
-              ;;   --enable-libopencv       enable video filtering via libopencv [no]
-              ;;   --enable-libopenjpeg     enable JPEG 2000 de/encoding via OpenJPEG [no]
-              ;;   --enable-librtmp         enable RTMP[E] support via librtmp [no]
-              ;;   --enable-libschroedinger enable Dirac de/encoding via libschroedinger [no]
-              ;;   --enable-libshine        enable fixed-point MP3 encoding via libshine [no]
-              ;;   --enable-libssh          enable SFTP protocol via libssh [no]
-              ;;                            (libssh2 does not work)
-              ;;   --enable-libstagefright-h264  enable H.264 decoding via libstagefright [no]
-              ;;   --enable-libutvideo      enable Ut Video encoding and decoding via libutvideo [no]
-              ;;   --enable-libv4l2         enable libv4l2/v4l-utils [no]
-              ;;   --enable-libvidstab      enable video stabilization using vid.stab [no]
-              ;;   --enable-libvo-aacenc    enable AAC encoding via libvo-aacenc [no]
-              ;;   --enable-libvo-amrwbenc  enable AMR-WB encoding via libvo-amrwbenc [no]
-              ;;   --enable-libwavpack      enable wavpack encoding via libwavpack [no]
-              ;;   --enable-libxavs         enable AVS encoding via xavs [no]
-              ;;   --enable-libzmq          enable message passing via libzmq [no]
-              ;;   --enable-libzvbi         enable teletext support via libzvbi [no]
-              ;;   --enable-opencl          enable OpenCL code
-              ;;   --enable-x11grab         enable X11 grabbing [no]
-              (zero? (system*
-                      "./configure"
-                      (string-append "--prefix=" out)
-                      ;; Add $libdir to the RUNPATH of all the binaries.
-                      (string-append "--extra-ldflags=-Wl,-rpath="
-                                     %output "/lib")
-                      "--enable-avresample"
-                      "--enable-gpl" ; enable optional gpl licensed parts
-                      "--enable-shared"
-                      "--enable-fontconfig"
-                      ;; "--enable-gnutls" ; causes test failures
-                      "--enable-ladspa"
-                      "--enable-libass"
-                      "--enable-libbluray"
-                      "--enable-libcaca"
-                      "--enable-libcdio"
-                      "--enable-libfreetype"
-                      "--enable-libmp3lame"
-                      "--enable-libopus"
-                      "--enable-libpulse"
-                      "--enable-libquvi"
-                      "--enable-libsoxr"
-                      "--enable-libspeex"
-                      "--enable-libtheora"
-                      "--enable-libtwolame"
-                      "--enable-libvorbis"
-                      "--enable-libvpx"
-                      "--enable-libxvid"
-                      "--enable-libx264"
-                      "--enable-openal"
-
-                      "--enable-runtime-cpudetect"
-
-                      ;; Runtime cpu detection is not implemented on
-                      ;; MIPS, so we disable some features.
-                      "--disable-mips32r2"
-                      "--disable-mipsdspr1"
-                      "--disable-mipsdspr2"
-                      "--disable-mipsfpu")))))
+              (zero? (apply system*
+                            "./configure"
+                            (string-append "--prefix=" out)
+                            ;; Add $libdir to the RUNPATH of all the binaries.
+                            (string-append "--extra-ldflags=-Wl,-rpath="
+                                           out "/lib")
+                            configure-flags)))))
          (add-before
           'check 'set-ld-library-path
           (lambda _
@@ -584,7 +601,7 @@ treaming protocols.")
 (define-public mplayer
   (package
     (name "mplayer")
-    (version "1.1.1")
+    (version "1.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -592,7 +609,7 @@ treaming protocols.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "0xlcg7rszrwmw29wqr0plsw5d1rq0hb7vjsq7bmmfsly2z1wg3yf"))))
+               "1dp2lbxyhgjr8sn91kf6xw3w6d7dsgq08v4dgrq20afz1bqzdrzz"))))
     (build-system gnu-build-system)
     ;; FIXME: Add additional inputs once available.
     (native-inputs
@@ -601,8 +618,11 @@ treaming protocols.")
      `(("alsa-lib" ,alsa-lib)
        ("cdparanoia" ,cdparanoia)
        ("fontconfig" ,fontconfig)
+       ("ffmpeg", ffmpeg)
        ("freetype" ,freetype)
        ("lame" ,lame)
+       ("libdvdcss", libdvdcss)
+       ("libdvdnav", libdvdnav)
        ("libmpg123" ,mpg123)                      ; audio codec for MP3
 ;;        ("giflib" ,giflib) ; uses QuantizeBuffer, requires version >= 5
        ("libjpeg" ,libjpeg)
@@ -639,7 +659,7 @@ treaming protocols.")
                       "./configure"
                       (string-append "--extra-cflags=-I"
                                      libx11 "/include") ; to detect libx11
-                      "--disable-tremor-internal" ; forces external libvorbis
+		       "--disable-ffmpeg_a" ; disables bundled ffmpeg
                       (string-append "--prefix=" out)
                       ;; Enable runtime cpu detection where supported,
                       ;; and choose a suitable target.
@@ -671,7 +691,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.11.0")
+    (version "0.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -679,7 +699,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "1njvmqzj8akan5y485gx4blynwiy52adw7zbbnnnvd3dwis725d2"))
+                "1nqjd64p4pj1lks9n9s8y4zf4dp5bz8pyd0gsvviww7mv17p0whk"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -720,10 +740,10 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                  (method url-fetch)
                  ;; Keep this in sync with the version in the bootstrap.py
                  ;; script of the source tarball.
-                 (uri "http://www.freehackers.org/~tnagy/release/waf-1.8.4")
+                 (uri "http://www.freehackers.org/~tnagy/release/waf-1.8.12")
                  (sha256
                   (base32
-                   "1a7skwgpl91adhcwlmdr76xzdpidh91hvcmj34zz6548bpx3a87h"))))
+                   "12y9c352zwliw0zk9jm2lhynsjcf5jy0k1qch1c1av8hnbm2pgq1"))))
        ("youtube-dl" ,youtube-dl)
        ("zlib" ,zlib)))
     (arguments
@@ -740,10 +760,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
             (substitute* "wscript"
               ;; XXX Remove this when our Samba package provides a .pc file.
               (("check_pkg_config\\('smbclient'\\)")
-               "check_cc(lib='smbclient')")
-              ;; XXX Remove this when our Lua package provides a .pc file.
-              (("check_lua")
-               "check_cc(lib='lua')")))))
+               "check_cc(lib='smbclient')")))))
        ;; No check function defined.
        #:tests? #f))
     (home-page "http://mpv.io/")
@@ -793,28 +810,28 @@ projects while introducing many more.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2015.10.16")
+    (version "2015.12.09")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://youtube-dl.org/downloads/"
+              (uri (string-append "http://youtube-dl.org/downloads/"
                                   version "/youtube-dl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "001a4md0yl3zx129mksmwc85grss67r3c9rynvranf9vlpv202vn"))))
+                "11rzb30ik4all43r7bnsnm35mvs37y7xj3g9r7ig9jr7qlbhllwk"))))
     (build-system python-build-system)
-    (inputs `(("setuptools" ,python-setuptools)))
+    (native-inputs `(("python-setuptools" ,python-setuptools)))
     (home-page "http://youtube-dl.org")
     (synopsis "Download videos from YouTube.com and other sites")
     (description
-     "youtube-dl is a small command-line program to download videos from
+     "Youtube-dl is a small command-line program to download videos from
 YouTube.com and a few more sites.")
     (license license:public-domain)))
 
 (define-public libbluray
   (package
     (name "libbluray")
-    (version "0.9.0")
+    (version "0.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.videolan.org/videolan/"
@@ -822,7 +839,7 @@ YouTube.com and a few more sites.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0kb9znxk6610vi0fjhqxn4z5i98nvxlsz1f8dakj99rg42livdl4"))))
+                "1sp71j4agcsg17g6b85cqz78pn5vknl5pl39rvr6mkib5ps99jgg"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags '("--disable-bdjava")))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -1083,15 +1100,16 @@ capabilities.")
 (define-public vapoursynth
   (package
     (name "vapoursynth")
-    (version "26")
+    (version "28")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/vapoursynth/vapoursynth/archive/R"
                     version ".tar.gz"))
+              (file-name (string-append name "-" version))
               (sha256
                (base32
-                "1qbg5kg0kgrxldd0ckn1s7vy7vx2ig8nqzv6djp38fxccpzw3x9k"))))
+                "0pnrawcg1j65i46yim0z447lglq1af5zgx0lkqf1x5xl1bfwc0v7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -1180,3 +1198,53 @@ and custom quantization matrices.")
 from various services and pipes them into a video playing application.")
     (home-page "http://livestreamer.io/")
     (license license:bsd-2)))
+
+(define-public mlt
+  (package
+    (name "mlt")
+    (version "0.9.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/mlt/mlt/mlt-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0rmrkj7z9g3nr4099f3ff0r14l3ixcfnlx2cdbkqa6pxin0pv9bz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags '("CC=gcc")
+       #:configure-flags
+       (list "--enable-gpl3"
+             "--enable-gpl")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'configure 'override-LDFLAGS
+          (lambda* (#:key outputs #:allow-other-keys)
+            (substitute* "config.mak"
+              (("LDFLAGS\\+=")
+               (string-append "LDFLAGS+=-Wl,-rpath="
+                              (assoc-ref outputs "out")
+                              "/lib ")))
+            #t)))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("fftw" ,fftw)
+       ("libxml2" ,libxml2)
+       ("jack" ,jack-1)
+       ("ladspa" ,ladspa)
+       ("libsamplerate" ,libsamplerate)
+       ("sdl" ,sdl)
+       ("sox" ,sox)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.mltframework.org/")
+    (synopsis "Author, manage, and run multitrack audio/video compositions")
+    (description
+     "MLT is a multimedia framework, designed and developed for television
+broadcasting.  It provides a toolkit for broadcasters, video editors, media
+players, transcoders, web streamers and many more types of applications.  The
+functionality of the system is provided via an assortment of ready to use
+tools, XML authoring components, and an extensible plug-in based API.")
+    (license license:lgpl2.1+)))

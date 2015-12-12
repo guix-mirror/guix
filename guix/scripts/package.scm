@@ -32,27 +32,21 @@
   #:use-module (guix scripts)
   #:use-module (guix scripts build)
   #:use-module ((guix build utils)
-                #:select (directory-exists? mkdir-p search-path-as-list))
+                #:select (directory-exists? mkdir-p))
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
-  #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
   #:use-module (gnu packages)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages guile)
-  #:use-module ((gnu packages bootstrap) #:select (%bootstrap-guile))
-  #:export (switch-to-generation
-            switch-to-previous-generation
-            roll-back
-            delete-generation
-            delete-generations
+  #:autoload   (gnu packages base) (canonical-package)
+  #:autoload   (gnu packages guile) (guile-2.0)
+  #:autoload   (gnu packages bootstrap) (%bootstrap-guile)
+  #:export (delete-generations
             display-search-paths
             guix-package))
 
@@ -100,148 +94,58 @@ indirectly, or PROFILE."
       %user-profile-directory
       profile))
 
-(define (link-to-empty-profile store generation)
-  "Link GENERATION, a string, to the empty profile."
-  (let* ((drv  (run-with-store store
-                 (profile-derivation (manifest '()))))
-         (prof (derivation->output-path drv "out")))
-    (when (not (build-derivations store (list drv)))
-          (leave (_ "failed to build the empty profile~%")))
+(define (ensure-default-profile)
+  "Ensure the default profile symlink and directory exist and are writable."
 
-    (switch-symlinks generation prof)))
+  (define (rtfm)
+    (format (current-error-port)
+            (_ "Try \"info '(guix) Invoking guix package'\" for \
+more information.~%"))
+    (exit 1))
 
-(define (switch-to-generation profile number)
-  "Atomically switch PROFILE to the generation NUMBER."
-  (let ((current    (generation-number profile))
-        (generation (generation-file-name profile number)))
-    (cond ((not (file-exists? profile))
-           (raise (condition (&profile-not-found-error
-                              (profile profile)))))
-          ((not (file-exists? generation))
-           (raise (condition (&missing-generation-error
-                              (profile profile)
-                              (generation number)))))
-          (else
-           (format #t (_ "switching from generation ~a to ~a~%")
-                   current number)
-           (switch-symlinks profile generation)))))
+  ;; Create ~/.guix-profile if it doesn't exist yet.
+  (when (and %user-profile-directory
+             %current-profile
+             (not (false-if-exception
+                   (lstat %user-profile-directory))))
+    (symlink %current-profile %user-profile-directory))
 
-(define (switch-to-previous-generation profile)
-  "Atomically switch PROFILE to the previous generation."
-  (switch-to-generation profile
-                        (previous-generation-number profile)))
+  (let ((s (stat %profile-directory #f)))
+    ;; Attempt to create /…/profiles/per-user/$USER if needed.
+    (unless (and s (eq? 'directory (stat:type s)))
+      (catch 'system-error
+        (lambda ()
+          (mkdir-p %profile-directory))
+        (lambda args
+          ;; Often, we cannot create %PROFILE-DIRECTORY because its
+          ;; parent directory is root-owned and we're running
+          ;; unprivileged.
+          (format (current-error-port)
+                  (_ "error: while creating directory `~a': ~a~%")
+                  %profile-directory
+                  (strerror (system-error-errno args)))
+          (format (current-error-port)
+                  (_ "Please create the `~a' directory, with you as the owner.~%")
+                  %profile-directory)
+          (rtfm))))
 
-(define (roll-back store profile)
-  "Roll back to the previous generation of PROFILE."
-  (let* ((number              (generation-number profile))
-         (previous-number     (previous-generation-number profile number))
-         (previous-generation (generation-file-name profile previous-number)))
-    (cond ((not (file-exists? profile))                 ; invalid profile
-           (raise (condition (&profile-not-found-error
-                              (profile profile)))))
-          ((zero? number)                               ; empty profile
-           (format (current-error-port)
-                   (_ "nothing to do: already at the empty profile~%")))
-          ((or (zero? previous-number)                  ; going to emptiness
-               (not (file-exists? previous-generation)))
-           (link-to-empty-profile store previous-generation)
-           (switch-to-previous-generation profile))
-          (else
-           (switch-to-previous-generation profile)))))  ; anything else
-
-(define (delete-generation store profile number)
-  "Delete generation with NUMBER from PROFILE."
-  (define (display-and-delete)
-    (let ((generation (generation-file-name profile number)))
-      (format #t (_ "deleting ~a~%") generation)
-      (delete-file generation)))
-
-  (let* ((current-number      (generation-number profile))
-         (previous-number     (previous-generation-number profile number))
-         (previous-generation (generation-file-name profile previous-number)))
-    (cond ((zero? number))              ; do not delete generation 0
-          ((and (= number current-number)
-                (not (file-exists? previous-generation)))
-           (link-to-empty-profile store previous-generation)
-           (switch-to-previous-generation profile)
-           (display-and-delete))
-          ((= number current-number)
-           (roll-back store profile)
-           (display-and-delete))
-          (else
-           (display-and-delete)))))
+    ;; Bail out if it's not owned by the user.
+    (unless (or (not s) (= (stat:uid s) (getuid)))
+      (format (current-error-port)
+              (_ "error: directory `~a' is not owned by you~%")
+              %profile-directory)
+      (format (current-error-port)
+              (_ "Please change the owner of `~a' to user ~s.~%")
+              %profile-directory (or (getenv "USER")
+                                     (getenv "LOGNAME")
+                                     (getuid)))
+      (rtfm))))
 
 (define (delete-generations store profile generations)
   "Delete GENERATIONS from PROFILE.
 GENERATIONS is a list of generation numbers."
-  (for-each (cut delete-generation store profile <>)
+  (for-each (cut delete-generation* store profile <>)
             generations))
-
-(define* (matching-generations str #:optional (profile %current-profile)
-                               #:key (duration-relation <=))
-  "Return the list of available generations matching a pattern in STR.  See
-'string->generations' and 'string->duration' for the list of valid patterns.
-When STR is a duration pattern, return all the generations whose ctime has
-DURATION-RELATION with the current time."
-  (define (valid-generations lst)
-    (define (valid-generation? n)
-      (any (cut = n <>) (generation-numbers profile)))
-
-    (fold-right (lambda (x acc)
-                  (if (valid-generation? x)
-                      (cons x acc)
-                      acc))
-                '()
-                lst))
-
-  (define (filter-generations generations)
-    (match generations
-      (() '())
-      (('>= n)
-       (drop-while (cut > n <>)
-                   (generation-numbers profile)))
-      (('<= n)
-       (valid-generations (iota n 1)))
-      ((lst ..1)
-       (valid-generations lst))
-      (_ #f)))
-
-  (define (filter-by-duration duration)
-    (define (time-at-midnight time)
-      ;; Return TIME at midnight by setting nanoseconds, seconds, minutes, and
-      ;; hours to zeros.
-      (let ((d (time-utc->date time)))
-         (date->time-utc
-          (make-date 0 0 0 0
-                     (date-day d) (date-month d)
-                     (date-year d) (date-zone-offset d)))))
-
-    (define generation-ctime-alist
-      (map (lambda (number)
-             (cons number
-                   (time-second
-                    (time-at-midnight
-                     (generation-time profile number)))))
-           (generation-numbers profile)))
-
-    (match duration
-      (#f #f)
-      (res
-       (let ((s (time-second
-                 (subtract-duration (time-at-midnight (current-time))
-                                    duration))))
-         (delete #f (map (lambda (x)
-                           (and (duration-relation s (cdr x))
-                                (first x)))
-                         generation-ctime-alist))))))
-
-  (cond ((string->generations str)
-         =>
-         filter-generations)
-        ((string->duration str)
-         =>
-         filter-by-duration)
-        (else #f)))
 
 (define (delete-matching-generations store profile pattern)
   "Delete from PROFILE all the generations matching PATTERN.  PATTERN must be
@@ -253,7 +157,7 @@ denote ranges as interpreted by 'matching-derivations'."
            (raise (condition (&profile-not-found-error
                               (profile profile)))))
           ((string-null? pattern)
-           (delete-generations (%store) profile
+           (delete-generations store profile
                                (delv current (profile-generations profile))))
           ;; Do not delete the zeroth generation.
           ((equal? 0 (string->number pattern))
@@ -274,9 +178,52 @@ denote ranges as interpreted by 'matching-derivations'."
              (let ((numbers (delv current numbers)))
                (when (null-list? numbers)
                  (leave (_ "no matching generation~%")))
-               (delete-generations (%store) profile numbers))))
+               (delete-generations store profile numbers))))
           (else
            (leave (_ "invalid syntax: ~a~%") pattern)))))
+
+(define* (build-and-use-profile store profile manifest
+                                #:key
+                                bootstrap? use-substitutes?
+                                dry-run?)
+  "Build a new generation of PROFILE, a file name, using the packages
+specified in MANIFEST, a manifest object."
+  (when (equal? profile %current-profile)
+    (ensure-default-profile))
+
+  (let* ((prof-drv (run-with-store store
+                     (profile-derivation manifest
+                                         #:hooks (if bootstrap?
+                                                     '()
+                                                     %default-profile-hooks))))
+         (prof     (derivation->output-path prof-drv)))
+    (show-what-to-build store (list prof-drv)
+                        #:use-substitutes? use-substitutes?
+                        #:dry-run? dry-run?)
+
+    (cond
+     (dry-run? #t)
+     ((and (file-exists? profile)
+           (and=> (readlink* profile) (cut string=? prof <>)))
+      (format (current-error-port) (_ "nothing to be done~%")))
+     (else
+      (let* ((number (generation-number profile))
+
+             ;; Always use NUMBER + 1 for the new profile, possibly
+             ;; overwriting a "previous future generation".
+             (name   (generation-file-name profile (+ 1 number))))
+        (and (build-derivations store (list prof-drv))
+             (let* ((entries (manifest-entries manifest))
+                    (count   (length entries)))
+               (switch-symlinks name prof)
+               (switch-symlinks profile name)
+               (unless (string=? profile %current-profile)
+                 (register-gc-root store name))
+               (format #t (N_ "~a package in profile~%"
+                              "~a packages in profile~%"
+                              count)
+                       count)
+               (display-search-paths entries (list profile)))))))))
 
 
 ;;;
@@ -327,11 +274,11 @@ an output path different than CURRENT-PATH."
 ;;; Search paths.
 ;;;
 
-(define* (search-path-environment-variables entries profile
+(define* (search-path-environment-variables entries profiles
                                             #:optional (getenv getenv)
                                             #:key (kind 'exact))
   "Return environment variable definitions that may be needed for the use of
-ENTRIES, a list of manifest entries, in PROFILE.  Use GETENV to determine the
+ENTRIES, a list of manifest entries, in PROFILES.  Use GETENV to determine the
 current settings and report only settings not already effective.  KIND
 must be one of 'exact, 'prefix, or 'suffix, depending on the kind of search
 path definition to be returned."
@@ -346,15 +293,15 @@ path definition to be returned."
                      (environment-variable-definition variable value
                                                       #:separator sep
                                                       #:kind kind))))
-                (evaluate-search-paths search-paths (list profile)
+                (evaluate-search-paths search-paths profiles
                                        getenv))))
 
-(define* (display-search-paths entries profile
+(define* (display-search-paths entries profiles
                                #:key (kind 'exact))
   "Display the search path environment variables that may need to be set for
 ENTRIES, a list of manifest entries, in the context of PROFILE."
-  (let* ((profile  (user-friendly-profile profile))
-         (settings (search-path-environment-variables entries profile
+  (let* ((profiles (map user-friendly-profile profiles))
+         (settings (search-path-environment-variables entries profiles
                                                       #:kind kind)))
     (unless (null? settings)
       (format #t (_ "The following environment variable definitions may be needed:~%"))
@@ -367,8 +314,7 @@ ENTRIES, a list of manifest entries, in the context of PROFILE."
 
 (define %default-options
   ;; Alist of default option values.
-  `((profile . ,%current-profile)
-    (max-silent-time . 3600)
+  `((max-silent-time . 3600)
     (verbosity . 0)
     (substitutes? . #t)))
 
@@ -527,7 +473,7 @@ kind of search path~%")
          (option '(#\p "profile") #t #f
                  (lambda (opt name arg result arg-handler)
                    (values (alist-cons 'profile (canonicalize-profile arg)
-                                       (alist-delete 'profile result))
+                                       result)
                            #f)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result arg-handler)
@@ -564,86 +510,75 @@ kind of search path~%")
 
          %standard-build-options))
 
+(define (options->upgrade-predicate opts)
+  "Return a predicate based on the upgrade/do-not-upgrade regexps in OPTS
+that, given a package name, returns true if the package is a candidate for
+upgrading, #f otherwise."
+  (define upgrade-regexps
+    (filter-map (match-lambda
+                  (('upgrade . regexp)
+                   (make-regexp* (or regexp "")))
+                  (_ #f))
+                opts))
+
+  (define do-not-upgrade-regexps
+    (filter-map (match-lambda
+                  (('do-not-upgrade . regexp)
+                   (make-regexp* regexp))
+                  (_ #f))
+                opts))
+
+  (lambda (name)
+    (and (any (cut regexp-exec <> name) upgrade-regexps)
+         (not (any (cut regexp-exec <> name) do-not-upgrade-regexps)))))
+
+(define (store-item->manifest-entry item)
+  "Return a manifest entry for ITEM, a \"/gnu/store/...\" file name."
+  (let-values (((name version)
+                (package-name->name+version (store-path-package-name item))))
+    (manifest-entry
+      (name name)
+      (version version)
+      (output #f)
+      (item item))))
+
 (define (options->installable opts manifest)
   "Given MANIFEST, the current manifest, and OPTS, the result of 'args-fold',
 return the new list of manifest entries."
   (define (package->manifest-entry* package output)
     (check-package-freshness package)
-    ;; When given a package via `-e', install the first of its
-    ;; outputs (XXX).
     (package->manifest-entry package output))
 
-  (define upgrade-regexps
-    (filter-map (match-lambda
-                 (('upgrade . regexp)
-                  (make-regexp (or regexp "")))
-                 (_ #f))
-                opts))
-
-  (define do-not-upgrade-regexps
-    (filter-map (match-lambda
-                 (('do-not-upgrade . regexp)
-                  (make-regexp regexp))
-                 (_ #f))
-                opts))
-
-  (define packages-to-upgrade
-    (match upgrade-regexps
-      (()
-       '())
-      ((_ ...)
-       (filter-map (match-lambda
-                    (($ <manifest-entry> name version output path _)
-                     (and (any (cut regexp-exec <> name)
-                               upgrade-regexps)
-                          (not (any (cut regexp-exec <> name)
-                                    do-not-upgrade-regexps))
-                          (upgradeable? name version path)
-                          (let ((output (or output "out")))
-                            (call-with-values
-                                (lambda ()
-                                  (specification->package+output name output))
-                              list))))
-                    (_ #f))
-                   (manifest-entries manifest)))))
+  (define upgrade?
+    (options->upgrade-predicate opts))
 
   (define to-upgrade
-    (map (match-lambda
-          ((package output)
-           (package->manifest-entry* package output)))
-         packages-to-upgrade))
-
-  (define packages-to-install
     (filter-map (match-lambda
-                 (('install . (? package? p))
-                  (list p "out"))
-                 (('install . (? string? spec))
-                  (and (not (store-path? spec))
-                       (let-values (((package output)
-                                     (specification->package+output spec)))
-                         (and package (list package output)))))
-                 (_ #f))
-                opts))
+                  (($ <manifest-entry> name version output path _)
+                   (and (upgrade? name)
+                        (upgradeable? name version path)
+                        (let ((output (or output "out")))
+                          (call-with-values
+                              (lambda ()
+                                (specification->package+output name output))
+                            package->manifest-entry*))))
+                  (_ #f))
+                (manifest-entries manifest)))
 
   (define to-install
-    (append (map (match-lambda
-                  ((package output)
-                   (package->manifest-entry* package output)))
-                 packages-to-install)
-            (filter-map (match-lambda
-                         (('install . (? package?))
-                          #f)
-                         (('install . (? store-path? path))
-                          (let-values (((name version)
-                                        (package-name->name+version
-                                         (store-path-package-name path))))
-                            (manifest-entry
-                             (name name)
-                             (version version)
-                             (output #f)
-                             (item path))))
-                         (_ #f))
-                        opts)))
+    (filter-map (match-lambda
+                  (('install . (? package? p))
+                   ;; When given a package via `-e', install the first of its
+                   ;; outputs (XXX).
+                   (package->manifest-entry* p "out"))
+                  (('install . (? string? spec))
+                   (if (store-path? spec)
+                       (store-item->manifest-entry spec)
+                       (let-values (((package output)
+                                     (specification->package+output spec)))
+                         (package->manifest-entry* package output))))
+                  (_ #f))
+                opts))
 
   (append to-upgrade to-install))
 
@@ -678,33 +613,200 @@ doesn't need it."
 
   (add-indirect-root store absolute))
 
-(define (readlink* file)
-  "Call 'readlink' until the result is not a symlink."
-  (define %max-symlink-depth 50)
+
+;;;
+;;; Queries and actions.
+;;;
 
-  (let loop ((file  file)
-             (depth 0))
-    (define (absolute target)
-      (if (absolute-file-name? target)
-          target
-          (string-append (dirname file) "/" target)))
+(define (process-query opts)
+  "Process any query specified by OPTS.  Return #t when a query was actually
+processed, #f otherwise."
+  (let* ((profiles (match (filter-map (match-lambda
+                                        (('profile . p) p)
+                                        (_              #f))
+                                      opts)
+                     (() (list %current-profile))
+                     (lst lst)))
+         (profile  (match profiles
+                     ((head tail ...) head))))
+    (match (assoc-ref opts 'query)
+      (('list-generations pattern)
+       (define (list-generation number)
+         (unless (zero? number)
+           (display-generation profile number)
+           (display-profile-content profile number)
+           (newline)))
 
-    (if (>= depth %max-symlink-depth)
-        file
-        (call-with-values
-            (lambda ()
-              (catch 'system-error
-                (lambda ()
-                  (values #t (readlink file)))
-                (lambda args
-                  (let ((errno (system-error-errno args)))
-                    (if (or (= errno EINVAL))
-                        (values #f file)
-                        (apply throw args))))))
-          (lambda (success? target)
-            (if success?
-                (loop (absolute target) (+ depth 1))
-                file))))))
+       (cond ((not (file-exists? profile))      ; XXX: race condition
+              (raise (condition (&profile-not-found-error
+                                 (profile profile)))))
+             ((string-null? pattern)
+              (for-each list-generation (profile-generations profile)))
+             ((matching-generations pattern profile)
+              =>
+              (lambda (numbers)
+                (if (null-list? numbers)
+                    (exit 1)
+                    (leave-on-EPIPE
+                     (for-each list-generation numbers)))))
+             (else
+              (leave (_ "invalid syntax: ~a~%")
+                     pattern)))
+       #t)
+
+      (('list-installed regexp)
+       (let* ((regexp    (and regexp (make-regexp* regexp)))
+              (manifest  (profile-manifest profile))
+              (installed (manifest-entries manifest)))
+         (leave-on-EPIPE
+          (for-each (match-lambda
+                      (($ <manifest-entry> name version output path _)
+                       (when (or (not regexp)
+                                 (regexp-exec regexp name))
+                         (format #t "~a\t~a\t~a\t~a~%"
+                                 name (or version "?") output path))))
+
+                    ;; Show most recently installed packages last.
+                    (reverse installed)))
+         #t))
+
+      (('list-available regexp)
+       (let* ((regexp    (and regexp (make-regexp* regexp)))
+              (available (fold-packages
+                          (lambda (p r)
+                            (let ((n (package-name p)))
+                              (if (supported-package? p)
+                                  (if regexp
+                                      (if (regexp-exec regexp n)
+                                          (cons p r)
+                                          r)
+                                      (cons p r))
+                                  r)))
+                          '())))
+         (leave-on-EPIPE
+          (for-each (lambda (p)
+                      (format #t "~a\t~a\t~a\t~a~%"
+                              (package-name p)
+                              (package-version p)
+                              (string-join (package-outputs p) ",")
+                              (location->string (package-location p))))
+                    (sort available
+                          (lambda (p1 p2)
+                            (string<? (package-name p1)
+                                      (package-name p2))))))
+         #t))
+
+      (('search regexp)
+       (let ((regexp (make-regexp* regexp regexp/icase)))
+         (leave-on-EPIPE
+          (for-each (cute package->recutils <> (current-output-port))
+                    (find-packages-by-description regexp)))
+         #t))
+
+      (('show requested-name)
+       (let-values (((name version)
+                     (package-name->name+version requested-name)))
+         (leave-on-EPIPE
+          (for-each (cute package->recutils <> (current-output-port))
+                    (find-packages-by-name name version)))
+         #t))
+
+      (('search-paths kind)
+       (let* ((manifests (map profile-manifest profiles))
+              (entries   (append-map manifest-entries manifests))
+              (profiles  (map user-friendly-profile profiles))
+              (settings  (search-path-environment-variables entries profiles
+                                                            (const #f)
+                                                            #:kind kind)))
+         (format #t "~{~a~%~}" settings)
+         #t))
+
+      (_ #f))))
+
+
+(define* (roll-back-action store profile arg opts
+                           #:key dry-run?)
+  "Roll back PROFILE to its previous generation."
+  (unless dry-run?
+    (roll-back* store profile)))
+
+(define* (switch-generation-action store profile spec opts
+                                   #:key dry-run?)
+  "Switch PROFILE to the generation specified by SPEC."
+  (unless dry-run?
+    (let* ((number (string->number spec))
+           (number (and number
+                        (case (string-ref spec 0)
+                          ((#\+ #\-)
+                           (relative-generation profile number))
+                          (else number)))))
+      (if number
+          (switch-to-generation* profile number)
+          (leave (_ "cannot switch to generation '~a'~%") spec)))))
+
+(define* (delete-generations-action store profile pattern opts
+                                    #:key dry-run?)
+  "Delete PROFILE's generations that match PATTERN."
+  (unless dry-run?
+    (delete-matching-generations store profile pattern)))
+
+(define* (manifest-action store profile file opts
+                          #:key dry-run?)
+  "Change PROFILE to contain the packages specified in FILE."
+  (let* ((user-module  (make-user-module '((guix profiles) (gnu))))
+         (manifest     (load* file user-module))
+         (bootstrap?   (assoc-ref opts 'bootstrap?))
+         (substitutes? (assoc-ref opts 'substitutes?)))
+    (if dry-run?
+        (format #t (_ "would install new manifest from '~a' with ~d entries~%")
+                file (length (manifest-entries manifest)))
+        (format #t (_ "installing new manifest from '~a' with ~d entries~%")
+                file (length (manifest-entries manifest))))
+    (build-and-use-profile store profile manifest
+                           #:bootstrap? bootstrap?
+                           #:use-substitutes? substitutes?
+                           #:dry-run? dry-run?)))
+
+(define %actions
+  ;; List of actions that may be processed.  The car of each pair is the
+  ;; action's symbol in the option list; the cdr is the action's procedure.
+  `((roll-back? . ,roll-back-action)
+    (switch-generation . ,switch-generation-action)
+    (delete-generations . ,delete-generations-action)
+    (manifest . ,manifest-action)))
+
+(define (process-actions store opts)
+  "Process any install/remove/upgrade action from OPTS."
+
+  (define dry-run? (assoc-ref opts 'dry-run?))
+  (define bootstrap? (assoc-ref opts 'bootstrap?))
+  (define substitutes? (assoc-ref opts 'substitutes?))
+  (define profile  (or (assoc-ref opts 'profile) %current-profile))
+
+  ;; First, process roll-backs, generation removals, etc.
+  (for-each (match-lambda
+              ((key . arg)
+               (and=> (assoc-ref %actions key)
+                      (lambda (proc)
+                        (proc store profile arg opts
+                              #:dry-run? dry-run?)))))
+            opts)
+
+  ;; Then, process normal package installation/removal/upgrade.
+  (let* ((manifest    (profile-manifest profile))
+         (install     (options->installable opts manifest))
+         (remove      (options->removable opts manifest))
+         (transaction (manifest-transaction (install install)
+                                            (remove remove)))
+         (new         (manifest-perform-transaction manifest transaction)))
+
+    (unless (and (null? install) (null? remove))
+      (show-manifest-transaction store manifest transaction
+                                 #:dry-run? dry-run?)
+      (build-and-use-profile store profile new
+                             #:bootstrap? bootstrap?
+                             #:use-substitutes? substitutes?
+                             #:dry-run? dry-run?))))
 
 
 ;;;
@@ -717,278 +819,6 @@ doesn't need it."
     (if arg-handler
         (arg-handler arg result)
         (leave (_ "~A: extraneous argument~%") arg)))
-
-  (define (ensure-default-profile)
-    ;; Ensure the default profile symlink and directory exist and are
-    ;; writable.
-
-    (define (rtfm)
-      (format (current-error-port)
-              (_ "Try \"info '(guix) Invoking guix package'\" for \
-more information.~%"))
-      (exit 1))
-
-    ;; Create ~/.guix-profile if it doesn't exist yet.
-    (when (and %user-profile-directory
-               %current-profile
-               (not (false-if-exception
-                     (lstat %user-profile-directory))))
-      (symlink %current-profile %user-profile-directory))
-
-    (let ((s (stat %profile-directory #f)))
-      ;; Attempt to create /…/profiles/per-user/$USER if needed.
-      (unless (and s (eq? 'directory (stat:type s)))
-        (catch 'system-error
-          (lambda ()
-            (mkdir-p %profile-directory))
-          (lambda args
-            ;; Often, we cannot create %PROFILE-DIRECTORY because its
-            ;; parent directory is root-owned and we're running
-            ;; unprivileged.
-            (format (current-error-port)
-                    (_ "error: while creating directory `~a': ~a~%")
-                    %profile-directory
-                    (strerror (system-error-errno args)))
-            (format (current-error-port)
-                    (_ "Please create the `~a' directory, with you as the owner.~%")
-                    %profile-directory)
-            (rtfm))))
-
-      ;; Bail out if it's not owned by the user.
-      (unless (or (not s) (= (stat:uid s) (getuid)))
-        (format (current-error-port)
-                (_ "error: directory `~a' is not owned by you~%")
-                %profile-directory)
-        (format (current-error-port)
-                (_ "Please change the owner of `~a' to user ~s.~%")
-                %profile-directory (or (getenv "USER")
-                                       (getenv "LOGNAME")
-                                       (getuid)))
-        (rtfm))))
-
-  (define (process-actions opts)
-    ;; Process any install/remove/upgrade action from OPTS.
-
-    (define dry-run? (assoc-ref opts 'dry-run?))
-    (define profile  (assoc-ref opts 'profile))
-
-    (define (build-and-use-profile manifest)
-      (let* ((bootstrap?  (assoc-ref opts 'bootstrap?)))
-
-        (when (equal? profile %current-profile)
-          (ensure-default-profile))
-
-        (let* ((prof-drv (run-with-store (%store)
-                           (profile-derivation
-                            manifest
-                            #:hooks (if bootstrap?
-                                        '()
-                                        %default-profile-hooks))))
-               (prof     (derivation->output-path prof-drv)))
-          (show-what-to-build (%store) (list prof-drv)
-                              #:use-substitutes?
-                              (assoc-ref opts 'substitutes?)
-                              #:dry-run? dry-run?)
-
-          (cond
-           (dry-run? #t)
-           ((and (file-exists? profile)
-                 (and=> (readlink* profile) (cut string=? prof <>)))
-            (format (current-error-port) (_ "nothing to be done~%")))
-           (else
-            (let* ((number (generation-number profile))
-
-                   ;; Always use NUMBER + 1 for the new profile,
-                   ;; possibly overwriting a "previous future
-                   ;; generation".
-                   (name   (generation-file-name profile
-                                                 (+ 1 number))))
-              (and (build-derivations (%store) (list prof-drv))
-                   (let* ((entries (manifest-entries manifest))
-                          (count   (length entries)))
-                     (switch-symlinks name prof)
-                     (switch-symlinks profile name)
-                     (unless (string=? profile %current-profile)
-                       (register-gc-root (%store) name))
-                     (format #t (N_ "~a package in profile~%"
-                                    "~a packages in profile~%"
-                                    count)
-                             count)
-                     (display-search-paths entries profile)))))))))
-
-    ;; First roll back if asked to.
-    (cond ((and (assoc-ref opts 'roll-back?)
-                (not dry-run?))
-           (roll-back (%store) profile)
-           (process-actions (alist-delete 'roll-back? opts)))
-          ((and (assoc-ref opts 'switch-generation)
-                (not dry-run?))
-           (for-each
-            (match-lambda
-              (('switch-generation . pattern)
-               (let* ((number (string->number pattern))
-                      (number (and number
-                                   (case (string-ref pattern 0)
-                                     ((#\+ #\-)
-                                      (relative-generation profile number))
-                                     (else number)))))
-                 (if number
-                     (switch-to-generation profile number)
-                     (leave (_ "cannot switch to generation '~a'~%")
-                            pattern)))
-               (process-actions (alist-delete 'switch-generation opts)))
-              (_ #f))
-            opts))
-          ((and (assoc-ref opts 'delete-generations)
-                (not dry-run?))
-           (for-each
-            (match-lambda
-             (('delete-generations . pattern)
-              (delete-matching-generations (%store) profile pattern)
-
-              (process-actions
-               (alist-delete 'delete-generations opts)))
-             (_ #f))
-            opts))
-          ((assoc-ref opts 'manifest)
-           (let* ((file-name   (assoc-ref opts 'manifest))
-                  (user-module (make-user-module '((guix profiles)
-                                                   (gnu))))
-                  (manifest    (load* file-name user-module)))
-             (if (assoc-ref opts 'dry-run?)
-                 (format #t (_ "would install new manifest from '~a' with ~d entries~%")
-                         file-name (length (manifest-entries manifest)))
-                 (format #t (_ "installing new manifest from '~a' with ~d entries~%")
-                         file-name (length (manifest-entries manifest))))
-             (build-and-use-profile manifest)))
-          (else
-           (let* ((manifest    (profile-manifest profile))
-                  (install     (options->installable opts manifest))
-                  (remove      (options->removable opts manifest))
-                  (transaction (manifest-transaction (install install)
-                                                     (remove remove)))
-                  (new         (manifest-perform-transaction
-                                manifest transaction)))
-
-             (unless (and (null? install) (null? remove))
-               (show-manifest-transaction (%store) manifest transaction
-                                          #:dry-run? dry-run?)
-               (build-and-use-profile new))))))
-
-  (define (process-query opts)
-    ;; Process any query specified by OPTS.  Return #t when a query was
-    ;; actually processed, #f otherwise.
-    (let ((profile  (assoc-ref opts 'profile)))
-      (match (assoc-ref opts 'query)
-        (('list-generations pattern)
-         (define (list-generation number)
-           (unless (zero? number)
-             (let ((header (format #f (_ "Generation ~a\t~a") number
-                                   (date->string
-                                    (time-utc->date
-                                     (generation-time profile number))
-                                    "~b ~d ~Y ~T")))
-                   (current (generation-number profile)))
-               (if (= number current)
-                   (format #t (_ "~a\t(current)~%") header)
-                   (format #t "~a~%" header)))
-             (for-each (match-lambda
-                        (($ <manifest-entry> name version output location _)
-                         (format #t "  ~a\t~a\t~a\t~a~%"
-                                 name version output location)))
-
-                       ;; Show most recently installed packages last.
-                       (reverse
-                        (manifest-entries
-                         (profile-manifest
-                          (generation-file-name profile number)))))
-             (newline)))
-
-         (cond ((not (file-exists? profile)) ; XXX: race condition
-                (raise (condition (&profile-not-found-error
-                                   (profile profile)))))
-               ((string-null? pattern)
-                (for-each list-generation (profile-generations profile)))
-               ((matching-generations pattern profile)
-                =>
-                (lambda (numbers)
-                  (if (null-list? numbers)
-                      (exit 1)
-                      (leave-on-EPIPE
-                       (for-each list-generation numbers)))))
-               (else
-                (leave (_ "invalid syntax: ~a~%")
-                       pattern)))
-         #t)
-
-        (('list-installed regexp)
-         (let* ((regexp    (and regexp (make-regexp regexp)))
-                (manifest  (profile-manifest profile))
-                (installed (manifest-entries manifest)))
-           (leave-on-EPIPE
-            (for-each (match-lambda
-                       (($ <manifest-entry> name version output path _)
-                        (when (or (not regexp)
-                                  (regexp-exec regexp name))
-                          (format #t "~a\t~a\t~a\t~a~%"
-                                  name (or version "?") output path))))
-
-                      ;; Show most recently installed packages last.
-                      (reverse installed)))
-           #t))
-
-        (('list-available regexp)
-         (let* ((regexp    (and regexp (make-regexp regexp)))
-                (available (fold-packages
-                            (lambda (p r)
-                              (let ((n (package-name p)))
-                                (if (supported-package? p)
-                                    (if regexp
-                                        (if (regexp-exec regexp n)
-                                            (cons p r)
-                                            r)
-                                        (cons p r))
-                                    r)))
-                            '())))
-           (leave-on-EPIPE
-            (for-each (lambda (p)
-                        (format #t "~a\t~a\t~a\t~a~%"
-                                (package-name p)
-                                (package-version p)
-                                (string-join (package-outputs p) ",")
-                                (location->string (package-location p))))
-                      (sort available
-                            (lambda (p1 p2)
-                              (string<? (package-name p1)
-                                        (package-name p2))))))
-           #t))
-
-        (('search regexp)
-         (let ((regexp (make-regexp regexp regexp/icase)))
-           (leave-on-EPIPE
-            (for-each (cute package->recutils <> (current-output-port))
-                      (find-packages-by-description regexp)))
-           #t))
-
-        (('show requested-name)
-         (let-values (((name version)
-                       (package-name->name+version requested-name)))
-           (leave-on-EPIPE
-            (for-each (cute package->recutils <> (current-output-port))
-                      (find-packages-by-name name version)))
-           #t))
-
-        (('search-paths kind)
-         (let* ((manifest (profile-manifest profile))
-                (entries  (manifest-entries manifest))
-                (profile  (user-friendly-profile profile))
-                (settings (search-path-environment-variables entries profile
-                                                             (const #f)
-                                                             #:kind kind)))
-           (format #t "~{~a~%~}" settings)
-           #t))
-
-        (_ #f))))
 
   (let ((opts (parse-command-line args %options (list %default-options #f)
                                   #:argument-handler handle-argument)))
@@ -1003,4 +833,4 @@ more information.~%"))
                              (if (assoc-ref opts 'bootstrap?)
                                  %bootstrap-guile
                                  (canonical-package guile-2.0)))))
-              (process-actions opts)))))))
+              (process-actions (%store) opts)))))))

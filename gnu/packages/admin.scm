@@ -485,14 +485,14 @@ tools: server, client, and relay agent.")
 (define-public libpcap
   (package
     (name "libpcap")
-    (version "1.5.3")
+    (version "1.7.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.tcpdump.org/release/libpcap-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "14wyjywrdi1ikaj6yc9c72m6m2r64z94lb0gm7k1a3q6q5cj3scs"))))
+                "1c28ykkizd7jqgzrfkg7ivqjlqs9p6lygp26bsw2i0z8hwhi3lvs"))))
     (build-system gnu-build-system)
     (native-inputs `(("bison" ,bison) ("flex" ,flex)))
     (arguments '(#:configure-flags '("--with-pcap=linux")
@@ -510,14 +510,14 @@ network statistics collection, security monitoring, network debugging, etc.")
 (define-public tcpdump
   (package
     (name "tcpdump")
-    (version "4.5.1")
+    (version "4.7.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.tcpdump.org/release/tcpdump-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15hb7zkzd66nag102qbv100hcnf7frglbkylmr8adwr8f5jkkaql"))))
+                "1byr8w6grk08fsq0444jmcz9ar89lq9nf4mjq2cny0w9k8k21rbb"))))
     (build-system gnu-build-system)
     (inputs `(("libpcap" ,libpcap)
               ("openssl" ,openssl)))
@@ -647,7 +647,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.10p3")
+    (version "1.8.15")
     (source (origin
               (method url-fetch)
               (uri
@@ -657,22 +657,35 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "002l6h27pnhb77b65frhazbhknsxvrsnkpi43j7i0qw1lrgi7nkf"))))
+                "0263gi6i19fyzzc488n0qw3m518i39f6a7qmrfvahk9j10bkh5j3"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--with-logpath=/var/log/sudo.log"
-                           "--with-rundir=/run/sudo"
-                           "--with-vardir=/var/db/sudo"
-                           "--with-iologdir=/var/log/sudo-io")
+     `(#:configure-flags
+       (list "--with-logpath=/var/log/sudo.log"
+             "--with-rundir=/run/sudo"
+             "--with-vardir=/var/db/sudo"
+             "--with-iologdir=/var/log/sudo-io"
+
+             ;; 'visudo.c' expects _PATH_MV to be defined, but glibc doesn't
+             ;; provide it.
+             (string-append "CPPFLAGS=-D_PATH_MV='\""
+                            (assoc-ref %build-inputs "coreutils")
+                            "/bin/mv\"'"))
+
+       ;; Avoid non-determinism; see <http://bugs.gnu.org/21918>.
+       #:parallel-build? #f
+
        #:phases (alist-cons-before
                  'configure 'pre-configure
                  (lambda _
-                   (substitute* "configure"
-                     ;; Refer to the right executables.
-                     (("/usr/bin/mv") (which "mv"))
-                     (("/usr/bin/sh") (which "sh")))
+                   (substitute* "src/sudo_usage.h.in"
+                     ;; Do not capture 'configure' arguments since we would
+                     ;; unduly retain references, and also because the
+                     ;; CPPFLAGS above would close the string literal
+                     ;; prematurely.
+                     (("@CONFIGURE_ARGS@") "\"\""))
                    (substitute* (find-files "." "Makefile\\.in")
-                     (("-O [[:graph:]]+ -G [[:graph:]]+")
+                     (("-o [[:graph:]]+ -g [[:graph:]]+")
                       ;; Allow installation as non-root.
                       "")
                      (("^install: (.*)install-sudoers(.*)" _ before after)
@@ -716,7 +729,12 @@ commands and their arguments.")
                     ".tar.gz"))
               (sha256
                (base32
-                "05mkp5bx1c3z7h5biddsv0p49gkrq9ksany3anp4wdiv92p5prfc"))))
+                "05mkp5bx1c3z7h5biddsv0p49gkrq9ksany3anp4wdiv92p5prfc"))
+              (patches
+               (map search-patch '("wpa-supplicant-CVE-2015-5310.patch"
+                                   "wpa-supplicant-CVE-2015-5314.patch"
+                                   "wpa-supplicant-CVE-2015-5315.patch"
+                                   "wpa-supplicant-CVE-2015-5316.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace

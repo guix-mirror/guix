@@ -18,13 +18,16 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages tor)
-  #:use-module ((guix licenses) #:select (bsd-3 gpl2+))
+  #:use-module ((guix licenses) #:select (bsd-3 gpl2+ gpl2))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages tls)
@@ -33,14 +36,14 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.2.6.10")
+    (version "0.2.7.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.torproject.org/dist/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "13ab4bqz19980q4qgmbr7ar4r9y70bmsfbw66y9n31ivwkpw0hh5"))))
+               "0pxayvcab4cb107ynbpzx4g0qyr1mjfba2an76wdx6dxn56rwakx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))  ; for tests
@@ -66,22 +69,36 @@ applications based on the TCP protocol.")
 (define-public torsocks
   (package
     (name "torsocks")
-    (version "1.2")
+    (version "2.0.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "http://torsocks.googlecode.com/files/torsocks-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "1m0is5q24sf7jjlkl0icfkdc0m53nbkg0q72s57p48yp4hv7v9dy"))))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://git.torproject.org/torsocks.git")
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0an2q5ail9z414riyjbkjkm29504hy778j914baz2gn5hlv2cfak"))
+              (file-name (string-append name "-" version "-checkout"))
+              (patches (list (search-patch "torsocks-dns-test.patch")))))
     (build-system gnu-build-system)
-    (home-page "http://code.google.com/p/torsocks/")
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'bootstrap
+                    (lambda _
+                      (system* "autoreconf" "-vfi"))))))
+    (native-inputs `(("autoconf" ,(autoconf-wrapper))
+                     ("automake" ,automake)
+                     ("libtool" ,libtool)
+                     ("perl-test-harness" ,perl-test-harness)))
+    (home-page "http://www.torproject.org/")
     (synopsis "Use socks-friendly applications with Tor")
     (description
      "Torsocks allows you to use most socks-friendly applications in a safe
 way with Tor.  It ensures that DNS requests are handled safely and explicitly
 rejects UDP traffic from the application you're using.")
-    (license gpl2+)))
+
+    ;; All the files explicitly say "version 2 only".
+    (license gpl2)))
 
 (define-public privoxy
   (package

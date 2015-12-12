@@ -4,6 +4,8 @@
 ;;; Copyright © 2013 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +48,7 @@
             libkate
             vorbis-tools
             opus
+            opusfile
             opus-tools))
 
 (define libogg
@@ -163,9 +166,11 @@ stereo encoding, and voice activity detection.")
     ;; XXX: Should back-ends be pushed to different outputs?  For instance,
     ;; "out" would include only the ALSA back-end, while "pulse" would
     ;; contain 'lib/ao/plugins-4/libpulse.*'.
-    (inputs `(("pkg-config" ,pkg-config)
-              ("alsa-lib" ,alsa-lib)
-              ("pulseaudio" ,pulseaudio)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("pulseaudio" ,pulseaudio)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (synopsis "Cross platform audio library")
     (description
      "Libao is a cross-platform audio library that allows programs to
@@ -288,7 +293,7 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
 (define opus
   (package
     (name "opus")
-    (version "1.1")
+    (version "1.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -296,7 +301,7 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
                     ".tar.gz"))
               (sha256
                (base32
-                "158xprn2086arvdib3vbbygz7z6jqkw2nci7nlywzzwallap0wmr"))))
+                "07iplfwim26b6k1bqjyciaqvihps9rk5gi8385axa83ppmbgz14v"))))
     (build-system gnu-build-system)
     (synopsis "Versatile audio codec")
     (description
@@ -338,6 +343,34 @@ incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
     (description "Opus is a royalty-free, highly versatile audio codec.
 Opus-tools provide command line utilities for creating, inspecting and
 decoding .opus files.")
+    (license license:bsd-3)
+    (home-page "http://www.opus-codec.org")))
+
+(define opusfile
+  (package
+    (name "opusfile")
+    (version "0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.xiph.org/releases/opus/opusfile-" version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "19iys2kld75k0210b807i4illrdmj3cmmnrgxlc9y4vf6mxp2a14"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("opus" ,opus)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libogg" ,libogg)
+       ("openssl" ,openssl)))
+    (synopsis "Versatile audio codec")
+    (description
+     "The opusfile library provides seeking, decode, and playback of Opus
+streams in the Ogg container (.opus files) including over http(s) on posix and
+windows systems.")
     (license license:bsd-3)
     (home-page "http://www.opus-codec.org")))
 

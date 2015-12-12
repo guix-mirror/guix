@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +27,11 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix upstream)
-  #:use-module ((guix gnu-maintenance) #:select (%gnu-updater))
+  #:use-module (guix graph)
+  #:use-module (guix scripts graph)
+  #:use-module (guix monads)
+  #:use-module ((guix gnu-maintenance)
+                #:select (%gnu-updater %gnome-updater))
   #:use-module (guix import elpa)
   #:use-module (guix import cran)
   #:use-module (guix gnupg)
@@ -41,7 +46,8 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (rnrs io ports)
-  #:export (guix-refresh))
+  #:export (guix-refresh
+            %updaters))
 
 
 ;;;
@@ -68,7 +74,16 @@
                             arg)))))
         (option '(#\t "type") #t #f
                 (lambda (opt name arg result)
-                  (alist-cons 'updater (string->symbol arg) result)))
+                  (let* ((not-comma (char-set-complement (char-set #\,)))
+                         (names (map string->symbol
+                                     (string-tokenize arg not-comma))))
+                    (alist-cons 'updaters names result))))
+        (option '(#\L "list-updaters") #f #f
+                (lambda args
+                  (list-updaters-and-exit)))
+        (option '(#\e "expression") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'expression arg result)))
         (option '(#\l "list-dependent") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'list-dependent? #t result)))
@@ -105,12 +120,17 @@ When PACKAGE... is given, update only the specified packages.  Otherwise
 update all the packages of the distribution, or the subset thereof
 specified with `--select'.\n"))
   (display (_ "
+  -e, --expression=EXPR  consider the package EXPR evaluates to"))
+  (display (_ "
   -u, --update           update source files in place"))
   (display (_ "
   -s, --select=SUBSET    select all the packages in SUBSET, one of
                          `core' or `non-core'"))
   (display (_ "
-  -t, --type=UPDATER     restrict to updates from UPDATER--e.g., 'gnu'"))
+  -t, --type=UPDATER,... restrict to updates from the specified updaters
+                         (e.g., 'gnu')"))
+  (display (_ "
+  -L, --list-updaters    list available updaters and exit"))
   (display (_ "
   -l, --list-dependent   list top-level dependent packages that would need to
                          be rebuilt as a result of upgrading PACKAGE..."))
@@ -137,17 +157,62 @@ specified with `--select'.\n"))
 ;;; Updates.
 ;;;
 
+(define-syntax maybe-updater
+  ;; Helper macro for 'list-updaters'.
+  (syntax-rules (=>)
+    ((_ ((module => updater) rest ...) result)
+     (maybe-updater (rest ...)
+                    (let ((iface (false-if-exception
+                                  (resolve-interface 'module)))
+                          (tail  result))
+                      (if iface
+                          (cons (module-ref iface 'updater) tail)
+                          tail))))
+    ((_ (updater rest ...) result)
+     (maybe-updater (rest ...)
+                    (cons updater result)))
+    ((_ () result)
+     (reverse result))))
+
+(define-syntax-rule (list-updaters updaters ...)
+  "Expand to '(list UPDATERS ...)' but only the subset of UPDATERS that are
+either unconditional, or have their requirement met.
+
+A conditional updater has this form:
+
+  ((SOME MODULE) => UPDATER)
+
+meaning that UPDATER is added to the list if and only if (SOME MODULE) could
+be resolved at run time.
+
+This is a way to discard at macro expansion time updaters that depend on
+unavailable optional dependencies such as Guile-JSON."
+  (maybe-updater (updaters ...) '()))
+
 (define %updaters
   ;; List of "updaters" used by default.  They are consulted in this order.
-  (list %gnu-updater
-        %elpa-updater
-        %cran-updater))
+  (list-updaters %gnu-updater
+                 %gnome-updater
+                 %elpa-updater
+                 %cran-updater
+                 ((guix import pypi) => %pypi-updater)))
 
 (define (lookup-updater name)
   "Return the updater called NAME."
-  (find (lambda (updater)
-          (eq? name (upstream-updater-name updater)))
-        %updaters))
+  (or (find (lambda (updater)
+              (eq? name (upstream-updater-name updater)))
+            %updaters)
+      (leave (_ "~a: no such updater~%") name)))
+
+(define (list-updaters-and-exit)
+  "Display available updaters and exit."
+  (format #t (_ "Available updaters:~%"))
+  (for-each (lambda (updater)
+              (format #t "- ~a: ~a~%"
+                      (upstream-updater-name updater)
+                      (_ (upstream-updater-description updater))))
+            %updaters)
+  (exit 0))
 
 (define* (update-package store package updaters
                          #:key (key-download 'interactive))
@@ -177,6 +242,50 @@ downloaded and authenticated; not updating~%")
 
 
 ;;;
+;;; Dependents.
+;;;
+
+(define (all-packages)
+  "Return the list of all the distro's packages."
+  (fold-packages cons '()))
+
+(define (list-dependents packages)
+  "List all the things that would need to be rebuilt if PACKAGES are changed."
+  (with-store store
+    (run-with-store store
+      ;; Using %BAG-NODE-TYPE is more accurate than using %PACKAGE-NODE-TYPE
+      ;; because it includes implicit dependencies.
+      (mlet %store-monad ((edges (node-back-edges %bag-node-type
+                                                  (all-packages))))
+        (let* ((dependents (node-transitive-edges packages edges))
+               (covering   (filter (lambda (node)
+                                     (null? (edges node)))
+                                   dependents)))
+          (match dependents
+            (()
+             (format (current-output-port)
+                     (N_ "No dependents other than itself: ~{~a~}~%"
+                         "No dependents other than themselves: ~{~a~^ ~}~%"
+                         (length packages))
+                     (map package-full-name packages)))
+
+            ((x)
+             (format (current-output-port)
+                     (_ "A single dependent package: ~a~%")
+                     (package-full-name x)))
+            (lst
+             (format (current-output-port)
+                     (N_ "Building the following package would ensure ~d \
+dependent packages are rebuilt: ~*~{~a~^ ~}~%"
+                         "Building the following ~d packages would ensure ~d \
+dependent packages are rebuilt: ~{~a~^ ~}~%"
+                         (length covering))
+                     (length covering) (length dependents)
+                     (map package-full-name covering))))
+          (return #t))))))
+
+
+;;;
 ;;; Entry point.
 ;;;
 
@@ -193,15 +302,15 @@ downloaded and authenticated; not updating~%")
   (define (options->updaters opts)
     ;; Return the list of updaters to use.
     (match (filter-map (match-lambda
-                         (('updater . name)
-                          (lookup-updater name))
+                         (('updaters . names)
+                          (map lookup-updater names))
                          (_ #f))
                        opts)
       (()
        ;; Use the default updaters.
        %updaters)
-      (lst
-       lst)))
+      (lists
+       (concatenate lists))))
 
   (define (keep-newest package lst)
     ;; If a newer version of PACKAGE is already in LST, return LST; otherwise
@@ -248,6 +357,8 @@ update would trigger a complete rebuild."
                                 ;; Take either the specified version or the
                                 ;; latest one.
                                 (specification->package spec))
+                               (('expression . exp)
+                                (read/eval-package-expression exp))
                                (_ #f))
                              opts)
             (()                                   ; default to all packages
@@ -265,25 +376,7 @@ update would trigger a complete rebuild."
     (with-error-handling
       (cond
        (list-dependent?
-        (let* ((rebuilds (map package-full-name
-                              (package-covering-dependents packages)))
-               (total-dependents
-                (length (package-transitive-dependents packages))))
-          (if (= total-dependents 0)
-              (format (current-output-port)
-                      (N_ "No dependents other than itself: ~{~a~}~%"
-                          "No dependents other than themselves: ~{~a~^ ~}~%"
-                          (length packages))
-                      (map package-full-name packages))
-              (format (current-output-port)
-                      (N_ (N_ "A single dependent package: ~2*~{~a~}~%"
-                              "Building the following package would ensure ~d \
-dependent packages are rebuilt; ~*~{~a~^ ~}~%"
-                              total-dependents)
-                          "Building the following ~d packages would ensure ~d \
-dependent packages are rebuilt: ~{~a~^ ~}~%"
-                          (length rebuilds))
-                      (length rebuilds) total-dependents rebuilds))))
+        (list-dependents packages))
        (update?
         (let ((store (open-connection)))
           (parameterize ((%openpgp-key-server

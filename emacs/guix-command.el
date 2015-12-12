@@ -65,6 +65,7 @@
 (require 'guix-help-vars)
 (require 'guix-read)
 (require 'guix-base)
+(require 'guix-build-log)
 (require 'guix-guile)
 (require 'guix-external)
 
@@ -131,7 +132,8 @@ to be modified."
 
 (guix-command-define-argument-improver
     guix-command-improve-action-argument
-  '(("graph"       :char ?G)
+  '(("container"   :char ?C)
+    ("graph"       :char ?G)
     ("environment" :char ?E)
     ("publish"     :char ?u)
     ("pull"        :char ?P)
@@ -173,7 +175,8 @@ to be modified."
 (defvar guix-command-improve-common-build-argument
   '(("--no-substitutes"  :char ?s)
     ("--no-build-hook"   :char ?h)
-    ("--max-silent-time" :char ?x)))
+    ("--max-silent-time" :char ?x)
+    ("--rounds"          :char ?R :fun read-number)))
 
 (defun guix-command-improve-common-build-argument (argument)
   (guix-command-modify-argument-from-alist
@@ -195,7 +198,11 @@ to be modified."
 
 (guix-command-define-argument-improver
     guix-command-improve-environment-argument
-  '(("--exec" :fun read-shell-command)
+  '(("--ad-hoc"
+     :name "--ad-hoc " :fun guix-read-package-names-string
+     :switch? nil :option? t)
+    ("--expose" :char ?E)
+    ("--share" :char ?S)
     ("--load" :fun guix-read-file-name)))
 
 (guix-command-define-argument-improver
@@ -234,6 +241,7 @@ to be modified."
      :switch? nil :option? t)
     ("--install-from-file" :fun guix-read-file-name)
     ("--manifest"       :fun guix-read-file-name)
+    ("--profile"        :fun guix-read-file-name)
     ("--do-not-upgrade" :char ?U)
     ("--roll-back"      :char ?R)
     ("--show"           :char ?w :fun guix-read-package-name)))
@@ -241,6 +249,7 @@ to be modified."
 (guix-command-define-argument-improver
     guix-command-improve-refresh-argument
   '(("--select"     :fun guix-read-refresh-subset)
+    ("--type"       :fun guix-read-refresh-updater-names-string)
     ("--key-server" :char ?S)))
 
 (guix-command-define-argument-improver
@@ -364,11 +373,16 @@ to be modified."
                      :name "-- " :char ?= :option? t args)))
     (let ((command (car commands)))
       (cond
-       ((member command '("archive" "build" "graph" "edit"
-                          "environment" "lint" "refresh"))
+       ((member command
+                '("archive" "build" "challenge" "edit"
+                  "graph" "lint" "refresh"))
         (argument :doc "Packages" :fun 'guix-read-package-names-string))
+       ((equal commands '("container" "exec"))
+        (argument :doc "PID Command [Args...]"))
        ((string= command "download")
         (argument :doc "URL"))
+       ((string= command "environment")
+        (argument :doc "Command [Args...]" :fun 'read-shell-command))
        ((string= command "gc")
         (argument :doc "Paths" :fun 'guix-read-file-name))
        ((member command '("hash" "system"))
@@ -382,10 +396,22 @@ to be modified."
              (string= command "import"))
         (argument :doc "Package name"))))))
 
+(defvar guix-command-additional-arguments
+  `((("environment")
+     ,(guix-command-make-argument
+       :name "++packages " :char ?p :option? t
+       :doc "build inputs of the specified packages"
+       :fun 'guix-read-package-names-string)))
+  "Alist of guix commands and additional arguments for them.
+These are 'fake' arguments that are not presented in 'guix' shell
+commands.")
+
 (defun guix-command-additional-arguments (&optional commands)
   "Return additional arguments for COMMANDS."
   (let ((rest-arg (guix-command-rest-argument commands)))
-    (and rest-arg (list rest-arg))))
+    (append (guix-assoc-value guix-command-additional-arguments
+                              commands)
+            (and rest-arg (list rest-arg)))))
 
 ;; Ideally only `guix-command-arguments' function should exist with the
 ;; contents of `guix-command-all-arguments', but we need to make a
@@ -463,27 +489,112 @@ to be modified."
   "Return actions from ARGUMENTS."
   (cl-remove-if-not #'guix-command-argument-action? arguments))
 
-(defun guix-command-post-process-args (args)
-  "Adjust appropriately command line ARGS returned from popup command."
-  ;; XXX We need to split "--install foo bar" and similar strings into
-  ;; lists of strings.  But some commands (e.g., 'guix hash') accept a
-  ;; file name as the 'rest' argument, and as file names may contain
-  ;; spaces, splitting by spaces will break such names.  For example, the
-  ;; following argument: "-- /tmp/file with spaces" will be transformed
-  ;; into the following list: ("--" "/tmp/file" "with" "spaces") instead
-  ;; of the wished ("--" "/tmp/file with spaces").
-  (let* (rest
-         (rx (rx string-start
-                 (or "-- " "--install " "--remove ")))
+
+;;; Post processing popup arguments
+
+(defvar guix-command-post-processors
+  '(("environment"
+     guix-command-post-process-environment-packages
+     guix-command-post-process-environment-ad-hoc
+     guix-command-post-process-rest-multiple-leave)
+    ("hash"
+     guix-command-post-process-rest-single)
+    ("package"
+     guix-command-post-process-package-args)
+    ("system"
+     guix-command-post-process-rest-single))
+  "Alist of guix commands and functions for post-processing
+a list of arguments returned from popup interface.
+Each function is called on the returned arguments in turn.")
+
+(defvar guix-command-rest-arg-regexp
+  (rx string-start "-- " (group (+ any)))
+  "Regexp to match a string with the 'rest' arguments.")
+
+(defun guix-command-replace-args (args predicate modifier)
+  "Replace arguments matching PREDICATE from ARGS.
+Call MODIFIER on each argument matching PREDICATE and append the
+returned list of strings to the end of ARGS.  Remove the original
+arguments."
+  (let* ((rest nil)
          (args (mapcar (lambda (arg)
-                         (if (string-match-p rx arg)
-                             (progn (push (split-string arg) rest)
-                                    nil)
+                         (if (funcall predicate arg)
+                             (progn
+                               (push (funcall modifier arg) rest)
+                               nil)
                            arg))
                        args)))
     (if rest
         (apply #'append (delq nil args) rest)
       args)))
+
+(cl-defun guix-command-post-process-matching-args (args regexp
+                                                   &key group split?)
+  "Modify arguments from ARGS matching REGEXP by moving them to
+the end of ARGS list.  If SPLIT? is non-nil, split matching
+arguments into multiple subarguments."
+  (guix-command-replace-args
+   args
+   (lambda (arg)
+     (string-match regexp arg))
+   (lambda (arg)
+     (let ((val (match-string (or group 0) arg))
+           (fun (if split? #'split-string #'list)))
+       (funcall fun val)))))
+
+(defun guix-command-post-process-rest-single (args)
+  "Modify ARGS by moving '-- ARG' argument to the end of ARGS list."
+  (guix-command-post-process-matching-args
+   args guix-command-rest-arg-regexp
+   :group 1))
+
+(defun guix-command-post-process-rest-multiple (args)
+  "Modify ARGS by splitting '-- ARG ...' into multiple subarguments
+and moving them to the end of ARGS list.
+Remove '-- ' string."
+  (guix-command-post-process-matching-args
+   args guix-command-rest-arg-regexp
+   :group 1
+   :split? t))
+
+(defun guix-command-post-process-rest-multiple-leave (args)
+  "Modify ARGS by splitting '-- ARG ...' into multiple subarguments
+and moving them to the end of ARGS list.
+Leave '--' string as a separate argument."
+  (guix-command-post-process-matching-args
+   args guix-command-rest-arg-regexp
+   :split? t))
+
+(defun guix-command-post-process-package-args (args)
+  "Adjust popup ARGS for 'guix package' command."
+  (guix-command-post-process-matching-args
+   args (rx string-start (or "--install " "--remove ") (+ any))
+   :split? t))
+
+(defun guix-command-post-process-environment-packages (args)
+  "Adjust popup ARGS for specified packages of 'guix environment'
+command."
+  (guix-command-post-process-matching-args
+   args (rx string-start "++packages " (group (+ any)))
+   :group 1
+   :split? t))
+
+(defun guix-command-post-process-environment-ad-hoc (args)
+  "Adjust popup ARGS for '--ad-hoc' argument of 'guix environment'
+command."
+  (guix-command-post-process-matching-args
+   args (rx string-start "--ad-hoc " (+ any))
+   :split? t))
+
+(defun guix-command-post-process-args (commands args)
+  "Adjust popup ARGS for guix COMMANDS."
+  (let* ((command (car commands))
+         (processors
+          (append (guix-assoc-value guix-command-post-processors commands)
+                  (guix-assoc-value guix-command-post-processors command))))
+    (guix-modify args
+                 (or processors
+                     (list #'guix-command-post-process-rest-multiple)))))
 
 
 ;;; 'Execute' actions
@@ -583,8 +694,7 @@ open the log file(s)."
          (output (guix-command-output args))
          (files  (split-string output "\n" t)))
     (dolist (file files)
-      (guix-find-file-or-url file)
-      (guix-build-log-mode))))
+      (guix-build-log-find-file file))))
 
 (defun guix-run-view-graph (args)
   "Run 'guix ARGS ...' graph command, make the image and open it."
@@ -640,7 +750,8 @@ EXECUTOR function is called with the current command line arguments."
        ,doc
        (interactive (,arguments-fun))
        (,executor (append ',commands
-                          (guix-command-post-process-args args))))))
+                          (guix-command-post-process-args
+                           ',commands args))))))
 
 (defun guix-command-generate-popup-actions (actions &optional commands)
   "Generate 'popup' commands from ACTIONS arguments for guix COMMANDS."

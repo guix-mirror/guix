@@ -45,6 +45,11 @@
   "Face used for file paths."
   :group 'guix-list-faces)
 
+(defface guix-list-time
+  '((t :inherit guix-info-time))
+  "Face used for time stamps."
+  :group 'guix-list-faces)
+
 (defcustom guix-list-describe-warning-count 10
   "The maximum number of entries for describing without a warning.
 If a user wants to describe more than this number of marked
@@ -201,7 +206,8 @@ VAL may be nil."
 
 (defun guix-list-get-time (seconds &optional _)
   "Return formatted time string from SECONDS."
-  (guix-get-time-string seconds))
+  (guix-get-string (guix-get-time-string seconds)
+                   'guix-list-time))
 
 (defun guix-list-get-file-path (path &optional _)
   "Return PATH button specification for `tabulated-list-entries'."

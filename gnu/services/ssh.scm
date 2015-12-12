@@ -21,8 +21,9 @@
   #:use-module (guix records)
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
-  #:use-module (gnu system linux)                 ; 'pam-service'
+  #:use-module (gnu system pam)
   #:use-module (gnu packages lsh)
+  #:use-module (srfi srfi-26)
   #:export (lsh-service))
 
 ;;; Commentary:
@@ -142,8 +143,8 @@
                 "--tcpip-forward" "--no-tcpip-forward")
             (if (null? interfaces)
                 '()
-                (list (string-append "--interfaces="
-                                     (string-join interfaces ",")))))))
+                (map (cut string-append "--interface=" <>)
+                     interfaces)))))
 
   (define requires
     (if (and daemonic? (lsh-configuration-syslog-output? config))

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -22,9 +23,10 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages check)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages compression)
@@ -33,39 +35,35 @@
 (define-public parted
   (package
     (name "parted")
-    (version "3.1")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/parted/parted-"
-                          version ".tar.xz"))
-      (sha256
-       (base32
-        "05fa4m1bky9d13hqv91jlnngzlyn7y4rnnyq6d86w0dg3vww372y"))))
+    (version "3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/parted/parted-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1r3qpg3bhz37mgvp9chsaa3k0csby3vayfvz8ggsqz194af5i2w5"))))
     (build-system gnu-build-system)
-    (arguments `(#:configure-flags '("--disable-device-mapper")
-                 #:phases (alist-cons-before
-                           'configure 'fix-mkswap
-                           (lambda* (#:key inputs #:allow-other-keys)
-                             (let ((util-linux (assoc-ref inputs
-                                                          "util-linux")))
-                               (substitute*
-                                   "tests/t9050-partition-table-types.sh"
-                                 (("mkswap")
-                                  (string-append util-linux "/sbin/mkswap")))))
-                           %standard-phases)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'fix-locales-and-python
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "tests/t0251-gpt-unicode.sh"
+              (("C.UTF-8") "en_US.utf8")) ;not in Glibc locales
+            (substitute* "tests/msdos-overlap"
+              (("/usr/bin/python") (which "python"))))))))
     (inputs
-     ;; XXX: add 'lvm2'.
-     `(("check" ,check)
-
-       ;; With Readline 6.3, parted/ui.c fails to build because it uses the
-       ;; now undefined 'CPPFunction' type.
-       ("readline" ,readline-6.2)
-
+     `(("lvm2" ,lvm2)
+       ("readline" ,readline)
        ("util-linux" ,util-linux)))
     (native-inputs
-     `(("gettext" ,gnu-gettext)))
-    (home-page "http://www.gnu.org/software/parted/")
+     `(("gettext" ,gnu-gettext)
+       ;; For the tests.
+       ("perl" ,perl)
+       ("python" ,python-2)))
+    (home-page "https://www.gnu.org/software/parted/")
     (synopsis "Disk partition editor")
     (description
      "GNU Parted is a package for creating and manipulating disk partition
@@ -124,7 +122,7 @@ to recover data more efficiently by only reading the necessary blocks.")
 (define-public dosfstools
   (package
     (name "dosfstools")
-    (version "3.0.27")
+    (version "3.0.28")
     (source
      (origin
        (method url-fetch)
@@ -133,7 +131,7 @@ to recover data more efficiently by only reading the necessary blocks.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1a2qs5g2zqbk1gzaaf4v3fw3yny6jgbzddpgcamkp3fjifn8wxl5"))))
+         "1qkya6lald91c8nsf29jwnk0k5v42wlj24gacfdp3wpc8hq935gf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output)

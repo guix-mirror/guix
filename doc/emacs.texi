@@ -227,6 +227,8 @@ prefix argument is used.  This has the same meaning as @code{--manifest}
 option (@pxref{Invoking guix package}).
 
 @item C-c C-z
+@cindex REPL
+@cindex read-eval-print loop
 Go to the Guix REPL (@pxref{The REPL,,, geiser, Geiser User Manual}).
 
 @item h
@@ -644,12 +646,11 @@ Toggle (show/hide) the bodies of all build phases.
 @end table
 
 There is also @kbd{M-x guix-build-log-minor-mode} which also provides
-the same highlighting (but not key bindings).  And as it is a minor
-mode, it can be enabled in any buffer.  For example, if you are building
-some package in a shell buffer (@pxref{Interactive Shell,,, emacs, The
-GNU Emacs Manual}), you may enable @command{guix-build-log-minor-mode}
-to make it more colorful.  Guix build output is rather specific, so this
-new highlighting shouldn't conflict with the existing one.
+the same highlighting and the same key bindings as the major mode, but
+prefixed with @kbd{C-c}.  By default, this minor mode is enabled in
+shell buffers (@pxref{Interactive Shell,,, emacs, The GNU Emacs
+Manual}).  If you don't like it, set
+@code{guix-build-log-minor-mode-activate} to nil.
 
 
 @node Emacs Completions

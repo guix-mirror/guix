@@ -50,7 +50,7 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu system nss)
   #:use-module (gnu system locale)
-  #:use-module (gnu system linux)
+  #:use-module (gnu system pam)
   #:use-module (gnu system linux-initrd)
   #:use-module (gnu system file-systems)
   #:use-module (ice-9 match)
@@ -76,6 +76,7 @@
             operating-system-timezone
             operating-system-locale
             operating-system-locale-definitions
+            operating-system-locale-libcs
             operating-system-mapped-devices
             operating-system-file-systems
             operating-system-activation-script
@@ -144,6 +145,8 @@
             (default "en_US.utf8"))
   (locale-definitions operating-system-locale-definitions ; list of <locale-definition>
                       (default %default-locale-definitions))
+  (locale-libcs operating-system-locale-libcs     ; list of <packages>
+                (default %default-locale-libcs))
   (name-service-switch operating-system-name-service-switch ; <name-service-switch>
                        (default %default-nss))
 
@@ -195,19 +198,16 @@ as 'needed-for-boot'."
                         (file-system-device fs)))
             (operating-system-mapped-devices os)))
 
-  (define (requirements fs)
-    ;; XXX: Fiddling with dmd service names is not nice.
-    (append (map (lambda (fs)
-                   (symbol-append 'file-system-
-                                  (string->symbol
-                                   (file-system-mount-point fs))))
-                 (file-system-dependencies fs))
-            (map (lambda (md)
-                   (symbol-append 'device-mapping-
-                                  (string->symbol (mapped-device-target md))))
-                 (device-mappings fs))))
+  (define (add-dependencies fs)
+    ;; Add the dependencies due to device mappings to FS.
+    (file-system
+      (inherit fs)
+      (dependencies
+       (delete-duplicates (append (device-mappings fs)
+                                  (file-system-dependencies fs))
+                          eq?))))
 
-  (map file-system-service file-systems))
+  (map (compose file-system-service add-dependencies) file-systems))
 
 (define (mapped-device-user device file-systems)
   "Return a file system among FILE-SYSTEMS that uses DEVICE, or #f."
@@ -254,6 +254,21 @@ from the initrd."
   "Return the list of swap services for OS."
   (map swap-service (operating-system-swap-devices os)))
 
+(define* (operating-system-directory-base-entries os #:key container?)
+  "Return the basic entries of the 'system' directory of OS for use as the
+value of the SYSTEM-SERVICE-TYPE service."
+  (mlet %store-monad ((locale (operating-system-locale-directory os)))
+    (if container?
+        (return `(("locale" ,locale)))
+        (mlet %store-monad
+            ((kernel  ->  (operating-system-kernel os))
+             (initrd      (operating-system-initrd-file os))
+             (params      (operating-system-parameters-file os)))
+          (return `(("kernel" ,kernel)
+                    ("parameters" ,params)
+                    ("initrd" ,initrd)
+                    ("locale" ,locale)))))))      ;used by libc
+
 (define* (essential-services os #:key container?)
   "Return the list of essential services for OS.  These are special services
 that implement part of what's declared in OS are responsible for low-level
@@ -269,8 +284,11 @@ a container or that of a \"bare metal\" system."
          (swaps     (swap-services os))
          (procs     (user-processes-service
                      (map service-parameters other-fs)))
-         (host-name (host-name-service (operating-system-host-name os))))
-    (cons* %boot-service
+         (host-name (host-name-service (operating-system-host-name os)))
+         (entries   (operating-system-directory-base-entries
+                     os #:container? container?)))
+    (cons* (service system-service-type entries)
+           %boot-service
 
            ;; %DMD-ROOT-SERVICE must come first so that the gexp that execs
            ;; dmd comes last in the boot script (XXX).
@@ -281,16 +299,21 @@ a container or that of a \"bare metal\" system."
                                     (operating-system-groups os))
                             (operating-system-skeletons os))
            (operating-system-etc-service os)
+           (session-environment-service
+            (operating-system-environment-variables os))
            host-name procs root-fs unmount
            (service setuid-program-service-type
                     (operating-system-setuid-programs os))
+           (service profile-service-type
+                    (operating-system-packages os))
            (append other-fs mappings swaps
 
                    ;; Add the firmware service, unless we are building for a
                    ;; container.
                    (if container?
                        '()
-                       (list (service firmware-service-type
+                       (list %linux-bare-metal-service
+                             (service firmware-service-type
                                       (operating-system-firmware os))))))))
 
 (define* (operating-system-services os #:key container?)
@@ -382,38 +405,11 @@ settings for 'guix.el' to work out-of-the-box."
                      (chdir #$output)
                      (symlink #$(emacs-site-file) "site-start.el"))))
 
-(define (user-shells os)
-  "Return the list of all the shells used by the accounts of OS.  These may be
-gexps or strings."
-  (map user-account-shell (operating-system-accounts os)))
-
-(define (shells-file shells)
-  "Return a file-like object that builds a shell list for use as /etc/shells
-based on SHELLS.  /etc/shells is used by xterm, polkit, and other programs."
-  (computed-file "shells"
-                 #~(begin
-                     (use-modules (srfi srfi-1))
-
-                     (define shells
-                       (delete-duplicates (list #$@shells)))
-
-                     (call-with-output-file #$output
-                       (lambda (port)
-                         (display "\
-/bin/sh
-/run/current-system/profile/bin/sh
-/run/current-system/profile/bin/bash\n" port)
-                         (for-each (lambda (shell)
-                                     (display shell port)
-                                     (newline port))
-                                   shells))))))
-
 (define* (operating-system-etc-service os)
   "Return a <service> that builds containing the static part of the /etc
 directory."
   (let ((login.defs (plain-file "login.defs" "# Empty for now.\n"))
 
-        (shells     (shells-file (user-shells os)))
         (emacs      (emacs-site-directory))
         (issue      (plain-file "issue" (operating-system-issue os)))
         (nsswitch   (plain-file "nsswitch.conf"
@@ -423,18 +419,6 @@ directory."
         ;; Startup file for POSIX-compliant login shells, which set system-wide
         ;; environment variables.
         (profile    (mixed-text-file "profile"  "\
-export LANG=\"" (operating-system-locale os) "\"
-export TZ=\"" (operating-system-timezone os) "\"
-export TZDIR=\"" tzdata "/share/zoneinfo\"
-
-# Tell 'modprobe' & co. where to look for modules.
-export LINUX_MODULE_DIRECTORY=/run/booted-system/kernel/lib/modules
-
-# These variables are honored by OpenSSL (libssl) and Git.
-export SSL_CERT_DIR=/etc/ssl/certs
-export SSL_CERT_FILE=\"$SSL_CERT_DIR/ca-certificates.crt\"
-export GIT_SSL_CAINFO=\"$SSL_CERT_FILE\"
-
 # Crucial variables that could be missing in the profiles' 'etc/profile'
 # because they would require combining both profiles.
 # FIXME: See <http://bugs.gnu.org/20255>.
@@ -463,13 +447,6 @@ else
   # when the user installs their first package.
   export PATH=\"$HOME/.guix-profile/bin:$PATH\"
 fi
-
-# Append the directory of 'site-start.el' to the search path.
-export EMACSLOADPATH=:/etc/emacs
-
-# By default, applications that use D-Bus, such as Emacs, abort at startup
-# when /etc/machine-id is missing.  Make sure these warnings are non-fatal.
-export DBUS_FATAL_WARNINGS=0
 
 # Allow Aspell to find dictionaries installed in the user profile.
 export ASPELL_CONF=\"dict-dir $HOME/.guix-profile/lib/aspell\"
@@ -503,7 +480,6 @@ fi\n")))
        ("login.defs" ,#~#$login.defs)
        ("issue" ,#~#$issue)
        ("nsswitch.conf" ,#~#$nsswitch)
-       ("shells" ,#~#$shells)
        ("profile" ,#~#$profile)
        ("bashrc" ,#~#$bashrc)
        ("hosts" ,#~#$(or (operating-system-hosts-file os)
@@ -511,11 +487,6 @@ fi\n")))
        ("localtime" ,#~(string-append #$tzdata "/share/zoneinfo/"
                                       #$(operating-system-timezone os)))
        ("sudoers" ,(operating-system-sudoers-file os))))))
-
-(define (operating-system-profile os)
-  "Return a derivation that builds the system profile of OS."
-  (profile-derivation (manifest (map package->manifest-entry
-                                     (operating-system-packages os)))))
 
 (define %root-account
   ;; Default root account.
@@ -573,6 +544,24 @@ use 'plain-file' instead~%")
    (fold-services (operating-system-services os)
                   #:target-type etc-service-type)))
 
+(define (operating-system-environment-variables os)
+  "Return the environment variables of OS for
+@var{session-environment-service-type}, to be used in @file{/etc/environment}."
+  `(("LANG" . ,(operating-system-locale os))
+    ("TZ" . ,(operating-system-timezone os))
+    ("TZDIR" . ,#~(string-append #$tzdata "/share/zoneinfo"))
+    ;; Tell 'modprobe' & co. where to look for modules.
+    ("LINUX_MODULE_DIRECTORY" . "/run/booted-system/kernel/lib/modules")
+    ;; These variables are honored by OpenSSL (libssl) and Git.
+    ("SSL_CERT_DIR" . "/etc/ssl/certs")
+    ("SSL_CERT_FILE" . "/etc/ssl/certs/ca-certificates.crt")
+    ("GIT_SSL_CAINFO" . "/etc/ssl/certs/ca-certificates.crt")
+    ;; Append the directory of 'site-start.el' to the search path.
+    ("EMACSLOADPATH" . ":/etc/emacs")
+    ;; By default, applications that use D-Bus, such as Emacs, abort at startup
+    ;; when /etc/machine-id is missing.  Make sure these warnings are non-fatal.
+    ("DBUS_FATAL_WARNINGS" . "0")))
+
 (define %setuid-programs
   ;; Default set of setuid-root programs.
   (let ((shadow (@ (gnu packages admin) shadow)))
@@ -606,9 +595,26 @@ etc."
 we're running in the final root.  When CONTAINER? is true, skip all
 hardware-related operations as necessary when booting a Linux container."
   (let* ((services (operating-system-services os #:container? container?))
-         (boot     (fold-services services)))
+         (boot     (fold-services services #:target-type boot-service-type)))
     ;; BOOT is the script as a monadic value.
     (service-parameters boot)))
+
+(define* (operating-system-derivation os #:key container?)
+  "Return a derivation that builds OS."
+  (let* ((services (operating-system-services os #:container? container?))
+         (system   (fold-services services)))
+    ;; SYSTEM contains the derivation as a monadic value.
+    (service-parameters system)))
+
+(define* (operating-system-profile os #:key container?)
+  "Return a derivation that builds the system profile of OS."
+  (mlet* %store-monad
+      ((services -> (operating-system-services os #:container? container?))
+       (profile (fold-services services
+                               #:target-type profile-service-type)))
+    (match profile
+      (("profile" profile)
+       (return profile)))))
 
 (define (operating-system-root-file-system os)
   "Return the root file system of OS."
@@ -645,7 +651,8 @@ listed in OS.  The C library expects to find it under
     (raise (condition
             (&message (message "system locale lacks a definition")))))
 
-  (locale-directory (operating-system-locale-definitions os)))
+  (locale-directory (operating-system-locale-definitions os)
+                    #:libcs (operating-system-locale-libcs os)))
 
 (define (kernel->grub-label kernel)
   "Return a label for the GRUB menu entry that boots KERNEL."
@@ -690,25 +697,5 @@ this file is the reconstruction of GRUB menu entries for old configurations."
                                    (kernel-arguments
                                     #$(operating-system-kernel-arguments os))
                                    (initrd #$initrd)))))
-
-(define (operating-system-derivation os)
-  "Return a derivation that builds OS."
-  (mlet* %store-monad
-      ((profile     (operating-system-profile os))
-       (etc ->      (operating-system-etc-directory os))
-       (boot        (operating-system-boot-script os))
-       (kernel  ->  (operating-system-kernel os))
-       (initrd      (operating-system-initrd-file os))
-       (locale      (operating-system-locale-directory os))
-       (params      (operating-system-parameters-file os)))
-    (lower-object
-     (file-union "system"
-                 `(("boot" ,#~#$boot)
-                   ("kernel" ,#~#$kernel)
-                   ("parameters" ,#~#$params)
-                   ("initrd" ,initrd)
-                   ("profile" ,#~#$profile)
-                   ("locale" ,#~#$locale)         ;used by libc
-                   ("etc" ,#~#$etc))))))
 
 ;;; system.scm ends here

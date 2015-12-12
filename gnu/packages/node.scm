@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,18 +19,19 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages node)
-  #:use-module ((guix licenses)
-                #:select (expat))
-  #:use-module (gnu packages)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages python)
-  #:use-module (gnu packages gcc)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages base)
+  #:use-module ((guix licenses) #:select (expat))
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages gcc)
+  #:use-module (gnu packages libevent)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages tls))
 
 (define-public node
   (package
@@ -42,38 +44,44 @@
               (sha256
                (base32
                 "17gk29zbw58l0sjjfw86acp39pkiblnq0gsq1jdrd70w0pgn8gdj"))))
-    (native-inputs `(("python" ,python-2)
-                     ("perl" ,perl)
-                     ("gcc" ,gcc-4.9)
-                     ("util-linux" ,util-linux)
-                     ("which" ,which)))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
-       (alist-replace
-        'configure
-        ;; Node's configure script is actually a python script, so we can't
-        ;; run it with bash.
-        (lambda* (#:key outputs (configure-flags '()) inputs
-                        #:allow-other-keys)
-          (let* ((prefix (assoc-ref outputs "out"))
-                 (flags `(,(string-append "--prefix=" prefix)
-                          ,@configure-flags)))
-            (format #t "build directory: ~s~%" (getcwd))
-            (format #t "configure flags: ~s~%" flags)
-            ;; Node's configure script expects the CC environment variable to
-            ;; be set.
-            (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
-            (zero? (apply system*
-                          (string-append (assoc-ref inputs "python")
-                                         "/bin/python")
-                          "./configure" flags))))
-        %standard-phases)))
+     ;; TODO: Package http_parser and add --shared-http-parser.
+     '(#:configure-flags '("--shared-openssl" "--shared-zlib" "--shared-libuv")
+       #:phases
+       (modify-phases %standard-phases
+        (replace 'configure
+         ;; Node's configure script is actually a python script, so we can't
+         ;; run it with bash.
+         (lambda* (#:key outputs (configure-flags '()) inputs
+                   #:allow-other-keys)
+           (let* ((prefix (assoc-ref outputs "out"))
+                  (flags (cons (string-append "--prefix=" prefix)
+                               configure-flags)))
+             (format #t "build directory: ~s~%" (getcwd))
+             (format #t "configure flags: ~s~%" flags)
+             ;; Node's configure script expects the CC environment variable to
+             ;; be set.
+             (setenv "CC" (string-append (assoc-ref inputs "gcc") "/bin/gcc"))
+             (zero? (apply system*
+                           (string-append (assoc-ref inputs "python")
+                                          "/bin/python")
+                           "./configure" flags))))))))
+    (native-inputs
+     `(("python" ,python-2)
+       ("perl" ,perl)
+       ("gcc" ,gcc-4.9)
+       ("util-linux" ,util-linux)
+       ("which" ,which)))
+    (inputs
+     `(("libuv" ,libuv)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
     (synopsis "Evented I/O for V8 JavaScript")
     (description "Node.js is a platform built on Chrome's JavaScript runtime
 for easily building fast, scalable network applications.  Node.js uses an
 event-driven, non-blocking I/O model that makes it lightweight and efficient,
 perfect for data-intensive real-time applications that run across distributed
 devices.")
-    (license expat)
-    (home-page "http://nodejs.org/")))
+    (home-page "http://nodejs.org/")
+    (license expat)))

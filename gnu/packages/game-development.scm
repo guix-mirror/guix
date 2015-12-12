@@ -48,7 +48,9 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages xiph))
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages lua)
+  #:use-module (gnu packages mp3))
 
 (define-public bullet
   (package
@@ -259,4 +261,36 @@ and it becomes a single, transparent hierarchical file system.  So archive
 files can be accessed in the same way as you access files directly on a disk,
 and it makes it easy to ship a new archive that will override a previous
 archive on a per-file basis.")
+    (license license:zlib)))
+
+(define-public love
+  (package
+    (name "love")
+    (version "0.9.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://bitbucket.org/rude/love/downloads/"
+                                 "love-" version "-linux-src.tar.gz"))
+             (sha256
+              (base32
+               "0wn1npr5gal5b1idh4a5fwc3f5c36lsbjd4r4d699rqlviid15d9"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("devil" ,devil)
+       ("freetype" ,freetype)
+       ("libmodplug" ,libmodplug)
+       ("libvorbis" ,libvorbis)
+       ("luajit" ,luajit)
+       ("mesa" ,mesa)
+       ("mpg123" ,mpg123)
+       ("openal" ,openal)
+       ("physfs" ,physfs)
+       ("sdl2" ,sdl2)
+       ("zlib" ,zlib)))
+    (synopsis "2D game framework for Lua")
+    (description "LÖVE is a framework for making 2D games in the Lua
+programming language.")
+    (home-page "https://love2d.org/")
     (license license:zlib)))

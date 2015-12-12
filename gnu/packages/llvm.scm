@@ -87,7 +87,10 @@ of programming tools as well as libraries with equivalent functionality.")
 functions for C and C++ programs.  It also provides header files that allow C
 and C++ source code to interface with the \"sanitization\" passes of the clang
 compiler.  In LLVM this library is called \"compiler-rt\".")
-    (license ncsa)))
+    (license ncsa)
+
+    ;; <http://compiler-rt.llvm.org/> doesn't list MIPS as supported.
+    (supported-systems (delete "mips64el-linux" %supported-systems))))
 
 (define (clang-from-llvm llvm clang-runtime hash)
   (package

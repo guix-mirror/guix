@@ -980,7 +980,8 @@ its search path."
                      (call-with-output-file (ungexp output)
                        (lambda (port)
                          (write '(ungexp exp) port))))
-                    #:local-build? #t))
+                    #:local-build? #t
+                    #:substitutable? #f))
 
 (define* (text-file* name #:rest text)
   "Return as a monadic value a derivation that builds a text file containing
@@ -992,7 +993,9 @@ resulting store file holds references to all these."
             (lambda (port)
               (display (string-append (ungexp-splicing text)) port)))))
 
-  (gexp->derivation name builder))
+  (gexp->derivation name builder
+                    #:local-build? #t
+                    #:substitutable? #f))
 
 (define* (mixed-text-file name #:rest text)
   "Return an object representing store file NAME containing TEXT.  TEXT is a
