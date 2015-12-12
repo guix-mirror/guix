@@ -260,11 +260,24 @@
                                   (package-native-inputs gcc))))))
 
 (define perl-boot0
-  (package-with-bootstrap-guile
-   (package-with-explicit-inputs perl
-                                 %boot0-inputs
-                                 (current-source-location)
-                                 #:guile %bootstrap-guile)))
+  (let ((perl (package
+                (inherit perl)
+                (arguments
+                 (substitute-keyword-arguments (package-arguments perl)
+                   ((#:phases phases)
+                    `(modify-phases ,phases
+                       ;; Pthread support is missing in the bootstrap compiler
+                       ;; (broken spec file), so disable it.
+                       (add-before 'configure 'disable-pthreads
+                         (lambda _
+                           (substitute* "Configure"
+                             (("^libswanted=(.*)pthread" _ before)
+                              (string-append "libswanted=" before))))))))))))
+   (package-with-bootstrap-guile
+    (package-with-explicit-inputs perl
+                                  %boot0-inputs
+                                  (current-source-location)
+                                  #:guile %bootstrap-guile))))
 
 (define (linux-libre-headers-boot0)
   "Return Linux-Libre header files for the bootstrap environment."

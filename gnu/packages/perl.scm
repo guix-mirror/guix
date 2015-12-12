@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
@@ -37,18 +37,17 @@
   ;; Yeah, Perl...  It is required early in the bootstrap process by Linux.
   (package
     (name "perl")
-    (version "5.16.1")
+    (version "5.22.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.cpan.org/src/5.0/perl-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "15qxzba3a50c9nik5ydgyfp62x7h9vxxn12yd1jgl93hb1wj96km"))
+               "0g5bl8sdpzx9gx2g5jq3py4bj07z2ylk7s1qn0fvsss2yl3hhs8c"))
              (patches (map search-patch
                            '("perl-no-sys-dirs.patch"
-                             "perl-autosplit-default-time.patch"
-                             "perl-module-pluggable-search.patch")))))
+                             "perl-autosplit-default-time.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -60,9 +59,15 @@
             (let ((out  (assoc-ref outputs "out"))
                   (libc (assoc-ref inputs "libc")))
               ;; Use the right path for `pwd'.
-              (substitute* "dist/Cwd/Cwd.pm"
+              (substitute* "dist/PathTools/Cwd.pm"
                 (("/bin/pwd")
                  (which "pwd")))
+
+              ;; Build in GNU89 mode to tolerate C++-style comment in libc's
+              ;; <bits/string3.h>.
+              (substitute* "cflags.SH"
+                (("-std=c89")
+                 "-std=gnu89"))
 
               (zero?
                (system* "./Configure"
