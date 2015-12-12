@@ -44,7 +44,8 @@
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)))
    (outputs '("out" "debug"))
-   (arguments `(#:configure-flags
+   (arguments `(#:parallel-tests? #f ; mpz/reuse fails otherwise
+                #:configure-flags
                 '(;; Build a "fat binary", with routines for several
                   ;; sub-architectures.
                   "--enable-fat"
