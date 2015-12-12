@@ -485,6 +485,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/glib-tests-timer.patch			\
   gnu/packages/patches/glib-tests-gapplication.patch		\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
+  gnu/packages/patches/glibc-hurd-extern-inline.patch		\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
   gnu/packages/patches/glibc-locales.patch			\
   gnu/packages/patches/glibc-locale-incompatibility.patch	\
@@ -623,6 +624,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/perl-tk-x11-discover.patch		\
   gnu/packages/patches/pidgin-add-search-path.patch		\
   gnu/packages/patches/pingus-sdl-libs-config.patch		\
+  gnu/packages/patches/plink-1.07-unclobber-i.patch		\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/polkit-drop-test.patch			\
   gnu/packages/patches/portaudio-audacity-compat.patch		\
