@@ -1394,7 +1394,7 @@ file system is as easy as logging into the server with an SSH client.")
 (define-public numactl
   (package
     (name "numactl")
-    (version "2.0.10")
+    (version "2.0.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1403,20 +1403,10 @@ file system is as easy as logging into the server with an SSH client.")
                     ".tar.gz"))
               (sha256
                (base32
-                "0qfv2ks6d3gm0mw5sj4cbhsd7cbsb7qm58xvchl2wfzifkzcinnv"))))
+                "0qbqa9gac2vlahrngi553hws2mqgqdwv2lc69a3yx4gq6l90j325"))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("autoconf" ,autoconf)
-       ("automake" ,automake)
-       ("libtool" ,libtool)))
     (arguments
-     '(#:phases
-       (modify-phases %standard-phases
-         (add-after
-          'unpack 'autogen
-          (lambda _
-            (zero? (system* "sh" "autogen.sh")))))
-       ;; There's a 'test' target, but it requires NUMA support in the kernel
+     '(;; There's a 'test' target, but it requires NUMA support in the kernel
        ;; to run, which we can't assume to have.
        #:tests? #f))
 
