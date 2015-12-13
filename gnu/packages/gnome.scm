@@ -2467,7 +2467,7 @@ services for numerous locations.")
 (define-public gnome-settings-daemon
   (package
     (name "gnome-settings-daemon")
-    (version "3.16.0")
+    (version "3.18.2")
     (source
      (origin
        (method url-fetch)
@@ -2476,7 +2476,7 @@ services for numerous locations.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1w29x2izq59125ga5ncmmaklc8kw7x7rdn6swn26bs23mah1r1g3"))))
+         "0vzwf875csyqx04fnra6zicmzcjc3s13bxxpcizlys12iwjwfw9h"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(;; Network manager not yet packaged.
