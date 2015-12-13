@@ -42,6 +42,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages calendar)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
@@ -4264,3 +4265,63 @@ the available networks and allows users to easily switch between them.")
      "This package provides a C++ wrapper for the XML parser library
 libxml2.")
     (license license:lgpl2.1+)))
+
+(define-public gdm
+  (package
+    (name "gdm")
+    (version "3.18.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "08pqhslwd487nh9w0jp4d0s4s2imm4ds0jjsbl6lzmqifqj3b4jl"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       '("--without-plymouth")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'pre-configure
+          (lambda _
+            ;; We don't have <systemd/sd-daemon.h>.
+            (substitute* '("common/gdm-log.c"
+                           "daemon/gdm-server.c"
+                           "daemon/gdm-session-worker.c"
+                           "daemon/gdm-session-worker-job.c")
+              (("#include <systemd/sd-daemon\\.h>") ""))
+            ;; Use elogind for sd-login.
+            (substitute* '("common/gdm-common.c"
+                           "daemon/gdm-manager.c"
+                           "libgdm/gdm-user-switching.c")
+              (("#include <systemd/sd-login\\.h>")
+               "#include <elogind/sd-login.h>"))
+            ;; Avoid checking SYSTEMD using pkg-config.
+            (setenv "SYSTEMD_CFLAGS" " ")
+            (setenv "SYSTEMD_LIBS" "-lelogind")
+            #t)))))
+    (native-inputs
+     `(("dconf" ,dconf)
+       ("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("accountsservice" ,accountsservice)
+       ("check" ,check) ; for testing
+       ("elogind" ,elogind)
+       ("gtk+" ,gtk+)
+       ("iso-codes" ,iso-codes)
+       ("libcanberra" ,libcanberra)
+       ("linux-pam" ,linux-pam)))
+    (synopsis "Display manager for GNOME")
+    (home-page "http://wiki.gnome.org/Projects/GDM/")
+    (description
+     "GNOME Display Manager is a system service that is responsible for
+providing graphical log-ins and managing local and remote displays.")
+    (license license:gpl2+)))
