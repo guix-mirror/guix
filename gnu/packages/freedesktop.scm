@@ -427,3 +427,34 @@ message bus.")
 and manipulating user account information and an implementation of these
 interfaces, based on the useradd, usermod and userdel commands.")
     (license license:gpl3+)))
+
+(define-public libmbim
+  (package
+    (name "libmbim")
+    (version "1.12.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.freedesktop.org/software/" name "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0abv0h9c3kbw4bq1b9270sg189jcjj3x3wa91bj836ynwg9m34wl"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (propagated-inputs
+     `(("glib" ,glib))) ; required by mbim-glib.pc
+    (inputs
+     `(("libgudev" ,libgudev)))
+    (synopsis "Library to communicate with MBIM-powered modems")
+    (home-page "http://www.freedesktop.org/wiki/Software/libmbim/")
+    (description
+     "Libmbim is a GLib-based library for talking to WWAN modems and devices
+which speak the Mobile Interface Broadband Model (MBIM) protocol.")
+    (license
+     ;; The libmbim-glib library is released under the LGPLv2+ license.
+     ;; The mbimcli tool is released under the GPLv2+ license.
+     (list license:lgpl2.0+ license:gpl2+))))
