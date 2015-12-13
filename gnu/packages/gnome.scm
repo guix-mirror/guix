@@ -152,7 +152,7 @@ features to enable users to create their discs easily and quickly.")
 (define-public gnome-common
   (package
     (name "gnome-common")
-    (version "3.14.0")
+    (version "3.18.0")
     (source
      (origin
        (method url-fetch)
@@ -161,7 +161,7 @@ features to enable users to create their discs easily and quickly.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0b1676g4q44ah73c5gwl1kg88pc93pnq1pa9kwl43d0vg0pj802c"))))
+         "1kzqi8qvh5p1zncj8msazlmvcwsczjz2hqxp4x2y0mg718vrwmi2"))))
     (build-system gnu-build-system)
     (home-page "https://www.gnome.org/")
     (synopsis "Bootstrap GNOME modules built from Git")
