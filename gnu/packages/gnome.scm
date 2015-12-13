@@ -2331,7 +2331,7 @@ permission from user.")
 (define-public geocode-glib
   (package
     (name "geocode-glib")
-    (version "3.16.0")
+    (version "3.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/geocode-glib/"
@@ -2339,7 +2339,7 @@ permission from user.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1cbfv0kds6b6k0cl7q47xpj3x1scwcd7m68zl1rf7i4hmhw4hpqj"))))
+                "0pa9cgndycynipc6z8wzbvn2fi89ndf2gpqzm9m6krp3d7az1dwg"))))
     (build-system gnu-build-system)
     (arguments
      `(;; The tests want to write to $HOME/.cache/geocode-glib, which doesn't
