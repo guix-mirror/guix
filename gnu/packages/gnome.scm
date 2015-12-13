@@ -586,7 +586,7 @@ update-desktop-database: updates the database containing a cache of MIME types
 (define-public adwaita-icon-theme
   (package (inherit gnome-icon-theme)
     (name "adwaita-icon-theme")
-    (version "3.16.2")
+    (version "3.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -594,7 +594,7 @@ update-desktop-database: updates the database containing a cache of MIME types
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1hmlw7kvhr7c2asc5y77adpymi9ka17gaf76zz835nwwffnn4rlw"))))))
+                "0n0fqlg55krw8pgn4z2vxnxh65lyvcydqkrr7klqxp8z00kfg72y"))))))
 
 (define-public shared-mime-info
   (package
