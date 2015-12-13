@@ -458,3 +458,32 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
      ;; The libmbim-glib library is released under the LGPLv2+ license.
      ;; The mbimcli tool is released under the GPLv2+ license.
      (list license:lgpl2.0+ license:gpl2+))))
+
+(define-public libqmi
+  (package
+    (name "libqmi")
+    (version "1.12.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.freedesktop.org/software/" name "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "101ppan2q1h4pyp2zbn9b8sdwy2c7fk9rp91yykxz3afrvzbymq8"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (propagated-inputs
+     `(("glib" ,glib))) ; required by qmi-glib.pc
+    (synopsis "Library to communicate with QMI-powered modems")
+    (home-page "http://www.freedesktop.org/wiki/Software/libqmi/")
+    (description
+     "Libqmi is a GLib-based library for talking to WWAN modems and devices
+which speak the Qualcomm MSM Interface (QMI) protocol.")
+    (license
+     ;; The libqmi-glib library is released under the LGPLv2+ license.
+     ;; The qmicli tool is released under the GPLv2+ license.
+     (list license:lgpl2.0+ license:gpl2+))))
