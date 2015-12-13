@@ -864,6 +864,12 @@ Allow at most @var{n} build jobs in parallel.  The default value is
 locally; instead, the daemon will offload builds (@pxref{Daemon Offload
 Setup}), or simply fail.
 
+@item --rounds=@var{N}
+Build each derivation @var{n} times in a row, and raise an error if
+consecutive build results are not bit-for-bit identical.  Note that this
+setting can be overridden by clients such as @command{guix build}
+(@pxref{Invoking guix build}).
+
 @item --debug
 Produce debugging output.
 

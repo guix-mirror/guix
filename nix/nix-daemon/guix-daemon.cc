@@ -80,6 +80,7 @@ builds derivations on behalf of its clients.");
 #define GUIX_OPT_NO_BUILD_HOOK 14
 #define GUIX_OPT_GC_KEEP_OUTPUTS 15
 #define GUIX_OPT_GC_KEEP_DERIVATIONS 16
+#define GUIX_OPT_BUILD_ROUNDS 17
 
 static const struct argp_option options[] =
   {
@@ -104,6 +105,8 @@ static const struct argp_option options[] =
       n_("do not use the 'build hook'") },
     { "cache-failures", GUIX_OPT_CACHE_FAILURES, 0, 0,
       n_("cache build failures") },
+    { "rounds", GUIX_OPT_BUILD_ROUNDS, "N", 0,
+      n_("build each derivation N times in a row") },
     { "lose-logs", GUIX_OPT_LOSE_LOGS, 0, 0,
       n_("do not keep build logs") },
     { "disable-log-compression", GUIX_OPT_DISABLE_LOG_COMPRESSION, 0, 0,
@@ -189,6 +192,18 @@ parse_opt (int key, char *arg, struct argp_state *state)
     case GUIX_OPT_CACHE_FAILURES:
       settings.cacheFailure = true;
       break;
+    case GUIX_OPT_BUILD_ROUNDS:
+      {
+	char *end;
+	unsigned long n = strtoul (arg, &end, 10);
+	if (end != arg + strlen (arg))
+	  {
+	    fprintf (stderr, _("error: %s: invalid number of rounds\n"), arg);
+	    exit (EXIT_FAILURE);
+	  }
+	settings.set ("build-repeat", std::to_string (std::max (0UL, n - 1)));
+	break;
+      }
     case GUIX_OPT_IMPERSONATE_LINUX_26:
       settings.impersonateLinux26 = true;
       break;
