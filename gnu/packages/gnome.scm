@@ -1765,7 +1765,7 @@ editors, IDEs, etc.")
 (define-public dconf
   (package
     (name "dconf")
-    (version "0.22.0")
+    (version "0.24.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1773,7 +1773,8 @@ editors, IDEs, etc.")
                     (version-major+minor version) "/"
                     name "-" version ".tar.xz"))
               (sha256
-               (base32 "13jb49504bir814v8n8vjip5sazwfwsrnniw87cpg7phqfq7q9qa"))))
+               (base32
+                "1hpy6336f0pbkyranywm4872i5in0xn7jf40a66xdmzls77f0ws3"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("gtk+" ,gtk+)
