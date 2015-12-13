@@ -2945,7 +2945,7 @@ for application developers.")
 (define-public grilo-plugins
   (package
     (name "grilo-plugins")
-    (version "0.2.14")
+    (version "0.2.16")
     (source
      (origin
        (method url-fetch)
@@ -2954,7 +2954,7 @@ for application developers.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1aykhc679pwn2qxsg19g8nh9hffpsqkgxcbqq7lcfn2hcwb83wfh"))))
+         "00sjmkzxc8w4qn4lp5yj65c4y83mwhp0zlvk11ghvpxnklgmgd40"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")     ; for glib-mkenums and glib-genmarshal
