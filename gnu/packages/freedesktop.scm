@@ -487,3 +487,44 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
      ;; The libqmi-glib library is released under the LGPLv2+ license.
      ;; The qmicli tool is released under the GPLv2+ license.
      (list license:lgpl2.0+ license:gpl2+))))
+
+(define-public modem-manager
+  (package
+    (name "modem-manager")
+    (version "1.4.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.freedesktop.org/software/ModemManager/"
+                    "ModemManager-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1cvhpkbdch9a77sdir0wcks45m2zlvq1sna2ly2v4lx9fm9h7xby"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       `(,(string-append "--with-udev-base-dir=" %output "/lib/udev"))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
+       ;; For testing.
+       ("dbus" ,dbus)))
+    (propagated-inputs
+     `(("glib" ,glib))) ; required by mm-glib.pc
+    (inputs
+     `(("libgudev" ,libgudev)
+       ("libmbim" ,libmbim)
+       ("libqmi" ,libqmi)
+       ("polkit" ,polkit)))
+    (synopsis "Mobile broadband modems manager")
+    (home-page "http://www.freedesktop.org/wiki/Software/ModemManager/")
+    (description
+     "ModemManager is a DBus-activated daemon which controls mobile
+broadband (2G/3G/4G) devices and connections.  Whether built-in devices, USB
+dongles, bluetooth-paired telephones, or professional RS232/USB devices with
+external power supplies, ModemManager is able to prepare and configure the
+modems and setup connections with them.")
+    (license license:gpl2+)))
