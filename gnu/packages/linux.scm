@@ -1759,11 +1759,21 @@ compliance.")
                     "wireless-regdb-" version ".tar.xz"))
               (sha256
                (base32
-                "0czi83k311fp27z42hxjm8vi88fsbc23mhavv96lkb4pmari0jjc"))))
+                "0czi83k311fp27z42hxjm8vi88fsbc23mhavv96lkb4pmari0jjc"))
+
+              ;; We're building 'regulatory.bin' by ourselves.
+              (snippet '(delete-file "regulatory.bin"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
                   (delete 'configure))
+
+       ;; The 'all' target of the makefile depends on $(REGDB_CHANGED), which
+       ;; is computed and can be equal to 'maintainer-clean'; when that
+       ;; happens, we can end up deleting the 'regulatory.bin' file that we
+       ;; just built.  Thus, build things sequentially.
+       #:parallel-build? #f
+
        #:tests? #f                                ;no tests
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list (string-append "PREFIX=" out)
