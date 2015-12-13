@@ -7126,7 +7126,7 @@ password, and which needs to access the @file{/etc/passwd} and
 obvious security reasons.  To address that, these executables are
 @dfn{setuid-root}, meaning that they always run with root privileges
 (@pxref{How Change Persona,,, libc, The GNU C Library Reference Manual},
-for more info about the setuid mechanisms.)
+for more info about the setuid mechanism.)
 
 The store itself @emph{cannot} contain setuid programs: that would be a
 security issue since any user on the system can write derivations that
