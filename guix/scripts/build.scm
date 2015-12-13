@@ -404,10 +404,16 @@ must be one of 'package', 'all', or 'transitive'~%")
 (define (options->things-to-build opts)
   "Read the arguments from OPTS and return a list of high-level objects to
 build---packages, gexps, derivations, and so on."
-  (define ensure-list
-    (match-lambda
-      ((x ...) x)
-      (x       (list x))))
+  (define (validate-type x)
+    (unless (or (package? x) (derivation? x) (gexp? x) (procedure? x))
+      (leave (_ "~s: not something we can build~%") x)))
+
+  (define (ensure-list x)
+    (let ((lst (match x
+                 ((x ...) x)
+                 (x       (list x)))))
+      (for-each validate-type lst)
+      lst))
 
   (append-map (match-lambda
                 (('argument . (? string? spec))
