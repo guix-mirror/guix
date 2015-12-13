@@ -250,6 +250,17 @@ edges."
                                        (bootstrap? package)))
                                  diff))))))))
 
+(test-assert "node-transitive-edges, no duplicates"
+  (run-with-store %store
+    (let* ((p0  (dummy-package "p0"))
+           (p1a (dummy-package "p1a" (inputs `(("p0" ,p0)))))
+           (p1b (dummy-package "p1b" (inputs `(("p0" ,p0)))))
+           (p2  (dummy-package "p2" (inputs `(("p1a" ,p1a) ("p1b" ,p1b))))))
+      (mlet %store-monad ((edges (node-edges %package-node-type
+                                             (list p2 p1a p1b p0))))
+        (return (lset= eq? (node-transitive-edges (list p2) edges)
+                       (list p1a p1b p0)))))))
+
 (test-end "graph")
 
 
