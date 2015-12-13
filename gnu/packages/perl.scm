@@ -47,7 +47,10 @@
                "0g5bl8sdpzx9gx2g5jq3py4bj07z2ylk7s1qn0fvsss2yl3hhs8c"))
              (patches (map search-patch
                            '("perl-no-sys-dirs.patch"
-                             "perl-autosplit-default-time.patch")))))
+                             "perl-autosplit-default-time.patch"
+                             "perl-source-date-epoch.patch"
+                             "perl-deterministic-ordering.patch"
+                             "perl-no-build-time.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f

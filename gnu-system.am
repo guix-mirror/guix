@@ -615,11 +615,14 @@ dist_patch_DATA =						\
   gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   gnu/packages/patches/patch-hurd-path-max.patch		\
   gnu/packages/patches/perl-autosplit-default-time.patch	\
+  gnu/packages/patches/perl-deterministic-ordering.patch	\
   gnu/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
   gnu/packages/patches/perl-gd-options-passthrough-and-fontconfig.patch \
   gnu/packages/patches/perl-net-amazon-s3-moose-warning.patch	\
   gnu/packages/patches/perl-net-ssleay-disable-ede-test.patch	\
+  gnu/packages/patches/perl-no-build-time.patch			\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
+  gnu/packages/patches/perl-source-date-epoch.patch		\
   gnu/packages/patches/perl-tk-x11-discover.patch		\
   gnu/packages/patches/pidgin-add-search-path.patch		\
   gnu/packages/patches/pingus-sdl-libs-config.patch		\
