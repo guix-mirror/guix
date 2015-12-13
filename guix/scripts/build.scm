@@ -424,8 +424,6 @@ build---packages, gexps, derivations, and so on."
                  (ensure-list (read/eval str)))
                 (('argument . (? derivation? drv))
                  drv)
-                (('argument . (? derivation-path? drv))
-                 (list ))
                 (_ '()))
               opts))
 
