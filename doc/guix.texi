@@ -2263,33 +2263,45 @@ The arguments that should be passed to the build system.  This is a
 list, typically containing sequential keyword-value pairs.
 
 @item @code{inputs} (default: @code{'()})
-Package or derivation inputs to the build.  This is a list of lists,
-where each list has the name of the input (a string) as its first
-element, a package or derivation object as its second element, and
-optionally the name of the output of the package or derivation that
-should be used, which defaults to @code{"out"}.
+@itemx @code{native-inputs} (default: @code{'()})
+@itemx @code{propagated-inputs} (default: @code{'()})
+@cindex inputs, of packages
+These fields list dependencies of the package.  Each one is a list of
+tuples, where each tuple has a label for the input (a string) as its
+first element, a package, origin, or derivation as its second element,
+and optionally the name of the output thereof that should be used, which
+defaults to @code{"out"} (@pxref{Packages with Multiple Outputs}, for
+more on package outputs).  For example, the list below specifies 3
+inputs:
 
-@item @anchor{package-propagated-inputs}@code{propagated-inputs} (default: @code{'()})
-@cindex propagated inputs
-This field is like @code{inputs}, but the specified packages will be
-force-installed alongside the package they belong to
-(@pxref{package-cmd-propagated-inputs, @command{guix package}}, for
-information on how @command{guix package} deals with propagated inputs.)
+@example
+`(("libffi" ,libffi)
+  ("libunistring" ,libunistring)
+  ("glib:bin" ,glib "bin"))  ;the "bin" output of Glib
+@end example
+
+@cindex cross compilation, package dependencies
+The distinction between @code{native-inputs} and @code{inputs} is
+necessary when considering cross-compilation.  When cross-compiling,
+dependencies listed in @code{inputs} are built for the @emph{target}
+architecture; conversely, dependencies listed in @code{native-inputs}
+are built for the architecture of the @emph{build} machine.
+
+@code{native-inputs} is typically where you would list tools needed at
+build time but not at run time, such as Autoconf, Automake, pkg-config,
+Gettext, or Bison.  @command{guix lint} can report likely mistakes in
+this area (@pxref{Invoking guix lint}).
+
+@anchor{package-propagated-inputs}
+Lastly, @code{propagated-inputs} is similar to @code{inputs}, but the
+specified packages will be force-installed alongside the package they
+belong to (@pxref{package-cmd-propagated-inputs, @command{guix
+package}}, for information on how @command{guix package} deals with
+propagated inputs.)
 
 For example this is necessary when a library needs headers of another
 library to compile, or needs another shared library to be linked
 alongside itself when a program wants to link to it.
-
-@item @code{native-inputs} (default: @code{'()})
-This field is like @code{inputs}, but in case of a cross-compilation it
-will be ensured that packages for the architecture of the build machine
-are present, such that executables from them can be used during the
-build.
-
-This is typically where you would list tools needed at build time but
-not at run time, such as Autoconf, Automake, pkg-config, Gettext, or
-Bison.  @command{guix lint} can report likely mistakes in this area
-(@pxref{Invoking guix lint}).
 
 @item @code{self-native-input?} (default: @code{#f})
 This is a Boolean field telling whether the package should use itself as
