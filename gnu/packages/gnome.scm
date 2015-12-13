@@ -3544,7 +3544,7 @@ freedesktop.org help system specification.")
 (define-public yelp-tools
   (package
     (name "yelp-tools")
-    (version "3.16.1")
+    (version "3.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3552,7 +3552,7 @@ freedesktop.org help system specification.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "177qzvj5w019isdp41qxqcys2kc4sq2x6dqhqn6l9ipib8a6rxml"))))
+                "0ck9f78c1xka8a823bd7w1k0gdn4k19zvaj7viy2d5r3h1gxdhf6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
