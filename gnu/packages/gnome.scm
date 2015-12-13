@@ -2173,7 +2173,7 @@ floating in an ocean using only your brain and a little bit of luck.")
 (define-public gnome-terminal
   (package
     (name "gnome-terminal")
-    (version "3.16.0")
+    (version "3.18.2")
     (source
      (origin
        (method url-fetch)
@@ -2182,7 +2182,7 @@ floating in an ocean using only your brain and a little bit of luck.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1s3zwqxs4crlqmh6l7s7n87pbmh2nnjdvhxlkalh58pbl0bk0qrd"))))
+         "1ylyv0mla2ypms7iyxndbdjvha0q9jzglb4mhfmqn9cm2gxc0day"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags
