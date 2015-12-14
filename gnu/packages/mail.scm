@@ -696,7 +696,8 @@ facilities for checking incoming mail.")
      `(("openssl" ,openssl)
        ("zlib" ,zlib)
        ("bzip2" ,bzip2)
-       ("sqlite" ,sqlite)))
+       ("sqlite" ,sqlite)
+       ("linux-pam" ,linux-pam)))
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc"
                            "--localstatedir=/var")
