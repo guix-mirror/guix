@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -822,6 +823,27 @@ projects while introducing many more.")
     (build-system python-build-system)
     (native-inputs `(("python-setuptools" ,python-setuptools)))
     (home-page "http://youtube-dl.org")
+    (arguments
+     ;; The problem here is that the directory for the man page and completion
+     ;; files is relative, and for some reason, setup.py uses the
+     ;; auto-detected sys.prefix instead of the user-defined "--prefix=FOO".
+     ;; So, we need pass the prefix directly.  In addition, make sure the Bash
+     ;; completion file is called 'youtube-dl' rather than
+     ;; 'youtube-dl.bash-completion'.
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'install 'fix-the-data-directories
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((prefix (assoc-ref outputs "out")))
+                        (mkdir "bash-completion")
+                        (rename-file "youtube-dl.bash-completion"
+                                     "bash-completion/youtube-dl")
+                        (substitute* "setup.py"
+                          (("youtube-dl\\.bash-completion")
+                           "bash-completion/youtube-dl")
+                          (("'etc/")
+                           (string-append "'" prefix "/etc/"))
+                          (("'share/")
+                           (string-append "'" prefix "/share/")))))))))
     (synopsis "Download videos from YouTube.com and other sites")
     (description
      "Youtube-dl is a small command-line program to download videos from
