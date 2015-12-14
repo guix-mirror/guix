@@ -361,6 +361,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/services/desktop.scm			\
   gnu/services/dmd.scm				\
   gnu/services/lirc.scm				\
+  gnu/services/mail.scm				\
   gnu/services/networking.scm			\
   gnu/services/ssh.scm				\
   gnu/services/web.scm				\
