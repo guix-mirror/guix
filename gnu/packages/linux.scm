@@ -5,6 +5,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1164,7 +1165,7 @@ devices.  It replaces 'iwconfig', which is deprecated.")
 (define-public powertop
   (package
     (name "powertop")
-    (version "2.7")
+    (version "2.8")
     (source
      (origin
        (method url-fetch)
@@ -1173,7 +1174,7 @@ devices.  It replaces 'iwconfig', which is deprecated.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1jkqqr3l1x98m7rgin1dgfzxqwj4vciw9lyyq1kl9bdswa818jwd"))))
+         "0nlwazxbnn0k6q5f5b09wdhw0f194lpzkp3l7vxansqhfczmcyx8"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
@@ -1181,7 +1182,7 @@ devices.  It replaces 'iwconfig', which is deprecated.")
        ("ncurses" ,ncurses)
        ("libnl" ,libnl)))
     (native-inputs
-       `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://01.org/powertop/")
     (synopsis "Analyze power consumption on Intel-based laptops")
     (description
