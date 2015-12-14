@@ -469,7 +469,7 @@ MANIFEST."
         (define (install-info info)
           (setenv "PATH" (string-append #+gzip "/bin")) ;for info.gz files
           (zero?
-           (system* (string-append #+texinfo "/bin/install-info")
+           (system* (string-append #+texinfo "/bin/install-info") "--silent"
                     info (string-append #$output "/share/info/dir"))))
 
         (mkdir-p (string-append #$output "/share/info"))
