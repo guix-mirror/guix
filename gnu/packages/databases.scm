@@ -386,14 +386,14 @@ is in the public domain.")
 (define-public tdb
   (package
     (name "tdb")
-    (version "1.3.0")
+    (version "1.3.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://samba.org/ftp/tdb/tdb-"
+              (uri (string-append "https://www.samba.org/ftp/tdb/tdb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "085sd2kii72fr0c4pdc7c7m0xk34nc66wnjp21c83dss826y9gh4"))))
+                "1cg6gmpgn36dd4bsp3j9k3hyrm87d8hdigqyyqxw5jga4w2aq186"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
