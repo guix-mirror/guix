@@ -3489,8 +3489,9 @@ content is directly passed as a string.
 @deffn {Scheme Procedure} local-file @var{file} [@var{name}] @
    [#:recursive? #t]
 Return an object representing local file @var{file} to add to the store; this
-object can be used in a gexp.  @var{file} will be added to the store under @var{name}--by
-default the base name of @var{file}.
+object can be used in a gexp.  If @var{file} is a relative file name, it is looked
+up relative to the source file where this form appears.  @var{file} will be added to
+the store under @var{name}--by default the base name of @var{file}.
 
 When @var{recursive?} is true, the contents of @var{file} are added recursively; if @var{file}
 designates a flat file and @var{recursive?} is true, its contents are added, and its
