@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -334,14 +335,14 @@ Go.  It also includes runtime support libraries for these languages.")
 
 (define-public gcc-5
   (package (inherit gcc-4.9)
-    (version "5.2.0")
+    (version "5.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gcc/gcc-"
                                   version "/gcc-" version ".tar.bz2"))
               (sha256
                (base32
-                "1bccp8a106xwz3wkixn65ngxif112vn90qf95m6lzpgpnl25p0sz"))
+                "1ny4smkp5bzs3cp8ss7pl6lk8yss0d9m4av1mvdp72r1x695akxq"))
               (patches (list (search-patch "gcc-5.0-libvtv-runpath.patch")))))))
 
 (define-public gcc gcc-4.9)
