@@ -417,6 +417,9 @@ providing the system administrator with some help in common tasks.")
     (arguments
      `(#:configure-flags (list "--disable-use-tty-group"
 
+                               ;; Do not build .a files to save 2 MiB.
+                               "--disable-static"
+
                                ;; Install completions where our
                                ;; bash-completion package expects them.
                                (string-append "--with-bashcompletiondir="
