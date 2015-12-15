@@ -179,16 +179,16 @@ Desktops into Active Directory environments using the winbind daemon.")
                 "13c365f7y8idjf2v1jxdjpkc3lxdmsxxfxjx1ymianm7zjiph393"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; talloc uses a custom configuration script that runs a
-                   ;; python script called 'waf'.
-                   (setenv "CONFIG_SHELL" (which "sh"))
-                   (let ((out (assoc-ref outputs "out")))
-                     (zero? (system* "./configure"
-                                     (string-append "--prefix=" out)))))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; talloc uses a custom configuration script that runs a
+             ;; python script called 'waf'.
+             (setenv "CONFIG_SHELL" (which "sh"))
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "./configure"
+                               (string-append "--prefix=" out)))))))))
     (inputs
      `(("python" ,python-2)))
     (home-page "http://talloc.samba.org")
