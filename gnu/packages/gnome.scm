@@ -2760,7 +2760,8 @@ presentations, kiosk style applications and so on.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gobject-introspection" ,gobject-introspection)))
-    (inputs
+    (propagated-inputs
+     ;; clutter-gtk.pc refers to all these.
      `(("clutter" ,clutter)
        ("gtk+" ,gtk+)))
     (home-page "http://www.clutter-project.org")
