@@ -4335,3 +4335,30 @@ libxml2.")
      "GNOME Display Manager is a system service that is responsible for
 providing graphical log-ins and managing local and remote displays.")
     (license license:gpl2+)))
+
+(define-public libgtop
+  (package
+    (name "libgtop")
+    (version "2.32.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "13hpml2vfm23816qggr5fvxj75ndb1dq4rgmi7ik6azj69ij8hw4"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib))) ; required by libgtop-2.0.pc
+    (synopsis "Portable system access library")
+    (home-page "https://www.gnome.org/")
+    (description
+     "LibGTop is a library to get system specific data such as CPU and memory
+usage and information about running processes.")
+    (license license:gpl2+)))
