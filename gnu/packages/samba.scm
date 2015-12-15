@@ -24,6 +24,7 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages openldap)
@@ -237,6 +238,49 @@ destructors.  It is the core memory allocator used in Samba.")
      "Tevent is an event system based on the talloc memory management library.
 It is the core event system used in Samba.  The low level tevent has support for
 many event types, including timers, signals, and the classic file descriptor events.")
+    (license lgpl3+)))
+
+(define-public ldb
+  (package
+    (name "ldb")
+    (version "1.1.23")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0ncmwgga6q9v7maiywgw21w6rb3149m1w2ca11yq8k5j0izjz2wg"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; ldb use a custom configuration script that runs waf.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "./configure"
+                               (string-append "--prefix=" out)
+                               (string-append "--with-modulesdir=" out
+                                              "/lib/ldb/modules")
+                               "--bundled-libraries=NONE"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-2)))
+    (propagated-inputs
+     ;; ldb.pc refers to all these.
+     `(("talloc" ,talloc)
+       ("tdb" ,tdb)))
+    (inputs
+     `(("popt" ,popt)
+       ("tevent" ,tevent)))
+    (synopsis "LDAP-like embedded database")
+    (home-page "https://ldb.samba.org/")
+    (description
+     "Ldb is a LDAP-like embedded database built on top of TDB.  What ldb does
+is provide a fast database with an LDAP-like API designed to be used within an
+application.  In some ways it can be seen as a intermediate solution between
+key-value pair databases and a real LDAP database.")
     (license lgpl3+)))
 
 (define-public ppp
