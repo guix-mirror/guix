@@ -40,6 +40,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages machine-learning)
@@ -1690,7 +1691,7 @@ sequencing tag position and orientation.")
 (define-public mafft
   (package
     (name "mafft")
-    (version "7.221")
+    (version "7.267")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1699,7 +1700,7 @@ sequencing tag position and orientation.")
               (file-name (string-append name "-" version ".tgz"))
               (sha256
                (base32
-                "0xi7klbsgi049vsrk6jiwh9wfj3b770gz3c8c7zwij448v0dr73d"))))
+                "1xl6xq1rfxkws0svrlhyqxhhwbv6r77jwblsdpcyiwzsscw6wlk0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no automated tests, though there are tests in the read me
@@ -1720,6 +1721,9 @@ sequencing tag position and orientation.")
               ;; remove mafft-homologs.rb from SCRIPTS
               (("^SCRIPTS = mafft mafft-homologs.rb")
                "SCRIPTS = mafft")
+              ;; remove mafft-homologs from MANPAGES
+              (("^MANPAGES = mafft.1 mafft-homologs.1")
+               "MANPAGES = mafft.1")
               ;; remove mafft-distance from PROGS
               (("^PROGS = dvtditr dndfast7 dndblast sextet5 mafft-distance")
                "PROGS = dvtditr dndfast7 dndblast sextet5")
@@ -1732,9 +1736,22 @@ sequencing tag position and orientation.")
               (("^\t\\$\\(INSTALL\\) -m 644 \\$\\(MANPAGES\\) \
 \\$\\(DESTDIR\\)\\$\\(LIBDIR\\)") "#"))
             #t))
+         (add-after 'enter-dir 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("pairash.c"
+                            "mafft.tmpl")
+               (("perl") (which "perl"))
+               (("([\"`| ])awk" _ prefix)
+                (string-append prefix (which "awk")))
+               (("grep") (which "grep")))
+             #t))
          (delete 'configure))))
     (inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("gawk" ,gawk)
+       ("grep" ,grep)))
+    (propagated-inputs
+     `(("coreutils" ,coreutils)))
     (home-page "http://mafft.cbrc.jp/alignment/software/")
     (synopsis "Multiple sequence alignment program")
     (description
