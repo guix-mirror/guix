@@ -67,34 +67,33 @@
                     '()))))
        `(#:tests? #f
          #:phases
-         (alist-replace
-          'configure
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (substitute* '("libs/config/configure"
-                             "libs/spirit/classic/phoenix/test/runtest.sh"
-                             "tools/build/doc/bjam.qbk"
-                             "tools/build/src/engine/execunix.c"
-                             "tools/build/src/engine/Jambase"
-                             "tools/build/src/engine/jambase.c")
-                (("/bin/sh") (which "sh")))
+         (modify-phases %standard-phases
+           (replace
+            'configure
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out")))
+                (substitute* '("libs/config/configure"
+                               "libs/spirit/classic/phoenix/test/runtest.sh"
+                               "tools/build/doc/bjam.qbk"
+                               "tools/build/src/engine/execunix.c"
+                               "tools/build/src/engine/Jambase"
+                               "tools/build/src/engine/jambase.c")
+                  (("/bin/sh") (which "sh")))
 
-              (setenv "SHELL" (which "sh"))
-              (setenv "CONFIG_SHELL" (which "sh"))
+                (setenv "SHELL" (which "sh"))
+                (setenv "CONFIG_SHELL" (which "sh"))
 
-              (zero? (system* "./bootstrap.sh"
-                              (string-append "--prefix=" out)
-                              "--with-toolset=gcc"))))
-          (alist-replace
-           'build
-           (lambda* (#:key outputs #:allow-other-keys)
-             (zero? (system* "./b2" ,@build-flags)))
-
-           (alist-replace
+                (zero? (system* "./bootstrap.sh"
+                                (string-append "--prefix=" out)
+                                "--with-toolset=gcc")))))
+           (replace
+            'build
+            (lambda* (#:key outputs #:allow-other-keys)
+              (zero? (system* "./b2" ,@build-flags))))
+           (replace
             'install
             (lambda* (#:key outputs #:allow-other-keys)
-              (zero? (system* "./b2" "install" ,@build-flags)))
-            %standard-phases))))))
+              (zero? (system* "./b2" "install" ,@build-flags))))))))
 
     (home-page "http://boost.org")
     (synopsis "Peer-reviewed portable C++ source libraries")
