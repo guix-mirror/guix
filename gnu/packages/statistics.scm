@@ -1385,3 +1385,21 @@ the header files from the templated Armadillo library.")
     ;; bindings to Armadillo) is licensed under the GNU GPL version 2 or
     ;; later, as is the rest of 'Rcpp'.
     (license license:gpl2+)))
+
+(define-public r-bitops
+  (package
+    (name "r-bitops")
+    (version "1.0-6")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "bitops" version))
+              (sha256
+               (base32
+                "176nr5wpnkavn5z0yy9f7d47l37ndnn2w3gv854xav8nnybi6wwv"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/bitops")
+    (synopsis "Bitwise operations")
+    (description
+     "This package provides functions for bitwise operations on integer
+vectors.")
+    (license license:gpl2+)))
