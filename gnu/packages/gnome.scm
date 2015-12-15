@@ -64,6 +64,7 @@
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages ibus)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages linux)
@@ -73,6 +74,7 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages image)
   #:use-module (gnu packages networking)
+  #:use-module (gnu packages password-utils)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pkg-config)
@@ -93,6 +95,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages mail)
+  #:use-module (gnu packages mit-krb5)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages ncurses)
@@ -4395,3 +4398,73 @@ usage and information about running processes.")
      "This package contains tools for managing and manipulating Bluetooth
 devices using the GNOME desktop.")
     (license license:lgpl2.1+)))
+
+(define-public gnome-control-center
+  (package
+    (name "gnome-control-center")
+    (version "3.18.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1bgqg1sl3cp2azrwrjgwx3jzk9n3w76xpcyvk257qavx4ibn3zin"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((libc   (assoc-ref inputs "libc"))
+                   (tzdata (assoc-ref inputs "tzdata")))
+               (substitute* "panels/datetime/tz.h"
+                 (("/usr/share/zoneinfo/zone.tab")
+                  (string-append tzdata "/share/zoneinfo/zone.tab")))
+               (substitute* "panels/datetime/test-endianess.c"
+                 (("/usr/share/locale")
+                  (string-append libc "/share/locale")))
+               #t))))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("xsltproc" ,libxslt)))
+    (inputs
+     `(("accountsservice" ,accountsservice)
+       ("clutter-gtk" ,clutter-gtk)
+       ("colord-gtk" ,colord-gtk)
+       ("cups" ,cups)
+       ("dconf" ,dconf)
+       ("docbook-xsl" ,docbook-xsl)
+       ("gnome-bluetooth" ,gnome-bluetooth)
+       ("gnome-desktop" ,gnome-desktop)
+       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("gnome-settings-daemon" ,gnome-settings-daemon)
+       ("grilo" ,grilo)
+       ("ibus" ,ibus)
+       ("libcanberra" ,libcanberra)
+       ("libgudev" ,libgudev)
+       ("libgtop" ,libgtop)
+       ("libpwquality" ,libpwquality)
+       ("libsoup" ,libsoup)
+       ("libxml2" ,libxml2)
+       ("libwacom" ,libwacom)
+       ("mesa" ,mesa)
+       ("mit-krb5" ,mit-krb5)
+       ("modem-manager" ,modem-manager)
+       ("network-manager-applet" ,network-manager-applet)
+       ("polkit" ,polkit)
+       ("pulseaudio" ,pulseaudio)
+       ("smbclient" ,samba)
+       ("tzdata" ,tzdata)
+       ("upower" ,upower)))
+    (synopsis "Utilities to configure the GNOME desktop")
+    (home-page "https://www.gnome.org/")
+    (description
+     "This package contains configuration applets for the GNOME desktop,
+allowing to set accessibility configuration, desktop fonts, keyboard and mouse
+properties, sound setup, desktop theme and background, user interface
+properties, screen resolution, and other GNOME parameters.")
+    (license license:gpl2+)))
