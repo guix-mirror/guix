@@ -4194,11 +4194,12 @@ without using the configuration machinery.")
     (version "3.2.1")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/i/"
-                          "ipython/ipython-" version ".tar.gz"))
-      (sha256
-       (base32 "0xwin0sa9n0cabx4cq1ibf5ldsiw5dyimibla82kicz5gbpas4y9"))))
+       (method url-fetch)
+       (patches (list (search-patch "python-ipython-inputhook-ctype.patch")))
+       (uri (string-append "https://pypi.python.org/packages/source/i/"
+                           "ipython/ipython-" version ".tar.gz"))
+       (sha256
+        (base32 "0xwin0sa9n0cabx4cq1ibf5ldsiw5dyimibla82kicz5gbpas4y9"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs

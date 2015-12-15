@@ -1,0 +1,41 @@
+From 04c5d358c7ab74d3ddab4f7662e539393d8604c6 Mon Sep 17 00:00:00 2001
+From: Lucretiel <Lucretiel@users.noreply.github.com>
+Date: Wed, 13 May 2015 13:12:43 -0400
+Subject: [PATCH] register now checks for missing ctypes
+
+If ctypes is None, then no input hooks may be registered; `InputHookManager.register` skips registration of input hook classes. Also updated `__init__` to no longer skip creating the instance attributes, to prevent AttributeError exceptions at load time.
+---
+ IPython/lib/inputhook.py | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/IPython/lib/inputhook.py b/IPython/lib/inputhook.py
+index 4ae2cb3..6578365 100644
+--- a/IPython/lib/inputhook.py
++++ b/IPython/lib/inputhook.py
+@@ -107,8 +107,8 @@ class InputHookManager(object):
+     def __init__(self):
+         if ctypes is None:
+             warn("IPython GUI event loop requires ctypes, %gui will not be available")
+-            return
+-        self.PYFUNC = ctypes.PYFUNCTYPE(ctypes.c_int)
++        else:
++            self.PYFUNC = ctypes.PYFUNCTYPE(ctypes.c_int)
+         self.guihooks = {}
+         self.aliases = {}
+         self.apps = {}
+@@ -197,10 +197,11 @@ def enable(self, app=None):
+                     ...
+         """
+         def decorator(cls):
+-            inst = cls(self)
+-            self.guihooks[toolkitname] = inst
+-            for a in aliases:
+-                self.aliases[a] = toolkitname
++            if ctypes is not None:
++                inst = cls(self)
++                self.guihooks[toolkitname] = inst
++                for a in aliases:
++                    self.aliases[a] = toolkitname
+             return cls
+         return decorator
+ 
