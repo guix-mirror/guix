@@ -1403,3 +1403,26 @@ the header files from the templated Armadillo library.")
      "This package provides functions for bitwise operations on integer
 vectors.")
     (license license:gpl2+)))
+
+(define-public r-catools
+  (package
+    (name "r-catools")
+    (version "1.17.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "caTools" version))
+              (sha256
+               (base32
+                "1x4szsn2qmbzpyjfdaiz2q7jwhap2gky9wq0riah74q0pzz76ank"))))
+    (properties `((upstream-name . "caTools")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bitops" ,r-bitops)))
+    (home-page "http://cran.r-project.org/web/packages/caTools")
+    (synopsis "Various tools including functions for moving window statistics")
+    (description
+     "This package contains several basic utility functions including:
+moving (rolling, running) window statistic functions, read/write for GIF and
+ENVI binary files, fast calculation of AUC, LogitBoost classifier, base64
+encoder/decoder, round-off-error-free sum and cumsum, etc.")
+    (license license:gpl3+)))
