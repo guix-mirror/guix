@@ -93,7 +93,11 @@
    (36 "0z6jbyy70lfdm6d3x0sbazbqdxb3xnpn9bmz7madpvrnbd284pxc")
    (37 "04sqr8zkl6s5fccfvb775ppn3ldij5imria9swc39aq0fkfp1w9k")
    (38 "0rv3g14mpgv8br267bf7rmgqlgwnc4v6g3g8y0sjba571i8amgmd")
-   (39 "1v3l3vkc3g2b6fjycqwlakr8xhiw6bmw6q0zd6bi0m0m4bnxr55b")))
+   (39 "1v3l3vkc3g2b6fjycqwlakr8xhiw6bmw6q0zd6bi0m0m4bnxr55b")
+   (40 "0sypv66vsldmc95gwvf7ylz1k7y37vnvdsjg8ajjr6b2j9mkkfw4")
+   (41 "06ic2gdpbi1afik3wqf9d4vh95if4bz8bmhcgr555621dsb35i2f")
+   (42 "06a90k0p6bqc4wk2dsmapna69124an76xvlnlj3xm497vci968dc")))
+
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
 number/base32-hash tuples, directly usable in the 'patch-series' form."
