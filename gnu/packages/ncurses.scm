@@ -29,16 +29,35 @@
          '(lambda _
             (for-each patch-makefile-SHELL
                       (find-files "." "Makefile.in"))))
+        (configure-phase
+         ;; The 'configure' script does not understand '--docdir', so we must
+         ;; override that and use '--mandir' instead.
+         '(lambda* (#:key build target outputs configure-flags
+                    #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out"))
+                  (doc (assoc-ref outputs "doc")))
+              (zero? (apply system* "./configure"
+                            (string-append "SHELL=" (which "sh"))
+                            (string-append "--build=" build)
+                            (string-append "--prefix=" out)
+                            (string-append "--mandir=" doc "/share/man")
+                            (if target
+                                (cons (string-append "--host=" target)
+                                      configure-flags)
+                                configure-flags))))))
         (remove-shebang-phase
          '(lambda _
             ;; To avoid retaining a reference to the bootstrap Bash via the
-            ;; shebang of the 'ncursesw5-config' script, simply remove that
-            ;; shebang: it'll work just as well without it.
+            ;; shebang of the 'ncursesw6-config' script, simply remove that
+            ;; shebang: it'll work just as well without it.  Likewise, do not
+            ;; retain a reference to the "doc" output.
             (substitute* "misc/ncurses-config.in"
               (("#!@SHELL@")
                "# No shebang here, use /bin/sh!\n")
               (("@SHELL@ \\$0")
-               "$0"))
+               "$0")
+              (("mandir=.*$")
+               "mandir=share/man"))
             #t))
         (post-install-phase
          '(lambda* (#:key outputs #:allow-other-keys)
@@ -79,6 +98,8 @@
                (base32
                 "0q3jck7lna77z5r42f13c4xglc7azd19pxfrjrpgp2yf615w4lgm"))))
      (build-system gnu-build-system)
+     (outputs '("out"
+                "doc"))                          ;1 MiB of man pages
      (arguments
       `(#:configure-flags
         `("--with-shared" "--without-debug" "--enable-widec"
@@ -95,12 +116,13 @@
                           "/lib"))
         #:tests? #f                               ; no "check" target
         #:phases (modify-phases %standard-phases
+                   (replace 'configure ,configure-phase)
                    (add-after 'install 'post-install
-                              ,post-install-phase)
+                     ,post-install-phase)
                    (add-before 'configure 'patch-makefile-SHELL
-                               ,patch-makefile-phase)
+                     ,patch-makefile-phase)
                    (add-after 'unpack 'remove-unneeded-shebang
-                              ,remove-shebang-phase))))
+                     ,remove-shebang-phase))))
      (self-native-input? #t)                      ; for `tic'
      (native-search-paths
       (list (search-path-specification
