@@ -156,3 +156,31 @@ and vice versa.")
 passwd like program.  The idea is simple: try to prevent users from choosing
 passwords that could be guessed by crack by filtering them out, at source.")
     (license license:lgpl2.1)))
+
+(define-public libpwquality
+  (package
+    (name "libpwquality")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (list
+                    (string-append "https://fedorahosted.org/releases/l/i/"
+                                   name "/" name "-" version ".tar.bz2")
+                    (string-append "https://launchpad.net/libpwquality/trunk/"
+                                   version "/+download/"
+                                   name "-" version ".tar.bz2")))
+              (sha256
+               (base32
+                "0aidriag6h0syfm33nzdfdsqgrnsgihwjv3a5lgkqch3w68fmlkl"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; XXX: have RUNPATH issue.
+     '(#:configure-flags '("--disable-python-bindings")))
+    (inputs
+     `(("cracklib" ,cracklib)))
+    (synopsis "Password quality checker")
+    (home-page "https://fedorahosted.org/libpwquality/")
+    (description
+     "Libpwquality is a library for password quality checking and generation of
+random passwords that pass the checks.")
+    (license license:gpl2+)))
