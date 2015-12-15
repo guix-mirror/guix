@@ -2305,9 +2305,16 @@ belong to (@pxref{package-cmd-propagated-inputs, @command{guix
 package}}, for information on how @command{guix package} deals with
 propagated inputs.)
 
-For example this is necessary when a library needs headers of another
-library to compile, or needs another shared library to be linked
-alongside itself when a program wants to link to it.
+For example this is necessary when a C/C++ library needs headers of
+another library to compile, or when a pkg-config file refers to another
+one @i{via} its @code{Requires} field.
+
+Another example where @code{propagated-inputs} is useful is for
+languages that lack a facility to record the run-time search path akin
+to ELF's @code{RUNPATH}; this includes Guile, Python, Perl, GHC, and
+more.  To ensure that libraries written in those languages can find
+library code they depend on at run time, run-time dependencies must be
+listed in @code{propagated-inputs} rather than @code{inputs}.
 
 @item @code{self-native-input?} (default: @code{#f})
 This is a Boolean field telling whether the package should use itself as
