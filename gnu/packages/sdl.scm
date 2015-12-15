@@ -323,6 +323,21 @@ directory.")
     (propagated-inputs
      (propagated-inputs-with-sdl2 sdl-image))))
 
+(define-public sdl2-mixer
+  (package (inherit sdl-mixer)
+    (name "sdl2-mixer")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "http://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-"
+                              version ".tar.gz"))
+              (sha256
+               (base32
+                "0nvjdxjchrajrn0jag877hdx9zb788hsd315zzg1lyck2wb0xkm8"))))
+    (propagated-inputs
+     (propagated-inputs-with-sdl2 sdl-mixer))))
+
 (define-public guile-sdl
   (package
     (name "guile-sdl")
