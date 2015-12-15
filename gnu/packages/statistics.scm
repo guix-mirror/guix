@@ -29,6 +29,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages haskell)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages java)
@@ -1425,4 +1426,30 @@ vectors.")
 moving (rolling, running) window statistic functions, read/write for GIF and
 ENVI binary files, fast calculation of AUC, LogitBoost classifier, base64
 encoder/decoder, round-off-error-free sum and cumsum, etc.")
+    (license license:gpl3+)))
+
+(define-public r-rmarkdown
+  (package
+    (name "r-rmarkdown")
+    (version "0.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "rmarkdown" version))
+        (sha256
+          (base32
+            "07q5g9dvac5j3vnf4sjc60mnkij1k6y7vnzjz6anf499rwdwbxza"))))
+    (properties `((upstream-name . "rmarkdown")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-catools" ,r-catools)
+       ("r-htmltools" ,r-htmltools)
+       ("r-knitr" ,r-knitr)
+       ("r-yaml" ,r-yaml)
+       ("ghc-pandoc" ,ghc-pandoc)))
+    (home-page "http://rmarkdown.rstudio.com")
+    (synopsis "Convert R Markdown documents into a variety of formats")
+    (description
+     "This package provides tools to convert R Markdown documents into a
+variety of formats.")
     (license license:gpl3+)))
