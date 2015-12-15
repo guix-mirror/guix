@@ -49,6 +49,8 @@
               (base32
                "0pb9vp4ifymvdmc31ks3xxcnfqgzj8shll39czmk8c1splclqjzd"))))
     (build-system gnu-build-system)
+    (outputs '("out"
+               "doc"))                            ;8 MiB of HTML
     (inputs
      `(("expat" ,expat)))
     (arguments
