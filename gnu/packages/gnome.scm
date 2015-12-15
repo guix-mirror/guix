@@ -4362,3 +4362,36 @@ providing graphical log-ins and managing local and remote displays.")
      "LibGTop is a library to get system specific data such as CPU and memory
 usage and information about running processes.")
     (license license:gpl2+)))
+
+(define-public gnome-bluetooth
+  (package
+    (name "gnome-bluetooth")
+    (version "3.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0jaa9nbygdvcqp9k4p4iy2g8x3684s4x9k5nbcmmm11jdn4mn7f5"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for gdbus-codegen, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("xmllint" ,libxml2)))
+    (propagated-inputs
+     ;; gnome-bluetooth-1.0.pc refers to all these.
+     `(("gtk+" ,gtk+)
+       ("udev" ,eudev)))
+    (inputs
+     `(("libcanberra" ,libcanberra)
+       ("libnotify" ,libnotify)))
+    (synopsis "GNOME Bluetooth subsystem")
+    (home-page "https://wiki.gnome.org/Projects/GnomeBluetooth")
+    (description
+     "This package contains tools for managing and manipulating Bluetooth
+devices using the GNOME desktop.")
+    (license license:lgpl2.1+)))
