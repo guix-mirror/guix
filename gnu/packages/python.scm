@@ -2127,15 +2127,13 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-click
   (package
     (name "python-click")
-    (version "4.0")
+    (version "6.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/c/click/click-"
-             version ".tar.gz"))
+         (uri (pypi-uri "click" version))
        (sha256
-        (base32 "0294x9g28w6zgswl0rsygkwi0wf6n480gf7fiiw5f9az3xhh77pl"))))
+        (base32 "10kavbisnk9m93jl2wi34pw7ryr2qbxshh2cysxwxd7bymqgz87v"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
