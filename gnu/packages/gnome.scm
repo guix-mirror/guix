@@ -4468,3 +4468,85 @@ allowing to set accessibility configuration, desktop fonts, keyboard and mouse
 properties, sound setup, desktop theme and background, user interface
 properties, screen resolution, and other GNOME parameters.")
     (license license:gpl2+)))
+
+(define-public gnome-shell
+  (package
+    (name "gnome-shell")
+    (version "3.18.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "16sicxdp08yfaj4hiyzvbspb5jk3fpmi291272zhx5vgc3wbl5w5"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (keysdir (string-append
+                              out "/share/gnome-control-center/keybindings")))
+               (zero? (system* "make"
+                               (string-append "keysdir=" keysdir)
+                               "install")))))
+         (add-after
+          'install 'wrap-programs
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out              (assoc-ref outputs "out"))
+                  (gi-typelib-path  (getenv "GI_TYPELIB_PATH"))
+                  (python-path      (getenv "PYTHONPATH")))
+              (wrap-program (string-append out "/bin/gnome-shell")
+                `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path)))
+              (for-each
+               (lambda (prog)
+                 (wrap-program (string-append out "/bin/" prog)
+                   `("PYTHONPATH"      ":" prefix (,python-path))
+                   `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))))
+               '("gnome-shell-extension-tool" "gnome-shell-perf-tool"))
+              #t))))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)
+       ("xsltproc" ,libxslt)))
+    (inputs
+     `(("accountsservice" ,accountsservice)
+       ("caribou" ,caribou)
+       ("docbook-xsl" ,docbook-xsl)
+       ("evolution-data-server" ,evolution-data-server)
+       ("gcr" ,gcr)
+       ("gdm" ,gdm)
+       ("gjs" ,gjs)
+       ("gnome-bluetooth" ,gnome-bluetooth)
+       ("gnome-control-center" ,gnome-control-center)
+       ("gnome-desktop" ,gnome-desktop)
+       ("gnome-settings-daemon" ,gnome-settings-daemon)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("ibus" ,ibus)
+       ("libcanberra" ,libcanberra)
+       ("libcroco" ,libcroco)
+       ("libgweather" ,libgweather)
+       ("libsoup" ,libsoup)
+       ("mesa-headers" ,mesa-headers)
+       ("mutter" ,mutter)
+       ("network-manager-applet" ,network-manager-applet)
+       ("polkit" ,polkit)
+       ("pulseaudio" ,pulseaudio)
+       ("python-pygobject" ,python-pygobject)
+       ("startup-notification" ,startup-notification)
+       ("telepathy-logger" ,telepathy-logger)
+       ("upower" ,upower)
+       ;; XXX: required by libgjs.la.
+       ("readline" ,readline)))
+    (synopsis "Desktop shell for GNOME")
+    (home-page "https://wiki.gnome.org/Projects/GnomeShell")
+    (description
+     "GNOME Shell provides core user interface functions for the GNOME desktop,
+like switching to windows and launching applications.")
+    (license license:gpl2+)))
