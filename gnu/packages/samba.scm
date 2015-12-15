@@ -24,14 +24,14 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages cups)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages readline)
-  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages elf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python))
 
@@ -98,64 +98,57 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "3.6.25")
+    (version "4.3.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.samba.org/samba/ftp/stable/samba-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0l9pz2m67vf398q3c2dwn8jwdxsjb20igncf4byhv6yq5dzqlb4g"))))
+               "0xcs2bcim421mlk6l9rcrkx4cq9y41gfssyfa7xzdw5draar3631"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-cons-before
-                 'configure 'chdir
-                 (lambda _
-                   (chdir "source3"))
-                 (alist-cons-after
-                  'strip 'add-lib-to-runpath
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (assoc-ref outputs "out"))
-                           (lib (string-append out "/lib")))
-                      ;; Add LIB to the RUNPATH of all the executables and
-                      ;; dynamic libraries.
-                      (with-directory-excursion out
-                        (for-each (cut augment-rpath <> lib)
-                                  (append (find-files "bin" ".*")
-                                          (find-files "sbin" ".*")
-                                          (find-files "lib" ".*"))))))
-                  %standard-phases))
-
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (guix build rpath)
-                  (srfi srfi-26))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build rpath))
-
-       ;; This flag is required to allow for "make test".
-       #:configure-flags '("--enable-socket-wrapper")
-
-       #:test-target "test"
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; samba uses a custom configuration script that runs waf.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out    (assoc-ref outputs "out"))
+                    (libdir (string-append out "/lib")))
+               (zero? (system*
+                       "./configure"
+                       "--enable-fhs"
+                       ;; XXX: heimdal not packaged.
+                       "--bundled-libraries=com_err"
+                       (string-append "--prefix=" out)
+                       ;; Install public and private libraries into
+                       ;; a single directory to avoid RPATH issues.
+                       (string-append "--libdir=" libdir)
+                       (string-append "--with-privatelibdir=" libdir)))))))
 
        ;; XXX: The test infrastructure attempts to set password with
        ;; smbpasswd, which fails with "smbpasswd -L can only be used by root."
        ;; So disable tests until there's a workaround.
        #:tests? #f))
     (inputs                                   ; TODO: Add missing dependencies
-     `(;; ("cups" ,cups)
-       ("acl" ,acl)
+     `(("acl" ,acl)
+       ("cups" ,cups)
        ;; ("gamin" ,gamin)
-       ("libunwind" ,libunwind)
+       ("gnutls" ,gnutls)
        ("iniparser" ,iniparser)
-       ("popt" ,popt)
-       ("openldap" ,openldap)
+       ("libaio" ,libaio)
+       ("ldb" ,ldb)
        ("linux-pam" ,linux-pam)
+       ("openldap" ,openldap)
+       ("popt" ,popt)
        ("readline" ,readline)
-       ("patchelf" ,patchelf)))                   ; for (guix build rpath)
-    (native-inputs                                ; for the test suite
+       ("talloc" ,talloc)
+       ("tevent" ,tevent)
+       ("tdb" ,tdb)))
+    (native-inputs
      `(("perl" ,perl)
-       ("python" ,python-wrapper)))
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2))) ; incompatible with Python 3
     (home-page "http://www.samba.org/")
     (synopsis
      "The standard Windows interoperability suite of programs for GNU and Unix")
