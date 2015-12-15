@@ -47,7 +47,8 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
-  #:use-module (gnu packages polkit))
+  #:use-module (gnu packages polkit)
+  #:use-module (gnu packages databases))
 
 (define-public xdg-utils
   (package
@@ -528,3 +529,42 @@ dongles, bluetooth-paired telephones, or professional RS232/USB devices with
 external power supplies, ModemManager is able to prepare and configure the
 modems and setup connections with them.")
     (license license:gpl2+)))
+
+(define-public telepathy-logger
+  (package
+    (name "telepathy-logger")
+    (version "0.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://telepathy.freedesktop.org/releases/"
+                                  name "/" name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1bjx85k7jyfi5pvl765fzc7q2iz9va51anrc2djv7caksqsdbjlg"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+          (lambda _
+            (setenv "HOME" (getenv "TMPDIR"))
+            #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)
+       ("xsltproc" ,libxslt)))
+    (propagated-inputs
+     ;; telepathy-logger-0.2.pc refers to all these.
+     `(("libxml2" ,libxml2)
+       ("sqlite" ,sqlite)
+       ("telepathy-glib" ,telepathy-glib)))
+    (synopsis "Telepathy logger library")
+    (home-page "http://telepathy.freedesktop.org/")
+    (description
+     "Telepathy logger is a headless observer client that logs information
+received by the Telepathy framework.  It features pluggable backends to log
+different sorts of messages in different formats.")
+    (license license:lgpl2.1+)))
