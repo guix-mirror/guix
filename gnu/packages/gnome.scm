@@ -3745,7 +3745,7 @@ such as gzip tarballs.")
               (sha256
                (base32
                 "0icajbzqf5llvp5s8nafwkhwz6a6jmwn4hhs81bk0bpzawyq4zdk"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
        ("pkg-config" ,pkg-config)
@@ -3753,6 +3753,7 @@ such as gzip tarballs.")
        ("xsltproc" ,libxslt)))
     (inputs
      `(("gnome-desktop" ,gnome-desktop)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)
        ("json-glib" ,json-glib)
        ("libsm" ,libsm)
