@@ -25,6 +25,7 @@
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages libunwind)
@@ -202,6 +203,41 @@ Desktops into Active Directory environments using the winbind daemon.")
      "Talloc is a hierarchical, reference counted memory pool system with
 destructors.  It is the core memory allocator used in Samba.")
     (license gpl3+))) ;; The bundled "replace" library uses LGPL3.
+
+(define-public tevent
+  (package
+    (name "tevent")
+    (version "0.9.26")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.samba.org/ftp/tevent/tevent-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1gbh6d2m49j1v2hkaiyrh8bj02i5wxd4hqayzk2g44yyivbi8b16"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; tevent uses a custom configuration script that runs waf.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "./configure"
+                               (string-append "--prefix=" out)
+                               "--bundled-libraries=NONE"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-2)))
+    (propagated-inputs
+     `(("talloc" ,talloc))) ; required by tevent.pc
+    (synopsis "Event system library")
+    (home-page "https://tevent.samba.org/")
+    (description
+     "Tevent is an event system based on the talloc memory management library.
+It is the core event system used in Samba.  The low level tevent has support for
+many event types, including timers, signals, and the classic file descriptor events.")
+    (license lgpl3+)))
 
 (define-public ppp
   (package
