@@ -183,8 +183,9 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
      (build-system gnu-build-system)
 
      (outputs '("out"
-                "include"))                       ;headers used by extensions
-     (native-inputs `(("bison" ,bison)))          ;to rebuild the parser
+                "doc"                         ;1.7 MiB of HTML and extra files
+                "include"))                   ;headers used by extensions
+     (native-inputs `(("bison" ,bison)))      ;to rebuild the parser
      (inputs `(("readline" ,readline)
                ("ncurses" ,ncurses)))             ;TODO: add texinfo
      (arguments
@@ -212,7 +213,7 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
         #:phases (modify-phases %standard-phases
                    (add-after 'install 'post-install ,post-install-phase)
                    (add-after 'install 'install-headers
-                              ,install-headers-phase))))
+                     ,install-headers-phase))))
      (synopsis "The GNU Bourne-Again SHell")
      (description
       "Bash is the shell, or command-line interpreter, of the GNU system.  It
