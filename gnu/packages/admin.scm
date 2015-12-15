@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -1233,3 +1233,44 @@ handles configuration-management, application deployment, cloud provisioning,
 ad-hoc task-execution, and multinode orchestration - including trivializing
 things like zero downtime rolling updates with load balancers.")
     (license license:gpl3+)))
+
+(define-public cpulimit
+  (package
+    (name "cpulimit")
+    (version "0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/opsengine/cpulimit/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1nn2w849xd5bw4y5sqnll29nxdwl5h0cv4smc7dwmpb9qnd2ycb4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (replace
+                   'build
+                   (lambda _
+                     (zero? (system* "make" "CC=gcc" "-Csrc"))))
+                  (replace
+                   'check
+                   (lambda _
+                     (zero? (system* "make" "CC=gcc" "-Ctests"))))
+                  (replace
+                   'install
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let* ((out (assoc-ref outputs "out"))
+                            (bin (string-append out "/bin")))
+                       (install-file "src/cpulimit" bin)))))))
+    (home-page "https://github.com/opsengine/cpulimit")
+    (synopsis "Limit CPU usage")
+    (description
+     "Cpulimit limits the CPU usage of a process.  It does not change the nice
+value or other scheduling priority settings, but the real CPU usage, and is
+able to adapt itself dynamically to the overall system load.  Children
+processes and threads of the specified process may optionally share the same
+limits.")
+    (license license:gpl2+)))
