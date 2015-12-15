@@ -135,3 +135,24 @@ session.  Two companion utilities enable users to convert CSV files to YAPET
 and vice versa.")
     (home-page "http://www.guengel.ch/myapps/yapet/")
     (license license:gpl3+)))
+
+(define-public cracklib
+  (package
+    (name "cracklib")
+    (version "2.9.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/cracklib/cracklib/"
+                                  "releases/download/" name "-" version "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0hrkb0prf7n92w6rxgq0ilzkk6rkhpys2cfqkrbzswp27na7dkqp"))))
+    (build-system gnu-build-system)
+    (synopsis "Password checking library")
+    (home-page "https://github.com/cracklib/cracklib")
+    (description
+     "CrackLib is a library containing a C function which may be used in a
+passwd like program.  The idea is simple: try to prevent users from choosing
+passwords that could be guessed by crack by filtering them out, at source.")
+    (license license:lgpl2.1)))
