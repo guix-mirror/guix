@@ -9,6 +9,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages less)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages gnome)
@@ -2030,4 +2032,33 @@ pre-defined constants (pi, e, c, etc.), support for using variables, \"active\"
 variables, a command history, hex/octal/binary input and output, unit
 conversions, embedded comments, and an expandable expression entry field.  It
 evaluates expressions using the standard order of operations.")
+    (license license:gpl2+)))
+
+(define-public xaos
+  (package
+    (name "xaos")
+    (version "3.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/xaos/xaos-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "15cd1cx1dyygw6g2nhjqq3bsfdj8sj8m4va9n75i0f3ryww3x7wq"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("gettext" ,gnu-gettext)))
+    (inputs `(("libx11" ,libx11)
+              ("zlib" ,zlib)
+              ("libpng" ,libpng)
+              ("gsl" ,gsl)))
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:make-flags '("LOCALEDIR=$DATAROOTDIR/locale")))
+    (synopsis "Real-time fractal zoomer")
+    (description "GNU XaoS is a graphical program that generates fractal
+patterns and allows you to zoom in and out of them infinitely in a fluid,
+continuous manner.  It also includes tutorials that help to explain how fractals
+are built.  It can generate many different fractal types such as the Mandelbrot
+set.")
+    (home-page "http://www.gnu.org/software/xaos/")
     (license license:gpl2+)))
