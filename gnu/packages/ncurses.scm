@@ -102,6 +102,10 @@
                    (add-after 'unpack 'remove-unneeded-shebang
                               ,remove-shebang-phase))))
      (self-native-input? #t)                      ; for `tic'
+     (native-search-paths
+      (list (search-path-specification
+             (variable "TERMINFO_DIRS")
+             (files '("share/terminfo")))))
      (synopsis "Terminal emulation (termcap, terminfo) library")
      (description
       "GNU Ncurses is a library which provides capabilities to write text to
