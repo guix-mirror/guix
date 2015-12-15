@@ -728,7 +728,9 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; The final grep.  Gzip holds a reference to it (via zgrep), so it must be
   ;; built before gzip.
   (package-with-bootstrap-guile
-   (package-with-explicit-inputs grep
+   (package-with-explicit-inputs (package
+                                   (inherit grep)
+                                   (native-inputs `(("perl" ,perl-boot0))))
                                  %boot5-inputs
                                  (current-source-location)
                                  #:guile guile-final)))

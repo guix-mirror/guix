@@ -82,6 +82,7 @@ command-line arguments, multiple languages, and so on.")
              (base32
               "1srn321x7whlhs5ks36zlcrrmj4iahll8fxwsh1vbz3v04px54fa"))))
    (build-system gnu-build-system)
+   (native-inputs `(("perl" ,perl)))             ;some of the tests require it
    (synopsis "Print lines matching a pattern")
    (description
      "grep is a tool for finding text inside files.  Text is found by
