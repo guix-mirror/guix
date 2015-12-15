@@ -838,34 +838,23 @@ etc.).  The package is structured to make adding new modules easy.")
 (define-public python-keyring
   (package
     (name "python-keyring")
-    (version "3.8")
+    (version "5.7.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/k/"
-                          "keyring/keyring-" version ".zip"))
+      (uri (pypi-uri "keyring" version))
       (sha256
        (base32
-        "1vxazfbcwggyfyramh55shkxs08skhpqrkm6lrrjnygnm8c1l2zg"))))
+        "1h7a1r9ick7wdd0xb5p63413nvjadna2xawrsvmklsl5ddhm5wrx"))))
     (build-system python-build-system)
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python-setuptools" ,python-setuptools)
+     `(("python-setuptools" ,python-setuptools)
+       ("python-setuptools-scm" ,python-setuptools-scm)
        ("python-mock" ,python-mock)))
     (inputs
      `(("python-pycrypto" ,python-pycrypto)))
     (arguments
-     `(#:tests? #f                      ;TODO: tests require pytest
-       #:phases
-       (alist-replace
-        'unpack
-        (lambda _
-          (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
-                                      "/bin/unzip"))
-                (source (assoc-ref %build-inputs "source")))
-            (and (zero? (system* unzip source))
-                 (chdir (string-append "keyring-" ,version)))))
-        %standard-phases)))
+     `(#:tests? #f))                      ;TODO: tests require pytest
     (home-page "http://bitbucket.org/kang/python-keyring-lib")
     (synopsis "Store and access your passwords safely")
     (description
