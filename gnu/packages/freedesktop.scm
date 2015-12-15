@@ -35,6 +35,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages glib)                ;intltool
@@ -567,4 +568,34 @@ modems and setup connections with them.")
      "Telepathy logger is a headless observer client that logs information
 received by the Telepathy framework.  It features pluggable backends to log
 different sorts of messages in different formats.")
+    (license license:lgpl2.1+)))
+
+(define-public colord-gtk
+  (package
+    (name "colord-gtk")
+    (version "0.1.26")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.freedesktop.org/software/colord"
+                                  "/releases/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0i9y3bb5apj6a0f8cx36l6mjzs7xc0k7nf0magmf58vy2mzhpl18"))))
+    (build-system gnu-build-system)
+    (arguments '(#:tests? #f)) ; require the colord system service
+    (native-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (propagated-inputs
+     ;; colord-gtk.pc refers to all these.
+     `(("colord" ,colord)
+       ("gtk+" ,gtk+)))
+    (synopsis "GTK integration for libcolord")
+    (home-page "http://www.freedesktop.org/software/colord/")
+    (description
+     "This is a GTK+ convenience library for interacting with colord.  It is
+useful for both applications which need colour management and applications that
+wish to perform colour calibration.")
     (license license:lgpl2.1+)))
