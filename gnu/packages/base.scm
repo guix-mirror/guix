@@ -595,6 +595,15 @@ store.")
                          (string-append "#define _PATH_BSHELL \""
                                         bash "/bin/bash\"\n")))
 
+                      ;; Nscd uses __DATE__ and __TIME__ to create a string to
+                      ;; make sure the client and server come from the same
+                      ;; libc.  Use something deterministic instead.
+                      (substitute* "nscd/nscd_stat.c"
+                        (("static const char compilation\\[21\\] =.*$")
+                         (string-append
+                          "static const char compilation[21] = \""
+                          (string-take (basename out) 20) "\";\n")))
+
                       ;; Make sure we don't retain a reference to the
                       ;; bootstrap Perl.
                       (substitute* "malloc/mtrace.pl"
