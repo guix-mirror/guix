@@ -4279,17 +4279,33 @@ guix import cpan Acme::Boolean
 
 @item cran
 @cindex CRAN
+@cindex Bioconductor
 Import meta-data from @uref{http://cran.r-project.org/, CRAN}, the
 central repository for the @uref{http://r-project.org, GNU@tie{}R
 statistical and graphical environment}.
 
-Information is extracted from the package's DESCRIPTION file.
+Information is extracted from the package's @code{DESCRIPTION} file.
 
 The command command below imports meta-data for the @code{Cairo}
 R package:
 
 @example
 guix import cran Cairo
+@end example
+
+When @code{--archive=bioconductor} is added, meta-data is imported from
+@uref{http://www.bioconductor.org/, Bioconductor}, a repository of R
+packages for for the analysis and comprehension of high-throughput
+genomic data in bioinformatics.
+
+Information is extracted from a package's @code{DESCRIPTION} file
+published on the web interface of the Bioconductor SVN repository.
+
+The command command below imports meta-data for the @code{GenomicRanges}
+R package:
+
+@example
+guix import cran --archive=bioconductor GenomicRanges
 @end example
 
 @item nix
@@ -4490,6 +4506,8 @@ the updater for GNOME packages;
 the updater for @uref{http://elpa.gnu.org/, ELPA} packages;
 @item cran
 the updater for @uref{http://cran.r-project.org/, CRAN} packages;
+@item bioconductor
+the updater for @uref{http://www.bioconductor.org/, Bioconductor} R packages;
 @item pypi
 the updater for @uref{https://pypi.python.org, PyPI} packages.
 @end table

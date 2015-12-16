@@ -29,12 +29,14 @@
   #:use-module (guix base32)
   #:use-module ((guix download) #:select (download-to-store))
   #:use-module (guix import utils)
-  #:use-module ((guix build-system r) #:select (cran-uri))
+  #:use-module ((guix build-system r) #:select (cran-uri bioconductor-uri))
   #:use-module (guix upstream)
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:export (cran->guix-package
-            %cran-updater))
+            bioconductor->guix-package
+            %cran-updater
+            %bioconductor-updater))
 
 ;;; Commentary:
 ;;;
@@ -108,6 +110,15 @@ package definition."
      `((,type (,'quasiquote ,(format-inputs package-inputs)))))))
 
 (define %cran-url "http://cran.r-project.org/web/packages/")
+(define %bioconductor-url "http://bioconductor.org/packages/")
+
+;; The latest Bioconductor release is 3.2.  Bioconductor packages should be
+;; updated together.
+(define %bioconductor-svn-url
+  (string-append "https://readonly:readonly@"
+                 "hedgehog.fhcrc.org/bioconductor/branches/RELEASE_3_2/"
+                 "madman/Rpacks/"))
+
 
 (define (fetch-description base-url name)
   "Return an alist of the contents of the DESCRIPTION file for the R package
@@ -136,24 +147,31 @@ empty list when the FIELD cannot be found."
                         (string-any char-set:whitespace item)))
                   (map string-trim-both items))))))
 
-(define (description->package meta)
-  "Return the `package' s-expression for a CRAN package from the alist META,
-which was derived from the R package's DESCRIPTION file."
+(define (description->package repository meta)
+  "Return the `package' s-expression for an R package published on REPOSITORY
+from the alist META, which was derived from the R package's DESCRIPTION file."
   (define (guix-name name)
     (if (string-prefix? "r-" name)
         (string-downcase name)
         (string-append "r-" (string-downcase name))))
 
-  (let* ((name       (assoc-ref meta "Package"))
+  (let* ((base-url   (case repository
+                       ((cran)         %cran-url)
+                       ((bioconductor) %bioconductor-url)))
+         (uri-helper (case repository
+                       ((cran)         cran-uri)
+                       ((bioconductor) bioconductor-uri)))
+         (name       (assoc-ref meta "Package"))
          (synopsis   (assoc-ref meta "Title"))
          (version    (assoc-ref meta "Version"))
          (license    (string->license (assoc-ref meta "License")))
          ;; Some packages have multiple home pages.  Some have none.
          (home-page  (match (listify meta "URL")
                        ((url rest ...) url)
-                       (_ (string-append %cran-url name))))
-         (source-url (match (cran-uri name version)
+                       (_ (string-append base-url name))))
+         (source-url (match (uri-helper name version)
                        ((url rest ...) url)
+                       ((? string? url) url)
                        (_ #f)))
          (tarball    (with-store store (download-to-store store source-url)))
          (sysdepends (map string-downcase (listify meta "SystemRequirements")))
@@ -167,26 +185,32 @@ which was derived from the R package's DESCRIPTION file."
        (version ,version)
        (source (origin
                  (method url-fetch)
-                 (uri (cran-uri ,name version))
+                 (uri (,(procedure-name uri-helper) ,name version))
                  (sha256
                   (base32
                    ,(bytevector->nix-base32-string (file-sha256 tarball))))))
-       (properties ,`(,'quasiquote ((,'upstream-name . ,name))))
+       ,@(if (not (equal? (string-append "r-" name)
+                          (guix-name name)))
+             `((properties ,`(,'quasiquote ((,'upstream-name . ,name)))))
+             '())
        (build-system r-build-system)
        ,@(maybe-inputs sysdepends)
        ,@(maybe-inputs propagate 'propagated-inputs)
        (home-page ,(if (string-null? home-page)
-                       (string-append %cran-url name)
+                       (string-append base-url name)
                        home-page))
        (synopsis ,synopsis)
        (description ,(beautify-description (assoc-ref meta "Description")))
        (license ,license))))
 
-(define (cran->guix-package package-name)
-  "Fetch the metadata for PACKAGE-NAME from cran.r-project.org, and return the
-`package' s-expression corresponding to that package, or #f on failure."
-  (let ((module-meta (fetch-description %cran-url package-name)))
-    (and=> module-meta description->package)))
+(define* (cran->guix-package package-name #:optional (repo 'cran))
+  "Fetch the metadata for PACKAGE-NAME from REPO and return the `package'
+s-expression corresponding to that package, or #f on failure."
+  (let* ((url (case repo
+                ((cran)         %cran-url)
+                ((bioconductor) %bioconductor-svn-url)))
+         (module-meta (fetch-description url package-name)))
+    (and=> module-meta (cut description->package repo <>))))
 
 
 ;;;
@@ -212,7 +236,7 @@ which was derived from the R package's DESCRIPTION file."
              (_ #f)))
           (_ #f)))))
 
-(define (latest-release package)
+(define (latest-cran-release package)
   "Return an <upstream-source> for the latest release of PACKAGE."
 
   (define upstream-name
@@ -229,16 +253,55 @@ which was derived from the R package's DESCRIPTION file."
           (version version)
           (urls (cran-uri upstream-name version))))))
 
+(define (latest-bioconductor-release package)
+  "Return an <upstream-source> for the latest release of PACKAGE."
+
+  (define upstream-name
+    (package->upstream-name (specification->package package)))
+
+  (define meta
+    (fetch-description %bioconductor-svn-url upstream-name))
+
+  (and meta
+       (let ((version (assoc-ref meta "Version")))
+         ;; Bioconductor does not provide signatures.
+         (upstream-source
+          (package package)
+          (version version)
+          (urls (bioconductor-uri upstream-name version))))))
+
 (define (cran-package? package)
   "Return true if PACKAGE is an R package from CRAN."
-  ;; Assume all R packages are available on CRAN.
-  (string-prefix? "r-" (package-name package)))
+  (and (string-prefix? "r-" (package-name package))
+       (match (and=> (package-source package) origin-uri)
+         ((? string? uri)
+          (string-prefix? "mirror://cran" uri))
+         ((? list? uris)
+          (any (cut string-prefix? "mirror://cran" <>) uris))
+         (_ #f))))
+
+(define (bioconductor-package? package)
+  "Return true if PACKAGE is an R package from Bioconductor."
+  (and (string-prefix? "r-" (package-name package))
+       (match (and=> (package-source package) origin-uri)
+         ((? string? uri)
+          (string-prefix? "http://bioconductor.org" uri))
+         ((? list? uris)
+          (any (cut string-prefix? "http://bioconductor.org" <>) uris))
+         (_ #f))))
 
 (define %cran-updater
   (upstream-updater
    (name 'cran)
    (description "Updater for CRAN packages")
    (pred cran-package?)
-   (latest latest-release)))
+   (latest latest-cran-release)))
+
+(define %bioconductor-updater
+  (upstream-updater
+   (name 'bioconductor)
+   (description "Updater for Bioconductor packages")
+   (pred bioconductor-package?)
+   (latest latest-bioconductor-release)))
 
 ;;; cran.scm ends here

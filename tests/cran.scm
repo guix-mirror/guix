@@ -107,7 +107,7 @@ Date/Publication: 2015-07-14 14:15:16
                   ("mirror://cran/src/contrib/My-Example_1.2.3.tar.gz"
                    "source")
                   (_ (error "Unexpected URL: " url))))))))
-    (match ((@@ (guix import cran) description->package) description-alist)
+    (match ((@@ (guix import cran) description->package) 'cran description-alist)
       (('package
          ('name "r-my-example")
          ('version "1.2.3")
