@@ -32,6 +32,7 @@
   #:use-module (rnrs bytevectors)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix base64)
   #:use-module ((guix build utils)
                 #:select (mkdir-p dump-port))
   #:use-module ((guix build download)
@@ -210,15 +211,23 @@ Raise an '&http-get-error' condition if downloading fails."
   (let loop ((uri (if (string? uri)
                       (string->uri uri)
                       uri)))
-    (let ((port (or port (open-connection-for-uri uri))))
+    (let ((port (or port (open-connection-for-uri uri)))
+          (auth-header (match (uri-userinfo uri)
+                         ((? string? str)
+                          (list (cons 'Authorization
+                                      (string-append "Basic "
+                                                     (base64-encode
+                                                      (string->utf8 str))))))
+                         (_ '()))))
       (unless buffered?
         (setvbuf port _IONBF))
       (let*-values (((resp data)
                      ;; Try hard to use the API du jour to get an input port.
                      (if (guile-version>? "2.0.7")
-                         (http-get uri #:streaming? #t #:port port) ; 2.0.9+
+                         (http-get uri #:streaming? #t #:port port
+                                   #:headers auth-header) ; 2.0.9+
                          (http-get* uri #:decode-body? text?        ; 2.0.7
-                                    #:port port)))
+                                    #:port port #:headers auth-header)))
                     ((code)
                      (response-code resp)))
         (case code
