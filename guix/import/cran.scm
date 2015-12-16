@@ -204,27 +204,33 @@ which was derived from the R package's DESCRIPTION file."
 ;;; Updater.
 ;;;
 
+(define (package->upstream-name package)
+  "Return the upstream name of the PACKAGE."
+  (let* ((properties (package-properties package))
+         (upstream-name (and=> properties
+                               (cut assoc-ref <> 'upstream-name))))
+    (if upstream-name
+        upstream-name
+        (match (package-source package)
+          ((? origin? origin)
+           (match (origin-uri origin)
+             ((url rest ...)
+              (let ((end   (string-rindex url #\_))
+                    (start (string-rindex url #\/)))
+                ;; The URL ends on
+                ;; (string-append "/" name "_" version ".tar.gz")
+                (substring url start end)))
+             (_ #f)))
+          (_ #f)))))
+
 (define (latest-release package)
   "Return an <upstream-source> for the latest release of PACKAGE."
 
-  (define (package->cran-name package)
-    (match (package-source package)
-      ((? origin? origin)
-       (match (origin-uri origin)
-         ((url rest ...)
-          (let ((end   (string-rindex url #\_))
-                (start (string-rindex url #\/)))
-            ;; The URL ends on
-            ;; (string-append "/" name "_" version ".tar.gz")
-            (substring url start end)))
-         (_ #f)))
-    (_ #f)))
-
-  (define cran-name
-    (package->cran-name (specification->package package)))
+  (define upstream-name
+    (package->upstream-name (specification->package package)))
 
   (define meta
-    (cran-fetch cran-name))
+    (cran-fetch upstream-name))
 
   (and meta
        (let ((version (assoc-ref meta "Version")))
@@ -232,7 +238,7 @@ which was derived from the R package's DESCRIPTION file."
          (upstream-source
           (package package)
           (version version)
-          (urls (cran-uri cran-name version))))))
+          (urls (cran-uri upstream-name version))))))
 
 (define (cran-package? package)
   "Return true if PACKAGE is an R package from CRAN."
