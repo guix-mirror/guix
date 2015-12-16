@@ -109,11 +109,11 @@ package definition."
 
 (define %cran-url "http://cran.r-project.org/web/packages/")
 
-(define (cran-fetch name)
+(define (fetch-description base-url name)
   "Return an alist of the contents of the DESCRIPTION file for the R package
 NAME, or #f on failure.  NAME is case-sensitive."
   ;; This API always returns the latest release of the module.
-  (let ((url (string-append %cran-url name "/DESCRIPTION")))
+  (let ((url (string-append base-url name "/DESCRIPTION")))
     (description->alist (read-string (http-fetch url)))))
 
 (define (listify meta field)
@@ -196,7 +196,7 @@ which was derived from the R package's DESCRIPTION file."
 (define (cran->guix-package package-name)
   "Fetch the metadata for PACKAGE-NAME from cran.r-project.org, and return the
 `package' s-expression corresponding to that package, or #f on failure."
-  (let ((module-meta (cran-fetch package-name)))
+  (let ((module-meta (fetch-description %cran-url package-name)))
     (and=> module-meta description->package)))
 
 
@@ -230,7 +230,7 @@ which was derived from the R package's DESCRIPTION file."
     (package->upstream-name (specification->package package)))
 
   (define meta
-    (cran-fetch upstream-name))
+    (fetch-description %cran-url upstream-name))
 
   (and meta
        (let ((version (assoc-ref meta "Version")))
