@@ -276,7 +276,19 @@ standards.")
       (sha256
        (base32
         "0rcaa19rfgclwd2qvcz8798m57jjzra6kaxg5dniysajvx7qndfp"))
-      (patches (map search-patch '("icecat-avoid-bundled-includes.patch"
+      (patches (map search-patch '("icecat-CVE-2015-7210.patch"
+                                   "icecat-CVE-2015-7205.patch"
+                                   "icecat-CVE-2015-7201-pt1.patch"
+                                   "icecat-CVE-2015-7201-pt2.patch"
+                                   "icecat-CVE-2015-7212.patch"
+                                   "icecat-CVE-2015-7213-pt1.patch"
+                                   "icecat-CVE-2015-7213-pt2.patch"
+                                   "icecat-CVE-2015-7222-pt1.patch"
+                                   "icecat-CVE-2015-7222-pt2.patch"
+                                   "icecat-CVE-2015-7222-pt3.patch"
+                                   "icecat-CVE-2015-7214.patch"
+                                   "icecat-CVE-2015-7201-pt3.patch"
+                                   "icecat-avoid-bundled-includes.patch"
                                    "icecat-freetype-2.6.patch")))
       (modules '((guix build utils)))
       (snippet
