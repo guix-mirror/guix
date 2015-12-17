@@ -1453,3 +1453,22 @@ encoder/decoder, round-off-error-free sum and cumsum, etc.")
      "This package provides tools to convert R Markdown documents into a
 variety of formats.")
     (license license:gpl3+)))
+
+(define-public r-gtable
+  (package
+    (name "r-gtable")
+    (version "0.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "gtable" version))
+              (sha256
+               (base32
+                "0k9hfj6r5y238gqh92s3cbdn34biczx3zfh79ix5xq0c5vkai2xh"))))
+    (properties `((upstream-name . "gtable")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/gtable")
+    (synopsis "Arrange grobs in tables")
+    (description
+     "This package provides tools to make it easier to work with tables of
+grobs.")
+    (license license:gpl2+)))
