@@ -2551,6 +2551,11 @@ including comments and whitespace.")
                (base32
                 "0ly2ms6c3irmbr1575ldyh52bz2v0lzzr2gagf0p526k12ld2n5b"))))
     (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-ext
+           (lambda _ (zero? (system* "rake" "compile:unf_ext")))))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-rake-compiler" ,ruby-rake-compiler)
