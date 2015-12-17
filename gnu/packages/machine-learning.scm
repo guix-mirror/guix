@@ -23,6 +23,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system r)
   #:use-module (gnu packages)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
@@ -290,3 +291,35 @@ combine multiple data representations, algorithm classes, and general purpose
 tools.  This enables both rapid prototyping of data pipelines and extensibility
 in terms of new algorithms.")
     (license license:gpl3+)))
+
+(define-public r-adaptivesparsity
+  (package
+    (name "r-adaptivesparsity")
+    (version "1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "AdaptiveSparsity" version))
+              (sha256
+               (base32
+                "1az7isvalf3kmdiycrfl6s9k9xqk22k1mc6rh8v0jmcz402qyq8z"))))
+    (properties
+     `((upstream-name . "AdaptiveSparsity")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-against-armadillo
+           (lambda _
+             (substitute* "src/Makevars"
+               (("PKG_LIBS=" prefix)
+                (string-append prefix "-larmadillo"))))))))
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("r-rcpparmadillo" ,r-rcpparmadillo)))
+    (home-page "http://cran.r-project.org/web/packages/AdaptiveSparsity")
+    (synopsis "Adaptive sparsity models")
+    (description
+     "This package implements the Figueiredo machine learning algorithm for
+adaptive sparsity and the Wong algorithm for adaptively sparse gaussian
+geometric models.")
+    (license license:lgpl3+)))
