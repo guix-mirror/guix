@@ -1472,3 +1472,28 @@ variety of formats.")
      "This package provides tools to make it easier to work with tables of
 grobs.")
     (license license:gpl2+)))
+
+(define-public r-gridextra
+  (package
+    (name "r-gridextra")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "gridExtra" version))
+              (sha256
+               (base32
+                "19yyrfd37c5hxlavb9lca9l26wjhc80rlqhgmfj9k3xhbvvpdp17"))))
+    (properties `((upstream-name . "gridExtra")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gtable" ,r-gtable)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ;for building vignettes
+    (home-page "https://github.com/baptiste/gridextra")
+    (synopsis "Miscellaneous functions for \"Grid\" graphics")
+    (description
+     "This package provides a number of user-level functions to work with
+@code{grid} graphics, notably to arrange multiple grid-based plots on a page,
+and draw tables.")
+    (license license:gpl2+)))
+
