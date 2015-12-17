@@ -385,7 +385,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.32.1")
+   (version "2.32.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -393,7 +393,7 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1g7kjxv67jcdasi14n7jan4icrnnppd1m99wrdmpv32k4m7vfcj4"))))
+              "0cfh87aqyqbfcwpbv1ihgmgfcn66il5q2n8yjyl8gxkjmkqp2rrb"))))
    (build-system gnu-build-system)
    (arguments
     '(#:configure-flags '("--with-x11")
@@ -403,9 +403,9 @@ highlighting and other features typical of a source code editor.")
          'unpack 'disable-failing-tests
          (lambda _
            (substitute* "tests/Makefile.in"
-             ;; XXX FIXME: This test fails on some machines with:
-             ;; GLib-FATAL-ERROR: gmem.c:103: failed to allocate
-             ;; 6039798016 bytes
+             ;; XXX FIXME: This test fails on armhf machines with:
+             ;; SKIP Not enough memory to load bitmap image
+             ;; ERROR: cve-2015-4491 - too few tests run (expected 4, got 2)
              (("cve-2015-4491\\$\\(EXEEXT\\) ") "")
              ;; XXX FIXME: This test fails with:
              ;; ERROR:pixbuf-jpeg.c:74:test_type9_rotation_exif_tag:
