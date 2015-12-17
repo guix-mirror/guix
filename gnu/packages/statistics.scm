@@ -1342,3 +1342,46 @@ visualization system inspired by Trellis graphics, with an emphasis on
 multivariate data.  Lattice is sufficient for typical graphics needs, and is
 also flexible enough to handle most nonstandard requirements.")
     (license license:gpl2+)))
+
+(define-public r-rcpparmadillo
+  (package
+    (name "r-rcpparmadillo")
+    (version "0.6.200.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "RcppArmadillo" version))
+              (sha256
+               (base32
+                "137wqqga776yj6synx5awhrzgkz7mmqnvgmggh9l4k6d99vwp9gj"))
+              (modules '((guix build utils)))
+              ;; Remove bundled armadillo sources
+              (snippet
+               '(begin
+                  (delete-file-recursively "inst/include/armadillo_bits")
+                  (delete-file "inst/include/armadillo")))))
+    (properties `((upstream-name . "RcppArmadillo")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-against-armadillo
+           (lambda _
+             (substitute* "src/Makevars"
+               (("PKG_LIBS=" prefix)
+                (string-append prefix "-larmadillo"))))))))
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("armadillo" ,armadillo-for-rcpparmadillo)))
+    (home-page "https://github.com/RcppCore/RcppArmadillo")
+    (synopsis "Rcpp integration for the Armadillo linear algebra library")
+    (description
+     "Armadillo is a templated C++ linear algebra library that aims towards a
+good balance between speed and ease of use.  Integer, floating point and
+complex numbers are supported, as well as a subset of trigonometric and
+statistics functions.  Various matrix decompositions are provided through
+optional integration with LAPACK and ATLAS libraries.  This package includes
+the header files from the templated Armadillo library.")
+    ;; Armadillo is licensed under the MPL 2.0, while RcppArmadillo (the Rcpp
+    ;; bindings to Armadillo) is licensed under the GNU GPL version 2 or
+    ;; later, as is the rest of 'Rcpp'.
+    (license license:gpl2+)))

@@ -1451,6 +1451,17 @@ provides efficient classes for vectors, matrices and cubes, as well as 150+
 associated functions (eg. contiguous and non-contiguous submatrix views).")
     (license license:mpl2.0)))
 
+(define-public armadillo-for-rcpparmadillo
+  (package (inherit armadillo)
+    (version "6.200.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/arma/armadillo-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1f69rlqhnf2wv8khyn2a8vi6gx1i72qgfy8b9b760ssk85dcl763"))))))
+
 (define-public muparser
   (package
     (name "muparser")
