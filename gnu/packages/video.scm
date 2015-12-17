@@ -42,6 +42,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages doxygen)
   #:use-module (gnu packages elf)
@@ -1270,3 +1271,40 @@ players, transcoders, web streamers and many more types of applications.  The
 functionality of the system is provided via an assortment of ready to use
 tools, XML authoring components, and an extensible plug-in based API.")
     (license license:lgpl2.1+)))
+
+(define-public obs
+  (package
+    (name "obs")
+    (version "0.12.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jp9000/obs-studio"
+                                  "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0b1xb5vd3g4h7m1hsjzsq3bbbnqb2n6mpmq6ix4yyy72g087rjk1"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f)) ; no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("eudev" ,eudev)
+       ("ffmpeg" ,ffmpeg)
+       ("freetype" ,freetype)
+       ("jack" ,jack-1)
+       ("jansson" ,jansson)
+       ("libx264" ,libx264)
+       ("libxcomposite" ,libxcomposite)
+       ("mesa" ,mesa)
+       ("pulseaudio" ,pulseaudio)
+       ("qt" ,qt)
+       ("zlib" ,zlib)))
+    (synopsis "Live streaming software")
+    (description "Open Broadcaster Software provides a graphical interface for
+video recording and live streaming.  OBS supports capturing audio and video
+from many input sources such as webcams, X11 (for screencasting), PulseAudio,
+and JACK.")
+    (home-page "https://obsproject.com")
+    (license license:gpl2+)))
