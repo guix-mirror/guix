@@ -3140,6 +3140,32 @@ BLAST, KEGG, GenBank, MEDLINE and GO.")
     ;; (LGPLv2.1+) and scripts in samples (which have GPL2 and GPL2+)
     (license (list license:ruby license:lgpl2.1+ license:gpl2+ ))))
 
+(define-public r-acsnminer
+  (package
+    (name "r-acsnminer")
+    (version "0.15.11")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "ACSNMineR" version))
+              (sha256
+               (base32
+                "1dl4drhjyazwm9wxlm8yfppwvvj4h6jxwmz8kfw5bxpb3jdnsqvy"))))
+    (properties `((upstream-name . "ACSNMineR")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-ggplot2" ,r-ggplot2)
+        ("r-gridextra" ,r-gridextra)))
+    (home-page "http://cran.r-project.org/web/packages/ACSNMineR")
+    (synopsis "Gene enrichment analysis")
+    (description
+     "This package provides tools to compute and represent gene set enrichment
+or depletion from your data based on pre-saved maps from the @dfn{Atlas of
+Cancer Signalling Networks} (ACSN) or user imported maps.  The gene set
+enrichment can be run with hypergeometric test or Fisher exact test, and can
+use multiple corrections.  Visualization of data can be done either by
+barplots or heatmaps.")
+    (license license:gpl2+)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
