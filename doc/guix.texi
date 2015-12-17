@@ -4206,7 +4206,7 @@ Import meta-data from @uref{http://cran.r-project.org/, CRAN}, the
 central repository for the @uref{http://r-project.org, GNU@tie{}R
 statistical and graphical environment}.
 
-Information is extracted from the HTML package description.
+Information is extracted from the package's DESCRIPTION file.
 
 The command command below imports meta-data for the @code{Cairo}
 R package:
