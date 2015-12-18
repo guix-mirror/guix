@@ -92,12 +92,15 @@
                                             ,@%bootstrap-inputs)
                                           #:guile %bootstrap-guile)))
      (package (inherit p)
+       (name "diffutils-boot0")
        (arguments `(#:tests? #f         ; the test suite needs diffutils
                     ,@(package-arguments p)))))))
 
 (define findutils-boot0
   (package-with-bootstrap-guile
-   (package-with-explicit-inputs findutils
+   (package-with-explicit-inputs (package
+                                   (inherit findutils)
+                                   (name "findutils-boot0"))
                                  `(("make" ,gnu-make-boot0)
                                    ("diffutils" ,diffutils-boot0) ; for tests
                                    ,@%bootstrap-inputs)
@@ -106,7 +109,9 @@
 
 (define file-boot0
   (package-with-bootstrap-guile
-   (package-with-explicit-inputs file
+   (package-with-explicit-inputs (package
+                                   (inherit file)
+                                   (name "file-boot0"))
                                  `(("make" ,gnu-make-boot0)
                                    ,@%bootstrap-inputs)
                                  (current-source-location)
@@ -262,6 +267,7 @@
 (define perl-boot0
   (let ((perl (package
                 (inherit perl)
+                (name "perl-boot0")
                 (arguments
                  (substitute-keyword-arguments (package-arguments perl)
                    ((#:phases phases)
