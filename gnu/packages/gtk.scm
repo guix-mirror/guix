@@ -1005,29 +1005,28 @@ extensive documentation, including API reference and a tutorial.")
        ("gtk+"             ,gtk+-2)))
     (arguments
      `(#:tests? #f
-       #:phases (alist-cons-after
-                 'configure 'fix-codegen
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (substitute* "pygtk-codegen-2.0"
-                     (("^prefix=.*$")
-                      (string-append
-                       "prefix="
-                       (assoc-ref inputs "python-pygobject") "\n"))))
-                 (alist-cons-after
-                  'install 'install-pth
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    ;; pygtk's modules are stored in a subdirectory of python's
-                    ;; site-packages directory.  Add a .pth file so that python
-                    ;; will add that subdirectory to its module search path.
-                    (let* ((out    (assoc-ref outputs "out"))
-                           (site   (string-append out "/lib/python"
-                                                  ,(version-major+minor
-                                                    (package-version python-2))
-                                                  "/site-packages")))
-                      (call-with-output-file (string-append site "/pygtk.pth")
-                        (lambda (port)
-                          (format port "gtk-2.0~%")))))
-                  %standard-phases))))
+       #:phases (modify-phases %standard-phases
+                  (add-after 'configure 'fix-codegen
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (substitute* "pygtk-codegen-2.0"
+                        (("^prefix=.*$")
+                         (string-append
+                          "prefix="
+                          (assoc-ref inputs "python-pygobject") "\n")))))
+                  (add-after 'install 'install-pth
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; pygtk's modules are stored in a subdirectory of
+                      ;; python's site-packages directory.  Add a .pth file so
+                      ;; that python will add that subdirectory to its module
+                      ;; search path.
+                      (let* ((out    (assoc-ref outputs "out"))
+                             (site   (string-append out "/lib/python"
+                                                    ,(version-major+minor
+                                                      (package-version python-2))
+                                                    "/site-packages")))
+                        (call-with-output-file (string-append site "/pygtk.pth")
+                          (lambda (port)
+                            (format port "gtk-2.0~%")))))))))
     (home-page "http://www.pygtk.org/")
     (synopsis "Python bindings for GTK+")
     (description
