@@ -3245,6 +3245,33 @@ naming and share the same rich and consistent \"Vector API\" as much as
 possible.")
     (license license:artistic2.0)))
 
+(define-public r-genomeinfodb
+  (package
+    (name "r-genomeinfodb")
+    (version "1.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "GenomeInfoDb" version))
+              (sha256
+               (base32
+                "1j2n1v1mrw1fxn7cyffz112pm76wd6gy9q9qwlsfv3brbsqbvdbf"))))
+    (properties
+     `((upstream-name . "GenomeInfoDb")
+       (r-repository . bioconductor)))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "http://bioconductor.org/packages/GenomeInfoDb")
+    (synopsis "Utilities for manipulating chromosome identifiers")
+    (description
+     "This package contains data and functions that define and allow
+translation between different chromosome sequence naming conventions (e.g.,
+\"chr1\" versus \"1\"), including a function that attempts to place sequence
+names in their natural, rather than lexicographic, order.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
