@@ -3166,6 +3166,27 @@ use multiple corrections.  Visualization of data can be done either by
 barplots or heatmaps.")
     (license license:gpl2+)))
 
+(define-public r-biocgenerics
+  (package
+    (name "r-biocgenerics")
+    (version "0.16.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "BiocGenerics" version))
+              (sha256
+               (base32
+                "0f16ryy5f012hvksrwlmm33bcl7lw97i2jvhbnwfwl03j4w7nhc1"))))
+    (properties
+     `((upstream-name . "BiocGenerics")
+       (r-repository . bioconductor)))
+    (build-system r-build-system)
+    (home-page "http://bioconductor.org/packages/BiocGenerics")
+    (synopsis "S4 generic functions for Bioconductor")
+    (description
+     "This package provides S4 generic functions needed by many Bioconductor
+packages.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
