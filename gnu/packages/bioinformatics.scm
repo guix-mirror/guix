@@ -3488,6 +3488,33 @@ manipulating genomic intervals and variables defined along a genome.")
 on Bioconductor or which replace R functions.")
     (license license:artistic2.0)))
 
+(define-public r-annotationdbi
+  (package
+    (name "r-annotationdbi")
+    (version "1.32.2")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "AnnotationDbi" version))
+              (sha256
+               (base32
+                "08ncdjvq0l44kqyiv32kn9wnbw1xgfb6qjfzfbjpqrcfp1jygz9j"))))
+    (properties
+     `((upstream-name . "AnnotationDbi")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-dbi" ,r-dbi)
+       ("r-iranges" ,r-iranges)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "http://bioconductor.org/packages/AnnotationDbi")
+    (synopsis "Annotation database interface")
+    (description
+     "This package provides user interface and database connection code for
+annotation data packages using SQLite data storage.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
