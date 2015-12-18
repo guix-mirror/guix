@@ -23,8 +23,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages linux)
-  #:use-module ((guix licenses)
-                #:hide (zlib openssl))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
@@ -150,7 +149,7 @@
        #:tests? #f))
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
-    (license gpl2)
+    (license license:gpl2)
     (home-page "http://www.gnu.org/software/linux-libre/"))))
 
 (define-public module-init-tools
@@ -184,7 +183,7 @@
     (description
      "Tools for loading and managing Linux kernel modules, such as `modprobe',
 `insmod', `lsmod', and more.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define %boot-logo-patch
   ;; Linux-Libre boot logo featuring Freedo and a gnu.
@@ -315,7 +314,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
     (description
      "GNU Linux-Libre is a free (as in freedom) variant of the Linux kernel.
 It has been modified to remove all non-free binary blobs.")
-    (license gpl2)
+    (license license:gpl2)
     (home-page "http://www.gnu.org/software/linux-libre/"))))
 
 
@@ -362,7 +361,7 @@ It has been modified to remove all non-free binary blobs.")
 Pluggable authentication modules are small shared object files that can
 be used through the PAM API to perform tasks, like authenticating a user
 at login.  Local and dynamic reconfiguration are its key features.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 
 ;;;
@@ -390,7 +389,7 @@ at login.  Local and dynamic reconfiguration are its key features.")
      "This PSmisc package is a set of some small useful utilities that
 use the proc filesystem.  We're not about changing the world, but
 providing the system administrator with some help in common tasks.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public util-linux
   (package
@@ -457,8 +456,8 @@ block devices, UUIDs, TTYs, and many other tools.")
     ;; Note that util-linux doesn't use the same license for all the
     ;; code.  GPLv2+ is the default license for a code without an
     ;; explicitly defined license.
-    (license (list gpl3+ gpl2+ gpl2 lgpl2.0+
-                   bsd-4 public-domain))))
+    (license (list license:gpl3+ license:gpl2+ license:gpl2 license:lgpl2.0+
+                   license:bsd-4 license:public-domain))))
 
 (define-public procps
   (package
@@ -525,7 +524,7 @@ block devices, UUIDs, TTYs, and many other tools.")
 that give information about processes using the Linux /proc file system.
 The package includes the programs ps, top, vmstat, w, kill, free,
 slabtop, and skill.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public usbutils
   (package
@@ -549,7 +548,7 @@ slabtop, and skill.")
      "Tools for working with USB devices, such as lsusb")
     (description
      "Tools for working with USB devices, such as lsusb.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public e2fsprogs
   (package
@@ -625,9 +624,9 @@ slabtop, and skill.")
     (synopsis "Creating and checking ext2/ext3/ext4 file systems")
     (description
      "This package provides tools for manipulating ext2/ext3/ext4 file systems.")
-    (license (list gpl2                           ; programs
-                   lgpl2.0                        ; libext2fs
-                   x11))))                        ; libuuid
+    (license (list license:gpl2                   ;programs
+                   license:lgpl2.0                ;libext2fs
+                   license:x11))))                ;libuuid
 
 (define e2fsprogs/static
   (static-package
@@ -691,7 +690,7 @@ from the e2fsprogs package.  It is meant to be used in initrds.")
     (description
      "Extundelete is a set of tools that can recover deleted files from an
 ext3 or ext4 partition.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public zerofree
   (package
@@ -726,7 +725,7 @@ ext3 or ext4 partition.")
      "The zerofree command scans the free blocks in an ext2 file system and
 fills any non-zero blocks with zeroes.  This is a useful way to make disk
 images more compressible.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public strace
   (package
@@ -746,7 +745,7 @@ images more compressible.")
     (description
      "strace is a system call tracer, i.e. a debugging tool which prints out a
 trace of all the system calls made by a another process/program.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ltrace
   (package
@@ -770,7 +769,7 @@ trace of all the system calls made by a another process/program.")
      "ltrace intercepts and records dynamic library calls which are called by
 an executed process and the signals received by that process.  It can also
 intercept and print the system calls executed by the program.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public alsa-lib
   (package
@@ -791,7 +790,7 @@ intercept and print the system calls executed by the program.")
     (description
      "The Advanced Linux Sound Architecture (ALSA) provides audio and
 MIDI functionality to the Linux-based operating system.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public alsa-utils
   (package
@@ -836,7 +835,7 @@ MIDI functionality to the Linux-based operating system.")
 
     ;; This is mostly GPLv2+ but a few files such as 'alsactl.c' are
     ;; GPLv2-only.
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public iptables
   (package
@@ -864,7 +863,7 @@ system administrators.  Since Network Address Translation is also configured
 from the packet filter ruleset, iptables is used for this, too.  The iptables
 package also includes ip6tables.  ip6tables is used for configuring the IPv6
 packet filter.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public iproute
   (package
@@ -925,7 +924,7 @@ consists of several tools, of which the most important are ip and tc.  ip
 controls IPv4 and IPv6 configuration and tc stands for traffic control.  Both
 tools print detailed usage messages and are accompanied by a set of
 manpages.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public net-tools
   ;; XXX: This package is basically unmaintained, but it provides a few
@@ -1023,7 +1022,7 @@ subsystem of the Linux kernel.  This includes arp, hostname, ifconfig,
 netstat, rarp and route.  Additionally, this package contains utilities
 relating to particular network hardware types (plipconfig, slattach) and
 advanced aspects of IP configuration (iptunnel, ipmaddr).")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public libcap
   (package
@@ -1061,7 +1060,7 @@ advanced aspects of IP configuration (iptunnel, ipmaddr).")
 Linux-based operating systems.")
 
     ;; License is BSD-3 or GPLv2, at the user's choice.
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public bridge-utils
   (package
@@ -1107,7 +1106,7 @@ to connect two Ethernet segments together in a protocol independent way.
 Packets are forwarded based on Ethernet address, rather than IP address (like
 a router).  Since forwarding is done at Layer 2, all protocols can go
 transparently through a bridge.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public libnl
   (package
@@ -1134,7 +1133,7 @@ configuration and monitoring interfaces.")
 
     ;; Most files are LGPLv2.1-only, but some are GPLv2-only (like
     ;; 'nl-addr-add.c'), so the result is GPLv2-only.
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public iw
   (package
@@ -1160,7 +1159,7 @@ configuration and monitoring interfaces.")
     (description
      "iw is a new nl80211 based CLI configuration utility for wireless
 devices.  It replaces 'iwconfig', which is deprecated.")
-    (license isc)))
+    (license license:isc)))
 
 (define-public powertop
   (package
@@ -1191,7 +1190,7 @@ power management.  In addition to being a diagnostic tool, PowerTOP also has
 an interactive mode where the user can experiment various power management
 settings for cases where the operating system has not enabled these
 settings.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public aumix
   (package
@@ -1212,7 +1211,7 @@ settings.")
     (description
      "Aumix adjusts an audio mixer from X, the console, a terminal,
 the command line or a script.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public iotop
   (package
@@ -1238,7 +1237,7 @@ the command line or a script.")
     (description
      "Iotop is a Python program with a top like user interface to show the
 processes currently causing I/O.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public fuse
   (package
@@ -1296,8 +1295,8 @@ but also an impediment to system extensibility.  FUSE, for \"file systems in
 user space\", is a kernel module and user-space library that tries to address
 part of this problem by allowing users to run file system implementations as
 user-space processes.")
-    (license (list lgpl2.1                        ; library
-                   gpl2+))))                      ; command-line utilities
+    (license (list license:lgpl2.1                ;library
+                   license:gpl2+))))              ;command-line utilities
 
 (define-public unionfs-fuse
   (package
@@ -1321,7 +1320,7 @@ user-space processes.")
 space, using the FUSE library.  Mounting a union file system allows you to
 \"aggregate\" the contents of several directories into a single mount point.
 UnionFS-FUSE additionally supports copy-on-write.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define fuse-static
   (package (inherit fuse)
@@ -1390,7 +1389,7 @@ UnionFS-FUSE additionally supports copy-on-write.")
 Since most SSH servers already support this protocol it is very easy to set
 up: on the server side there's nothing to do; on the client side mounting the
 file system is as easy as logging into the server with an SSH client.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public numactl
   (package
@@ -1423,8 +1422,8 @@ program.
 The package contains other commands, such as numademo, numastat and memhog.
 The numademo command provides a quick overview of NUMA performance on your
 system.")
-    (license (list gpl2                           ; programs
-                   lgpl2.1))))                    ; library
+    (license (list license:gpl2                   ;programs
+                   license:lgpl2.1))))            ;library
 
 (define-public kbd
   (package
@@ -1482,7 +1481,7 @@ system.")
      "This package contains keytable files and keyboard utilities compatible
 for systems using the Linux kernel.  This includes commands such as
 'loadkeys', 'setfont', 'kbdinfo', and 'chvt'.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public inotify-tools
   (package
@@ -1502,7 +1501,7 @@ for systems using the Linux kernel.  This includes commands such as
     (description
      "The inotify-tools packages provides a C library and command-line tools
 to use Linux' inotify mechanism, which allows file accesses to be monitored.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public kmod
   (package
@@ -1546,7 +1545,7 @@ dependencies and aliases.
 These tools are designed on top of libkmod, a library that is shipped with
 kmod.  The aim is to be compatible with tools, configurations and indices
 from the module-init-tools project.")
-    (license gpl2+))) ; library under lgpl2.1+
+    (license license:gpl2+))) ; library under lgpl2.1+
 
 (define-public eudev
   ;; The post-systemd fork, maintained by Gentoo.
@@ -1574,7 +1573,7 @@ from the module-init-tools project.")
     (description "Udev is a daemon which dynamically creates and removes
 device nodes from /dev/, handles hotplug events and loads drivers at boot
 time.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public lvm2
   (package
@@ -1639,7 +1638,7 @@ mapper.  Kernel components are part of Linux-libre.")
 
     ;; Libraries (liblvm2, libdevmapper) are LGPLv2.1.
     ;; Command-line tools are GPLv2.
-    (license (list gpl2 lgpl2.1))))
+    (license (list license:gpl2 license:lgpl2.1))))
 
 (define-public wireless-tools
   (package
@@ -1678,7 +1677,7 @@ interface.")
     (home-page "http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html")
     ;; wireless.21.h and wireless.22.h are distributed under lgpl2.1+, the
     ;; other files are distributed under gpl2.
-    (license (list gpl2 lgpl2.1+))))
+    (license (list license:gpl2 license:lgpl2.1+))))
 
 (define-public crda
   (package
@@ -1747,7 +1746,7 @@ interface.")
      "The Central Regulatory Domain Agent (CRDA) acts as the udev helper for
 communication between the kernel Linux and user space for regulatory
 compliance.")
-    (license copyleft-next)))
+    (license license:copyleft-next)))
 
 (define-public wireless-regdb
   (package
@@ -1795,7 +1794,7 @@ compliance.")
      "This package contains the wireless regulatory database Central
 Regulatory Database Agent (CRDA) daemon.  The database contains information on
 country-specific regulations for the wireless spectrum.")
-    (license isc)))
+    (license license:isc)))
 
 (define-public lm-sensors
   (package
@@ -1868,7 +1867,7 @@ country-specific regulations for the wireless spectrum.")
      "Lm-sensors is a hardware health monitoring package for Linux.  It allows
 you to access information from temperature, voltage, and fan speed sensors.
 It works with most newer systems.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public i2c-tools
   (package
@@ -1898,7 +1897,7 @@ It works with most newer systems.")
 Linux: a bus probing tool, a chip dumper, register-level SMBus access helpers,
 EEPROM decoding scripts, EEPROM programming tools, and a python module for
 SMBus access.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public xsensors
   (package
@@ -1935,7 +1934,7 @@ SMBus access.")
      "Xsensors reads data from the libsensors library regarding hardware
 health such as temperature, voltage and fan speed and displays the information
 in a digital read-out.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public perf
   (package
@@ -2011,7 +2010,7 @@ containers.  It can be used for running a command or even booting an OS inside
 an isolated container, created with the help of Linux namespaces.  It is
 similar in functionality to chroot, although pflask provides better isolation
 thanks to the use of namespaces.")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public hdparm
   (package
@@ -2037,7 +2036,7 @@ thanks to the use of namespaces.")
     (description
      "Get/set device parameters for Linux SATA/IDE drives.  It's primary use
 is for enabling irq-unmasking and IDE multiple-mode.")
-    (license (non-copyleft "file://LICENSE.TXT"))))
+    (license (license:non-copyleft "file://LICENSE.TXT"))))
 
 (define-public rfkill
   (package
@@ -2063,8 +2062,8 @@ is for enabling irq-unmasking and IDE multiple-mode.")
      "rfkill is a simple tool for accessing the rfkill device interface,
 which is used to enable and disable wireless networking devices, typically
 WLAN, Bluetooth and mobile broadband.")
-    (license (non-copyleft "file://COPYING"
-                           "See COPYING in the distribution."))))
+    (license (license:non-copyleft "file://COPYING"
+                                   "See COPYING in the distribution."))))
 
 (define-public acpid
   (package
@@ -2086,7 +2085,7 @@ Configuration and Power Interface (ACPI) events.  acpid should be started
 during the system boot, and will run as a background process.  When an ACPI
 event is received from the kernel, acpid will examine the list of rules
 specified in /etc/acpi/events and execute the rules that match the event.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public sysfsutils
   (package
@@ -2110,7 +2109,7 @@ Linux kernel versions 2.5+ that exposes a system's device tree.  The package
 also contains the libsysfs library.")
     ;; The library is under lgpl2.1+ (all files say "or any later version").
     ;; The rest is mostly gpl2, with a few files indicating gpl2+.
-    (license (list gpl2 gpl2+ lgpl2.1+))))
+    (license (list license:gpl2 license:gpl2+ license:lgpl2.1+))))
 
 (define-public sysfsutils-1
   (package
@@ -2162,7 +2161,7 @@ also contains the libsysfs library.")
      "The cpufrequtils suite contains utilities to retrieve CPU frequency
 information, and set the CPU frequency if supported, using the cpufreq
 capabilities of the Linux kernel.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public libraw1394
   (package
@@ -2185,7 +2184,7 @@ the Linux IEEE-1394 subsystem, which provides direct access to the connected
 1394 buses to user space.  Through libraw1394/raw1394, applications can directly
 send to and receive from other nodes without requiring a kernel driver for the
 protocol in question.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public libavc1394
   (package
@@ -2208,7 +2207,7 @@ protocol in question.")
     (description
      "Libavc1394 is a programming interface to the AV/C specification from
 the 1394 Trade Association.  AV/C stands for Audio/Video Control.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public libiec61883
   (package
@@ -2232,7 +2231,7 @@ the 1394 Trade Association.  AV/C stands for Audio/Video Control.")
     (description
      "The libiec61883 library provides a higher level API for streaming DV,
 MPEG-2 and audio over Linux IEEE 1394.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public mdadm
   (package
@@ -2275,7 +2274,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
      "mdadm is a tool for managing Linux Software RAID arrays.  It can create,
 assemble, report on, and monitor arrays.  It can also move spares between raid
 arrays when needed.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public libaio
   (package
@@ -2304,7 +2303,7 @@ arrays when needed.")
      "This library enables userspace to use Linux kernel asynchronous I/O
 system calls, important for the performance of databases and other advanced
 applications.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public bluez
   (package
@@ -2341,7 +2340,7 @@ applications.")
     (description
      "BlueZ provides support for the core Bluetooth layers and protocols.  It
 is flexible, efficient and uses a modular implementation.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public fuse-exfat
   (package
@@ -2399,7 +2398,7 @@ id=0B7CLI-REKbE3VTdaa0EzTkhYdU0")
     (description
      "This package provides a FUSE-based file system that provides read and
 write access to exFAT devices.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public gpm
   (package
@@ -2442,4 +2441,4 @@ write access to exFAT devices.")
      "The GPM (general-purpose mouse) daemon is a mouse server for
 applications running on the Linux console.  It allows users to select items
 and copy/paste text in the console and in xterm.")
-    (license gpl2+)))
+    (license license:gpl2+)))

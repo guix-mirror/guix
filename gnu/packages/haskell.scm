@@ -21,10 +21,7 @@
 
 (define-module (gnu packages haskell)
   #:use-module (ice-9 regex)
-  #:use-module ((guix licenses) #:select (bsd-3
-                                          lgpl2.1 lgpl2.1+ gpl2+ gpl3+
-                                          public-domain
-                                          expat))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -251,7 +248,7 @@
     (description
      "The Glasgow Haskell Compiler (GHC) is a state-of-the-art compiler and
 interactive environment for the functional language Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-hostname
   (package
@@ -270,7 +267,7 @@ interactive environment for the functional language Haskell.")
     (synopsis "Hostname in Haskell")
     (description "Network.HostName is a simple package providing a means to
 determine the hostname.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-libxml
   (package
@@ -297,7 +294,7 @@ determine the hostname.")
     (synopsis "Haskell bindings to libxml2")
     (description
      "This library provides minimal Haskell binding to libxml2.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-prelude-extras
   (package
@@ -319,7 +316,7 @@ determine the hostname.")
     (description "This library provides higher order versions of
 @code{Prelude} classes to ease programming with polymorphic recursion and
 reduce @code{UndecidableInstances}.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-data-default
   (package
@@ -352,7 +349,7 @@ reduce @code{UndecidableInstances}.")
      "This package defines a class for types with a default value, and
 provides instances for types from the base, containers, dlist and old-locale
 packages.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-data-default-class
   (package
@@ -371,7 +368,7 @@ packages.")
     (synopsis "Types with default values")
     (description
      "This package defines a class for types with default values.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-data-default-instances-base
   (package
@@ -394,7 +391,7 @@ packages.")
     (description
      "This package provides default instances for types from the base
 package.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-data-default-instances-containers
   (package
@@ -416,7 +413,7 @@ package.")
     (synopsis "Default instances for types in containers")
     (description "Provides default instances for types from the containers
 package.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-data-default-instances-dlist
   (package
@@ -439,7 +436,7 @@ package.")
     (synopsis "Default instances for types in dlist")
     (description "Provides default instances for types from the dlist
 package.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-haddock-library
   (package
@@ -469,7 +466,7 @@ modules expose some functionality of it without pulling in the GHC dependency.
 Please note that the API is likely to change so specify upper bounds in your
 project if you can't release often.  For interacting with Haddock itself, see
 the ‘haddock’ package.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-haddock-api
   (package
@@ -493,7 +490,7 @@ the ‘haddock’ package.")
     (synopsis "API for documentation-generation tool Haddock")
     (description "This package provides an API to Haddock, the
 documentation-generation tool for Haskell libraries.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-haddock
   (package
@@ -519,7 +516,7 @@ documentation-generation tool for Haskell libraries.")
      "Documentation-generation tool for Haskell libraries")
     (description
      "Haddock is a documentation-generation tool for Haskell libraries.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-simple-reflect
   (package
@@ -546,7 +543,7 @@ variables.  Reflection here means that a Haskell expression is turned into a
 string.  The primary aim of this package is teaching and understanding; there
 are no options for manipulating the reflected expressions beyond showing
 them.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-multipart
   (package
@@ -570,7 +567,7 @@ them.")
      "HTTP multipart library")
     (description
      "HTTP multipart split out of the cgi package, for Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-html
   (package
@@ -593,7 +590,7 @@ them.")
     (description
      "This package contains a combinator library for constructing HTML
 documents.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-xhtml
   (package
@@ -615,7 +612,7 @@ documents.")
     (description
      "This package provides combinators for producing XHTML 1.0, including the
 Strict, Transitional and Frameset variants.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-haskell-src
   (package
@@ -644,7 +641,7 @@ Strict, Transitional and Frameset variants.")
 source code.  The package provides a lexer, parser and pretty-printer, and a
 definition of a Haskell abstract syntax tree (AST).  Common uses of this
 package are to parse or generate Haskell 98 code.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-alex
   (package
@@ -673,7 +670,7 @@ package are to parse or generate Haskell 98 code.")
 description of tokens based on regular expressions and generates a Haskell
 module containing code for scanning text efficiently.  It is similar to the
 tool lex or flex for C/C++.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-cgi
   (package
@@ -704,7 +701,7 @@ tool lex or flex for C/C++.")
     (synopsis "Library for writing CGI programs")
     (description
      "This is a Haskell library for writing CGI programs.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-cmdargs
   (package
@@ -726,7 +723,7 @@ tool lex or flex for C/C++.")
     (synopsis "Command line argument processing")
     (description
      "This library provides an easy way to define command line parsers.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-happy
   (package
@@ -752,7 +749,7 @@ tool lex or flex for C/C++.")
     (description "Happy is a parser generator for Haskell.  Given a grammar
 specification in BNF, Happy generates Haskell code to parse the grammar.
 Happy works in a similar way to the yacc tool for C.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-haskell-src-exts
   (package
@@ -786,7 +783,7 @@ extension of the standard @code{haskell-src} package, and handles most
 registered syntactic extensions to Haskell.  All extensions implemented in GHC
 are supported.  Apart from these standard extensions, it also handles regular
 patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public hlint
   (package
@@ -815,7 +812,7 @@ patterns as per the HaRP extension as well as HSX-style embedded XML syntax.")
     (description "HLint reads Haskell programs and suggests changes that
 hopefully make them easier to read.  HLint also makes it easy to disable
 unwanted suggestions, and to add your own custom suggestions.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-resourcet
   (package
@@ -846,7 +843,7 @@ unwanted suggestions, and to add your own custom suggestions.")
     (synopsis "Deterministic allocation and freeing of scarce resources")
     (description "ResourceT is a monad transformer which creates a region of
 code where you can safely allocate resources.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-xss-sanitize
   (package
@@ -878,7 +875,7 @@ code where you can safely allocate resources.")
     (description "This library provides @code{sanitizeXSS}.  Run untrusted
 HTML through @code{Text.HTML.SanitizeXSS.sanitizeXSS} to prevent XSS
 attacks.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-objectname
   (package
@@ -901,7 +898,7 @@ attacks.")
 corresponds to the general notion of explicitly handled identifiers for API
 objects, e.g. a texture object name in OpenGL or a buffer object name in
 OpenAL.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-sdl
   (package
@@ -927,7 +924,7 @@ multimedia library designed to provide low level access to audio, keyboard,
 mouse, joystick, 3D hardware via OpenGL, and 2D video framebuffer.  It is used
 by MPEG playback software, emulators, and many popular games, including the
 award winning Linux port of \"Civilization: Call To Power.\"")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-sdl-mixer
   (package
@@ -959,7 +956,7 @@ award winning Linux port of \"Civilization: Call To Power.\"")
 supports any number of simultaneously playing channels of 16 bit stereo audio,
 plus a single channel of music, mixed by the popular MikMod MOD, Timidity
 MIDI, Ogg Vorbis, and SMPEG MP3 libraries.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-sdl-image
   (package
@@ -990,7 +987,7 @@ MIDI, Ogg Vorbis, and SMPEG MP3 libraries.")
     (description "SDL_image is an image file loading library.  It loads images
 as SDL surfaces, and supports the following formats: BMP, GIF, JPEG, LBM, PCX,
 PNG, PNM, TGA, TIFF, XCF, XPM, XV.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-half
   (package
@@ -1011,7 +1008,7 @@ PNG, PNM, TGA, TIFF, XCF, XPM, XV.")
     (synopsis "Half-precision floating-point computations")
     (description "This library provides a half-precision floating-point
 computation library for Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-openglraw
   (package
@@ -1043,7 +1040,7 @@ the naming structure of the OpenGL extensions, making it easy to find the
 right module to import.  All API entries are loaded dynamically, so no special
 C header files are needed for building this package.  If an API entry is not
 found at runtime, a userError is thrown.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-glut
   (package
@@ -1071,7 +1068,7 @@ found at runtime, a userError is thrown.")
     (description "This library provides Haskell bindings for the OpenGL
 Utility Toolkit, a window system-independent toolkit for writing OpenGL
 programs.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-gluraw
   (package
@@ -1095,7 +1092,7 @@ programs.")
     (description "GLURaw is a raw Haskell binding for the GLU 1.3 OpenGL
 utility library.  It is basically a 1:1 mapping of GLU's C API, intended as a
 basis for a nicer interface.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-opengl
   (package
@@ -1123,7 +1120,7 @@ basis for a nicer interface.")
     (description "This package provides Haskell bindings for the OpenGL
 graphics system (GL, version 4.5) and its accompanying utility library (GLU,
 version 1.3).")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-streaming-commons
   (package
@@ -1156,7 +1153,7 @@ version 1.3).")
     (description "Provides low-dependency functionality commonly needed by
 various Haskell streaming data libraries, such as @code{conduit} and
 @code{pipe}s.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public cpphs
   (package
@@ -1184,7 +1181,7 @@ can be distributed with compilers.  This version of the C pre-processor is
 pretty-much feature-complete and compatible with traditional (K&R)
 pre-processors.  Additional features include: a plain-text mode; an option to
 unlit literate code files; and an option to turn off macro-expansion.")
-    (license (list lgpl2.1+ gpl3+))))
+    (license (list license:lgpl2.1+ license:gpl3+))))
 
 (define-public ghc-reflection
   (package
@@ -1209,7 +1206,7 @@ into terms")
 propogating configurations that are available at run-time, allowing multiple
 configurations to coexist without resorting to mutable global variables or
 @code{System.IO.Unsafe.unsafePerformIO}.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-old-locale
   (package
@@ -1230,7 +1227,7 @@ configurations to coexist without resorting to mutable global variables or
     (description
      "This package provides the ability to adapt to locale conventions such as
 date and time formats.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-old-time
   (package
@@ -1254,7 +1251,7 @@ date and time formats.")
     (description "Old-time is a package for backwards compatibility with the
 old @code{time} library.  For new projects, the newer
 @uref{http://hackage.haskell.org/package/time, time library} is recommended.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-data-default-instances-old-locale
   (package
@@ -1278,7 +1275,7 @@ old @code{time} library.  For new projects, the newer
     (synopsis "Default instances for types in old-locale")
     (description "Provides Default instances for types from the old-locale
   package.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-dlist
   (package
@@ -1302,7 +1299,7 @@ old @code{time} library.  For new projects, the newer
      "Difference lists are a list-like type supporting O(1) append.  This is
 particularly useful for efficient logging and pretty printing (e.g. with the
 Writer monad), where list append quickly becomes too expensive.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-extensible-exceptions
   (package
@@ -1322,7 +1319,7 @@ Writer monad), where list append quickly becomes too expensive.")
     (description
      "This package provides extensible exceptions for both new and old
 versions of GHC (i.e., < 6.10).")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public cabal-install
  (package
@@ -1353,7 +1350,7 @@ versions of GHC (i.e., < 6.10).")
     "The cabal command-line program simplifies the process of managing
 Haskell software by automating the fetching, configuration, compilation and
 installation of Haskell libraries and programs.")
-   (license bsd-3)))
+   (license license:bsd-3)))
 
 (define-public ghc-mtl
   (package
@@ -1379,7 +1376,7 @@ for various monad transformers, inspired by the paper 'Functional Programming
 with Overloading and Higher-Order Polymorphism', by Mark P Jones, in 'Advanced
 School of Functional Programming', 1995.  See
 @uref{http://web.cecs.pdx.edu/~mpj/pubs/springschool.html, the paper}.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-paths
   (package
@@ -1402,7 +1399,7 @@ School of Functional Programming', 1995.  See
      "Knowledge of GHC's installation directories")
     (description
      "Knowledge of GHC's installation directories.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-utf8-string
   (package
@@ -1424,7 +1421,7 @@ School of Functional Programming', 1995.  See
      "A UTF8 layer for Strings.  The utf8-string package provides operations
 for encoding UTF8 strings to Word8 lists and back, and for reading and writing
 UTF8 without truncation.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-setenv
   (package
@@ -1445,7 +1442,7 @@ UTF8 without truncation.")
     (synopsis "Library for setting environment variables")
     (description "This package provides a Haskell library for setting
 environment variables.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-x11
   (package
@@ -1471,7 +1468,7 @@ environment variables.")
     (description
      "This package provides Haskell bindings to the X11 graphics library.  The
 bindings are a direct translation of the C bindings.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-x11-xft
   (package
@@ -1499,7 +1496,7 @@ bindings are a direct translation of the C bindings.")
     (description
      "Bindings to the Xft, X Free Type interface library, and some Xrender
 parts.")
-    (license lgpl2.1)))
+    (license license:lgpl2.1)))
 
 (define-public ghc-stringbuilder
   (package
@@ -1522,7 +1519,7 @@ parts.")
     (synopsis "Writer monad for multi-line string literals")
     (description "This package provides a writer monad for multi-line string
 literals.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-zlib
   (package
@@ -1551,7 +1548,7 @@ so it has high performance.  It supports the 'zlib', 'gzip' and 'raw'
 compression formats.  It provides a convenient high level API suitable for
 most tasks and for the few cases where more control is needed it provides
 access to the full zlib feature set.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-stm
   (package
@@ -1573,7 +1570,7 @@ access to the full zlib feature set.")
     (synopsis "Software Transactional Memory")
     (description
      "A modular composable concurrency abstraction.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-parallel
   (package
@@ -1595,7 +1592,7 @@ access to the full zlib feature set.")
     (synopsis "Parallel programming library")
     (description
      "This package provides a library for parallel programming.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-text
   (package
@@ -1625,7 +1622,7 @@ The 'Text' type represents Unicode character strings, in a time and
 space-efficient manner.  This package provides text processing
 capabilities that are optimized for performance critical use, both
 in terms of large data quantities and high speed.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-hashable
   (package
@@ -1656,7 +1653,7 @@ in terms of large data quantities and high speed.")
 converted to a hash value.  This class exists for the benefit of hashing-based
 data structures.  The package provides instances for basic types and a way to
 combine hash values.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-hunit
   (package
@@ -1679,7 +1676,7 @@ combine hash values.")
     (description
      "HUnit is a unit testing framework for Haskell, inspired by the
 JUnit tool for Java.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-random
   (package
@@ -1700,7 +1697,7 @@ JUnit tool for Java.")
     (synopsis "Random number library")
     (description "This package provides a basic random number generation
 library, including the ability to split random number generators.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-primitive
   (package
@@ -1723,7 +1720,7 @@ library, including the ability to split random number generators.")
     (synopsis "Primitive memory-related operations")
     (description
      "This package provides various primitive memory-related operations.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-test-framework
   (package
@@ -1758,7 +1755,7 @@ cases to be assembled into test groups, run in parallel (but reported in
 deterministic order, to aid diff interpretation) and filtered and controlled
 by command line options.  All of this comes with colored test output, progress
 reporting and test statistics output.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-test-framework-hunit
   (package
@@ -1782,7 +1779,7 @@ reporting and test statistics output.")
     (synopsis "HUnit support for test-framework")
     (description
      "This package provides HUnit support for the test-framework package.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-test-framework-quickcheck2
   (package
@@ -1815,7 +1812,7 @@ reporting and test statistics output.")
     (description
      "This packages provides QuickCheck2 support for the test-framework
 package.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-tf-random
   (package
@@ -1843,7 +1840,7 @@ splittable pseudorandom number generator.  The generator is based on a
 cryptographic hash function built on top of the ThreeFish block cipher.  See
 the paper \"Splittable Pseudorandom Number Generators Using Cryptographic
 Hashing\" by Claessen, Pałka for details and the rationale of the design.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-transformers-base
   (package
@@ -1872,7 +1869,7 @@ Hashing\" by Claessen, Pałka for details and the rationale of the design.")
      "Backported versions of types that were added to transformers in
 transformers 0.3 and 0.4 for users who need strict transformers 0.2 or 0.3
 compatibility to run on old versions of the platform.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-transformers-compat
   (package
@@ -1894,7 +1891,7 @@ compatibility to run on old versions of the platform.")
 added to transformers in transformers 0.3 and 0.4 for users who need strict
 transformers 0.2 or 0.3 compatibility to run on old versions of the platform,
 but also need those types.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-unix-time
   (package
@@ -1921,7 +1918,7 @@ but also need those types.")
     (synopsis "Unix time parser/formatter and utilities")
     (description "This library provides fast parsing and formatting utilities
 for Unix time in Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-unix-compat
   (package
@@ -1945,7 +1942,7 @@ for Unix time in Haskell.")
      "This package provides portable implementations of parts of the unix
 package.  This package re-exports the unix package when available.  When it
 isn't available, portable implementations are used.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-http-types
   (package
@@ -1974,7 +1971,7 @@ isn't available, portable implementations are used.")
     (synopsis "Generic HTTP types for Haskell")
     (description "This package provides generic HTTP types for Haskell (for
 both client and server code).")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-iproute
   (package
@@ -2004,7 +2001,7 @@ both client and server code).")
     (description "IP Routing Table is a tree of IP ranges to search one of
 them on the longest match base.  It is a kind of TRIE with one way branching
 removed.  Both IPv4 and IPv6 are supported.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-regex-base
   (package
@@ -2028,7 +2025,7 @@ removed.  Both IPv4 and IPv6 are supported.")
     (synopsis "Replaces/Enhances Text.Regex")
     (description "@code{Text.Regex.Base} provides the interface API for
 regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-regex-posix
   (package
@@ -2051,7 +2048,7 @@ regex-posix, regex-pcre, regex-parsec, regex-tdfa, regex-dfa.")
     (synopsis "POSIX regular expressions for Haskell")
     (description "This library provides the POSIX regex backend used by the
 Haskell library @code{regex-base}.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-regex-compat
   (package
@@ -2075,7 +2072,7 @@ Haskell library @code{regex-base}.")
     (synopsis "Replaces/Enhances Text.Regex")
     (description "This library provides one module layer over
 @code{regex-posix} to replace @code{Text.Regex}.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-regex-tdfa-rc
   (package
@@ -2102,7 +2099,7 @@ Haskell library @code{regex-base}.")
     (synopsis "Tagged DFA regex engine for Haskell")
     (description "A new all-Haskell \"tagged\" DFA regex engine, inspired by
 @code{libtre} (fork by Roman Cheplyaka).")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-parsers
   (package
@@ -2137,7 +2134,7 @@ with and building parsing combinator libraries.  Given a few simple instances,
 you get access to a large number of canned definitions.  Instances exist for
 the parsers provided by @code{parsec}, @code{attoparsec} and @code{base}'s
 @code{Text.Read}.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-trifecta
   (package
@@ -2179,7 +2176,7 @@ the parsers provided by @code{parsec}, @code{attoparsec} and @code{base}'s
     (synopsis "Parser combinator library with convenient diagnostics")
     (description "Trifecta is a modern parser combinator library for Haskell,
 with slicing and Clang-style colored diagnostics.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-attoparsec
   (package
@@ -2210,7 +2207,7 @@ with slicing and Clang-style colored diagnostics.")
     (description "This library provides a fast parser combinator library,
 aimed particularly at dealing efficiently with network protocols and
 complicated text/binary file formats.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-css-text
   (package
@@ -2236,7 +2233,7 @@ complicated text/binary file formats.")
     (synopsis "CSS parser and renderer")
     (description "This package provides a CSS parser and renderer for
 Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-zip-archive
   (package
@@ -2266,7 +2263,7 @@ Haskell.")
     (synopsis "Zip archive library for Haskell")
     (description "The zip-archive library provides functions for creating,
 modifying, and extracting files from zip archives in Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-distributive
   (package
@@ -2292,7 +2289,7 @@ modifying, and extracting files from zip archives in Haskell.")
     (synopsis "Distributive functors for Haskell")
     (description "This package provides distributive functors for Haskell.
 Dual to @code{Traversable}.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-cereal
   (package
@@ -2314,7 +2311,7 @@ Dual to @code{Traversable}.")
     (description "This package provides a binary serialization library,
 similar to @code{binary}, that introduces an @code{isolate} primitive for
 parser isolation, and labeled blocks for better error messages.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-comonad
   (package
@@ -2344,7 +2341,7 @@ parser isolation, and labeled blocks for better error messages.")
     (home-page "http://github.com/ekmett/comonad/")
     (synopsis "Comonads for Haskell")
     (description "This library provides @code{Comonad}s for Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public hscolour
   (package
@@ -2368,7 +2365,7 @@ code.  It currently has six output formats: ANSI terminal codes (optionally
 XTerm-256colour codes), HTML 3.2 with font tags, HTML 4.01 with CSS, HTML 4.01
 with CSS and mouseover annotations, XHTML 1.0 with inline CSS styling, LaTeX,
 and mIRC chat codes.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-polyparse
   (package
@@ -2398,7 +2395,7 @@ features like good error reporting, arbitrary token type, running state, lazy
 parsing, and so on.  Finally, Text.Parse is a proposed replacement for the
 standard Read class, for better deserialisation of Haskell values from
 Strings.")
-    (license lgpl2.1)))
+    (license license:lgpl2.1)))
 
 (define-public ghc-extra
   (package
@@ -2422,7 +2419,7 @@ Strings.")
 Haskell libraries.  Most functions are simple additions, filling out missing
 functionality.  A few functions are available in later versions of GHC, but
 this package makes them available back to GHC 7.2.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-profunctors
   (package
@@ -2447,7 +2444,7 @@ this package makes them available back to GHC 7.2.")
     (home-page "http://github.com/ekmett/profunctors/")
     (synopsis "Profunctors for Haskell")
     (description "This library provides profunctors for Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-reducers
   (package
@@ -2476,7 +2473,7 @@ this package makes them available back to GHC 7.2.")
     (synopsis "Semigroups, specialized containers and a general map/reduce framework")
     (description "This library provides various semigroups, specialized
 containers and a general map/reduce framework for Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-appar
   (package
@@ -2498,7 +2495,7 @@ containers and a general map/reduce framework for Haskell.")
     (synopsis "Simple applicative parser")
     (description "This package provides a simple applicative parser in Parsec
 style.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-safe
   (package
@@ -2520,7 +2517,7 @@ style.")
     (description "This library provides wrappers around @code{Prelude} and
 @code{Data.List} functions, such as @code{head} and @code{!!}, that can throw
 exceptions.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-generic-deriving
   (package
@@ -2541,7 +2538,7 @@ exceptions.")
     (synopsis "Generalise the deriving mechanism to arbitrary classes")
     (description "This package provides functionality for generalising the
 deriving mechanism in Haskell to arbitrary classes.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-pcre-light
   (package
@@ -2566,7 +2563,7 @@ deriving mechanism in Haskell to arbitrary classes.")
 library for Perl 5 compatible regular expressions.  The PCRE library is a set
 of functions that implement regular expression pattern matching using the same
 syntax and semantics as Perl 5.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-logict
   (package
@@ -2591,7 +2588,7 @@ logic programming monad.  An adaptation of the two-continuation implementation
 found in the paper \"Backtracking, Interleaving, and Terminating Monad
 Transformers\" available @uref{http://okmij.org/ftp/papers/LogicT.pdf,
 online}.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-xml
   (package
@@ -2613,7 +2610,7 @@ online}.")
     (home-page "http://code.galois.com")
     (synopsis "Simple XML library for Haskell")
     (description "This package provides a simple XML library for Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-exceptions
   (package
@@ -2639,7 +2636,7 @@ online}.")
     (synopsis "Extensible optionally-pure exceptions")
     (description "This library provides extensible optionally-pure exceptions
 for Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-temporary
   (package
@@ -2664,7 +2661,7 @@ in the Haskelll base library are quite limited.  This library just repackages
 the Cabal implementations of its own temporary file and folder functions so
 that you can use them without linking against Cabal or depending on it being
 installed.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-temporary-rc
   (package
@@ -2693,7 +2690,7 @@ they aren't portable to Windows.  This library just repackages the Cabal
 implementations of its own temporary file and folder functions so that you can
 use them without linking against Cabal or depending on it being installed.
 This is a better maintained fork of the \"temporary\" package.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-smallcheck
   (package
@@ -2720,7 +2717,7 @@ This is a better maintained fork of the \"temporary\" package.")
     (description "SmallCheck is a testing library that allows to verify
 properties for all test cases up to some depth.  The test cases are generated
 automatically by SmallCheck.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-tasty-ant-xml
   (package
@@ -2753,7 +2750,7 @@ automatically by SmallCheck.")
      "A tasty ingredient to output test results in XML, using the Ant
 schema.  This XML can be consumed by the Jenkins continuous integration
 framework.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-tasty-smallcheck
   (package
@@ -2779,7 +2776,7 @@ framework.")
     (synopsis "SmallCheck support for the Tasty test framework")
     (description "This package provides SmallCheck support for the Tasty
 Haskell test framework.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-silently
   (package
@@ -2803,7 +2800,7 @@ Haskell test framework.")
     (synopsis "Prevent writing to stdout")
     (description "This package provides functions to prevent or capture
 writing to stdout and other handles.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-quickcheck-instances
   (package
@@ -2832,7 +2829,7 @@ writing to stdout and other handles.")
     (synopsis "Common quickcheck instances")
     (description "This package provides QuickCheck instances for types
 provided by the Haskell Platform.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-quickcheck-unicode
   (package
@@ -2855,7 +2852,7 @@ provided by the Haskell Platform.")
     (synopsis "Generator functions Unicode-related tests")
     (description "This package provides generator and shrink functions for
 testing Unicode-related software.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-quickcheck-io
   (package
@@ -2880,7 +2877,7 @@ testing Unicode-related software.")
     (synopsis "Use HUnit assertions as QuickCheck properties")
     (description "This package provides an orphan instance that allows you to
 use HUnit assertions as QuickCheck properties.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-quickcheck
   (package
@@ -2910,7 +2907,7 @@ use HUnit assertions as QuickCheck properties.")
      "Automatic testing of Haskell programs")
     (description
      "QuickCheck is a library for random testing of program properties.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-case-insensitive
   (package
@@ -2944,7 +2941,7 @@ use HUnit assertions as QuickCheck properties.")
 which can be parameterised by a string-like type like: 'String', 'ByteString',
 'Text', etc..  Comparisons of values of the resulting type will be insensitive
 to cases.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-syb
   (package
@@ -2974,7 +2971,7 @@ to cases.")
 defines the 'Data' class of types permitting folding and unfolding of
 constructor applications, instances of this class for primitive types, and a
 variety of traversals.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-fgl
   (package
@@ -3000,7 +2997,7 @@ variety of traversals.")
 and function definitions to address graph problems.  The basis of the library
 is an inductive definition of graphs in the style of algebraic data types that
 encourages inductive, recursive definitions of graph algorithms.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-chasingbottoms
   (package
@@ -3038,7 +3035,7 @@ see the article
 @uref{http://www.cse.chalmers.se/~nad/publications/danielsson-jansson-mpc2004.html,
 \"Chasing Bottoms A Case Study in Program Verification in the Presence of
 Partial and Infinite Values\"}.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-unordered-containers
   (package
@@ -3072,7 +3069,7 @@ Partial and Infinite Values\"}.")
      "Efficient hashing-based container types.  The containers have been
 optimized for performance critical use, both in terms of large data quantities
 and high speed.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-uniplate
   (package
@@ -3098,7 +3095,7 @@ and high speed.")
     (description "Uniplate is a library for writing simple and concise generic
 operations.  Uniplate has similar goals to the original Scrap Your Boilerplate
 work, but is substantially simpler and faster.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-base64-bytestring
   (package
@@ -3120,7 +3117,7 @@ work, but is substantially simpler and faster.")
     (synopsis "Base64 encoding and decoding for ByteStrings")
     (description "This library provides fast base64 encoding and decoding for
 Haskell @code{ByteString}s.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-annotated-wl-pprint
   (package
@@ -3145,7 +3142,7 @@ Haskell @code{ByteString}s.")
 Wadler's paper \"A Prettier Printer\".  This version allows the library user
 to annotate the text with semantic information, which can later be rendered in
 a variety of ways.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-ansi-wl-pprint
   (package
@@ -3169,7 +3166,7 @@ a variety of ways.")
     (description "This is a pretty printing library based on Wadler's paper
 \"A Prettier Printer\".  It has been enhanced with support for ANSI terminal
 colored output using the ansi-terminal package.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-split
   (package
@@ -3201,7 +3198,7 @@ colored output using the ansi-terminal package.")
     (description "This package provides a collection of Haskell functions for
 splitting lists into parts, akin to the @code{split} function found in several
 mainstream languages.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-parsec
   (package
@@ -3233,7 +3230,7 @@ mainstream languages.")
 documented, has extensive libraries, good error messages, and is fast.  It is
 defined as a monad transformer that can be stacked on arbitrary monads, and it
 is also parametric in the input stream type.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-vector
   (package
@@ -3263,7 +3260,7 @@ is also parametric in the input stream type.")
     (description "This library provides an efficient implementation of
 Int-indexed arrays (both mutable and immutable), with a powerful loop
 optimisation framework.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-vector-binary-instances
   (package
@@ -3291,7 +3288,7 @@ types defined in the @code{vector} package, making it easy to serialize
 vectors to and from disk.  We use the generic interface to vectors, so all
 vector types are supported.  Specific instances are provided for unboxed,
 boxed and storable vectors.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-network
   (package
@@ -3317,7 +3314,7 @@ boxed and storable vectors.")
     (synopsis "Low-level networking interface")
     (description
      "This package provides a low-level networking interface.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-network-uri
   (package
@@ -3348,7 +3345,7 @@ boxed and storable vectors.")
     (description "This package provides an URI manipulation interface.  In
 'network-2.6' the 'Network.URI' module was split off from the 'network'
 package into this package.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-ansi-terminal
   (package
@@ -3370,7 +3367,7 @@ package into this package.")
     (description "This package provides ANSI terminal support for Haskell.  It
 allows cursor movement, screen clearing, color output showing or hiding the
 cursor, and changing the title.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-http
   (package
@@ -3404,7 +3401,7 @@ cursor, and changing the title.")
      "The HTTP package supports client-side web programming in Haskell.  It
 lets you set up HTTP connections, transmitting requests and processing the
 responses coming back.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-hspec
   (package
@@ -3434,7 +3431,7 @@ responses coming back.")
     (synopsis "Testing Framework for Haskell")
     (description "This library provides the Hspec testing framework for
 Haskell, inspired by the Ruby library RSpec.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-hspec-contrib
   (package
@@ -3458,7 +3455,7 @@ Haskell, inspired by the Ruby library RSpec.")
     (synopsis "Contributed functionality for Hspec")
     (description
      "This package provides contributed Hspec extensions.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-hspec-expectations
   (package
@@ -3480,7 +3477,7 @@ Haskell, inspired by the Ruby library RSpec.")
     (synopsis "Catchy combinators for HUnit")
     (description "This library provides catchy combinators for HUnit, see
 @uref{https://github.com/sol/hspec-expectations#readme, the README}.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public hspec-discover
   (package
@@ -3504,7 +3501,7 @@ Haskell, inspired by the Ruby library RSpec.")
     (synopsis "Automatically discover and run Hspec tests")
     (description "hspec-discover is a tool which automatically discovers and
 runs Hspec tests.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-hspec-core
   (package
@@ -3536,7 +3533,7 @@ runs Hspec tests.")
     (synopsis "Testing framework for Haskell")
     (description "This library exposes internal types and functions that can
 be used to extend Hspec's functionality.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-hspec-meta
   (package
@@ -3566,7 +3563,7 @@ be used to extend Hspec's functionality.")
     (synopsis "Version of Hspec to test Hspec itself")
     (description "This library provides a stable version of Hspec which is
 used to test the in-development version of Hspec.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-vault
   (package
@@ -3595,7 +3592,7 @@ access to the storage space behind @code{IORefs}.  The data structure is
 analogous to a bank vault, where you can access different bank boxes with
 different keys; hence the name.  Also provided is a @code{locker} type,
 representing a store for a single element.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-mmorph
   (package
@@ -3618,7 +3615,7 @@ representing a store for a single element.")
     (description
      "This library provides monad morphism utilities, most commonly used for
 manipulating monad transformer stacks.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-monad-control
   (package
@@ -3644,7 +3641,7 @@ catching")
     (description "This package defines the type class @code{MonadBaseControl},
 a subset of @code{MonadBase} into which generic control operations such as
 @code{catch} can be lifted from @code{IO} or any other base monad.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-byteorder
   (package
@@ -3668,7 +3665,7 @@ a subset of @code{MonadBase} into which generic control operations such as
     (description
      "This package is for working with the native byte-ordering of the
 system.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-base-compat
   (package
@@ -3693,7 +3690,7 @@ system.")
     (description "This library provides functions available in later versions
 of base to a wider range of compilers, without requiring the use of CPP
 pragmas in your code.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-blaze-builder
   (package
@@ -3721,7 +3718,7 @@ pragmas in your code.")
 @code{bytestring-0.10.4.0}.  This implementation is mostly intended as a
 bridge to the new builder, so that code that uses the old interface can
 interoperate with code that uses the new implementation.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-blaze-markup
   (package
@@ -3746,7 +3743,7 @@ interoperate with code that uses the new implementation.")
     (synopsis "Fast markup combinator library for Haskell")
     (description "This library provides core modules of a markup combinator
 library for Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-blaze-html
   (package
@@ -3771,7 +3768,7 @@ library for Haskell.")
     (home-page "http://jaspervdj.be/blaze")
     (synopsis "Fast HTML combinator library")
     (description "This library provides HTML combinators for Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-easy-file
   (package
@@ -3792,7 +3789,7 @@ library for Haskell.")
      "http://github.com/kazu-yamamoto/easy-file")
     (synopsis "File handling library for Haskell")
     (description "This library provides file handling utilities for Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-async
   (package
@@ -3821,7 +3818,7 @@ library for Haskell.")
 asynchronously, and wait for their results.  It is a higher-level interface
 over threads in Haskell, in which @code{Async a} is a concurrent thread that
 will eventually deliver a value of type @code{a}.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-fingertree
   (package
@@ -3846,7 +3843,7 @@ representation with arbitrary annotations, for use as a base for
 implementations of various collection types.  It includes examples, as
 described in section 4 of Ralf Hinze and Ross Paterson, \"Finger trees: a
 simple general-purpose data structure\".")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-optparse-applicative
   (package
@@ -3869,7 +3866,7 @@ simple general-purpose data structure\".")
     (synopsis "Utilities and combinators for parsing command line options")
     (description "This package provides utilities and combinators for parsing
 command line options in Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-base-orphans
   (package
@@ -3893,7 +3890,7 @@ command line options in Haskell.")
     (synopsis "Orphan instances for backwards compatibility")
     (description "This package defines orphan instances that mimic instances
 available in later versions of base to a wider (older) range of compilers.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-auto-update
   (package
@@ -3914,7 +3911,7 @@ available in later versions of base to a wider (older) range of compilers.")
     (synopsis "Efficiently run periodic, on-demand actions")
     (description "This library provides mechanisms to efficiently run
 periodic, on-demand actions in Haskell.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-tagged
   (package
@@ -3935,7 +3932,7 @@ periodic, on-demand actions in Haskell.")
     (synopsis "Haskell phantom types to avoid passing dummy arguments")
     (description "This library provides phantom types for Haskell 98, to avoid
 having to unsafely pass dummy arguments.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-unbounded-delays
   (package
@@ -3958,7 +3955,7 @@ having to unsafely pass dummy arguments.")
 Haskell base library use the bounded @code{Int} type for specifying the delay
 or timeout period.  This package provides alternative functions which use the
 unbounded @code{Integer} type.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 ;; This package builds `clock` without tests, since the tests rely on tasty
 ;; and tasty-quickcheck, which in turn require clock to build.  When tasty and
@@ -3983,7 +3980,7 @@ unbounded @code{Integer} type.")
     (synopsis "High-resolution clock for Haskell")
     (description "A package for convenient access to high-resolution clock and
 timer functions of different operating systems via a unified API.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-clock
   (package
@@ -4006,7 +4003,7 @@ timer functions of different operating systems via a unified API.")
     (synopsis "High-resolution clock for Haskell")
     (description "A package for convenient access to high-resolution clock and
 timer functions of different operating systems via a unified API.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-charset
   (package
@@ -4031,7 +4028,7 @@ timer functions of different operating systems via a unified API.")
     (synopsis "Fast unicode character sets for Haskell")
     (description "This package provides fast unicode character sets for
 Haskell, based on complemented PATRICIA tries.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-bytestring-builder
   (package
@@ -4053,7 +4050,7 @@ Haskell, based on complemented PATRICIA tries.")
     (description "This package provides the bytestring builder that is
 debuting in bytestring-0.10.4.0, which should be shipping with GHC 7.8.
 Compatibility package for older packages.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-nats
   (package
@@ -4076,7 +4073,7 @@ Compatibility package for older packages.")
     (home-page "https://hackage.haskell.org/package/nats")
     (synopsis "Natural numbers")
     (description "This library provides the natural numbers for Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-void
   (package
@@ -4103,7 +4100,7 @@ Compatibility package for older packages.")
     (description
      "A Haskell 98 logically uninhabited data type, used to indicate that a
 given term should not exist.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-kan-extensions
   (package
@@ -4134,7 +4131,7 @@ given term should not exist.")
     (synopsis "Kan extensions library")
     (description "This library provides Kan extensions, Kan lifts, various
 forms of the Yoneda lemma, and (co)density (co)monads for Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-statevar
   (package
@@ -4157,7 +4154,7 @@ forms of the Yoneda lemma, and (co)density (co)monads for Haskell.")
     (synopsis "State variables for Haskell")
     (description "This package provides state variables, which are references
 in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-lens
   (package
@@ -4208,7 +4205,7 @@ in the @code{IO} monad, like @code{IORef}s or parts of the OpenGL state.")
 in @code{Control.Lens} provide a highly generic toolbox for composing families
 of getters, folds, isomorphisms, traversals, setters and lenses and their
 indexed variants.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-tagsoup
   (package
@@ -4237,7 +4234,7 @@ specification, and can be used to parse either well-formed XML, or
 unstructured and malformed HTML from the web.  The library also provides
 useful functions to extract information from an HTML document, making it ideal
 for screen-scraping.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-digest
   (package
@@ -4264,7 +4261,7 @@ for screen-scraping.")
      "This package provides efficient cryptographic hash implementations for
 strict and lazy bytestrings.  For now, CRC32 and Adler32 are supported; they
 are implemented as FFI bindings to efficient code from zlib.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-cheapskate
   (package
@@ -4301,7 +4298,7 @@ Haskell.  It aims to process Markdown efficiently and in the most forgiving
 possible way.  It is designed to deal with any input, including garbage, with
 linear performance.  Output is sanitized by default for protection against XSS
 attacks.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-bifunctors
   (package
@@ -4324,7 +4321,7 @@ attacks.")
     (home-page "http://github.com/ekmett/bifunctors/")
     (synopsis "Bifunctors for Haskell")
     (description "This package provides bifunctors for Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-semigroupoids
   (package
@@ -4362,7 +4359,7 @@ Finally, to work with these weaker structures it is beneficial to have
 containers that can provide stronger guarantees about their contents, so
 versions of @code{Traversable} and @code{Foldable} that can be folded with
 just a @code{Semigroup} are added.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-contravariant
   (package
@@ -4389,7 +4386,7 @@ just a @code{Semigroup} are added.")
      "http://github.com/ekmett/contravariant/")
     (synopsis "Contravariant functors")
     (description "Contravariant functors for Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-semigroups
   (package
@@ -4422,7 +4419,7 @@ monoid in that there might not exist an identity element.  It
 also (originally) generalized a group (a monoid with all inverses) to a type
 where every element did not have to have an inverse, thus the name
 semigroup.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-free
   (package
@@ -4459,7 +4456,7 @@ whose nodes are labeled with the constructors of @code{f}.  The word \"free\"
 is used in the sense of \"unrestricted\" rather than \"zero-cost\": @code{Free
 f} makes no constraining assumptions beyond those given by @code{f} and the
 definition of @code{Monad}.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-adjunctions
   (package
@@ -4492,7 +4489,7 @@ definition of @code{Monad}.")
     (synopsis "Adjunctions and representable functors")
     (description "This library provides adjunctions and representable functors
 for Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-fast-logger
   (package
@@ -4518,7 +4515,7 @@ for Haskell.")
     (home-page "https://hackage.haskell.org/package/fast-logger")
     (synopsis "Fast logging system")
     (description "This library provides a fast logging system for Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-doctest
   (package
@@ -4553,7 +4550,7 @@ for Haskell.")
     (description "The doctest program checks examples in source code comments.
 It is modeled after doctest for Python, see
 @uref{http://docs.python.org/library/doctest.html, the Doctest website}.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-lifted-base
   (package
@@ -4584,7 +4581,7 @@ library lifted to any instance of @code{MonadBase} or @code{MonadBaseControl}.
 Note that not all modules from @code{base} are converted yet.  The package
 includes a copy of the @code{monad-peel} test suite written by Anders
 Kaseorg.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-word8
   (package
@@ -4606,7 +4603,7 @@ Kaseorg.")
     (home-page "http://hackage.haskell.org/package/word8")
     (synopsis "Word8 library for Haskell")
     (description "Word8 library to be used with @code{Data.ByteString}.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-stringsearch
   (package
@@ -4629,7 +4626,7 @@ Kaseorg.")
 for substrings in strict or lazy @code{ByteStrings}.  It also provides
 functions for breaking or splitting on substrings and replacing all
 occurrences of a substring (the first in case of overlaps) with another.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-tasty-quickcheck
   (package
@@ -4658,7 +4655,7 @@ occurrences of a substring (the first in case of overlaps) with another.")
     (synopsis "QuickCheck support for the Tasty test framework")
     (description "This package provides QuickCheck support for the Tasty
 Haskell test framework.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-tasty-golden
   (package
@@ -4693,7 +4690,7 @@ Haskell test framework.")
 IO action that writes its result to a file.  To pass the test, this output
 file should be identical to the corresponding 'golden' file, which contains
 the correct result for the test.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-tasty
   (package
@@ -4725,7 +4722,7 @@ the correct result for the test.")
     (description "Tasty is a modern testing framework for Haskell.  It lets
 you combine your unit tests, golden tests, QuickCheck/SmallCheck properties,
 and any other types of tests into a single test suite.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-tasty-hunit
   (package
@@ -4748,7 +4745,7 @@ and any other types of tests into a single test suite.")
     (synopsis "HUnit support for the Tasty test framework")
     (description "This package provides HUnit support for the Tasty Haskell
 test framework.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-cookie
   (package
@@ -4779,7 +4776,7 @@ test framework.")
     (home-page "http://github.com/snoyberg/cookie")
     (synopsis "HTTP cookie parsing and rendering")
     (description "HTTP cookie parsing and rendering library for Haskell.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-scientific
   (package
@@ -4815,7 +4812,7 @@ the number type @code{Scientific}.  Scientific numbers are arbitrary precision
 and space efficient.  They are represented using
 @uref{http://en.wikipedia.org/wiki/Scientific_notation, scientific
 notation}.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-aeson
   (package
@@ -4851,7 +4848,7 @@ notation}.")
     (description "This package provides a JSON parsing and encoding library
 for Haskell, optimized for ease of use and high performance.  (A note on
 naming: in Greek mythology, Aeson was the father of Jason.)")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-wai
   (package
@@ -4885,7 +4882,7 @@ naming: in Greek mythology, Aeson was the father of Jason.)")
     (description "This package provides a Web Application Interface (WAI)
 library for the Haskell language.  It defines a common protocol for
 communication between web applications and web servers.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-wai-logger
   (package
@@ -4919,7 +4916,7 @@ communication between web applications and web servers.")
     (home-page "http://hackage.haskell.org/package/wai-logger")
     (synopsis "Logging system for WAI")
     (description "This package provides the logging system for WAI.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-wai-extra
   (package
@@ -4967,7 +4964,7 @@ communication between web applications and web servers.")
     (synopsis "Some basic WAI handlers and middleware")
     (description "This library provides basic WAI handlers and middleware
 functionality.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-deepseq-generics
   (package
@@ -5000,7 +4997,7 @@ functionality.")
      "This package provides a @code{GHC.Generics}-based
 @code{Control.DeepSeq.Generics.genericRnf} function which can be used for
 providing an 'rnf' implementation.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-pandoc-types
   (package
@@ -5025,7 +5022,7 @@ providing an 'rnf' implementation.")
      "This module defines the @code{Pandoc} data structure, which is used by
 pandoc to represent structured documents.  It also provides functions for
 building up, manipulating and serialising @code{Pandoc} structures.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-texmath
   (package
@@ -5058,7 +5055,7 @@ Office).  Support is also included for converting math formats to pandoc's
 native format (allowing conversion, via pandoc, to a variety of different
 markup formats).  The TeX reader supports basic LaTeX and AMS extensions, and
 it can parse and apply LaTeX macros.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public ghc-regex-pcre-builtin
   (package
@@ -5081,7 +5078,7 @@ it can parse and apply LaTeX macros.")
      "This package is an enhancement of the @code{Text.Regex} library,
 providing the PCRE backend to accompany regex-base, with bundled code from
 @url{http://www.pcre.org}.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-diff
   (package
@@ -5100,7 +5097,7 @@ providing the PCRE backend to accompany regex-base, with bundled code from
     (description
      "This package provides an implementation of the standard diff algorithm,
 and utilities for pretty printing.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-highlighting-kate
   (package
@@ -5132,7 +5129,7 @@ from @uref{http://kate-editor.org/, Kate syntax descriptions}, so any syntax
 supported by Kate can be added.  An (optional) command-line program is
 provided, along with a utility for generating new parsers from Kate XML syntax
 descriptions.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public ghc-cmark
   (package
@@ -5157,7 +5154,7 @@ descriptions.")
 @uref{https://github.com/jgm/cmark, libcmark}, the reference parser for
 CommonMark, a fully specified variant of Markdown.  It includes sources for
 libcmark (0.21.0) and does not require prior installation of the C library.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-executable-path
   (package
@@ -5179,7 +5176,7 @@ libcmark (0.21.0) and does not require prior installation of the C library.")
 \"However, this is hard-to-impossible to implement on some non-Unix OSes, so
 instead, for maximum portability, we just return the leafname of the program
 as invoked.\" This library tries to provide the missing path.")
-    (license public-domain)))
+    (license license:public-domain)))
 
 (define-public ghc-enclosed-exceptions
   (package
@@ -5208,7 +5205,7 @@ as invoked.\" This library tries to provide the missing path.")
      "This library implements a technique to catch all exceptions raised
 within an enclosed computation, while remaining responsive to (external)
 asynchronous exceptions.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-packedstring
   (package
@@ -5237,7 +5234,7 @@ asynchronous exceptions.")
     (synopsis "Library for packed strings")
     (description
      "This deprecated library provides an implementation of packed strings.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-th-lift
   (package
@@ -5258,7 +5255,7 @@ asynchronous exceptions.")
     (description
      "This is a Haskell library to derive Template Haskell's Lift class for
 datatypes.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-th-expand-syns
   (package
@@ -5280,7 +5277,7 @@ datatypes.")
     (description
      "This package enables users to expand type synonyms in Template Haskell
 @dfn{abstract syntax trees} (ASTs).")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-th-reify-many
   (package
@@ -5306,7 +5303,7 @@ datatypes.")
 declarations.  The main intended use case is for enumerating the names of
 datatypes reachable from an initial datatype, and passing these names to some
 function which generates instances.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-th-orphans
   (package
@@ -5334,7 +5331,7 @@ function which generates instances.")
 instances for @code{Ord} and @code{Lift}, as well as a few missing @code{Show}
 and @code{Eq} instances.  These instances used to live in the haskell-src-meta
 package, and that's where the version number started.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-haskell-src-meta
   (package
@@ -5358,7 +5355,7 @@ package, and that's where the version number started.")
     (description
      "This package provides tools to parse Haskell sources to the
 template-haskell abstract syntax.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-aeson-qq
   (package
@@ -5389,7 +5386,7 @@ template-haskell abstract syntax.")
      "aeson-qq provides a JSON quasiquoter for Haskell.  This package exposes
 the function @code{aesonQQ} that compile-time converts a string representation
 of a JSON value into a @code{Data.Aeson.Value}.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-conduit
   (package
@@ -5423,7 +5420,7 @@ production, transformation, and consumption of streams of data in constant
 memory.  It is an alternative to lazy I/O which guarantees deterministic
 resource handling, and fits in the same general solution space as
 enumerator/iteratee and pipes." )
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-logging-facade
   (package
@@ -5445,7 +5442,7 @@ enumerator/iteratee and pipes." )
     (description
      "This package provides a simple logging abstraction that allows multiple
 back-ends.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-mockery
   (package
@@ -5468,7 +5465,7 @@ back-ends.")
     (synopsis "Support functions for automated testing")
     (description
      "The mockery package provides support functions for automated testing.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-yaml
   (package
@@ -5502,7 +5499,7 @@ back-ends.")
     (synopsis "Parsing and rendering YAML documents")
     (description
      "This package provides a library to parse and render YAML documents.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-filemanip
   (package
@@ -5525,7 +5522,7 @@ back-ends.")
      "This package provides a Haskell library for working with files and
 directories.  It includes code for pattern matching, finding files, modifying
 file contents, and more.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-mmap
   (package
@@ -5546,7 +5543,7 @@ file contents, and more.")
 devices to be lazily loaded into memory as strict or lazy @code{ByteStrings},
 @code{ForeignPtrs} or plain @code{Ptrs}, using the virtual memory subsystem to
 do on-demand loading.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-juicypixels
   (package
@@ -5572,7 +5569,7 @@ do on-demand loading.")
     (description
      "This library can load and store images in PNG, Bitmap, JPEG, Radiance,
 TIFF and GIF formats.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-sha
   (package
@@ -5599,7 +5596,7 @@ SHA-based HMAC routines.  The functions have been tested against most of the
 NIST and RFC test vectors for the various functions.  While some attention has
 been paid to performance, these do not presently reach the speed of well-tuned
 libraries, like OpenSSL.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-hslua
   (package
@@ -5630,7 +5627,7 @@ libraries, like OpenSSL.")
     (description
      "The Scripting.Lua module is a wrapper of the Lua language interpreter as
 described in @url{http://www.lua.org/}.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-mime-types
   (package
@@ -5651,7 +5648,7 @@ described in @url{http://www.lua.org/}.")
     (synopsis "Basic MIME type handling types and functions")
     (description
      "This library provides basic MIME type handling types and functions.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-http-client
   (package
@@ -5692,7 +5689,7 @@ described in @url{http://www.lua.org/}.")
     (description
      "This package provides an HTTP client engine, intended as a base layer
 for more user-friendly packages.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-byteable
   (package
@@ -5712,7 +5709,7 @@ for more user-friendly packages.")
      "This package provides an abstract class to manipulate sequence of bytes.
 The use case of this class is abstracting manipulation of types that are just
 wrapping a bytestring with stronger and more meaniful name.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-hourglass
   (package
@@ -5741,7 +5738,7 @@ performant API.  The backbone of the library are the @code{Timeable} and
 @code{Time} type classes.  Each @code{Timeable} instances can be converted to
 a type that has a @code{Time} instances, and thus are different
 representations of current time.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-pem
   (package
@@ -5769,7 +5766,7 @@ representations of current time.")
     (description
      "This library provides readers and writers for the @dfn{Privacy Enhanced
 Mail} (PEM) format.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-asn1-types
   (package
@@ -5792,7 +5789,7 @@ Mail} (PEM) format.")
     (description
      "The package provides the standard types for dealing with the ASN.1
 format.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-asn1-encoding
   (package
@@ -5820,7 +5817,7 @@ format.")
     (description
      "This package provides a reader and writer for ASN1 data in raw form with
 supports for high level forms of ASN1 (BER, and DER).")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-asn1-parse
   (package
@@ -5843,7 +5840,7 @@ supports for high level forms of ASN1 (BER, and DER).")
     (description
      "This package provides a simple monadic parser for ASN1 stream types,
 when ASN1 pattern matching is not convenient.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-tasty-kat
   (package
@@ -5867,7 +5864,7 @@ when ASN1 pattern matching is not convenient.")
     (description
      "This package provides a @dfn{Known Answer Tests} (KAT) framework for
 tasty.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-cryptonite
   (package
@@ -5897,7 +5894,7 @@ tasty.")
 It supports a wide range of symmetric ciphers, cryptographic hash functions,
 public key algorithms, key derivation numbers, cryptographic random number
 generators, and more.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-memory
   (package
@@ -5923,7 +5920,7 @@ polymorphic byte array management and manipulation functions.  It contains a
 polymorphic byte array abstraction and functions similar to strict ByteString,
 different type of byte array abstraction, raw memory IO operations (memory
 set, memory copy, ..) and more")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-x509
   (package
@@ -5953,7 +5950,7 @@ set, memory copy, ..) and more")
     (synopsis "X509 reader and writer")
     (description
      "This library provides functions to read and write X509 certificates.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-x509-store
   (package
@@ -5980,7 +5977,7 @@ set, memory copy, ..) and more")
     (description
      "This package provides functions for accessing and storing X.509
 collections, certificates, revocation lists, and exception lists.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-x509-validation
   (package
@@ -6012,7 +6009,7 @@ collections, certificates, revocation lists, and exception lists.")
     (description
      "This package provides functions for X.509 certificate and revocation
 list validation.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-x509-system
   (package
@@ -6037,7 +6034,7 @@ list validation.")
     (description
      "This package provides a library to handle system accessors and storage
 for X.509 certificates.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-tls
   (package
@@ -6080,7 +6077,7 @@ type system, high level constructions and common Haskell features.  Currently
 implement the SSL3.0, TLS1.0, TLS1.1 and TLS1.2 protocol, and support RSA and
 Ephemeral (Elliptic curve and regular) Diffie Hellman key exchanges, and many
 extensions.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-socks
   (package
@@ -6101,7 +6098,7 @@ extensions.")
     (synopsis "SOCKS proxy (version 5) implementation.")
     (description
      "This library provides a SOCKS proxy (version 5) implementation.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-connection
   (package
@@ -6132,7 +6129,7 @@ extensions.")
      "This package provides a simple network library for all your connection
 needs.  It provides a very simple API to create sockets to a destination with
 the choice of SSL/TLS, and SOCKS.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-http-client-tls
   (package
@@ -6164,7 +6161,7 @@ the choice of SSL/TLS, and SOCKS.")
      "This package provides a backend for the http-client package using the
 connection and TLS libraries.  It is intended for use by higher-level
 libraries, such as http-conduit.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public ghc-pandoc
   (package
@@ -6237,7 +6234,7 @@ LaTeX, DocBook, and many more.
 Pandoc extends standard Markdown syntax with footnotes, embedded LaTeX,
 definition lists, tables, and other features.  A compatibility mode is
 provided for those who need a drop-in replacement for Markdown.pl.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public idris
   (package
@@ -6298,6 +6295,6 @@ types.  It is compiled, with eager evaluation.  Dependent types allow types to
 be predicated on values, meaning that some aspects of a program's behaviour
 can be specified precisely in the type.  The language is closely related to
 Epigram and Agda.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 ;;; haskell.scm ends here
