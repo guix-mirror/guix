@@ -1643,3 +1643,24 @@ convenient and easy to use replacement for @code{cat} and @code{print}
 statements.")
     (license license:lgpl3+)))
 
+(define-public r-snow
+  (package
+    (name "r-snow")
+    (version "0.4-1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "snow" version))
+              (sha256
+               (base32
+                "19r2yq8aqw99vwyx81p6ay4afsfqffal1wzvizk3dj882s2n4j8w"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/snow")
+    (synopsis "Support for simple parallel computing in R")
+    (description
+     "The snow package provides support for simple parallel computing on a
+network of workstations using R.  A master R process calls @code{makeCluster}
+to start a cluster of worker processes; the master process then uses functions
+such as @code{clusterCall} and @code{clusterApply} to execute R code on the
+worker processes and collect and return the results on the master.")
+    (license (list license:gpl2+ license:gpl3+))))
+
