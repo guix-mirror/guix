@@ -1470,6 +1470,12 @@ Hints specification (EWMH).")
               (sha256
                (base32 "0nmghi26dpjcw7knkviq031crhm0zjy4k650pv1jj3hb1fmhx9yd"))))
     (build-system gnu-build-system)
+    (outputs '("out"
+               "doc"))                            ;4.1 MiB of gtk-doc
+    (arguments
+     '(#:configure-flags (list (string-append "--with-html-dir="
+                                              (assoc-ref %outputs "doc")
+                                              "/share/gtk-doc/html"))))
     (inputs
      `(("gtk+" ,gtk+)
        ("libgsf" ,libgsf)
@@ -1507,7 +1513,9 @@ Hints specification (EWMH).")
           ;; https://bugzilla.gnome.org/show_bug.cgi?id=670316
           (substitute* "configure"
             (("glib/gregex\\.h") "glib.h")) #t)
-        %standard-phases)))
+        %standard-phases)
+
+       ,@(package-arguments goffice)))
     (propagated-inputs
      ;; libgoffice-0.8.pc mentions libgsf-1
      `(("libgsf" ,libgsf)))
