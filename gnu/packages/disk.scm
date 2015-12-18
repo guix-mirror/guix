@@ -29,8 +29,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages guile)
-  #:use-module ((gnu packages compression)
-                #:select (lzip)))
+  #:use-module (gnu packages compression))
 
 (define-public parted
   (package

@@ -47,7 +47,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
   #:use-module (gnu packages pcre)
-  #:use-module ((gnu packages xml) #:select (libxml2))
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
 (define ghc-bootstrap-x86_64-7.8.4
