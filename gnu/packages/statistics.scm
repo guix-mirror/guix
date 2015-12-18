@@ -1551,3 +1551,28 @@ supporting FTP/FTPS/TFTP (uploads and downloads), SSL/HTTPS, telnet, dict,
 ldap, and also supports cookies, redirects, authentication, etc.")
     (license license:bsd-3)))
 
+(define-public r-xml
+  (package
+    (name "r-xml")
+    (version "3.98-1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "XML" version))
+              (sha256
+               (base32
+                "0j9ayp8a35g0227a4zd8nbmvnbfnj5w687jal6qvj4lbhi3va7sy"))))
+    (properties
+     `((upstream-name . "XML")))
+    (build-system r-build-system)
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (propagated-inputs
+     `(("r-rcurl" ,r-rcurl)))
+    (home-page "http://www.omegahat.org/RSXML")
+    (synopsis "Tools for parsing and generating XML within R")
+    (description
+     "Many approaches for both reading and creating XML (and HTML)
+documents (including DTDs), both local and accessible via HTTP or FTP.  Also
+offers access to an XPath \"interpreter\".")
+    (license license:bsd-2)))
+
