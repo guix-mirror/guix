@@ -3668,6 +3668,39 @@ typically represent genomic ranges of interest and the columns represent
 samples.")
     (license license:artistic2.0)))
 
+(define-public r-genomicalignments
+  (package
+    (name "r-genomicalignments")
+    (version "1.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "GenomicAlignments" version))
+              (sha256
+               (base32
+                "03pxzkmwcpl0d7a09ahan0nllfv7qw2i7w361w6af2s4n3xwrniz"))))
+    (properties
+     `((upstream-name . "GenomicAlignments")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biostrings" ,r-biostrings)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "http://bioconductor.org/packages/GenomicAlignments")
+    (synopsis "Representation and manipulation of short genomic alignments")
+    (description
+     "This package provides efficient containers for storing and manipulating
+short genomic alignments (typically obtained by aligning short reads to a
+reference genome).  This includes read counting, computing the coverage,
+junction detection, and working with the nucleotide content of the
+alignments.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
