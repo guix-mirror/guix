@@ -3466,6 +3466,28 @@ GenomicRanges package defines general purpose containers for storing and
 manipulating genomic intervals and variables defined along a genome.")
     (license license:artistic2.0)))
 
+(define-public r-biobase
+  (package
+    (name "r-biobase")
+    (version "2.30.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "Biobase" version))
+              (sha256
+               (base32
+                "1qasjpq3kw8h7qw8cin3bjvv1256hqr1mm24fq3v0ymxzlb66szi"))))
+    (properties
+     `((upstream-name . "Biobase")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)))
+    (home-page "http://bioconductor.org/packages/Biobase")
+    (synopsis "Base functions for Bioconductor")
+    (description
+     "This package provides functions that are needed by many other packages
+on Bioconductor or which replace R functions.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
