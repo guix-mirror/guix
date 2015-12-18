@@ -3569,6 +3569,32 @@ functions for parallel evaluation, tailored to use with Bioconductor
 objects.")
     (license (list license:gpl2+ license:gpl3+))))
 
+(define-public r-biostrings
+  (package
+    (name "r-biostrings")
+    (version "2.38.2")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "Biostrings" version))
+              (sha256
+               (base32
+                "1afp9szc8ci6jn0m3hrrqh6df65cpw3v1dcnl6xir3d3m3lwwmk4"))))
+    (properties
+     `((upstream-name . "Biostrings")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xvector" ,r-xvector)))
+    (home-page "http://bioconductor.org/packages/Biostrings")
+    (synopsis "String objects and algorithms for biological sequences")
+    (description
+     "This package provides memory efficient string containers, string
+matching algorithms, and other utilities, for fast manipulation of large
+biological sequences or sets of sequences.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
