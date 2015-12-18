@@ -56,7 +56,7 @@
        #:tests? #f))                         ;no tests
     (native-inputs
      `(("python2-setuptools" ,python2-setuptools)))
-    (propagated-inputs
+    (inputs
      `(("python2-xlib" ,python2-xlib)
        ("python2-pygtk" ,python2-pygtk)
        ("librsvg" ,librsvg)
