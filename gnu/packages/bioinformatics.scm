@@ -56,6 +56,7 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages web)
@@ -1737,6 +1738,55 @@ data.  It also provides the bgzip, htsfile, and tabix utilities.")
 to measure the reproducibility of findings identified from replicate
 experiments and provide highly stable thresholds based on reproducibility.")
     (license license:gpl3+)))
+
+(define-public jellyfish
+  (package
+    (name "jellyfish")
+    (version "2.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/gmarcais/Jellyfish/"
+                                  "releases/download/v" version
+                                  "/jellyfish-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0a6xnynqy2ibfbfz86b9g2m2dgm7f1469pmymkpam333gi3p26nk"))))
+    (build-system gnu-build-system)
+    (outputs '("out"      ;for library
+               "ruby"     ;for Ruby bindings
+               "python")) ;for Python bindings
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--enable-ruby-binding="
+                            (assoc-ref %outputs "ruby"))
+             (string-append "--enable-python-binding="
+                            (assoc-ref %outputs "python")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-SHELL-variable
+           (lambda _
+             ;; generator_manager.hpp either uses /bin/sh or $SHELL
+             ;; to run tests.
+             (setenv "SHELL" (which "bash"))
+             #t)))))
+    (native-inputs
+     `(("bc" ,bc)
+       ("time" ,time)
+       ("ruby" ,ruby)
+       ("python" ,python-2)))
+    (synopsis "Tool for fast counting of k-mers in DNA")
+    (description
+     "Jellyfish is a tool for fast, memory-efficient counting of k-mers in
+DNA.  A k-mer is a substring of length k, and counting the occurrences of all
+such substrings is a central step in many analyses of DNA sequence.  Jellyfish
+is a command-line program that reads FASTA and multi-FASTA files containing
+DNA sequences.  It outputs its k-mer counts in a binary format, which can be
+translated into a human-readable text format using the @code{jellyfish dump}
+command, or queried for specific k-mers with @code{jellyfish query}.")
+    (home-page "http://www.genome.umd.edu/jellyfish.html")
+    ;; The combined work is published under the GPLv3 or later.  Individual
+    ;; files such as lib/jsoncpp.cpp are released under the Expat license.
+    (license (list license:gpl3+ license:expat))))
 
 (define-public macs
   (package
