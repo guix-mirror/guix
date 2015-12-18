@@ -31,11 +31,11 @@
 (require 'guix-utils)
 (require 'guix-messages)
 
-(defgroup guix-ui nil
-  "Settings for Guix package management.
+(guix-define-groups ui
+  :group-doc "\
+Settings for 'ui' (Guix package management) buffers.
 This group includes settings for displaying packages, outputs and
-generations in 'list' and 'info' buffers."
-  :group 'guix)
+generations in 'list' and 'info' buffers.")
 
 (defvar guix-ui-map
   (let ((map (make-sparse-keymap)))
@@ -175,6 +175,18 @@ See `guix-ui-update-after-operation' for details."
 
 ;;; Interface definers
 
+(defmacro guix-ui-define-entry-type (entry-type &rest args)
+  "Define general code for ENTRY-TYPE.
+Remaining arguments (ARGS) should have a form [KEYWORD VALUE] ...
+
+The rest keyword arguments are passed to
+`guix-define-entry-type' macro."
+  (declare (indent 1))
+  `(guix-define-entry-type ,entry-type
+     :parent-group guix-ui
+     :parent-faces-group guix-ui-faces
+     ,@args))
+
 (defmacro guix-ui-define-interface (buffer-type entry-type &rest args)
   "Define BUFFER-TYPE interface for displaying ENTRY-TYPE entries.
 Remaining arguments (ARGS) should have a form [KEYWORD VALUE] ...
@@ -300,7 +312,8 @@ The rest keyword arguments are passed to
 
 (defvar guix-ui-font-lock-keywords
   (eval-when-compile
-    `((,(rx "(" (group (or "guix-ui-define-interface"
+    `((,(rx "(" (group (or "guix-ui-define-entry-type"
+                           "guix-ui-define-interface"
                            "guix-ui-info-define-interface"
                            "guix-ui-list-define-interface"))
             symbol-end)

@@ -36,9 +36,7 @@
 (require 'guix-entry)
 (require 'guix-utils)
 
-(defgroup guix-generation nil
-  "Interface for displaying generations."
-  :group 'guix-ui)
+(guix-ui-define-entry-type generation)
 
 (defun guix-generation-get-display (profile search-type &rest search-values)
   "Search for generations and show results.

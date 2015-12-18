@@ -31,15 +31,7 @@
 (require 'guix-entry)
 (require 'guix-utils)
 
-(defgroup guix-list nil
-  "General settings for list buffers."
-  :prefix "guix-list-"
-  :group 'guix)
-
-(defgroup guix-list-faces nil
-  "Faces for list buffers."
-  :group 'guix-list
-  :group 'guix-faces)
+(guix-define-buffer-type list)
 
 (defface guix-list-file-path
   '((t :inherit guix-info-file-path))

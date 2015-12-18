@@ -29,15 +29,7 @@
 (require 'guix-entry)
 (require 'guix-utils)
 
-(defgroup guix-info nil
-  "General settings for info buffers."
-  :prefix "guix-info-"
-  :group 'guix)
-
-(defgroup guix-info-faces nil
-  "Faces for info buffers."
-  :group 'guix-info
-  :group 'guix-faces)
+(guix-define-buffer-type info)
 
 (defface guix-info-heading
   '((((type tty pc) (class color)) :weight bold)

@@ -331,7 +331,58 @@ This function does not update the buffer data, use
     (guix-buffer-redisplay)))
 
 
-;;; Interface definer
+;;; Interface definers
+
+(defmacro guix-define-groups (type &rest args)
+  "Define `guix-TYPE' and `guix-TYPE-faces' custom groups.
+Remaining arguments (ARGS) should have a form [KEYWORD VALUE] ...
+
+Optional keywords:
+
+  - `:parent-group' - name of a parent custom group.
+
+  - `:parent-faces-group' - name of a parent custom faces group.
+
+  - `:group-doc' - docstring of a `guix-TYPE' group.
+
+  - `:faces-group-doc' - docstring of a `guix-TYPE-faces' group."
+  (declare (indent 1))
+  (let* ((type-str           (symbol-name type))
+         (prefix             (concat "guix-" type-str))
+         (group              (intern prefix))
+         (faces-group        (intern (concat prefix "-faces"))))
+    (guix-keyword-args-let args
+        ((parent-group       :parent-group 'guix)
+         (parent-faces-group :parent-faces-group 'guix-faces)
+         (group-doc          :group-doc
+                             (format "Settings for '%s' buffers."
+                                     type-str))
+         (faces-group-doc    :faces-group-doc
+                             (format "Faces for '%s' buffers."
+                                     type-str)))
+      `(progn
+         (defgroup ,group nil
+           ,group-doc
+           :group ',parent-group)
+
+         (defgroup ,faces-group nil
+           ,faces-group-doc
+           :group ',group
+           :group ',parent-faces-group)))))
+
+(defmacro guix-define-entry-type (entry-type &rest args)
+  "Define general code for ENTRY-TYPE.
+See `guix-define-groups'."
+  (declare (indent 1))
+  `(guix-define-groups ,entry-type
+     ,@args))
+
+(defmacro guix-define-buffer-type (buffer-type &rest args)
+  "Define general code for BUFFER-TYPE.
+See `guix-define-groups'."
+  (declare (indent 1))
+  `(guix-define-groups ,buffer-type
+     ,@args))
 
 (defmacro guix-buffer-define-interface (buffer-type entry-type &rest args)
   "Define BUFFER-TYPE interface for displaying ENTRY-TYPE entries.
@@ -408,14 +459,16 @@ Optional keywords:
          (reduced?           :reduced?))
       `(progn
          (defgroup ,group nil
-           ,(format "Display '%s' entries in '%s' buffer."
+           ,(format "Displaying '%s' entries in '%s' buffer."
                     entry-type-str buffer-type-str)
-           :prefix ,(concat prefix "-")
+           :group ',(intern (concat "guix-" entry-type-str))
            :group ',(intern (concat "guix-" buffer-type-str)))
 
          (defgroup ,faces-group nil
            ,(format "Faces for displaying '%s' entries in '%s' buffer."
                     entry-type-str buffer-type-str)
+           :group ',group
+           :group ',(intern (concat "guix-" entry-type-str "-faces"))
            :group ',(intern (concat "guix-" buffer-type-str "-faces")))
 
          (defcustom ,titles-var ,titles-val
@@ -555,7 +608,10 @@ Major mode for displaying '%s' entries in '%s' buffer.
   (eval-when-compile
     `((,(rx "(" (group (or "guix-buffer-with-item"
                            "guix-buffer-with-current-item"
-                           "guix-buffer-define-interface"))
+                           "guix-buffer-define-interface"
+                           "guix-define-groups"
+                           "guix-define-entry-type"
+                           "guix-define-buffer-type"))
             symbol-end)
        . 1))))
 

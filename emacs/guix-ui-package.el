@@ -35,9 +35,8 @@
 (require 'guix-entry)
 (require 'guix-utils)
 
-(defgroup guix-package nil
-  "Interface for displaying packages and outputs."
-  :group 'guix-ui)
+(guix-ui-define-entry-type package)
+(guix-ui-define-entry-type output)
 
 (defcustom guix-package-list-type 'output
   "Define how to display packages in 'list' buffer.
