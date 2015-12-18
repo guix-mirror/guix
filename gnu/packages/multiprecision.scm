@@ -60,6 +60,24 @@ cryptography and computational algebra.")
    (license lgpl3+)
    (home-page "http://gmplib.org/")))
 
+(define-public gmp-6.0
+  ;; We keep this one around to bootstrap GCC, to work around a compilation
+  ;; issue on ARM.  See
+  ;; <https://gmplib.org/list-archives/gmp-bugs/2015-December/003848.html>.
+  (package
+    (inherit gmp)
+    (version "6.0.0a")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gmp/gmp-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0r5pp27cy7ch3dg5v0rsny8bib1zfvrza6027g2mp5f6v8pd6mli"))
+              (patches (map search-patch
+                            '("gmp-arm-asm-nothumb.patch"
+                              "gmp-faulty-test.patch")))))))
+
 (define-public mpfr
   (package
    (name "mpfr")

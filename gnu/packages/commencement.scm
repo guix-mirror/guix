@@ -231,7 +231,7 @@
                                         (package-full-name lib)
                                         char-set:letter)
                                       ,(package-name lib)))
-                          (list gmp mpfr mpc))))
+                          (list gmp-6.0 mpfr mpc))))
                (alist-cons-after
                 'install 'symlink-libgcc_eh
                 (lambda* (#:key outputs #:allow-other-keys)
@@ -245,7 +245,7 @@
                       (symlink "libgcc.a" "libgcc_eh.a"))))
                 ,phases))))))
 
-     (inputs `(("gmp-source" ,(package-source gmp))
+     (inputs `(("gmp-source" ,(package-source gmp-6.0))
                ("mpfr-source" ,(package-source mpfr))
                ("mpc-source" ,(package-source mpc))
                ("binutils-cross" ,binutils-boot0)
@@ -636,7 +636,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                      ("static-bash" ,static-bash-for-glibc)
                      ,@(package-native-inputs gcc-boot0)))
 
-    (inputs `(("gmp-source" ,(bootstrap-origin (package-source gmp)))
+    (inputs `(("gmp-source" ,(bootstrap-origin (package-source gmp-6.0)))
               ("mpfr-source" ,(package-source mpfr))
               ("mpc-source" ,(package-source mpc))
               ("ld-wrapper" ,ld-wrapper-boot3)
