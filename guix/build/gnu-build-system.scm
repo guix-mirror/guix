@@ -329,7 +329,7 @@ makefiles."
                 (objcopy-command (if target
                                      (string-append target "-objcopy")
                                      "objcopy"))
-                (strip-flags '("--strip-debug"))
+                (strip-flags '("--strip-debug" "-D"))
                 (strip-directories '("lib" "lib64" "libexec"
                                      "bin" "sbin"))
                 #:allow-other-keys)
@@ -367,7 +367,7 @@ makefiles."
     ;; `bfd_fill_in_gnu_debuglink_section' function.)  No reference to
     ;; DEBUG-OUTPUT is kept because bfd keeps only the basename of the debug
     ;; file.
-    (zero? (system* objcopy-command
+    (zero? (system* objcopy-command "-D"
                     (string-append "--add-gnu-debuglink="
                                    (debug-file file))
                     file)))

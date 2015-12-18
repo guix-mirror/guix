@@ -282,7 +282,7 @@ standard packages used as implicit inputs of the GNU build system."
                     (parallel-tests? #t)
                     (patch-shebangs? #t)
                     (strip-binaries? #t)
-                    (strip-flags ''("--strip-debug"))
+                    (strip-flags ''("--strip-debug" "-D"))
                     (strip-directories ''("lib" "lib64" "libexec"
                                           "bin" "sbin"))
                     (validate-runpath? #t)
@@ -417,7 +417,7 @@ is one of `host' or `target'."
                           (parallel-build? #t) (parallel-tests? #t)
                           (patch-shebangs? #t)
                           (strip-binaries? #t)
-                          (strip-flags ''("--strip-debug"))
+                          (strip-flags ''("--strip-debug" "-D"))
                           (strip-directories ''("lib" "lib64" "libexec"
                                                 "bin" "sbin"))
                           (validate-runpath? #t)
