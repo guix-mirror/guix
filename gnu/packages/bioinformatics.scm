@@ -3746,6 +3746,47 @@ built-in).  The user may export/import tracks to/from the supported browsers,
 as well as query and modify the browser state, such as the current viewport.")
     (license license:artistic2.0)))
 
+(define-public r-genomicfeatures
+  (package
+    (name "r-genomicfeatures")
+    (version "1.22.7")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "GenomicFeatures" version))
+              (sha256
+               (base32
+                "1jb4s49ar5j9qslpd3kfdg2wrl4q7ciysd55h9a7zvspymxcngq8"))))
+    (properties
+     `((upstream-name . "GenomicFeatures")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biomart" ,r-biomart)
+       ("r-biostrings" ,r-biostrings)
+       ("r-dbi" ,r-dbi)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rcurl" ,r-rcurl)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xvector" ,r-xvector)))
+    (home-page "http://bioconductor.org/packages/GenomicFeatures")
+    (synopsis "Tools for working with transcript centric annotations")
+    (description
+     "This package provides a set of tools and methods for making and
+manipulating transcript centric annotations.  With these tools the user can
+easily download the genomic locations of the transcripts, exons and cds of a
+given organism, from either the UCSC Genome Browser or a BioMart
+database (more sources will be supported in the future).  This information is
+then stored in a local database that keeps track of the relationship between
+transcripts, exons, cds and genes.  Flexible methods are provided for
+extracting the desired features in a convenient format.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
