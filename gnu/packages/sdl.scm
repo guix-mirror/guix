@@ -174,8 +174,6 @@ other supporting functions for SDL.")
                            "--disable-tif-shared"
                            "--disable-webp-shared")))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    ;; FIXME: Add webp
-    ;;
     ;; libjpeg, libpng, and libtiff are propagated inputs because the
     ;; SDL_image headers include the headers of these libraries.  SDL is a
     ;; propagated input because the pkg-config file refers to SDL's pkg-config
@@ -183,7 +181,8 @@ other supporting functions for SDL.")
     (propagated-inputs `(("sdl" ,sdl)
                          ("libjpeg" ,libjpeg)
                          ("libpng" ,libpng)
-                         ("libtiff" ,libtiff)))
+                         ("libtiff" ,libtiff)
+                         ("libwebp" ,libwebp)))
     (synopsis "SDL image loading library")
     (description "SDL_image is an image file loading library for SDL that
 supports the following formats: BMP, GIF, JPEG, LBM, PCX, PNG, PNM, TGA, TIFF,
