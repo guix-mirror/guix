@@ -429,14 +429,15 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                                (current-source-location)
                                                #:guile %bootstrap-guile)))
          (bison (package (inherit bison)
-                  (native-inputs `(("perl" ,perl-boot0)))
                   (propagated-inputs `(("m4" ,m4)))
                   (inputs '())                    ;remove Flex...
                   (arguments '(#:tests? #f)))))   ;... and thus disable tests
-   (package-with-bootstrap-guile
-    (package-with-explicit-inputs bison %boot0-inputs
-                                  (current-source-location)
-                                  #:guile %bootstrap-guile))))
+    (package
+      (inherit (package-with-bootstrap-guile
+                (package-with-explicit-inputs bison %boot0-inputs
+                                              (current-source-location)
+                                              #:guile %bootstrap-guile)))
+      (native-inputs `(("perl" ,perl-boot0))))))
 
 (define static-bash-for-glibc
   ;; A statically-linked Bash to be used by GLIBC-FINAL in system(3) & co.
@@ -444,17 +445,18 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                   glibc-final-with-bootstrap-bash
                                   (car (assoc-ref %boot1-inputs "bash"))))
          (bash (package (inherit static-bash)
-                 (native-inputs `(("bison" ,bison-boot1)))
                  (arguments
                   `(#:guile ,%bootstrap-guile
-                    ,@(package-arguments static-bash))))))
-    (package-with-bootstrap-guile
-     (package-with-explicit-inputs bash
-                                   `(("gcc" ,gcc)
-                                     ("libc" ,glibc-final-with-bootstrap-bash)
-                                     ,@(fold alist-delete %boot1-inputs
-                                             '("gcc" "libc")))
-                                   (current-source-location)))))
+                    ,@(package-arguments static-bash)))))
+         (inputs `(("gcc" ,gcc)
+                   ("libc" ,glibc-final-with-bootstrap-bash)
+                   ,@(fold alist-delete %boot1-inputs
+                           '("gcc" "libc")))))
+    (package
+      (inherit (package-with-bootstrap-guile
+                (package-with-explicit-inputs bash inputs
+                                              (current-source-location))))
+      (native-inputs `(("bison" ,bison-boot1))))))
 
 (define gettext-boot0
   ;; A minimal gettext used during bootstrap.
