@@ -47,6 +47,13 @@ generations in 'list' and 'info' buffers.")
 (guix-buffer-define-current-args-accessors
  "guix-ui-current" "profile" "search-type" "search-values")
 
+(defun guix-ui-read-profile ()
+  "Return `guix-current-profile' or prompt for it.
+This function is intended for using in `interactive' forms."
+  (if current-prefix-arg
+      (guix-profile-prompt)
+    guix-current-profile))
+
 (defun guix-ui-get-entries (profile entry-type search-type search-values
                                     &optional params)
   "Receive ENTRY-TYPE entries for PROFILE.
