@@ -293,8 +293,16 @@ where the OS part is overloaded to denote a specific ABI---into GCC
            %standard-phases))))
 
       (native-search-paths
+       ;; Use the language-specific variables rather than 'CPATH' because they
+       ;; are equivalent to '-isystem' whereas 'CPATH' is equivalent to '-I'.
+       ;; The intent is to allow headers that are in the search path to be
+       ;; treated as "system headers" (headers exempt from warnings) just like
+       ;; the typical /usr/include headers on an FHS system.
        (list (search-path-specification
-              (variable "CPATH")
+              (variable "C_INCLUDE_PATH")
+              (files '("include")))
+             (search-path-specification
+              (variable "CPLUS_INCLUDE_PATH")
               (files '("include")))
              (search-path-specification
               (variable "LIBRARY_PATH")
@@ -408,13 +416,18 @@ using compilers other than GCC."
 (define-public libiberty
   (make-libiberty gcc))
 
-(define* (custom-gcc gcc name languages #:key (separate-lib-output? #t))
-  "Return a custom version of GCC that supports LANGUAGES."
+(define* (custom-gcc gcc name languages
+                     #:optional
+                     (search-paths (package-native-search-paths gcc))
+                     #:key (separate-lib-output? #t))
+  "Return a custom version of GCC that supports LANGUAGES.  Use SEARCH-PATHS
+as the 'native-search-paths' field."
   (package (inherit gcc)
     (name name)
     (outputs (if separate-lib-output?
                  (package-outputs gcc)
                  (delete "lib" (package-outputs gcc))))
+    (native-search-paths search-paths)
     (arguments
      (substitute-keyword-arguments `(#:modules ((guix build gnu-build-system)
                                                 (guix build utils)
@@ -428,20 +441,37 @@ using compilers other than GCC."
                (remove (cut string-match "--enable-languages.*" <>)
                        ,flags)))))))
 
+(define %generic-search-paths
+  ;; This is the language-neutral search path for GCC.  Entries in $CPATH are
+  ;; not considered "system headers", which means GCC can raise warnings for
+  ;; issues in those headers.  'CPATH' is the only one that works for
+  ;; front-ends not in the C family.
+  (list (search-path-specification
+         (variable "CPATH")
+         (files '("include")))
+        (search-path-specification
+         (variable "LIBRARY_PATH")
+         (files '("lib" "lib64")))))
+
 (define-public gfortran-4.8
-  (custom-gcc gcc-4.8 "gfortran" '("fortran")))
+  (custom-gcc gcc-4.8 "gfortran" '("fortran")
+              %generic-search-paths))
 
 (define-public gfortran-4.9
-  (custom-gcc gcc-4.9 "gfortran" '("fortran")))
+  (custom-gcc gcc-4.9 "gfortran" '("fortran")
+              %generic-search-paths))
 
 (define-public gfortran
-  (custom-gcc gcc "gfortran" '("fortran")))
+  (custom-gcc gcc "gfortran" '("fortran")
+              %generic-search-paths))
 
 (define-public gfortran-5
-  (custom-gcc gcc-5 "gfortran" '("fortran")))
+  (custom-gcc gcc-5 "gfortran" '("fortran")
+              %generic-search-paths))
 
 (define-public gccgo-4.8
   (custom-gcc gcc-4.8 "gccgo" '("go")
+              %generic-search-paths
               ;; Suppress the separate "lib" output, because otherwise the
               ;; "lib" and "out" outputs would refer to each other, creating
               ;; a cyclic dependency.  <http://debbugs.gnu.org/18101>
@@ -468,6 +498,8 @@ using compilers other than GCC."
     (native-inputs
      `(("dejagnu" ,dejagnu)
        ,@(package-native-inputs gcc)))
+    (native-search-paths %generic-search-paths)
+
     ;; Suppress the separate "lib" output, because otherwise the
     ;; "lib" and "out" outputs would refer to each other, creating
     ;; a cyclic dependency.  <http://debbugs.gnu.org/18101>
@@ -551,10 +583,22 @@ using compilers other than GCC."
       "1k9lgm3qamf6zy534pa2zwskr8mpiqrngbv1vw9j4y1ghrdyf1lm"))))
 
 (define-public gcc-objc-4.8
-  (custom-gcc gcc-4.8 "gcc-objc" '("objc")))
+  (custom-gcc gcc-4.8 "gcc-objc" '("objc")
+              (list (search-path-specification
+                     (variable "OBJC_INCLUDE_PATH")
+                     (files '("include")))
+                    (search-path-specification
+                     (variable "LIBRARY_PATH")
+                     (files '("lib" "lib64"))))))
 
 (define-public gcc-objc++-4.8
-  (custom-gcc gcc-4.8 "gcc-objc++" '("obj-c++")))
+  (custom-gcc gcc-4.8 "gcc-objc++" '("obj-c++")
+              (list (search-path-specification
+                     (variable "OBJCPLUS_INCLUDE_PATH")
+                     (files '("include")))
+                    (search-path-specification
+                     (variable "LIBRARY_PATH")
+                     (files '("lib" "lib64"))))))
 
 (define (make-libstdc++-doc gcc)
   "Return a package with the libstdc++ documentation for GCC."
