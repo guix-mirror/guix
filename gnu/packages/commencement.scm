@@ -431,7 +431,14 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
          (bison (package (inherit bison)
                   (propagated-inputs `(("m4" ,m4)))
                   (inputs '())                    ;remove Flex...
-                  (arguments '(#:tests? #f)))))   ;... and thus disable tests
+                  (arguments
+                   '(#:tests? #f                  ;... and thus disable tests
+
+                     ;; Zero timestamps in liby.a; this must be done
+                     ;; explicitly here because the bootstrap Binutils don't
+                     ;; do that (default is "cru".)
+                     #:make-flags '("ARFLAGS=crD" "RANLIB=ranlib -D"
+                                    "V=1"))))))
     (package
       (inherit (package-with-bootstrap-guile
                 (package-with-explicit-inputs bison %boot0-inputs
