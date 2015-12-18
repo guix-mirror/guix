@@ -3701,6 +3701,51 @@ junction detection, and working with the nucleotide content of the
 alignments.")
     (license license:artistic2.0)))
 
+(define-public r-rtracklayer
+  (package
+    (name "r-rtracklayer")
+    (version "1.30.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "rtracklayer" version))
+              (sha256
+               (base32
+                "1if31hg56islx5vwydpgs5gkyas26kyvv2ljv1c7jikpm62w14qv"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-system-zlib
+           (lambda _
+             (substitute* "DESCRIPTION"
+               (("zlibbioc, ") ""))
+             (substitute* "NAMESPACE"
+               (("import\\(zlibbioc\\)") ""))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rcurl" ,r-rcurl)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xml" ,r-xml)
+       ("r-xvector" ,r-xvector)))
+    (home-page "http://bioconductor.org/packages/rtracklayer")
+    (synopsis "R interface to genome browsers and their annotation tracks")
+    (description
+     "rtracklayer is an extensible framework for interacting with multiple
+genome browsers (currently UCSC built-in) and manipulating annotation tracks
+in various formats (currently GFF, BED, bedGraph, BED15, WIG, BigWig and 2bit
+built-in).  The user may export/import tracks to/from the supported browsers,
+as well as query and modify the browser state, such as the current viewport.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
