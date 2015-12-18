@@ -3515,6 +3515,36 @@ on Bioconductor or which replace R functions.")
 annotation data packages using SQLite data storage.")
     (license license:artistic2.0)))
 
+(define-public r-biomart
+  (package
+    (name "r-biomart")
+    (version "2.26.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "biomaRt" version))
+              (sha256
+               (base32
+                "1s709055abj2gd35g6nnk5d2ai5ii09iir270l2xika6pi62gj3f"))))
+    (properties
+     `((upstream-name . "biomaRt")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-rcurl" ,r-rcurl)
+       ("r-xml" ,r-xml)))
+    (home-page "http://bioconductor.org/packages/biomaRt")
+    (synopsis "Interface to BioMart databases")
+    (description
+     "biomaRt provides an interface to a growing collection of databases
+implementing the @url{BioMart software suite, http://www.biomart.org}.  The
+package enables retrieval of large amounts of data in a uniform way without
+the need to know the underlying database schemas or write complex SQL queries.
+Examples of BioMart databases are Ensembl, COSMIC, Uniprot, HGNC, Gramene,
+Wormbase and dbSNP mapped to Ensembl.  These major databases give biomaRt
+users direct access to a diverse set of data and enable a wide range of
+powerful online queries from gene annotation to database mining.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
