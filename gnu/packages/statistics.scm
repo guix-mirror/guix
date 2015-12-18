@@ -1497,3 +1497,25 @@ grobs.")
 and draw tables.")
     (license license:gpl2+)))
 
+(define-public r-rsqlite
+  (package
+    (name "r-rsqlite")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "RSQLite" version))
+              (sha256
+               (base32
+                "08b1syv8z887gxiw8i09dpqh0zisfb6ihq6qqr01zipvkahzq34f"))))
+    (properties `((upstream-name . "RSQLite")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dbi" ,r-dbi)))
+    (home-page "https://github.com/rstats-db/RSQLite")
+    (synopsis "SQLite interface for R")
+    (description
+     "This package embeds the SQLite database engine in R and provides an
+interface compliant with the DBI package.  The source for the SQLite
+engine (version 3.8.6) is included.")
+    (license license:lgpl2.0+)))
+
