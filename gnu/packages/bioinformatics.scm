@@ -3639,6 +3639,35 @@ binary variant call (BCF) and compressed indexed tab-delimited (tabix)
 files.")
     (license license:expat)))
 
+(define-public r-summarizedexperiment
+  (package
+    (name "r-summarizedexperiment")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "SummarizedExperiment" version))
+              (sha256
+               (base32
+                "0w1dwp99p6i7sc3cn0ir3dr8ksgxwjf16675h5i8n6gbv4rl9lz6"))))
+    (properties
+     `((upstream-name . "SummarizedExperiment")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "http://bioconductor.org/packages/SummarizedExperiment")
+    (synopsis "Container for representing genomic ranges by sample")
+    (description
+     "The SummarizedExperiment container contains one or more assays, each
+represented by a matrix-like object of numeric or other mode.  The rows
+typically represent genomic ranges of interest and the columns represent
+samples.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
