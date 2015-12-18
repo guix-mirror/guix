@@ -128,6 +128,12 @@ buffers.")
                (base32
                 "0bdj0l7a94jqhjnj40m9rqaf622wj905iximivb55iy98639aanq"))))
     (build-system gnu-build-system)
+    (outputs '("out"
+               "doc"))                            ;8 MiB of gtk-doc HTML
+    (arguments
+     '(#:configure-flags (list (string-append "--with-html-dir="
+                                              (assoc-ref %outputs "doc")
+                                              "/share/gtk-doc/html"))))
     (inputs
      `(("babl" ,babl)
        ("glib" ,glib)
