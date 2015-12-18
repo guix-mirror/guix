@@ -1619,3 +1619,27 @@ via @code{futile.options} are fully self-contained and will not collide with
 options defined in other packages.")
     (license license:lgpl3+)))
 
+(define-public r-futile-logger
+  (package
+    (name "r-futile-logger")
+    (version "1.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "futile.logger" version))
+              (sha256
+               (base32
+                "1plld1icxrcay7llplbd4i8inpg97crpnczk58mbk26j8glqbr51"))))
+    (properties `((upstream-name . "futile.logger")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-futile-options" ,r-futile-options)
+       ("r-lambda-r" ,r-lambda-r)))
+    (home-page "http://cran.r-project.org/web/packages/futile.logger")
+    (synopsis "Logging utility for R")
+    (description
+     "This package provides a simple yet powerful logging utility.  Based
+loosely on log4j, futile.logger takes advantage of R idioms to make logging a
+convenient and easy to use replacement for @code{cat} and @code{print}
+statements.")
+    (license license:lgpl3+)))
+
