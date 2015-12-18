@@ -27,6 +27,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages haskell)
@@ -1518,4 +1519,35 @@ and draw tables.")
 interface compliant with the DBI package.  The source for the SQLite
 engine (version 3.8.6) is included.")
     (license license:lgpl2.0+)))
+
+(define-public r-rcurl
+  (package
+    (name "r-rcurl")
+    (version "1.95-0.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/extra/src/"
+                                  "contrib/RCurl_" version ".tar.gz"))
+              (sha256
+               (base32
+                "0l7qi45jxlf898n0jazabnam1yyczvqfdknd00bdirhhiplpd1sc"))))
+    (properties `((upstream-name . "RCurl")))
+    (build-system r-build-system)
+    (inputs
+     `(("libcurl" ,curl)))
+    (propagated-inputs
+     `(("r-bitops" ,r-bitops)))
+    (home-page "http://www.omegahat.org/RCurl")
+    (synopsis "General network client interface for R")
+    (description
+     "The package allows one to compose general HTTP requests and provides
+convenient functions to fetch URIs, GET and POST forms, etc. and process the
+results returned by the Web server.  This provides a great deal of control
+over the HTTP/FTP/... connection and the form of the request while providing a
+higher-level interface than is available just using R socket connections.
+Additionally, the underlying implementation is robust and extensive,
+supporting FTP/FTPS/TFTP (uploads and downloads), SSL/HTTPS, telnet, dict,
+ldap, and also supports cookies, redirects, authentication, etc.")
+    (license license:bsd-3)))
 
