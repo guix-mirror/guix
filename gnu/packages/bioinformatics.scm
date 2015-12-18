@@ -3187,6 +3187,34 @@ barplots or heatmaps.")
 packages.")
     (license license:artistic2.0)))
 
+(define-public r-s4vectors
+  (package
+    (name "r-s4vectors")
+    (version "0.8.5")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "S4Vectors" version))
+              (sha256
+               (base32
+                "10f4jxwlwsiy7zhb3kgp6anid0d7wkvrrljl80r3nhx38yr24l5k"))))
+    (properties
+     `((upstream-name . "S4Vectors")
+       (r-repository . bioconductor)))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)))
+    (home-page "http://bioconductor.org/packages/S4Vectors")
+    (synopsis "S4 implementation of vectors and lists")
+    (description
+     "The S4Vectors package defines the @code{Vector} and @code{List} virtual
+classes and a set of generic functions that extend the semantic of ordinary
+vectors and lists in R.  Package developers can easily implement vector-like
+or list-like objects as concrete subclasses of @code{Vector} or @code{List}.
+In addition, a few low-level concrete subclasses of general interest (e.g.
+@code{DataFrame}, @code{Rle}, and @code{Hits}) are implemented in the
+S4Vectors package itself.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
