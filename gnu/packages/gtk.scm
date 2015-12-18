@@ -994,6 +994,8 @@ extensive documentation, including API reference and a tutorial.")
        (base32
         "04k942gn8vl95kwf0qskkv6npclfm31d78ljkrkgyqxxcni1w76d"))))
     (build-system gnu-build-system)
+    (outputs '("out"
+               "doc"))                            ;13 MiB of gtk-doc HTML
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -1006,6 +1008,13 @@ extensive documentation, including API reference and a tutorial.")
     (arguments
      `(#:tests? #f
        #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-gtk-doc-directory
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Install documentation to "doc".
+                      (let ((doc (assoc-ref outputs "doc")))
+                        (substitute* "docs/Makefile.in"
+                          (("TARGET_DIR = \\$\\(datadir\\)")
+                           (string-append "TARGET_DIR = " doc))))))
                   (add-after 'configure 'fix-codegen
                     (lambda* (#:key inputs #:allow-other-keys)
                       (substitute* "pygtk-codegen-2.0"
