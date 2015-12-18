@@ -3272,6 +3272,43 @@ translation between different chromosome sequence naming conventions (e.g.,
 names in their natural, rather than lexicographic, order.")
     (license license:artistic2.0)))
 
+(define-public r-xvector
+  (package
+    (name "r-xvector")
+    (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "XVector" version))
+              (sha256
+               (base32
+                "0havwyr6xqk7w0rmbwfj9jq1djz7wzdz7w39adhklwzwz9l4ih3a"))))
+    (properties
+     `((upstream-name . "XVector")
+       (r-repository . bioconductor)))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-system-zlib
+           (lambda _
+             (substitute* "DESCRIPTION"
+               (("zlibbioc, ") ""))
+             (substitute* "NAMESPACE"
+               (("import\\(zlibbioc\\)") ""))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "http://bioconductor.org/packages/XVector")
+    (synopsis "Representation and manpulation of external sequences")
+    (description
+     "This package provides memory efficient S4 classes for storing sequences
+\"externally\" (behind an R external pointer, or on disk).")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
