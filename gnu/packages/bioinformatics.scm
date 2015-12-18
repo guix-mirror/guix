@@ -3545,6 +3545,30 @@ users direct access to a diverse set of data and enable a wide range of
 powerful online queries from gene annotation to database mining.")
     (license license:artistic2.0)))
 
+(define-public r-biocparallel
+  (package
+    (name "r-biocparallel")
+    (version "1.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "BiocParallel" version))
+              (sha256
+               (base32
+                "1f5mndx66vampcsq0n66afg6x851crl0h3nyv2nyp9bsgzj9cdzq"))))
+    (properties
+     `((upstream-name . "BiocParallel")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-futile-logger" ,r-futile-logger)
+       ("r-snow" ,r-snow)))
+    (home-page "http://bioconductor.org/packages/BiocParallel")
+    (synopsis "Bioconductor facilities for parallel evaluation")
+    (description
+     "This package provides modified versions and novel implementation of
+functions for parallel evaluation, tailored to use with Bioconductor
+objects.")
+    (license (list license:gpl2+ license:gpl3+))))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
