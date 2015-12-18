@@ -1576,3 +1576,24 @@ documents (including DTDs), both local and accessible via HTTP or FTP.  Also
 offers access to an XPath \"interpreter\".")
     (license license:bsd-2)))
 
+(define-public r-lambda-r
+  (package
+    (name "r-lambda-r")
+    (version "1.1.7")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "lambda.r" version))
+              (sha256
+               (base32
+                "1lxzrwyminc3dfb07pbn1rmj45kplxgsb17b06pzflj728knbqwa"))))
+    (properties `((upstream-name . "lambda.r")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/lambda.r")
+    (synopsis "Functional programming extension for R")
+    (description
+     "This package provides a language extension to efficiently write
+functional programs in R.  Syntax extensions include multi-part function
+definitions, pattern matching, guard statements, built-in (optional) type
+safety.")
+    (license license:lgpl3+)))
+
