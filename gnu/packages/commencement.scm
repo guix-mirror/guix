@@ -662,11 +662,13 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 (define bash-final
   ;; Link with `-static-libgcc' to make sure we don't retain a reference
   ;; to the bootstrap GCC.
-  (package-with-bootstrap-guile
-   (package-with-explicit-inputs (static-libgcc-package bash)
-                                 %boot3-inputs
-                                 (current-source-location)
-                                 #:guile %bootstrap-guile)))
+  (package
+    (inherit (package-with-bootstrap-guile
+              (package-with-explicit-inputs (static-libgcc-package bash)
+                                            %boot3-inputs
+                                            (current-source-location)
+                                            #:guile %bootstrap-guile)))
+    (native-inputs `(("bison" ,bison-boot1)))))
 
 (define %boot4-inputs
   ;; Now use the final Bash.
