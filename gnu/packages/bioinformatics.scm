@@ -3309,6 +3309,34 @@ names in their natural, rather than lexicographic, order.")
 \"externally\" (behind an R external pointer, or on disk).")
     (license license:artistic2.0)))
 
+(define-public r-genomicranges
+  (package
+    (name "r-genomicranges")
+    (version "1.22.2")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "GenomicRanges" version))
+              (sha256
+               (base32
+                "1jffvcs0jsi7q4l3pvjj6r73vll80csgkljvhqp0g2ixc43jjng9"))))
+    (properties
+     `((upstream-name . "GenomicRanges")
+       (r-repository . bioconductor)))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-xvector" ,r-xvector)))
+    (home-page "http://bioconductor.org/packages/GenomicRanges")
+    (synopsis "Representation and manipulation of genomic intervals")
+    (description
+     "This package provides tools to efficiently represent and manipulate
+genomic annotations and alignments is playing a central role when it comes to
+analyzing high-throughput sequencing data (a.k.a. NGS data).  The
+GenomicRanges package defines general purpose containers for storing and
+manipulating genomic intervals and variables defined along a genome.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
