@@ -3595,6 +3595,50 @@ matching algorithms, and other utilities, for fast manipulation of large
 biological sequences or sets of sequences.")
     (license license:artistic2.0)))
 
+(define-public r-rsamtools
+  (package
+    (name "r-rsamtools")
+    (version "1.22.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "Rsamtools" version))
+              (sha256
+               (base32
+                "1yc3nzzms3igjwr4l9yd3wdac95glcs08b4cfp7disyly0wcskjd"))))
+    (properties
+     `((upstream-name . "Rsamtools")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-system-zlib
+           (lambda _
+             (substitute* "DESCRIPTION"
+               (("zlibbioc, ") ""))
+             (substitute* "NAMESPACE"
+               (("import\\(zlibbioc\\)") ""))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bitops" ,r-bitops)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xvector" ,r-xvector)))
+    (home-page "http://bioconductor.org/packages/release/bioc/html/Rsamtools.html")
+    (synopsis "Interface to samtools, bcftools, and tabix")
+    (description
+     "This package provides an interface to the 'samtools', 'bcftools', and
+'tabix' utilities for manipulating SAM (Sequence Alignment / Map), FASTA,
+binary variant call (BCF) and compressed indexed tab-delimited (tabix)
+files.")
+    (license license:expat)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
