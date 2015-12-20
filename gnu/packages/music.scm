@@ -39,6 +39,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages doxygen)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fonts)
@@ -769,6 +770,52 @@ highlighting and automatic completion.  Among other things, it can render
 scores next to the source, can capture input from MIDI or read MusicXML and
 ABC files, has a MIDI player for proof-listening, and includes a documentation
 browser.")
+    (license license:gpl2+)))
+
+(define-public drumstick
+  (package
+    (name "drumstick")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/drumstick/"
+                                  version "/drumstick-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0mxgix85b2qqs859z91cxik5x0s60dykqiflbj62px9akvf91qdv"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f  ; no test target
+       #:configure-flags '("-DLIB_SUFFIX=")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-docbook
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "cmake_admin/CreateManpages.cmake"
+               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl)
+                               "/manpages/docbook.xsl")))
+             #t)))))
+    (inputs
+     `(("qt" ,qt)
+       ("alsa-lib" ,alsa-lib)
+       ("fluidsynth" ,fluidsynth)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("libxslt" ,libxslt) ;for xsltproc
+       ("docbook-xsl" ,docbook-xsl)
+       ("doxygen" ,doxygen)))
+    (home-page "http://drumstick.sourceforge.net/")
+    (synopsis "C++ MIDI library")
+    (description
+     "Drumstick is a set of MIDI libraries using C++/Qt5 idioms and style.  It
+includes a C++ wrapper around the ALSA library sequencer interface.  A
+complementary library provides classes for processing SMF (Standard MIDI
+files: .MID/.KAR), Cakewalk (.WRK), and Overture (.OVE) file formats.  A
+multiplatform realtime MIDI I/O library is also provided with various output
+backends, including ALSA, OSS, Network and FluidSynth.")
     (license license:gpl2+)))
 
 (define-public zynaddsubfx
