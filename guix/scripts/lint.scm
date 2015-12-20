@@ -587,6 +587,7 @@ be determined."
 Common Platform Enumeration (CPE) name."
   (match name
     ("icecat"   "firefox")                        ;or "firefox_esr"
+    ("grub"     "grub2")
     ;; TODO: Add more.
     (_          name)))
 
