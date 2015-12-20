@@ -39,7 +39,9 @@
    (arguments
     ;; Make it so that we don't rely on /proc.  This is especially useful in
     ;; an initrd run before /proc is mounted.
-    '(#:configure-flags '("CPPFLAGS=-DUSE_LIBC_PRIVATES")))
+    '(#:configure-flags '("CPPFLAGS=-DUSE_LIBC_PRIVATES"
+                          ;; Install gc_cpp.h et al.
+                          "--enable-cplusplus")))
    (outputs '("out" "debug"))
    (synopsis "The Boehm-Demers-Weiser conservative garbage collector
 for C and C++")
@@ -103,4 +105,4 @@ lock-free code, experiment with thread programming paradigms, etc.")
     (inputs `(("libatomic-ops" ,libatomic-ops)))
 
     ;; 'USE_LIBC_PRIVATES' is now the default.
-    (arguments '())))
+    (arguments '(#:configure-flags '("--enable-cplusplus")))))
