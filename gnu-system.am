@@ -405,6 +405,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/agg-am_c_prototype.patch			\
   gnu/packages/patches/alsa-lib-mips-atomic-fix.patch		\
   gnu/packages/patches/apr-skip-getservbyname-test.patch	\
+  gnu/packages/patches/asymptote-gsl2.patch			\
   gnu/packages/patches/ath9k-htc-firmware-binutils.patch	\
   gnu/packages/patches/ath9k-htc-firmware-gcc.patch		\
   gnu/packages/patches/ath9k-htc-firmware-objcopy.patch		\

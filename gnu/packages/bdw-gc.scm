@@ -104,3 +104,10 @@ lock-free code, experiment with thread programming paradigms, etc.")
 
     ;; 'USE_LIBC_PRIVATES' is now the default.
     (arguments '())))
+
+;;; TODO: Remove this package once libgc is updated from core-updates.
+(define-public libgc-for-c++
+  (package (inherit libgc)
+    (name "libgc-cxx")
+    (arguments
+     '(#:configure-flags '("--enable-cplusplus"))))) ;install gc_cpp.h et al.
