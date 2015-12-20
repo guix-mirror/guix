@@ -32,6 +32,7 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 popen)
   #:use-module (rnrs io ports)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-64))
 
@@ -223,6 +224,14 @@
                            (manifest-entry-search-paths entry)
                            (package-native-search-paths
                             packages:guile-2.0)))))))))
+
+(test-assert "package->manifest-entry, search paths"
+  ;; See <http://bugs.gnu.org/22073>.
+  (let ((mpl (@ (gnu packages python) python2-matplotlib)))
+    (lset= eq?
+           (package-transitive-native-search-paths mpl)
+           (manifest-entry-search-paths
+            (package->manifest-entry mpl)))))
 
 (test-assertm "etc/profile"
   ;; Make sure we get an 'etc/profile' file that at least defines $PATH.
