@@ -29,6 +29,7 @@
   #:use-module (guix hash)
   #:use-module (guix derivations)
   #:use-module (guix packages)
+  #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
@@ -503,6 +504,26 @@
       (and (null? (collect (package-derivation %store a)))
            (equal? x (collect (package-derivation %store b)))
            (equal? x (collect (package-derivation %store c)))))))
+
+(test-assert "package-transitive-native-search-paths"
+  (let* ((sp (lambda (name)
+               (list (search-path-specification
+                      (variable name)
+                      (files '("foo/bar"))))))
+         (p0 (dummy-package "p0" (native-search-paths (sp "PATH0"))))
+         (p1 (dummy-package "p1" (native-search-paths (sp "PATH1"))))
+         (p2 (dummy-package "p2"
+               (native-search-paths (sp "PATH2"))
+               (inputs `(("p0" ,p0)))
+               (propagated-inputs `(("p1" ,p1)))))
+         (p3 (dummy-package "p3"
+               (native-search-paths (sp "PATH3"))
+               (native-inputs `(("p0" ,p0)))
+               (propagated-inputs `(("p2" ,p2))))))
+    (lset= string=?
+           '("PATH1" "PATH2" "PATH3")
+           (map search-path-specification-variable
+                (package-transitive-native-search-paths p3)))))
 
 (test-assert "package-cross-derivation"
   (let ((drv (package-cross-derivation %store (dummy-package "p")
