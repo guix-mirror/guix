@@ -5936,6 +5936,12 @@ bits), and @code{no-exec} (disallow program execution.)
 @item @code{options} (default: @code{#f})
 This is either @code{#f}, or a string denoting mount options.
 
+@item @code{mount?} (default: @code{#t})
+This value indicates whether to automatically mount the file system when
+the system is brought up.  When set to @code{#f}, the file system gets
+an entry in @file{/etc/fstab} (read by the @command{mount} command) but
+is not automatically mounted.
+
 @item @code{needed-for-boot?} (default: @code{#f})
 This Boolean value indicates whether the file system is needed when
 booting.  If that is true, then the file system is mounted when the

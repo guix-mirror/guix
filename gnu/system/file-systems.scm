@@ -35,6 +35,7 @@
             file-system-needed-for-boot?
             file-system-flags
             file-system-options
+            file-system-mount?
             file-system-check?
             file-system-create-mount-point?
             file-system-dependencies
@@ -93,6 +94,8 @@
                     (default '()))
   (options          file-system-options           ; string or #f
                     (default #f))
+  (mount?           file-system-mount?            ; Boolean
+                    (default #t))
   (needed-for-boot? %file-system-needed-for-boot? ; Boolean
                     (default #f))
   (check?           file-system-check?            ; Boolean
@@ -112,7 +115,7 @@ file system."
   "Return a list corresponding to file-system FS that can be passed to the
 initrd code."
   (match fs
-    (($ <file-system> device title mount-point type flags options _ check?)
+    (($ <file-system> device title mount-point type flags options _ _ check?)
      (list device title mount-point type flags options check?))))
 
 (define %uuid-rx
