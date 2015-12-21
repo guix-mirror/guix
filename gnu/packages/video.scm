@@ -1325,3 +1325,27 @@ and JACK.")
 provides an interface to video decode acceleration and presentation hardware
 present in modern GPUs.")
     (license (license:x11-style "file://COPYING"))))
+
+(define-public vdpauinfo
+  (package
+    (name "vdpauinfo")
+    (version "1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://secure.freedesktop.org/~aplattner/vdpau/"
+                            name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1i2b0k9h8r0lnxlrkgqzmrjakgaw3f1ygqqwzx8w6676g85rcm20"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("libx11" ,libx11)))
+    (propagated-inputs
+     `(("libvdpau" ,libvdpau)))
+    (home-page "https://wiki.freedesktop.org/www/Software/VDPAU/")
+    (synopsis "Tool to query the capabilities of a VDPAU implementation")
+    (description "Vdpauinfo is a tool to query the capabilities of a VDPAU
+implementation.")
+    (license (license:x11-style "file://COPYING"))))
