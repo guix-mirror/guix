@@ -43,7 +43,8 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
-  #:export (root-file-system-service
+  #:export (fstab-service-type
+            root-file-system-service
             file-system-service
             user-unmount-service
             device-mapping-service
@@ -104,6 +105,48 @@
 ;;;
 ;;; File systems.
 ;;;
+
+(define (file-system->fstab-entry file-system)
+  "Return a @file{/etc/fstab} entry for @var{file-system}."
+  (string-append (case (file-system-title file-system)
+                   ((label)
+                    (string-append "LABEL=" (file-system-device file-system)))
+                   ((uuid)
+                    (string-append
+                     "UUID="
+                     (uuid->string (file-system-device file-system))))
+                   (else
+                    (file-system-device file-system)))
+                 "\t"
+                 (file-system-mount-point file-system) "\t"
+                 (file-system-type file-system) "\t"
+                 (or (file-system-options file-system) "defaults") "\t"
+
+                 ;; XXX: Omit the 'fs_freq' and 'fs_passno' fields because we
+                 ;; don't have anything sensible to put in there.
+                 ))
+
+(define (file-systems->fstab file-systems)
+  "Return a @file{/etc} entry for an @file{fstab} describing
+@var{file-systems}."
+  `(("fstab" ,(plain-file "fstab"
+                          (string-append
+                           "\
+# This file was generated from your GuixSD configuration.  Any changes
+# will be lost upon reboot or reconfiguration.\n\n"
+                           (string-join (map file-system->fstab-entry
+                                             file-systems)
+                                        "\n")
+                           "\n")))))
+
+(define fstab-service-type
+  ;; The /etc/fstab service.
+  (service-type (name 'fstab)
+                (extensions
+                 (list (service-extension etc-service-type
+                                          file-systems->fstab)))
+                (compose identity)
+                (extend append)))
 
 (define %root-file-system-dmd-service
   (dmd-service
@@ -170,70 +213,76 @@ FILE-SYSTEM."
     ((? file-system? fs)
      (file-system->dmd-service-name fs))))
 
+(define (file-system-dmd-service file-system)
+  "Return a list containing the dmd service for @var{file-system}."
+  (let ((target  (file-system-mount-point file-system))
+        (device  (file-system-device file-system))
+        (type    (file-system-type file-system))
+        (title   (file-system-title file-system))
+        (check?  (file-system-check? file-system))
+        (create? (file-system-create-mount-point? file-system))
+        (dependencies (file-system-dependencies file-system)))
+    (list (dmd-service
+           (provision (list (file-system->dmd-service-name file-system)))
+           (requirement `(root-file-system
+                          ,@(map dependency->dmd-service-name dependencies)))
+           (documentation "Check, mount, and unmount the given file system.")
+           (start #~(lambda args
+                      ;; FIXME: Use or factorize with 'mount-file-system'.
+                      (let ((device (canonicalize-device-spec #$device '#$title))
+                            (flags  #$(mount-flags->bit-mask
+                                       (file-system-flags file-system))))
+                        #$(if create?
+                              #~(mkdir-p #$target)
+                              #~#t)
+                        #$(if check?
+                              #~(begin
+                                  ;; Make sure fsck.ext2 & co. can be found.
+                                  (setenv "PATH"
+                                          (string-append
+                                           #$e2fsprogs "/sbin:"
+                                           "/run/current-system/profile/sbin:"
+                                           (getenv "PATH")))
+                                  (check-file-system device #$type))
+                              #~#t)
+
+                        (mount device #$target #$type flags
+                               #$(file-system-options file-system))
+
+                        ;; For read-only bind mounts, an extra remount is needed,
+                        ;; as per <http://lwn.net/Articles/281157/>, which still
+                        ;; applies to Linux 4.0.
+                        (when (and (= MS_BIND (logand flags MS_BIND))
+                                   (= MS_RDONLY (logand flags MS_RDONLY)))
+                          (mount device #$target #$type
+                                 (logior MS_BIND MS_REMOUNT MS_RDONLY))))
+                      #t))
+           (stop #~(lambda args
+                     ;; Normally there are no processes left at this point, so
+                     ;; TARGET can be safely unmounted.
+
+                     ;; Make sure PID 1 doesn't keep TARGET busy.
+                     (chdir "/")
+
+                     (umount #$target)
+                     #f))
+
+           ;; We need an additional module.
+           (modules `(((gnu build file-systems)
+                       #:select (check-file-system canonicalize-device-spec))
+                      ,@%default-modules))
+           (imported-modules `((gnu build file-systems)
+                               ,@%default-imported-modules))))))
+
 (define file-system-service-type
   ;; TODO(?): Make this an extensible service that takes <file-system> objects
   ;; and returns a list of <dmd-service>.
-  (dmd-service-type
-   'file-system
-   (lambda (file-system)
-     (let ((target  (file-system-mount-point file-system))
-           (device  (file-system-device file-system))
-           (type    (file-system-type file-system))
-           (title   (file-system-title file-system))
-           (check?  (file-system-check? file-system))
-           (create? (file-system-create-mount-point? file-system))
-           (dependencies (file-system-dependencies file-system)))
-       (dmd-service
-        (provision (list (file-system->dmd-service-name file-system)))
-        (requirement `(root-file-system
-                       ,@(map dependency->dmd-service-name dependencies)))
-        (documentation "Check, mount, and unmount the given file system.")
-        (start #~(lambda args
-                   ;; FIXME: Use or factorize with 'mount-file-system'.
-                   (let ((device (canonicalize-device-spec #$device '#$title))
-                         (flags  #$(mount-flags->bit-mask
-                                    (file-system-flags file-system))))
-                     #$(if create?
-                           #~(mkdir-p #$target)
-                           #~#t)
-                     #$(if check?
-                           #~(begin
-                               ;; Make sure fsck.ext2 & co. can be found.
-                               (setenv "PATH"
-                                       (string-append
-                                        #$e2fsprogs "/sbin:"
-                                        "/run/current-system/profile/sbin:"
-                                        (getenv "PATH")))
-                               (check-file-system device #$type))
-                           #~#t)
-
-                     (mount device #$target #$type flags
-                            #$(file-system-options file-system))
-
-                     ;; For read-only bind mounts, an extra remount is needed,
-                     ;; as per <http://lwn.net/Articles/281157/>, which still
-                     ;; applies to Linux 4.0.
-                     (when (and (= MS_BIND (logand flags MS_BIND))
-                                (= MS_RDONLY (logand flags MS_RDONLY)))
-                       (mount device #$target #$type
-                              (logior MS_BIND MS_REMOUNT MS_RDONLY))))
-                   #t))
-        (stop #~(lambda args
-                  ;; Normally there are no processes left at this point, so
-                  ;; TARGET can be safely unmounted.
-
-                  ;; Make sure PID 1 doesn't keep TARGET busy.
-                  (chdir "/")
-
-                  (umount #$target)
-                  #f))
-
-        ;; We need an additional module.
-        (modules `(((gnu build file-systems)
-                    #:select (check-file-system canonicalize-device-spec))
-                   ,@%default-modules))
-        (imported-modules `((gnu build file-systems)
-                            ,@%default-imported-modules)))))))
+  (service-type (name 'file-system)
+                (extensions
+                 (list (service-extension dmd-root-service-type
+                                          file-system-dmd-service)
+                       (service-extension fstab-service-type
+                                          identity)))))
 
 (define* (file-system-service file-system)
   "Return a service that mounts @var{file-system}, a @code{<file-system>}

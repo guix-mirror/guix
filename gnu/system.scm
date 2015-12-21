@@ -299,6 +299,7 @@ a container or that of a \"bare metal\" system."
                                     (operating-system-groups os))
                             (operating-system-skeletons os))
            (operating-system-etc-service os)
+           (service fstab-service-type '())
            (session-environment-service
             (operating-system-environment-variables os))
            host-name procs root-fs unmount
