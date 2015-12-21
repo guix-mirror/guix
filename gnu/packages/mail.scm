@@ -564,17 +564,18 @@ which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.6.2")
+    (version "1.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://sourceforge/msmtp/msmtp-" version ".tar.xz"))
        (sha256 (base32
-                "12c7ljahb06pgn8yvvw526xvr11vnr6d4nr0apylixddpxycsvig"))))
+                "0mbkflxv2swjz4185inis83v6pxcblpmapwjhgpc6wh7kh3bx0pr"))))
     (build-system gnu-build-system)
     (inputs
      `(("libidn" ,libidn)
+       ("libsecret" ,libsecret)
        ("gnutls" ,gnutls)
        ("zlib" ,zlib)
        ("gsasl" ,gsasl)))
