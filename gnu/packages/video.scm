@@ -1299,3 +1299,29 @@ from many input sources such as webcams, X11 (for screencasting), PulseAudio,
 and JACK.")
     (home-page "https://obsproject.com")
     (license license:gpl2+)))
+
+(define-public libvdpau
+  (package
+    (name "libvdpau")
+    (version "1.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://secure.freedesktop.org/~aplattner/vdpau/"
+                            name "-" version ".tar.bz2"))
+        (sha256
+         (base32
+          "0dnpb0yh7v6rvckx82kxg045rd9rbsw25wjv7ad5n8h94s9h2yl5"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dri2proto" ,dri2proto)
+       ("libx11" ,libx11 "out")
+       ("libxext" ,libxext)))
+    (home-page "https://wiki.freedesktop.org/www/Software/VDPAU/")
+    (synopsis "Video Decode and Presentation API")
+    (description "VDPAU is the Video Decode and Presentation API for UNIX.  It
+provides an interface to video decode acceleration and presentation hardware
+present in modern GPUs.")
+    (license (license:x11-style "file://COPYING"))))
