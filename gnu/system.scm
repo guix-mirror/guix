@@ -192,11 +192,14 @@ as 'needed-for-boot'."
             (operating-system-file-systems os)))
 
   (define (device-mappings fs)
-    (filter (lambda (md)
-              (string=? (string-append "/dev/mapper/"
-                                       (mapped-device-target md))
-                        (file-system-device fs)))
-            (operating-system-mapped-devices os)))
+    (let ((device (file-system-device fs)))
+      (if (string? device)
+          (filter (lambda (md)
+                    (string=? (string-append "/dev/mapper/"
+                                             (mapped-device-target md))
+                              device))
+                  (operating-system-mapped-devices os))
+          '())))
 
   (define (add-dependencies fs)
     ;; Add the dependencies due to device mappings to FS.
