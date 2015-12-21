@@ -1422,6 +1422,35 @@ output to TeX, and a browser for Maxima's manual including command index and
 full text searching.")
     (license license:gpl2+)))
 
+(define-public armadillo
+  (package
+    (name "armadillo")
+    (version "6.400.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/arma/armadillo-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0bsgrmldlx77w5x26n3axj1hg6iw6csyw0dwl1flrbdwl51f9701"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ;no test target
+    (inputs
+     `(("openblas" ,openblas)
+       ("lapack" ,lapack)
+       ("arpack" ,arpack-ng)))
+    (home-page "http://arma.sourceforge.net/")
+    (synopsis "C++ linear algebra library")
+    (description
+     "Armadillo is a C++ linear algebra library, aiming towards a good balance
+between speed and ease of use.  It is useful for algorithm development
+directly in C++, or quick conversion of research code into production
+environments.  It can be used for machine learning, pattern recognition,
+signal processing, bioinformatics, statistics, econometrics, etc.  The library
+provides efficient classes for vectors, matrices and cubes, as well as 150+
+associated functions (eg. contiguous and non-contiguous submatrix views).")
+    (license license:mpl2.0)))
+
 (define-public muparser
   (package
     (name "muparser")
