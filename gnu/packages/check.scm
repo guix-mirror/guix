@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial))
 
@@ -147,3 +149,26 @@ supervised tests.")
      "Catch stands for C++ Automated Test Cases in Headers and is a
 multi-paradigm automated test framework for C++ and Objective-C.")
     (license boost1.0)))
+
+(define-public cmocka
+  (package
+    (name "cmocka")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://cmocka.org/files/1.0/cmocka-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0fvm6rdalqcxckbddch8ycdw6n2ckldblv117n09chi2l7bm0q5k"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ; No test target
+    (home-page "https://cmocka.org/")
+    (synopsis "Unit testing framework for C")
+    (description "Cmocka is a unit testing framework for C with support for
+mock objects.  It only requires the standard C library, and works with
+different compilers.  Cmocka supports several different message output formats
+like Test Anything Protocol, Subunit, xUnit XML or the original cmockery output
+format.")
+    (license asl2.0)))
