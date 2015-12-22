@@ -24,6 +24,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages tls)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -60,14 +61,15 @@ reimplementation.")
 (define-public ucommon
   (package
    (name "ucommon")
-   (version "6.6.2")
+   (version "7.0.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/commoncpp/" name "-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "16haqzq97axiyhgpca95rhr5y5s7fl8b65if5vil7v4lcqxp3hqn"))))
+                     "1mv080rvrhyxyhgqiqr8r9jdqhg3xhfawjvfj5zgj47h59nggjba"))))
    (build-system gnu-build-system)
+   (inputs `(("gnutls" ,gnutls)))
    (synopsis "Common C++ framework for threaded applications")
    (description "GNU uCommon C++ is meant as a very light-weight C++ library
 to facilitate using C++ design patterns even for very deeply embedded
