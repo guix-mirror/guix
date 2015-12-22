@@ -2839,6 +2839,25 @@ follows LRU semantics, that is, the last n results, where n is specified as
 the argument to the CACHESIZE parameter, will be cached.")
     (license (package-license perl))))
 
+(define-public perl-mime-charset
+  (package
+    (name "perl-mime-charset")
+    (version "1.012")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/N/NE/NEZUMI/"
+                                  "MIME-Charset-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1kfc5p4g1x9c0ffhg125wvhravcviny3alwrgnhnrm2a33ad3rff"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/MIME-Charset")
+    (synopsis "Charset information for MIME messages")
+    (description
+     "@code{MIME::Charset} provides information about character sets used for
+MIME messages on Internet.")
+    (license (package-license perl))))
+
 (define-public perl-mime-types
   (package
     (name "perl-mime-types")
