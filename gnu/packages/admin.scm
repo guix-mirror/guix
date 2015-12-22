@@ -388,99 +388,141 @@ connection alive.")
     (license license:gpl3+)))
 
 (define-public isc-dhcp
-  (package
-    (name "isc-dhcp")
-    (version "4.3.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://ftp.isc.org/isc/dhcp/"
-                                  version "/dhcp-" version ".tar.gz"))
-              (sha256
-               (base32
-                "1w4s7sni1m9223ya8m2a64lr62845c6xlraprjf8zfx6lylbqv16"))))
-    (build-system gnu-build-system)
-    (arguments
-     '(#:phases (alist-cons-after
-                 'configure 'post-configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Point to the right client script, which will be
-                   ;; installed in a later phase.
-                   (substitute* "includes/dhcpd.h"
-                     (("#define[[:blank:]]+_PATH_DHCLIENT_SCRIPT.*")
-                      (let ((out (assoc-ref outputs "out")))
-                        (string-append "#define _PATH_DHCLIENT_SCRIPT \""
-                                       out "/libexec/dhclient-script"
-                                       "\"\n"))))
+  (let* ((bind-major-version "9")
+         (bind-minor-version "9")
+         (bind-patch-version "8")
+         (bind-release-type "-P")
+         (bind-release-version "2")
+         (bind-version (string-append bind-major-version
+                                      "."
+                                      bind-minor-version
+                                      "."
+                                      bind-patch-version
+                                      bind-release-type
+                                      bind-release-version)))
+    (package
+      (name "isc-dhcp")
+      (version "4.3.3")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "http://ftp.isc.org/isc/dhcp/"
+                                    version "/dhcp-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "1pjy4lylx7dww1fp2mk5ikya5vxaf97z70279j81n74vn12ljg2m"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'replace-bundled-bind
+             (lambda* (#:key inputs #:allow-other-keys)
+               (delete-file "bind/bind.tar.gz")
+               (copy-file (assoc-ref inputs "bind-source-tarball")
+                          "bind/bind.tar.gz")
+               (chmod "bind/bind.tar.gz" #o644)
+               (substitute* "bind/version.tmp"
+                 (("^MAJORVER=.*")
+                  (format #f "MAJORVER=~a\n" ,bind-major-version))
+                 (("^MINORVER=.*")
+                  (format #f "MINORVER=~a\n" ,bind-minor-version))
+                 (("^PATCHVER=.*")
+                  (format #f "PATCHVER=~a\n" ,bind-patch-version))
+                 (("^RELEASETYPE=.*")
+                  (format #f "RELEASETYPE=~a\n" ,bind-release-type))
+                 (("^RELEASEVER=.*")
+                  (format #f "RELEASEVER=~a\n" ,bind-release-version)))
+               #t))
+           (add-after 'configure 'post-configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; Point to the right client script, which will be
+               ;; installed in a later phase.
+               (substitute* "includes/dhcpd.h"
+                 (("#define[[:blank:]]+_PATH_DHCLIENT_SCRIPT.*")
+                  (let ((out (assoc-ref outputs "out")))
+                    (string-append "#define _PATH_DHCLIENT_SCRIPT \""
+                                   out "/libexec/dhclient-script"
+                                   "\"\n"))))
 
-                   ;; During the 'build' phase, 'bind.tar.gz' is extracted, so
-                   ;; we must patch shebangs in there and make sure the right
-                   ;; shell is used.
-                   (with-directory-excursion "bind"
-                     (substitute* "Makefile"
-                       (("\\./configure")
-                        (let ((sh (which "sh")))
-                          (string-append "./configure CONFIG_SHELL="
-                                         sh " SHELL=" sh))))
+               ;; During the 'build' phase, 'bind.tar.gz' is extracted, so
+               ;; we must patch shebangs in there and make sure the right
+               ;; shell is used.
+               (with-directory-excursion "bind"
+                 (substitute* "Makefile"
+                   (("\\./configure")
+                    (let ((sh (which "sh")))
+                      (string-append "./configure CONFIG_SHELL="
+                                     sh " SHELL=" sh))))
 
-                     (system* "tar" "xf" "bind.tar.gz")
-                     (for-each patch-shebang
-                               (find-files "bind-9.9.5-P1" ".*"))
-                     (zero? (system* "tar" "cf" "bind.tar.gz"
-                                     "bind-9.9.5-P1"
-                                     ;; avoid non-determinism in the archive
-                                     "--sort=name"
-                                     "--mtime=@0"
-                                     "--owner=root:0"
-                                     "--group=root:0"))))
-                 (alist-cons-after
-                  'install 'post-install
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    ;; Install the dhclient script for GNU/Linux and make sure
-                    ;; if finds all the programs it needs.
-                    (let* ((out       (assoc-ref outputs "out"))
-                           (libexec   (string-append out "/libexec"))
-                           (coreutils (assoc-ref inputs "coreutils"))
-                           (inetutils (assoc-ref inputs "inetutils"))
-                           (net-tools (assoc-ref inputs "net-tools"))
-                           (sed       (assoc-ref inputs "sed")))
-                      (substitute* "client/scripts/linux"
-                        (("/sbin/ip")
-                         (string-append (assoc-ref inputs "iproute")
-                                        "/sbin/ip")))
+                 (let ((bind-directory (string-append "bind-" ,bind-version)))
+                   (system* "tar" "xf" "bind.tar.gz")
+                   (for-each patch-shebang
+                             (find-files bind-directory ".*"))
+                   (zero? (system* "tar" "cf" "bind.tar.gz"
+                                   bind-directory
+                                   ;; avoid non-determinism in the archive
+                                   "--sort=name"
+                                   "--mtime=@0"
+                                   "--owner=root:0"
+                                   "--group=root:0"))))))
+           (add-after 'install 'post-install
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               ;; Install the dhclient script for GNU/Linux and make sure
+               ;; if finds all the programs it needs.
+               (let* ((out       (assoc-ref outputs "out"))
+                      (libexec   (string-append out "/libexec"))
+                      (coreutils (assoc-ref inputs "coreutils"))
+                      (inetutils (assoc-ref inputs "inetutils"))
+                      (net-tools (assoc-ref inputs "net-tools"))
+                      (sed       (assoc-ref inputs "sed")))
+                 (substitute* "client/scripts/linux"
+                   (("/sbin/ip")
+                    (string-append (assoc-ref inputs "iproute")
+                                   "/sbin/ip")))
 
-                      (mkdir-p libexec)
-                      (copy-file "client/scripts/linux"
-                                 (string-append libexec "/dhclient-script"))
+                 (mkdir-p libexec)
+                 (copy-file "client/scripts/linux"
+                            (string-append libexec "/dhclient-script"))
 
-                      (wrap-program
-                          (string-append libexec "/dhclient-script")
-                        `("PATH" ":" prefix
-                          ,(map (lambda (dir)
-                                  (string-append dir "/bin:"
-                                                 dir "/sbin"))
-                                (list inetutils net-tools coreutils sed))))))
-                  %standard-phases))))
+                 (wrap-program
+                     (string-append libexec "/dhclient-script")
+                   `("PATH" ":" prefix
+                     ,(map (lambda (dir)
+                             (string-append dir "/bin:"
+                                            dir "/sbin"))
+                           (list inetutils net-tools coreutils sed))))))))))
 
-    (native-inputs `(("perl" ,perl)))
+      (native-inputs `(("perl" ,perl)))
 
-    (inputs `(("inetutils" ,inetutils)
-              ("net-tools" ,net-tools)
-              ("iproute" ,iproute)
+      (inputs `(("inetutils" ,inetutils)
+                ("net-tools" ,net-tools)
+                ("iproute" ,iproute)
 
-              ;; When cross-compiling, we need the cross Coreutils and sed.
-              ;; Otherwise just use those from %FINAL-INPUTS.
-              ,@(if (%current-target-system)
-                    `(("coreutils" ,coreutils)
-                      ("sed" ,sed))
-                    '())))
+                ;; XXX isc-dhcp bundles a copy of bind that has security
+                ;; flaws, so we use a newer version.
+                ("bind-source-tarball"
+                 ,(origin
+                    (method url-fetch)
+                    (uri (string-append "http://ftp.isc.org/isc/bind9/"
+                                        bind-version
+                                        "/bind-" bind-version ".tar.gz"))
+                    (sha256
+                     (base32
+                      "0agkpmpna7s67la13krn4xlhwhdjpazmljxlq0zbjdwnw4k1k17m"))))
 
-    (home-page "http://www.isc.org/products/DHCP/")
-    (synopsis "Dynamic Host Configuration Protocol (DHCP) tools")
-    (description
-     "ISC's Dynamic Host Configuration Protocol (DHCP) distribution provides a
+                ;; When cross-compiling, we need the cross Coreutils and sed.
+                ;; Otherwise just use those from %FINAL-INPUTS.
+                ,@(if (%current-target-system)
+                      `(("coreutils" ,coreutils)
+                        ("sed" ,sed))
+                      '())))
+
+      (home-page "http://www.isc.org/products/DHCP/")
+      (synopsis "Dynamic Host Configuration Protocol (DHCP) tools")
+      (description
+       "ISC's Dynamic Host Configuration Protocol (DHCP) distribution provides a
 reference implementation of all aspects of DHCP, through a suite of DHCP
 tools: server, client, and relay agent.")
-    (license license:isc)))
+      (license license:isc))))
 
 (define-public libpcap
   (package
