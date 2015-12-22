@@ -223,6 +223,28 @@ module allows Perl programmers to make use of the highly capable validating
 XML parser and the high performance DOM implementation.")
     (license (package-license perl))))
 
+(define-public perl-xml-libxml-simple
+  (package
+    (name "perl-xml-libxml-simple")
+    (version "0.95")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "XML-LibXML-Simple-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0qqfqj5bgqmh1j4iv8dwl3g00nsmcvf2b7w1d09k9d77rrb249xi"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-slurp-tiny" ,perl-file-slurp-tiny)
+       ("perl-xml-libxml" ,perl-xml-libxml)))
+    (home-page "http://search.cpan.org/dist/XML-LibXML-Simple")
+    (synopsis "XML::LibXML based XML::Simple clone")
+    (description
+     "This package provides the same API as @code{XML::Simple} but is based on
+@code{XML::LibXML}.")
+    (license (package-license perl))))
+
 (define-public perl-xml-namespacesupport
   (package
     (name "perl-xml-namespacesupport")
