@@ -444,6 +444,29 @@ XML or XML into a Perl data-structure, both directions under rigid control by
 a schema.")
     (license (package-license perl))))
 
+(define-public perl-xml-compile-cache
+  (package
+    (name "perl-xml-compile-cache")
+    (version "1.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "XML-Compile-Cache-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1689dm54n7wb0n0cl9n77vk0kvg0mcckn2hz9ahigjhvazah8740"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-log-report" ,perl-log-report)
+       ("perl-xml-compile" ,perl-xml-compile)
+       ("perl-xml-compile-tester" ,perl-xml-compile-tester)
+       ("perl-xml-libxml-simple" ,perl-xml-libxml-simple)))
+    (home-page "http://search.cpan.org/dist/XML-Compile-Cache")
+    (synopsis "Cache compiled XML translators")
+    (description
+     "This package provides methods to cache compiled XML translators.")
+    (license (package-license perl))))
+
 (define-public pugixml
   (package
     (name "pugixml")
