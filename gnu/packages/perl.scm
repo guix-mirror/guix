@@ -2795,6 +2795,29 @@ In that case, the module using the 'Optional' will also use the full
 version.")
     (license (package-license perl))))
 
+(define-public perl-log-report
+  (package
+    (name "perl-log-report")
+    (version "1.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "Log-Report-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1jjx1ari3a7ixsyan91b6n7lmjq6dy5223k3x2ah18qbxvw4caap"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-devel-globaldestruction" ,perl-devel-globaldestruction)
+       ("perl-log-report-optional" ,perl-log-report-optional)
+       ("perl-string-print" ,perl-string-print)))
+    (home-page "http://search.cpan.org/dist/Log-Report")
+    (synopsis "Get messages to users and logs")
+    (description
+     "@code{Log::Report} combines three tasks which are closely related in
+one: logging, exceptions, and translations.")
+    (license (package-license perl))))
+
 (define-public perl-list-allutils
   (package
     (name "perl-list-allutils")
