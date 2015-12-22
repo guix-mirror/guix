@@ -1717,7 +1717,7 @@ void DerivationGoal::startBuilder()
 
     /* In a sandbox, for determinism, always use the same temporary
        directory. */
-    tmpDirInSandbox = useChroot ? "/tmp/guix-build-" + drvName + "-0" : tmpDir;
+    tmpDirInSandbox = useChroot ? canonPath("/tmp/guix-build-", true) + drvName + "-0" : tmpDir;
 
     /* For convenience, set an environment pointing to the top build
        directory. */
