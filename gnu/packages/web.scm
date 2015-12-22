@@ -1894,6 +1894,30 @@ are invoked.")
 kinds of HTML parsing operations.")
     (home-page "http://search.cpan.org/dist/HTML-Tagset/")))
 
+(define-public perl-html-template
+  (package
+    (name "perl-html-template")
+    (version "2.95")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/W/WO/WONKO/"
+                                  "HTML-Template-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07ahpfgidxsw2yb7y8i7bbr8s64aq6qgq832h9jswmksxbd0l43q"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/HTML-Template")
+    (synopsis "HTML-like templates")
+    (description
+     "This module attempts to make using HTML templates simple and natural.
+It extends standard HTML with a few new HTML-esque tags: @code{<TMPL_VAR>},
+@code{<TMPL_LOOP>}, @code{<TMPL_INCLUDE>}, @code{<TMPL_IF>},
+@code{<TMPL_ELSE>} and @code{<TMPL_UNLESS>}.  The file written with HTML and
+these new tags is called a template.  Using this module you fill in the values
+for the variables, loops and branches declared in the template.  This allows
+you to separate design from the data.")
+    (license (package-license perl))))
+
 (define-public perl-http-body
   (package
     (name "perl-http-body")
