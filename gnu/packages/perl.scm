@@ -5838,6 +5838,28 @@ else.")
 common serialisation formats such as JSON or CBOR.")
     (license (package-license perl))))
 
+(define-public perl-unicode-linebreak
+  (package
+    (name "perl-unicode-linebreak")
+    (version "2015.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/N/NE/NEZUMI/"
+                                  "Unicode-LineBreak-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1d0nnc97irfpab4d3b2lvq22hac118k7zbfrj0lnxkbfwx7122cm"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-mime-charset" ,perl-mime-charset)))
+    (home-page "http://search.cpan.org/dist/Unicode-LineBreak")
+    (synopsis "Unicode line breaking algorithm")
+    (description
+     "@code{Unicode::LineBreak} implements the line breaking algorithm
+described in Unicode Standard Annex #14.  The @code{East_Asian_Width} property
+defined by Annex #11 is used to determine breaking positions.")
+    (license (package-license perl))))
+
 (define-public perl-universal-can
   (package
     (name "perl-universal-can")
