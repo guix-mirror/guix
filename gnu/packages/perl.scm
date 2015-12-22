@@ -4365,6 +4365,28 @@ CamelCase and back again.")
 known prefixes.")
     (license (package-license perl))))
 
+(define-public perl-string-print
+  (package
+    (name "perl-string-print")
+    (version "0.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "String-Print-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1n9lc5dr66sg89hym47764fyfms7vrxrhwvdps2x8x8gxly7rsdl"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-unicode-linebreak" ,perl-unicode-linebreak)))
+    (home-page "http://search.cpan.org/dist/String-Print")
+    (synopsis "String printing alternatives to printf")
+    (description
+     "This module inserts values into (translated) strings.  It provides
+@code{printf} and @code{sprintf} alternatives via both an object-oriented and
+a functional interface.")
+    (license (package-license perl))))
+
 (define-public perl-sub-exporter
   (package
     (name "perl-sub-exporter")
