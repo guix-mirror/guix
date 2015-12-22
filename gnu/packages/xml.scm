@@ -467,6 +467,34 @@ a schema.")
      "This package provides methods to cache compiled XML translators.")
     (license (package-license perl))))
 
+(define-public perl-xml-compile-soap
+  (package
+    (name "perl-xml-compile-soap")
+    (version "3.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "XML-Compile-SOAP-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08qw63l78040nh37xzapbqp43g6s5l67bvskf3dyyizlarjx5mi4"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-slurp-tiny" ,perl-file-slurp-tiny)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-log-report" ,perl-log-report)
+       ("perl-xml-compile" ,perl-xml-compile)
+       ("perl-xml-compile-cache" ,perl-xml-compile-cache)
+       ("perl-xml-compile-tester" ,perl-xml-compile-tester)))
+    (home-page "http://search.cpan.org/dist/XML-Compile-SOAP")
+    (synopsis "Base-class for SOAP implementations")
+    (description
+     "This module provides a class to handle the SOAP protocol.  The first
+implementation is @url{SOAP1.1,
+http://www.w3.org/TR/2000/NOTE-SOAP-20000508/}, which is still most often
+used.")
+    (license (package-license perl))))
+
 (define-public pugixml
   (package
     (name "pugixml")
