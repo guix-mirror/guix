@@ -2770,6 +2770,31 @@ either uses the first module it finds or throws an error.")
 versa.")
     (license (package-license perl))))
 
+(define-public perl-log-report-optional
+  (package
+    (name "perl-log-report-optional")
+    (version "1.01")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "Log-Report-Optional-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1f4yi4dgzqjc79vrh4f2phdj57xxgk8hd2psx77214i4m5av408f"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-string-print" ,perl-string-print)))
+    (home-page "http://search.cpan.org/dist/Log-Report-Optional")
+    (synopsis "Log::Report in the lightest form")
+    (description
+     "This module allows libraries to have a dependency to a small module
+instead of the full Log-Report distribution.  The full power of
+@code{Log::Report} is only released when the main program uses that module.
+In that case, the module using the 'Optional' will also use the full
+@code{Log::Report}, otherwise the dressed-down @code{Log::Report::Minimal}
+version.")
+    (license (package-license perl))))
+
 (define-public perl-list-allutils
   (package
     (name "perl-list-allutils")
