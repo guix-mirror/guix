@@ -374,6 +374,29 @@ from XML::Parser.  It parses XML strings or files and builds a data structure
 that conforms to the API of the Document Object Model.")
     (home-page "http://search.cpan.org/~tjmather/XML-DOM-1.44/lib/XML/DOM.pm")))
 
+(define-public perl-xml-compile-tester
+  (package
+    (name "perl-xml-compile-tester")
+    (version "0.90")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "XML-Compile-Tester-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bcl8x8cyacqv9yjp97aq9qq85sy8wv78kd8c16yd9yw3by4cpp1"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-log-report" ,perl-log-report)
+       ("perl-test-deep" ,perl-test-deep)))
+    (home-page "http://search.cpan.org/dist/XML-Compile-Tester")
+    (synopsis "XML::Compile related regression testing")
+    (description
+     "The @code{XML::Compile} module suite has extensive regression testing.
+This module provide functions which simplify writing tests for
+@code{XML::Compile} related distributions.")
+    (license (package-license perl))))
+
 (define-public pugixml
   (package
     (name "pugixml")
