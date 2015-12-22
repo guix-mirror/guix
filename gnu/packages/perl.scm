@@ -2344,6 +2344,24 @@ files with a simple call.  It also has a subroutine for reading the list of
 file names in a directory.")
     (license (package-license perl))))
 
+(define-public perl-file-slurp-tiny
+  (package
+    (name "perl-file-slurp-tiny")
+    (version "0.004")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/L/LE/LEONT/"
+                                  "File-Slurp-Tiny-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07kzfmibl43dq4c803f022g2rcfv4nkjgipxclz943mzxaz9aaa5"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/File-Slurp-Tiny")
+    (synopsis "Simple file reader and writer")
+    (description
+     "This module provides functions for fast reading and writing of files.")
+    (license (package-license perl))))
+
 (define-public perl-file-temp
   (package
     (name "perl-file-temp")
