@@ -397,6 +397,31 @@ This module provide functions which simplify writing tests for
 @code{XML::Compile} related distributions.")
     (license (package-license perl))))
 
+(define-public perl-xml-compile
+  (package
+    (name "perl-xml-compile")
+    (version "1.51")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "XML-Compile-" version ".tar.gz"))
+              (sha256
+               (base32
+                "06fj4zf0yh4kf3kx4bhwrmrjr6al40nasasbgfhn8f1zxwkmm8f2"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-log-report" ,perl-log-report)
+       ("perl-xml-compile-tester" ,perl-xml-compile-tester)
+       ("perl-xml-libxml" ,perl-xml-libxml)
+       ("perl-test-deep" ,perl-test-deep)))
+    (home-page "http://search.cpan.org/dist/XML-Compile")
+    (synopsis "Compilation-based XML processing")
+    (description
+     "@code{XML::Compile} can be used to translate a Perl data-structure into
+XML or XML into a Perl data-structure, both directions under rigid control by
+a schema.")
+    (license (package-license perl))))
+
 (define-public pugixml
   (package
     (name "pugixml")
