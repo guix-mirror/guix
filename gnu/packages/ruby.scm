@@ -1683,6 +1683,16 @@ to reproduce user environments.")
     (home-page "http://github.com/flavorjones/mini_portile")
     (license license:expat)))
 
+(define-public ruby-mini-portile-2
+  (package (inherit ruby-mini-portile)
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "mini_portile2" version))
+              (sha256
+               (base32
+                "056drbn5m4khdxly1asmiik14nyllswr6sh3wallvsywwdiryz8l"))))))
+
 (define-public ruby-nokogiri
   (package
     (name "ruby-nokogiri")
