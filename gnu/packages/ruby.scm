@@ -1696,13 +1696,13 @@ to reproduce user environments.")
 (define-public ruby-nokogiri
   (package
     (name "ruby-nokogiri")
-    (version "1.6.6.2")
+    (version "1.6.7.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "nokogiri" version))
               (sha256
                (base32
-                "1j4qv32qjh67dcrc1yy1h8sqjnny8siyy4s44awla8d6jk361h30"))))
+                "12nwv3lad5k2k73aa1d1xy4x577c143ixks6rs70yp78sinbglk2"))))
     (build-system ruby-build-system)
     (arguments
      ;; Tests fail because Nokogiri can only test with an installed extension,
@@ -1720,7 +1720,7 @@ to reproduce user environments.")
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)))
     (propagated-inputs
-     `(("ruby-mini-portile" ,ruby-mini-portile)))
+     `(("ruby-mini-portile" ,ruby-mini-portile-2)))
     (synopsis "HTML, XML, SAX, and Reader parser for Ruby")
     (description "Nokogiri (鋸) parses and searches XML/HTML, and features
 both CSS3 selector and XPath 1.0 support.")
