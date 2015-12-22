@@ -412,7 +412,8 @@ connection alive.")
                   "1pjy4lylx7dww1fp2mk5ikya5vxaf97z70279j81n74vn12ljg2m"))))
       (build-system gnu-build-system)
       (arguments
-       `(#:phases
+       `(#:parallel-build? #f
+         #:phases
          (modify-phases %standard-phases
            (add-after 'unpack 'replace-bundled-bind
              (lambda* (#:key inputs #:allow-other-keys)
