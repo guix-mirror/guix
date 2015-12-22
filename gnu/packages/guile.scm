@@ -174,7 +174,8 @@ without requiring the source code to be rewritten.")
            (files '("share/guile/site/2.0")))
           (search-path-specification
            (variable "GUILE_LOAD_COMPILED_PATH")
-           (files '("share/guile/site/2.0")))))
+           (files '("lib/guile/2.0/ccache"
+                    "share/guile/site/2.0")))))
 
    (synopsis "Scheme implementation intended especially for extensions")
    (description
