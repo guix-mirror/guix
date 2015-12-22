@@ -495,6 +495,32 @@ http://www.w3.org/TR/2000/NOTE-SOAP-20000508/}, which is still most often
 used.")
     (license (package-license perl))))
 
+(define-public perl-xml-compile-wsdl11
+  (package
+    (name "perl-xml-compile-wsdl11")
+    (version "3.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "XML-Compile-WSDL11-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0pyikwnfwpangvnkf5dbdagy4z93ag9824f1ax5qaibc3ghca8kv"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-log-report" ,perl-log-report)
+       ("perl-xml-compile" ,perl-xml-compile)
+       ("perl-xml-compile-cache" ,perl-xml-compile-cache)
+       ("perl-xml-compile-soap" ,perl-xml-compile-soap)))
+    (home-page "http://search.cpan.org/dist/XML-Compile-WSDL11")
+    (synopsis "Create SOAP messages defined by WSDL 1.1")
+    (description
+     "This module understands WSDL version 1.1.  A WSDL file defines a set of
+messages to be send and received over SOAP connections.  This involves
+encoding of the message to be send into XML, sending the message to the
+server, collect the answer, and finally decoding the XML to Perl.")
+    (license (package-license perl))))
+
 (define-public pugixml
   (package
     (name "pugixml")
