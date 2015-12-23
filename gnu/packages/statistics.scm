@@ -1832,3 +1832,34 @@ where the key can be an arbitrary set of R objects.  The cache memory is
 persistent (on the file system).")
     (license license:lgpl2.1+)))
 
+(define-public r-r-rsp
+  (package
+    (name "r-r-rsp")
+    (version "0.20.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "R.rsp" version))
+              (sha256
+               (base32
+                "06vq9qq5hdz3hqc99q82622mab6ix7jwap20h4za6ap6gnwqs0fv"))))
+    (properties `((upstream-name . "R.rsp")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-r-cache" ,r-r-cache)
+       ("r-r-methodss3" ,r-r-methodss3)
+       ("r-r-oo" ,r-r-oo)
+       ("r-r-utils" ,r-r-utils)))
+    (home-page "https://github.com/HenrikBengtsson/R.rsp")
+    (synopsis "Dynamic generation of scientific reports")
+    (description
+     "The RSP markup language provides a powerful markup for controlling the
+content and output of LaTeX, HTML, Markdown, AsciiDoc, Sweave and knitr
+documents (and more), e.g. @code{Today's date is <%=Sys.Date()%>}.  Contrary
+to many other literate programming languages, with RSP it is straightforward
+to loop over mixtures of code and text sections, e.g.  in month-by-month
+summaries.  RSP has also several preprocessing directives for incorporating
+static and dynamic contents of external files (local or online) among other
+things.  RSP is ideal for self-contained scientific reports and R package
+vignettes.")
+    (license license:lgpl2.1+)))
+
