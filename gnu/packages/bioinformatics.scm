@@ -3886,6 +3886,32 @@ genome data packages and support for efficient SNP representation.")
 microarray data, using nearest neighbor averaging.")
     (license license:gpl2+)))
 
+(define-public r-seqpattern
+  (package
+    (name "r-seqpattern")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "seqPattern" version))
+              (sha256
+               (base32
+                "0p9zj6bic7sa0hb2bjm988kkk5n9r1kvlbqkzvy702f642n0j53i"))))
+    (properties
+     `((upstream-name . "seqPattern")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-plotrix" ,r-plotrix)))
+    (home-page "http://bioconductor.org/packages/seqPattern")
+    (synopsis "Visualising oligonucleotide patterns and motif occurrences")
+    (description
+     "This package provides tools to visualize oligonucleotide patterns and
+sequence motif occurrences across a large set of sequences centred at a common
+reference point and sorted by a user defined feature.")
+    (license license:gpl3+)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
