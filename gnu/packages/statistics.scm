@@ -1913,3 +1913,33 @@ black-and-white.  They are also designed to be perceived by readers with the
 most common form of color blindness.")
     (license license:x11)))
 
+(define-public r-plotly
+  (package
+    (name "r-plotly")
+    (version "2.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "plotly" version))
+              (sha256
+               (base32
+                "16pqycns8qf0y1j21n009qf242lv0izwyidlx40zv88izxhg1vs0"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-digest" ,r-digest)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plyr" ,r-plyr)
+       ("r-viridis" ,r-viridis)))
+    (home-page "https://plot.ly/r")
+    (synopsis "Create interactive web graphics")
+    (description
+     "This package enables the translation of ggplot2 graphs to an interactive
+web-based version and/or the creation of custom web-based visualizations
+directly from R.  Once uploaded to a plotly account, plotly graphs (and the
+data behind them) can be viewed and modified in a web browser.")
+    (license license:x11)))
+
