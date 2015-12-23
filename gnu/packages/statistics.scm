@@ -1737,3 +1737,27 @@ The 'DataTables' library has been included in this R package.")
 flexible than the orphaned \"base64\" package.")
     (license license:gpl2+)))
 
+(define-public r-r-methodss3
+  (package
+    (name "r-r-methodss3")
+    (version "1.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "R.methodsS3" version))
+              (sha256
+               (base32
+                "1dg4bbrwr8jcsqisjrrwxs942mrjq72zw8yvl2br4djdm0md8zz5"))))
+    (properties `((upstream-name . "R.methodsS3")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/R.methodsS3")
+    (synopsis "S3 methods simplified")
+    (description
+     "This package provides methods that simplify the setup of S3 generic
+functions and S3 methods.  Major effort has been made in making definition of
+methods as simple as possible with a minimum of maintenance for package
+developers.  For example, generic functions are created automatically, if
+missing, and naming conflict are automatically solved, if possible.  The
+method @code{setMethodS3()} is a good start for those who in the future may
+want to migrate to S4.")
+    (license license:lgpl2.1+)))
+
