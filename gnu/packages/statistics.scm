@@ -1887,3 +1887,29 @@ also some vector-based methods, e.g. @code{binMeans()}, @code{madDiff()} and
 memory usage.")
     (license license:artistic2.0)))
 
+(define-public r-viridis
+  (package
+    (name "r-viridis")
+    (version "0.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "viridis" version))
+              (sha256
+               (base32
+                "0zz9i874s1fwhl9bcbiprlzaz7zsy1rj6c729zn3k525d63qbnj7"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)))
+    (home-page "https://github.com/sjmgarnier/viridis")
+    (synopsis "Matplotlib default color map")
+    (description
+     "This package is a port of the new @url{matplotlib,
+http://matplotlib.org/} color maps (@code{viridis}--the default--,
+@code{magma}, @code{plasma}, and @code{inferno}) to R.  These color maps are
+designed in such a way that they will analytically be perfectly
+perceptually-uniform, both in regular form and also when converted to
+black-and-white.  They are also designed to be perceived by readers with the
+most common form of color blindness.")
+    (license license:x11)))
+
