@@ -1806,3 +1806,29 @@ maintenance for package developers.")
 developing R packages.")
     (license license:lgpl2.1+)))
 
+(define-public r-r-cache
+  (package
+    (name "r-r-cache")
+    (version "0.12.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "R.cache" version))
+              (sha256
+               (base32
+                "006x52w9r8phw5hgqmyp0bz8z42vn8p5yibibnzi1sfa1xlw8iyx"))))
+    (properties `((upstream-name . "R.cache")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-r-methodss3" ,r-r-methodss3)
+       ("r-r-oo" ,r-r-oo)
+       ("r-r-utils" ,r-r-utils)))
+    (home-page "https://github.com/HenrikBengtsson/R.cache")
+    (synopsis "Light-weight caching of objects and results")
+    (description
+     "This package provides methods for caching or memoization of objects and
+results.  With this package, any R object can be cached in a key-value storage
+where the key can be an arbitrary set of R objects.  The cache memory is
+persistent (on the file system).")
+    (license license:lgpl2.1+)))
+
