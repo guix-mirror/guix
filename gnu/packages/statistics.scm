@@ -1685,3 +1685,37 @@ matrices.  It includes Cholesky decomposition and backsolving as well as
 standard R subsetting and Kronecker products.")
     (license license:gpl2+)))
 
+(define-public r-dt
+  (package
+    (name "r-dt")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "DT" version))
+              (sha256
+               (base32
+                "0mj7iiy1gglw7kixybmb7kr1bcl5r006zcb3klkw7p6vvvzdm6qj"))))
+    (properties
+     `((upstream-name . "DT")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-magrittr" ,r-magrittr)))
+    (home-page "http://rstudio.github.io/DT")
+    (synopsis "R wrapper of the DataTables JavaScript library")
+    (description
+     "This package allows for data objects in R to be rendered as HTML tables
+using the JavaScript library 'DataTables' (typically via R Markdown or Shiny).
+The 'DataTables' library has been included in this R package.")
+    ;; The DT package as a whole is distributed under GPLv3.  The DT package
+    ;; inludes other software components under different licenses:
+    ;;
+    ;;   * Expat: jQuery, jquery.highlight.js, DataTables
+    ;;   * ASL2.0: selectize.js
+    ;;   * WTFPL: noUiSlider
+    (license (list license:gpl3
+                   license:expat
+                   license:asl2.0
+                   (license:non-copyleft "http://www.wtfpl.net/txt/copying/")))))
+
