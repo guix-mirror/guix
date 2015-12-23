@@ -1664,3 +1664,24 @@ such as @code{clusterCall} and @code{clusterApply} to execute R code on the
 worker processes and collect and return the results on the master.")
     (license (list license:gpl2+ license:gpl3+))))
 
+(define-public r-sparsem
+  (package
+    (name "r-sparsem")
+    (version "1.7")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "SparseM" version))
+              (sha256
+               (base32
+                "0s9kab5khk7daqf6nfp1wm1qnhkssnnwnymisfwyk3kz4q5maqfz"))))
+    (properties
+     `((upstream-name . "SparseM")))
+    (build-system r-build-system)
+    (home-page "http://www.econ.uiuc.edu/~roger/research/sparse/sparse.html")
+    (synopsis "Sparse linear algebra")
+    (description
+     "This package provides some basic linear algebra functionality for sparse
+matrices.  It includes Cholesky decomposition and backsolving as well as
+standard R subsetting and Kronecker products.")
+    (license license:gpl2+)))
+
