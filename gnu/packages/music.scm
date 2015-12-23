@@ -67,6 +67,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
@@ -904,4 +905,61 @@ instrument or MIDI file player.")
      "ZynAddSubFX is a feature heavy realtime software synthesizer.  It offers
 three synthesizer engines, multitimbral and polyphonic synths, microtonal
 capabilities, custom envelopes, effects, etc.")
+    (license license:gpl2)))
+
+(define-public yoshimi
+  (package
+    (name "yoshimi")
+    (version "1.3.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/yoshimi/"
+                                  (version-major+minor version)
+                                  "/yoshimi-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "13xc1x8jrr2rn26jx4dini692ww3771d5j5xf7f56ixqr7mmdhvz"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:configure-flags
+       (list (string-append "-DCMAKE_INSTALL_DATAROOTDIR="
+                            (assoc-ref %outputs "out") "/share"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'enter-dir
+           (lambda _ (chdir "src") #t))
+         ;; Move SSE compiler optimization flags from generic target to
+         ;; athlon64 and core2 targets, because otherwise the build would fail
+         ;; on non-Intel machines.
+         (add-after 'unpack 'remove-sse-flags-from-generic-target
+          (lambda _
+            (substitute* "src/CMakeLists.txt"
+              (("-msse -msse2 -mfpmath=sse") "")
+              (("-march=(athlon64|core2)" flag)
+               (string-append flag " -msse -msse2 -mfpmath=sse")))
+            #t)))))
+    (inputs
+     `(("boost" ,boost)
+       ("fftwf" ,fftwf)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("fontconfig" ,fontconfig)
+       ("minixml" ,minixml)
+       ("mesa" ,mesa)
+       ("fltk" ,fltk)
+       ("lv2" ,lv2)
+       ("readline" ,readline)
+       ("ncurses" ,ncurses)
+       ("cairo" ,cairo)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://yoshimi.sourceforge.net/")
+    (synopsis "Multi-paradigm software synthesizer")
+    (description
+     "Yoshimi is a fork of ZynAddSubFX, a feature heavy realtime software
+synthesizer.  It offers three synthesizer engines, multitimbral and polyphonic
+synths, microtonal capabilities, custom envelopes, effects, etc.  Yoshimi
+improves on support for JACK features, such as JACK MIDI.")
     (license license:gpl2)))
