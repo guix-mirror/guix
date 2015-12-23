@@ -3807,6 +3807,35 @@ extracting the desired features in a convenient format.")
 information about the latest version of the Gene Ontologies.")
     (license license:artistic2.0)))
 
+(define-public r-topgo
+  (package
+    (name "r-topgo")
+    (version "2.22.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "topGO" version))
+              (sha256
+               (base32
+                "029j9nb39b8l9xlzsp83pmjr8ap247aia387yzaa1yyw8klapdaf"))))
+    (properties
+     `((upstream-name . "topGO")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-go-db" ,r-go-db)
+       ("r-sparsem" ,r-sparsem)))
+    (home-page "http://bioconductor.org/packages/topGO")
+    (synopsis "Enrichment analysis for gene ontology")
+    (description
+     "The topGO package provides tools for testing @dfn{gene ontology} (GO)
+terms while accounting for the topology of the GO graph.  Different test
+statistics and different methods for eliminating local similarities and
+dependencies between GO terms can be implemented and applied.")
+    ;; Any version of the LGPL applies.
+    (license license:lgpl2.1+)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
