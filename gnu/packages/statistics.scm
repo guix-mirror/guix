@@ -1863,3 +1863,27 @@ things.  RSP is ideal for self-contained scientific reports and R package
 vignettes.")
     (license license:lgpl2.1+)))
 
+(define-public r-matrixstats
+  (package
+    (name "r-matrixstats")
+    (version "0.15.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "matrixStats" version))
+              (sha256
+               (base32
+                "1068k85s6rlwfzlszw790c2rndydvrsw7rpck6k6z17896m8drfa"))))
+    (properties `((upstream-name . "matrixStats")))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-r-rsp" ,r-r-rsp))) ;used to build vignettes
+    (home-page "https://github.com/HenrikBengtsson/matrixStats")
+    (synopsis "Methods applying to vectors and matrix rows and columns")
+    (description
+     "This package provides methods operating on rows and columns of matrices,
+e.g.  @code{rowMedians()}, @code{rowRanks()}, and @code{rowSds()}.  There are
+also some vector-based methods, e.g. @code{binMeans()}, @code{madDiff()} and
+@code{weightedMedians()}.  All methods have been optimized for speed and
+memory usage.")
+    (license license:artistic2.0)))
+
