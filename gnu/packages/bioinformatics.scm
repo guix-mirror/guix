@@ -3866,6 +3866,26 @@ dependencies between GO terms can be implemented and applied.")
 genome data packages and support for efficient SNP representation.")
     (license license:artistic2.0)))
 
+(define-public r-impute
+  (package
+    (name "r-impute")
+    (version "1.44.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "impute" version))
+              (sha256
+               (base32
+                "0y4x5jk7gsf4xn56jrkdcdnxpcfll4h6ivncd7n4snmzixldvmvw"))))
+    (inputs
+     `(("gfortran" ,gfortran)))
+    (build-system r-build-system)
+    (home-page "http://bioconductor.org/packages/impute")
+    (synopsis "Imputation for microarray data")
+    (description
+     "This package provides a function to impute missing gene expression
+microarray data, using nearest neighbor averaging.")
+    (license license:gpl2+)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
