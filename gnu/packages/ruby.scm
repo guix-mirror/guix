@@ -891,6 +891,29 @@ functions.")
     (home-page "https://github.com/ahoward/options")
     (license license:ruby)))
 
+(define-public ruby-erubis
+  (package
+    (name "ruby-erubis")
+    (version "2.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "erubis" version))
+       (sha256
+        (base32
+         "1fj827xqjs91yqsydf0zmfyw9p4l2jz5yikg3mppz6d7fi8kyrb3"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; tests do not run properly with Ruby 2.0
+    (synopsis "Implementation of embedded Ruby (eRuby)")
+    (description
+     "Erubis is a fast implementation of embedded Ruby (eRuby) with several
+features such as multi-language support, auto escaping, auto trimming spaces
+around @code{<% %>}, a changeable embedded pattern, and Ruby on Rails
+support.")
+    (home-page "http://www.kuwata-lab.com/erubis/")
+    (license license:expat)))
+
 (define-public ruby-orderedhash
   (package
     (name "ruby-orderedhash")
