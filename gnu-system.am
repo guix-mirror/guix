@@ -512,20 +512,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/hop-linker-flags.patch			\
   gnu/packages/patches/hydra-automake-1.15.patch		\
   gnu/packages/patches/hydra-disable-darcs-test.patch		\
-  gnu/packages/patches/icecat-CVE-2015-7201-pt1.patch		\
-  gnu/packages/patches/icecat-CVE-2015-7201-pt2.patch		\
-  gnu/packages/patches/icecat-CVE-2015-7201-pt3.patch		\
-  gnu/packages/patches/icecat-CVE-2015-7205.patch		\
-  gnu/packages/patches/icecat-CVE-2015-7210.patch		\
-  gnu/packages/patches/icecat-CVE-2015-7212.patch		\
-  gnu/packages/patches/icecat-CVE-2015-7213-pt1.patch		\
-  gnu/packages/patches/icecat-CVE-2015-7213-pt2.patch		\
-  gnu/packages/patches/icecat-CVE-2015-7214.patch		\
-  gnu/packages/patches/icecat-CVE-2015-7222-pt1.patch		\
-  gnu/packages/patches/icecat-CVE-2015-7222-pt2.patch		\
-  gnu/packages/patches/icecat-CVE-2015-7222-pt3.patch		\
   gnu/packages/patches/icecat-avoid-bundled-includes.patch	\
-  gnu/packages/patches/icecat-freetype-2.6.patch		\
   gnu/packages/patches/icu4c-CVE-2014-6585.patch		\
   gnu/packages/patches/icu4c-CVE-2015-1270.patch		\
   gnu/packages/patches/icu4c-CVE-2015-4760.patch		\
