@@ -1784,3 +1784,25 @@ making definition of methods as simple as possible with a minimum of
 maintenance for package developers.")
     (license license:lgpl2.1+)))
 
+(define-public r-r-utils
+  (package
+    (name "r-r-utils")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "R.utils" version))
+              (sha256
+               (base32
+                "03pi6pkcsq65fv7cn4x74cj050dc8x5d4xyg930p6f7flk788xaz"))))
+    (properties `((upstream-name . "R.utils")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-r-methodss3" ,r-r-methodss3)
+       ("r-r-oo" ,r-r-oo)))
+    (home-page "https://github.com/HenrikBengtsson/R.utils")
+    (synopsis "Various programming utilities")
+    (description
+     "This package provides utility functions useful when programming and
+developing R packages.")
+    (license license:lgpl2.1+)))
+
