@@ -3912,6 +3912,49 @@ sequence motif occurrences across a large set of sequences centred at a common
 reference point and sorted by a user defined feature.")
     (license license:gpl3+)))
 
+(define-public r-genomation
+  (package
+    (name "r-genomation")
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "genomation" version))
+              (sha256
+               (base32
+                "1mzs995snwim13qk9kz4q3nczpnbsy1allwp4whfq0cflg2mndfr"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-data-table" ,r-data-table)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridbase" ,r-gridbase)
+       ("r-impute" ,r-impute)
+       ("r-iranges" ,r-iranges)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-plotrix" ,r-plotrix)
+       ("r-plyr" ,r-plyr)
+       ("r-readr" ,r-readr)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-seqpattern" ,r-seqpattern)))
+    (home-page "http://bioinformatics.mdc-berlin.de/genomation/")
+    (synopsis "Summary, annotation and visualization of genomic data")
+    (description
+     "This package provides a package for summary and annotation of genomic
+intervals.  Users can visualize and quantify genomic intervals over
+pre-defined functional regions, such as promoters, exons, introns, etc.  The
+genomic intervals represent regions with a defined chromosome position, which
+may be associated with a score, such as aligned reads from HT-seq experiments,
+TF binding sites, methylation scores, etc.  The package can use any tabular
+genomic feature data as long as it has minimal information on the locations of
+genomic intervals.  In addition, it can use BAM or BigWig files as input.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
