@@ -3787,6 +3787,26 @@ transcripts, exons, cds and genes.  Flexible methods are provided for
 extracting the desired features in a convenient format.")
     (license license:artistic2.0)))
 
+(define-public r-go-db
+  (package
+    (name "r-go-db")
+    (version "3.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "GO.db" version))
+              (sha256
+               (base32
+                "00gariag9ampz82dh0xllrc26r85d7vdcwc0vca5zdy147rwxr7f"))))
+    (properties
+     `((upstream-name . "GO.db")))
+    (build-system r-build-system)
+    (home-page "http://bioconductor.org/packages/GO.db")
+    (synopsis "Annotation maps describing the entire Gene Ontology")
+    (description
+     "The purpose of this GO.db annotation package is to provide detailed
+information about the latest version of the Gene Ontologies.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
