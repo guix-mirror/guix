@@ -1761,3 +1761,26 @@ method @code{setMethodS3()} is a good start for those who in the future may
 want to migrate to S4.")
     (license license:lgpl2.1+)))
 
+(define-public r-r-oo
+  (package
+    (name "r-r-oo")
+    (version "1.19.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "R.oo" version))
+              (sha256
+               (base32
+                "15rm1qb9a212bqazhcpk7m48hcp7jq8rh4yhd9c6zfyvdqszfmsb"))))
+    (properties `((upstream-name . "R.oo")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-r-methodss3" ,r-r-methodss3)))
+    (home-page "https://github.com/HenrikBengtsson/R.oo")
+    (synopsis "R object-oriented programming with or without references")
+    (description
+     "This package provides methods and classes for object-oriented
+programming in R with or without references.  Large effort has been made on
+making definition of methods as simple as possible with a minimum of
+maintenance for package developers.")
+    (license license:lgpl2.1+)))
+
