@@ -3836,6 +3836,36 @@ dependencies between GO terms can be implemented and applied.")
     ;; Any version of the LGPL applies.
     (license license:lgpl2.1+)))
 
+(define-public r-bsgenome
+  (package
+    (name "r-bsgenome")
+    (version "1.38.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "BSgenome" version))
+              (sha256
+               (base32
+                "130w0m6q8kkca7gyz1aqj5jjhalwvwi6rk2yvbjrnj4gpnncyrd2"))))
+    (properties
+     `((upstream-name . "BSgenome")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xvector" ,r-xvector)))
+    (home-page "http://bioconductor.org/packages/BSgenome")
+    (synopsis "Infrastructure for Biostrings-based genome data packages")
+    (description
+     "This package provides infrastructure shared by all Biostrings-based
+genome data packages and support for efficient SNP representation.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
