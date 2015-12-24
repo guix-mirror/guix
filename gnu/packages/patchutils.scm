@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -151,12 +152,13 @@ refreshed, and more.")
     (name "colordiff")
     (version "1.0.13")
     (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "http://www.colordiff.org/colordiff-"
-                          version ".tar.gz"))
+      (origin
+        (method url-fetch)
+        (uri (list (string-append "http://www.colordiff.org/archive/colordiff-"
+                                  version ".tar.gz")))
       (sha256
-       (base32 "0akcz1p3klsjnhwcqdfq4grs6paljc5c0jzr3mqla5f862hhaa6f"))))
+       (base32
+        "0akcz1p3klsjnhwcqdfq4grs6paljc5c0jzr3mqla5f862hhaa6f"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
