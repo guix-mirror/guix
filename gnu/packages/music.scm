@@ -268,27 +268,34 @@ you to define complex tempo maps for entire songs or performances.")
     (arguments
      `(#:tests? #f ; out-test/collated-files.html fails
        #:out-of-source? #t
+       #:make-flags '("conf=www") ;to generate images for info manuals
        #:configure-flags
-       (list (string-append "--with-texgyre-dir="
+       (list "CONFIGURATION=www"
+             (string-append "--with-texgyre-dir="
                             (assoc-ref %build-inputs "font-tex-gyre")
                             "/share/fonts/opentype/"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'hardcode-path-to-gs
-          (lambda* (#:key inputs #:allow-other-keys)
+         (add-after 'unpack 'fix-path-references
+          (lambda _
             (substitute* "scm/backend-library.scm"
               (("\\(search-executable '\\(\"gs\"\\)\\)")
-               (string-append "\""
-                              (assoc-ref inputs "ghostscript")
-                              "/bin/gs"
-                              "\"" )))
+               (string-append "\"" (which "gs") "\""))
+              (("\"/bin/sh\"")
+               (string-append "\"" (which "sh") "\"")))
             #t))
          (add-before 'configure 'prepare-configuration
           (lambda _
             (substitute* "configure"
               (("SHELL=/bin/sh") "SHELL=sh"))
-            (setenv "out" "")
-            #t)))))
+            (setenv "out" "www")
+            (setenv "conf" "www")
+            #t))
+         (add-after 'install 'install-info
+           (lambda _
+             (zero? (system* "make"
+                             "-j" (number->string (parallel-job-count))
+                             "conf=www" "install-info")))))))
     (inputs
      `(("guile" ,guile-1.8)
        ("font-dejavu" ,font-dejavu)
