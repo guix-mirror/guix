@@ -254,7 +254,7 @@ you to define complex tempo maps for entire songs or performances.")
 (define-public lilypond
   (package
     (name "lilypond")
-    (version "2.19.27")
+    (version "2.19.33")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -263,7 +263,7 @@ you to define complex tempo maps for entire songs or performances.")
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "11v4jr4qj1jpqvjw1ww7riv8pxfyasif8mf16l447f1xq1ifhkhs"))))
+                "0s4vbbfy4xwq4da4kmlnndalmcyx2jaz7y8praah2146qbnr90xh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; out-test/collated-files.html fails
