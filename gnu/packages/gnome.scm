@@ -3345,7 +3345,7 @@ DAV, and others.")
                     (lambda _
                       (and (zero? (system* "gtkdocize"))
                            (zero? (system* "autoreconf" "-vif"))))))))
-    (home-page "https://github/hughsie/libgusb")
+    (home-page "https://github.com/hughsie/libgusb")
     (synopsis "GLib binding for libusb1")
     (description
      "GUsb is a GObject wrapper for libusb1 that makes it easy to do
