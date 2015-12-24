@@ -654,7 +654,8 @@ threads.")
                                       lib-relative-path
                                       (string-append out lib-relative-path
                                                      "/scmutils"))))
-                          (emacs-byte-compile-directory (dirname el-file))
+                          (emacs-generate-autoloads ,name emacs-lisp-dir)
+                          (emacs-byte-compile-directory emacs-lisp-dir)
                           #t))))))
       (home-page
        "http://groups.csail.mit.edu/mac/users/gjs/6946/linux-install.htm")
