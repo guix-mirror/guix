@@ -151,7 +151,7 @@ GENERATIONS is a list of generation numbers."
   "Delete from PROFILE all the generations matching PATTERN.  PATTERN must be
 a string denoting a set of generations: the empty list means \"all generations
 but the current one\", a number designates a generation, and other patterns
-denote ranges as interpreted by 'matching-derivations'."
+denote ranges as interpreted by 'matching-generations'."
   (let ((current (generation-number profile)))
     (cond ((not (file-exists? profile))            ; XXX: race condition
            (raise (condition (&profile-not-found-error
