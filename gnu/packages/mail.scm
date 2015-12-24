@@ -597,7 +597,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.85")
+    (version "4.86")
     (source
      (origin
        (method url-fetch)
@@ -606,7 +606,8 @@ delivery.")
                   (string-append "ftp://ftp.exim.org/pub/exim/exim4/old/exim-"
                                  version ".tar.bz2")))
        (sha256
-        (base32 "195a3ll5ck9viazf9pvgcyc0sziln5g0ggmlm6ax002lphmiy88k"))))
+        (base32
+         "0mn4bxih9slrmll5262ayhf41ji43pjf1rv0y6xpy6x55v7g5k7i"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
