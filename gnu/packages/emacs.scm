@@ -1228,3 +1228,30 @@ for quotation marks, dashes, and ellipses.  For example, typing @kbd{\"}
 automatically inserts a Unicode opening or closing quotation mark, depending
 on context.")
     (license license:gpl3+)))
+
+(define-public emacs-scheme-complete
+  (let ((commit "9b5cf224bf2a5994bc6d5b152ff487517f1a9bb5"))
+    (package
+      (name "emacs-scheme-complete")
+      (version (string-append "20151223." (string-take commit 8)))
+      (source
+       (origin
+         (file-name (string-append name "-" version))
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/ashinn/scheme-complete.git")
+               (commit commit)))
+         (sha256
+          (base32
+           "141wn9l0m33w0g3dqmx8nxbfdny1r5xbr6ak61rsz21bk0qafs7x"))
+         (patches
+          (list (search-patch "emacs-scheme-complete-scheme-r5rs-info.patch")))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/ashinn/scheme-complete")
+      (synopsis "Smart tab completion for Scheme in Emacs")
+      (description
+       "This file provides a single function, @code{scheme-smart-complete},
+which you can use for intelligent, context-sensitive completion for any Scheme
+implementation in Emacs.  To use it just load this file and bind that function
+to a key in your preferred mode.")
+      (license license:public-domain))))
