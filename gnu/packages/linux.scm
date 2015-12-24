@@ -1568,7 +1568,7 @@ from the module-init-tools project.")
        ("gperf" ,gperf)))
     (inputs
      `(("kmod" ,kmod)))
-    (home-page "http://www.gentoo.org/proj/en/eudev/")
+    (home-page "https://wiki.gentoo.org/wiki/Project:Eudev")
     (synopsis "Userspace device management")
     (description "Udev is a daemon which dynamically creates and removes
 device nodes from /dev/, handles hotplug events and loads drivers at boot
