@@ -601,8 +601,10 @@ delivery.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "ftp://ftp.exim.org/pub/exim/exim4/exim-" version ".tar.bz2"))
+       (uri (list (string-append "ftp://ftp.exim.org/pub/exim/exim4/exim-"
+                                 version ".tar.bz2")
+                  (string-append "ftp://ftp.exim.org/pub/exim/exim4/old/exim-"
+                                 version ".tar.bz2")))
        (sha256
         (base32 "195a3ll5ck9viazf9pvgcyc0sziln5g0ggmlm6ax002lphmiy88k"))))
     (build-system gnu-build-system)
