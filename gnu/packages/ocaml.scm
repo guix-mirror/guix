@@ -285,7 +285,7 @@ concrete syntax of the language (Quotations, Syntax Extensions).")
     (version "2.23")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://hevea.inria.fr/distri/"
+              (uri (string-append "http://hevea.inria.fr/old/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
