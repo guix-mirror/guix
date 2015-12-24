@@ -37,8 +37,7 @@
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://lynx.isc.org/lynx"
-                    (substring version 0 (string-index version char-set:letter))
+                    "http://invisible-mirror.net/archives/lynx/tarballs"
                     "/lynx" version ".tar.bz2"))
               (sha256
                (base32 "1rxysl08acqll5b87368f04kckl8sggy1qhnq59gsxyny1ffg039"))))
