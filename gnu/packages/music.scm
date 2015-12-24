@@ -645,6 +645,38 @@ modification devices that brought world-wide fame to the names and products of
 Laurens Hammond and Don Leslie.")
     (license license:gpl2+)))
 
+(define-public bristol
+  (package
+    (name "bristol")
+    (version "0.60.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/bristol/bristol/"
+                                  (version-major+minor version)
+                                  "/bristol-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1fi2m4gmvxdi260821y09lxsimq82yv4k5bbgk3kyc3x1nyhn7vx"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("liblo" ,liblo)
+       ("libx11" ,libx11)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://bristol.sourceforge.net/")
+    (synopsis "Synthesizer emulator")
+    (description
+     "Bristol is an emulation package for a number of different 'classic'
+synthesizers including additive and subtractive and a few organs.  The
+application consists of the engine, which is called bristol, and its own GUI
+library called brighton that represents all the emulations.  There are
+currently more than twenty different emulations; each does sound different
+although the author maintains that the quality and accuracy of each emulation
+is subjective.")
+    (license license:gpl3+)))
+
 (define-public tuxguitar
   (package
     (name "tuxguitar")
