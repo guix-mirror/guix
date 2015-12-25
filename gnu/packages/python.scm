@@ -2046,16 +2046,13 @@ tests written in a natural language style, backed up by Python code.")
 (define-public python-exif-read
   (package
     (name "python-exif-read")
-    (version "1.4.2")
+    (version "2.1.2")
     (source (origin
               (method url-fetch)
-              (uri
-               (string-append
-                "https://pypi.python.org/packages/source/E/ExifRead/ExifRead-"
-                version ".tar.gz"))
+              (uri (pypi-uri "ExifRead" version))
               (sha256
                (base32
-                "17c627gcdmyc05hz4zk8qs4pjgw6rc68qzjzgz8gh1cmpsd7acf1"))))
+                "1b90jf6m9vxh9nanhpyvqdq7hmfx5iggw1l8kq10jrs6xgr49qkr"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
