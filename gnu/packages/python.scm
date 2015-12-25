@@ -1564,16 +1564,14 @@ standard library.")
 (define-public python-py
   (package
     (name "python-py")
-    (version "1.4.23")
+    (version "1.4.31")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/py/py-"
-             version ".tar.gz"))
+       (uri (pypi-uri "py" version))
        (sha256
         (base32
-         "1jkhffpai419v5rickm2vz86p9bkg3b3kcm2k4bi5wfajhw2m3xs"))))
+         "0561gz2w3i825gyl42mcq14y3dcgkapfiv5zv9a2bz15qxiijl56"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
