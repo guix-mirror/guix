@@ -2540,16 +2540,14 @@ reStructuredText.")
 (define-public python-pygments
   (package
     (name "python-pygments")
-    (version "1.6")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/P/Pygments/Pygments-"
-             version ".tar.gz"))
+       (uri (pypi-uri "Pygments" version))
        (sha256
         (base32
-         "1h11r6ss8waih51vcksfvzghfxiav2f8svc0812fa5kmyz5d97kr"))))
+         "0lagrwifsgn0s8bzqahpr87p7gd38xja8f06akscinp6hj89283k"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
