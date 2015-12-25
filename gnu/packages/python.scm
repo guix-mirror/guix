@@ -3889,15 +3889,13 @@ PNG, PostScript, PDF, and SVG file output.")
 (define-public python-decorator
   (package
     (name "python-decorator")
-    (version "3.4.2")
+    (version "4.0.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/d/decorator/decorator-"
-             version ".tar.gz"))
+       (uri (pypi-uri "decorator" version))
        (sha256
-        (base32 "0i2bnlkh0p9gs76hb28mafandcrig2fmv56w9ai6mshxwqn0083k"))))
+        (base32 "1710cwsbwr8fkiq59w2min7rwgdz7ly51yz8l8yh1zbpfxcm8qhw"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; no test target
     (native-inputs
