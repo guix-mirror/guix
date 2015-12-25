@@ -3753,14 +3753,13 @@ a front-end for C compilers or analysis tools.")
 (define-public python-cffi
   (package
     (name "python-cffi")
-    (version "1.2.1")
+    (version "1.4.2")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/c/"
-                          "cffi/cffi-" version ".tar.gz"))
+      (uri (pypi-uri "cffi" version))
       (sha256
-       (base32 "0g8yfzinry1vsj6d1jlnd19338bh92lhhk207ksy4lm1n3g73dga"))))
+       (base32 "161rj52rzi3880lij17d6i9kvgkiwjilrqjs8405k8sf6ryif7cg"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs
