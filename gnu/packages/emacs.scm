@@ -55,6 +55,7 @@
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
+  #:use-module (gnu packages scheme)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages mp3)
   #:use-module (guix utils)
@@ -1255,3 +1256,44 @@ which you can use for intelligent, context-sensitive completion for any Scheme
 implementation in Emacs.  To use it just load this file and bind that function
 to a key in your preferred mode.")
       (license license:public-domain))))
+
+(define-public emacs-mit-scheme-doc
+  (package
+    (name "emacs-mit-scheme-doc")
+    (version "20140203")
+    (source
+     (origin
+       (modules '((guix build utils)))
+       (snippet
+        ;; keep only file of interest
+        '(begin
+           (for-each delete-file '("dot-emacs.el" "Makefile"))
+           (copy-file "6.945-config/mit-scheme-doc.el" "mit-scheme-doc.el")
+           (delete-file-recursively "6.945-config")))
+       (file-name (string-append name "-" version ".tar.bz2"))
+       (method url-fetch)
+       (uri (string-append "http://groups.csail.mit.edu/mac/users/gjs/"
+                           "6.945/dont-panic/emacs-basic-config.tar.bz2"))
+       (sha256
+        (base32
+         "0dqidg2bd66pawqfarvwca93w5gqf9mikn1k2a2rmd9ymfjpziq1"))))
+    (build-system emacs-build-system)
+    (inputs `(("mit-scheme" ,mit-scheme)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'configure-doc
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((mit-scheme-dir (assoc-ref inputs "mit-scheme"))
+                    (doc-dir (string-append mit-scheme-dir "/share/doc/"
+                                            "mit-scheme-"
+                                            ,(package-version mit-scheme))))
+               (substitute* "mit-scheme-doc.el"
+                 (("http://www\\.gnu\\.org/software/mit-scheme/documentation/mit-scheme-ref/")
+                  (string-append "file:" doc-dir "/mit-scheme-ref/")))))))))
+    (home-page "http://groups.csail.mit.edu/mac/users/gjs/6.945/dont-panic/")
+    (synopsis "MIT-Scheme documentation lookup for Emacs")
+    (description
+     "This package provides a set of Emacs functions to search definitions of
+identifiers in the MIT-Scheme documentation.")
+    (license license:gpl2+)))
