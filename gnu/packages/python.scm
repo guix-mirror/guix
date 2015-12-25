@@ -1963,16 +1963,14 @@ have failed since the last commit or what tests are currently failing.")
 (define-public python-coverage
   (package
     (name "python-coverage")
-    (version "3.7.1")
+    (version "4.0.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/c/coverage/coverage-"
-             version ".tar.gz"))
+       (uri (pypi-uri "coverage" version))
        (sha256
         (base32
-         "0knlbq79g2ww6xzsyknj9rirrgrgc983dpa2d9nkdf31mb2a3bni"))))
+         "0qjlja8ny4gcfp8abqfwdrvr8qw9kr69lkja0b4cqqbsdmdjgcc5"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
