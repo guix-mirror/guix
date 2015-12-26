@@ -411,8 +411,13 @@ things less distracting.")
     (version "5.45")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://www.tux.org/~bagleyd/xlock/xlockmore-"
-                                 version "/xlockmore-" version ".tar.bz2"))
+             (uri (list (string-append
+                          "http://www.tux.org/~bagleyd/xlock/xlockmore-"
+                          version ".tar.xz")
+                        (string-append
+                          "http://www.tux.org/~bagleyd/xlock/xlockmore-old"
+                          "/xlockmore-" version
+                          "/xlockmore-" version ".tar.bz2")))
              (sha256
               (base32
                "1xqm61bbfn5q056w57vp16gvai8nqpcw570ysxlm5h46nh6ai0bz"))))
