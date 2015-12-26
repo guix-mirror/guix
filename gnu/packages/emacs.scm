@@ -26,6 +26,9 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
+  #:use-module (guix store)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system emacs)
   #:use-module (guix build-system glib-or-gtk)
@@ -1296,4 +1299,42 @@ to a key in your preferred mode.")
     (description
      "This package provides a set of Emacs functions to search definitions of
 identifiers in the MIT-Scheme documentation.")
+    (license license:gpl2+)))
+
+;;; XXX: move this procedure to an utility module
+(define* (uncompressed-file-fetch url hash-algo hash
+                                  #:optional name
+                                  #:key (system (%current-system))
+                                  (guile (default-guile)))
+  (mlet %store-monad ((drv (url-fetch url hash-algo hash name
+                                      #:system system
+                                      #:guile guile)))
+    (gexp->derivation (or name (basename url))
+                      #~(begin
+                          (mkdir #$output)
+                          (setenv "PATH"
+                                  (string-append #$gzip "/bin"))
+                          (chdir #$output)
+                          (copy-file #$drv (basename #$url))))))
+
+(define-public emacs-constants
+  (package
+    (name "emacs-constants")
+    (version "2.2")
+    (source
+     (origin
+       (file-name (string-append name "-" version ".el"))
+       (method uncompressed-file-fetch)
+       (uri "https://staff.fnwi.uva.nl/c.dominik/Tools/constants/constants.el")
+       (patches
+        (list (search-patch "emacs-constants-lisp-like.patch")))
+       (sha256
+        (base32
+         "14q094aphsjhq8gklv7i5a7byl0ygz63cv3n6b5p8ji2jy0mnnw3"))))
+    (build-system emacs-build-system)
+    (home-page "https://staff.fnwi.uva.nl/c.dominik/Tools/constants")
+    (synopsis "Enter definition of constants into an Emacs buffer")
+    (description
+     "This package provides functions for inserting the definition of natural
+constants and units into an Emacs buffer.")
     (license license:gpl2+)))
