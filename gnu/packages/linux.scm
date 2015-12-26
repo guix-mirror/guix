@@ -1242,15 +1242,18 @@ processes currently causing I/O.")
 (define-public fuse
   (package
     (name "fuse")
-    (version "2.9.3")
+    (version "2.9.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/fuse/fuse-"
-                                  version ".tar.gz"))
+              (uri (let ((version-with-underscores
+                          (string-join (string-split version #\.) "_")))
+                     (string-append
+                       "https://github.com/libfuse/libfuse/"
+                       "releases/download/" version-with-underscores
+                       "/fuse-" version ".tar.gz")))
               (sha256
                (base32
-                "071r6xjgssy8vwdn6m28qq1bqxsd2bphcd2mzhq0grf5ybm87sqb"))
-              (patches (list (search-patch "fuse-CVE-2015-3202.patch")))))
+                "1qbwp63a2bp0bchabkwiyzszi9x5krlk2pwk2is6g35gyszw1sbb"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (arguments
