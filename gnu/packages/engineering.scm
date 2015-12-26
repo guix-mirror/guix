@@ -376,6 +376,57 @@ multipole-accelerated algorithm.")
 multipole-accelerated algorithm.")
     (license (license:non-copyleft #f "See induct.c."))))
 
+(define-public fritzing
+  (package
+    (name "fritzing")
+    (version "0.9.2b")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/fritzing/"
+                                  "fritzing-app/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0pvk57z2pxz89pcwwm61lkpvj4w9qxqz8mi0zkpj6pnaljabp7bf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (and (zero? (system* "tar"
+                                  "-xvf" (assoc-ref inputs "fritzing-parts-db")
+                                  "-C" "parts"))
+                  (zero? (system* "qmake"
+                                  (string-append "PREFIX="
+                                                 (assoc-ref outputs "out"))
+                                  "phoenix.pro"))))))))
+    (inputs
+     `(("qt" ,qt)
+       ("boost" ,boost)
+       ("zlib" ,zlib)
+       ("fritzing-parts-db"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://github.com/fritzing/"
+                               "fritzing-parts/archive/" version ".tar.gz"))
+           (file-name (string-append "fritzing-parts-" version ".tar.gz"))
+           (sha256
+            (base32
+             "0jqr8yjg7177f3pk1fcns584r0qavwpr280nggsi2ff3pwk5wpsz"))))))
+    (home-page "http://fritzing.org")
+    (synopsis "Electronic circuit design")
+    (description
+     "The Fritzing application is @dfn{Electronic Design Automation} (EDA)
+software with a low entry barrier, suited for the needs of makers and
+hobbyists.  It offers a unique real-life \"breadboard\" view, and a parts
+library with many commonly used high-level components.  Fritzing makes it very
+easy to communicate about circuits, as well as to turn them into PCB layouts
+ready for production.")
+    ;; Documentation and parts are released under CC-BY-SA 3.0; source code is
+    ;; released under GPLv3+.
+    (license (list license:gpl3+ license:cc-by-sa3.0))))
+
 (define-public gerbv
   (package
     (name "gerbv")
