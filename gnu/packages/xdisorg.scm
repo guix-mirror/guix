@@ -408,7 +408,7 @@ things less distracting.")
 (define-public xlockmore
   (package
     (name "xlockmore")
-    (version "5.45")
+    (version "5.46")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -420,7 +420,7 @@ things less distracting.")
                           "/xlockmore-" version ".tar.bz2")))
              (sha256
               (base32
-               "1xqm61bbfn5q056w57vp16gvai8nqpcw570ysxlm5h46nh6ai0bz"))))
+               "1ps0dmnh912x8mwns94y2607xk90rjxrjn5s1pkmmpjg5h9bxcrj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--enable-appdefaultdir="
