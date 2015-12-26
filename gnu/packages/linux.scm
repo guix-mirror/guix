@@ -1374,8 +1374,11 @@ UnionFS-FUSE additionally supports copy-on-write.")
     (version "2.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/fuse/sshfs-fuse-"
-                                  version ".tar.gz"))
+              (uri (let ((version-with-underscores
+                          (string-join (string-split version #\.) "_")))
+                     (string-append "https://github.com/libfuse/sshfs/releases/"
+                                    "download/sshfs_" version-with-underscores
+                                    "/sshfs-fuse-" version ".tar.gz")))
               (sha256
                (base32
                 "0gp6qr33l2p0964j0kds0dfmvyyf5lpgsn11daf0n5fhwm9185z9"))))
