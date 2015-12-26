@@ -30,6 +30,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix cvs-download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system cmake)
@@ -435,11 +436,12 @@ used to validate and fix HTML data.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.samba.org/~obnox/" name "/download/"
-                    name "-" version ".tar.bz2"))
+                    "https://download.banu.com/tinyproxy/"
+                    (version-major+minor version)
+                    "/tinyproxy-" version ".tar.gz"))
               (sha256
                (base32
-                "0vl9igw7vm924rs6d6bkib7zfclxnlf9s8rmml1sfwj7xda9nmdy"))))
+                "05y0y2q9j10x72y1fipya6bmc8hjcdf3kfw7dh8ahczpy341c938"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
