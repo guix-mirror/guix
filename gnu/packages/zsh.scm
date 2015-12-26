@@ -32,8 +32,12 @@
     (version "5.1.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.zsh.org/pub/zsh-" version
-                                  ".tar.gz"))
+              (uri (list (string-append
+                           "http://www.zsh.org/pub/zsh-" version
+                           ".tar.gz")
+                         (string-append
+                           "http://www.zsh.org/pub/old/zsh-" version
+                           ".tar.gz")))
               (sha256
                (base32
                 "11shllzhq53fg8ngy3bgbmpf09fn2czifg7hsb41nxi3410mpvcl"))))
