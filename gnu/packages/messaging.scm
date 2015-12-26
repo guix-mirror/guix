@@ -368,7 +368,7 @@ compromised.")
     (version "1.6.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://znc.in/releases/znc-"
+              (uri (string-append "http://znc.in/releases/archive/znc-"
                                   version ".tar.gz"))
               (sha256
                (base32
