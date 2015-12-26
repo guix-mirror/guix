@@ -290,7 +290,7 @@ System style license, and has no special dependencies.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://tomas.styblo.name/wmctrl/dist/wmctrl-"
+                    "https://sites.google.com/site/tstyblo/wmctrl/wmctrl-"
                     version ".tar.gz"))
               (sha256
                (base32
