@@ -1355,6 +1355,87 @@ supports next-generation sequencing data in fasta/q and csfasta/q format from
 Illumina, Roche 454, and the SOLiD platform.")
     (license license:gpl3)))
 
+(define-public fraggenescan
+  (package
+    (name "fraggenescan")
+    (version "1.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/fraggenescan/"
+                       "FragGeneScan" version ".tar.gz"))
+       (sha256
+        (base32 "1zzigqmvqvjyqv4945kv6nc5ah2xxm1nxgrlsnbzav3f5c0n0pyj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'patch-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (string-append (assoc-ref outputs "out")))
+                    (share (string-append out "/share/fraggenescan/")))
+               (substitute* "run_FragGeneScan.pl"
+                 (("system\\(\"rm")
+                  (string-append "system(\"" (which "rm")))
+                 (("system\\(\"mv")
+                  (string-append "system(\"" (which "mv")))
+                 ;; This script and other programs expect the training files
+                 ;; to be in the non-standard location bin/train/XXX. Change
+                 ;; this to be share/fraggenescan/train/XXX instead.
+                 (("^\\$train.file = \\$dir.*")
+                  (string-append "$train_file = \""
+                                 share
+                                 "train/\".$FGS_train_file;")))
+               (substitute* "run_hmm.c"
+                 (("^  strcat\\(train_dir, \\\"train/\\\"\\);")
+                  (string-append "  strcpy(train_dir, \"" share "/train/\");")))
+               (substitute* "post_process.pl"
+                 (("^my \\$dir = substr.*")
+                  (string-append "my $dir = \"" share "\";"))))
+             #t))
+         (replace 'build
+           (lambda _ (and (zero? (system* "make" "clean"))
+                          (zero? (system* "make" "fgs")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (string-append (assoc-ref outputs "out")))
+                    (bin (string-append out "/bin/"))
+                    (share (string-append out "/share/fraggenescan/train")))
+               (install-file "run_FragGeneScan.pl" bin)
+               (install-file "FragGeneScan" bin)
+               (install-file "FGS_gff.py" bin)
+               (install-file "post_process.pl" bin)
+               (copy-recursively "train" share))))
+         (delete 'check)
+         (add-after 'install 'post-install-check
+           ;; In lieu of 'make check', run one of the examples and check the
+           ;; output files gets created.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (string-append (assoc-ref outputs "out")))
+                    (bin (string-append out "/bin/")))
+               (and (zero? (system* (string-append bin "run_FragGeneScan.pl")
+                             "-genome=./example/NC_000913.fna"
+                             "-out=./test2"
+                             "-complete=1"
+                             "-train=complete"))
+                    (file-exists? "test2.faa")
+                    (file-exists? "test2.ffn")
+                    (file-exists? "test2.gff")
+                    (file-exists? "test2.out"))))))))
+    (inputs
+     `(("perl" ,perl)
+       ("python" ,python-2))) ;not compatible with python 3.
+    (home-page "https://sourceforge.net/projects/fraggenescan/")
+    (synopsis "Finds potentially fragmented genes in short reads")
+    (description
+     "FragGeneScan is a program for predicting bacterial and archaeal genes in
+short and error-prone DNA sequencing reads.  It can also be applied to predict
+genes in incomplete assemblies or complete genomes.")
+    ;; GPL3+ according to private correspondense with the authors.
+    (license license:gpl3+)))
+
 (define-public grit
   (package
     (name "grit")
