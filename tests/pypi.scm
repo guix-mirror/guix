@@ -21,7 +21,7 @@
   #:use-module (guix base32)
   #:use-module (guix hash)
   #:use-module (guix tests)
-  #:use-module ((guix build utils) #:select (delete-file-recursively))
+  #:use-module ((guix build utils) #:select (delete-file-recursively which))
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
@@ -42,6 +42,9 @@
       }, {
         \"url\": \"https://example.com/foo-1.0.0.tar.gz\",
         \"packagetype\": \"sdist\",
+      }, {
+        \"url\": \"https://example.com/foo-1.0.0-py2.py3-none-any.whl\",
+        \"packagetype\": \"bdist_wheel\",
       }
     ]
   }
@@ -55,6 +58,18 @@
  # A comment after a space
 bar
 baz > 13.37")
+
+(define test-metadata
+  "{
+  \"run_requires\": [
+    {
+      \"requires\": [
+        \"bar\",
+        \"baz (>13.37)\"
+      ]
+    }
+  ]
+}")
 
 (test-begin "pypi")
 
@@ -77,6 +92,67 @@ baz > 13.37")
                  (delete-file-recursively "foo-1.0.0")
                  (set! test-source-hash
                        (call-with-input-file file-name port-sha256))))
+             ("https://example.com/foo-1.0.0-py2.py3-none-any.whl" #f)
+             (_ (error "Unexpected URL: " url)))))
+    (match (pypi->guix-package "foo")
+      (('package
+         ('name "python-foo")
+         ('version "1.0.0")
+         ('source ('origin
+                    ('method 'url-fetch)
+                    ('uri (string-append "https://example.com/foo-"
+                                         version ".tar.gz"))
+                    ('sha256
+                     ('base32
+                      (? string? hash)))))
+         ('build-system 'python-build-system)
+         ('inputs
+          ('quasiquote
+           (("python-bar" ('unquote 'python-bar))
+            ("python-baz" ('unquote 'python-baz))
+            ("python-setuptools" ('unquote 'python-setuptools)))))
+         ('home-page "http://example.com")
+         ('synopsis "summary")
+         ('description "summary")
+         ('license 'lgpl2.0))
+       (string=? (bytevector->nix-base32-string
+                  test-source-hash)
+                 hash))
+      (x
+       (pk 'fail x #f)))))
+
+(test-skip (if (which "zip") 0 1))
+(test-assert "pypi->guix-package, wheels"
+  ;; Replace network resources with sample data.
+  (mock ((guix import utils) url-fetch
+         (lambda (url file-name)
+           (match url
+             ("https://pypi.python.org/pypi/foo/json"
+              (with-output-to-file file-name
+                (lambda ()
+                  (display test-json))))
+             ("https://example.com/foo-1.0.0.tar.gz"
+               (begin
+                 (mkdir "foo-1.0.0")
+                 (with-output-to-file "foo-1.0.0/requirements.txt"
+                   (lambda ()
+                     (display test-requirements)))
+                 (system* "tar" "czvf" file-name "foo-1.0.0/")
+                 (delete-file-recursively "foo-1.0.0")
+                 (set! test-source-hash
+                       (call-with-input-file file-name port-sha256))))
+             ("https://example.com/foo-1.0.0-py2.py3-none-any.whl"
+               (begin
+                 (mkdir "foo-1.0.0.dist-info")
+                 (with-output-to-file "foo-1.0.0.dist-info/metadata.json"
+                   (lambda ()
+                     (display test-metadata)))
+                 (let ((zip-file (string-append file-name ".zip")))
+                   ;; zip always adds a "zip" extension to the file it creates,
+                   ;; so we need to rename it.
+                   (system* "zip" zip-file "foo-1.0.0.dist-info/metadata.json")
+                   (rename-file zip-file file-name))
+                 (delete-file-recursively "foo-1.0.0.dist-info")))
              (_ (error "Unexpected URL: " url)))))
     (match (pypi->guix-package "foo")
       (('package

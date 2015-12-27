@@ -4545,7 +4545,9 @@ Import metadata from the @uref{https://pypi.python.org/, Python Package
 Index}@footnote{This functionality requires Guile-JSON to be installed.
 @xref{Requirements}.}.  Information is taken from the JSON-formatted
 description available at @code{pypi.python.org} and usually includes all
-the relevant information, including package dependencies.
+the relevant information, including package dependencies.  For maximum
+efficiency, it is recommended to install the @command{unzip} utility, so
+that the importer can unzip Python wheels and gather data from them.
 
 The command below imports metadata for the @code{itsdangerous} Python
 package:

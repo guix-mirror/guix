@@ -71,6 +71,16 @@ or #f on failure."
         (raise (condition (&missing-source-error
                            (package pypi-package)))))))
 
+(define (latest-wheel-release pypi-package)
+  "Return the url of the wheel for the latest release of pypi-package,
+or #f if there isn't any."
+  (let ((releases (assoc-ref* pypi-package "releases"
+                              (assoc-ref* pypi-package "info" "version"))))
+    (or (find (lambda (release)
+                (string=? "bdist_wheel" (assoc-ref release "packagetype")))
+              releases)
+        #f)))
+
 (define (python->package-name name)
   "Given the NAME of a package on PyPI, return a Guix-compliant name for the
 package."
@@ -88,6 +98,11 @@ package on PyPI."
     ;; '/' + package name + '/' + ...
     (substring source-url 42 (string-rindex source-url #\/))))
 
+(define (wheel-url->extracted-directory wheel-url)
+  (match (string-split (basename wheel-url) #\-)
+    ((name version _ ...)
+     (string-append name "-" version ".dist-info"))))
+
 (define (maybe-inputs package-inputs)
   "Given a list of PACKAGE-INPUTS, tries to generate the 'inputs' field of a
 package definition."
@@ -97,10 +112,10 @@ package definition."
     ((package-inputs ...)
      `((inputs (,'quasiquote ,package-inputs))))))
 
-(define (guess-requirements source-url tarball)
-  "Given SOURCE-URL and a TARBALL of the package, return a list of the required
-packages specified in the requirements.txt file. TARBALL will be extracted in
-the current directory, and will be deleted."
+(define (guess-requirements source-url wheel-url tarball)
+  "Given SOURCE-URL, WHEEL-URL and a TARBALL of the package, return a list of
+the required packages specified in the requirements.txt file. TARBALL will be
+extracted in the current directory, and will be deleted."
 
   (define (tarball-directory url)
     ;; Given the URL of the package's tarball, return the name of the directory
@@ -147,26 +162,69 @@ cannot determine package dependencies"))
                   (loop (cons (python->package-name (clean-requirement line))
                               result))))))))))
 
-  (let ((dirname (tarball-directory source-url)))
-    (if (string? dirname)
-        (let* ((req-file (string-append dirname "/requirements.txt"))
-               (exit-code (system* "tar" "xf" tarball req-file)))
-          ;; TODO: support more formats.
-          (if (zero? exit-code)
-              (dynamic-wind
-                (const #t)
-                (lambda ()
-                  (read-requirements req-file))
-                (lambda ()
-                  (delete-file req-file)
-                  (rmdir dirname)))
-              (begin
-                (warning (_ "'tar xf' failed with exit code ~a\n")
-                         exit-code)
-                '())))
-        '())))
+  (define (read-wheel-metadata wheel-archive)
+    ;; Given WHEEL-ARCHIVE, a ZIP Python wheel archive, return the package's
+    ;; requirements.
+    (let* ((dirname (wheel-url->extracted-directory wheel-url))
+           (json-file (string-append dirname "/metadata.json")))
+      (and (zero? (system* "unzip" "-q" wheel-archive json-file))
+           (dynamic-wind
+             (const #t)
+             (lambda ()
+               (call-with-input-file json-file
+                 (lambda (port)
+                   (let* ((metadata (json->scm port))
+                          (run_requires (hash-ref metadata "run_requires"))
+                          (requirements (hash-ref (list-ref run_requires 0)
+                                                  "requires")))
+                     (map (lambda (r)
+                            (python->package-name (clean-requirement r)))
+                          requirements)))))
+             (lambda ()
+               (delete-file json-file)
+               (rmdir dirname))))))
 
-(define (compute-inputs source-url tarball)
+  (define (guess-requirements-from-wheel)
+    ;; Return the package's requirements using the wheel, or #f if an error
+    ;; occurs.
+    (call-with-temporary-output-file
+     (lambda (temp port)
+       (if wheel-url
+         (and (url-fetch wheel-url temp)
+              (read-wheel-metadata temp))
+         #f))))
+
+
+  (define (guess-requirements-from-source)
+    ;; Return the package's requirements by guessing them from the source.
+    (let ((dirname (tarball-directory source-url)))
+      (if (string? dirname)
+          (let* ((req-file (string-append dirname "/requirements.txt"))
+                 (exit-code (system* "tar" "xf" tarball req-file)))
+            ;; TODO: support more formats.
+            (if (zero? exit-code)
+                (dynamic-wind
+                  (const #t)
+                  (lambda ()
+                    (read-requirements req-file))
+                  (lambda ()
+                    (delete-file req-file)
+                    (rmdir dirname)))
+                (begin
+                  (warning (_ "'tar xf' failed with exit code ~a\n")
+                           exit-code)
+                  '())))
+          '())))
+
+  ;; First, try to compute the requirements using the wheel, since that is the
+  ;; most reliable option. If a wheel is not provided for this package, try
+  ;; getting them by reading the "requirements.txt" file from the source. Note
+  ;; that "requirements.txt" is not mandatory, so this is likely to fail.
+  (or (guess-requirements-from-wheel)
+      (guess-requirements-from-source)))
+
+
+(define (compute-inputs source-url wheel-url tarball)
   "Given the SOURCE-URL of an already downloaded TARBALL, return a list of
 name/variable pairs describing the required inputs of this package."
   (sort
@@ -175,13 +233,13 @@ name/variable pairs describing the required inputs of this package."
          (append '("python-setuptools")
                  ;; Argparse has been part of Python since 2.7.
                  (remove (cut string=? "python-argparse" <>)
-                         (guess-requirements source-url tarball))))
+                         (guess-requirements source-url wheel-url tarball))))
     (lambda args
       (match args
         (((a _ ...) (b _ ...))
          (string-ci<? a b))))))
 
-(define (make-pypi-sexp name version source-url home-page synopsis
+(define (make-pypi-sexp name version source-url wheel-url home-page synopsis
                         description license)
   "Return the `package' s-expression for a python package with the given NAME,
 VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
@@ -206,7 +264,7 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
                         (base32
                          ,(guix-hash-url temp)))))
              (build-system python-build-system)
-             ,@(maybe-inputs (compute-inputs source-url temp))
+             ,@(maybe-inputs (compute-inputs source-url wheel-url temp))
              (home-page ,home-page)
              (synopsis ,synopsis)
              (description ,description)
@@ -225,11 +283,12 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
            (let ((name (assoc-ref* package "info" "name"))
                  (version (assoc-ref* package "info" "version"))
                  (release (assoc-ref (latest-source-release package) "url"))
+                 (wheel (assoc-ref (latest-wheel-release package) "url"))
                  (synopsis (assoc-ref* package "info" "summary"))
                  (description (assoc-ref* package "info" "summary"))
                  (home-page (assoc-ref* package "info" "home_page"))
                  (license (string->license (assoc-ref* package "info" "license"))))
-             (make-pypi-sexp name version release home-page synopsis
+             (make-pypi-sexp name version release wheel home-page synopsis
                              description license))))))
 
 (define (pypi-package? package)
