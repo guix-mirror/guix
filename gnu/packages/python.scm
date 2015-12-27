@@ -7198,3 +7198,39 @@ concurrent.futures package from Python 3.2")
 
 (define-public python2-futures
   (package-with-python2 python-futures))
+
+(define-public python-urllib3
+  (package
+    (name "python-urllib3")
+    (version "1.13.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "urllib3" version))
+        (sha256
+         (base32
+          "10rrbr6c6k7j5dvfsyj4b2gsgxg9gggnn708qixf6ll57xqivfkf"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ;; some packages for tests
+       ("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)
+       ("python-tornado" ,python-tornado)))
+    (propagated-inputs
+     `(;; packages for https security
+       ("python-certifi" ,python-certifi)
+       ("python-ndg-httpsclient" ,python-ndg-httpsclient)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pyopenssl" ,python-pyopenssl)))
+    (home-page "http://urllib3.readthedocs.org/")
+    (synopsis "HTTP library with thread-safe connection pooling")
+    (description
+     "Urllib3 supports features left out of urllib and urllib2 libraries.  It
+can reuse the same socket connection for multiple requests, it can POST files,
+supports url redirection and retries, and also gzip and deflate decoding.")
+    (license license:expat)))
+
+(define-public python2-urllib3
+  (package-with-python2 python-urllib3))
