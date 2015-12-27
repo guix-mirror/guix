@@ -2119,25 +2119,29 @@ with sensible defaults out of the box.")
   (package
     (name "python-wheel")
     (version "0.26.0")
-      (source
-        (origin
-          (method url-fetch)
-          (uri (pypi-uri "wheel" version))
-          (sha256
-            (base32
-             "032k1ajijbqnv0z0k88bhf75mdimi18fcmm28mss90610lw3bbga"))))
-  (build-system python-build-system)
-  (native-inputs
-   `(("python-setuptools" ,python-setuptools)
-     ("python-jsonschema" ,python-jsonschema)
-     ("python-pytest-cov" ,python-pytest-cov)))
-  (home-page "https://bitbucket.org/pypa/wheel/")
-  (synopsis "Built-package format for Python")
-  (description
-   "A wheel is a ZIP-format archive with a specially formatted filename and the
-.whl extension.  It is designed to contain all the files for a PEP 376
-compatible install in a way that is very close to the on-disk format.")
-  (license license:expat)))
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "wheel" version))
+        (sha256
+         (base32
+          "032k1ajijbqnv0z0k88bhf75mdimi18fcmm28mss90610lw3bbga"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://bitbucket.org/pypa/wheel/")
+    (synopsis "Format for built Python packages")
+    (description
+     "A wheel is a ZIP-format archive with a specially formatted filename and
+the @code{.whl} extension.  It is designed to contain all the files for a PEP
+376 compatible install in a way that is very close to the on-disk format.  Many
+packages will be properly installed with only the @code{Unpack} step and the
+unpacked archive preserves enough information to @code{Spread} (copy data and
+scripts to their final locations) at any later time.  Wheel files can be
+installed with a newer @code{pip} or with wheel's own command line utility.")
+    (license license:expat)))
 
 (define-public python2-wheel
   (package-with-python2 python-wheel))
