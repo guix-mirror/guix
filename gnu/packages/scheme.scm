@@ -59,38 +59,33 @@
     (arguments
      `(#:tests? #f                                ; no "check" target
        #:phases
-       (alist-replace
-        'unpack
-        (lambda* (#:key inputs #:allow-other-keys)
-          (and (zero? (system* "tar" "xzvf"
-                               (assoc-ref inputs "source")))
-               (chdir ,(mit-scheme-source-directory (%current-system)
-                                                    version))
-               (begin
-                 ;; Delete these dangling symlinks since they break
-                 ;; `patch-shebangs'.
-                 (for-each delete-file
-                           (append '("src/lib/shim-config.scm")
-                                   (find-files "src/lib/lib" "\\.so$")
-                                   (find-files "src/lib" "^liarc-")
-                                   (find-files "src/compiler" "^make\\.")))
-                 (chdir "src")
-                 #t)))
-        (alist-replace
-         'build
-         (lambda* (#:key system outputs #:allow-other-keys)
-           (let ((out (assoc-ref outputs "out")))
-             (if (or (string-prefix? "x86_64" system)
-                     (string-prefix? "i686" system))
-                 (zero? (system* "make" "compile-microcode"))
-                 (zero? (system* "./etc/make-liarc.sh"
-                                 (string-append "--prefix=" out))))))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key inputs #:allow-other-keys)
+             (and (zero? (system* "tar" "xzvf"
+                                  (assoc-ref inputs "source")))
+                  (chdir ,(mit-scheme-source-directory (%current-system)
+                                                       version))
+                  (begin
+                    ;; Delete these dangling symlinks since they break
+                    ;; `patch-shebangs'.
+                    (for-each delete-file
+                              (append '("src/lib/shim-config.scm")
+                                      (find-files "src/lib/lib" "\\.so$")
+                                      (find-files "src/lib" "^liarc-")
+                                      (find-files "src/compiler" "^make\\.")))
+                    (chdir "src")
+                    #t))))
+         (replace 'build
+           (lambda* (#:key system outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (if (or (string-prefix? "x86_64" system)
+                       (string-prefix? "i686" system))
+                   (zero? (system* "make" "compile-microcode"))
+                   (zero? (system* "./etc/make-liarc.sh"
+                                   (string-append "--prefix=" out))))))))))
     (inputs
-     `(;; TODO: Build doc when TeX Live is available.
-       ;; ("automake" ,automake)
-       ;; ("texlive-core" ,texlive-core)
-       ("texinfo" ,texinfo)
+     `(("texinfo" ,texinfo)
        ("m4" ,m4)
        ("libx11" ,libx11)
 
