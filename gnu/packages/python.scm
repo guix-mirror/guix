@@ -1610,18 +1610,18 @@ and many external plugins.")
         (sha256
           (base32
            "1lf9jsmhqk5nc4w3kzwglmdzjvmi7ajvrsnwv826j3bn0wzx8c92"))))
-  (build-system python-build-system)
-  (propagated-inputs
-   `(("python-coverage" ,python-coverage)
-     ("python-pytest" ,python-pytest)))
-  (native-inputs
-   `(("python-setuptools" ,python-setuptools)))
-  (home-page "https://github.com/pytest-dev/pytest-cov")
-  (synopsis "Pytest plugin for measuring coverage")
-  (description
-   "Pytest-cov produces coverage reports.  It supports centralised testing and
-distributed testing in both load and each modes.  It also supports coverage
-of subprocesses.")
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/pytest-dev/pytest-cov")
+    (synopsis "Pytest plugin for measuring coverage")
+    (description
+     "Pytest-cov produces coverage reports.  It supports centralised testing and
+distributed testing in both @code{load} and @code{each} modes.  It also
+supports coverage of subprocesses.")
   (license license:expat)))
 
 (define-public python2-pytest-cov
