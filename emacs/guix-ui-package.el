@@ -221,11 +221,13 @@ ENTRIES is a list of package entries to get info about packages."
             (location format (format guix-package-location))
             (home-url format (format guix-url))
             (license format (format guix-package-info-license))
+            (systems format guix-package-info-insert-systems)
             (inputs format (format guix-package-input))
             (native-inputs format (format guix-package-native-input))
             (propagated-inputs format
                                (format guix-package-propagated-input)))
-  :titles '((home-url . "Home page"))
+  :titles '((home-url . "Home page")
+            (systems . "Supported systems"))
   :required '(id name version installed non-unique))
 
 (guix-info-define-interface installed-output
@@ -362,6 +364,20 @@ formatted with this string, an action button is inserted.")
    (guix-package-entry->name-specification entry)
    'guix-package-name
    'face 'guix-package-info-heading))
+
+(defun guix-package-info-insert-systems (systems entry)
+  "Insert supported package SYSTEMS at point."
+  (guix-info-insert-value-format
+   systems 'guix-hydra-build-system
+   'action (lambda (btn)
+             (let ((args (guix-hydra-build-latest-prompt-args
+                          :job (button-get btn 'job-name)
+                          :system (button-label btn))))
+               (apply #'guix-hydra-build-get-display
+                      'latest args)))
+   'job-name (guix-package-name-specification
+              (guix-entry-value entry 'name)
+              (guix-entry-value entry 'version))))
 
 (defmacro guix-package-info-define-insert-inputs (&optional type)
   "Define a face and a function for inserting package inputs.
@@ -749,6 +765,7 @@ for all ARGS."
             (location format (format guix-package-location))
             (home-url format (format guix-url))
             (license format (format guix-package-info-license))
+            (systems format guix-package-info-insert-systems)
             (inputs format (format guix-package-input))
             (native-inputs format (format guix-package-native-input))
             (propagated-inputs format
