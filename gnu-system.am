@@ -76,7 +76,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/cryptsetup.scm			\
   gnu/packages/cups.scm				\
   gnu/packages/curl.scm				\
-  gnu/packages/cursynth.scm			\
   gnu/packages/cyrus-sasl.scm			\
   gnu/packages/databases.scm			\
   gnu/packages/datamash.scm			\

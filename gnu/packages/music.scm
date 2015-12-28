@@ -1,4 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
@@ -1004,3 +1005,29 @@ synthesizer.  It offers three synthesizer engines, multitimbral and polyphonic
 synths, microtonal capabilities, custom envelopes, effects, etc.  Yoshimi
 improves on support for JACK features, such as JACK MIDI.")
     (license license:gpl2)))
+
+(define-public cursynth
+  (package
+    (name "cursynth")
+    (version "1.5")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/cursynth/cursynth-"
+                          version ".tar.gz"))
+      (sha256
+       (base32 "1dhphsya41rv8z6yqcv9l6fwbslsds4zh1y56zizi39nd996d40v"))
+      (patches (list (search-patch "cursynth-wave-rand.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    ;; TODO: See https://github.com/iyoko/cursynth/issues/4 which currently
+    ;; prevents us from using pulseaudio
+    (inputs `(("ncurses" ,ncurses)
+              ("alsa" ,alsa-lib)))
+    (home-page "http://www.gnu.org/software/cursynth")
+    (synopsis "Polyphonic and MIDI subtractive music synthesizer using curses")
+    (description "GNU cursynth is a polyphonic synthesizer that runs
+graphically in the terminal.  It is built on a full-featured subtractive
+synthesis engine.  Notes and parameter changes may be entered via MIDI or the
+computer's keyboard.")
+    (license license:gpl3+)))
