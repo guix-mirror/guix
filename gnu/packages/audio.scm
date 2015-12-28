@@ -1986,3 +1986,23 @@ files are a way to represent the layout of a data or audio CD in a
 machine-readable ASCII format.")
     (home-page "https://github.com/svend/cuetools")
     (license license:gpl2+)))
+
+(define-public shntool
+  (package
+    (name "shntool")
+    (version "3.0.10")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://etree.org/shnutils/shntool/dist/src/"
+                                 "shntool-" version ".tar.gz"))
+             (sha256
+              (base32
+               "00i1rbjaaws3drkhiczaign3lnbhr161b7rbnjr8z83w8yn2wc3l"))))
+    (build-system gnu-build-system)
+    (synopsis "WAVE audio data processing tool")
+    (description "shntool is a multi-purpose WAVE data processing and reporting
+utility.  File formats are abstracted from its core, so it can process any file
+that contains WAVE data, compressed or not---provided there exists a format
+module to handle that particular file type.")
+    (home-page "http://etree.org/shnutils/shntool/")
+    (license license:gpl3+)))
