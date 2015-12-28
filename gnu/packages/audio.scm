@@ -1953,3 +1953,36 @@ access to ALSA PCM devices, taking care of the many functions required to
 open, initialise and use a hw: device in mmap mode, and providing floating
 point audio data.")
     (license license:gpl3+)))
+
+(define-public cuetools
+  (package
+    (name "cuetools")
+    (version "1.4.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/svend/cuetools/archive/"
+                                 version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "01xi3rvdmil9nawsha04iagjylqr1l9v9vlzk99scs8c207l58i4"))))
+    (build-system gnu-build-system)
+    ;; The source tarball is not bootstrapped.
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (add-after 'unpack 'bootstrap
+            (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+    ;; Bootstrapping tools
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("flex" ,flex)
+       ("bison" ,bison)))
+    (synopsis "Cue and toc file parsers and utilities")
+    (description "Cuetools is a set of programs that are useful for manipulating
+and using CUE sheet (cue) files and Table of Contents (toc) files.  CUE and TOC
+files are a way to represent the layout of a data or audio CD in a
+machine-readable ASCII format.")
+    (home-page "https://github.com/svend/cuetools")
+    (license license:gpl2+)))
