@@ -470,8 +470,8 @@ as the 'native-search-paths' field."
   (custom-gcc gcc-5 "gfortran" '("fortran")
               %generic-search-paths))
 
-(define-public gccgo-4.8
-  (custom-gcc gcc-4.8 "gccgo" '("go")
+(define-public gccgo-4.9
+  (custom-gcc gcc-4.9 "gccgo" '("go")
               %generic-search-paths
               ;; Suppress the separate "lib" output, because otherwise the
               ;; "lib" and "out" outputs would refer to each other, creating
