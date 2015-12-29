@@ -3233,3 +3233,24 @@ specific use case.")
      "RubyRC4 is a pure Ruby implementation of the RC4 algorithm.")
     (home-page "https://github.com/caiges/Ruby-RC4")
     (license license:expat)))
+
+(define-public ruby-afm
+  (package
+    (name "ruby-afm")
+    (version "0.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "afm" version))
+       (sha256
+        (base32
+         "06kj9hgd0z8pj27bxp2diwqh6fv7qhwwm17z64rhdc4sfn76jgn8"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Read Adobe Font Metrics (afm) files")
+    (description
+     "This library provides methods to read @dfn{Adobe Font Metrics} (afm)
+files and use the data therein.")
+    (home-page "http://github.com/halfbyte/afm")
+    (license license:expat)))
