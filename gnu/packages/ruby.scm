@@ -2894,3 +2894,39 @@ programs to concentrate on the implementation of network protocols.  It can be
 used to create both network servers and clients.")
     (home-page "http://rubyeventmachine.com")
     (license (list license:ruby license:gpl3)))) ; GPLv3 only AFAICT
+
+(define-public ruby-ansi
+  (package
+    (name "ruby-ansi")
+    (version "1.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Fetch from GitHub as the gem does not contain testing code.
+       (uri (string-append "https://github.com/rubyworks/ansi/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zdip30hivyipi8hndhb457bhiz033awd00bgrsk5axjrwp6zhly"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Disable testing to break the cycle ansi, ae, ansi, as well as the
+         ;; cycle ansi, qed, ansi.  Instead simply test that the library can
+         ;; be require'd.
+         (replace 'check
+           (lambda _
+             (zero? (system* "ruby" "-Ilib" "-r" "ansi")))))))
+    (synopsis "ANSI escape code related libraries")
+    (description
+     "This package is a collection of ANSI escape code related libraries
+enabling ANSI colorization and stylization of console output.  Included in the
+library are the @code{Code} module, which defines ANSI codes as constants and
+methods, a @code{Mixin} module for including color methods, a @code{Logger}, a
+@code{ProgressBar}, and a @code{String} subclass.  The library also includes a
+@code{Terminal} module which provides information about the current output
+device.")
+    (home-page "http://rubyworks.github.io/ansi")
+    (license license:bsd-2)))
