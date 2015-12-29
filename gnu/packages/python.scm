@@ -6830,3 +6830,23 @@ minimal and fast API targetting the following uses:
 @end enumerate")
     (home-page "http://codespeak.net/execnet/")
     (license license:expat)))
+
+;;; The software provided by this package was integrated into pytest 2.8.
+(define-public python-pytest-cache
+  (package
+    (name "python-pytest-cache")
+    (version "1.0")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "pytest-cache" version))
+             (sha256
+              (base32
+               "1a873fihw4rhshc722j4h6j7g3nj7xpgsna9hhg3zn6ksknnhx5y"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-execnet" ,python-execnet)))
+    (synopsis "Py.test plugin with mechanisms for caching across test runs")
+    (description "The pytest-cache plugin provides tools to rerun failures from
+the last py.test invocation.")
+    (home-page "https://bitbucket.org/hpk42/pytest-cache/")
+    (license license:expat)))
