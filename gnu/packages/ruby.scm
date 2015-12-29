@@ -3148,3 +3148,27 @@ case-to-class and unit-to-method test construction.  This enforcement can help
 focus concern on individual units of behavior.")
     (home-page "http://rubyworks.github.io/lemon")
     (license license:bsd-2)))
+
+(define-public ruby-rubytest-cli
+  (package
+    (name "ruby-rubytest-cli")
+    (version "0.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rubytest-cli" version))
+       (sha256
+        (base32
+         "0n7hv4k1ba4fm3i98c6ydbsqhkxgbp52mhi70ba1x3mqzfvk438p"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f)) ; no tests
+    (propagated-inputs
+     `(("ruby-ansi" ,ruby-ansi)
+       ("ruby-rubytest" ,ruby-rubytest)))
+    (synopsis "Command-line interface for rubytest")
+    (description
+     "Rubytest CLI is a command-line interface for running tests for
+Rubytest-based test frameworks.  It provides the @code{rubytest} executable.")
+    (home-page "http://rubyworks.github.io/rubytest-cli")
+    (license license:bsd-2)))
