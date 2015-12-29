@@ -3254,3 +3254,25 @@ specific use case.")
 files and use the data therein.")
     (home-page "http://github.com/halfbyte/afm")
     (license license:expat)))
+
+(define-public ruby-ascii85
+  (package
+    (name "ruby-ascii85")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "Ascii85" version))
+       (sha256
+        (base32
+         "0j95sbxd18kc8rhcnvl1w37kflqpax1r12h1x47gh4xxn3mz4m7q"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Encode and decode Ascii85 binary-to-text encoding")
+    (description
+     "This library provides methods to encode and decode Ascii85
+binary-to-text encoding.  The main modern use of Ascii85 is in PostScript and
+@dfn{Portable Document Format} (PDF) file formats.")
+    (home-page "https://github.com/datawraith/ascii85gem")
+    (license license:expat)))
