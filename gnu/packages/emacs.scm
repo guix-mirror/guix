@@ -1338,3 +1338,62 @@ identifiers in the MIT-Scheme documentation.")
      "This package provides functions for inserting the definition of natural
 constants and units into an Emacs buffer.")
     (license license:gpl2+)))
+
+(define-public emacs-slime
+  (package
+    (name "emacs-slime")
+    (version "2.15")
+    (source
+     (origin
+       (file-name (string-append name "-" version ".tar.gz"))
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/slime/slime/archive/v"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0l2z6l2xm78mhh0nczkrmzh2ddb1n911ij9xb6q40zwvx4f8blds"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("texinfo" ,texinfo)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'configure
+           (lambda* _
+             (emacs-substitute-variables "slime.el"
+               ("inferior-lisp-program" "sbcl"))
+             #t))
+         (add-before 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (info-dir (string-append out "/share/info"))
+                    (doc-dir (string-append out "/share/doc/"
+                                            ,name "-" ,version))
+                    (doc-files '("doc/slime-refcard.pdf"
+                                 "README.md" "NEWS" "PROBLEMS"
+                                 "CONTRIBUTING.md")))
+               (with-directory-excursion "doc"
+                 (substitute* "Makefile"
+                   (("infodir=/usr/local/info")
+                    (string-append "infodir=" info-dir)))
+                 (system* "make" "html/index.html")
+                 (system* "make" "slime.info")
+                 (install-file "slime.info" info-dir)
+                 (copy-recursively "html" (string-append doc-dir "/html")))
+               (for-each (lambda (f)
+                           (install-file f doc-dir)
+                           (delete-file f))
+                         doc-files)
+               (delete-file-recursively "doc")
+               #t))))))
+    (home-page "https://github.com/slime/slime")
+    (synopsis "Superior Lisp Interaction Mode for Emacs")
+    (description
+     "SLIME extends Emacs with support for interactive programming in
+Common Lisp.  The features are centered around @{slime-mode}, an Emacs
+minor mode that complements the standard @{lisp-mode}.  While lisp-mode
+supports editing Lisp source files, @{slime-mode} adds support for
+interacting with a running Common Lisp process for compilation,
+debugging, documentation lookup, and so on.")
+    (license license:gpl2+)))
