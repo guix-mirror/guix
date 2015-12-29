@@ -2720,6 +2720,27 @@ of @var{gnu-build-system}, and differ mainly in the set of inputs
 implicitly added to the build process, and in the list of phases
 executed.  Some of these build systems are listed below.
 
+@defvr {Scheme Variable} ant-build-system
+This variable is exported by @code{(guix build-system ant)}.  It
+implements the build procedure for Java packages that can be built with
+@url{http://ant.apache.org/, Ant build tool}.
+
+It adds both @code{ant} and the @dfn{Java Development Kit} (JDK) as
+provided by the @code{icedtea} package to the set of inputs.  Different
+packages can be specified with the @code{#:ant} and @code{#:jdk}
+parameters, respectively.
+
+When the original package does not provide a suitable Ant build file,
+the parameter @code{#:jar-name} can be used to generate a minimal Ant
+build file @file{build.xml} with tasks to build the specified jar
+archive.
+
+The parameter @code{#:build-target} can be used to specify the Ant task
+that should be run during the @code{build} phase.  By default the
+``jar'' task will be run.
+
+@end defvr
+
 @defvr {Scheme Variable} cmake-build-system
 This variable is exported by @code{(guix build-system cmake)}.  It
 implements the build procedure for packages using the
