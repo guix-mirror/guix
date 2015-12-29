@@ -6802,3 +6802,31 @@ package and greatly reduce the number of imports for your users.  It is a small
 pure Python module that works on virtually all Python versions.")
     (home-page "https://bitbucket.org/hpk42/apipkg")
     (license license:expat)))
+
+(define-public python-execnet
+  (package
+    (name "python-execnet")
+    (version "1.4.1")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "execnet" version))
+             (sha256
+              (base32
+               "1rpk1vyclhg911p3hql0m0nrpq7q7mysxnaaw6vs29cpa6kx8vgn"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (propagated-inputs
+     `(("python-apipkg" ,python-apipkg)))
+    (synopsis "Rapid multi-Python deployment")
+    (description "Execnet provides a share-nothing model with
+channel-send/receive communication for distributing execution across many
+Python interpreters across version, platform and network barriers.  It has a
+minimal and fast API targetting the following uses:
+@enumerate
+@item distribute tasks to (many) local or remote CPUs
+@item write and deploy hybrid multi-process applications
+@item write scripts to administer multiple environments
+@end enumerate")
+    (home-page "http://codespeak.net/execnet/")
+    (license license:expat)))
