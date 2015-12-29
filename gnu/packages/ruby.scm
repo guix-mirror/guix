@@ -3118,3 +3118,33 @@ requirement specifications systems like Cucumber.")
 for reuse by other test frameworks.")
     (home-page "http://rubyworks.github.io/ae")
     (license license:bsd-2)))
+
+(define-public ruby-lemon
+  (package
+    (name "ruby-lemon")
+    (version "0.9.1")
+    (source
+    (origin
+      (method url-fetch)
+      (uri (rubygems-uri "lemon" version))
+      (sha256
+       (base32
+        "0gqhpgjavgpvx23rqpfqcv3d5bs8gc7lr9yvj8kxgp7mfbdc2jcm"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check (lambda _ (zero? (system* "qed")))))))
+    (propagated-inputs
+     `(("ruby-ae" ,ruby-ae)
+       ("ruby-ansi" ,ruby-ansi)
+       ("ruby-rubytest" ,ruby-rubytest)))
+    (native-inputs
+     `(("ruby-qed" ,ruby-qed)))
+    (synopsis "Test framework correlating code structure and test unit")
+    (description
+     "Lemon is a unit testing framework that enforces highly formal
+case-to-class and unit-to-method test construction.  This enforcement can help
+focus concern on individual units of behavior.")
+    (home-page "http://rubyworks.github.io/lemon")
+    (license license:bsd-2)))
