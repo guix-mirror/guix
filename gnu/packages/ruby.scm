@@ -3172,3 +3172,38 @@ focus concern on individual units of behavior.")
 Rubytest-based test frameworks.  It provides the @code{rubytest} executable.")
     (home-page "http://rubyworks.github.io/rubytest-cli")
     (license license:bsd-2)))
+
+(define-public ruby-hashery
+  (package
+    (name "ruby-hashery")
+    (version "2.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "hashery" version))
+       (sha256
+        (base32
+         "0xawbljsjarl9l7700bka672ixwznzwih4s9i38p1y9mp8hyx54g"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (and (zero? (system* "qed"))
+                  (zero? (system* "rubytest" "-Ilib" "-Itest" "test/"))))))))
+    (native-inputs
+     `(("ruby-rubytest-cli" ,ruby-rubytest-cli)
+       ("ruby-qed" ,ruby-qed)
+       ("ruby-lemon" ,ruby-lemon)))
+    (synopsis "Hash-like classes with extra features")
+    (description
+     "The Hashery is a tight collection of @code{Hash}-like classes.
+Included are the auto-sorting @code{Dictionary} class, the efficient
+@code{LRUHash}, the flexible @code{OpenHash} and the convenient
+@code{KeyHash}.  Nearly every class is a subclass of the @code{CRUDHash} which
+defines a CRUD (Create, Read, Update and Delete) model on top of Ruby's
+standard @code{Hash} making it possible to subclass and augment to fit any
+specific use case.")
+    (home-page "http://rubyworks.github.io/hashery")
+    (license license:bsd-2)))
