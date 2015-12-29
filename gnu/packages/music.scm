@@ -701,17 +701,17 @@ is subjective.")
        #:tests? #f ;no "check" target
        #:parallel-build? #f ;not supported
        #:phases
-       (alist-cons-before
-        'build 'enter-dir-set-path-and-pass-ldflags
-        (lambda* (#:key inputs #:allow-other-keys)
-          (chdir "TuxGuitar")
-          (substitute* "GNUmakefile"
-            (("PROPERTIES\\?=")
-             (string-append "PROPERTIES?= -Dswt.library.path="
-                            (assoc-ref inputs "swt") "/lib"))
-            (("\\$\\(GCJ\\) -o") "$(GCJ) $(LDFLAGS) -o"))
-          #t)
-        (alist-delete 'configure %standard-phases))))
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'enter-dir-and-set-flags
+          (lambda* (#:key inputs #:allow-other-keys)
+            (chdir "TuxGuitar")
+            (substitute* "GNUmakefile"
+              (("PROPERTIES\\?=")
+               (string-append "PROPERTIES?= -Dswt.library.path="
+                              (assoc-ref inputs "swt") "/lib"))
+              (("\\$\\(GCJ\\) -o") "$(GCJ) $(LDFLAGS) -o"))
+            #t)))))
     (inputs
      `(("swt" ,swt)))
     (native-inputs
