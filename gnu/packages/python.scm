@@ -6780,3 +6780,25 @@ applications.")
 applications.")
     (home-page "https://github.com/click-contrib/click-log")
     (license license:expat)))
+
+(define-public python-apipkg
+  (package
+    (name "python-apipkg")
+    (version "1.4")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "apipkg" version))
+             (sha256
+              (base32
+               "1iks5701qnp3dlr3q1d9qm68y2plp2m029irhpz92a44psfkjf1f"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)))
+    (synopsis "Namespace control and lazy-import mechanism")
+    (description "With apipkg you can control the exported namespace of a Python
+package and greatly reduce the number of imports for your users.  It is a small
+pure Python module that works on virtually all Python versions.")
+    (home-page "https://bitbucket.org/hpk42/apipkg")
+    (license license:expat)))
