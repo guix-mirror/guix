@@ -2994,3 +2994,34 @@ to the @code{STDOUT} and @code{STDERR} streams are reported, giving extra
 detail to ease debugging.")
     (home-page "http://github.com/wwood/bioruby-commandeer")
     (license license:expat)))
+
+(define-public ruby-rubytest
+  (package
+    (name "ruby-rubytest")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rubytest" version))
+       (sha256
+        (base32
+         "19jydsdnkl81i9dhdcr4dc34j0ilm68ff2ngnka1hi38xiw4p5qz"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; Disable regular testing to break the cycle rubytest, qed, brass,
+     ;; rubytest, as well as the cycle rubytest, qed, ansi, rubytest.  Instead
+     ;; simply test that the library can be require'd.
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "ruby" "-Ilib" "-r" "rubytest")))))))
+    (propagated-inputs
+     `(("ruby-ansi" ,ruby-ansi)))
+    (synopsis "Universal test harness for Ruby")
+    (description
+     "Rubytest is a testing meta-framework for Ruby.  It can handle any
+compliant test framework and can run tests from multiple frameworks in a
+single pass.")
+    (home-page "http://rubyworks.github.io/rubytest")
+    (license license:bsd-2)))
