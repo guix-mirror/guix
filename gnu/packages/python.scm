@@ -6880,3 +6880,30 @@ the last py.test invocation.")
 framework which enables you to test server connections locally.")
     (home-page "https://pypi.python.org/pypi/pytest-localserver")
     (license license:expat)))
+
+(define-public python-wsgi-intercept
+  (package
+    (name "python-wsgi-intercept")
+    (version "0.10.3")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "wsgi_intercept" version))
+             (sha256
+              (base32
+               "0xyfchacywb1mql84270mcidsqc5ssyspd18yacjk82x2xc68h0r"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-httplib2" ,python-httplib2)
+       ("python-requests" ,python-requests)))
+    (synopsis "Puts a WSGI application in place of a real URI for testing")
+    (description "Wsgi_intercept installs a WSGI application in place of a real
+URI for testing.  Testing a WSGI application normally involves starting a
+server at a local host and port, then pointing your test code to that address.
+Instead, this library lets you intercept calls to any specific host/port
+combination and redirect them into a WSGI application importable by your test
+program.  Thus, you can avoid spawning multiple processes or threads to test
+your Web app.")
+    (home-page "https://github.com/cdent/wsgi-intercept")
+    (license license:expat)))
