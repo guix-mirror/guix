@@ -3025,3 +3025,31 @@ compliant test framework and can run tests from multiple frameworks in a
 single pass.")
     (home-page "http://rubyworks.github.io/rubytest")
     (license license:bsd-2)))
+
+(define-public ruby-brass
+  (package
+    (name "ruby-brass")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "brass" version))
+       (sha256
+        (base32
+         "154lp8rp1vmg60ri1j4cb8hqlw37z7bn575h899v8hzxwi11sxka"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; Disable tests to break the cycle brass, lemon, ae, qed, brass.
+     ;; Instead simply test that the library can be require'd.
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "ruby" "-Ilib" "-r" "brass")))))))
+    (synopsis "Basic foundational assertions framework")
+    (description
+     "BRASS (Bare-Metal Ruby Assertion System Standard) is a basic
+foundational assertions framework for other assertion and test frameworks to
+make use of.")
+    (home-page "http://rubyworks.github.io/brass")
+    (license license:bsd-2)))
