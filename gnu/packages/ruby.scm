@@ -3086,3 +3086,35 @@ somewhere between lower-level testing tools like @code{Test::Unit} and
 requirement specifications systems like Cucumber.")
     (home-page "http://rubyworks.github.io/qed")
     (license license:bsd-2)))
+
+(define-public ruby-ae
+  (package
+    (name "ruby-ae")
+    (version "1.8.2")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Fetch from github so tests are included.
+       (uri (string-append
+             "https://github.com/rubyworks/ae/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "147jmkx54x7asy2d8m4dyrhhf4hdx4galpnhwzai030y3cdsfrrl"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (zero? (system* "qed")))))))
+    (propagated-inputs
+     `(("ruby-ansi" ,ruby-ansi)))
+    (native-inputs
+     `(("ruby-qed" ,ruby-qed)))
+    (synopsis "Assertions library")
+    (description
+     "Assertive Expressive (AE) is an assertions library specifically designed
+for reuse by other test frameworks.")
+    (home-page "http://rubyworks.github.io/ae")
+    (license license:bsd-2)))
