@@ -707,6 +707,8 @@ is subjective.")
           (lambda* (#:key inputs #:allow-other-keys)
             (chdir "TuxGuitar")
             (substitute* "GNUmakefile"
+              (("GCJFLAGS\\+=(.*)" _ rest)
+               (string-append "GCJFLAGS=-fsource=1.4 -fPIC " rest))
               (("PROPERTIES\\?=")
                (string-append "PROPERTIES?= -Dswt.library.path="
                               (assoc-ref inputs "swt") "/lib"))
