@@ -3053,3 +3053,36 @@ foundational assertions framework for other assertion and test frameworks to
 make use of.")
     (home-page "http://rubyworks.github.io/brass")
     (license license:bsd-2)))
+
+(define-public ruby-qed
+  (package
+    (name "ruby-qed")
+    (version "2.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "qed" version))
+       (sha256
+        (base32
+         "03h4lmlxpcya8j7s2cnyscqlx8v3xl1xgsw5y1wk1scxcgz2vbmr"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; Disable testing to break the cycle qed, ansi, qed, among others.
+     ;; Instead simply test that the executable runs using --copyright.
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "ruby" "-Ilib" "bin/qed" "--copyright")))))))
+    (propagated-inputs
+     `(("ruby-ansi" ,ruby-ansi)
+       ("ruby-brass" ,ruby-brass)))
+    (synopsis "Test framework utilizing literate programming techniques")
+    (description
+     "@dfn{Quality Ensured Demonstrations} (QED) is a test framework for
+@dfn{Test Driven Development} (TDD) and @dfn{Behaviour Driven
+Development} (BDD) utilizing Literate Programming techniques.  QED sits
+somewhere between lower-level testing tools like @code{Test::Unit} and
+requirement specifications systems like Cucumber.")
+    (home-page "http://rubyworks.github.io/qed")
+    (license license:bsd-2)))
