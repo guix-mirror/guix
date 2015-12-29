@@ -3207,3 +3207,29 @@ standard @code{Hash} making it possible to subclass and augment to fit any
 specific use case.")
     (home-page "http://rubyworks.github.io/hashery")
     (license license:bsd-2)))
+
+(define-public ruby-rc4
+  (package
+    (name "ruby-rc4")
+    (version "0.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ruby-rc4" version))
+       (sha256
+        (base32
+         "00vci475258mmbvsdqkmqadlwn6gj9m01sp7b5a3zd90knil1k00"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "rspec" "spec/rc4_spec.rb")))))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec-2)))
+    (synopsis "Implementation of the RC4 algorithm")
+    (description
+     "RubyRC4 is a pure Ruby implementation of the RC4 algorithm.")
+    (home-page "https://github.com/caiges/Ruby-RC4")
+    (license license:expat)))
