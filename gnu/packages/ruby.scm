@@ -3276,3 +3276,44 @@ binary-to-text encoding.  The main modern use of Ascii85 is in PostScript and
 @dfn{Portable Document Format} (PDF) file formats.")
     (home-page "https://github.com/datawraith/ascii85gem")
     (license license:expat)))
+
+(define-public ruby-ttfunk
+  (package
+    (name "ruby-ttfunk")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       ;; fetch from github as the gem does not contain testing code
+       (uri (string-append
+             "https://github.com/prawnpdf/ttfunk/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1izq84pnm9niyvkzp8k0vl232q9zj41hwmp9na9fzycfh1pbnsl6"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'remove-rubocop
+           (lambda _
+             ;; remove rubocop as a dependency as not needed for testing
+             (substitute* "ttfunk.gemspec"
+               (("spec.add_development_dependency\\('rubocop'.*") ""))
+             (substitute* "Rakefile"
+               (("require 'rubocop/rake_task'") "")
+               (("Rubocop::RakeTask.new") ""))
+             #t)))))
+    (native-inputs
+     `(("ruby-rspec" ,ruby-rspec)
+       ("bundler" ,bundler)))
+    (synopsis "Font metrics parser for the Prawn PDF generator")
+    (description
+     "TTFunk is a TrueType font parser written in pure Ruby.  It is used as
+part of the Prawn PDF generator.")
+    (home-page "https://github.com/prawnpdf/ttfunk")
+    ;; From the README: "Matz's terms for Ruby, GPLv2, or GPLv3. See LICENSE
+    ;; for details."
+    (license (list license:gpl2 license:gpl3 license:ruby))))
