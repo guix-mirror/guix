@@ -3219,6 +3219,44 @@ names.")
     (home-page "https://github.com/thoughtbot/shoulda-context")
     (license license:expat)))
 
+(define-public ruby-shoulda-matchers
+  (package
+    (name "ruby-shoulda-matchers")
+    (version "3.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "shoulda-matchers" version))
+       (sha256
+        (base32
+         "1agabvb8i39mjrp3kb78nvhl41xk1i258hdwdlj0fm8nj9yzn1jb"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-import
+           (lambda _
+             ;; A presumed bug reported upstream at
+             ;; https://github.com/thoughtbot/shoulda-matchers/pull/871
+             (substitute* (string-append  "lib/shoulda/matchers/active_model/"
+                                          "validate_inclusion_of_matcher.rb")
+               (("^require 'bigdecimal'")
+                "require 'bigdecimal'; require 'date'"))))
+         (replace 'check
+           (lambda _
+             ;; Do not run tests to avoid circular dependence with rails.  Instead
+             ;; just import the library to test.
+             (zero? (system* "ruby" "-Ilib" "-r" "shoulda-matchers")))))))
+    (propagated-inputs
+     `(("ruby-activesupport" ,ruby-activesupport)))
+    (synopsis "Collection of testing matchers extracted from Shoulda")
+    (description
+     "Shoulda Matchers provides RSpec- and Minitest-compatible one-liners that
+test common Rails functionality.  These tests would otherwise be much longer,
+more complex, and error-prone.")
+    (home-page "https://github.com/thoughtbot/shoulda-matchers")
+    (license license:expat)))
+
 (define-public ruby-ansi
   (package
     (name "ruby-ansi")
