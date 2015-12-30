@@ -3083,6 +3083,30 @@ that TURN is no longer being maintained.")
     (home-page "http://rubygems.org/gems/turn")
     (license license:expat)))
 
+(define-public ruby-mime-types-data
+  (package
+    (name "ruby-mime-types-data")
+    (version "3.2015.1120")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mime-types-data" version))
+       (sha256
+        (base32
+         "04fzvy02w8d0rrsg8avncn7h58pvwdxj82aps54srb3sam2dkhic"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)))
+    (synopsis "Registry for information about MIME media type definitions")
+    (description
+     "@code{mime-types-data} provides a registry for information about
+Multipurpose Internet Mail Extensions (MIME) media type definitions.  It can
+be used with the Ruby mime-types library or other software to determine
+defined filename extensions for MIME types, or to use filename extensions to
+look up the likely MIME type definitions.")
+    (home-page "https://github.com/mime-types/mime-types-data/")
+    (license license:expat)))
+
 (define-public ruby-ansi
   (package
     (name "ruby-ansi")
