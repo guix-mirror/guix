@@ -576,7 +576,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
     ;; same license as both GNU Classpath and OpenJDK.
     (license license:gpl2+)))
 
-(define-public icedtea7
+(define-public icedtea-7
   (let* ((version "2.6.3")
          (drop (lambda (name hash)
                  (origin
@@ -741,4 +741,4 @@ build process and its dependencies, whereas Make uses Makefile format.")
          ,@(fold alist-delete (package-native-inputs icedtea-6)
                  '("openjdk6-src")))))))
 
-(define-public icedtea icedtea7)
+(define-public icedtea icedtea-7)
