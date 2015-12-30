@@ -2063,16 +2063,13 @@ files.")
 (define-public python-pyld
   (package
     (name "python-pyld")
-    (version "0.6.0")
+    (version "0.6.8")
     (source (origin
               (method url-fetch)
-              (uri
-               (string-append
-                "https://pypi.python.org/packages/source/P/PyLD/PyLD-"
-                version ".tar.gz"))
+              (uri (pypi-uri "PyLD" version))
               (sha256
                (base32
-                "1l9ymj85fsvayqplinzpk0kyiq6m74ps9xd3a9fhlxfn1rldf8x8"))))
+                "0k881ffazpf8q1z8862g4bb3pzwpnz9whrci2mf311mvn1qbyqad"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
