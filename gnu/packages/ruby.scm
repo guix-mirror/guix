@@ -1651,6 +1651,31 @@ instance, it provides @code{assert_true}, @code{assert_false} and
     (home-page "https://github.com/halostatue/minitest-bonus-assertions")
     (license license:expat)))
 
+(define-public ruby-minitest-rg
+  (package
+    (name "ruby-minitest-rg")
+    (version "5.2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "minitest-rg" version))
+       (sha256
+        (base32
+         "0sq509ax1x62rd0w10b0hcydcxyk5bxxr3fwrgxv02r8drq2r354"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; Some tests fail even outside Guix, so disable tests.
+     ;; https://github.com/blowmage/minitest-rg/issues/12
+     ;; https://github.com/blowmage/minitest-rg/pull/13
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-minitest" ,ruby-minitest)))
+    (synopsis "Coloured output for Minitest")
+    (description
+     "@code{minitest-rg} changes the colour of the output from Minitest.")
+    (home-page "http://blowmage.com/minitest-rg")
+    (license license:expat)))
+
 (define-public ruby-daemons
   (package
     (name "ruby-daemons")
