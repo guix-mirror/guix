@@ -149,7 +149,7 @@
        ("doxygen" ,doxygen)
        ("gawk" ,gawk)
        ("gettext" ,gnu-gettext)
-       ("icedtea7" ,icedtea7) ; needed at build-time only, mandatory
+       ("icedtea" ,icedtea) ; needed at build-time only, mandatory
        ("libtool" ,libtool)
        ("pkg-config" ,pkg-config)
        ("swig" ,swig)

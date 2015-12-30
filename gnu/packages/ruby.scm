@@ -466,7 +466,7 @@ supported: XML Markup and XML Events.")
             (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
             #t)))))
     (native-inputs
-     `(("jdk" ,icedtea7 "jdk")))
+     `(("jdk" ,icedtea "jdk")))
     (synopsis "Ruby-to-Java bridge using the Java Native Interface")
     (description "RJB is a bridge program that connects Ruby and Java via the
 Java Native Interface.")

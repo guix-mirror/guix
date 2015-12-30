@@ -81,7 +81,7 @@
          'build
          (lambda* (#:key inputs outputs #:allow-other-keys)
            (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
-             (setenv "JAVA_HOME" (assoc-ref inputs "icedtea6"))
+             (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
 
              ;; Build shared libraries.  Users of SWT have to set the system
              ;; property swt.library.path to the "lib" directory of this
@@ -115,7 +115,7 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("unzip" ,unzip)
-       ("icedtea6" ,icedtea6 "jdk")))
+       ("jdk" ,icedtea "jdk")))
     (home-page "https://www.eclipse.org/swt/")
     (synopsis "Widget toolkit for Java")
     (description
@@ -740,3 +740,5 @@ build process and its dependencies, whereas Make uses Makefile format.")
                  "03pggsrhkzpjnj939vhr3b7mcrhfp22b7yg3hkx52kcv8dqkg3yx"))
          ,@(fold alist-delete (package-native-inputs icedtea6)
                  '("openjdk6-src")))))))
+
+(define-public icedtea icedtea7)

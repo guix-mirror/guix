@@ -1644,7 +1644,7 @@ from high-throughput sequencing assays.")
                        '(configure install check)))))
     (native-inputs
      `(("ant" ,ant)
-       ("jdk" ,icedtea6 "jdk")))
+       ("jdk" ,icedtea "jdk")))
     (home-page "http://samtools.github.io/htsjdk/")
     (synopsis "Java API for high-throughput sequencing data (HTS) formats")
     (description
@@ -2539,7 +2539,7 @@ simultaneously.")
             `(modify-phases ,phases
                (replace 'enter-dir (lambda _ (chdir "ngs-java") #t)))))))
     (inputs
-     `(("jdk" ,icedtea6 "jdk")
+     `(("jdk" ,icedtea "jdk")
        ("ngs-sdk" ,ngs-sdk)))
     (synopsis "Java bindings for NGS SDK")))
 
