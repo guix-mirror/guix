@@ -304,13 +304,28 @@ void exportPaths(StoreAPI & store, const Paths & paths,
     writeInt(0, sink);
 }
 
+Path readStorePath(Source & from)
+{
+    Path path = readString(from);
+    assertStorePath(path);
+    return path;
+}
+
+
+template<class T> T readStorePaths(Source & from)
+{
+    T paths = readStrings<T>(from);
+    foreach (typename T::iterator, i, paths) assertStorePath(*i);
+    return paths;
+}
+
+template PathSet readStorePaths(Source & from);
 
 }
 
 
 #include "local-store.hh"
 #include "serialise.hh"
-#include "remote-store.hh"
 
 
 namespace nix {
@@ -321,10 +336,7 @@ std::shared_ptr<StoreAPI> store;
 
 std::shared_ptr<StoreAPI> openStore(bool reserveSpace)
 {
-    if (getEnv("NIX_REMOTE") == "")
-        return std::shared_ptr<StoreAPI>(new LocalStore(reserveSpace));
-    else
-        return std::shared_ptr<StoreAPI>(new RemoteStore());
+    return std::shared_ptr<StoreAPI>(new LocalStore(reserveSpace));
 }
 
 
