@@ -1891,16 +1891,14 @@ and sensible default behaviors into your setuptools run.")
 (define-public python-fixtures
   (package
     (name "python-fixtures")
-    (version "1.3.1")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/f/fixtures/fixtures-"
-             version ".tar.gz"))
+       (uri (pypi-uri "fixtures" version))
        (sha256
         (base32
-         "1khpywdh91ijryhxjxiyyi5rmbimhl8hwbbf8lazhgzq6yxz6g5n"))))
+         "0djxvdwm8s60dbfn7bhf40x6g818p3b3mlwijm1c3bqg7msn271y"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
