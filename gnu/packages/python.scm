@@ -5872,15 +5872,13 @@ a hash value.")
 (define-public python-libarchive-c
   (package
     (name "python-libarchive-c")
-    (version "2.1")
+    (version "2.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/l/libarchive-c/libarchive-c-"
-                    version ".tar.gz"))
+              (uri (pypi-uri "libarchive-c" version))
               (sha256
                (base32
-                "089lrz6xyrfnk55v35vis6jyqyyl77w093057djyspnd2744wi2n"))))
+                "0z4r7v3dhd6b3120mav05ff08srih176r2rg5k8kn7mjd9pslm2x"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
