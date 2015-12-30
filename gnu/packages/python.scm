@@ -900,7 +900,7 @@ Python file, so it can be easily copied into your project.")
 (define-public python-dateutil-2
   (package
     (name "python-dateutil")
-    (version "2.2")
+    (version "2.4.2")
     (source
      (origin
       (method url-fetch)
@@ -908,7 +908,7 @@ Python file, so it can be easily copied into your project.")
                           name "/" name "-" version ".tar.gz"))
       (sha256
        (base32
-        "0s74ad6r789810s10dxgvaf48ni6adac2icrdad34zxygqq6bj7f"))))
+        "0ggbm2z72p0nwjqgvpw8s5bqzwayqiqv2iws0x2a605m3mf4959y"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)
