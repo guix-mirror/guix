@@ -5827,19 +5827,16 @@ Python Package Index (PyPI).")
 (define-public python-tlsh
   (package
     (name "python-tlsh")
-    (version "3.4.1")                             ;according to CMakeLists.txt
+    (version "3.4.4")
     (home-page "https://github.com/trendmicro/tlsh")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url home-page)
-                    ;; This is a commit right after 3.4.1; see
-                    ;; <https://github.com/trendmicro/tlsh/issues/9>.
-                    (commit "3ae3f1f")))
+              (method url-fetch)
+              (uri (string-append "https://github.com/trendmicro/tlsh/archive/v"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "12cvnr5ndm5cg6i7lch93id90kgwgrigjgrj8f186nh3h4bf9chj"))
-              (file-name (string-append name "-" version "-checkout"))))
+                "00bhzjqrlh7v538kbkbn8lgx976j1138al3sdhklaizqjvpwyk4r"))
+              (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
      '(#:out-of-source? #f
