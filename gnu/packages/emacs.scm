@@ -1013,6 +1013,27 @@ and stored in memory.")
     (description "This package provides a modern list API library for Emacs.")
     (license license:gpl3+)))
 
+(define-public emacs-undo-tree
+  (package
+    (name "emacs-undo-tree")
+    (version "0.6.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "http://dr-qubit.org/git/undo-tree.git")
+                    (commit "release/0.6.4")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+                (base32
+                  "0b6hnv6bq1g5np5q2yw9r9aj1cxpp14akm21br7vpb7wp01fv4b3"))))
+    (build-system emacs-build-system)
+    (home-page "http://www.dr-qubit.org/emacs.php")
+    (synopsis "Treat undo history as a tree")
+    (description "Tree-like interface to Emacs undo system, providing
+graphical tree presentation of all previous states of buffer that
+allows easily move between them.")
+    (license license:gpl3+)))
+
 (define-public emacs-s
   (package
     (name "emacs-s")
