@@ -2225,16 +2225,13 @@ than Python’s urllib2 library.")
 (define-public python-unidecode
   (package
     (name "python-unidecode")
-    (version "0.04.16")
+    (version "0.04.18")
     (source (origin
              (method url-fetch)
-             (uri
-              (string-append
-               "https://pypi.python.org/packages/source/U/Unidecode/Unidecode-"
-               version ".tar.gz"))
+             (uri (pypi-uri "Unidecode" version))
              (sha256
               (base32
-               "0yv56vc49rvippyxgxvcyz7jklc07ky38rcspax7p00sgmriiljc"))))
+               "12hhblqy1ajvidm38im4171x4arg83pfmziyn53nizp29p3m14gi"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
