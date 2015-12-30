@@ -136,14 +136,14 @@ guidelines}.")
 (define-public python-mox3
   (package
     (name "python-mox3")
-    (version "0.12.0")
+    (version "0.13.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mox3" version))
         (sha256
           (base32
-           "1pwz98q098cb8xxf8yryq21nvklc7hla880bsrq4y3j6bprw3iaj"))))
+           "0hj57374r239cj1zbzpxw7mj0yfblz55jdfrc2p1h8j7xng0319j"))))
     (build-system python-build-system)
     (inputs
       `(("python-fixtures" ,python-fixtures)
