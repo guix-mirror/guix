@@ -1713,11 +1713,11 @@ void DerivationGoal::startBuilder()
     /* Create a temporary directory where the build will take
        place. */
     auto drvName = storePathToName(drvPath);
-    tmpDir = createTempDir("", "nix-build-" + drvName, false, false, 0700);
+    tmpDir = createTempDir("", "guix-build-" + drvName, false, false, 0700);
 
     /* In a sandbox, for determinism, always use the same temporary
        directory. */
-    tmpDirInSandbox = useChroot ? "/tmp/nix-build-" + drvName + "-0" : tmpDir;
+    tmpDirInSandbox = useChroot ? "/tmp/guix-build-" + drvName + "-0" : tmpDir;
 
     /* For convenience, set an environment pointing to the top build
        directory. */

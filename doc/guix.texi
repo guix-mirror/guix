@@ -604,7 +604,7 @@ a writable @file{/tmp} directory.
 
 You can influence the directory where the daemon stores build trees
 @i{via} the @code{TMPDIR} environment variable.  However, the build tree
-within the chroot is always @file{/tmp/nix-build-@var{name}.drv-0},
+within the chroot is always @file{/tmp/guix-build-@var{name}.drv-0},
 where @var{name} is the derivation name---e.g., @code{coreutils-8.24}.
 This way, the value of @code{TMPDIR} does not leak inside build
 environments, which avoids discrepancies in cases where build processes
