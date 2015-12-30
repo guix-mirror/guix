@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Pjotr Prins <pjotr.public01@thebird.nl>
+;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -115,15 +116,19 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
                                          (assoc-ref inputs "ruby"))
                            1))
          (out (assoc-ref outputs "out"))
-         (gem-home (string-append out "/lib/ruby/gems/" ruby-version ".0")))
-
+         (gem-home (string-append out "/lib/ruby/gems/" ruby-version ".0"))
+         (gem-name (first-matching-file "\\.gem$")))
     (setenv "GEM_HOME" gem-home)
     (mkdir-p gem-home)
-    (zero? (apply system* "gem" "install" (first-matching-file "\\.gem$")
-                  "--local" "--ignore-dependencies"
-                  ;; Executables should go into /bin, not /lib/ruby/gems.
-                  "--bindir" (string-append out "/bin")
-                  gem-flags))))
+    (and (apply system* "gem" "install" gem-name
+                "--local" "--ignore-dependencies"
+                ;; Executables should go into /bin, not /lib/ruby/gems.
+                "--bindir" (string-append out "/bin")
+                gem-flags)
+         ;; Remove the cached gem file as this is unnecessary and contains
+         ;; timestamped files rendering builds not reproducible.
+         (begin (delete-file (string-append gem-home "/cache/" gem-name))
+                #t))))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
