@@ -1249,7 +1249,7 @@ processes currently causing I/O.")
                           (string-join (string-split version #\.) "_")))
                      (string-append
                        "https://github.com/libfuse/libfuse/"
-                       "releases/download/" version-with-underscores
+                       "releases/download/fuse_" version-with-underscores
                        "/fuse-" version ".tar.gz")))
               (sha256
                (base32
