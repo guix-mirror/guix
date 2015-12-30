@@ -6441,15 +6441,14 @@ This allows one to make simple text-mode user interfaces on Unix-like systems")
 (define-public python-pyrfc3339
   (package
     (name "python-pyrfc3339")
-    (version "0.2")
+    (version "1.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/p/"
-                           "pyRFC3339/pyRFC3339-" version ".tar.gz"))
+       (uri (pypi-uri "pyRFC3339" version))
        (sha256
         (base32
-         "1pp648xsjaw9h1xq2mgwzda5wis2ypjmzxlksc1a8grnrdmzy155"))))
+         "0dgm4l9y8jiax5cp6yxjd2i27cq8h33sh81n1wfbmnmqb32cdywd"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pytz" ,python-pytz)))
