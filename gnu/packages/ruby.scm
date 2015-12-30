@@ -3374,6 +3374,45 @@ Suffix List.")
     (home-page "https://github.com/knu/ruby-domain_name")
     (license license:bsd-2)))
 
+(define-public ruby-http-cookie
+  (package
+    (name "ruby-http-cookie")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "http-cookie" version))
+       (sha256
+        (base32
+         "0cz2fdkngs3jc5w32a6xcl511hy03a7zdiy988jk1sf3bf5v3hdw"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'add-dependency-to-bundler
+           (lambda _
+             ;; Fix NameError
+             (substitute* "Rakefile"
+               (("HTTP::Cookie::VERSION")
+                "Bundler::GemHelper.gemspec.version"))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-domain-name" ,ruby-domain-name)))
+    (native-inputs
+     `(("rubysimplecov" ,ruby-simplecov)
+       ("bundler" ,bundler)
+       ("ruby-sqlite3" ,ruby-sqlite3)
+       ("ruby-test-unit" ,ruby-test-unit)))
+    (synopsis "Handle HTTP Cookies based on RFC 6265")
+    (description
+     "@code{HTTP::Cookie} is a Ruby library to handle HTTP Cookies based on
+RFC 6265.  It has been designed with security, standards compliance and
+compatibility in mind, to behave just the same as today's major web browsers.
+It has built-in support for the legacy @code{cookies.txt} and
+@code{cookies.sqlite} formats of Mozilla Firefox.")
+    (home-page "https://github.com/sparklemotion/http-cookie")
+    (license license:expat)))
+
 (define-public ruby-ansi
   (package
     (name "ruby-ansi")
