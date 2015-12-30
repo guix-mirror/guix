@@ -4970,17 +4970,14 @@ PEP 8.")
 (define-public python-pyflakes
   (package
     (name "python-pyflakes")
-    (version "0.9.2")
+    (version "1.0.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/p/pyflakes/pyflakes-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "pyflakes" version))
         (sha256
           (base32
-            "0pvawddspdq0y22dbraq5gld9qr6rwa7zhmpfhl2b7v9rqiiqs82"))))
+            "0qs2sgqszq7wcplis8509wk2ygqcrwzbs1ghfj3svvivq2j377pk"))))
     (build-system python-build-system)
     (inputs
       `(("python-setuptools" ,python-setuptools)))
