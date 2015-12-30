@@ -2424,16 +2424,14 @@ for Python.")
 (define-public python-jinja2
   (package
     (name "python-jinja2")
-    (version "2.7.3")
+    (version "2.8")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/J/Jinja2/Jinja2-"
-             version ".tar.gz"))
+       (uri (pypi-uri "Jinja2" version))
        (sha256
         (base32
-         "1nwg9yfqgy421lncnm63k1zf9xkd1klc0jm0fr4p3dad01fsq91f"))))
+         "1x0v41lp5m1pjix3l46zx02b7lqp2hflgpnxwkywxynvi3zz47xw"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)
