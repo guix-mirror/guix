@@ -345,14 +345,14 @@ extensions.")
 (define-public python-tempest-lib
   (package
     (name "python-tempest-lib")
-    (version "0.11.0")
+    (version "0.12.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "tempest-lib" version))
       (sha256
        (base32
-        "1q4wpqcg0yv99mr5gc43wsfirlqdjz90npyghy3mn5f6lby2yikg"))))
+        "0f15wxk394cb2kw34krpxq8mvy1rxw0lnl5wfiv14cq1s1fm9cjd"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
