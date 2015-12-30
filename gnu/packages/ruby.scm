@@ -1581,6 +1581,41 @@ structures when tests fail.")
       (home-page "https://github.com/adammck/minitest-pretty_diff")
       (license license:expat))))
 
+(define-public ruby-minitest-moar
+  (package
+    (name "ruby-minitest-moar")
+    (version "0.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "minitest-moar" version))
+       (sha256
+        (base32
+         "0nb83blrsab92gcy6nfpw39njys7zisia8pw4igzzfzfl51cis0x"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'clean-dependencies
+           (lambda _
+             ;; Remove all gems defined in the Gemfile because these are not
+             ;; truly needed.
+             (substitute* "Gemfile"
+               (("gem .*") ""))
+             ;; Remove byebug as not needed to run tests.
+             (substitute* "test/test_helper.rb"
+               (("require 'byebug'") ""))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-minitest" ,ruby-minitest)))
+    (synopsis "Extra features and changes to MiniTest")
+    (description "@code{MiniTest Moar} add some additional features and
+changes some default behaviours in MiniTest.  For instance, Moar replaces the
+MiniTest @code{Object#stub} with a global @code{stub} method.")
+    (home-page "https://github.com/dockyard/minitest-moar")
+    (license license:expat)))
+
 (define-public ruby-daemons
   (package
     (name "ruby-daemons")
