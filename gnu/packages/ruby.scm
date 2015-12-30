@@ -1521,6 +1521,31 @@ functionality, making it easier to migrate test suites from bacon to minitest.")
     (home-page "https://github.com/seattlerb/minitest-bacon")
     (license license:expat)))
 
+(define-public ruby-minitest-focus
+  (package
+    (name "ruby-minitest-focus")
+    (version "1.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "minitest-focus" version))
+       (sha256
+        (base32
+         "1zgjslp6d7dzcn8smj595idymgd5j603p9g2jqkfgi28sqbhz6m0"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-minitest" ,ruby-minitest)))
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)))
+    (synopsis "Allows a few specific tests to be focused on")
+    (description
+     "@code{minitest-focus} gives the ability focus on a few tests with ease
+without having to use command-line arguments.  It introduces a @code{focus}
+class method for use in testing classes, specifying that the next defined test
+is to be run.")
+    (home-page "https://github.com/seattlerb/minitest-focus")
+    (license license:expat)))
+
 (define-public ruby-daemons
   (package
     (name "ruby-daemons")
