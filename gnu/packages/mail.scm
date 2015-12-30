@@ -372,17 +372,18 @@ attachments, create new maildirs, and so on.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.20.2")
+    (version "0.21")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://notmuchmail.org/releases/notmuch-"
+              (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1v5dcnlg4km5hfaq0i0qywq5fn66fi0rq4aaibyqkwxz8mis4hgp"))))
+                "1cr53rbpkcy3pvrmhbg2gq7sjpwb0c8xd7a4zhzxbiv8s7z8yvyh"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ;; FIXME: 637 tests; 70 fail and 98 are skipped
+     '(#:tests? #f ;; FIXME: 662 tests; 168 fail and 99 are skipped
+                   ;; with perl input: 50 fail and 99 are skipped
        #:phases (modify-phases %standard-phases
                   (replace 'configure
                     (lambda* (#:key outputs #:allow-other-keys)
