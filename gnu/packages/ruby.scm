@@ -3107,6 +3107,35 @@ look up the likely MIME type definitions.")
     (home-page "https://github.com/mime-types/mime-types-data/")
     (license license:expat)))
 
+(define-public ruby-mime-types
+  (package
+    (name "ruby-mime-types")
+    (version "3.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "mime-types" version))
+       (sha256
+        (base32
+         "1snjc38a9vqvy8j41xld1i1byq9prbl955pbjw7dxqcfcirqlzra"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-mime-types-data" ,ruby-mime-types-data)))
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)
+       ("ruby-fivemat" ,ruby-fivemat)
+       ("ruby-minitest-focus" ,ruby-minitest-focus)
+       ("ruby-minitest-rg" ,ruby-minitest-rg)
+       ("ruby-minitest-bonus-assertions" ,ruby-minitest-bonus-assertions)))
+    (synopsis "Library and registry for MIME content type definitions")
+    (description "The mime-types library provides a library and registry for
+information about Multipurpose Internet Mail Extensions (MIME) content type
+definitions.  It can be used to determine defined filename extensions for MIME
+types, or to use filename extensions to look up the likely MIME type
+definitions.")
+    (home-page "https://github.com/mime-types/ruby-mime-types")
+    (license license:expat)))
+
 (define-public ruby-fivemat
   (package
     (name "ruby-fivemat")
