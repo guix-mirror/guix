@@ -341,16 +341,14 @@ instead of @command{python3}.")))
 (define-public python-psutil
   (package
     (name "python-psutil")
-    (version "3.0.1")
+    (version "3.3.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/psutil/psutil-"
-             version ".tar.gz"))
+       (uri (pypi-uri "psutil" version))
        (sha256
         (base32
-         "00c8h1mzqysih99z8pnbmdv117d2naldf11yjy50dhykxsf3n89z"))))
+         "11bd1555vf2ibjnmqf64im5cp55vcqfq45ccinm9ll3bs68na6s2"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
