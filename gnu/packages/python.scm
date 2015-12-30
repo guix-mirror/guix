@@ -5479,16 +5479,14 @@ fractional seconds) of a clock which never goes backwards.")
 (define-public python-webob
   (package
     (name "python-webob")
-    (version "1.5.0b0")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/W/WebOb/WebOb-"
-             version ".tar.gz"))
+       (uri (pypi-uri "WebOb" version))
        (sha256
         (base32
-         "140b3iczclk1j0405rvw5gxshqfkhcc8254fj520z3m23cwbql4a"))))
+         "02bhhzijfhv8hmi1i54d4b0v43liwhnywhflvxsv4x3zax9s3afq"))))
     (build-system python-build-system)
     (inputs
       `(("python-nose" ,python-nose)
