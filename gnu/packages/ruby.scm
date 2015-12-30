@@ -3257,6 +3257,17 @@ more complex, and error-prone.")
     (home-page "https://github.com/thoughtbot/shoulda-matchers")
     (license license:expat)))
 
+(define-public ruby-shoulda-matchers-2
+  (package
+    (inherit ruby-shoulda-matchers)
+    (version "2.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "shoulda-matchers" version))
+              (sha256
+               (base32
+                "0d3ryqcsk1n9y35bx5wxnqbgw4m8b3c79isazdjnnbg8crdp72d0"))))))
+
 (define-public ruby-ansi
   (package
     (name "ruby-ansi")
