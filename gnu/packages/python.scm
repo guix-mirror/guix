@@ -1495,16 +1495,14 @@ matching them against a list of media-ranges.")
 (define-public python-nose
   (package
     (name "python-nose")
-    (version "1.3.4")
+    (version "1.3.7")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/n/nose/nose-"
-               version ".tar.gz"))
+        (uri (pypi-uri "nose" version))
         (sha256
           (base32
-            "00qymfgwg4iam4xi0w9bnv7lcb3fypq1hzfafzgs1rfmwaj67g3n"))))
+            "164a43k7k2wsqqk1s6vavcdamvss4mz0vd6pwzv2h9n8rgwzxgzi"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
