@@ -3107,6 +3107,28 @@ look up the likely MIME type definitions.")
     (home-page "https://github.com/mime-types/mime-types-data/")
     (license license:expat)))
 
+(define-public ruby-fivemat
+  (package
+    (name "ruby-fivemat")
+    (version "1.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "fivemat" version))
+       (sha256
+        (base32
+         "1gvw6g4yc96l2pcyvigahyfsjxpdjx21iiwzvf965zippchdh6gk"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f)) ; no tests
+    (synopsis "Each test file given its own line of dots")
+    (description
+     "Fivemat is a MiniTest/RSpec/Cucumber formatter that gives each test file
+its own line of dots during testing.  It aims to provide test output that is
+neither too verbose nor too minimal.")
+    (home-page "https://github.com/tpope/fivemat")
+    (license license:expat)))
+
 (define-public ruby-ansi
   (package
     (name "ruby-ansi")
