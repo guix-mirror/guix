@@ -4911,15 +4911,13 @@ applications.")
 (define-public python-pyzmq
   (package
     (name "python-pyzmq")
-    (version "14.6.0")
+    (version "15.1.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/pyzmq/pyzmq-"
-             version ".tar.gz"))
+       (uri (pypi-uri "pyzmq" version))
        (sha256
-        (base32 "1frmbjykvhmdg64g7sn20c9fpamrsfxwci1nhhg8q7jgz5pq0ikp"))))
+        (base32 "13fhwnlvsvxv72kfhqbpn6qi7msh8mc8377mpabv32skk2cjfnxx"))))
     (build-system python-build-system)
     (arguments
      `(#:configure-flags
