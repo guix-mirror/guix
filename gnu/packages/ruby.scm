@@ -1546,6 +1546,41 @@ is to be run.")
     (home-page "https://github.com/seattlerb/minitest-focus")
     (license license:expat)))
 
+(define-public ruby-minitest-pretty-diff
+  ;; Use git reference because gem is out of date and does not contain testing
+  ;; script.  There are no releases on GitHub.
+  (let ((commit "11f32e930f574225432f42e5e1ef6e7471efe572"))
+    (package
+      (name "ruby-minitest-pretty-diff")
+      (version (string-append "0.1-1." (string-take commit 8)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/adammck/minitest-pretty_diff.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "13y5dhmcckhzd83gj1nfwh41iykbjcm2w7y4pr6j6rpqa5as122r"))))
+      (build-system ruby-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda _
+               (zero? (system* "script/test")))))))
+      (native-inputs
+       `(("bundler" ,bundler)
+         ("ruby-turn" ,ruby-turn)))
+      (synopsis "Pretty-print hashes and arrays in MiniTest")
+      (description
+       "@code{minitest-pretty_diff} monkey-patches
+@code{MiniTest::Assertions#mu_pp} to pretty-print hashes and arrays before
+diffing them.  This makes it easier to spot differences between nested
+structures when tests fail.")
+      (home-page "https://github.com/adammck/minitest-pretty_diff")
+      (license license:expat))))
+
 (define-public ruby-daemons
   (package
     (name "ruby-daemons")
