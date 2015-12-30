@@ -48,3 +48,61 @@ Instead, it supports the CalDAV and CardDAV implementations of popular
 clients.")
     (home-page "http://radicale.org/")
     (license gpl3+)))
+
+(define-public vdirsyncer
+  (package
+    (name "vdirsyncer")
+    (version "0.7.5")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "vdirsyncer" version))
+             (sha256
+              (base32
+               "0dvar4k95n689fgw5gy19mb7ggaw32c8j2gbglr33wn7pbxc2l9z"))))
+    (build-system python-build-system)
+    (arguments
+      `(#:phases (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "DAV_SERVER" "radicale")
+             (setenv "REMOTESTORAGE_SERVER" "skip")
+             (zero? (system* "py.test"))))
+         ;; vdirsyncer requires itself to be installed in order to build
+         ;; the manpage.
+         (add-after 'install 'manpage
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "PYTHONPATH"
+                     (string-append
+                       (getenv "PYTHONPATH")
+                       ":" (assoc-ref outputs "out")))
+             (zero? (system* "make" "--directory=docs/" "man"))
+             (install-file
+               "docs/_build/man/vdirsyncer.1"
+               (string-append
+                 (assoc-ref outputs "out")
+                 "/share/man/man1")))))))
+    (native-inputs
+     `(("python-oauthlib" ,python-oauthlib)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ("python-sphinx" ,python-sphinx)
+       ;; Required for testing
+       ("python-pytest" ,python-pytest)
+       ("python-pytest-localserver" ,python-pytest-localserver)
+       ("python-pytest-xprocess" ,python-pytest-xprocess)
+       ("python-wsgi-intercept" ,python-wsgi-intercept)
+       ("radicale" ,radicale)))
+    (propagated-inputs
+     `(("python-atomicwrites" ,python-atomicwrites)
+       ("python-click" ,python-click)
+       ("python-click-log" ,python-click-log)
+       ("python-click-threading" ,python-click-threading)
+       ("python-lxml" ,python-lxml) ; which one?
+       ("python-requests-toolbelt" ,python-requests-toolbelt)))
+    (synopsis "Synchronize calendars and contacts")
+    (description "Vdirsyncer synchronizes your calendars and addressbooks
+between two storage locations.  The most popular purpose is to
+synchronize a CalDAV or CardDAV server with a local folder or file.  The
+local data can then be accessed via a variety of programs, none of which
+have to know or worry about syncing to a server.")
+    (home-page "https://github.com/untitaker/vdirsyncer")
+    (license expat)))
