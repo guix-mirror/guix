@@ -204,6 +204,7 @@ options handled by 'set-build-options-from-command-line', and listed in
                 (lambda (opt name arg result . rest)
                   ;; XXX: Imperatively modify the search paths.
                   (%package-module-path (cons arg (%package-module-path)))
+                  (%patch-path (cons arg (%patch-path)))
                   (set! %load-path (cons arg %load-path))
                   (set! %load-compiled-path (cons arg %load-compiled-path))
 
