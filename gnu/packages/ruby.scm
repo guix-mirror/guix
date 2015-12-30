@@ -1616,6 +1616,41 @@ MiniTest @code{Object#stub} with a global @code{stub} method.")
     (home-page "https://github.com/dockyard/minitest-moar")
     (license license:expat)))
 
+(define-public ruby-minitest-bonus-assertions
+  (package
+    (name "ruby-minitest-bonus-assertions")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "minitest-bonus-assertions" version))
+       (sha256
+        (base32
+         "11nrd32kwy61ndg9csk7l1ifya79ghrrv3vsrxj57k50m7na6jkm"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'clean-dependencies
+           (lambda _
+             ;; Remove unneeded require statement that would entail another
+             ;; dependency.
+             (substitute* "test/minitest_config.rb"
+               (("require 'minitest/bisect'") ""))
+             #t)))))
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)
+       ("ruby-minitest-pretty-diff" ,ruby-minitest-pretty-diff)
+       ("ruby-minitest-focus" ,ruby-minitest-focus)
+       ("ruby-minitest-moar" ,ruby-minitest-moar)))
+    (synopsis "Bonus assertions for @code{Minitest}")
+    (description
+     "Minitest bonus assertions provides extra MiniTest assertions.  For
+instance, it provides @code{assert_true}, @code{assert_false} and
+@code{assert_set_equal}.")
+    (home-page "https://github.com/halostatue/minitest-bonus-assertions")
+    (license license:expat)))
+
 (define-public ruby-daemons
   (package
     (name "ruby-daemons")
