@@ -3190,6 +3190,35 @@ engine.")
      "https://github.com/sparklemotion/sqlite3-ruby")
     (license license:bsd-3)))
 
+(define-public ruby-shoulda-context
+  (package
+    (name "ruby-shoulda-context")
+    (version "1.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "shoulda-context" version))
+       (sha256
+        (base32
+         "06wv2ika5zrbxn0m3qxwk0zkbspxids3zmlq3xxays5qmvl1qb55"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Do not run tests to avoid circular dependence with rails.
+             ;; Instead just import the library to test.
+             (zero? (system* "ruby" "-Ilib" "-r" "shoulda-context")))))))
+    (synopsis "Test::Unit context framework extracted from Shoulda")
+    (description
+     "@code{shoulda-context} is the context framework extracted from Shoulda.
+Instead of writing Ruby methods with lots_of_underscores, shoulda-context adds
+context, setup, and should blocks combine to produce natural test method
+names.")
+    (home-page "https://github.com/thoughtbot/shoulda-context")
+    (license license:expat)))
+
 (define-public ruby-ansi
   (package
     (name "ruby-ansi")
