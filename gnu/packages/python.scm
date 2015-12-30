@@ -2680,16 +2680,14 @@ interested parties to subscribe to events, or \"signals\".")
 (define-public pelican
   (package
     (name "pelican")
-    (version "3.6.0")
+    (version "3.6.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/pelican/pelican-"
-             version ".tar.gz"))
+       (uri (pypi-uri "pelican" version))
        (sha256
         (base32
-         "0lbkk902mqxpp452pp76n6qcjv6f99lq2zl204xmqyzcan9zr3ps"))))
+         "1hn94rb4q3zmcq16in055xikal4dba5hfx3zznq7warllcgc9f8k"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
