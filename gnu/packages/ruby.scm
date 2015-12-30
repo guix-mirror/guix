@@ -3334,6 +3334,46 @@ support to both Ruby and JRuby.  It uses @code{unf_ext} on CRuby and
     (home-page "https://github.com/knu/ruby-unf")
     (license license:bsd-2)))
 
+(define-public ruby-domain-name
+  (package
+    (name "ruby-domain-name")
+    (version "0.5.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "domain_name" version))
+       (sha256
+        (base32
+         "16qvfrmcwlzz073aas55mpw2nhyhjcn96s524w0g1wlml242hjav"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'fix-versions
+           (lambda _
+             ;; Fix NameError that appears to already be fixed upstream.
+             (substitute* "Rakefile"
+               (("DomainName::VERSION")
+                "Bundler::GemHelper.gemspec.version"))
+             ;; Loosen unnecessarily strict test-unit version specification.
+             (substitute* "domain_name.gemspec"
+               (("<test-unit>, \\[\\\"~> 2.5.5") "<test-unit>, [\">0"))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-unf" ,ruby-unf)))
+    (native-inputs
+     `(("ruby-shoulda" ,ruby-shoulda)
+       ("bundler" ,bundler)
+       ("ruby-test-unit" ,ruby-test-unit)))
+    (synopsis "Domain name manipulation library")
+    (description
+     "@code{domain_name} is a Domain name manipulation library.  It parses a
+domain name ready for extracting the registered domain and TLD (Top Level
+Domain).  It can also be used for cookie domain validation based on the Public
+Suffix List.")
+    (home-page "https://github.com/knu/ruby-domain_name")
+    (license license:bsd-2)))
+
 (define-public ruby-ansi
   (package
     (name "ruby-ansi")
