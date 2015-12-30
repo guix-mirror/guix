@@ -184,7 +184,7 @@ and is best suited to building Java projects.  Ant uses XML to describe the
 build process and its dependencies, whereas Make uses Makefile format.")
     (license license:asl2.0)))
 
-(define-public icedtea6
+(define-public icedtea-6
   (package
     (name "icedtea")
     (version "1.13.9")
@@ -585,7 +585,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                          "http://icedtea.classpath.org/download/drops/"
                          "/icedtea7/" version "/" name ".tar.bz2"))
                    (sha256 (base32 hash))))))
-    (package (inherit icedtea6)
+    (package (inherit icedtea-6)
       (version version)
       (source (origin
                 (method url-fetch)
@@ -616,7 +616,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
          #:tests? #f
          ;; Apparently, the C locale is needed for some of the tests.
          #:locale "C"
-         ,@(substitute-keyword-arguments (package-arguments icedtea6)
+         ,@(substitute-keyword-arguments (package-arguments icedtea-6)
              ((#:modules modules)
               `((ice-9 match)
                 (srfi srfi-26)
@@ -738,7 +738,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
          ("hotspot-drop"
           ,(drop "hotspot"
                  "03pggsrhkzpjnj939vhr3b7mcrhfp22b7yg3hkx52kcv8dqkg3yx"))
-         ,@(fold alist-delete (package-native-inputs icedtea6)
+         ,@(fold alist-delete (package-native-inputs icedtea-6)
                  '("openjdk6-src")))))))
 
 (define-public icedtea icedtea7)
