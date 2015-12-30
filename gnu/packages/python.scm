@@ -3385,15 +3385,14 @@ operators such as union, intersection, and difference.")
 (define-public python-rpy2
   (package
     (name "python-rpy2")
-    (version "2.6.0")
+    (version "2.7.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/r/rpy2"
-                           "/rpy2-" version ".tar.gz"))
+       (uri (pypi-uri "rpy2" version))
        (sha256
         (base32
-         "1dp4l8hpv0jpf4crz4wis6in3lvwk86cr5zvpw410y4a07rrbqjk"))))
+         "0nhan2qvrw7b7gg5zddwa22kybdv3x1g26vkd7q8lvnkgzrs4dga"))))
     (build-system python-build-system)
     (inputs
      `(("python-six" ,python-six)
