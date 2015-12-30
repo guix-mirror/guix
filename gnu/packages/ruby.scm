@@ -3158,6 +3158,38 @@ neither too verbose nor too minimal.")
     (home-page "https://github.com/tpope/fivemat")
     (license license:expat)))
 
+(define-public ruby-sqlite3
+  (package
+    (name "ruby-sqlite3")
+    (version "1.3.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "sqlite3" version))
+       (sha256
+        (base32
+         "19r06wglnm6479ffj9dl0fa4p5j2wi6dj7k6k3d0rbx7036cv3ny"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'add-gemtest-file
+           ;; This file exists in the repository but is not distributed.
+           (lambda _ (zero? (system* "touch" ".gemtest")))))))
+    (inputs
+     `(("sqlite" ,sqlite)))
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)
+       ("ruby-mini-portile" ,ruby-mini-portile)))
+    (synopsis "Interface with SQLite3 databases")
+    (description
+     "This module allows Ruby programs to interface with the SQLite3 database
+engine.")
+    (home-page
+     "https://github.com/sparklemotion/sqlite3-ruby")
+    (license license:bsd-3)))
+
 (define-public ruby-ansi
   (package
     (name "ruby-ansi")
