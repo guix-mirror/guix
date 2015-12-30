@@ -6907,3 +6907,24 @@ program.  Thus, you can avoid spawning multiple processes or threads to test
 your Web app.")
     (home-page "https://github.com/cdent/wsgi-intercept")
     (license license:expat)))
+
+(define-public python-pytest-xprocess
+  (package
+    (name "python-pytest-xprocess")
+    (version "0.9.1")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "pytest-xprocess" version))
+             (sha256
+              (base32
+               "17zlql1xqw3ywcgwwbqmw633aly99lab12hm02asr8awvg5603pp"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cache" ,python-pytest-cache)
+       ("python-psutil" ,python-psutil)))
+    (synopsis "Pytest plugin to manage external processes across test runs")
+    (description "Pytest-xprocess is an experimental py.test plugin for managing
+processes across test runs.")
+    (home-page "https://bitbucket.org/pytest-dev/pytest-xprocess")
+    (license license:expat)))
