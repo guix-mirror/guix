@@ -2364,21 +2364,24 @@ object.")
 (define-public python-virtualenv
   (package
     (name "python-virtualenv")
-    (version "1.11.6")
+    (version "13.1.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/v/virtualenv/virtualenv-"
-             version ".tar.gz"))
+       (uri (pypi-uri "virtualenv" version))
        (sha256
         (base32
-         "1xq4prmg25n9cz5zcvbqx68lmc3kl39by582vd8pzs9f3qalqyiy"))))
+         "1p732accxwqfjbdna39k8w8lp9gyw91vr4kzkhm8mgfxikqqxg5a"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+        (replace 'check
+         (lambda _ (zero? (system* "py.test")))))))
     (inputs
      `(("python-setuptools" ,python-setuptools)
        ("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)))
+       ("python-pytest" ,python-pytest)))
     (home-page "https://virtualenv.pypa.io/")
     (synopsis "Virtual Python environment builder")
     (description
