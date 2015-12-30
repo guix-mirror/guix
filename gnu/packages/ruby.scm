@@ -3297,6 +3297,43 @@ more complex, and error-prone.")
     (home-page "https://github.com/thoughtbot/shoulda")
     (license license:expat)))
 
+(define-public ruby-unf
+  (package
+    (name "ruby-unf")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "unf" version))
+       (sha256
+        (base32
+         "0bh2cf73i2ffh4fcpdn9ir4mhq8zi50ik0zqa1braahzadx536a9"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'add-dependency-to-bundler
+           (lambda _
+             ;; test-unit is required but not provided by the bundler
+             ;; environment.  This is fixed in the upstream repository but fix
+             ;; has not been released.
+             (substitute* "Gemfile"
+               (("^gemspec") "gem 'test-unit'\ngemspec"))
+             #t)))))
+    (propagated-inputs
+     `(("ruby-unf-ext" ,ruby-unf-ext)))
+    (native-inputs
+     `(("ruby-shoulda" ,ruby-shoulda)
+       ("bundler" ,bundler)
+       ("ruby-test-unit" ,ruby-test-unit)))
+    (synopsis "Unicode Normalization Form support to Ruby and JRuby")
+    (description
+     "@code{ruby-unf} is a wrapper library to bring Unicode Normalization Form
+support to both Ruby and JRuby.  It uses @code{unf_ext} on CRuby and
+@code{java.text.Normalizer} on JRuby.")
+    (home-page "https://github.com/knu/ruby-unf")
+    (license license:bsd-2)))
+
 (define-public ruby-ansi
   (package
     (name "ruby-ansi")
