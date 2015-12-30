@@ -6850,3 +6850,33 @@ minimal and fast API targetting the following uses:
 the last py.test invocation.")
     (home-page "https://bitbucket.org/hpk42/pytest-cache/")
     (license license:expat)))
+
+(define-public python-pytest-localserver
+  (package
+    (name "python-pytest-localserver")
+    (version "0.3.4")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "pytest-localserver" version ".zip"))
+             (sha256
+              (base32
+               "050q505a7gnsz7vqidw0w5dvxjb2flzi7z734agpjzmsl85c2bcx"))))
+    (build-system python-build-system)
+    (arguments
+      `(#:phases (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "py.test" "--genscript=runtests.py"))
+             (zero? (system* "py.test")))))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)
+       ("python-werkzeug" ,python-werkzeug)))
+    (synopsis "Py.test plugin to test server connections locally")
+    (description "Pytest-localserver is a plugin for the pytest testing
+framework which enables you to test server connections locally.")
+    (home-page "https://pypi.python.org/pypi/pytest-localserver")
+    (license license:expat)))
