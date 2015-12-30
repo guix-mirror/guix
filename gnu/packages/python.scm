@@ -2658,16 +2658,14 @@ which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
 (define-public python-blinker
   (package
     (name "python-blinker")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/b/blinker/blinker-"
-             version ".tar.gz"))
+       (uri (pypi-uri "blinker" version))
        (sha256
         (base32
-         "0bvfxkmjx6bpa302pv7v2vw5rwr3dlzjzfdp3bj628i6144024b8"))))
+         "1dpq0vb01p36jjwbhhd08ylvrnyvcc82yxx3mwjx6awrycjyw6j7"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
