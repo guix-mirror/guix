@@ -202,14 +202,14 @@ tested on Python version 3.2, 2.7 and 2.6.")
 (define-public python-os-testr
   (package
     (name "python-os-testr")
-    (version "0.4.2")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "os-testr" version))
        (sha256
         (base32
-         "0474z0mxb7y3vfk4s097wf1mzji5d135vh27cvlh9q17rq3x9r3w"))))
+         "0bv03wnmvxhyi8y08hjh9clxrwqc2251529v4kh5khvca0fsbqdp"))))
     (build-system python-build-system)
     (arguments
      ;; os-testr uses itself to run the tests. It seems like pbr writes the
