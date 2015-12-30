@@ -285,7 +285,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "6.6.0")
+    (version "6.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -293,7 +293,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1x33zxjm3y2p54lbcsgflrs6v2zq785y2k0xi6xia6akrvjmh4n4"))))
+                "1c2b03856a78ripkpl9jjzj6yzyfb3rlrdnjx300s647l1xx8gxg"))))
     (build-system python-build-system)
     (native-inputs `(("python" ,python-2)))
     (arguments
@@ -302,7 +302,7 @@ and corrections.  It is based on a Bayesian filter.")
       ;; Tests require a modifiable IMAP account.
        #:tests? #f))
     (home-page "http://www.offlineimap.org")
-    (synopsis "Synch emails between two repositories")
+    (synopsis "Sync emails between two repositories")
     (description
      "OfflineImap synchronizes emails between two repositories, so that you
 can read the same mailbox from multiple computers.  It supports IMAP as REMOTE
