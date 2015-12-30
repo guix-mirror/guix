@@ -3716,6 +3716,55 @@ used to create both network servers and clients.")
     (home-page "http://rubyeventmachine.com")
     (license (list license:ruby license:gpl3)))) ; GPLv3 only AFAICT
 
+(define-public ruby-ruby-engine
+  (package
+    (name "ruby-ruby-engine")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "ruby_engine" version))
+       (sha256
+        (base32
+         "1d0sd4q50zkcqhr395wj1wpn2ql52r0fpwhzjfvi1bljml7k546v"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'clean-up
+           (lambda _
+             (delete-file "Gemfile.lock")
+             (substitute* "ruby_engine.gemspec"
+               ;; Remove unnecessary imports that would entail further
+               ;; dependencies.
+               ((".*<rdoc.*") "")
+               ((".*<rubygems-tasks.*") "")
+               ;; Remove extraneous .gem file
+               (("\\\"pkg/ruby_engine-1.0.0.gem\\\",") "")
+               ;; Soften rake dependency
+               (("%q<rake>.freeze, \\[\\\"~> 10.0\\\"\\]")
+                "%q<rake>.freeze, [\">= 10.0\"]")
+               ;; Soften the rspec dependency
+               (("%q<rspec>.freeze, \\[\\\"~> 2.4\\\"\\]")
+                "%q<rspec>.freeze, [\">= 2.4\"]"))
+             (substitute* "Rakefile"
+               (("require 'rubygems/tasks'") "")
+               (("Gem::Tasks.new") ""))
+             ;; Remove extraneous .gem file that otherwise gets installed.
+             (delete-file "pkg/ruby_engine-1.0.0.gem")
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rake" ,ruby-rake)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Simplifies checking for Ruby implementation")
+    (description
+     "@code{ruby_engine} provides an RubyEngine class that can be used to
+check which implementation of Ruby is in use.  It can provide the interpreter
+name and provides query methods such as @{RubyEngine.mri?}.")
+    (home-page "https://github.com/janlelis/ruby_engine")
+    (license license:expat)))
+
 (define-public ruby-turn
   (package
     (name "ruby-turn")
