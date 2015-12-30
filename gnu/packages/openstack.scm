@@ -569,14 +569,14 @@ in transmittable and storable formats, such as JSON and MessagePack.")
 (define-public python-oslosphinx
   (package
     (name "python-oslosphinx")
-    (version "3.1.0")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "oslosphinx" version))
        (sha256
         (base32
-         "0zcshdc9s1f7hnvg0fm2ps5rak3dpnm8kqg4i21lknhmsvb7p5cb"))))
+         "178svff46pmynpsnw06gpxk0w13p1gwkqbsvyxphblxv9wl09ksz"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-requests" ,python-requests)))
