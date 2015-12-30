@@ -3268,6 +3268,35 @@ more complex, and error-prone.")
                (base32
                 "0d3ryqcsk1n9y35bx5wxnqbgw4m8b3c79isazdjnnbg8crdp72d0"))))))
 
+(define-public ruby-shoulda
+  (package
+    (name "ruby-shoulda")
+    (version "3.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "shoulda" version))
+       (sha256
+        (base32
+         "0csmf15a7mcinfq54lfa4arp0f4b2jmwva55m0p94hdf3pxnjymy"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; Don't run tests to avoid circular dependence with rails.  Instead
+           ;; just import the library to test.
+           (lambda _ (zero? (system* "ruby" "-Ilib" "-r" "shoulda")))))))
+    (propagated-inputs
+     `(("ruby-shoulda-context" ,ruby-shoulda-context)
+       ("ruby-shoulda-matchers" ,ruby-shoulda-matchers-2)))
+    (synopsis "Context framework and matchers for testing")
+    (description
+     "@code{shoulda} is a meta-package combining @code{shoulda-context} and
+@code{shoulda-matchers} providing tools for writing tests.")
+    (home-page "https://github.com/thoughtbot/shoulda")
+    (license license:expat)))
+
 (define-public ruby-ansi
   (package
     (name "ruby-ansi")
