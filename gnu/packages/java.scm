@@ -186,7 +186,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
 
 (define-public icedtea6
   (package
-    (name "icedtea6")
+    (name "icedtea")
     (version "1.13.9")
     (source (origin
               (method url-fetch)
@@ -514,7 +514,8 @@ build process and its dependencies, whereas Make uses Makefile format.")
                (alist-replace
                 'install
                 (lambda* (#:key outputs #:allow-other-keys)
-                  (let ((doc (string-append (assoc-ref outputs "doc") "/share/doc/" ,name))
+                  (let ((doc (string-append (assoc-ref outputs "doc")
+                                            "/share/doc/icedtea"))
                         (jre (assoc-ref outputs "out"))
                         (jdk (assoc-ref outputs "jdk")))
                     (copy-recursively "openjdk.build/docs" doc)
@@ -585,7 +586,6 @@ build process and its dependencies, whereas Make uses Makefile format.")
                          "/icedtea7/" version "/" name ".tar.bz2"))
                    (sha256 (base32 hash))))))
     (package (inherit icedtea6)
-      (name "icedtea7")
       (version version)
       (source (origin
                 (method url-fetch)
