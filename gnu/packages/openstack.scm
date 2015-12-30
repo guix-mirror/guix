@@ -532,14 +532,14 @@ handlers and support for context specific logging (like resource id’s etc).")
 (define-public python-oslo.serialization
   (package
     (name "python-oslo.serialization")
-    (version "2.0.0")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "oslo.serialization" version))
        (sha256
         (base32
-         "1hnkc69sa4r1qhx6hdwlrk2ng7wypgwr063iq5r815a0bv0qr1ad"))))
+         "00s03krhf833gs76aw5ns32w9m1i4hx6x6d9g82m0j5wyqk0sci4"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-iso8601" ,python-iso8601)
