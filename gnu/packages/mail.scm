@@ -730,14 +730,14 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
 (define-public isync
   (package
     (name "isync")
-    (version "1.1.2")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/isync/isync/"
                            version "/isync-" version ".tar.gz"))
        (sha256 (base32
-                "1960ah3fmp75cakd06lcx50n5q0yvfsadjh3lffhyvjvj7ava9d2"))))
+                "1bij6nm06ghkg98n2pdyacam2fyg5y8f7ajw0d5653m0r4ldw5p7"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
