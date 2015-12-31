@@ -701,6 +701,37 @@ AsciiDoc content to HTML5, DocBook 5 (or 4.5) and other formats.")
   (home-page "http://asciidoctor.org")
   (license license:expat)))
 
+(define-public ruby-sporkmonger-rack-mount
+  ;; Testing the addressable gem requires a newer commit than that released, so
+  ;; use an up to date version.
+  (let ((revision "1")
+        (commit "076aa2c47d9a4c081f1e9bcb56a826a9e72bd5c3"))
+    (package
+      (name "ruby-sporkmonger-rack-mount")
+      (version (git-version "0.8.3" revision commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/sporkmonger/rack-mount.git")
+                      (commit commit)))
+                (file-name (git-file-name name version))
+                (sha256
+                 (base32
+                  "1scx273g3xd93424x9lxc4zyvcp2niknbw5mkz6wkivpf7xsyxdq"))))
+      (build-system ruby-build-system)
+      (arguments
+       ;; Tests currently fail so disable them.
+       ;; https://github.com/sporkmonger/rack-mount/pull/1
+       `(#:tests? #f))
+      (propagated-inputs `(("ruby-rack" ,ruby-rack)))
+      (synopsis "Stackable dynamic tree based Rack router")
+      (description
+       "@code{Rack::Mount} supports Rack's @code{X-Cascade} convention to
+continue trying routes if the response returns pass.  This allows multiple
+routes to be nested or stacked on top of each other.")
+      (home-page "https://github.com/sporkmonger/rack-mount")
+      (license license:expat))))
+
 (define-public ruby-ci-reporter
   (package
     (name "ruby-ci-reporter")
