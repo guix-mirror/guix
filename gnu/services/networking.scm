@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages connman)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages tor)
   #:use-module (gnu packages messaging)
@@ -45,7 +47,8 @@
             tor-service
             bitlbee-service
             wicd-service
-            network-manager-service))
+            network-manager-service
+            connman-service))
 
 ;;; Commentary:
 ;;;
@@ -651,5 +654,49 @@ and @command{wicd-curses} user interfaces."
   "Return a service that runs NetworkManager, a network connection manager
 that attempting to keep active network connectivity when available."
   (service network-manager-service-type network-manager))
+
+
+;;;
+;;; Connman
+;;;
+
+(define %connman-activation
+  ;; Activation gexp for Connman.
+  #~(begin
+      (use-modules (guix build utils))
+      (mkdir-p "/var/lib/connman/")
+      (mkdir-p "/var/lib/connman-vpn/")))
+
+(define (connman-shepherd-service connman)
+  "Return a shepherd service for Connman"
+  (list (shepherd-service
+         (documentation "Run Connman")
+         (provision '(networking))
+         (requirement '(user-processes dbus-system loopback))
+         (start #~(make-forkexec-constructor
+                   (list (string-append #$connman
+                                        "/sbin/connmand")
+                         "-n" "-r")))
+         (stop #~(make-kill-destructor)))))
+
+(define connman-service-type
+  (service-type (name 'connman)
+                (extensions
+                 (list (service-extension shepherd-root-service-type
+                                          connman-shepherd-service)
+                       (service-extension dbus-root-service-type list)
+                       (service-extension activation-service-type
+                                          (const %connman-activation))
+                       ;; Add connman to the system profile.
+                       (service-extension profile-service-type list)))))
+
+(define* (connman-service #:key (connman connman))
+  "Return a service that runs @url{https://01.org/connman,Connman}, a network
+connection manager.
+
+This service adds the @var{connman} package to the global profile, providing
+several the @command{connmanctl} command to interact with the daemon and
+configure networking."
+  (service connman-service-type connman))
 
 ;;; networking.scm ends here
