@@ -1080,6 +1080,25 @@ for Chinese languages:
 guix package -i font-adobe-source-han-sans:cn
 @end example
 
+@subsection Emacs Packages
+
+When you install Emacs packages with Guix, the elisp files may be placed
+either in @file{$HOME/.guix-profile/share/emacs/site-lisp/} or in
+sub-directories of
+@file{$HOME/.guix-profile/share/emacs/site-lisp/guix.d/}.  The latter
+directory exists because potentially there may exist thousands of Emacs
+packages and storing all their files in a single directory may be not
+reliable (because of name conflicts).  So we think using a separate
+directory for each package is a good idea.  It is very similar to how
+the Emacs package system organizes the file structure (@pxref{Package
+Files,,, emacs, The GNU Emacs Manual}).
+
+By default, Emacs (installed with Guix) ``knows'' where these packages
+are placed, so you don't need to perform any configuration.  If, for
+some reason, you want to avoid auto-loading Emacs packages installed
+with Guix, you can do it by running Emacs with @code{--no-site-file}
+option (@pxref{Init File,,, emacs, The GNU Emacs Manual}).
+
 @c TODO What else?
 
 @c *********************************************************************
