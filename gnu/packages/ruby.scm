@@ -3329,6 +3329,37 @@ into a single method call.")
     (home-page "https://rack.github.io/")
     (license license:expat)))
 
+(define-public ruby-rack-test
+  (package
+    (name "ruby-rack-test")
+    (version "0.8.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rack-test" version))
+       (sha256
+        (base32
+         "14ij39zywvr1i9f6jsixfg4zxi2q1m1n1nydvf47f0b6sfc9mv1g"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; Disable tests because of circular dependencies: requires sinatra,
+     ;; which requires rack-protection, which requires rack-test.  Instead
+     ;; simply require the library.
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (invoke "ruby" "-Ilib" "-r" "rack/test"))))))
+    (propagated-inputs
+     `(("ruby-rack" ,ruby-rack)))
+    (synopsis "Testing API for Rack applications")
+    (description
+     "Rack::Test is a small, simple testing API for Rack applications.  It can
+be used on its own or as a reusable starting point for Web frameworks and
+testing libraries to build on.")
+    (home-page "https://github.com/rack-test/rack-test")
+    (license license:expat)))
+
 (define-public ruby-docile
   (package
     (name "ruby-docile")
