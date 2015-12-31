@@ -223,65 +223,61 @@ an interpreter, a compiler, a debugger, and much more.")
        ("ed" ,ed)))
     (arguments
      '(#:phases
-       (alist-delete
-        'configure
-        (alist-cons-before
-         'build 'patch-unix-tool-paths
-         (lambda* (#:key outputs inputs #:allow-other-keys)
-           (let ((out (assoc-ref outputs "out"))
-                 (bash (assoc-ref inputs "bash"))
-                 (coreutils (assoc-ref inputs "coreutils"))
-                 (ed (assoc-ref inputs "ed")))
-             (define (quoted-path input path)
-               (string-append "\"" input path "\""))
-             ;; Patch absolute paths in string literals.  Note that this
-             ;; occurs in some .sh files too (which contain Lisp code).  Use
-             ;; ISO-8859-1 because some of the files are ISO-8859-1 encoded.
-             (with-fluids ((%default-port-encoding #f))
-               (substitute* (find-files "." "\\.(lisp|sh)$")
-                 (("\"/bin/sh\"") (quoted-path bash "/bin/sh"))
-                 (("\"/usr/bin/env\"") (quoted-path coreutils "/usr/bin/env"))
-                 (("\"/bin/cat\"") (quoted-path coreutils "/bin/cat"))
-                 (("\"/bin/ed\"") (quoted-path ed "/bin/ed"))
-                 (("\"/bin/echo\"") (quoted-path coreutils "/bin/echo"))
-                 (("\"/bin/uname\"") (quoted-path coreutils "/bin/uname"))))
-             ;; This one script has a non-string occurrence of /bin/sh.
-             (substitute* '("tests/foreign.test.sh")
-               ;; Leave whitespace so we don't match the shebang.
-               ((" /bin/sh ") " sh "))
-             ;; This file contains a module that can create executable files
-             ;; which depend on the presence of SBCL.  It generates shell
-             ;; scripts doing "exec sbcl ..." to achieve this.  We patch both
-             ;; the shebang and the reference to "sbcl", tying the generated
-             ;; executables to the exact SBCL package that generated them.
-             (substitute* '("contrib/sb-executable/sb-executable.lisp")
-               (("/bin/sh") (string-append bash "/bin/sh"))
-               (("exec sbcl") (string-append "exec " out "/bin/sbcl")))
-             ;; Disable some tests that fail in our build environment.
-             (substitute* '("contrib/sb-bsd-sockets/tests.lisp")
-               ;; This requires /etc/protocols.
-               (("\\(deftest get-protocol-by-name/error" all)
-                (string-append "#+nil ;disabled by Guix\n" all)))
-             (substitute* '("contrib/sb-posix/posix-tests.lisp")
-               ;; These assume some users/groups which we don't have.
-               (("\\(deftest pwent\\.[12]" all)
-                (string-append "#+nil ;disabled by Guix\n" all))
-               (("\\(deftest grent\\.[12]" all)
-                (string-append "#+nil ;disabled by Guix\n" all)))))
-         (alist-replace
-          'build
-          (lambda* (#:key outputs #:allow-other-keys)
-            (setenv "CC" "gcc")
-            (zero? (system* "sh" "make.sh" "clisp"
-                            (string-append "--prefix="
-                                           (assoc-ref outputs "out")))))
-          (alist-replace
-           'install
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'patch-unix-tool-paths
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (bash (assoc-ref inputs "bash"))
+                   (coreutils (assoc-ref inputs "coreutils"))
+                   (ed (assoc-ref inputs "ed")))
+               (define (quoted-path input path)
+                 (string-append "\"" input path "\""))
+               ;; Patch absolute paths in string literals.  Note that this
+               ;; occurs in some .sh files too (which contain Lisp code).  Use
+               ;; ISO-8859-1 because some of the files are ISO-8859-1 encoded.
+               (with-fluids ((%default-port-encoding #f))
+                 (substitute* (find-files "." "\\.(lisp|sh)$")
+                   (("\"/bin/sh\"") (quoted-path bash "/bin/sh"))
+                   (("\"/usr/bin/env\"") (quoted-path coreutils "/usr/bin/env"))
+                   (("\"/bin/cat\"") (quoted-path coreutils "/bin/cat"))
+                   (("\"/bin/ed\"") (quoted-path ed "/bin/ed"))
+                   (("\"/bin/echo\"") (quoted-path coreutils "/bin/echo"))
+                   (("\"/bin/uname\"") (quoted-path coreutils "/bin/uname"))))
+               ;; This one script has a non-string occurrence of /bin/sh.
+               (substitute* '("tests/foreign.test.sh")
+                 ;; Leave whitespace so we don't match the shebang.
+                 ((" /bin/sh ") " sh "))
+               ;; This file contains a module that can create executable files
+               ;; which depend on the presence of SBCL.  It generates shell
+               ;; scripts doing "exec sbcl ..." to achieve this.  We patch both
+               ;; the shebang and the reference to "sbcl", tying the generated
+               ;; executables to the exact SBCL package that generated them.
+               (substitute* '("contrib/sb-executable/sb-executable.lisp")
+                 (("/bin/sh") (string-append bash "/bin/sh"))
+                 (("exec sbcl") (string-append "exec " out "/bin/sbcl")))
+               ;; Disable some tests that fail in our build environment.
+               (substitute* '("contrib/sb-bsd-sockets/tests.lisp")
+                 ;; This requires /etc/protocols.
+                 (("\\(deftest get-protocol-by-name/error" all)
+                  (string-append "#+nil ;disabled by Guix\n" all)))
+               (substitute* '("contrib/sb-posix/posix-tests.lisp")
+                 ;; These assume some users/groups which we don't have.
+                 (("\\(deftest pwent\\.[12]" all)
+                  (string-append "#+nil ;disabled by Guix\n" all))
+                 (("\\(deftest grent\\.[12]" all)
+                  (string-append "#+nil ;disabled by Guix\n" all))))))
+         (replace 'build
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "CC" "gcc")
+             (zero? (system* "sh" "make.sh" "clisp"
+                             (string-append "--prefix="
+                                            (assoc-ref outputs "out"))))))
+         (replace 'install
            (lambda _
-             (zero? (system* "sh" "install.sh")))
-           %standard-phases))))
-       ;; No 'check' target, though "make.sh" (build phase) runs tests.
-       #:tests? #f))
+             (zero? (system* "sh" "install.sh")))))
+         ;; No 'check' target, though "make.sh" (build phase) runs tests.
+         #:tests? #f))
     (home-page "http://www.sbcl.org/")
     (synopsis "Common Lisp implementation")
     (description "Steel Bank Common Lisp (SBCL) is a high performance Common
