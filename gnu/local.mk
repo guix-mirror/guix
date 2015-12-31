@@ -73,6 +73,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/compression.scm			\
   gnu/packages/conkeror.scm			\
   gnu/packages/conky.scm			\
+  gnu/packages/connman.scm			\
   gnu/packages/cook.scm				\
   gnu/packages/cpio.scm				\
   gnu/packages/cppi.scm				\
