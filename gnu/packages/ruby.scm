@@ -36,6 +36,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ragel)
@@ -664,6 +665,41 @@ line of code.")
     ;; "Saikuro uses the BSD license", but the LICENSE file contains the text
     ;; of the Expat license.
     (license license:bsd-3)))
+
+(define-public ruby-asciidoctor
+  (package
+  (name "ruby-asciidoctor")
+  (version "1.5.6.1")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (rubygems-uri "asciidoctor" version))
+      (sha256
+        (base32
+          "1jnf9y8q5asfdzilp8vcqafrc2faj719df4yh1993mh6jd0iqdy4"))))
+  (build-system ruby-build-system)
+  (arguments
+   `(#:test-target "test:all"
+     #:phases
+     (modify-phases %standard-phases
+       (add-before 'check 'remove-circular-tests
+         (lambda _
+           ;; Remove tests that require circular dependencies to load or pass.
+           (delete-file "test/invoker_test.rb")
+           (delete-file "test/converter_test.rb")
+           (delete-file "test/options_test.rb")
+           #t)))))
+  (native-inputs
+   `(("ruby-minitest" ,ruby-minitest)
+     ("ruby-nokogiri" ,ruby-nokogiri)
+     ("ruby-asciimath" ,ruby-asciimath)
+     ("ruby-coderay" ,ruby-coderay)))
+  (synopsis "Converter from AsciiDoc content to other formats")
+  (description
+    "Asciidoctor is a text processor and publishing toolchain for converting
+AsciiDoc content to HTML5, DocBook 5 (or 4.5) and other formats.")
+  (home-page "http://asciidoctor.org")
+  (license license:expat)))
 
 (define-public ruby-ci-reporter
   (package
