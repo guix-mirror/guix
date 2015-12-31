@@ -3360,6 +3360,35 @@ testing libraries to build on.")
     (home-page "https://github.com/rack-test/rack-test")
     (license license:expat)))
 
+(define-public ruby-rack-protection
+  (package
+    (name "ruby-rack-protection")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "rack-protection" version))
+       (sha256
+        (base32
+         "0ywmgh7x8ljf7jfnq5hmfzki3f803waji3fcvi107w7mlyflbng7"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(;; Tests missing from the gem
+       #:tests? #f))
+    (propagated-inputs
+     `(("ruby-rack" ,ruby-rack)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec-2)
+       ("ruby-rack-test" ,ruby-rack-test)))
+    (synopsis "Rack middleware that protects against typical web attacks")
+    (description "Rack middleware that can be used to protect against typical
+web attacks.  It can protect all Rack apps, including Rails.  For instance, it
+protects against cross site request forgery, cross site scripting,
+clickjacking, directory traversal, session hijacking and IP spoofing.")
+    (home-page "https://github.com/sinatra/sinatra/tree/master/rack-protection")
+    (license license:expat)))
+
 (define-public ruby-docile
   (package
     (name "ruby-docile")
