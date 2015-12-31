@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -329,7 +329,8 @@ makefiles."
                 (objcopy-command (if target
                                      (string-append target "-objcopy")
                                      "objcopy"))
-                (strip-flags '("--strip-debug" "-D"))
+                (strip-flags '("--strip-debug"
+                               "--enable-deterministic-archives"))
                 (strip-directories '("lib" "lib64" "libexec"
                                      "bin" "sbin"))
                 #:allow-other-keys)
@@ -367,7 +368,7 @@ makefiles."
     ;; `bfd_fill_in_gnu_debuglink_section' function.)  No reference to
     ;; DEBUG-OUTPUT is kept because bfd keeps only the basename of the debug
     ;; file.
-    (zero? (system* objcopy-command "-D"
+    (zero? (system* objcopy-command "--enable-deterministic-archives"
                     (string-append "--add-gnu-debuglink="
                                    (debug-file file))
                     file)))

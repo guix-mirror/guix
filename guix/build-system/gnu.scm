@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -282,7 +282,8 @@ standard packages used as implicit inputs of the GNU build system."
                     (parallel-tests? #t)
                     (patch-shebangs? #t)
                     (strip-binaries? #t)
-                    (strip-flags ''("--strip-debug" "-D"))
+                    (strip-flags ''("--strip-debug"
+                                    "--enable-deterministic-archives"))
                     (strip-directories ''("lib" "lib64" "libexec"
                                           "bin" "sbin"))
                     (validate-runpath? #t)
@@ -417,7 +418,8 @@ is one of `host' or `target'."
                           (parallel-build? #t) (parallel-tests? #t)
                           (patch-shebangs? #t)
                           (strip-binaries? #t)
-                          (strip-flags ''("--strip-debug" "-D"))
+                          (strip-flags ''("--strip-debug"
+                                          "--enable-deterministic-archives"))
                           (strip-directories ''("lib" "lib64" "libexec"
                                                 "bin" "sbin"))
                           (validate-runpath? #t)
