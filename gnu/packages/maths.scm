@@ -53,6 +53,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system ocaml)
   #:use-module (guix build-system r)
+  #:use-module (guix build-system ruby)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bison)
@@ -97,6 +98,7 @@
   #:use-module (gnu packages python-web)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ruby)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages scheme)
   #:use-module (gnu packages shells)
@@ -1939,6 +1941,38 @@ linear algebra, numerical optimization, differential equations, plus some
 special functions.  It uses Matlab function names where appropriate to simplify
 porting.")
     (license license:gpl3+)))
+
+(define-public ruby-asciimath
+  (package
+    (name "ruby-asciimath")
+    (version "1.0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "asciimath" version))
+       (sha256
+        (base32
+         "1d80kiph5mc78zps7si1hv48kv4k12mzaq8jk5kb3pqpjdr72qmc"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; Apply this patch
+         ;; https://github.com/asciidoctor/asciimath/commit/1c06fdc8086077f4785479f78b0823a4a72d7948
+         (add-after 'unpack 'patch-remove-spurious-backslashes
+           (lambda _
+             (substitute* "spec/parser_spec.rb"
+               (("\\\\\"")
+                "\"")))))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "AsciiMath parsing and conversion library")
+    (description
+     "A pure Ruby AsciiMath parsing and conversion library.  AsciiMath is an
+easy-to-write markup language for mathematics.")
+    (home-page "https://github.com/asciidoctor/asciimath")
+    (license license:expat)))
 
 (define-public superlu
   (package
