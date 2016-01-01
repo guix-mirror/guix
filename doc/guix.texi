@@ -4571,6 +4571,8 @@ the updater for @uref{http://cran.r-project.org/, CRAN} packages;
 the updater for @uref{http://www.bioconductor.org/, Bioconductor} R packages;
 @item pypi
 the updater for @uref{https://pypi.python.org, PyPI} packages.
+@item gem
+the updater for @uref{https://rubygems.org, RubyGems} packages.
 @end table
 
 For instance, the following command only checks for updates of Emacs

@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
                 #:select (%gnu-updater %gnome-updater))
   #:use-module (guix import elpa)
   #:use-module (guix import cran)
+  #:use-module (guix import gem)
   #:use-module (guix gnupg)
   #:use-module (gnu packages)
   #:use-module ((gnu packages commencement) #:select (%final-inputs))
@@ -196,7 +198,8 @@ unavailable optional dependencies such as Guile-JSON."
                  %elpa-updater
                  %cran-updater
                  %bioconductor-updater
-                 ((guix import pypi) => %pypi-updater)))
+                 ((guix import pypi) => %pypi-updater)
+                 ((guix import gem) => %gem-updater)))
 
 (define (lookup-updater name)
   "Return the updater called NAME."
