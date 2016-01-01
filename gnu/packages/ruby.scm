@@ -3389,6 +3389,25 @@ clickjacking, directory traversal, session hijacking and IP spoofing.")
     (home-page "https://github.com/sinatra/sinatra/tree/master/rack-protection")
     (license license:expat)))
 
+(define-public ruby-contest
+  (package
+    (name "ruby-contest")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "contest" version))
+       (sha256
+        (base32
+         "1p9f2292b7b0fbrcjswvj9v01z7ig5ig52328wyqcabgb553qsdf"))))
+    (build-system ruby-build-system)
+    (synopsis "Write declarative tests using nested contexts")
+    (description
+     "Contest allows writing declarative @code{Test::Unit} tests using nested
+contexts without performance penalties.")
+    (home-page "https://github.com/citrusbyte/contest")
+    (license license:expat)))
+
 (define-public ruby-docile
   (package
     (name "ruby-docile")
