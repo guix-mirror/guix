@@ -52,6 +52,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages package-management)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages xiph)
@@ -74,20 +75,41 @@
                             (search-patch "emacs-source-date-epoch.patch")))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:phases (modify-phases %standard-phases
-                  (add-before 'configure 'fix-/bin/pwd
-                    (lambda _
-                      ;; Use `pwd', not `/bin/pwd'.
-                      (substitute* (find-files "." "^Makefile\\.in$")
-                        (("/bin/pwd")
-                         "pwd"))))
-                  (add-after 'install 'remove-info.info
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      ;; Remove 'info.info', which is provided by Texinfo.
-                      (let ((out (assoc-ref outputs "out")))
-                        (delete-file
-                         (string-append out "/share/info/info.info.gz"))
-                        #t))))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-/bin/pwd
+           (lambda _
+             ;; Use `pwd', not `/bin/pwd'.
+             (substitute* (find-files "." "^Makefile\\.in$")
+               (("/bin/pwd")
+                "pwd"))))
+         (add-after 'install 'remove-info.info
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Remove 'info.info', which is provided by Texinfo.
+             (let ((out (assoc-ref outputs "out")))
+               (delete-file
+                (string-append out "/share/info/info.info.gz"))
+               #t)))
+         (add-after 'install 'install-site-start
+           ;; Copy guix-emacs.el from Guix and add it to site-start.el.  This
+           ;; way, Emacs packages provided by Guix and installed in
+           ;; ~/.guix-profile/share/emacs/site-lisp/guix.d/PACKAGE-VERSION are
+           ;; automatically found.
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((guix-src (assoc-ref inputs "guix-src"))
+                    (out      (assoc-ref outputs "out"))
+                    (lisp-dir (string-append out "/share/emacs/"
+                                             ,(version-major+minor version)
+                                             "/site-lisp"))
+                    (unpack   (assoc-ref %standard-phases 'unpack)))
+               (mkdir "guix")
+               (with-directory-excursion "guix"
+                 (apply unpack (list #:source guix-src))
+                 (install-file "emacs/guix-emacs.el" lisp-dir))
+               (with-output-to-file (string-append lisp-dir "/site-start.el")
+                 (lambda ()
+                   (display "(require 'guix-emacs nil t)")))
+               #t))))))
     (inputs
      `(("gnutls" ,gnutls)
        ("ncurses" ,ncurses)
@@ -112,7 +134,8 @@
        ("libice" ,libice)
        ("libsm" ,libsm)
        ("alsa-lib" ,alsa-lib)
-       ("dbus" ,dbus)))
+       ("dbus" ,dbus)
+       ("guix-src" ,(package-source guix))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("texinfo" ,texinfo)))
