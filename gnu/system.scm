@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;;
@@ -193,7 +193,7 @@ as 'needed-for-boot'."
 
   (define (device-mappings fs)
     (let ((device (file-system-device fs)))
-      (if (string? device)
+      (if (string? device)                        ;title is 'device
           (filter (lambda (md)
                     (string=? (string-append "/dev/mapper/"
                                              (mapped-device-target md))
@@ -216,7 +216,8 @@ as 'needed-for-boot'."
   "Return a file system among FILE-SYSTEMS that uses DEVICE, or #f."
   (let ((target (string-append "/dev/mapper/" (mapped-device-target device))))
     (find (lambda (fs)
-            (string=? (file-system-device fs) target))
+            (and (eq? 'device (file-system-title fs))
+                 (string=? (file-system-device fs) target)))
           file-systems)))
 
 (define (operating-system-user-mapped-devices os)

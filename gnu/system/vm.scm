@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -391,7 +391,8 @@ environment with the store shared with the host.  MAPPINGS is a list of
                     (source (file-system-device fs)))
                 (or (string=? target (%store-prefix))
                     (string=? target "/")
-                    (string-prefix? "/dev/" source))))
+                    (and (eq? 'device (file-system-title fs))
+                         (string-prefix? "/dev/" source)))))
             (operating-system-file-systems os)))
 
   (operating-system (inherit os)
