@@ -673,12 +673,14 @@ listed in OS.  The C library expects to find it under
       ((system      (operating-system-derivation os))
        (root-fs ->  (operating-system-root-file-system os))
        (kernel ->   (operating-system-kernel os))
+       (root-device -> (if (eq? 'uuid (file-system-title root-fs))
+                           (uuid->string (file-system-device root-fs))
+                           (file-system-device root-fs)))
        (entries ->  (list (menu-entry
                            (label (kernel->grub-label kernel))
                            (linux kernel)
                            (linux-arguments
-                            (cons* (string-append "--root="
-                                                  (file-system-device root-fs))
+                            (cons* (string-append "--root=" root-device)
                                    #~(string-append "--system=" #$system)
                                    #~(string-append "--load=" #$system
                                                     "/boot")

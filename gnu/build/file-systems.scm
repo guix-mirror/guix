@@ -295,9 +295,12 @@ the following:
     ;; The realm of canonicalization.
     (if (eq? title 'any)
         (if (string? spec)
-            (if (string-prefix? "/" spec)
-                'device
-                'label)
+            ;; The "--root=SPEC" kernel command-line option always provides a
+            ;; string, but the string can represent a device, a UUID, or a
+            ;; label.  So check for all three.
+            (cond ((string-prefix? "/" spec) 'device)
+                  ((string->uuid spec) 'uuid)
+                  (else 'label))
             'uuid)
         title))
 
@@ -323,7 +326,11 @@ the following:
      ;; Resolve the label.
      (resolve find-partition-by-label spec identity))
     ((uuid)
-     (resolve find-partition-by-uuid spec uuid->string))
+     (resolve find-partition-by-uuid
+              (if (string? spec)
+                  (string->uuid spec)
+                  spec)
+              uuid->string))
     (else
      (error "unknown device title" title))))
 
