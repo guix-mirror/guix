@@ -312,11 +312,27 @@ Installing goes along these lines:
 @enumerate
 @item
 Download the binary tarball from
-@indicateurl{ftp://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz}@footnote{As
-usual, make sure to download the associated @file{.sig} file and to
-verify the authenticity of the tarball against it!}, where @var{system}
-is @code{x86_64-linux} for an @code{x86_64} machine already running the
-kernel Linux, and so on.
+@indicateurl{ftp://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz},
+where @var{system} is @code{x86_64-linux} for an @code{x86_64} machine
+already running the kernel Linux, and so on.
+
+Make sure to download the associated @file{.sig} file and to verify the
+authenticity of the tarball against it, along these lines:
+
+@example
+$ wget ftp://alpha.gnu.org/gnu/guix/guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
+$ gpg --verify guix-binary-@value{VERSION}.@var{system}.tar.xz.sig
+@end example
+
+If that command fails because you don't have the required public key,
+then run this command to import it:
+
+@example
+$ gpg --keyserver keys.gnupg.net --recv-keys 3D9AEBB5
+@end example
+
+@noindent
+and rerun the @code{gpg --verify} command.
 
 @item
 As @code{root}, run:
