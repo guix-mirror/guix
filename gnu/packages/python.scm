@@ -13,7 +13,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2015 Erik Edrosa <erik.edrosa@gmail.com>
+;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 Chris Marusich <cmmarusich@gmail.com>
@@ -5144,6 +5144,39 @@ Python.")
 
 (define-public python2-mistune
   (package-with-python2 python-mistune))
+
+(define-public python-markdown
+  (package
+    (name "python-markdown")
+    (version "2.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Markdown" version))
+       (sha256
+        (base32
+         "0q758a3fiiawr20b3hhjfs677cwj6xi284yb7xspcvv0fdicz54d"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+                  (lambda _
+                    (zero? (system* "python" "run-tests.py")))))))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-pyyaml" ,python-pyyaml)))
+    (home-page "https://pythonhosted.org/Markdown/")
+    (synopsis "Python implementation of Markdown")
+    (description
+     "This package provides a Python implementation of John Gruber's
+Markdown.  The library features international input, various Markdown
+extensions, and several HTML output formats.  A command line wrapper
+markdown_py is also provided to convert Markdown files to HTML.")
+    (license bsd-3)))
+
+(define-public python2-markdown
+  (package-with-python2 python-markdown))
 
 (define-public python-ptyprocess
   (package
