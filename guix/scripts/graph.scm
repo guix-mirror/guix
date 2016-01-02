@@ -113,7 +113,7 @@ Dependencies may include packages, origin, and file names."
            (((labels things . outputs) ...)
             things)))
         ((origin? thing)
-         (cons (origin-patch-guile thing)
+         (cons (or (origin-patch-guile thing) (default-guile))
                (if (or (pair? (origin-patches thing))
                        (origin-snippet thing))
                    (match (origin-patch-inputs thing)

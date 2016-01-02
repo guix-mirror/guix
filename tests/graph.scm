@@ -150,7 +150,8 @@ edges."
       (let-values (((nodes edges) (nodes+edges)))
         (run-with-store %store
           (mlet %store-monad ((o* (lower-object o))
-                              (p* (lower-object p)))
+                              (p* (lower-object p))
+                              (g  (lower-object (default-guile))))
             (return
              (and (find (match-lambda
                           ((file "the-uri") #t)
@@ -160,6 +161,13 @@ edges."
                           ((source target)
                            (and (string=? source (derivation-file-name p*))
                                 (string=? target o*))))
+                        edges)
+
+                  ;; There must also be an edge from O to G.
+                  (find (match-lambda
+                          ((source target)
+                           (and (string=? source o*)
+                                (string=? target (derivation-file-name g)))))
                         edges)))))))))
 
 (test-assert "derivation DAG"
