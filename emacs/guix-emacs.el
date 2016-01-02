@@ -1,6 +1,6 @@
 ;;; guix-emacs.el --- Emacs packages installed with Guix
 
-;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -24,8 +24,9 @@
 
 ;;; Code:
 
-(require 'guix-profiles)
 (require 'cl-lib)
+(unless (require 'guix-profiles nil t)
+  (defvar guix-user-profile (expand-file-name "~/.guix-profile")))
 
 (defcustom guix-emacs-activate-after-operation t
   "Activate Emacs packages after installing.
@@ -90,7 +91,9 @@ Return nil if there are no emacs packages installed in PROFILE."
   "Load autoloads for Emacs packages installed in PROFILE.
 If PROFILE is nil, use `guix-user-profile'.
 Add autoloads directories to `load-path'."
-  (interactive (list (guix-profile-prompt)))
+  (interactive (list (if (fboundp 'guix-profile-prompt)
+                         (funcall 'guix-profile-prompt)
+                       guix-user-profile)))
   (let* ((autoloads     (guix-emacs-find-autoloads profile))
          (new-autoloads (cl-nset-difference autoloads
                                             guix-emacs-autoloads
