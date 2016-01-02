@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -171,7 +171,9 @@ GNU-BUILD-SYSTEM have zero dependencies."
    (description "same as 'bag', but without the bootstrap nodes")
    (identifier bag-node-identifier)
    (label node-full-name)
-   (edges (lift1 bag-node-edges-sans-bootstrap %store-monad))))
+   (edges (lift1 (compose (cut filter package? <>)
+                          bag-node-edges-sans-bootstrap)
+                 %store-monad))))
 
 
 ;;;

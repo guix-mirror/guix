@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,16 +89,18 @@ edges."
 
 (test-assert "bag-emerged DAG"
   (let-values (((backend nodes+edges) (make-recording-backend)))
-    (let ((p        (dummy-package "p"))
-          (implicit (map (match-lambda
-                           ((label package) package))
-                         (standard-packages))))
+    (let* ((o        (dummy-origin (method (lambda _
+                                             (text-file "foo" "bar")))))
+           (p        (dummy-package "p" (source o)))
+           (implicit (map (match-lambda
+                            ((label package) package))
+                          (standard-packages))))
       (run-with-store %store
         (export-graph (list p) 'port
                       #:node-type %bag-emerged-node-type
                       #:backend backend))
       ;; We should see exactly P and IMPLICIT, with one edge from P to each
-      ;; element of IMPLICIT.
+      ;; element of IMPLICIT.  O must not appear among NODES.
       (let-values (((nodes edges) (nodes+edges)))
         (and (equal? (match nodes
                        (((labels names) ...)
