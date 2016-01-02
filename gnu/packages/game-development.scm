@@ -266,14 +266,14 @@ archive on a per-file basis.")
 (define-public love
   (package
     (name "love")
-    (version "0.9.2")
+    (version "0.10.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://bitbucket.org/rude/love/downloads/"
                                  "love-" version "-linux-src.tar.gz"))
              (sha256
               (base32
-               "0wn1npr5gal5b1idh4a5fwc3f5c36lsbjd4r4d699rqlviid15d9"))))
+               "1r2n1nrw3hcdvy14fjbwz3l9swcy65v3lqwpj2frnkkcwncdz94p"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -281,6 +281,7 @@ archive on a per-file basis.")
      `(("devil" ,devil)
        ("freetype" ,freetype)
        ("libmodplug" ,libmodplug)
+       ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
        ("luajit" ,luajit)
        ("mesa" ,mesa)
