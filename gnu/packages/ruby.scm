@@ -46,7 +46,7 @@
 (define-public ruby
   (package
     (name "ruby")
-    (version "2.2.4")
+    (version "2.3.0")
     (source
      (origin
        (method url-fetch)
@@ -55,14 +55,19 @@
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "0g3ps4q3iz7wj9m45n8xyxzw8nh29ljdqb87b0f6i0p3853gz2yj"))))
+         "15s0dsb5ynf3d2w5gzawnszq5594fqvapv2y7a0qw16przq5l4kh"))
+       (modules '((guix build utils)))
+       (snippet `(begin
+                   ;; Remove bundled libffi
+                   (delete-file-recursively
+                    (string-append "ext/fiddle/libffi-3.2.1"))
+                   #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
-       #:parallel-tests? #f
        #:phases
        (modify-phases %standard-phases
-         (add-before 'configure 'replace-bin-sh
+         (add-before 'configure 'replace-bin-sh-and-remove-libffi
            (lambda _
              (substitute* '("Makefile.in"
                             "ext/pty/pty.c"
@@ -94,6 +99,25 @@
 a focus on simplicity and productivity.")
     (home-page "https://ruby-lang.org")
     (license license:ruby)))
+
+(define-public ruby-2.2
+  (package (inherit ruby)
+    (version "2.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
+                           (version-major+minor version)
+                           "/ruby-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0g3ps4q3iz7wj9m45n8xyxzw8nh29ljdqb87b0f6i0p3853gz2yj"))
+       (modules '((guix build utils)))
+       (snippet `(begin
+                   ;; Remove bundled libffi
+                   (delete-file-recursively
+                    (string-append "ext/fiddle/libffi-3.2.1"))
+                   #t))))))
 
 (define-public ruby-2.1
   (package (inherit ruby)
