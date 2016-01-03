@@ -4361,13 +4361,22 @@ and written in Python.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/u/urwid/urwid-"
-             version ".tar.gz"))
+       (uri (pypi-uri "urwid" version))
        (sha256
         (base32
          "18mb0yy94sjc434rd61m2sfnw27sa0nyrszpj5a9r9zh7fnlzw19"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Disable failing test. Bug filed upstream:
+         ;; https://github.com/wardi/urwid/issues/164
+         ;; TODO: check again for python-urwid > 1.3.0 or python > 3.4.3.
+         (add-after 'unpack 'disable-failing-test
+          (lambda _
+            (substitute* "urwid/tests/test_event_loops.py"
+              (("test_remove_watch_file")
+                "disable_remove_watch_file")))))))
     (native-inputs `(("python-setuptools" ,python-setuptools)))
     (home-page "http://urwid.org")
     (synopsis "Console user interface library for Python")
