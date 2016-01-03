@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Roel Janssen <roel@gnu.org>
 ;;;
@@ -25,6 +25,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages python))
 
@@ -193,3 +194,26 @@ files.  This file format is more compact and more readable than XML.  And
 unlike XML, it is type-aware, so it is not necessary to do string parsing in
 application code.")
     (license license:lgpl2.1+)))
+
+(define-public pfff
+  (package
+    (name "pfff")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/pfff/pfff/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "00m553aa277iarxj6dalmklyb64r7ias49bfwzbacsfg8h3kar8m"))))
+    (build-system cmake-build-system)
+    (home-page "http://biit.cs.ut.ee/pfff/")
+    (synopsis "Probabilistic fast file fingerprinting tool")
+    (description
+     "pfff is a tool for calculating a compact digital fingerprint of a file
+by sampling randomly from the file instead of reading it in full.
+Consequently, the computation has a flat performance characteristic,
+correlated with data variation rather than file size.  pfff can be as reliable
+as existing hashing techniques, with provably negligible risk of collisions.")
+    (license license:bsd-3)))
