@@ -80,7 +80,9 @@ command-line arguments, multiple languages, and so on.")
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1srn321x7whlhs5ks36zlcrrmj4iahll8fxwsh1vbz3v04px54fa"))))
+              "1srn321x7whlhs5ks36zlcrrmj4iahll8fxwsh1vbz3v04px54fa"))
+            (patches
+             (list (search-patch "grep-timing-sensitive-test.patch")))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))             ;some of the tests require it
    (synopsis "Print lines matching a pattern")

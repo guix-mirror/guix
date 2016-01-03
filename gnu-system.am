@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 # Copyright © 2013, 2014, 2015 Mark H Weaver <mhw@netris.org>
 #
@@ -498,6 +498,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   gnu/packages/patches/gobject-introspection-cc.patch		\
   gnu/packages/patches/gobject-introspection-girepository.patch	\
+  gnu/packages/patches/grep-timing-sensitive-test.patch		\
   gnu/packages/patches/grub-gets-undeclared.patch		\
   gnu/packages/patches/grub-freetype.patch			\
   gnu/packages/patches/guile-1.8-cpp-4.5.patch			\
