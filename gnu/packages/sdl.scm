@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 David Thompson <dthompson2@worcester.edu>
+;;; Copyright © 2013, 2015 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -20,6 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages sdl)
+  #:use-module (ice-9 match)
   #:use-module (gnu packages)
   #:use-module ((guix licenses) #:hide (freetype))
   #:use-module (guix packages)
@@ -173,8 +174,6 @@ other supporting functions for SDL.")
                            "--disable-tif-shared"
                            "--disable-webp-shared")))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    ;; FIXME: Add webp
-    ;;
     ;; libjpeg, libpng, and libtiff are propagated inputs because the
     ;; SDL_image headers include the headers of these libraries.  SDL is a
     ;; propagated input because the pkg-config file refers to SDL's pkg-config
@@ -182,7 +181,8 @@ other supporting functions for SDL.")
     (propagated-inputs `(("sdl" ,sdl)
                          ("libjpeg" ,libjpeg)
                          ("libpng" ,libpng)
-                         ("libtiff" ,libtiff)))
+                         ("libtiff" ,libtiff)
+                         ("libwebp" ,libwebp)))
     (synopsis "SDL image loading library")
     (description "SDL_image is an image file loading library for SDL that
 supports the following formats: BMP, GIF, JPEG, LBM, PCX, PNG, PNM, TGA, TIFF,
@@ -298,6 +298,59 @@ sdl-config assumes that all of the headers and libraries are in the same
 directory.")
     (home-page (package-home-page sdl))
     (license (package-license sdl))))
+
+(define (propagated-inputs-with-sdl2 package)
+  "Replace the \"sdl\" propagated input of PACKAGE with SDL2."
+  (map (match-lambda
+         (("sdl" _)
+          `("sdl2" ,sdl2))
+         (other other))
+       (package-propagated-inputs package)))
+
+(define-public sdl2-image
+  (package (inherit sdl-image)
+    (name "sdl2-image")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "http://www.libsdl.org/projects/SDL_image/release/SDL2_image-"
+                              version ".tar.gz"))
+              (sha256
+               (base32
+                "0d3jlhkmr0j5a2dd5h6y29jfcsj7mkl16wghm6n3nqqp7g3ib65j"))))
+    (propagated-inputs
+     (propagated-inputs-with-sdl2 sdl-image))))
+
+(define-public sdl2-mixer
+  (package (inherit sdl-mixer)
+    (name "sdl2-mixer")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "http://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-"
+                              version ".tar.gz"))
+              (sha256
+               (base32
+                "0nvjdxjchrajrn0jag877hdx9zb788hsd315zzg1lyck2wb0xkm8"))))
+    (propagated-inputs
+     (propagated-inputs-with-sdl2 sdl-mixer))))
+
+(define-public sdl2-ttf
+  (package (inherit sdl-ttf)
+    (name "sdl2-ttf")
+    (version "2.0.12")
+    (source (origin
+             (method url-fetch)
+             (uri
+              (string-append "http://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-"
+                             version ".tar.gz"))
+             (sha256
+              (base32
+               "0vkg6lyj278mdpd52map3rfi65fbq16w67ahmmfcl77a8da60a47"))))
+    (propagated-inputs
+     (propagated-inputs-with-sdl2 sdl-ttf))))
 
 (define-public guile-sdl
   (package

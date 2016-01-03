@@ -135,3 +135,52 @@ session.  Two companion utilities enable users to convert CSV files to YAPET
 and vice versa.")
     (home-page "http://www.guengel.ch/myapps/yapet/")
     (license license:gpl3+)))
+
+(define-public cracklib
+  (package
+    (name "cracklib")
+    (version "2.9.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/cracklib/cracklib/"
+                                  "releases/download/" name "-" version "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0hrkb0prf7n92w6rxgq0ilzkk6rkhpys2cfqkrbzswp27na7dkqp"))))
+    (build-system gnu-build-system)
+    (synopsis "Password checking library")
+    (home-page "https://github.com/cracklib/cracklib")
+    (description
+     "CrackLib is a library containing a C function which may be used in a
+passwd like program.  The idea is simple: try to prevent users from choosing
+passwords that could be guessed by crack by filtering them out, at source.")
+    (license license:lgpl2.1)))
+
+(define-public libpwquality
+  (package
+    (name "libpwquality")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (list
+                    (string-append "https://fedorahosted.org/releases/l/i/"
+                                   name "/" name "-" version ".tar.bz2")
+                    (string-append "https://launchpad.net/libpwquality/trunk/"
+                                   version "/+download/"
+                                   name "-" version ".tar.bz2")))
+              (sha256
+               (base32
+                "0aidriag6h0syfm33nzdfdsqgrnsgihwjv3a5lgkqch3w68fmlkl"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; XXX: have RUNPATH issue.
+     '(#:configure-flags '("--disable-python-bindings")))
+    (inputs
+     `(("cracklib" ,cracklib)))
+    (synopsis "Password quality checker")
+    (home-page "https://fedorahosted.org/libpwquality/")
+    (description
+     "Libpwquality is a library for password quality checking and generation of
+random passwords that pass the checks.")
+    (license license:gpl2+)))

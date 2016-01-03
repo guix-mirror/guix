@@ -8,6 +8,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
@@ -311,6 +313,49 @@ everything from small to very large projects with speed and efficiency.")
 This is the documentation displayed when using the '--help' option of a 'git'
 command.")))
 
+(define-public libgit2
+  (package
+    (name "libgit2")
+    (version "0.23.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/libgit2/libgit2/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bhyzw9b7xr1vj24hgbwbfjw2wiaigiklccsdvd8r4kmcr180p1d"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-hardcoded-paths
+           (lambda _
+             (substitute* "tests/repo/init.c"
+               (("#!/bin/sh") (string-append "#!" (which "sh"))))
+             (substitute* "tests/clar/fs.h"
+               (("/bin/cp") (which "cp"))
+               (("/bin/rm") (which "rm")))
+             #t))
+         ;; Run checks more verbosely.
+         (replace 'check
+           (lambda _ (zero? (system* "./libgit2_clar" "-v" "-Q")))))))
+    (inputs
+     `(("libssh2" ,libssh2)
+       ("libcurl" ,curl)
+       ("python" ,python)
+       ("openssl" ,openssl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://libgit2.github.com/")
+    (synopsis "Library providing Git core methods")
+    (description
+     "Libgit2 is a portable, pure C implementation of the Git core methods
+provided as a re-entrant linkable library with a solid API, allowing you to
+write native speed custom Git applications in any language with bindings.")
+    ;; GPLv2 with linking exception
+    (license gpl2)))
+
 (define-public shflags
   (package
     (name "shflags")
@@ -570,14 +615,14 @@ property manipulation.")
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.8.14")
+    (version "1.8.15")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://archive.apache.org/dist/subversion/"
                                  "subversion-" version ".tar.bz2"))
              (sha256
               (base32
-               "07ws4bspdgi4r5hbxvk86a15c669iqz6wkfrdph78hddzk6q6f3z"))))
+               "0b68rjy1sjd66nqcswrm1bhda3vk2ngkgs6drcanmzbcd3vs366g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after

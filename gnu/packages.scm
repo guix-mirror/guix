@@ -46,10 +46,6 @@
             find-best-packages-by-name
             find-newest-available-packages
 
-            package-direct-dependents
-            package-transitive-dependents
-            package-covering-dependents
-
             check-package-freshness
 
             specification->package
@@ -261,63 +257,6 @@ VERSION."
       (match (vhash-assoc name (find-newest-available-packages))
         ((_ version pkgs ...) pkgs)
         (#f '()))))
-
-
-(define* (vhash-refq vhash key #:optional (dflt #f))
-  "Look up KEY in the vhash VHASH, and return the value (if any) associated
-with it.  If KEY is not found, return DFLT (or `#f' if no DFLT argument is
-supplied).  Uses `eq?' for equality testing."
-  (or (and=> (vhash-assq key vhash) cdr)
-      dflt))
-
-(define package-dependencies
-  (memoize
-   (lambda ()
-     "Return a vhash keyed by package, and with associated values that are a
-list of packages that depend on that package."
-     (fold-packages
-      (lambda (package dag)
-        (fold
-         (lambda (in d)
-           ;; Insert a graph edge from each of package's inputs to package.
-           (vhash-consq in
-                        (cons package (vhash-refq d in '()))
-                        (vhash-delq in d)))
-         dag
-         (match (package-direct-inputs package)
-           (((labels packages . _) ...)
-            packages) )))
-      vlist-null))))
-
-(define (package-direct-dependents packages)
-  "Return a list of packages from the distribution that directly depend on the
-packages in PACKAGES."
-  (delete-duplicates
-   (concatenate
-    (map (lambda (p)
-           (vhash-refq (package-dependencies) p '()))
-         packages))))
-
-(define (package-transitive-dependents packages)
-  "Return the transitive dependent packages of the distribution packages in
-PACKAGES---i.e. the dependents of those packages, plus their dependents,
-recursively."
-  (let ((dependency-dag (package-dependencies)))
-    (fold-tree
-     cons '()
-     (lambda (node) (vhash-refq dependency-dag node))
-     ;; Start with the dependents to avoid including PACKAGES in the result.
-     (package-direct-dependents packages))))
-
-(define (package-covering-dependents packages)
-  "Return a minimal list of packages from the distribution whose dependencies
-include all of PACKAGES and all packages that depend on PACKAGES."
-  (let ((dependency-dag (package-dependencies)))
-    (fold-tree-leaves
-     cons '()
-     (lambda (node) (vhash-refq dependency-dag node))
-     ;; Start with the dependents to avoid including PACKAGES in the result.
-     (package-direct-dependents packages))))
 
 
 (define %sigint-prompt

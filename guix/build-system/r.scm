@@ -29,7 +29,8 @@
   #:export (%r-build-system-modules
             r-build
             r-build-system
-            cran-uri))
+            cran-uri
+            bioconductor-uri))
 
 ;; Commentary:
 ;;
@@ -45,6 +46,12 @@ available via the first URI, the second URI points to the archived version."
                        name "_" version ".tar.gz")
         (string-append "mirror://cran/src/contrib/Archive/"
                        name "/" name "_" version ".tar.gz")))
+
+(define (bioconductor-uri name version)
+  "Return a URI string for the R package archive on Bioconductor for the
+release corresponding to NAME and VERSION."
+  (string-append "http://bioconductor.org/packages/release/bioc/src/contrib/"
+                 name "_" version ".tar.gz"))
 
 (define %r-build-system-modules
   ;; Build-side modules imported by default.

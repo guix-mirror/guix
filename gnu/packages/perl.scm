@@ -2352,6 +2352,24 @@ files with a simple call.  It also has a subroutine for reading the list of
 file names in a directory.")
     (license (package-license perl))))
 
+(define-public perl-file-slurp-tiny
+  (package
+    (name "perl-file-slurp-tiny")
+    (version "0.004")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/L/LE/LEONT/"
+                                  "File-Slurp-Tiny-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07kzfmibl43dq4c803f022g2rcfv4nkjgipxclz943mzxaz9aaa5"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/File-Slurp-Tiny")
+    (synopsis "Simple file reader and writer")
+    (description
+     "This module provides functions for fast reading and writing of files.")
+    (license (package-license perl))))
+
 (define-public perl-file-temp
   (package
     (name "perl-file-temp")
@@ -2778,6 +2796,54 @@ either uses the first module it finds or throws an error.")
 versa.")
     (license (package-license perl))))
 
+(define-public perl-log-report-optional
+  (package
+    (name "perl-log-report-optional")
+    (version "1.01")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "Log-Report-Optional-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1f4yi4dgzqjc79vrh4f2phdj57xxgk8hd2psx77214i4m5av408f"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-string-print" ,perl-string-print)))
+    (home-page "http://search.cpan.org/dist/Log-Report-Optional")
+    (synopsis "Log::Report in the lightest form")
+    (description
+     "This module allows libraries to have a dependency to a small module
+instead of the full Log-Report distribution.  The full power of
+@code{Log::Report} is only released when the main program uses that module.
+In that case, the module using the 'Optional' will also use the full
+@code{Log::Report}, otherwise the dressed-down @code{Log::Report::Minimal}
+version.")
+    (license (package-license perl))))
+
+(define-public perl-log-report
+  (package
+    (name "perl-log-report")
+    (version "1.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "Log-Report-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1jjx1ari3a7ixsyan91b6n7lmjq6dy5223k3x2ah18qbxvw4caap"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-devel-globaldestruction" ,perl-devel-globaldestruction)
+       ("perl-log-report-optional" ,perl-log-report-optional)
+       ("perl-string-print" ,perl-string-print)))
+    (home-page "http://search.cpan.org/dist/Log-Report")
+    (synopsis "Get messages to users and logs")
+    (description
+     "@code{Log::Report} combines three tasks which are closely related in
+one: logging, exceptions, and translations.")
+    (license (package-license perl))))
+
 (define-public perl-list-allutils
   (package
     (name "perl-list-allutils")
@@ -2845,6 +2911,25 @@ functionality on lists which is not going to go into List::Util.")
     (description "This module implements an expiry policy for Memoize that
 follows LRU semantics, that is, the last n results, where n is specified as
 the argument to the CACHESIZE parameter, will be cached.")
+    (license (package-license perl))))
+
+(define-public perl-mime-charset
+  (package
+    (name "perl-mime-charset")
+    (version "1.012")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/N/NE/NEZUMI/"
+                                  "MIME-Charset-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1kfc5p4g1x9c0ffhg125wvhravcviny3alwrgnhnrm2a33ad3rff"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/MIME-Charset")
+    (synopsis "Charset information for MIME messages")
+    (description
+     "@code{MIME::Charset} provides information about character sets used for
+MIME messages on Internet.")
     (license (package-license perl))))
 
 (define-public perl-mime-types
@@ -4354,6 +4439,28 @@ CamelCase and back again.")
 known prefixes.")
     (license (package-license perl))))
 
+(define-public perl-string-print
+  (package
+    (name "perl-string-print")
+    (version "0.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "String-Print-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1n9lc5dr66sg89hym47764fyfms7vrxrhwvdps2x8x8gxly7rsdl"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-unicode-linebreak" ,perl-unicode-linebreak)))
+    (home-page "http://search.cpan.org/dist/String-Print")
+    (synopsis "String printing alternatives to printf")
+    (description
+     "This module inserts values into (translated) strings.  It provides
+@code{printf} and @code{sprintf} alternatives via both an object-oriented and
+a functional interface.")
+    (license (package-license perl))))
+
 (define-public perl-sub-exporter
   (package
     (name "perl-sub-exporter")
@@ -5825,6 +5932,28 @@ else.")
     (synopsis "Data types for common serialisation formats")
     (description "This module provides some extra datatypes that are used by
 common serialisation formats such as JSON or CBOR.")
+    (license (package-license perl))))
+
+(define-public perl-unicode-linebreak
+  (package
+    (name "perl-unicode-linebreak")
+    (version "2015.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/N/NE/NEZUMI/"
+                                  "Unicode-LineBreak-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1d0nnc97irfpab4d3b2lvq22hac118k7zbfrj0lnxkbfwx7122cm"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-mime-charset" ,perl-mime-charset)))
+    (home-page "http://search.cpan.org/dist/Unicode-LineBreak")
+    (synopsis "Unicode line breaking algorithm")
+    (description
+     "@code{Unicode::LineBreak} implements the line breaking algorithm
+described in Unicode Standard Annex #14.  The @code{East_Asian_Width} property
+defined by Annex #11 is used to determine breaking positions.")
     (license (package-license perl))))
 
 (define-public perl-universal-can

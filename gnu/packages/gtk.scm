@@ -385,7 +385,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.32.1")
+   (version "2.32.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -393,7 +393,7 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1g7kjxv67jcdasi14n7jan4icrnnppd1m99wrdmpv32k4m7vfcj4"))))
+              "0cfh87aqyqbfcwpbv1ihgmgfcn66il5q2n8yjyl8gxkjmkqp2rrb"))))
    (build-system gnu-build-system)
    (arguments
     '(#:configure-flags '("--with-x11")
@@ -403,9 +403,9 @@ highlighting and other features typical of a source code editor.")
          'unpack 'disable-failing-tests
          (lambda _
            (substitute* "tests/Makefile.in"
-             ;; XXX FIXME: This test fails on some machines with:
-             ;; GLib-FATAL-ERROR: gmem.c:103: failed to allocate
-             ;; 6039798016 bytes
+             ;; XXX FIXME: This test fails on armhf machines with:
+             ;; SKIP Not enough memory to load bitmap image
+             ;; ERROR: cve-2015-4491 - too few tests run (expected 4, got 2)
              (("cve-2015-4491\\$\\(EXEEXT\\) ") "")
              ;; XXX FIXME: This test fails with:
              ;; ERROR:pixbuf-jpeg.c:74:test_type9_rotation_exif_tag:
@@ -994,6 +994,8 @@ extensive documentation, including API reference and a tutorial.")
        (base32
         "04k942gn8vl95kwf0qskkv6npclfm31d78ljkrkgyqxxcni1w76d"))))
     (build-system gnu-build-system)
+    (outputs '("out"
+               "doc"))                            ;13 MiB of gtk-doc HTML
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
@@ -1005,29 +1007,35 @@ extensive documentation, including API reference and a tutorial.")
        ("gtk+"             ,gtk+-2)))
     (arguments
      `(#:tests? #f
-       #:phases (alist-cons-after
-                 'configure 'fix-codegen
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (substitute* "pygtk-codegen-2.0"
-                     (("^prefix=.*$")
-                      (string-append
-                       "prefix="
-                       (assoc-ref inputs "python-pygobject") "\n"))))
-                 (alist-cons-after
-                  'install 'install-pth
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    ;; pygtk's modules are stored in a subdirectory of python's
-                    ;; site-packages directory.  Add a .pth file so that python
-                    ;; will add that subdirectory to its module search path.
-                    (let* ((out    (assoc-ref outputs "out"))
-                           (site   (string-append out "/lib/python"
-                                                  ,(version-major+minor
-                                                    (package-version python-2))
-                                                  "/site-packages")))
-                      (call-with-output-file (string-append site "/pygtk.pth")
-                        (lambda (port)
-                          (format port "gtk-2.0~%")))))
-                  %standard-phases))))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-gtk-doc-directory
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Install documentation to "doc".
+                      (let ((doc (assoc-ref outputs "doc")))
+                        (substitute* "docs/Makefile.in"
+                          (("TARGET_DIR = \\$\\(datadir\\)")
+                           (string-append "TARGET_DIR = " doc))))))
+                  (add-after 'configure 'fix-codegen
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (substitute* "pygtk-codegen-2.0"
+                        (("^prefix=.*$")
+                         (string-append
+                          "prefix="
+                          (assoc-ref inputs "python-pygobject") "\n")))))
+                  (add-after 'install 'install-pth
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; pygtk's modules are stored in a subdirectory of
+                      ;; python's site-packages directory.  Add a .pth file so
+                      ;; that python will add that subdirectory to its module
+                      ;; search path.
+                      (let* ((out    (assoc-ref outputs "out"))
+                             (site   (string-append out "/lib/python"
+                                                    ,(version-major+minor
+                                                      (package-version python-2))
+                                                    "/site-packages")))
+                        (call-with-output-file (string-append site "/pygtk.pth")
+                          (lambda (port)
+                            (format port "gtk-2.0~%")))))))))
     (home-page "http://www.pygtk.org/")
     (synopsis "Python bindings for GTK+")
     (description

@@ -128,9 +128,12 @@ empty list when the FIELD cannot be found."
                                     #f "( *\\([^\\)]+\\)) *"
                                     value 'pre 'post)
                                    #\,)))
-          ;; When there is whitespace inside of items it is probably because
-          ;; this was not an actual list to begin with.
-          (remove (cut string-any char-set:whitespace <>)
+          (remove (lambda (item)
+                    (or (string-null? item)
+                        ;; When there is whitespace inside of items it is
+                        ;; probably because this was not an actual list to
+                        ;; begin with.
+                        (string-any char-set:whitespace item)))
                   (map string-trim-both items))))))
 
 (define (beautify-description description)

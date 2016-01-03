@@ -29,6 +29,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages haskell)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages java)
@@ -1342,3 +1343,157 @@ visualization system inspired by Trellis graphics, with an emphasis on
 multivariate data.  Lattice is sufficient for typical graphics needs, and is
 also flexible enough to handle most nonstandard requirements.")
     (license license:gpl2+)))
+
+(define-public r-rcpparmadillo
+  (package
+    (name "r-rcpparmadillo")
+    (version "0.6.200.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "RcppArmadillo" version))
+              (sha256
+               (base32
+                "137wqqga776yj6synx5awhrzgkz7mmqnvgmggh9l4k6d99vwp9gj"))
+              (modules '((guix build utils)))
+              ;; Remove bundled armadillo sources
+              (snippet
+               '(begin
+                  (delete-file-recursively "inst/include/armadillo_bits")
+                  (delete-file "inst/include/armadillo")))))
+    (properties `((upstream-name . "RcppArmadillo")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-against-armadillo
+           (lambda _
+             (substitute* "src/Makevars"
+               (("PKG_LIBS=" prefix)
+                (string-append prefix "-larmadillo"))))))))
+    (propagated-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("armadillo" ,armadillo-for-rcpparmadillo)))
+    (home-page "https://github.com/RcppCore/RcppArmadillo")
+    (synopsis "Rcpp integration for the Armadillo linear algebra library")
+    (description
+     "Armadillo is a templated C++ linear algebra library that aims towards a
+good balance between speed and ease of use.  Integer, floating point and
+complex numbers are supported, as well as a subset of trigonometric and
+statistics functions.  Various matrix decompositions are provided through
+optional integration with LAPACK and ATLAS libraries.  This package includes
+the header files from the templated Armadillo library.")
+    ;; Armadillo is licensed under the MPL 2.0, while RcppArmadillo (the Rcpp
+    ;; bindings to Armadillo) is licensed under the GNU GPL version 2 or
+    ;; later, as is the rest of 'Rcpp'.
+    (license license:gpl2+)))
+
+(define-public r-bitops
+  (package
+    (name "r-bitops")
+    (version "1.0-6")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "bitops" version))
+              (sha256
+               (base32
+                "176nr5wpnkavn5z0yy9f7d47l37ndnn2w3gv854xav8nnybi6wwv"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/bitops")
+    (synopsis "Bitwise operations")
+    (description
+     "This package provides functions for bitwise operations on integer
+vectors.")
+    (license license:gpl2+)))
+
+(define-public r-catools
+  (package
+    (name "r-catools")
+    (version "1.17.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "caTools" version))
+              (sha256
+               (base32
+                "1x4szsn2qmbzpyjfdaiz2q7jwhap2gky9wq0riah74q0pzz76ank"))))
+    (properties `((upstream-name . "caTools")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-bitops" ,r-bitops)))
+    (home-page "http://cran.r-project.org/web/packages/caTools")
+    (synopsis "Various tools including functions for moving window statistics")
+    (description
+     "This package contains several basic utility functions including:
+moving (rolling, running) window statistic functions, read/write for GIF and
+ENVI binary files, fast calculation of AUC, LogitBoost classifier, base64
+encoder/decoder, round-off-error-free sum and cumsum, etc.")
+    (license license:gpl3+)))
+
+(define-public r-rmarkdown
+  (package
+    (name "r-rmarkdown")
+    (version "0.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "rmarkdown" version))
+        (sha256
+          (base32
+            "07q5g9dvac5j3vnf4sjc60mnkij1k6y7vnzjz6anf499rwdwbxza"))))
+    (properties `((upstream-name . "rmarkdown")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-catools" ,r-catools)
+       ("r-htmltools" ,r-htmltools)
+       ("r-knitr" ,r-knitr)
+       ("r-yaml" ,r-yaml)
+       ("ghc-pandoc" ,ghc-pandoc)))
+    (home-page "http://rmarkdown.rstudio.com")
+    (synopsis "Convert R Markdown documents into a variety of formats")
+    (description
+     "This package provides tools to convert R Markdown documents into a
+variety of formats.")
+    (license license:gpl3+)))
+
+(define-public r-gtable
+  (package
+    (name "r-gtable")
+    (version "0.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "gtable" version))
+              (sha256
+               (base32
+                "0k9hfj6r5y238gqh92s3cbdn34biczx3zfh79ix5xq0c5vkai2xh"))))
+    (properties `((upstream-name . "gtable")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/gtable")
+    (synopsis "Arrange grobs in tables")
+    (description
+     "This package provides tools to make it easier to work with tables of
+grobs.")
+    (license license:gpl2+)))
+
+(define-public r-gridextra
+  (package
+    (name "r-gridextra")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "gridExtra" version))
+              (sha256
+               (base32
+                "19yyrfd37c5hxlavb9lca9l26wjhc80rlqhgmfj9k3xhbvvpdp17"))))
+    (properties `((upstream-name . "gridExtra")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-gtable" ,r-gtable)))
+    (native-inputs
+     `(("r-knitr" ,r-knitr))) ;for building vignettes
+    (home-page "https://github.com/baptiste/gridextra")
+    (synopsis "Miscellaneous functions for \"Grid\" graphics")
+    (description
+     "This package provides a number of user-level functions to work with
+@code{grid} graphics, notably to arrange multiple grid-based plots on a page,
+and draw tables.")
+    (license license:gpl2+)))
+

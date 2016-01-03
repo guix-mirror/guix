@@ -35,6 +35,7 @@
             local-file
             local-file?
             local-file-file
+            local-file-absolute-file-name
             local-file-name
             local-file-recursive?
 
@@ -182,35 +183,76 @@ cross-compiling.)"
 ;;; File declarations.
 ;;;
 
+;; A local file name.  FILE is the file name the user entered, which can be a
+;; relative file name, and ABSOLUTE is a promise that computes its canonical
+;; absolute file name.  We keep it in a promise to compute it lazily and avoid
+;; repeated 'stat' calls.
 (define-record-type <local-file>
-  (%local-file file name recursive?)
+  (%%local-file file absolute name recursive?)
   local-file?
   (file       local-file-file)                    ;string
+  (absolute   %local-file-absolute-file-name)     ;promise string
   (name       local-file-name)                    ;string
   (recursive? local-file-recursive?))             ;Boolean
 
-(define* (local-file file #:optional (name (basename file))
-                     #:key recursive?)
+(define* (%local-file file promise #:optional (name (basename file))
+                      #:key recursive?)
+  ;; This intermediate procedure is part of our ABI, but the underlying
+  ;; %%LOCAL-FILE is not.
+  (%%local-file file promise name recursive?))
+
+(define (extract-directory properties)
+  "Extract the directory name from source location PROPERTIES."
+  (match (assq 'filename properties)
+    (('filename . (? string? file-name))
+     (dirname file-name))
+    (_
+     #f)))
+
+(define-syntax-rule (current-source-directory)
+  "Expand to the directory of the current source file or #f if it could not
+be determined."
+  (extract-directory (current-source-location)))
+
+(define (absolute-file-name file directory)
+  "Return the canonical absolute file name for FILE, which lives in the
+vicinity of DIRECTORY."
+  (canonicalize-path
+   (cond ((string-prefix? "/" file) file)
+         ((not directory) file)
+         ((string-prefix? "/" directory)
+          (string-append directory "/" file))
+         (else file))))
+
+(define-syntax-rule (local-file file rest ...)
   "Return an object representing local file FILE to add to the store; this
-object can be used in a gexp.  FILE will be added to the store under NAME--by
-default the base name of FILE.
+object can be used in a gexp.  If FILE is a relative file name, it is looked
+up relative to the source file where this form appears.  FILE will be added to
+the store under NAME--by default the base name of FILE.
 
 When RECURSIVE? is true, the contents of FILE are added recursively; if FILE
 designates a flat file and RECURSIVE? is true, its contents are added, and its
 permission bits are kept.
 
 This is the declarative counterpart of the 'interned-file' monadic procedure."
-  ;; Canonicalize FILE so that if it's a symlink, it is resolved.  Failing to
-  ;; do that, when RECURSIVE? is #t, we could end up creating a dangling
-  ;; symlink in the store, and when RECURSIVE? is #f 'add-to-store' would just
-  ;; throw an error, both of which are inconvenient.
-  (%local-file (canonicalize-path file) name recursive?))
+  (%local-file file
+               (delay (absolute-file-name file (current-source-directory)))
+               rest ...))
+
+(define (local-file-absolute-file-name file)
+  "Return the absolute file name for FILE, a <local-file> instance.  A
+'system-error' exception is raised if FILE could not be found."
+  (force (%local-file-absolute-file-name file)))
 
 (define-gexp-compiler (local-file-compiler (file local-file?) system target)
   ;; "Compile" FILE by adding it to the store.
   (match file
-    (($ <local-file> file name recursive?)
-     (interned-file file name #:recursive? recursive?))))
+    (($ <local-file> file (= force absolute) name recursive?)
+     ;; Canonicalize FILE so that if it's a symlink, it is resolved.  Failing
+     ;; to do that, when RECURSIVE? is #t, we could end up creating a dangling
+     ;; symlink in the store, and when RECURSIVE? is #f 'add-to-store' would
+     ;; just throw an error, both of which are inconvenient.
+     (interned-file absolute name #:recursive? recursive?))))
 
 (define-record-type <plain-file>
   (%plain-file name content references)

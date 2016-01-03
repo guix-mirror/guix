@@ -22,14 +22,19 @@ ELFILES =					\
   emacs/guix-backend.el				\
   emacs/guix-base.el				\
   emacs/guix-build-log.el			\
+  emacs/guix-buffer.el				\
   emacs/guix-command.el				\
   emacs/guix-devel.el				\
   emacs/guix-emacs.el				\
+  emacs/guix-entry.el				\
   emacs/guix-external.el			\
   emacs/guix-geiser.el				\
   emacs/guix-guile.el				\
   emacs/guix-help-vars.el			\
   emacs/guix-history.el				\
+  emacs/guix-hydra.el				\
+  emacs/guix-hydra-build.el			\
+  emacs/guix-hydra-jobset.el			\
   emacs/guix-info.el				\
   emacs/guix-init.el				\
   emacs/guix-list.el				\
@@ -39,8 +44,10 @@ ELFILES =					\
   emacs/guix-prettify.el			\
   emacs/guix-profiles.el			\
   emacs/guix-read.el				\
-  emacs/guix-utils.el				\
-  emacs/guix.el
+  emacs/guix-ui.el				\
+  emacs/guix-ui-package.el			\
+  emacs/guix-ui-generation.el			\
+  emacs/guix-utils.el
 
 if HAVE_EMACS
 

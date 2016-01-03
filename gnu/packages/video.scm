@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015 Alex Vong <alexvong1995@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages doxygen)
   #:use-module (gnu packages elf)
@@ -373,14 +375,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "2.8.3")
+    (version "2.8.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0jkhyv68aa7h3hf905ganwqbrflams3hs74in7ygxdfkcqw2xqhq"))))
+               "07wmvp05zanmg3rm539dd0j7h1fi2fk0mcvmv01hjbpy92kq0qwb"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -691,7 +693,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.13.0")
+    (version "0.14.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -699,7 +701,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "1nqjd64p4pj1lks9n9s8y4zf4dp5bz8pyd0gsvviww7mv17p0whk"))
+                "0cqjwl0xyg0sv1jflipfkvqjg32y0kqfh4gc3lyhqgv0hgs3fa84"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -753,14 +755,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
           'configure 'setup-waf
           (lambda* (#:key inputs #:allow-other-keys)
             (copy-file (assoc-ref inputs "waf") "waf")
-            (setenv "CC" "gcc")))
-         (add-before
-          'configure 'patch-wscript
-          (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "wscript"
-              ;; XXX Remove this when our Samba package provides a .pc file.
-              (("check_pkg_config\\('smbclient'\\)")
-               "check_cc(lib='smbclient')")))))
+            (setenv "CC" "gcc"))))
        ;; No check function defined.
        #:tests? #f))
     (home-page "http://mpv.io/")
@@ -810,7 +805,7 @@ projects while introducing many more.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2015.12.09")
+    (version "2015.12.29")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://youtube-dl.org/downloads/"
@@ -818,10 +813,31 @@ projects while introducing many more.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "11rzb30ik4all43r7bnsnm35mvs37y7xj3g9r7ig9jr7qlbhllwk"))))
+                "0232wiq8mjs5ngmlcvf0292icrhvzr9mkwy2km0g0djznsf7rxjg"))))
     (build-system python-build-system)
     (native-inputs `(("python-setuptools" ,python-setuptools)))
     (home-page "http://youtube-dl.org")
+    (arguments
+     ;; The problem here is that the directory for the man page and completion
+     ;; files is relative, and for some reason, setup.py uses the
+     ;; auto-detected sys.prefix instead of the user-defined "--prefix=FOO".
+     ;; So, we need pass the prefix directly.  In addition, make sure the Bash
+     ;; completion file is called 'youtube-dl' rather than
+     ;; 'youtube-dl.bash-completion'.
+     `(#:phases (modify-phases %standard-phases
+                  (add-before 'install 'fix-the-data-directories
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((prefix (assoc-ref outputs "out")))
+                        (mkdir "bash-completion")
+                        (rename-file "youtube-dl.bash-completion"
+                                     "bash-completion/youtube-dl")
+                        (substitute* "setup.py"
+                          (("youtube-dl\\.bash-completion")
+                           "bash-completion/youtube-dl")
+                          (("'etc/")
+                           (string-append "'" prefix "/etc/"))
+                          (("'share/")
+                           (string-append "'" prefix "/share/")))))))))
     (synopsis "Download videos from YouTube.com and other sites")
     (description
      "Youtube-dl is a small command-line program to download videos from
@@ -1248,3 +1264,40 @@ players, transcoders, web streamers and many more types of applications.  The
 functionality of the system is provided via an assortment of ready to use
 tools, XML authoring components, and an extensible plug-in based API.")
     (license license:lgpl2.1+)))
+
+(define-public obs
+  (package
+    (name "obs")
+    (version "0.12.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/jp9000/obs-studio"
+                                  "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0b1xb5vd3g4h7m1hsjzsq3bbbnqb2n6mpmq6ix4yyy72g087rjk1"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f)) ; no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("curl" ,curl)
+       ("eudev" ,eudev)
+       ("ffmpeg" ,ffmpeg)
+       ("freetype" ,freetype)
+       ("jack" ,jack-1)
+       ("jansson" ,jansson)
+       ("libx264" ,libx264)
+       ("libxcomposite" ,libxcomposite)
+       ("mesa" ,mesa)
+       ("pulseaudio" ,pulseaudio)
+       ("qt" ,qt)
+       ("zlib" ,zlib)))
+    (synopsis "Live streaming software")
+    (description "Open Broadcaster Software provides a graphical interface for
+video recording and live streaming.  OBS supports capturing audio and video
+from many input sources such as webcams, X11 (for screencasting), PulseAudio,
+and JACK.")
+    (home-page "https://obsproject.com")
+    (license license:gpl2+)))

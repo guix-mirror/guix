@@ -30,9 +30,12 @@
     (version "1.0.0")
     (source (origin
             (method url-fetch)
-            (uri (string-append
-                  "http://download.libsodium.org/libsodium/releases/libsodium-"
-                  version ".tar.gz"))
+            (uri (list (string-append
+                        "http://download.libsodium.org/libsodium/"
+                        "releases/libsodium-" version ".tar.gz")
+                       (string-append
+                        "https://download.libsodium.org/libsodium/"
+                        "releases/old/libsodium-" version ".tar.gz")))
             (sha256
              (base32
               "19f9vf0shfp4rc4l791r6xjg06z4i8psj1zkjkm3z5b640yzxlff"))))

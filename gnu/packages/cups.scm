@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +38,7 @@
 (define-public cups-filters
   (package
     (name "cups-filters")
-    (version "1.0.75")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri
@@ -45,7 +46,7 @@
                               "cups-filters-" version ".tar.xz"))
               (sha256
                (base32
-                "0wrh9jmd2rm4z8c8nb50llb10shj1hik9vwqnr0djcvf63mfqsbw"))
+                "16jpqqlixlv2dxqv8gak5qg4qnsnw4p745xr6rhw9dgylf13z9ha"))
               (modules '((guix build utils)))
               (snippet
                ;; install backends, banners and filters to cups-filters output

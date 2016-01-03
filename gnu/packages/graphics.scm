@@ -271,8 +271,16 @@ and understanding different BRDFs (and other component functions).")
     (version "2.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.antigrain.com/agg-"
-                                  version ".tar.gz"))
+              (uri (list (string-append
+                          "ftp://ftp.fau.de/gentoo/distfiles/agg-"
+                          version ".tar.gz")
+                         (string-append
+                          "ftp://ftp.ula.ve/gentoo/distfiles/agg-"
+                          version ".tar.gz")
+
+                         ;; Site was discontinued.
+                         (string-append "http://www.antigrain.com/agg-"
+                                        version ".tar.gz")))
               (sha256
                (base32 "07wii4i824vy9qsvjsgqxppgqmfdxq0xa87i5yk53fijriadq7mb"))
               (patches (list (search-patch "agg-am_c_prototype.patch")))))
@@ -301,7 +309,9 @@ and understanding different BRDFs (and other component functions).")
      `(("libx11" ,libx11)
        ("freetype" ,freetype)
        ("sdl" ,sdl)))
-    (home-page "http://antigrain.com")
+
+    ;; Antigrain.com was discontinued.
+    (home-page "http://agg.sourceforge.net/antigrain.com/index.html")
     (synopsis "High-quality 2D graphics rendering engine for C++")
     (description
      "Anti-Grain Geometry is a high quality rendering engine written in C++.

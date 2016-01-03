@@ -58,7 +58,6 @@
  (guix licenses)
  (guix utils)
  (guix ui)
- (guix scripts graph)
  (guix scripts lint)
  (guix scripts package)
  (guix scripts pull)
@@ -989,7 +988,8 @@ Return #t if the shell command was executed successfully."
 
 (define (graph-type-names)
   "Return a list of names of available graph node types."
-  (map node-type-name %node-types))
+  (map (@ (guix graph) node-type-name)
+       (@ (guix scripts graph) %node-types)))
 
 (define (refresh-updater-names)
   "Return a list of names of available refresh updater types."

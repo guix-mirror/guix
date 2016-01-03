@@ -10,11 +10,11 @@
   (timezone "Europe/Berlin")
   (locale "en_US.UTF-8")
 
-  ;; Assuming /dev/sdX is the target hard disk, and "root" is
+  ;; Assuming /dev/sdX is the target hard disk, and "my-root" is
   ;; the label of the target root file system.
   (bootloader (grub-configuration (device "/dev/sdX")))
   (file-systems (cons (file-system
-                        (device "root")
+                        (device "my-root")
                         (title 'label)
                         (mount-point "/")
                         (type "ext4"))

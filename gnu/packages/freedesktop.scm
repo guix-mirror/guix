@@ -35,6 +35,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages glib)                ;intltool
@@ -47,7 +48,8 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
-  #:use-module (gnu packages polkit))
+  #:use-module (gnu packages polkit)
+  #:use-module (gnu packages databases))
 
 (define-public xdg-utils
   (package
@@ -427,3 +429,173 @@ message bus.")
 and manipulating user account information and an implementation of these
 interfaces, based on the useradd, usermod and userdel commands.")
     (license license:gpl3+)))
+
+(define-public libmbim
+  (package
+    (name "libmbim")
+    (version "1.12.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.freedesktop.org/software/" name "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0abv0h9c3kbw4bq1b9270sg189jcjj3x3wa91bj836ynwg9m34wl"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (propagated-inputs
+     `(("glib" ,glib))) ; required by mbim-glib.pc
+    (inputs
+     `(("libgudev" ,libgudev)))
+    (synopsis "Library to communicate with MBIM-powered modems")
+    (home-page "http://www.freedesktop.org/wiki/Software/libmbim/")
+    (description
+     "Libmbim is a GLib-based library for talking to WWAN modems and devices
+which speak the Mobile Interface Broadband Model (MBIM) protocol.")
+    (license
+     ;; The libmbim-glib library is released under the LGPLv2+ license.
+     ;; The mbimcli tool is released under the GPLv2+ license.
+     (list license:lgpl2.0+ license:gpl2+))))
+
+(define-public libqmi
+  (package
+    (name "libqmi")
+    (version "1.12.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.freedesktop.org/software/" name "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "101ppan2q1h4pyp2zbn9b8sdwy2c7fk9rp91yykxz3afrvzbymq8"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (propagated-inputs
+     `(("glib" ,glib))) ; required by qmi-glib.pc
+    (synopsis "Library to communicate with QMI-powered modems")
+    (home-page "http://www.freedesktop.org/wiki/Software/libqmi/")
+    (description
+     "Libqmi is a GLib-based library for talking to WWAN modems and devices
+which speak the Qualcomm MSM Interface (QMI) protocol.")
+    (license
+     ;; The libqmi-glib library is released under the LGPLv2+ license.
+     ;; The qmicli tool is released under the GPLv2+ license.
+     (list license:lgpl2.0+ license:gpl2+))))
+
+(define-public modem-manager
+  (package
+    (name "modem-manager")
+    (version "1.4.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.freedesktop.org/software/ModemManager/"
+                    "ModemManager-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1cvhpkbdch9a77sdir0wcks45m2zlvq1sna2ly2v4lx9fm9h7xby"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       `(,(string-append "--with-udev-base-dir=" %output "/lib/udev"))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
+       ;; For testing.
+       ("dbus" ,dbus)))
+    (propagated-inputs
+     `(("glib" ,glib))) ; required by mm-glib.pc
+    (inputs
+     `(("libgudev" ,libgudev)
+       ("libmbim" ,libmbim)
+       ("libqmi" ,libqmi)
+       ("polkit" ,polkit)))
+    (synopsis "Mobile broadband modems manager")
+    (home-page "http://www.freedesktop.org/wiki/Software/ModemManager/")
+    (description
+     "ModemManager is a DBus-activated daemon which controls mobile
+broadband (2G/3G/4G) devices and connections.  Whether built-in devices, USB
+dongles, bluetooth-paired telephones, or professional RS232/USB devices with
+external power supplies, ModemManager is able to prepare and configure the
+modems and setup connections with them.")
+    (license license:gpl2+)))
+
+(define-public telepathy-logger
+  (package
+    (name "telepathy-logger")
+    (version "0.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://telepathy.freedesktop.org/releases/"
+                                  name "/" name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1bjx85k7jyfi5pvl765fzc7q2iz9va51anrc2djv7caksqsdbjlg"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'pre-check
+          (lambda _
+            (setenv "HOME" (getenv "TMPDIR"))
+            #t)))))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)
+       ("xsltproc" ,libxslt)))
+    (propagated-inputs
+     ;; telepathy-logger-0.2.pc refers to all these.
+     `(("libxml2" ,libxml2)
+       ("sqlite" ,sqlite)
+       ("telepathy-glib" ,telepathy-glib)))
+    (synopsis "Telepathy logger library")
+    (home-page "http://telepathy.freedesktop.org/")
+    (description
+     "Telepathy logger is a headless observer client that logs information
+received by the Telepathy framework.  It features pluggable backends to log
+different sorts of messages in different formats.")
+    (license license:lgpl2.1+)))
+
+(define-public colord-gtk
+  (package
+    (name "colord-gtk")
+    (version "0.1.26")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.freedesktop.org/software/colord"
+                                  "/releases/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0i9y3bb5apj6a0f8cx36l6mjzs7xc0k7nf0magmf58vy2mzhpl18"))))
+    (build-system gnu-build-system)
+    (arguments '(#:tests? #f)) ; require the colord system service
+    (native-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (propagated-inputs
+     ;; colord-gtk.pc refers to all these.
+     `(("colord" ,colord)
+       ("gtk+" ,gtk+)))
+    (synopsis "GTK integration for libcolord")
+    (home-page "http://www.freedesktop.org/software/colord/")
+    (description
+     "This is a GTK+ convenience library for interacting with colord.  It is
+useful for both applications which need colour management and applications that
+wish to perform colour calibration.")
+    (license license:lgpl2.1+)))

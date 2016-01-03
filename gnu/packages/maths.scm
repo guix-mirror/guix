@@ -9,6 +9,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,6 +54,7 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages less)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages gnome)
@@ -1422,6 +1424,46 @@ output to TeX, and a browser for Maxima's manual including command index and
 full text searching.")
     (license license:gpl2+)))
 
+(define-public armadillo
+  (package
+    (name "armadillo")
+    (version "6.400.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/arma/armadillo-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0bsgrmldlx77w5x26n3axj1hg6iw6csyw0dwl1flrbdwl51f9701"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ;no test target
+    (inputs
+     `(("openblas" ,openblas)
+       ("lapack" ,lapack)
+       ("arpack" ,arpack-ng)))
+    (home-page "http://arma.sourceforge.net/")
+    (synopsis "C++ linear algebra library")
+    (description
+     "Armadillo is a C++ linear algebra library, aiming towards a good balance
+between speed and ease of use.  It is useful for algorithm development
+directly in C++, or quick conversion of research code into production
+environments.  It can be used for machine learning, pattern recognition,
+signal processing, bioinformatics, statistics, econometrics, etc.  The library
+provides efficient classes for vectors, matrices and cubes, as well as 150+
+associated functions (eg. contiguous and non-contiguous submatrix views).")
+    (license license:mpl2.0)))
+
+(define-public armadillo-for-rcpparmadillo
+  (package (inherit armadillo)
+    (version "6.200.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/arma/armadillo-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1f69rlqhnf2wv8khyn2a8vi6gx1i72qgfy8b9b760ssk85dcl763"))))))
+
 (define-public muparser
   (package
     (name "muparser")
@@ -1990,4 +2032,33 @@ pre-defined constants (pi, e, c, etc.), support for using variables, \"active\"
 variables, a command history, hex/octal/binary input and output, unit
 conversions, embedded comments, and an expandable expression entry field.  It
 evaluates expressions using the standard order of operations.")
+    (license license:gpl2+)))
+
+(define-public xaos
+  (package
+    (name "xaos")
+    (version "3.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/xaos/xaos-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "15cd1cx1dyygw6g2nhjqq3bsfdj8sj8m4va9n75i0f3ryww3x7wq"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("gettext" ,gnu-gettext)))
+    (inputs `(("libx11" ,libx11)
+              ("zlib" ,zlib)
+              ("libpng" ,libpng)
+              ("gsl" ,gsl)))
+    (arguments
+     `(#:tests? #f ;no "check" target
+       #:make-flags '("LOCALEDIR=$DATAROOTDIR/locale")))
+    (synopsis "Real-time fractal zoomer")
+    (description "GNU XaoS is a graphical program that generates fractal
+patterns and allows you to zoom in and out of them infinitely in a fluid,
+continuous manner.  It also includes tutorials that help to explain how fractals
+are built.  It can generate many different fractal types such as the Mandelbrot
+set.")
+    (home-page "http://www.gnu.org/software/xaos/")
     (license license:gpl2+)))

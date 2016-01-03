@@ -136,14 +136,14 @@ guidelines}.")
 (define-public python-mox3
   (package
     (name "python-mox3")
-    (version "0.12.0")
+    (version "0.13.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mox3" version))
         (sha256
           (base32
-           "1pwz98q098cb8xxf8yryq21nvklc7hla880bsrq4y3j6bprw3iaj"))))
+           "0hj57374r239cj1zbzpxw7mj0yfblz55jdfrc2p1h8j7xng0319j"))))
     (build-system python-build-system)
     (inputs
       `(("python-fixtures" ,python-fixtures)
@@ -202,14 +202,14 @@ tested on Python version 3.2, 2.7 and 2.6.")
 (define-public python-os-testr
   (package
     (name "python-os-testr")
-    (version "0.4.2")
+    (version "0.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "os-testr" version))
        (sha256
         (base32
-         "0474z0mxb7y3vfk4s097wf1mzji5d135vh27cvlh9q17rq3x9r3w"))))
+         "0bv03wnmvxhyi8y08hjh9clxrwqc2251529v4kh5khvca0fsbqdp"))))
     (build-system python-build-system)
     (arguments
      ;; os-testr uses itself to run the tests. It seems like pbr writes the
@@ -307,14 +307,14 @@ portions of your testing code.")
 (define-public python-stevedore
   (package
     (name "python-stevedore")
-    (version "1.9.0")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "stevedore" version))
        (sha256
          (base32
-          "01pcrdqsb6ca7hmqwm11b3baj6ml8yz9pxawrgvxb3j9824906fc"))))
+          "17vpffcnk56sj86d2n3vz5bprcc9bswilgd0awnm7jp073pqkmpm"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-six" ,python-six)))
@@ -345,14 +345,14 @@ extensions.")
 (define-public python-tempest-lib
   (package
     (name "python-tempest-lib")
-    (version "0.11.0")
+    (version "0.12.0")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "tempest-lib" version))
       (sha256
        (base32
-        "1q4wpqcg0yv99mr5gc43wsfirlqdjz90npyghy3mn5f6lby2yikg"))))
+        "0f15wxk394cb2kw34krpxq8mvy1rxw0lnl5wfiv14cq1s1fm9cjd"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -532,14 +532,14 @@ handlers and support for context specific logging (like resource id’s etc).")
 (define-public python-oslo.serialization
   (package
     (name "python-oslo.serialization")
-    (version "2.0.0")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "oslo.serialization" version))
        (sha256
         (base32
-         "1hnkc69sa4r1qhx6hdwlrk2ng7wypgwr063iq5r815a0bv0qr1ad"))))
+         "00s03krhf833gs76aw5ns32w9m1i4hx6x6d9g82m0j5wyqk0sci4"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-iso8601" ,python-iso8601)
@@ -569,14 +569,14 @@ in transmittable and storable formats, such as JSON and MessagePack.")
 (define-public python-oslosphinx
   (package
     (name "python-oslosphinx")
-    (version "3.1.0")
+    (version "4.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "oslosphinx" version))
        (sha256
         (base32
-         "0zcshdc9s1f7hnvg0fm2ps5rak3dpnm8kqg4i21lknhmsvb7p5cb"))))
+         "178svff46pmynpsnw06gpxk0w13p1gwkqbsvyxphblxv9wl09ksz"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-requests" ,python-requests)))

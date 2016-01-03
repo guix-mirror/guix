@@ -1,4 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
@@ -39,6 +40,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages doxygen)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fonts)
@@ -66,6 +68,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages rdf)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
@@ -252,7 +255,7 @@ you to define complex tempo maps for entire songs or performances.")
 (define-public lilypond
   (package
     (name "lilypond")
-    (version "2.19.27")
+    (version "2.19.33")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -261,32 +264,39 @@ you to define complex tempo maps for entire songs or performances.")
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "11v4jr4qj1jpqvjw1ww7riv8pxfyasif8mf16l447f1xq1ifhkhs"))))
+                "0s4vbbfy4xwq4da4kmlnndalmcyx2jaz7y8praah2146qbnr90xh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; out-test/collated-files.html fails
        #:out-of-source? #t
+       #:make-flags '("conf=www") ;to generate images for info manuals
        #:configure-flags
-       (list (string-append "--with-texgyre-dir="
+       (list "CONFIGURATION=www"
+             (string-append "--with-texgyre-dir="
                             (assoc-ref %build-inputs "font-tex-gyre")
                             "/share/fonts/opentype/"))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'hardcode-path-to-gs
-          (lambda* (#:key inputs #:allow-other-keys)
+         (add-after 'unpack 'fix-path-references
+          (lambda _
             (substitute* "scm/backend-library.scm"
               (("\\(search-executable '\\(\"gs\"\\)\\)")
-               (string-append "\""
-                              (assoc-ref inputs "ghostscript")
-                              "/bin/gs"
-                              "\"" )))
+               (string-append "\"" (which "gs") "\""))
+              (("\"/bin/sh\"")
+               (string-append "\"" (which "sh") "\"")))
             #t))
          (add-before 'configure 'prepare-configuration
           (lambda _
             (substitute* "configure"
               (("SHELL=/bin/sh") "SHELL=sh"))
-            (setenv "out" "")
-            #t)))))
+            (setenv "out" "www")
+            (setenv "conf" "www")
+            #t))
+         (add-after 'install 'install-info
+           (lambda _
+             (zero? (system* "make"
+                             "-j" (number->string (parallel-job-count))
+                             "conf=www" "install-info")))))))
     (inputs
      `(("guile" ,guile-1.8)
        ("font-dejavu" ,font-dejavu)
@@ -636,6 +646,38 @@ modification devices that brought world-wide fame to the names and products of
 Laurens Hammond and Don Leslie.")
     (license license:gpl2+)))
 
+(define-public bristol
+  (package
+    (name "bristol")
+    (version "0.60.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/bristol/bristol/"
+                                  (version-major+minor version)
+                                  "/bristol-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1fi2m4gmvxdi260821y09lxsimq82yv4k5bbgk3kyc3x1nyhn7vx"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("liblo" ,liblo)
+       ("libx11" ,libx11)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://bristol.sourceforge.net/")
+    (synopsis "Synthesizer emulator")
+    (description
+     "Bristol is an emulation package for a number of different 'classic'
+synthesizers including additive and subtractive and a few organs.  The
+application consists of the engine, which is called bristol, and its own GUI
+library called brighton that represents all the emulations.  There are
+currently more than twenty different emulations; each does sound different
+although the author maintains that the quality and accuracy of each emulation
+is subjective.")
+    (license license:gpl3+)))
+
 (define-public tuxguitar
   (package
     (name "tuxguitar")
@@ -660,17 +702,19 @@ Laurens Hammond and Don Leslie.")
        #:tests? #f ;no "check" target
        #:parallel-build? #f ;not supported
        #:phases
-       (alist-cons-before
-        'build 'enter-dir-set-path-and-pass-ldflags
-        (lambda* (#:key inputs #:allow-other-keys)
-          (chdir "TuxGuitar")
-          (substitute* "GNUmakefile"
-            (("PROPERTIES\\?=")
-             (string-append "PROPERTIES?= -Dswt.library.path="
-                            (assoc-ref inputs "swt") "/lib"))
-            (("\\$\\(GCJ\\) -o") "$(GCJ) $(LDFLAGS) -o"))
-          #t)
-        (alist-delete 'configure %standard-phases))))
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'enter-dir-and-set-flags
+          (lambda* (#:key inputs #:allow-other-keys)
+            (chdir "TuxGuitar")
+            (substitute* "GNUmakefile"
+              (("GCJFLAGS\\+=(.*)" _ rest)
+               (string-append "GCJFLAGS=-fsource=1.4 -fPIC " rest))
+              (("PROPERTIES\\?=")
+               (string-append "PROPERTIES?= -Dswt.library.path="
+                              (assoc-ref inputs "swt") "/lib"))
+              (("\\$\\(GCJ\\) -o") "$(GCJ) $(LDFLAGS) -o"))
+            #t)))))
     (inputs
      `(("swt" ,swt)))
     (native-inputs
@@ -771,6 +815,95 @@ ABC files, has a MIDI player for proof-listening, and includes a documentation
 browser.")
     (license license:gpl2+)))
 
+(define-public drumstick
+  (package
+    (name "drumstick")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/drumstick/"
+                                  version "/drumstick-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0mxgix85b2qqs859z91cxik5x0s60dykqiflbj62px9akvf91qdv"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f  ; no test target
+       #:configure-flags '("-DLIB_SUFFIX=")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-docbook
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "cmake_admin/CreateManpages.cmake"
+               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl)
+                               "/manpages/docbook.xsl")))
+             #t)))))
+    (inputs
+     `(("qt" ,qt)
+       ("alsa-lib" ,alsa-lib)
+       ("fluidsynth" ,fluidsynth)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("libxslt" ,libxslt) ;for xsltproc
+       ("docbook-xsl" ,docbook-xsl)
+       ("doxygen" ,doxygen)))
+    (home-page "http://drumstick.sourceforge.net/")
+    (synopsis "C++ MIDI library")
+    (description
+     "Drumstick is a set of MIDI libraries using C++/Qt5 idioms and style.  It
+includes a C++ wrapper around the ALSA library sequencer interface.  A
+complementary library provides classes for processing SMF (Standard MIDI
+files: .MID/.KAR), Cakewalk (.WRK), and Overture (.OVE) file formats.  A
+multiplatform realtime MIDI I/O library is also provided with various output
+backends, including ALSA, OSS, Network and FluidSynth.")
+    (license license:gpl2+)))
+
+(define-public vmpk
+  (package
+    (name "vmpk")
+    (version "0.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/vmpk/vmpk/"
+                                  version "/vmpk-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0ranldd033bd31m9d2vkbkn9zp1k46xbaysllai2i95rf1nhirqc"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f  ; no test target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-docbook
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "cmake_admin/CreateManpages.cmake"
+               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl)
+                               "/manpages/docbook.xsl")))
+             #t)))))
+    (inputs
+     `(("drumstick" ,drumstick)
+       ("qt" ,qt)))
+    (native-inputs
+     `(("libxslt" ,libxslt) ;for xsltproc
+       ("docbook-xsl" ,docbook-xsl)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://vmpk.sourceforge.net")
+    (synopsis "Virtual MIDI piano keyboard")
+    (description
+     "Virtual MIDI Piano Keyboard is a MIDI events generator and receiver.  It
+doesn't produce any sound by itself, but can be used to drive a MIDI
+synthesizer (either hardware or software, internal or external).  You can use
+the computer's keyboard to play MIDI notes, and also the mouse.  You can use
+the Virtual MIDI Piano Keyboard to display the played MIDI notes from another
+instrument or MIDI file player.")
+    (license license:gpl3+)))
+
 (define-public zynaddsubfx
   (package
     (name "zynaddsubfx")
@@ -815,3 +948,86 @@ browser.")
 three synthesizer engines, multitimbral and polyphonic synths, microtonal
 capabilities, custom envelopes, effects, etc.")
     (license license:gpl2)))
+
+(define-public yoshimi
+  (package
+    (name "yoshimi")
+    (version "1.3.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/yoshimi/"
+                                  (version-major+minor version)
+                                  "/yoshimi-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "13xc1x8jrr2rn26jx4dini692ww3771d5j5xf7f56ixqr7mmdhvz"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:configure-flags
+       (list (string-append "-DCMAKE_INSTALL_DATAROOTDIR="
+                            (assoc-ref %outputs "out") "/share"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'enter-dir
+           (lambda _ (chdir "src") #t))
+         ;; Move SSE compiler optimization flags from generic target to
+         ;; athlon64 and core2 targets, because otherwise the build would fail
+         ;; on non-Intel machines.
+         (add-after 'unpack 'remove-sse-flags-from-generic-target
+          (lambda _
+            (substitute* "src/CMakeLists.txt"
+              (("-msse -msse2 -mfpmath=sse") "")
+              (("-march=(athlon64|core2)" flag)
+               (string-append flag " -msse -msse2 -mfpmath=sse")))
+            #t)))))
+    (inputs
+     `(("boost" ,boost)
+       ("fftwf" ,fftwf)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("fontconfig" ,fontconfig)
+       ("minixml" ,minixml)
+       ("mesa" ,mesa)
+       ("fltk" ,fltk)
+       ("lv2" ,lv2)
+       ("readline" ,readline)
+       ("ncurses" ,ncurses)
+       ("cairo" ,cairo)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://yoshimi.sourceforge.net/")
+    (synopsis "Multi-paradigm software synthesizer")
+    (description
+     "Yoshimi is a fork of ZynAddSubFX, a feature heavy realtime software
+synthesizer.  It offers three synthesizer engines, multitimbral and polyphonic
+synths, microtonal capabilities, custom envelopes, effects, etc.  Yoshimi
+improves on support for JACK features, such as JACK MIDI.")
+    (license license:gpl2)))
+
+(define-public cursynth
+  (package
+    (name "cursynth")
+    (version "1.5")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/cursynth/cursynth-"
+                          version ".tar.gz"))
+      (sha256
+       (base32 "1dhphsya41rv8z6yqcv9l6fwbslsds4zh1y56zizi39nd996d40v"))
+      (patches (list (search-patch "cursynth-wave-rand.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    ;; TODO: See https://github.com/iyoko/cursynth/issues/4 which currently
+    ;; prevents us from using pulseaudio
+    (inputs `(("ncurses" ,ncurses)
+              ("alsa" ,alsa-lib)))
+    (home-page "http://www.gnu.org/software/cursynth")
+    (synopsis "Polyphonic and MIDI subtractive music synthesizer using curses")
+    (description "GNU cursynth is a polyphonic synthesizer that runs
+graphically in the terminal.  It is built on a full-featured subtractive
+synthesis engine.  Notes and parameter changes may be entered via MIDI or the
+computer's keyboard.")
+    (license license:gpl3+)))

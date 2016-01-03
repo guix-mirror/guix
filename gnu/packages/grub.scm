@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,7 +84,8 @@
               (base32
                "0n64hpmsccvicagvr0c6v0kgp2yw0kgnd3jvsyd26cnwgs7c6kkq"))
              (patches (list (search-patch "grub-gets-undeclared.patch")
-                            (search-patch "grub-freetype.patch")))))
+                            (search-patch "grub-freetype.patch")
+                            (search-patch "grub-CVE-2015-8370.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-werror")

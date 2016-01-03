@@ -285,7 +285,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "6.5.7")
+    (version "6.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -293,7 +293,7 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "18whwc4f8nk8gi3mjw9153c9cvwd3i9i7njmpdbhcplrv33m5pmp"))))
+                "1c2b03856a78ripkpl9jjzj6yzyfb3rlrdnjx300s647l1xx8gxg"))))
     (build-system python-build-system)
     (native-inputs `(("python" ,python-2)))
     (arguments
@@ -302,7 +302,7 @@ and corrections.  It is based on a Bayesian filter.")
       ;; Tests require a modifiable IMAP account.
        #:tests? #f))
     (home-page "http://www.offlineimap.org")
-    (synopsis "Synch emails between two repositories")
+    (synopsis "Sync emails between two repositories")
     (description
      "OfflineImap synchronizes emails between two repositories, so that you
 can read the same mailbox from multiple computers.  It supports IMAP as REMOTE
@@ -372,17 +372,18 @@ attachments, create new maildirs, and so on.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.20.2")
+    (version "0.21")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://notmuchmail.org/releases/notmuch-"
+              (uri (string-append "https://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1v5dcnlg4km5hfaq0i0qywq5fn66fi0rq4aaibyqkwxz8mis4hgp"))))
+                "1cr53rbpkcy3pvrmhbg2gq7sjpwb0c8xd7a4zhzxbiv8s7z8yvyh"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:tests? #f ;; FIXME: 637 tests; 70 fail and 98 are skipped
+     '(#:tests? #f ;; FIXME: 662 tests; 168 fail and 99 are skipped
+                   ;; with perl input: 50 fail and 99 are skipped
        #:phases (modify-phases %standard-phases
                   (replace 'configure
                     (lambda* (#:key outputs #:allow-other-keys)
@@ -449,7 +450,7 @@ and search library.")
 (define-public getmail
   (package
     (name "getmail")
-    (version "4.46.0")
+    (version "4.48.0")
     (source
      (origin
        (method url-fetch)
@@ -457,7 +458,7 @@ and search library.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "15rqmm25pq6ll8aaqh8h6pfdkpqs7y6yismb3h3w1bz8j292c8zl"))))
+         "0k5rm5kag14izng2ajcagvli9sns5mzvkyfa65ri4xymxs91wi29"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -518,14 +519,15 @@ MailCore 2.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.13.0")
+    (version "3.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://www.claws-mail.org/releases/" name "-" version
                     ".tar.xz"))
               (sha256
-               (base32 "0fpr9gdgrs5yggm61a6135ca06x0cflddsh8dwfqmpb3dj07cl1n"))))
+               (base32
+                "049av7r0xhjjjm1p93l2ns3xisvn125v3ncqar23cqjzgcichg5d"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)
@@ -563,17 +565,18 @@ which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.6.2")
+    (version "1.6.3")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://sourceforge/msmtp/msmtp-" version ".tar.xz"))
        (sha256 (base32
-                "12c7ljahb06pgn8yvvw526xvr11vnr6d4nr0apylixddpxycsvig"))))
+                "0mbkflxv2swjz4185inis83v6pxcblpmapwjhgpc6wh7kh3bx0pr"))))
     (build-system gnu-build-system)
     (inputs
      `(("libidn" ,libidn)
+       ("libsecret" ,libsecret)
        ("gnutls" ,gnutls)
        ("zlib" ,zlib)
        ("gsasl" ,gsasl)))
@@ -595,14 +598,17 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.85")
+    (version "4.86")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "ftp://ftp.exim.org/pub/exim/exim4/exim-" version ".tar.bz2"))
+       (uri (list (string-append "ftp://ftp.exim.org/pub/exim/exim4/exim-"
+                                 version ".tar.bz2")
+                  (string-append "ftp://ftp.exim.org/pub/exim/exim4/old/exim-"
+                                 version ".tar.bz2")))
        (sha256
-        (base32 "195a3ll5ck9viazf9pvgcyc0sziln5g0ggmlm6ax002lphmiy88k"))))
+        (base32
+         "0mn4bxih9slrmll5262ayhf41ji43pjf1rv0y6xpy6x55v7g5k7i"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)
@@ -696,7 +702,8 @@ facilities for checking incoming mail.")
      `(("openssl" ,openssl)
        ("zlib" ,zlib)
        ("bzip2" ,bzip2)
-       ("sqlite" ,sqlite)))
+       ("sqlite" ,sqlite)
+       ("linux-pam" ,linux-pam)))
     (arguments
      `(#:configure-flags '("--sysconfdir=/etc"
                            "--localstatedir=/var")
@@ -723,14 +730,14 @@ It supports mbox/Maildir and its own dbox/mdbox formats.")
 (define-public isync
   (package
     (name "isync")
-    (version "1.1.2")
+    (version "1.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/isync/isync/"
                            version "/isync-" version ".tar.gz"))
        (sha256 (base32
-                "1960ah3fmp75cakd06lcx50n5q0yvfsadjh3lffhyvjvj7ava9d2"))))
+                "1bij6nm06ghkg98n2pdyacam2fyg5y8f7ajw0d5653m0r4ldw5p7"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)

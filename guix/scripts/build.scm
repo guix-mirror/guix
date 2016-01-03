@@ -204,6 +204,7 @@ options handled by 'set-build-options-from-command-line', and listed in
                 (lambda (opt name arg result . rest)
                   ;; XXX: Imperatively modify the search paths.
                   (%package-module-path (cons arg (%package-module-path)))
+                  (%patch-path (cons arg (%patch-path)))
                   (set! %load-path (cons arg %load-path))
                   (set! %load-compiled-path (cons arg %load-compiled-path))
 
@@ -404,10 +405,16 @@ must be one of 'package', 'all', or 'transitive'~%")
 (define (options->things-to-build opts)
   "Read the arguments from OPTS and return a list of high-level objects to
 build---packages, gexps, derivations, and so on."
-  (define ensure-list
-    (match-lambda
-      ((x ...) x)
-      (x       (list x))))
+  (define (validate-type x)
+    (unless (or (package? x) (derivation? x) (gexp? x) (procedure? x))
+      (leave (_ "~s: not something we can build~%") x)))
+
+  (define (ensure-list x)
+    (let ((lst (match x
+                 ((x ...) x)
+                 (x       (list x)))))
+      (for-each validate-type lst)
+      lst))
 
   (append-map (match-lambda
                 (('argument . (? string? spec))
@@ -424,8 +431,6 @@ build---packages, gexps, derivations, and so on."
                  (ensure-list (read/eval str)))
                 (('argument . (? derivation? drv))
                  drv)
-                (('argument . (? derivation-path? drv))
-                 (list ))
                 (_ '()))
               opts))
 

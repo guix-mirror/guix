@@ -35,7 +35,8 @@
     (version "0.8.17")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://www.irssi.org/files/irssi-"
+             (uri (string-append "https://github.com/irssi-import/irssi/"
+                                 "releases/download/0.8.17/irssi-"
                                  version ".tar.bz2"))
              (sha256
               (base32

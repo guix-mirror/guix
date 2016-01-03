@@ -89,6 +89,7 @@
             package-transitive-target-inputs
             package-transitive-native-inputs
             package-transitive-propagated-inputs
+            package-transitive-native-search-paths
             package-transitive-supported-systems
             package-source-derivation
             package-derivation
@@ -631,6 +632,17 @@ for the host system (\"native inputs\"), and not target inputs."
   "Return the propagated inputs of PACKAGE, and their propagated inputs,
 recursively."
   (transitive-inputs (package-propagated-inputs package)))
+
+(define (package-transitive-native-search-paths package)
+  "Return the list of search paths for PACKAGE and its propagated inputs,
+recursively."
+  (append (package-native-search-paths package)
+          (append-map (match-lambda
+                        ((label (? package? p) _ ...)
+                         (package-native-search-paths p))
+                        (_
+                         '()))
+                      (package-transitive-propagated-inputs package))))
 
 (define (transitive-input-references alist inputs)
   "Return a list of (assoc-ref ALIST <label>) for each (<label> <package> . _)

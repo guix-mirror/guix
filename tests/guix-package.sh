@@ -225,6 +225,10 @@ cat > "$module_dir/foo.scm"<<EOF
 EOF
 guix package -i emacs-foo-bar-patched -n
 
+# Same when -L is used.
+( unset GUIX_PACKAGE_PATH;					\
+  guix package -L "$module_dir" -i emacs-foo-bar-patched -n )
+
 # Make sure installing from a file works.
 cat > "$module_dir/package.scm"<<EOF
 (use-modules (gnu))

@@ -24,12 +24,14 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages cups)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages readline)
-  #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages elf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python))
 
@@ -96,64 +98,57 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "3.6.25")
+    (version "4.3.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.samba.org/samba/ftp/stable/samba-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0l9pz2m67vf398q3c2dwn8jwdxsjb20igncf4byhv6yq5dzqlb4g"))))
+               "0xcs2bcim421mlk6l9rcrkx4cq9y41gfssyfa7xzdw5draar3631"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-cons-before
-                 'configure 'chdir
-                 (lambda _
-                   (chdir "source3"))
-                 (alist-cons-after
-                  'strip 'add-lib-to-runpath
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (assoc-ref outputs "out"))
-                           (lib (string-append out "/lib")))
-                      ;; Add LIB to the RUNPATH of all the executables and
-                      ;; dynamic libraries.
-                      (with-directory-excursion out
-                        (for-each (cut augment-rpath <> lib)
-                                  (append (find-files "bin" ".*")
-                                          (find-files "sbin" ".*")
-                                          (find-files "lib" ".*"))))))
-                  %standard-phases))
-
-       #:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (guix build rpath)
-                  (srfi srfi-26))
-       #:imported-modules (,@%gnu-build-system-modules
-                           (guix build rpath))
-
-       ;; This flag is required to allow for "make test".
-       #:configure-flags '("--enable-socket-wrapper")
-
-       #:test-target "test"
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; samba uses a custom configuration script that runs waf.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out    (assoc-ref outputs "out"))
+                    (libdir (string-append out "/lib")))
+               (zero? (system*
+                       "./configure"
+                       "--enable-fhs"
+                       ;; XXX: heimdal not packaged.
+                       "--bundled-libraries=com_err"
+                       (string-append "--prefix=" out)
+                       ;; Install public and private libraries into
+                       ;; a single directory to avoid RPATH issues.
+                       (string-append "--libdir=" libdir)
+                       (string-append "--with-privatelibdir=" libdir)))))))
 
        ;; XXX: The test infrastructure attempts to set password with
        ;; smbpasswd, which fails with "smbpasswd -L can only be used by root."
        ;; So disable tests until there's a workaround.
        #:tests? #f))
     (inputs                                   ; TODO: Add missing dependencies
-     `(;; ("cups" ,cups)
-       ("acl" ,acl)
+     `(("acl" ,acl)
+       ("cups" ,cups)
        ;; ("gamin" ,gamin)
-       ("libunwind" ,libunwind)
+       ("gnutls" ,gnutls)
        ("iniparser" ,iniparser)
-       ("popt" ,popt)
-       ("openldap" ,openldap)
+       ("libaio" ,libaio)
+       ("ldb" ,ldb)
        ("linux-pam" ,linux-pam)
+       ("openldap" ,openldap)
+       ("popt" ,popt)
        ("readline" ,readline)
-       ("patchelf" ,patchelf)))                   ; for (guix build rpath)
-    (native-inputs                                ; for the test suite
+       ("talloc" ,talloc)
+       ("tevent" ,tevent)
+       ("tdb" ,tdb)))
+    (native-inputs
      `(("perl" ,perl)
-       ("python" ,python-wrapper)))
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2))) ; incompatible with Python 3
     (home-page "http://www.samba.org/")
     (synopsis
      "The standard Windows interoperability suite of programs for GNU and Unix")
@@ -169,26 +164,31 @@ Desktops into Active Directory environments using the winbind daemon.")
 (define-public talloc
   (package
     (name "talloc")
-    (version "2.1.2")
+    (version "2.1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/talloc/talloc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "13c365f7y8idjf2v1jxdjpkc3lxdmsxxfxjx1ymianm7zjiph393"))))
+                "1pfx3kmj973hpacfw46fzfnjd7ms1j03ifkc30wk930brx8ffcrq"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; talloc uses a custom configuration script that runs a
-                   ;; python script called 'waf'.
-                   (setenv "CONFIG_SHELL" (which "sh"))
-                   (let ((out (assoc-ref outputs "out")))
-                     (zero? (system* "./configure"
-                                     (string-append "--prefix=" out)))))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; test_magic_differs.sh has syntax error, and is not in the right
+             ;; place where wscript expected.
+             ;; Skip the test.
+             (substitute* "wscript"
+               (("magic_ret = .*") "magic_ret = 0\n"))
+             ;; talloc uses a custom configuration script that runs a
+             ;; python script called 'waf'.
+             (setenv "CONFIG_SHELL" (which "sh"))
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "./configure"
+                               (string-append "--prefix=" out)))))))))
     (inputs
      `(("python" ,python-2)))
     (home-page "http://talloc.samba.org")
@@ -197,6 +197,84 @@ Desktops into Active Directory environments using the winbind daemon.")
      "Talloc is a hierarchical, reference counted memory pool system with
 destructors.  It is the core memory allocator used in Samba.")
     (license gpl3+))) ;; The bundled "replace" library uses LGPL3.
+
+(define-public tevent
+  (package
+    (name "tevent")
+    (version "0.9.26")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.samba.org/ftp/tevent/tevent-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1gbh6d2m49j1v2hkaiyrh8bj02i5wxd4hqayzk2g44yyivbi8b16"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; tevent uses a custom configuration script that runs waf.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "./configure"
+                               (string-append "--prefix=" out)
+                               "--bundled-libraries=NONE"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-2)))
+    (propagated-inputs
+     `(("talloc" ,talloc))) ; required by tevent.pc
+    (synopsis "Event system library")
+    (home-page "https://tevent.samba.org/")
+    (description
+     "Tevent is an event system based on the talloc memory management library.
+It is the core event system used in Samba.  The low level tevent has support for
+many event types, including timers, signals, and the classic file descriptor events.")
+    (license lgpl3+)))
+
+(define-public ldb
+  (package
+    (name "ldb")
+    (version "1.1.23")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0ncmwgga6q9v7maiywgw21w6rb3149m1w2ca11yq8k5j0izjz2wg"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; ldb use a custom configuration script that runs waf.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "./configure"
+                               (string-append "--prefix=" out)
+                               (string-append "--with-modulesdir=" out
+                                              "/lib/ldb/modules")
+                               "--bundled-libraries=NONE"))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-2)))
+    (propagated-inputs
+     ;; ldb.pc refers to all these.
+     `(("talloc" ,talloc)
+       ("tdb" ,tdb)))
+    (inputs
+     `(("popt" ,popt)
+       ("tevent" ,tevent)))
+    (synopsis "LDAP-like embedded database")
+    (home-page "https://ldb.samba.org/")
+    (description
+     "Ldb is a LDAP-like embedded database built on top of TDB.  What ldb does
+is provide a fast database with an LDAP-like API designed to be used within an
+application.  In some ways it can be seen as a intermediate solution between
+key-value pair databases and a real LDAP database.")
+    (license lgpl3+)))
 
 (define-public ppp
   (package

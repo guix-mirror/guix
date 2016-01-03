@@ -240,8 +240,9 @@ capacity is user-selectable.")
     (version "1.4.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://sourceforge/libcue/libcue-"
-                                 version ".tar.bz2"))
+             (uri (string-append "https://github.com/lipnitsk/libcue/releases"
+                                 "/download/v" version
+                                 "/libcue-" version ".tar.bz2"))
              (sha256
               (base32
                "17kjd7rjz1bvfn44n3n2bjb7a1ywd0yc0g4sqp5ihf9b5bn7cwlb"))))

@@ -320,7 +320,7 @@ incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "ftp://ftp.mozilla.org/pub/mozilla.org/opus/opus-tools-"
+                    "http://downloads.xiph.org/releases/opus/opus-tools-"
                     version ".tar.gz"))
               (sha256
                (base32

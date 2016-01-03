@@ -17,7 +17,7 @@
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 #
-# Test the daemon and its interaction with 'guix substitute'.
+# Test 'guix system', mostly error reporting.
 #
 
 set -e
@@ -26,7 +26,15 @@ guix system --version
 
 tmpfile="t-guix-system-$$"
 errorfile="t-guix-system-error-$$"
-trap 'rm -f "$tmpfile" "$errorfile"' EXIT
+
+# Note: This directory is chosen outside $builddir so that relative file name
+# canonicalization doesn't mess up with 'current-source-directory', used by
+# 'local-file' ('load' forces 'relative' for
+# %FILE-PORT-NAME-CANONICALIZATION.)
+tmpdir="${TMPDIR:-/tmp}/t-guix-system-$$"
+mkdir "$tmpdir"
+
+trap 'rm -f "$tmpfile" "$errorfile" "$tmpdir"/*; rmdir "$tmpdir"' EXIT
 
 # Reporting of syntax errors.
 
@@ -180,3 +188,23 @@ make_user_config "users" "group-that-does-not-exist"
 if guix system build "$tmpfile" -n 2> "$errorfile"
 then false
 else grep "supplementary group.*group-that-does-not-exist.*undeclared" "$errorfile"; fi
+
+# Try 'local-file' and relative file name resolution.
+
+cat > "$tmpdir/config.scm"<<EOF
+(use-modules (gnu))
+(use-service-modules networking)
+
+(operating-system
+  $OS_BASE
+  (services (cons (tor-service (local-file "my-torrc"))
+                  %base-services)))
+EOF
+
+cat > "$tmpdir/my-torrc"<<EOF
+# This is an example file.
+EOF
+
+# In both cases 'my-torrc' should be properly resolved.
+guix system build "$tmpdir/config.scm" -n
+(cd "$tmpdir"; guix system build "config.scm" -n)

@@ -14,6 +14,7 @@ Guix convenient and fun.
 * Build Log Mode: Emacs Build Log.	Highlighting Guix build logs.
 * Completions: Emacs Completions.	Completing @command{guix} shell command.
 * Development: Emacs Development.	Tools for Guix developers.
+* Hydra: Emacs Hydra.			Interface for Guix build farm.
 @end menu
 
 
@@ -160,7 +161,7 @@ Display package(s) with the specified name.
 @item M-x guix-search-by-regexp
 Search for packages by a specified regexp.  By default ``name'',
 ``synopsis'' and ``description'' of the packages will be searched.  This
-can be changed by modifying @code{guix-search-params} variable.
+can be changed by modifying @code{guix-package-search-params} variable.
 
 @end table
 
@@ -287,6 +288,8 @@ similar to @command{guix edit} command (@pxref{Invoking guix edit}), but
 for opening a package recipe in the current Emacs instance.
 @item x
 Execute actions on the marked packages.
+@item B
+Display latest builds of the current package (@pxref{Emacs Hydra}).
 @end table
 
 A ``generation-list'' buffer additionally provides the following
@@ -414,7 +417,7 @@ changed with the following variables:
 
 By default, the name of a profile is also displayed in a ``list'' or
 ``info'' buffer name.  To change this behavior, use
-@code{guix-buffer-name-function} variable.
+@code{guix-ui-buffer-name-function} variable.
 
 For example, if you want to display all types of results in a single
 buffer (in such case you will probably use a history (@kbd{l}/@kbd{r})
@@ -428,8 +431,7 @@ extensively), you may do it like this:
    guix-generation-list-buffer-name name
    guix-package-info-buffer-name    name
    guix-output-info-buffer-name     name
-   guix-generation-info-buffer-name name
-   guix-buffer-name-function        #'guix-buffer-name-simple))
+   guix-generation-info-buffer-name name))
 @end example
 
 @node Emacs Keymaps
@@ -439,8 +441,12 @@ If you want to change default key bindings, use the following keymaps
 (@pxref{Init Rebinding,,, emacs, The GNU Emacs Manual}):
 
 @table @code
-@item guix-root-map
-Parent keymap with general keys for all guix modes.
+@item guix-buffer-map
+Parent keymap with general keys for any buffer type.
+
+@item guix-ui-map
+Parent keymap with general keys for buffers used for Guix package
+management (for packages, outputs and generations).
 
 @item guix-list-mode-map
 Parent keymap with general keys for ``list'' buffers.
@@ -475,22 +481,22 @@ Keymap with keys available when a point is placed on a button.
 @subsubsection Appearance
 
 You can change almost any aspect of ``list'' / ``info'' buffers using
-the following variables:
+the following variables (@dfn{ENTRY-TYPE} means @code{package},
+@code{output} or @code{generation}):
 
 @table @code
-@item guix-list-column-format
-@itemx guix-list-column-titles
-@itemx guix-list-column-value-methods
+@item guix-ENTRY-TYPE-list-format
+@itemx guix-ENTRY-TYPE-list-titles
 Specify the columns, their names, what and how is displayed in ``list''
 buffers.
 
-@item guix-info-displayed-params
-@itemx guix-info-insert-methods
-@itemx guix-info-ignore-empty-vals
+@item guix-ENTRY-TYPE-info-format
+@itemx guix-ENTRY-TYPE-info-titles
+@itemx guix-info-ignore-empty-values
 @itemx guix-info-param-title-format
 @itemx guix-info-multiline-prefix
 @itemx guix-info-indent
-@itemx guix-info-fill-column
+@itemx guix-info-fill
 @itemx guix-info-delimiter
 Various settings for ``info'' buffers.
 
@@ -738,3 +744,41 @@ evaluation will be finished in the REPL.
 Alternatively, to avoid this limitation, you may just run another Geiser
 REPL, and while something is being evaluated in the previous REPL, you
 can continue editing a scheme file with the help of the current one.
+
+
+@node Emacs Hydra
+@section Hydra
+
+The continuous integration server at @code{hydra.gnu.org} builds all
+the distribution packages on the supported architectures and serves
+them as substitutes (@pxref{Substitutes}).  Continuous integration is
+currently orchestrated by @uref{https://nixos.org/hydra/, Hydra}.
+
+This section describes an Emacs interface to query Hydra to know the
+build status of specific packages, discover recent and ongoing builds,
+view build logs, and so on.  This interface is mostly the same as the
+``list''/``info'' interface for displaying packages and generations
+(@pxref{Emacs Package Management}).
+
+The following commands are available:
+
+@table @kbd
+
+@item M-x guix-hydra-latest-builds
+Display latest failed or successful builds (you will be prompted for a
+number of builds).  With @kbd{C-u}, you will also be prompted for other
+parameters (project, jobset, job and system).
+
+@item M-x guix-hydra-queued-builds
+Display scheduled or currently running builds (you will be prompted for
+a number of builds).
+
+@item M-x guix-hydra-jobsets
+Display available jobsets (you will be prompted for a project).
+
+@end table
+
+In a list of builds you can press @kbd{L} key to display a build log of
+the current build.  Also both a list of builds and a list of jobsets
+provide @kbd{B} key to display latest builds of the current job or
+jobset (don't forget about @kbd{C-u}).

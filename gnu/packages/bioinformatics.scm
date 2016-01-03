@@ -40,6 +40,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages machine-learning)
@@ -1354,6 +1355,87 @@ supports next-generation sequencing data in fasta/q and csfasta/q format from
 Illumina, Roche 454, and the SOLiD platform.")
     (license license:gpl3)))
 
+(define-public fraggenescan
+  (package
+    (name "fraggenescan")
+    (version "1.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "mirror://sourceforge/fraggenescan/"
+                       "FragGeneScan" version ".tar.gz"))
+       (sha256
+        (base32 "1zzigqmvqvjyqv4945kv6nc5ah2xxm1nxgrlsnbzav3f5c0n0pyj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'patch-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (string-append (assoc-ref outputs "out")))
+                    (share (string-append out "/share/fraggenescan/")))
+               (substitute* "run_FragGeneScan.pl"
+                 (("system\\(\"rm")
+                  (string-append "system(\"" (which "rm")))
+                 (("system\\(\"mv")
+                  (string-append "system(\"" (which "mv")))
+                 ;; This script and other programs expect the training files
+                 ;; to be in the non-standard location bin/train/XXX. Change
+                 ;; this to be share/fraggenescan/train/XXX instead.
+                 (("^\\$train.file = \\$dir.*")
+                  (string-append "$train_file = \""
+                                 share
+                                 "train/\".$FGS_train_file;")))
+               (substitute* "run_hmm.c"
+                 (("^  strcat\\(train_dir, \\\"train/\\\"\\);")
+                  (string-append "  strcpy(train_dir, \"" share "/train/\");")))
+               (substitute* "post_process.pl"
+                 (("^my \\$dir = substr.*")
+                  (string-append "my $dir = \"" share "\";"))))
+             #t))
+         (replace 'build
+           (lambda _ (and (zero? (system* "make" "clean"))
+                          (zero? (system* "make" "fgs")))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (string-append (assoc-ref outputs "out")))
+                    (bin (string-append out "/bin/"))
+                    (share (string-append out "/share/fraggenescan/train")))
+               (install-file "run_FragGeneScan.pl" bin)
+               (install-file "FragGeneScan" bin)
+               (install-file "FGS_gff.py" bin)
+               (install-file "post_process.pl" bin)
+               (copy-recursively "train" share))))
+         (delete 'check)
+         (add-after 'install 'post-install-check
+           ;; In lieu of 'make check', run one of the examples and check the
+           ;; output files gets created.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (string-append (assoc-ref outputs "out")))
+                    (bin (string-append out "/bin/")))
+               (and (zero? (system* (string-append bin "run_FragGeneScan.pl")
+                             "-genome=./example/NC_000913.fna"
+                             "-out=./test2"
+                             "-complete=1"
+                             "-train=complete"))
+                    (file-exists? "test2.faa")
+                    (file-exists? "test2.ffn")
+                    (file-exists? "test2.gff")
+                    (file-exists? "test2.out"))))))))
+    (inputs
+     `(("perl" ,perl)
+       ("python" ,python-2))) ;not compatible with python 3.
+    (home-page "https://sourceforge.net/projects/fraggenescan/")
+    (synopsis "Finds potentially fragmented genes in short reads")
+    (description
+     "FragGeneScan is a program for predicting bacterial and archaeal genes in
+short and error-prone DNA sequencing reads.  It can also be applied to predict
+genes in incomplete assemblies or complete genomes.")
+    ;; GPL3+ according to private correspondense with the authors.
+    (license license:gpl3+)))
+
 (define-public grit
   (package
     (name "grit")
@@ -1690,7 +1772,7 @@ sequencing tag position and orientation.")
 (define-public mafft
   (package
     (name "mafft")
-    (version "7.221")
+    (version "7.267")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1699,7 +1781,7 @@ sequencing tag position and orientation.")
               (file-name (string-append name "-" version ".tgz"))
               (sha256
                (base32
-                "0xi7klbsgi049vsrk6jiwh9wfj3b770gz3c8c7zwij448v0dr73d"))))
+                "1xl6xq1rfxkws0svrlhyqxhhwbv6r77jwblsdpcyiwzsscw6wlk0"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no automated tests, though there are tests in the read me
@@ -1720,6 +1802,9 @@ sequencing tag position and orientation.")
               ;; remove mafft-homologs.rb from SCRIPTS
               (("^SCRIPTS = mafft mafft-homologs.rb")
                "SCRIPTS = mafft")
+              ;; remove mafft-homologs from MANPAGES
+              (("^MANPAGES = mafft.1 mafft-homologs.1")
+               "MANPAGES = mafft.1")
               ;; remove mafft-distance from PROGS
               (("^PROGS = dvtditr dndfast7 dndblast sextet5 mafft-distance")
                "PROGS = dvtditr dndfast7 dndblast sextet5")
@@ -1732,9 +1817,22 @@ sequencing tag position and orientation.")
               (("^\t\\$\\(INSTALL\\) -m 644 \\$\\(MANPAGES\\) \
 \\$\\(DESTDIR\\)\\$\\(LIBDIR\\)") "#"))
             #t))
+         (add-after 'enter-dir 'patch-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* '("pairash.c"
+                            "mafft.tmpl")
+               (("perl") (which "perl"))
+               (("([\"`| ])awk" _ prefix)
+                (string-append prefix (which "awk")))
+               (("grep") (which "grep")))
+             #t))
          (delete 'configure))))
     (inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("gawk" ,gawk)
+       ("grep" ,grep)))
+    (propagated-inputs
+     `(("coreutils" ,coreutils)))
     (home-page "http://mafft.cbrc.jp/alignment/software/")
     (synopsis "Multiple sequence alignment program")
     (description
@@ -3122,6 +3220,203 @@ BLAST, KEGG, GenBank, MEDLINE and GO.")
     ;; Code is released under Ruby license, except for setup
     ;; (LGPLv2.1+) and scripts in samples (which have GPL2 and GPL2+)
     (license (list license:ruby license:lgpl2.1+ license:gpl2+ ))))
+
+(define-public r-acsnminer
+  (package
+    (name "r-acsnminer")
+    (version "0.15.11")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "ACSNMineR" version))
+              (sha256
+               (base32
+                "1dl4drhjyazwm9wxlm8yfppwvvj4h6jxwmz8kfw5bxpb3jdnsqvy"))))
+    (properties `((upstream-name . "ACSNMineR")))
+    (build-system r-build-system)
+    (propagated-inputs
+      `(("r-ggplot2" ,r-ggplot2)
+        ("r-gridextra" ,r-gridextra)))
+    (home-page "http://cran.r-project.org/web/packages/ACSNMineR")
+    (synopsis "Gene enrichment analysis")
+    (description
+     "This package provides tools to compute and represent gene set enrichment
+or depletion from your data based on pre-saved maps from the @dfn{Atlas of
+Cancer Signalling Networks} (ACSN) or user imported maps.  The gene set
+enrichment can be run with hypergeometric test or Fisher exact test, and can
+use multiple corrections.  Visualization of data can be done either by
+barplots or heatmaps.")
+    (license license:gpl2+)))
+
+(define-public r-biocgenerics
+  (package
+    (name "r-biocgenerics")
+    (version "0.16.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "BiocGenerics" version))
+              (sha256
+               (base32
+                "0f16ryy5f012hvksrwlmm33bcl7lw97i2jvhbnwfwl03j4w7nhc1"))))
+    (properties
+     `((upstream-name . "BiocGenerics")
+       (r-repository . bioconductor)))
+    (build-system r-build-system)
+    (home-page "http://bioconductor.org/packages/BiocGenerics")
+    (synopsis "S4 generic functions for Bioconductor")
+    (description
+     "This package provides S4 generic functions needed by many Bioconductor
+packages.")
+    (license license:artistic2.0)))
+
+(define-public r-s4vectors
+  (package
+    (name "r-s4vectors")
+    (version "0.8.5")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "S4Vectors" version))
+              (sha256
+               (base32
+                "10f4jxwlwsiy7zhb3kgp6anid0d7wkvrrljl80r3nhx38yr24l5k"))))
+    (properties
+     `((upstream-name . "S4Vectors")
+       (r-repository . bioconductor)))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)))
+    (home-page "http://bioconductor.org/packages/S4Vectors")
+    (synopsis "S4 implementation of vectors and lists")
+    (description
+     "The S4Vectors package defines the @code{Vector} and @code{List} virtual
+classes and a set of generic functions that extend the semantic of ordinary
+vectors and lists in R.  Package developers can easily implement vector-like
+or list-like objects as concrete subclasses of @code{Vector} or @code{List}.
+In addition, a few low-level concrete subclasses of general interest (e.g.
+@code{DataFrame}, @code{Rle}, and @code{Hits}) are implemented in the
+S4Vectors package itself.")
+    (license license:artistic2.0)))
+
+(define-public r-iranges
+  (package
+    (name "r-iranges")
+    (version "2.4.6")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "IRanges" version))
+              (sha256
+               (base32
+                "00x0266sys1fc5ipa639y84p6m6mgspk2xb099vcwmd3w4hypj9d"))))
+    (properties
+     `((upstream-name . "IRanges")
+       (r-repository . bioconductor)))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "http://bioconductor.org/packages/IRanges")
+    (synopsis "Infrastructure for manipulating intervals on sequences")
+    (description
+     "This package provides efficient low-level and highly reusable S4 classes
+for storing ranges of integers, RLE vectors (Run-Length Encoding), and, more
+generally, data that can be organized sequentially (formally defined as
+@code{Vector} objects), as well as views on these @code{Vector} objects.
+Efficient list-like classes are also provided for storing big collections of
+instances of the basic classes.  All classes in the package use consistent
+naming and share the same rich and consistent \"Vector API\" as much as
+possible.")
+    (license license:artistic2.0)))
+
+(define-public r-genomeinfodb
+  (package
+    (name "r-genomeinfodb")
+    (version "1.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "GenomeInfoDb" version))
+              (sha256
+               (base32
+                "1j2n1v1mrw1fxn7cyffz112pm76wd6gy9q9qwlsfv3brbsqbvdbf"))))
+    (properties
+     `((upstream-name . "GenomeInfoDb")
+       (r-repository . bioconductor)))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "http://bioconductor.org/packages/GenomeInfoDb")
+    (synopsis "Utilities for manipulating chromosome identifiers")
+    (description
+     "This package contains data and functions that define and allow
+translation between different chromosome sequence naming conventions (e.g.,
+\"chr1\" versus \"1\"), including a function that attempts to place sequence
+names in their natural, rather than lexicographic, order.")
+    (license license:artistic2.0)))
+
+(define-public r-xvector
+  (package
+    (name "r-xvector")
+    (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "XVector" version))
+              (sha256
+               (base32
+                "0havwyr6xqk7w0rmbwfj9jq1djz7wzdz7w39adhklwzwz9l4ih3a"))))
+    (properties
+     `((upstream-name . "XVector")
+       (r-repository . bioconductor)))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-system-zlib
+           (lambda _
+             (substitute* "DESCRIPTION"
+               (("zlibbioc, ") ""))
+             (substitute* "NAMESPACE"
+               (("import\\(zlibbioc\\)") ""))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "http://bioconductor.org/packages/XVector")
+    (synopsis "Representation and manpulation of external sequences")
+    (description
+     "This package provides memory efficient S4 classes for storing sequences
+\"externally\" (behind an R external pointer, or on disk).")
+    (license license:artistic2.0)))
+
+(define-public r-genomicranges
+  (package
+    (name "r-genomicranges")
+    (version "1.22.2")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "GenomicRanges" version))
+              (sha256
+               (base32
+                "1jffvcs0jsi7q4l3pvjj6r73vll80csgkljvhqp0g2ixc43jjng9"))))
+    (properties
+     `((upstream-name . "GenomicRanges")
+       (r-repository . bioconductor)))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-xvector" ,r-xvector)))
+    (home-page "http://bioconductor.org/packages/GenomicRanges")
+    (synopsis "Representation and manipulation of genomic intervals")
+    (description
+     "This package provides tools to efficiently represent and manipulate
+genomic annotations and alignments is playing a central role when it comes to
+analyzing high-throughput sequencing data (a.k.a. NGS data).  The
+GenomicRanges package defines general purpose containers for storing and
+manipulating genomic intervals and variables defined along a genome.")
+    (license license:artistic2.0)))
 
 (define-public r-qtl
  (package

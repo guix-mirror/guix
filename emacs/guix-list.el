@@ -1,4 +1,4 @@
-;;; guix-list.el --- List buffers for displaying entries   -*- lexical-binding: t -*-
+;;; guix-list.el --- 'List' buffer interface for displaying data  -*- lexical-binding: t -*-
 
 ;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 
@@ -19,26 +19,19 @@
 
 ;;; Commentary:
 
-;; This file provides a list-like buffer for displaying information
-;; about Guix packages and generations.
+;; This file provides 'list' buffer interface for displaying an arbitrary
+;; data.
 
 ;;; Code:
 
 (require 'cl-lib)
 (require 'tabulated-list)
+(require 'guix-buffer)
 (require 'guix-info)
-(require 'guix-base)
+(require 'guix-entry)
 (require 'guix-utils)
 
-(defgroup guix-list nil
-  "General settings for list buffers."
-  :prefix "guix-list-"
-  :group 'guix)
-
-(defgroup guix-list-faces nil
-  "Faces for list buffers."
-  :group 'guix-list
-  :group 'guix-faces)
+(guix-define-buffer-type list)
 
 (defface guix-list-file-path
   '((t :inherit guix-info-file-path))
@@ -50,152 +43,164 @@
   "Face used for time stamps."
   :group 'guix-list-faces)
 
-(defcustom guix-list-describe-warning-count 10
-  "The maximum number of entries for describing without a warning.
-If a user wants to describe more than this number of marked
-entries, he will be prompted for confirmation."
-  :type 'integer
-  :group 'guix-list)
+(defun guix-list-describe (&optional mark-names)
+  "Describe entries marked with a general mark.
+'Describe' means display entries in 'info' buffer.
+If no entries are marked, describe the current entry.
+With prefix argument, describe entries marked with any mark."
+  (interactive (list (unless current-prefix-arg '(general))))
+  (let* ((ids        (or (apply #'guix-list-get-marked-id-list mark-names)
+                         (list (guix-list-current-id))))
+         (count      (length ids))
+         (entry-type (guix-buffer-current-entry-type)))
+    (when (or (<= count (guix-list-describe-warning-count entry-type))
+              (y-or-n-p (format "Do you really want to describe %d entries? "
+                                count)))
+      (guix-list-describe-entries entry-type ids))))
 
-(defvar guix-list-column-format
-  `((package
-     (name 20 t)
-     (version 10 nil)
-     (outputs 13 t)
-     (installed 13 t)
-     (synopsis 30 nil))
-    (output
-     (name 20 t)
-     (version 10 nil)
-     (output 9 t)
-     (installed 12 t)
-     (synopsis 30 nil))
-    (generation
-     (number 5
-             ,(lambda (a b) (guix-list-sort-numerically 0 a b))
-             :right-align t)
-     (current 10 t)
-     (time 20 t)
-     (path 30 t)))
-  "Columns displayed in list buffers.
-Each element of the list has a form:
+
+;;; Wrappers for 'list' variables
 
-  (ENTRY-TYPE . ((PARAM WIDTH SORT . PROPS) ...))
+(defvar guix-list-data nil
+  "Alist with 'list' data.
+This alist is filled by `guix-list-define-interface' macro.")
 
-PARAM is the name of an entry parameter of ENTRY-TYPE.  For the
-meaning of WIDTH, SORT and PROPS, see `tabulated-list-format'.")
+(defun guix-list-value (entry-type symbol)
+  "Return SYMBOL's value for ENTRY-TYPE from `guix-list-data'."
+  (symbol-value (guix-assq-value guix-list-data entry-type symbol)))
 
-(defvar guix-list-column-titles
-  '((generation
-     (number . "N.")))
-  "Column titles for list buffers.
-Has the same structure as `guix-param-titles', but titles from
-this list have a priority.")
+(defun guix-list-param-title (entry-type param)
+  "Return column title of an ENTRY-TYPE parameter PARAM."
+  (guix-buffer-param-title 'list entry-type param))
 
-(defvar guix-list-column-value-methods
-  '((package
-     (name        . guix-package-list-get-name)
-     (synopsis    . guix-list-get-one-line)
-     (description . guix-list-get-one-line)
-     (installed   . guix-package-list-get-installed-outputs))
-    (output
-     (name        . guix-package-list-get-name)
-     (synopsis    . guix-list-get-one-line)
-     (description . guix-list-get-one-line))
-    (generation
-     (current     . guix-generation-list-get-current)
-     (time        . guix-list-get-time)
-     (path        . guix-list-get-file-path)))
-  "Methods for inserting parameter values in columns.
-Each element of the list has a form:
-
-  (ENTRY-TYPE . ((PARAM . FUN) ...))
-
-PARAM is the name of an entry parameter of ENTRY-TYPE.
-
-FUN is a function returning a value that will be inserted.  The
-function is called with 2 arguments: the first one is the value
-of the parameter; the second argument is an entry info (alist of
-parameters and their values).")
-
-(defun guix-list-get-param-title (entry-type param)
-  "Return title of an ENTRY-TYPE entry parameter PARAM."
-  (or (guix-assq-value guix-list-column-titles
-                       entry-type param)
-      (guix-get-param-title entry-type param)))
-
-(defun guix-list-get-column-format (entry-type)
+(defun guix-list-format (entry-type)
   "Return column format for ENTRY-TYPE."
-  (guix-assq-value guix-list-column-format entry-type))
+  (guix-list-value entry-type 'format))
 
-(defun guix-list-get-displayed-params (entry-type)
-  "Return list of parameters of ENTRY-TYPE that should be displayed."
-  (mapcar #'car
-          (guix-list-get-column-format entry-type)))
+(defun guix-list-displayed-params (entry-type)
+  "Return a list of ENTRY-TYPE parameters that should be displayed."
+  (mapcar #'car (guix-list-format entry-type)))
 
-(defun guix-list-get-sort-key (entry-type param &optional invert)
-  "Return suitable sort key for `tabulated-list-sort-key'.
-Define column title by ENTRY-TYPE and PARAM.  If INVERT is
-non-nil, invert the sort."
-  (when (memq param (guix-list-get-displayed-params entry-type))
-    (cons (guix-list-get-param-title entry-type param) invert)))
+(defun guix-list-sort-key (entry-type)
+  "Return sort key for ENTRY-TYPE."
+  (guix-list-value entry-type 'sort-key))
+
+(defun guix-list-additional-marks (entry-type)
+  "Return alist of additional marks for ENTRY-TYPE."
+  (guix-list-value entry-type 'marks))
+
+(defun guix-list-single-entry? (entry-type)
+  "Return non-nil, if a single entry of ENTRY-TYPE should be listed."
+  (guix-list-value entry-type 'list-single))
+
+(defun guix-list-describe-warning-count (entry-type)
+  "Return the maximum number of ENTRY-TYPE entries to describe."
+  (guix-list-value entry-type 'describe-count))
+
+(defun guix-list-describe-entries (entry-type ids)
+  "Describe ENTRY-TYPE entries with IDS in 'info' buffer"
+  (funcall (guix-list-value entry-type 'describe)
+           ids))
+
+
+;;; Tabulated list internals
 
 (defun guix-list-sort-numerically (column a b)
   "Compare COLUMN of tabulated entries A and B numerically.
-It is a sort predicate for `tabulated-list-format'.
+This function is used for sort predicates for `tabulated-list-format'.
 Return non-nil, if B is bigger than A."
   (cl-flet ((num (entry)
               (string-to-number (aref (cadr entry) column))))
     (> (num b) (num a))))
 
-(defun guix-list-make-tabulated-vector (entry-type fun)
+(defmacro guix-list-define-numerical-sorter (column)
+  "Define numerical sort predicate for COLUMN.
+See `guix-list-sort-numerically' for details."
+  (let ((name (intern (format "guix-list-sort-numerically-%d" column)))
+        (doc  (format "\
+Predicate to sort tabulated list by column %d numerically.
+See `guix-list-sort-numerically' for details."
+                      column)))
+    `(defun ,name (a b)
+       ,doc
+       (guix-list-sort-numerically ,column a b))))
+
+(defmacro guix-list-define-numerical-sorters (n)
+  "Define numerical sort predicates for columns from 0 to N.
+See `guix-list-define-numerical-sorter' for details."
+  `(progn
+     ,@(mapcar (lambda (i)
+                 `(guix-list-define-numerical-sorter ,i))
+               (number-sequence 0 n))))
+
+(guix-list-define-numerical-sorters 9)
+
+(defun guix-list-tabulated-sort-key (entry-type)
+  "Return ENTRY-TYPE sort key for `tabulated-list-sort-key'."
+  (let ((sort-key (guix-list-sort-key entry-type)))
+    (and sort-key
+         (cons (guix-list-param-title entry-type (car sort-key))
+               (cdr sort-key)))))
+
+(defun guix-list-tabulated-vector (entry-type fun)
   "Call FUN on each column specification for ENTRY-TYPE.
 
-FUN is called with 2 argument: parameter name and column
-specification (see `guix-list-column-format').
+FUN is applied to column specification as arguments (see
+`guix-list-format').
 
 Return a vector made of values of FUN calls."
   (apply #'vector
          (mapcar (lambda (col-spec)
-                   (funcall fun (car col-spec) (cdr col-spec)))
-                 (guix-list-get-column-format entry-type))))
+                   (apply fun col-spec))
+                 (guix-list-format entry-type))))
 
-(defun guix-list-get-list-format (entry-type)
+(defun guix-list-tabulated-format (entry-type)
   "Return ENTRY-TYPE list specification for `tabulated-list-format'."
-  (guix-list-make-tabulated-vector
+  (guix-list-tabulated-vector
    entry-type
-   (lambda (param spec)
-     (cons (guix-list-get-param-title entry-type param)
-           spec))))
+   (lambda (param _ &rest rest-spec)
+     (cons (guix-list-param-title entry-type param)
+           rest-spec))))
 
-(defun guix-list-insert-entries (entries entry-type)
-  "Display ENTRIES of ENTRY-TYPE in the current list buffer.
-ENTRIES should have a form of `guix-entries'."
-  (setq tabulated-list-entries
-        (guix-list-get-tabulated-entries entries entry-type))
-  (tabulated-list-print))
-
-(defun guix-list-get-tabulated-entries (entries entry-type)
-  "Return list of values of ENTRY-TYPE for `tabulated-list-entries'.
-Values are taken from ENTRIES which should have the form of
-`guix-entries'."
+(defun guix-list-tabulated-entries (entries entry-type)
+  "Return a list of ENTRY-TYPE values for `tabulated-list-entries'."
   (mapcar (lambda (entry)
-            (list (guix-assq-value entry 'id)
-                  (guix-list-get-tabulated-entry entry entry-type)))
+            (list (guix-entry-id entry)
+                  (guix-list-tabulated-entry entry entry-type)))
           entries))
 
-(defun guix-list-get-tabulated-entry (entry entry-type)
+(defun guix-list-tabulated-entry (entry entry-type)
   "Return array of values for `tabulated-list-entries'.
-Parameters are taken from ENTRY of ENTRY-TYPE."
-  (guix-list-make-tabulated-vector
+Parameters are taken from ENTRY-TYPE ENTRY."
+  (guix-list-tabulated-vector
    entry-type
-   (lambda (param _)
-     (let ((val (guix-assq-value entry param))
-           (fun (guix-assq-value guix-list-column-value-methods
-                                 entry-type param)))
+   (lambda (param fun &rest _)
+     (let ((val (guix-entry-value entry param)))
        (if fun
            (funcall fun val entry)
          (guix-get-string val))))))
+
+
+;;; Displaying entries
+
+(defun guix-list-get-display-entries (entry-type &rest args)
+  "Search for entries and show them in a 'list' buffer preferably."
+  (let ((entries (guix-buffer-get-entries 'list entry-type args)))
+    (if (or (null entries)      ; = 0
+            (cdr entries)       ; > 1
+            (guix-list-single-entry? entry-type)
+            (null (guix-buffer-value 'info entry-type 'show-entries)))
+        (guix-buffer-display-entries entries 'list entry-type args 'add)
+      (if (equal (guix-buffer-value 'info entry-type 'get-entries)
+                 (guix-buffer-value 'list entry-type 'get-entries))
+          (guix-buffer-display-entries entries 'info entry-type args 'add)
+        (guix-buffer-get-display-entries 'info entry-type args 'add)))))
+
+(defun guix-list-insert-entries (entries entry-type)
+  "Print ENTRY-TYPE ENTRIES in the current buffer."
+  (setq tabulated-list-entries
+        (guix-list-tabulated-entries entries entry-type))
+  (tabulated-list-print))
 
 (defun guix-list-get-one-line (val &optional _)
   "Return one-line string from a multi-line string VAL.
@@ -217,22 +222,18 @@ VAL may be nil."
         'follow-link t
         'help-echo "Find file"))
 
+
+;;; 'List' lines
+
 (defun guix-list-current-id ()
-  "Return ID of the current entry."
+  "Return ID of the entry at point."
   (or (tabulated-list-get-id)
       (user-error "No entry here")))
 
 (defun guix-list-current-entry ()
-  "Return alist of the current entry info."
-  (guix-get-entry-by-id (guix-list-current-id) guix-entries))
-
-(defun guix-list-current-package-id ()
-  "Return ID of the current package."
-  (cl-ecase major-mode
-    (guix-package-list-mode
-     (guix-list-current-id))
-    (guix-output-list-mode
-     (guix-assq-value (guix-list-current-entry) 'package-id))))
+  "Return entry at point."
+  (guix-entry-by-id (guix-list-current-id)
+                    (guix-buffer-current-entries)))
 
 (defun guix-list-for-each-line (fun &rest args)
   "Call FUN with ARGS for each entry line."
@@ -263,20 +264,28 @@ Each element of the list has a form:
   (ID MARK-NAME . ARGS)
 
 ID is an entry ID.
-MARK-NAME is a symbol from `guix-list-mark-alist'.
+MARK-NAME is a symbol from `guix-list-marks'.
 ARGS is a list of additional values.")
 
-(defvar guix-list-mark-alist
-  '((empty   . ?\s)
-    (general . ?*))
+(defvar-local guix-list-marks nil
   "Alist of available mark names and mark characters.")
 
-(defsubst guix-list-get-mark (name)
+(defvar guix-list-default-marks
+  '((empty   . ?\s)
+    (general . ?*))
+  "Alist of default mark names and mark characters.")
+
+(defun guix-list-marks (entry-type)
+  "Return alist of available marks for ENTRY-TYPE."
+  (append guix-list-default-marks
+          (guix-list-additional-marks entry-type)))
+
+(defun guix-list-get-mark (name)
   "Return mark character by its NAME."
-  (or (guix-assq-value guix-list-mark-alist name)
+  (or (guix-assq-value guix-list-marks name)
       (error "Mark '%S' not found" name)))
 
-(defsubst guix-list-get-mark-string (name)
+(defun guix-list-get-mark-string (name)
   "Return mark string by its NAME."
   (string (guix-list-get-mark name)))
 
@@ -288,11 +297,11 @@ ARGS is a list of additional values.")
   "Return list of specs of entries marked with any mark from MARK-NAMES.
 Entry specs are elements from `guix-list-marked' list.
 If MARK-NAMES are not specified, use all marks from
-`guix-list-mark-alist' except the `empty' one."
+`guix-list-marks' except the `empty' one."
   (or mark-names
       (setq mark-names
             (delq 'empty
-                  (mapcar #'car guix-list-mark-alist))))
+                  (mapcar #'car guix-list-marks))))
   (cl-remove-if-not (lambda (assoc)
                       (memq (cadr assoc) mark-names))
                     guix-list-marked))
@@ -314,7 +323,7 @@ See `guix-list-get-marked' for details."
 (defun guix-list--mark (mark-name &optional advance &rest args)
   "Put a mark on the current line.
 Also add the current entry to `guix-list-marked' using its ID and ARGS.
-MARK-NAME is a symbol from `guix-list-mark-alist'.
+MARK-NAME is a symbol from `guix-list-marks'.
 If ADVANCE is non-nil, move forward by one line after marking."
   (let ((id (guix-list-current-id)))
     (if (eq mark-name 'empty)
@@ -337,7 +346,7 @@ With ARG, mark all lines."
 
 (defun guix-list-mark-all (&optional mark-name)
   "Mark all lines with MARK-NAME mark.
-MARK-NAME is a symbol from `guix-list-mark-alist'.
+MARK-NAME is a symbol from `guix-list-marks'.
 Interactively, put a general mark on all lines."
   (interactive)
   (or mark-name (setq mark-name 'general))
@@ -363,7 +372,7 @@ With ARG, unmark all lines."
   (guix-list-mark-all 'empty))
 
 (defun guix-list-restore-marks ()
-  "Put marks according to `guix-list-mark-alist'."
+  "Put marks according to `guix-list-marked'."
   (guix-list-for-each-line
    (lambda ()
      (let ((mark-name (car (guix-assq-value guix-list-marked
@@ -380,520 +389,183 @@ Same as `tabulated-list-sort', but also restore marks after sorting."
   (guix-list-restore-marks))
 
 
+;;; Major mode and interface definer
+
 (defvar guix-list-mode-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent
-     map (make-composed-keymap guix-root-map
+     map (make-composed-keymap guix-buffer-map
                                tabulated-list-mode-map))
     (define-key map (kbd "RET") 'guix-list-describe)
+    (define-key map (kbd "i")   'guix-list-describe)
     (define-key map (kbd "m")   'guix-list-mark)
     (define-key map (kbd "*")   'guix-list-mark)
     (define-key map (kbd "u")   'guix-list-unmark)
     (define-key map (kbd "DEL") 'guix-list-unmark-backward)
     (define-key map [remap tabulated-list-sort] 'guix-list-sort)
     map)
-  "Parent keymap for list buffers.")
+  "Keymap for `guix-list-mode' buffers.")
 
 (define-derived-mode guix-list-mode tabulated-list-mode "Guix-List"
-  "Parent mode for displaying information in list buffers."
-  (setq tabulated-list-padding 2))
+  "Parent mode for displaying data in 'list' form.")
 
-(defmacro guix-list-define-entry-type (entry-type &rest args)
-  "Define common stuff for displaying ENTRY-TYPE entries in list buffers.
+(defun guix-list-mode-initialize (entry-type)
+  "Set up the current 'list' buffer for displaying ENTRY-TYPE entries."
+  (setq tabulated-list-padding  2
+        tabulated-list-format   (guix-list-tabulated-format entry-type)
+        tabulated-list-sort-key (guix-list-tabulated-sort-key entry-type))
+  (setq-local guix-list-marks   (guix-list-marks entry-type))
+  (tabulated-list-init-header))
 
-Remaining argument (ARGS) should have a form [KEYWORD VALUE] ...  The
-following keywords are available:
+(defmacro guix-list-define-interface (entry-type &rest args)
+  "Define 'list' interface for displaying ENTRY-TYPE entries.
+Remaining arguments (ARGS) should have a form [KEYWORD VALUE] ...
 
-  - `:sort-key' - default sort key for the tabulated list buffer.
+Required keywords:
 
-  - `:invert-sort' - if non-nil, invert initial sort.
+  - `:format' - default value of the generated
+    `guix-ENTRY-TYPE-list-format' variable.
 
-  - `:marks' - default value for the defined
-    `guix-ENTRY-TYPE-mark-alist' variable.
+Optional keywords:
 
-This macro defines the following functions:
+  - `:sort-key' - default value of the generated
+    `guix-ENTRY-TYPE-list-sort-key' variable.
 
-  - `guix-ENTRY-TYPE-mark-MARK-NAME' functions for each mark
-    specified in `:marks' argument."
-  (let* ((entry-type-str (symbol-name entry-type))
-         (prefix         (concat "guix-" entry-type-str "-list"))
-         (mode-str       (concat prefix "-mode"))
-         (init-fun       (intern (concat prefix "-mode-initialize")))
-         (marks-var      (intern (concat prefix "-mark-alist")))
-         (marks-val      nil)
-         (sort-key       nil)
-         (invert-sort    nil))
+  - `:describe-function' - default value of the generated
+    `guix-ENTRY-TYPE-describe-function' variable.
 
-    ;; Process the keyword args.
-    (while (keywordp (car args))
-      (pcase (pop args)
-        (`:sort-key    (setq sort-key (pop args)))
-        (`:invert-sort (setq invert-sort (pop args)))
-	(`:marks       (setq marks-val (pop args)))
-	(_ (pop args))))
+  - `:list-single?' - default value of the generated
+    `guix-ENTRY-TYPE-list-single' variable.
 
-    `(progn
-       (defvar ,marks-var ',marks-val
-         ,(concat "Alist of additional marks for `" mode-str "'.\n"
-                  "Marks from this list are added to `guix-list-mark-alist'."))
+  - `:marks' - default value of the generated
+    `guix-ENTRY-TYPE-list-marks' variable.
 
-       ,@(mapcar (lambda (mark-spec)
-                   (let* ((mark-name (car mark-spec))
-                          (mark-name-str (symbol-name mark-name)))
-                     `(defun ,(intern (concat prefix "-mark-" mark-name-str "-simple")) ()
-                        ,(concat "Put '" mark-name-str "' mark and move to the next line.\n"
-                                 "Also add the current entry to `guix-list-marked'.")
-                        (interactive)
-                        (guix-list--mark ',mark-name t))))
-                 marks-val)
+The rest keyword arguments are passed to
+`guix-buffer-define-interface' macro."
+  (declare (indent 1))
+  (let* ((entry-type-str     (symbol-name entry-type))
+         (prefix             (concat "guix-" entry-type-str "-list"))
+         (group              (intern prefix))
+         (describe-var       (intern (concat prefix "-describe-function")))
+         (describe-count-var (intern (concat prefix
+                                             "-describe-warning-count")))
+         (format-var         (intern (concat prefix "-format")))
+         (sort-key-var       (intern (concat prefix "-sort-key")))
+         (list-single-var    (intern (concat prefix "-single")))
+         (marks-var          (intern (concat prefix "-marks"))))
+    (guix-keyword-args-let args
+        ((show-entries-val   :show-entries-function)
+         (describe-val       :describe-function)
+         (describe-count-val :describe-count 10)
+         (format-val         :format)
+         (sort-key-val       :sort-key)
+         (list-single-val    :list-single?)
+         (marks-val          :marks))
+      `(progn
+         (defcustom ,format-var ,format-val
+           ,(format "\
+List of format values of the displayed columns.
+Each element of the list has a form:
 
-       (defun ,init-fun ()
-         ,(concat "Initial settings for `" mode-str "'.")
-         ,(when sort-key
-            `(setq tabulated-list-sort-key
-                   (guix-list-get-sort-key
-                    ',entry-type ',sort-key ,invert-sort)))
-         (setq tabulated-list-format
-               (guix-list-get-list-format ',entry-type))
-         (setq-local guix-list-mark-alist
-                     (append guix-list-mark-alist ,marks-var))
-         (tabulated-list-init-header)))))
+  (PARAM VALUE-FUN WIDTH SORT . PROPS)
 
-(put 'guix-list-define-entry-type 'lisp-indent-function 'defun)
+PARAM is a name of '%s' entry parameter.
 
-(defun guix-list-describe-maybe (entry-type ids)
-  "Describe ENTRY-TYPE entries in info buffer using list of IDS."
-  (let ((count (length ids)))
-    (when (or (<= count guix-list-describe-warning-count)
-              (y-or-n-p (format "Do you really want to describe %d entries? "
-                                count)))
-      (apply #'guix-get-show-entries
-             guix-profile 'info entry-type 'id ids))))
+VALUE-FUN may be either nil or a function returning a value that
+will be inserted.  The function is called with 2 arguments: the
+first one is the value of the parameter; the second one is an
+entry (alist of parameter names and values).
 
-(defun guix-list-describe (&optional arg)
-  "Describe entries marked with a general mark.
-If no entries are marked, describe the current entry.
-With prefix (if ARG is non-nil), describe entries marked with any mark."
-  (interactive "P")
-  (let ((ids (or (apply #'guix-list-get-marked-id-list
-                        (unless arg '(general)))
-                 (list (guix-list-current-id)))))
-    (guix-list-describe-maybe guix-entry-type ids)))
+For the meaning of WIDTH, SORT and PROPS, see
+`tabulated-list-format'."
+                    entry-type-str)
+           :type 'sexp
+           :group ',group)
 
-(defun guix-list-edit-package ()
-  "Go to the location of the current package."
-  (interactive)
-  (guix-edit (guix-list-current-package-id)))
+         (defcustom ,sort-key-var ,sort-key-val
+           ,(format "\
+Default sort key for 'list' buffer with '%s' entries.
+Should be nil (no sort) or have a form:
 
-
-;;; Displaying packages
+  (PARAM . FLIP)
 
-(guix-define-buffer-type list package)
+PARAM is the name of '%s' entry parameter.  For the meaning of
+FLIP, see `tabulated-list-sort-key'."
+                    entry-type-str entry-type-str)
+           :type '(choice (const :tag "No sort" nil)
+                          (cons symbol boolean))
+           :group ',group)
 
-(guix-list-define-entry-type package
-  :sort-key name
-  :marks ((install . ?I)
-          (upgrade . ?U)
-          (delete  . ?D)))
+         (defvar ,marks-var ,marks-val
+           ,(format "\
+Alist of additional marks for 'list' buffer with '%s' entries.
+Marks from this list are used along with `guix-list-default-marks'."
+                    entry-type-str))
 
-(defface guix-package-list-installed
-  '((t :inherit guix-package-info-installed-outputs))
-  "Face used if there are installed outputs for the current package."
-  :group 'guix-package-list-faces)
+         (defcustom ,list-single-var ,list-single-val
+           ,(format "\
+If non-nil, list '%s' entry even if it is the only matching result.
+If nil, show a single '%s' entry in the 'info' buffer."
+                    entry-type-str entry-type-str)
+           :type 'boolean
+           :group ',group)
 
-(defface guix-package-list-obsolete
-  '((t :inherit guix-package-info-obsolete))
-  "Face used if a package is obsolete."
-  :group 'guix-package-list-faces)
+         (defcustom ,describe-count-var ,describe-count-val
+           ,(format "\
+The maximum number of '%s' entries to describe without a warning.
+If a user wants to describe more than this number of marked
+entries, he will be prompted for confirmation.
+See also `guix-list-describe'."
+                    entry-type-str)
+           :type 'integer
+           :group ',group)
 
-(defcustom guix-package-list-generation-marking-enabled nil
-  "If non-nil, allow putting marks in a list with 'generation packages'.
+         (defvar ,describe-var ,describe-val
+           ,(format "Function used to describe '%s' entries."
+                    entry-type-str))
 
-By default this is disabled, because it may be confusing.  For
-example a package is installed in some generation, so a user can
-mark it for deletion in the list of packages from this
-generation, but the package may not be installed in the latest
-generation, so actually it cannot be deleted.
+         (guix-alist-put!
+          '((describe       . ,describe-var)
+            (describe-count . ,describe-count-var)
+            (format         . ,format-var)
+            (sort-key       . ,sort-key-var)
+            (list-single    . ,list-single-var)
+            (marks          . ,marks-var))
+          'guix-list-data ',entry-type)
 
-If you managed to understand the explanation above or if you
-really know what you do or if you just don't care, you can set
-this variable to t.  It should not do much harm anyway (most
-likely)."
-  :type 'boolean
-  :group 'guix-package-list)
+         ,(if show-entries-val
+              `(guix-buffer-define-interface list ,entry-type
+                 :show-entries-function ,show-entries-val
+                 ,@%foreign-args)
 
-(let ((map guix-package-list-mode-map))
-  (define-key map (kbd "e")   'guix-list-edit-package)
-  (define-key map (kbd "x")   'guix-package-list-execute)
-  (define-key map (kbd "i")   'guix-package-list-mark-install)
-  (define-key map (kbd "d")   'guix-package-list-mark-delete)
-  (define-key map (kbd "U")   'guix-package-list-mark-upgrade)
-  (define-key map (kbd "^")   'guix-package-list-mark-upgrades))
+            (let ((insert-fun    (intern (concat prefix "-insert-entries")))
+                  (mode-init-fun (intern (concat prefix "-mode-initialize"))))
+              `(progn
+                 (defun ,insert-fun (entries)
+                   ,(format "\
+Print '%s' ENTRIES in the current 'list' buffer."
+                            entry-type-str)
+                   (guix-list-insert-entries entries ',entry-type))
 
-(defun guix-package-list-get-name (name entry)
-  "Return NAME of the package ENTRY.
-Colorize it with `guix-package-list-installed' or
-`guix-package-list-obsolete' if needed."
-  (guix-get-string name
-                   (cond ((guix-assq-value entry 'obsolete)
-                          'guix-package-list-obsolete)
-                         ((guix-assq-value entry 'installed)
-                          'guix-package-list-installed))))
+                 (defun ,mode-init-fun ()
+                   ,(format "\
+Set up the current 'list' buffer for displaying '%s' entries."
+                            entry-type-str)
+                   (guix-list-mode-initialize ',entry-type))
 
-(defun guix-package-list-get-installed-outputs (installed &optional _)
-  "Return string with outputs from INSTALLED entries."
-  (guix-get-string
-   (mapcar (lambda (entry)
-             (guix-assq-value entry 'output))
-           installed)))
-
-(defun guix-package-list-marking-check ()
-  "Signal an error if marking is disabled for the current buffer."
-  (when (and (not guix-package-list-generation-marking-enabled)
-             (or (derived-mode-p 'guix-package-list-mode)
-                 (derived-mode-p 'guix-output-list-mode))
-             (eq guix-search-type 'generation))
-    (error "Action marks are disabled for lists of 'generation packages'")))
-
-(defun guix-package-list-mark-outputs (mark default
-                                       &optional prompt available)
-  "Mark the current package with MARK and move to the next line.
-If PROMPT is non-nil, use it to ask a user for outputs from
-AVAILABLE list, otherwise mark all DEFAULT outputs."
-  (let ((outputs (if prompt
-                     (guix-completing-read-multiple
-                      prompt available nil t)
-                   default)))
-    (apply #'guix-list--mark mark t outputs)))
-
-(defun guix-package-list-mark-install (&optional arg)
-  "Mark the current package for installation and move to the next line.
-With ARG, prompt for the outputs to install (several outputs may
-be separated with \",\")."
-  (interactive "P")
-  (guix-package-list-marking-check)
-  (let* ((entry     (guix-list-current-entry))
-         (all       (guix-assq-value entry 'outputs))
-         (installed (guix-get-installed-outputs entry))
-         (available (cl-set-difference all installed :test #'string=)))
-    (or available
-        (user-error "This package is already installed"))
-    (guix-package-list-mark-outputs
-     'install '("out")
-     (and arg "Output(s) to install: ")
-     available)))
-
-(defun guix-package-list-mark-delete (&optional arg)
-  "Mark the current package for deletion and move to the next line.
-With ARG, prompt for the outputs to delete (several outputs may
-be separated with \",\")."
-  (interactive "P")
-  (guix-package-list-marking-check)
-  (let* ((entry (guix-list-current-entry))
-         (installed (guix-get-installed-outputs entry)))
-    (or installed
-        (user-error "This package is not installed"))
-    (guix-package-list-mark-outputs
-     'delete installed
-     (and arg "Output(s) to delete: ")
-     installed)))
-
-(defun guix-package-list-mark-upgrade (&optional arg)
-  "Mark the current package for upgrading and move to the next line.
-With ARG, prompt for the outputs to upgrade (several outputs may
-be separated with \",\")."
-  (interactive "P")
-  (guix-package-list-marking-check)
-  (let* ((entry (guix-list-current-entry))
-         (installed (guix-get-installed-outputs entry)))
-    (or installed
-        (user-error "This package is not installed"))
-    (when (or (guix-assq-value entry 'obsolete)
-              (y-or-n-p "This package is not obsolete.  Try to upgrade it anyway? "))
-      (guix-package-list-mark-outputs
-       'upgrade installed
-       (and arg "Output(s) to upgrade: ")
-       installed))))
-
-(defun guix-list-mark-package-upgrades (fun)
-  "Mark all obsolete packages for upgrading.
-Use FUN to perform marking of the current line.  FUN should
-accept an entry as argument."
-  (guix-package-list-marking-check)
-  (let ((obsolete (cl-remove-if-not
-                   (lambda (entry)
-                     (guix-assq-value entry 'obsolete))
-                   guix-entries)))
-    (guix-list-for-each-line
-     (lambda ()
-       (let* ((id (guix-list-current-id))
-              (entry (cl-find-if
-                      (lambda (entry)
-                        (equal id (guix-assq-value entry 'id)))
-                      obsolete)))
-         (when entry
-           (funcall fun entry)))))))
-
-(defun guix-package-list-mark-upgrades ()
-  "Mark all obsolete packages for upgrading."
-  (interactive)
-  (guix-list-mark-package-upgrades
-   (lambda (entry)
-     (apply #'guix-list--mark
-            'upgrade nil
-            (guix-get-installed-outputs entry)))))
-
-(defun guix-list-execute-package-actions (fun)
-  "Perform actions on the marked packages.
-Use FUN to define actions suitable for `guix-process-package-actions'.
-FUN should accept action-type as argument."
-  (let ((actions (delq nil
-                       (mapcar fun '(install delete upgrade)))))
-    (if actions
-        (guix-process-package-actions
-         guix-profile actions (current-buffer))
-      (user-error "No operations specified"))))
-
-(defun guix-package-list-execute ()
-  "Perform actions on the marked packages."
-  (interactive)
-  (guix-list-execute-package-actions #'guix-package-list-make-action))
-
-(defun guix-package-list-make-action (action-type)
-  "Return action specification for the packages marked with ACTION-TYPE.
-Return nil, if there are no packages marked with ACTION-TYPE.
-The specification is suitable for `guix-process-package-actions'."
-  (let ((specs (guix-list-get-marked-args action-type)))
-    (and specs (cons action-type specs))))
+                 (guix-buffer-define-interface list ,entry-type
+                   :insert-entries-function ',insert-fun
+                   :mode-init-function ',mode-init-fun
+                   ,@%foreign-args))))))))
 
 
-;;; Displaying outputs
+(defvar guix-list-font-lock-keywords
+  (eval-when-compile
+    `((,(rx "(" (group "guix-list-define-interface")
+            symbol-end)
+       . 1))))
 
-(guix-define-buffer-type list output
-  :buffer-name "*Guix Package List*"
-  :required (package-id))
-
-(guix-list-define-entry-type output
-  :sort-key name
-  :marks ((install . ?I)
-          (upgrade . ?U)
-          (delete  . ?D)))
-
-(let ((map guix-output-list-mode-map))
-  (define-key map (kbd "RET") 'guix-output-list-describe)
-  (define-key map (kbd "e")   'guix-list-edit-package)
-  (define-key map (kbd "x")   'guix-output-list-execute)
-  (define-key map (kbd "i")   'guix-output-list-mark-install)
-  (define-key map (kbd "d")   'guix-output-list-mark-delete)
-  (define-key map (kbd "U")   'guix-output-list-mark-upgrade)
-  (define-key map (kbd "^")   'guix-output-list-mark-upgrades))
-
-(defun guix-output-list-mark-install ()
-  "Mark the current output for installation and move to the next line."
-  (interactive)
-  (guix-package-list-marking-check)
-  (let* ((entry     (guix-list-current-entry))
-         (installed (guix-assq-value entry 'installed)))
-    (if installed
-        (user-error "This output is already installed")
-      (guix-list--mark 'install t))))
-
-(defun guix-output-list-mark-delete ()
-  "Mark the current output for deletion and move to the next line."
-  (interactive)
-  (guix-package-list-marking-check)
-  (let* ((entry     (guix-list-current-entry))
-         (installed (guix-assq-value entry 'installed)))
-    (if installed
-        (guix-list--mark 'delete t)
-      (user-error "This output is not installed"))))
-
-(defun guix-output-list-mark-upgrade ()
-  "Mark the current output for deletion and move to the next line."
-  (interactive)
-  (guix-package-list-marking-check)
-  (let* ((entry     (guix-list-current-entry))
-         (installed (guix-assq-value entry 'installed)))
-    (or installed
-        (user-error "This output is not installed"))
-    (when (or (guix-assq-value entry 'obsolete)
-              (y-or-n-p "This output is not obsolete.  Try to upgrade it anyway? "))
-      (guix-list--mark 'upgrade t))))
-
-(defun guix-output-list-mark-upgrades ()
-  "Mark all obsolete package outputs for upgrading."
-  (interactive)
-  (guix-list-mark-package-upgrades
-   (lambda (_) (guix-list--mark 'upgrade))))
-
-(defun guix-output-list-execute ()
-  "Perform actions on the marked outputs."
-  (interactive)
-  (guix-list-execute-package-actions #'guix-output-list-make-action))
-
-(defun guix-output-list-make-action (action-type)
-  "Return action specification for the outputs marked with ACTION-TYPE.
-Return nil, if there are no outputs marked with ACTION-TYPE.
-The specification is suitable for `guix-process-output-actions'."
-  (let ((ids (guix-list-get-marked-id-list action-type)))
-    (and ids (cons action-type
-                   (mapcar #'guix-get-package-id-and-output-by-output-id
-                           ids)))))
-
-(defun guix-output-list-describe (&optional arg)
-  "Describe outputs or packages marked with a general mark.
-If no entries are marked, describe the current output or package.
-With prefix (if ARG is non-nil), describe entries marked with any mark.
-Also see `guix-package-info-type'."
-  (interactive "P")
-  (if (eq guix-package-info-type 'output)
-      (guix-list-describe arg)
-    (let* ((oids (or (apply #'guix-list-get-marked-id-list
-                            (unless arg '(general)))
-                     (list (guix-list-current-id))))
-           (pids (mapcar (lambda (oid)
-                           (car (guix-get-package-id-and-output-by-output-id
-                                 oid)))
-                         oids)))
-      (guix-list-describe-maybe 'package (cl-remove-duplicates pids)))))
-
-
-;;; Displaying generations
-
-(guix-define-buffer-type list generation)
-
-(guix-list-define-entry-type generation
-  :sort-key number
-  :invert-sort t
-  :marks ((delete . ?D)))
-
-(let ((map guix-generation-list-mode-map))
-  (define-key map (kbd "RET") 'guix-generation-list-show-packages)
-  (define-key map (kbd "+")   'guix-generation-list-show-added-packages)
-  (define-key map (kbd "-")   'guix-generation-list-show-removed-packages)
-  (define-key map (kbd "=")   'guix-generation-list-diff)
-  (define-key map (kbd "D")   'guix-generation-list-diff)
-  (define-key map (kbd "e")   'guix-generation-list-ediff)
-  (define-key map (kbd "x")   'guix-generation-list-execute)
-  (define-key map (kbd "i")   'guix-list-describe)
-  (define-key map (kbd "s")   'guix-generation-list-switch)
-  (define-key map (kbd "d")   'guix-generation-list-mark-delete))
-
-(defun guix-generation-list-get-current (val &optional _)
-  "Return string from VAL showing whether this generation is current.
-VAL is a boolean value."
-  (if val "(current)" ""))
-
-(defun guix-generation-list-switch ()
-  "Switch current profile to the generation at point."
-  (interactive)
-  (let* ((entry   (guix-list-current-entry))
-         (current (guix-assq-value entry 'current))
-         (number  (guix-assq-value entry 'number)))
-    (if current
-        (user-error "This generation is already the current one")
-      (guix-switch-to-generation guix-profile number (current-buffer)))))
-
-(defun guix-generation-list-show-packages ()
-  "List installed packages for the generation at point."
-  (interactive)
-  (guix-get-show-entries guix-profile 'list guix-package-list-type
-                         'generation (guix-list-current-id)))
-
-(defun guix-generation-list-generations-to-compare ()
-  "Return a sorted list of 2 marked generations for comparing."
-  (let ((numbers (guix-list-get-marked-id-list 'general)))
-    (if (/= (length numbers) 2)
-        (user-error "2 generations should be marked for comparing")
-      (sort numbers #'<))))
-
-(defun guix-generation-list-show-added-packages ()
-  "List package outputs added to the latest marked generation.
-If 2 generations are marked with \\[guix-list-mark], display
-outputs installed in the latest marked generation that were not
-installed in the other one."
-  (interactive)
-  (apply #'guix-get-show-entries
-         guix-profile 'list 'output 'generation-diff
-         (reverse (guix-generation-list-generations-to-compare))))
-
-(defun guix-generation-list-show-removed-packages ()
-  "List package outputs removed from the latest marked generation.
-If 2 generations are marked with \\[guix-list-mark], display
-outputs not installed in the latest marked generation that were
-installed in the other one."
-  (interactive)
-  (apply #'guix-get-show-entries
-         guix-profile 'list 'output 'generation-diff
-         (guix-generation-list-generations-to-compare)))
-
-(defun guix-generation-list-compare (diff-fun gen-fun)
-  "Run GEN-FUN on the 2 marked generations and run DIFF-FUN on the results."
-  (cl-multiple-value-bind (gen1 gen2)
-      (guix-generation-list-generations-to-compare)
-    (funcall diff-fun
-             (funcall gen-fun gen1)
-             (funcall gen-fun gen2))))
-
-(defun guix-generation-list-ediff-manifests ()
-  "Run Ediff on manifests of the 2 marked generations."
-  (interactive)
-  (guix-generation-list-compare
-   #'ediff-files
-   #'guix-profile-generation-manifest-file))
-
-(defun guix-generation-list-diff-manifests ()
-  "Run Diff on manifests of the 2 marked generations."
-  (interactive)
-  (guix-generation-list-compare
-   #'guix-diff
-   #'guix-profile-generation-manifest-file))
-
-(defun guix-generation-list-ediff-packages ()
-  "Run Ediff on package outputs installed in the 2 marked generations."
-  (interactive)
-  (guix-generation-list-compare
-   #'ediff-buffers
-   #'guix-profile-generation-packages-buffer))
-
-(defun guix-generation-list-diff-packages ()
-  "Run Diff on package outputs installed in the 2 marked generations."
-  (interactive)
-  (guix-generation-list-compare
-   #'guix-diff
-   #'guix-profile-generation-packages-buffer))
-
-(defun guix-generation-list-ediff (arg)
-  "Run Ediff on package outputs installed in the 2 marked generations.
-With ARG, run Ediff on manifests of the marked generations."
-  (interactive "P")
-  (if arg
-      (guix-generation-list-ediff-manifests)
-    (guix-generation-list-ediff-packages)))
-
-(defun guix-generation-list-diff (arg)
-  "Run Diff on package outputs installed in the 2 marked generations.
-With ARG, run Diff on manifests of the marked generations."
-  (interactive "P")
-  (if arg
-      (guix-generation-list-diff-manifests)
-    (guix-generation-list-diff-packages)))
-
-(defun guix-generation-list-mark-delete (&optional arg)
-  "Mark the current generation for deletion and move to the next line.
-With ARG, mark all generations for deletion."
-  (interactive "P")
-  (if arg
-      (guix-list-mark-all 'delete)
-    (guix-list--mark 'delete t)))
-
-(defun guix-generation-list-execute ()
-  "Delete marked generations."
-  (interactive)
-  (let ((marked (guix-list-get-marked-id-list 'delete)))
-    (or marked
-        (user-error "No generations marked for deletion"))
-    (guix-delete-generations guix-profile marked (current-buffer))))
+(font-lock-add-keywords 'emacs-lisp-mode guix-list-font-lock-keywords)
 
 (provide 'guix-list)
 

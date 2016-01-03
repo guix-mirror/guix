@@ -223,6 +223,28 @@ module allows Perl programmers to make use of the highly capable validating
 XML parser and the high performance DOM implementation.")
     (license (package-license perl))))
 
+(define-public perl-xml-libxml-simple
+  (package
+    (name "perl-xml-libxml-simple")
+    (version "0.95")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "XML-LibXML-Simple-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0qqfqj5bgqmh1j4iv8dwl3g00nsmcvf2b7w1d09k9d77rrb249xi"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-slurp-tiny" ,perl-file-slurp-tiny)
+       ("perl-xml-libxml" ,perl-xml-libxml)))
+    (home-page "http://search.cpan.org/dist/XML-LibXML-Simple")
+    (synopsis "XML::LibXML based XML::Simple clone")
+    (description
+     "This package provides the same API as @code{XML::Simple} but is based on
+@code{XML::LibXML}.")
+    (license (package-license perl))))
+
 (define-public perl-xml-namespacesupport
   (package
     (name "perl-xml-namespacesupport")
@@ -373,6 +395,131 @@ level interface to James Clark's expat library.  XML::DOM::Parser is derived
 from XML::Parser.  It parses XML strings or files and builds a data structure
 that conforms to the API of the Document Object Model.")
     (home-page "http://search.cpan.org/~tjmather/XML-DOM-1.44/lib/XML/DOM.pm")))
+
+(define-public perl-xml-compile-tester
+  (package
+    (name "perl-xml-compile-tester")
+    (version "0.90")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "XML-Compile-Tester-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bcl8x8cyacqv9yjp97aq9qq85sy8wv78kd8c16yd9yw3by4cpp1"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-log-report" ,perl-log-report)
+       ("perl-test-deep" ,perl-test-deep)))
+    (home-page "http://search.cpan.org/dist/XML-Compile-Tester")
+    (synopsis "XML::Compile related regression testing")
+    (description
+     "The @code{XML::Compile} module suite has extensive regression testing.
+This module provide functions which simplify writing tests for
+@code{XML::Compile} related distributions.")
+    (license (package-license perl))))
+
+(define-public perl-xml-compile
+  (package
+    (name "perl-xml-compile")
+    (version "1.51")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "XML-Compile-" version ".tar.gz"))
+              (sha256
+               (base32
+                "06fj4zf0yh4kf3kx4bhwrmrjr6al40nasasbgfhn8f1zxwkmm8f2"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-log-report" ,perl-log-report)
+       ("perl-xml-compile-tester" ,perl-xml-compile-tester)
+       ("perl-xml-libxml" ,perl-xml-libxml)
+       ("perl-test-deep" ,perl-test-deep)))
+    (home-page "http://search.cpan.org/dist/XML-Compile")
+    (synopsis "Compilation-based XML processing")
+    (description
+     "@code{XML::Compile} can be used to translate a Perl data-structure into
+XML or XML into a Perl data-structure, both directions under rigid control by
+a schema.")
+    (license (package-license perl))))
+
+(define-public perl-xml-compile-cache
+  (package
+    (name "perl-xml-compile-cache")
+    (version "1.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "XML-Compile-Cache-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1689dm54n7wb0n0cl9n77vk0kvg0mcckn2hz9ahigjhvazah8740"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-log-report" ,perl-log-report)
+       ("perl-xml-compile" ,perl-xml-compile)
+       ("perl-xml-compile-tester" ,perl-xml-compile-tester)
+       ("perl-xml-libxml-simple" ,perl-xml-libxml-simple)))
+    (home-page "http://search.cpan.org/dist/XML-Compile-Cache")
+    (synopsis "Cache compiled XML translators")
+    (description
+     "This package provides methods to cache compiled XML translators.")
+    (license (package-license perl))))
+
+(define-public perl-xml-compile-soap
+  (package
+    (name "perl-xml-compile-soap")
+    (version "3.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "XML-Compile-SOAP-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08qw63l78040nh37xzapbqp43g6s5l67bvskf3dyyizlarjx5mi4"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-file-slurp-tiny" ,perl-file-slurp-tiny)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-log-report" ,perl-log-report)
+       ("perl-xml-compile" ,perl-xml-compile)
+       ("perl-xml-compile-cache" ,perl-xml-compile-cache)
+       ("perl-xml-compile-tester" ,perl-xml-compile-tester)))
+    (home-page "http://search.cpan.org/dist/XML-Compile-SOAP")
+    (synopsis "Base-class for SOAP implementations")
+    (description
+     "This module provides a class to handle the SOAP protocol.  The first
+implementation is @url{SOAP1.1,
+http://www.w3.org/TR/2000/NOTE-SOAP-20000508/}, which is still most often
+used.")
+    (license (package-license perl))))
+
+(define-public perl-xml-compile-wsdl11
+  (package
+    (name "perl-xml-compile-wsdl11")
+    (version "3.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MA/MARKOV/"
+                                  "XML-Compile-WSDL11-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0pyikwnfwpangvnkf5dbdagy4z93ag9824f1ax5qaibc3ghca8kv"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-log-report" ,perl-log-report)
+       ("perl-xml-compile" ,perl-xml-compile)
+       ("perl-xml-compile-cache" ,perl-xml-compile-cache)
+       ("perl-xml-compile-soap" ,perl-xml-compile-soap)))
+    (home-page "http://search.cpan.org/dist/XML-Compile-WSDL11")
+    (synopsis "Create SOAP messages defined by WSDL 1.1")
+    (description
+     "This module understands WSDL version 1.1.  A WSDL file defines a set of
+messages to be send and received over SOAP connections.  This involves
+encoding of the message to be send into XML, sending the message to the
+server, collect the answer, and finally decoding the XML to Perl.")
+    (license (package-license perl))))
 
 (define-public pugixml
   (package

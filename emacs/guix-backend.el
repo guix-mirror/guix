@@ -36,18 +36,13 @@
 ;; running code in the REPL (see
 ;; <https://github.com/jaor/geiser/issues/28>).
 ;;
-;; If you need to use "guix.el" in another Emacs (i.e. when there is
-;; a runnig "guile --listen..." REPL somewhere), you can either change
-;; `guix-default-port' in that Emacs instance or set
-;; `guix-use-guile-server' to t.
-;;
 ;; Guix REPLs (unlike the usual Geiser REPLs) are not added to
 ;; `geiser-repl--repls' variable, and thus cannot be used for evaluating
 ;; while editing scm-files.  The only purpose of Guix REPLs is to be an
 ;; intermediate between "Guix/Guile level" and "Emacs interface level".
 ;; That being said you can still want to use a Guix REPL while hacking
-;; auxiliary scheme-files for "guix.el".  You can just use "M-x
-;; connect-to-guile" (connect to "localhost" and `guix-default-port') to
+;; auxiliary scheme-files for "guix.el".  You can just use
+;; `geiser-connect-local' command with `guix-repl-current-socket' to
 ;; have a usual Geiser REPL with all stuff defined by "guix.el" package.
 
 ;;; Code:
@@ -98,10 +93,16 @@ REPL while some packages are being installed/removed in the main REPL."
   :type 'boolean
   :group 'guix-repl)
 
-(defcustom guix-default-port 37246
-  "Default port used if `guix-use-guile-server' is non-nil."
-  :type 'integer
+(defcustom guix-repl-socket-file-name-function
+  #'guix-repl-socket-file-name
+  "Function used to define a socket file name used by Guix REPL.
+The function is called without arguments."
+  :type '(choice (function-item guix-repl-socket-file-name)
+                 (function :tag "Other function"))
   :group 'guix-repl)
+
+(defvar guix-repl-current-socket nil
+  "Name of a socket file used by the current Guix REPL.")
 
 (defvar guix-repl-buffer nil
   "Main Geiser REPL buffer used for communicating with Guix.
@@ -139,17 +140,28 @@ See `guix-eval-in-repl' for details.")
   "Message telling about successful Guix operation."
   (message "Guix operation has been performed."))
 
-(defun guix-get-guile-program (&optional internal)
+(defun guix-get-guile-program (&optional socket)
   "Return a value suitable for `geiser-guile-binary'."
-  (if (or internal
-          (not guix-use-guile-server))
+  (if (null socket)
       guix-guile-program
     (append (if (listp guix-guile-program)
                 guix-guile-program
               (list guix-guile-program))
-            ;; Guile understands "--listen=..." but not "--listen ..."
-            (list (concat "--listen="
-                          (number-to-string guix-default-port))))))
+            (list (concat "--listen=" socket)))))
+
+(defun guix-repl-socket-file-name ()
+  "Return a name of a socket file used by Guix REPL."
+  (make-temp-name
+   (concat (file-name-as-directory temporary-file-directory)
+           "guix-repl-")))
+
+(defun guix-repl-delete-socket-maybe ()
+  "Delete `guix-repl-current-socket' file if it exists."
+  (and guix-repl-current-socket
+       (file-exists-p guix-repl-current-socket)
+       (delete-file guix-repl-current-socket)))
+
+(add-hook 'kill-emacs-hook 'guix-repl-delete-socket-maybe)
 
 (defun guix-start-process-maybe (&optional start-msg end-msg)
   "Start Geiser REPL configured for Guix if needed.
@@ -176,19 +188,21 @@ display messages."
                  (get-buffer-process repl))
       (and start-msg (message start-msg))
       (setq guix-repl-operation-p nil)
-      (let ((geiser-guile-binary (guix-get-guile-program internal))
-            (geiser-guile-init-file (or internal guix-helper-file))
+      (unless internal
+        ;; Guile leaves socket file after exit, so remove it if it
+        ;; exists (after the REPL restart).
+        (guix-repl-delete-socket-maybe)
+        (setq guix-repl-current-socket
+              (and guix-use-guile-server
+                   (or guix-repl-current-socket
+                       (funcall guix-repl-socket-file-name-function)))))
+      (let ((geiser-guile-binary (guix-get-guile-program
+                                  (unless internal
+                                    guix-repl-current-socket)))
+            (geiser-guile-init-file (unless internal guix-helper-file))
             (repl (get-buffer-create
                    (guix-get-repl-buffer-name internal))))
-        (condition-case err
-            (guix-start-repl repl
-                             (and internal
-                                  (geiser-repl--read-address
-                                   "localhost" guix-default-port)))
-          (text-read-only
-           (error (concat "Couldn't start Guix REPL.  Perhaps the port %s is busy.\n"
-                          "See buffer '%s' for details")
-                  guix-default-port (buffer-name repl))))
+        (guix-start-repl repl (and internal guix-repl-current-socket))
         (set repl-var repl)
         (and end-msg (message end-msg))
         (unless internal

@@ -186,7 +186,7 @@ Additionally, various channel-specific options can be negotiated.")
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.8.0")
+    (version "0.9.0")
     (source (origin
               ;; ftp://memory-heap.org/software/guile-ssh/guile-ssh-VERSION.tar.gz
               ;; exists, but the server appears to be too slow and unreliable.
@@ -197,7 +197,7 @@ Additionally, various channel-specific options can be negotiated.")
               (file-name (string-append name "-" version "-checkout"))
               (sha256
                (base32
-                "1ld2khzylaylhqfsfcvbxs95frvm8pkr7dq40ia1wwn9c349fcdv"))))
+                "04zs1cykwdyj51ag62ymrkgsja9dbhbaaglkvbfbac0bkxl2ir6d"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after

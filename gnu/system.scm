@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;;
@@ -192,11 +192,14 @@ as 'needed-for-boot'."
             (operating-system-file-systems os)))
 
   (define (device-mappings fs)
-    (filter (lambda (md)
-              (string=? (string-append "/dev/mapper/"
-                                       (mapped-device-target md))
-                        (file-system-device fs)))
-            (operating-system-mapped-devices os)))
+    (let ((device (file-system-device fs)))
+      (if (string? device)                        ;title is 'device
+          (filter (lambda (md)
+                    (string=? (string-append "/dev/mapper/"
+                                             (mapped-device-target md))
+                              device))
+                  (operating-system-mapped-devices os))
+          '())))
 
   (define (add-dependencies fs)
     ;; Add the dependencies due to device mappings to FS.
@@ -213,7 +216,8 @@ as 'needed-for-boot'."
   "Return a file system among FILE-SYSTEMS that uses DEVICE, or #f."
   (let ((target (string-append "/dev/mapper/" (mapped-device-target device))))
     (find (lambda (fs)
-            (string=? (file-system-device fs) target))
+            (and (eq? 'device (file-system-title fs))
+                 (string=? (file-system-device fs) target)))
           file-systems)))
 
 (define (operating-system-user-mapped-devices os)
@@ -299,6 +303,7 @@ a container or that of a \"bare metal\" system."
                                     (operating-system-groups os))
                             (operating-system-skeletons os))
            (operating-system-etc-service os)
+           (service fstab-service-type '())
            (session-environment-service
             (operating-system-environment-variables os))
            host-name procs root-fs unmount
@@ -668,12 +673,14 @@ listed in OS.  The C library expects to find it under
       ((system      (operating-system-derivation os))
        (root-fs ->  (operating-system-root-file-system os))
        (kernel ->   (operating-system-kernel os))
+       (root-device -> (if (eq? 'uuid (file-system-title root-fs))
+                           (uuid->string (file-system-device root-fs))
+                           (file-system-device root-fs)))
        (entries ->  (list (menu-entry
                            (label (kernel->grub-label kernel))
                            (linux kernel)
                            (linux-arguments
-                            (cons* (string-append "--root="
-                                                  (file-system-device root-fs))
+                            (cons* (string-append "--root=" root-device)
                                    #~(string-append "--system=" #$system)
                                    #~(string-append "--load=" #$system
                                                     "/boot")

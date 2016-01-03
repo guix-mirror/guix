@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 xd1le <elisp.vim@gmail.com>
+;;; Copyright © 2015 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)               ;for libgudev
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages linux)
@@ -288,7 +290,7 @@ System style license, and has no special dependencies.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://tomas.styblo.name/wmctrl/dist/wmctrl-"
+                    "https://sites.google.com/site/tstyblo/wmctrl/wmctrl-"
                     version ".tar.gz"))
               (sha256
                (base32
@@ -406,14 +408,19 @@ things less distracting.")
 (define-public xlockmore
   (package
     (name "xlockmore")
-    (version "5.45")
+    (version "5.46")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://www.tux.org/~bagleyd/xlock/xlockmore-"
-                                 version "/xlockmore-" version ".tar.bz2"))
+             (uri (list (string-append
+                          "http://www.tux.org/~bagleyd/xlock/xlockmore-"
+                          version ".tar.xz")
+                        (string-append
+                          "http://www.tux.org/~bagleyd/xlock/xlockmore-old"
+                          "/xlockmore-" version
+                          "/xlockmore-" version ".tar.bz2")))
              (sha256
               (base32
-               "1xqm61bbfn5q056w57vp16gvai8nqpcw570ysxlm5h46nh6ai0bz"))))
+               "1ps0dmnh912x8mwns94y2607xk90rjxrjn5s1pkmmpjg5h9bxcrj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--enable-appdefaultdir="
@@ -529,24 +536,34 @@ compact configuration syntax.")
   (package
     (name "rxvt-unicode")
     (version "9.21")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-              "http://dist.schmorp.de/rxvt-unicode/"
-              name "-"
-              version
-              ".tar.bz2"))
-        (sha256
-          (base32
-            "0swmi308v5yxsddrdhvi4cch88k2bbs2nffpl5j5m2f55gbhw9vm"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://dist.schmorp.de/rxvt-unicode/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0swmi308v5yxsddrdhvi4cch88k2bbs2nffpl5j5m2f55gbhw9vm"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; This sets the destination when installing the necessary terminal
+     ;; capability data, which are not provided by 'ncurses'.  See
+     ;; https://lists.gnu.org/archive/html/bug-ncurses/2009-10/msg00031.html
+     '(#:make-flags (list (string-append "TERMINFO="
+                                         (assoc-ref %outputs "out")
+                                         "/share/terminfo"))))
     (inputs
      `(("libXft" ,libxft)
        ("libX11" ,libx11)))
     (native-inputs
-     `(("perl" ,perl)
+     `(("ncurses" ,ncurses)         ;trigger the installation of terminfo data
+       ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
+    ;; FIXME: This should only be located in 'ncurses'.  Nonetheless it is
+    ;; provided for usability reasons.  See <https://bugs.gnu.org/22138>.
+    (native-search-paths
+     (list (search-path-specification
+            (variable "TERMINFO_DIRS")
+            (files '("share/terminfo")))))
     (home-page "http://software.schmorp.de/pkg/rxvt-unicode.html")
     (synopsis "Rxvt clone with XFT and unicode support")
     (description "Rxvt-unicode (urxvt) is a colour vt102 terminal emulator
@@ -655,3 +672,37 @@ use it as well.")
      "The xf86-input-wacom driver is the wacom-specific X11 input driver for
 the X.Org X Server version 1.7 and later (X11R7.5 or later).")
     (license license:x11)))
+
+(define-public redshift
+  (package
+    (name "redshift")
+    (version "1.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/jonls/redshift/"
+                       "releases/download/v" version
+                       "/redshift-" version ".tar.xz"))
+       (sha256
+        (base32
+         "19pfk9il5x2g2ivqix4a555psz8mj3m0cvjwnjpjvx0llh5fghjv"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("libdrm" ,libdrm)
+       ("libx11" ,libx11)
+       ("libxcb" ,libxcb)
+       ("libxxf86vm", libxxf86vm)
+       ("glib" ,glib)))                           ;for Geoclue2 support
+    (home-page "https://github.com/jonls/redshift")
+    (synopsis "Adjust the color temperature of your screen")
+    (description
+     "Redshift adjusts the color temperature according to the position of the
+sun.  A different color temperature is set during night and daytime.  During
+twilight and early morning, the color temperature transitions smoothly from
+night to daytime temperature to allow your eyes to slowly adapt.  At night the
+color temperature should be set to match the lamps in your room.")
+    (license license:gpl3+)))

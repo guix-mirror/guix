@@ -280,3 +280,35 @@ stack traces.")
     ;; Sources are released under Expat license, but since BFD is licensed
     ;; under the GPLv3+ the combined work is GPLv3+ as well.
     (license license:gpl3+)))
+
+(define-public lcov
+  (package
+    (name "lcov")
+    (version "1.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/ltp/lcov-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "13xq2ln4jjasslqzzhr5g11q1c19gwpng1jphzbzmylmrjz62ila"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list (string-append "PREFIX=" out)
+                            (string-append "BIN_DIR=" out "/bin")
+                            (string-append "MAN_DIR=" out "/share/man")))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))
+       #:tests? #f))                              ;no 'check' target
+    (inputs `(("perl" ,perl)))
+    (home-page "http://ltp.sourceforge.net/coverage/lcov.php")
+    (synopsis "Code coverage tool that enhances GNU gcov")
+    (description
+     "LCOV is an extension of @command{gcov}, a tool part of the
+GNU@tie{}Binutils, which provides information about what parts of a program
+are actually executed (i.e., \"covered\") while running a particular test
+case.  The extension consists of a set of Perl scripts which build on the
+textual @command{gcov} output to implement the following enhanced
+functionality such as HTML output.")
+    (license license:gpl2+)))

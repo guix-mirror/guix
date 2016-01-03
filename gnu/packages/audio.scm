@@ -817,15 +817,20 @@ plugin function as a JACK application.")
   (package
     (name "ladspa")
     (version "1.13")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "http://www.ladspa.org/download/ladspa_sdk_"
-                   version
-                   ".tgz"))
-             (sha256
-              (base32
-               "0srh5n2l63354bc0srcrv58rzjkn4gv8qjqzg8dnq3rs4m7kzvdm"))))
+    (source
+     (origin
+       (method url-fetch)
+       ;; Since the official link is dead,
+       ;; we download the tarball from Debian or Internet Archive.
+       (uri (list (string-append "http://http.debian.net"
+                                 "/debian/pool/main/l/ladspa-sdk/ladspa-sdk_"
+                                 version ".orig.tar.gz")
+                  (string-append "https://web.archive.org/web/20140717172251/"
+                                 "http://www.ladspa.org/download/ladspa_sdk_"
+                                 version ".tgz")))
+       (sha256
+        (base32
+         "0srh5n2l63354bc0srcrv58rzjkn4gv8qjqzg8dnq3rs4m7kzvdm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f  ; the "test" target is a listening test only
@@ -843,7 +848,9 @@ plugin function as a JACK application.")
               (("^CC.*")            "CC = gcc\n")
               (("^CPP.*")           "CPP = g++\n"))))
         (alist-delete 'build %standard-phases))))
-    (home-page "http://ladspa.org")
+    ;; Since the home page is gone, we provide a link to the archived version.
+    (home-page
+     "https://web.archive.org/web/20140729190945/http://www.ladspa.org/")
     (synopsis "Linux Audio Developer's Simple Plugin API (LADSPA)")
     (description
      "LADSPA is a standard that allows software audio processors and effects
@@ -1952,4 +1959,57 @@ provide high-quality sample rate conversion.")
 access to ALSA PCM devices, taking care of the many functions required to
 open, initialise and use a hw: device in mmap mode, and providing floating
 point audio data.")
+    (license license:gpl3+)))
+
+(define-public cuetools
+  (package
+    (name "cuetools")
+    (version "1.4.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/svend/cuetools/archive/"
+                                 version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "01xi3rvdmil9nawsha04iagjylqr1l9v9vlzk99scs8c207l58i4"))))
+    (build-system gnu-build-system)
+    ;; The source tarball is not bootstrapped.
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (add-after 'unpack 'bootstrap
+            (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+    ;; Bootstrapping tools
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("flex" ,flex)
+       ("bison" ,bison)))
+    (synopsis "Cue and toc file parsers and utilities")
+    (description "Cuetools is a set of programs that are useful for manipulating
+and using CUE sheet (cue) files and Table of Contents (toc) files.  CUE and TOC
+files are a way to represent the layout of a data or audio CD in a
+machine-readable ASCII format.")
+    (home-page "https://github.com/svend/cuetools")
+    (license license:gpl2+)))
+
+(define-public shntool
+  (package
+    (name "shntool")
+    (version "3.0.10")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://etree.org/shnutils/shntool/dist/src/"
+                                 "shntool-" version ".tar.gz"))
+             (sha256
+              (base32
+               "00i1rbjaaws3drkhiczaign3lnbhr161b7rbnjr8z83w8yn2wc3l"))))
+    (build-system gnu-build-system)
+    (synopsis "WAVE audio data processing tool")
+    (description "shntool is a multi-purpose WAVE data processing and reporting
+utility.  File formats are abstracted from its core, so it can process any file
+that contains WAVE data, compressed or not---provided there exists a format
+module to handle that particular file type.")
+    (home-page "http://etree.org/shnutils/shntool/")
     (license license:gpl3+)))

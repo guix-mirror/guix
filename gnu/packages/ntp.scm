@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages libevent)
@@ -29,6 +31,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (srfi srfi-1))
 
@@ -108,3 +111,43 @@ secure, easy to configure, and accurate enough for most purposes, so it's more
 minimalist than ntpd.")
     ;; A few of the source files are under bsd-3.
     (license (list l:isc l:bsd-3))))
+
+(define-public tlsdate
+  (package
+    (name "tlsdate")
+    (version "0.0.13")
+    (home-page "https://github.com/ioerror/tlsdate")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (commit (string-append "tlsdate-" version))
+                    (url home-page)))
+              (sha256
+               (base32
+                "0w3v63qmbhpqlxjsvf4k3zp90k6mdzi8cdpgshan9iphy1f44xgl"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'autogen
+                    (lambda _
+                      ;; The ancestor of 'SOURCE_DATE_EPOCH'; it contains the
+                      ;; date that is recorded in binaries.  It must be a
+                      ;; "recent date" since it is used to detect bogus dates
+                      ;; received from servers.
+                      (setenv "COMPILE_DATE" (number->string 1450563040))
+                      (zero? (system* "sh" "autogen.sh")))))))
+    (inputs `(("openssl" ,openssl)
+              ("libevent" ,libevent)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("libtool" ,libtool)))
+    (synopsis "Extract remote time from TLS handshakes")
+    (description
+     "@command{tlsdate} sets the local clock by securely connecting with TLS
+to remote servers and extracting the remote time out of the secure handshake.
+Unlike ntpdate, @command{tlsdate} uses TCP, for instance connecting to a
+remote HTTPS or TLS enabled service, and provides some protection against
+adversaries that try to feed you malicious time information.")
+    (license l:bsd-3)))

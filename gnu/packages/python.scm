@@ -13,9 +13,10 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2015 Erik Edrosa <erik.edrosa@gmail.com>
+;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
+;;; Copyright © 2015 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -342,16 +343,14 @@ instead of @command{python3}.")))
 (define-public python-psutil
   (package
     (name "python-psutil")
-    (version "3.0.1")
+    (version "3.3.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/psutil/psutil-"
-             version ".tar.gz"))
+       (uri (pypi-uri "psutil" version))
        (sha256
         (base32
-         "00c8h1mzqysih99z8pnbmdv117d2naldf11yjy50dhykxsf3n89z"))))
+         "11bd1555vf2ibjnmqf64im5cp55vcqfq45ccinm9ll3bs68na6s2"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
@@ -373,17 +372,14 @@ pidof, tty, taskset, pmap.")
 (define-public python-passlib
   (package
     (name "python-passlib")
-    (version "1.6.2")
+    (version "1.6.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/passlib/passlib-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "passlib" version))
        (sha256
         (base32
-         "0b9rd161b3mmiwd7nx1v599yh9sp07mlfwac65sjy9qn1l0gd1z9"))))
+         "1z27wdxs5rj5xhhqfzvzn3yg682irkxw6dcs5jj7mcf97psk8gd8"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)
@@ -839,34 +835,23 @@ etc.).  The package is structured to make adding new modules easy.")
 (define-public python-keyring
   (package
     (name "python-keyring")
-    (version "3.8")
+    (version "5.7.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/k/"
-                          "keyring/keyring-" version ".zip"))
+      (uri (pypi-uri "keyring" version))
       (sha256
        (base32
-        "1vxazfbcwggyfyramh55shkxs08skhpqrkm6lrrjnygnm8c1l2zg"))))
+        "1h7a1r9ick7wdd0xb5p63413nvjadna2xawrsvmklsl5ddhm5wrx"))))
     (build-system python-build-system)
     (native-inputs
-     `(("unzip" ,unzip)
-       ("python-setuptools" ,python-setuptools)
+     `(("python-setuptools" ,python-setuptools)
+       ("python-setuptools-scm" ,python-setuptools-scm)
        ("python-mock" ,python-mock)))
     (inputs
      `(("python-pycrypto" ,python-pycrypto)))
     (arguments
-     `(#:tests? #f                      ;TODO: tests require pytest
-       #:phases
-       (alist-replace
-        'unpack
-        (lambda _
-          (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
-                                      "/bin/unzip"))
-                (source (assoc-ref %build-inputs "source")))
-            (and (zero? (system* unzip source))
-                 (chdir (string-append "keyring-" ,version)))))
-        %standard-phases)))
+     `(#:tests? #f))                      ;TODO: tests require pytest
     (home-page "http://bitbucket.org/kang/python-keyring-lib")
     (synopsis "Store and access your passwords safely")
     (description
@@ -912,7 +897,7 @@ Python file, so it can be easily copied into your project.")
 (define-public python-dateutil-2
   (package
     (name "python-dateutil")
-    (version "2.2")
+    (version "2.4.2")
     (source
      (origin
       (method url-fetch)
@@ -920,7 +905,7 @@ Python file, so it can be easily copied into your project.")
                           name "/" name "-" version ".tar.gz"))
       (sha256
        (base32
-        "0s74ad6r789810s10dxgvaf48ni6adac2icrdad34zxygqq6bj7f"))))
+        "0ggbm2z72p0nwjqgvpw8s5bqzwayqiqv2iws0x2a605m3mf4959y"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)
@@ -1507,16 +1492,14 @@ matching them against a list of media-ranges.")
 (define-public python-nose
   (package
     (name "python-nose")
-    (version "1.3.4")
+    (version "1.3.7")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/n/nose/nose-"
-               version ".tar.gz"))
+        (uri (pypi-uri "nose" version))
         (sha256
           (base32
-            "00qymfgwg4iam4xi0w9bnv7lcb3fypq1hzfafzgs1rfmwaj67g3n"))))
+            "164a43k7k2wsqqk1s6vavcdamvss4mz0vd6pwzv2h9n8rgwzxgzi"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
@@ -1576,16 +1559,14 @@ standard library.")
 (define-public python-py
   (package
     (name "python-py")
-    (version "1.4.23")
+    (version "1.4.31")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/py/py-"
-             version ".tar.gz"))
+       (uri (pypi-uri "py" version))
        (sha256
         (base32
-         "1jkhffpai419v5rickm2vz86p9bkg3b3kcm2k4bi5wfajhw2m3xs"))))
+         "0561gz2w3i825gyl42mcq14y3dcgkapfiv5zv9a2bz15qxiijl56"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
@@ -1912,16 +1893,14 @@ and sensible default behaviors into your setuptools run.")
 (define-public python-fixtures
   (package
     (name "python-fixtures")
-    (version "1.3.1")
+    (version "1.4.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/f/fixtures/fixtures-"
-             version ".tar.gz"))
+       (uri (pypi-uri "fixtures" version))
        (sha256
         (base32
-         "1khpywdh91ijryhxjxiyyi5rmbimhl8hwbbf8lazhgzq6yxz6g5n"))))
+         "0djxvdwm8s60dbfn7bhf40x6g818p3b3mlwijm1c3bqg7msn271y"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-six" ,python-six)
@@ -1977,16 +1956,14 @@ have failed since the last commit or what tests are currently failing.")
 (define-public python-coverage
   (package
     (name "python-coverage")
-    (version "3.7.1")
+    (version "4.0.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/c/coverage/coverage-"
-             version ".tar.gz"))
+       (uri (pypi-uri "coverage" version))
        (sha256
         (base32
-         "0knlbq79g2ww6xzsyknj9rirrgrgc983dpa2d9nkdf31mb2a3bni"))))
+         "0qjlja8ny4gcfp8abqfwdrvr8qw9kr69lkja0b4cqqbsdmdjgcc5"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
@@ -2062,16 +2039,13 @@ tests written in a natural language style, backed up by Python code.")
 (define-public python-exif-read
   (package
     (name "python-exif-read")
-    (version "1.4.2")
+    (version "2.1.2")
     (source (origin
               (method url-fetch)
-              (uri
-               (string-append
-                "https://pypi.python.org/packages/source/E/ExifRead/ExifRead-"
-                version ".tar.gz"))
+              (uri (pypi-uri "ExifRead" version))
               (sha256
                (base32
-                "17c627gcdmyc05hz4zk8qs4pjgw6rc68qzjzgz8gh1cmpsd7acf1"))))
+                "1b90jf6m9vxh9nanhpyvqdq7hmfx5iggw1l8kq10jrs6xgr49qkr"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
@@ -2089,16 +2063,13 @@ files.")
 (define-public python-pyld
   (package
     (name "python-pyld")
-    (version "0.6.0")
+    (version "0.6.8")
     (source (origin
               (method url-fetch)
-              (uri
-               (string-append
-                "https://pypi.python.org/packages/source/P/PyLD/PyLD-"
-                version ".tar.gz"))
+              (uri (pypi-uri "PyLD" version))
               (sha256
                (base32
-                "1l9ymj85fsvayqplinzpk0kyiq6m74ps9xd3a9fhlxfn1rldf8x8"))))
+                "0k881ffazpf8q1z8862g4bb3pzwpnz9whrci2mf311mvn1qbyqad"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
@@ -2139,15 +2110,13 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-click
   (package
     (name "python-click")
-    (version "4.0")
+    (version "6.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/c/click/click-"
-             version ".tar.gz"))
+         (uri (pypi-uri "click" version))
        (sha256
-        (base32 "0294x9g28w6zgswl0rsygkwi0wf6n480gf7fiiw5f9az3xhh77pl"))))
+        (base32 "10kavbisnk9m93jl2wi34pw7ryr2qbxshh2cysxwxd7bymqgz87v"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
@@ -2246,16 +2215,13 @@ than Python’s urllib2 library.")
 (define-public python-unidecode
   (package
     (name "python-unidecode")
-    (version "0.04.16")
+    (version "0.04.18")
     (source (origin
              (method url-fetch)
-             (uri
-              (string-append
-               "https://pypi.python.org/packages/source/U/Unidecode/Unidecode-"
-               version ".tar.gz"))
+             (uri (pypi-uri "Unidecode" version))
              (sha256
               (base32
-               "0yv56vc49rvippyxgxvcyz7jklc07ky38rcspax7p00sgmriiljc"))))
+               "12hhblqy1ajvidm38im4171x4arg83pfmziyn53nizp29p3m14gi"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
@@ -2395,21 +2361,24 @@ object.")
 (define-public python-virtualenv
   (package
     (name "python-virtualenv")
-    (version "1.11.6")
+    (version "13.1.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/v/virtualenv/virtualenv-"
-             version ".tar.gz"))
+       (uri (pypi-uri "virtualenv" version))
        (sha256
         (base32
-         "1xq4prmg25n9cz5zcvbqx68lmc3kl39by582vd8pzs9f3qalqyiy"))))
+         "1p732accxwqfjbdna39k8w8lp9gyw91vr4kzkhm8mgfxikqqxg5a"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+        (replace 'check
+         (lambda _ (zero? (system* "py.test")))))))
     (inputs
      `(("python-setuptools" ,python-setuptools)
        ("python-mock" ,python-mock)
-       ("python-nose" ,python-nose)))
+       ("python-pytest" ,python-pytest)))
     (home-page "https://virtualenv.pypa.io/")
     (synopsis "Virtual Python environment builder")
     (description
@@ -2448,16 +2417,14 @@ for Python.")
 (define-public python-jinja2
   (package
     (name "python-jinja2")
-    (version "2.7.3")
+    (version "2.8")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/J/Jinja2/Jinja2-"
-             version ".tar.gz"))
+       (uri (pypi-uri "Jinja2" version))
        (sha256
         (base32
-         "1nwg9yfqgy421lncnm63k1zf9xkd1klc0jm0fr4p3dad01fsq91f"))))
+         "1x0v41lp5m1pjix3l46zx02b7lqp2hflgpnxwkywxynvi3zz47xw"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)
@@ -2556,16 +2523,14 @@ reStructuredText.")
 (define-public python-pygments
   (package
     (name "python-pygments")
-    (version "1.6")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/P/Pygments/Pygments-"
-             version ".tar.gz"))
+       (uri (pypi-uri "Pygments" version))
        (sha256
         (base32
-         "1h11r6ss8waih51vcksfvzghfxiav2f8svc0812fa5kmyz5d97kr"))))
+         "0lagrwifsgn0s8bzqahpr87p7gd38xja8f06akscinp6hj89283k"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
@@ -2681,16 +2646,14 @@ which can produce feeds in RSS 2.0, RSS 0.91, and Atom formats.")
 (define-public python-blinker
   (package
     (name "python-blinker")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/b/blinker/blinker-"
-             version ".tar.gz"))
+       (uri (pypi-uri "blinker" version))
        (sha256
         (base32
-         "0bvfxkmjx6bpa302pv7v2vw5rwr3dlzjzfdp3bj628i6144024b8"))))
+         "1dpq0vb01p36jjwbhhd08ylvrnyvcc82yxx3mwjx6awrycjyw6j7"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
@@ -2710,16 +2673,14 @@ interested parties to subscribe to events, or \"signals\".")
 (define-public pelican
   (package
     (name "pelican")
-    (version "3.6.0")
+    (version "3.6.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/pelican/pelican-"
-             version ".tar.gz"))
+       (uri (pypi-uri "pelican" version))
        (sha256
         (base32
-         "0lbkk902mqxpp452pp76n6qcjv6f99lq2zl204xmqyzcan9zr3ps"))))
+         "1hn94rb4q3zmcq16in055xikal4dba5hfx3zznq7warllcgc9f8k"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
@@ -2913,15 +2874,14 @@ is designed to have a low barrier to entry.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.21.1")
+    (version "0.23.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://cython.org/release/Cython-"
-                           version ".tar.gz"))
+       (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "0ddz2l2dvcy5hdkxx4xlfiwpccvwia7ixgcy4h0pdv46a4i4vxj3"))))
+         "13hdffhd37mx3gjby018xl179jaj957fy7kzi01crmimxvn2zi7y"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
@@ -3418,15 +3378,14 @@ operators such as union, intersection, and difference.")
 (define-public python-rpy2
   (package
     (name "python-rpy2")
-    (version "2.6.0")
+    (version "2.7.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/r/rpy2"
-                           "/rpy2-" version ".tar.gz"))
+       (uri (pypi-uri "rpy2" version))
        (sha256
         (base32
-         "1dp4l8hpv0jpf4crz4wis6in3lvwk86cr5zvpw410y4a07rrbqjk"))))
+         "0nhan2qvrw7b7gg5zddwa22kybdv3x1g26vkd7q8lvnkgzrs4dga"))))
     (build-system python-build-system)
     (inputs
      `(("python-six" ,python-six)
@@ -3722,15 +3681,14 @@ a general image processing tool.")
 (define-public python-pycparser
   (package
     (name "python-pycparser")
-    (version "2.10")
+    (version "2.14")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/p/"
-                          "pycparser/pycparser-" version ".tar.gz"))
+      (uri (pypi-uri "pycparser" version))
       (sha256
        (base32
-        "0v5qfq03yvd1pi0dwlgfai0p3dh9bq94pydn19c4pdn0c6v9hzcm"))))
+        "0wvzyb6rxsfj3xcnpa4ynbh9qc7rrbk2277d5wqpphmx9akv8nbr"))))
     (outputs '("out" "doc"))
     (build-system python-build-system)
     (native-inputs
@@ -3770,14 +3728,13 @@ a front-end for C compilers or analysis tools.")
 (define-public python-cffi
   (package
     (name "python-cffi")
-    (version "1.2.1")
+    (version "1.4.2")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/c/"
-                          "cffi/cffi-" version ".tar.gz"))
+      (uri (pypi-uri "cffi" version))
       (sha256
-       (base32 "0g8yfzinry1vsj6d1jlnd19338bh92lhhk207ksy4lm1n3g73dga"))))
+       (base32 "161rj52rzi3880lij17d6i9kvgkiwjilrqjs8405k8sf6ryif7cg"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (inputs
@@ -3914,15 +3871,13 @@ PNG, PostScript, PDF, and SVG file output.")
 (define-public python-decorator
   (package
     (name "python-decorator")
-    (version "3.4.2")
+    (version "4.0.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/d/decorator/decorator-"
-             version ".tar.gz"))
+       (uri (pypi-uri "decorator" version))
        (sha256
-        (base32 "0i2bnlkh0p9gs76hb28mafandcrig2fmv56w9ai6mshxwqn0083k"))))
+        (base32 "1710cwsbwr8fkiq59w2min7rwgdz7ly51yz8l8yh1zbpfxcm8qhw"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; no test target
     (native-inputs
@@ -4208,11 +4163,12 @@ without using the configuration machinery.")
     (version "3.2.1")
     (source
      (origin
-      (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/i/"
-                          "ipython/ipython-" version ".tar.gz"))
-      (sha256
-       (base32 "0xwin0sa9n0cabx4cq1ibf5ldsiw5dyimibla82kicz5gbpas4y9"))))
+       (method url-fetch)
+       (patches (list (search-patch "python-ipython-inputhook-ctype.patch")))
+       (uri (string-append "https://pypi.python.org/packages/source/i/"
+                           "ipython/ipython-" version ".tar.gz"))
+       (sha256
+        (base32 "0xwin0sa9n0cabx4cq1ibf5ldsiw5dyimibla82kicz5gbpas4y9"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs
@@ -4952,15 +4908,13 @@ applications.")
 (define-public python-pyzmq
   (package
     (name "python-pyzmq")
-    (version "14.6.0")
+    (version "15.1.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/pyzmq/pyzmq-"
-             version ".tar.gz"))
+       (uri (pypi-uri "pyzmq" version))
        (sha256
-        (base32 "1frmbjykvhmdg64g7sn20c9fpamrsfxwci1nhhg8q7jgz5pq0ikp"))))
+        (base32 "13fhwnlvsvxv72kfhqbpn6qi7msh8mc8377mpabv32skk2cjfnxx"))))
     (build-system python-build-system)
     (arguments
      `(#:configure-flags
@@ -5013,17 +4967,14 @@ PEP 8.")
 (define-public python-pyflakes
   (package
     (name "python-pyflakes")
-    (version "0.9.2")
+    (version "1.0.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/p/pyflakes/pyflakes-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "pyflakes" version))
         (sha256
           (base32
-            "0pvawddspdq0y22dbraq5gld9qr6rwa7zhmpfhl2b7v9rqiiqs82"))))
+            "0qs2sgqszq7wcplis8509wk2ygqcrwzbs1ghfj3svvivq2j377pk"))))
     (build-system python-build-system)
     (inputs
       `(("python-setuptools" ,python-setuptools)))
@@ -5119,17 +5070,14 @@ complexity of Python source code.")
 (define-public python-flake8
   (package
     (name "python-flake8")
-    (version "2.4.1")
+    (version "2.5.1")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/f/flake8/flake8-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "flake8" version))
         (sha256
           (base32
-            "0dvmrpv7x98xkzffjz1z7lqr90sp5zdz16bdwckfd1cckpjvnzif"))))
+            "00sn2g5ydriv5anbipcrprpv797kh4q8rfa75w3fc7v7n14fv2j4"))))
     (build-system python-build-system)
     (inputs
       `(("python-setuptools" ,python-setuptools)
@@ -5198,6 +5146,39 @@ Python.")
 
 (define-public python2-mistune
   (package-with-python2 python-mistune))
+
+(define-public python-markdown
+  (package
+    (name "python-markdown")
+    (version "2.6.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Markdown" version))
+       (sha256
+        (base32
+         "0q758a3fiiawr20b3hhjfs677cwj6xi284yb7xspcvv0fdicz54d"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+                  (lambda _
+                    (zero? (system* "python" "run-tests.py")))))))
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-pyyaml" ,python-pyyaml)))
+    (home-page "https://pythonhosted.org/Markdown/")
+    (synopsis "Python implementation of Markdown")
+    (description
+     "This package provides a Python implementation of John Gruber's
+Markdown.  The library features international input, various Markdown
+extensions, and several HTML output formats.  A command line wrapper
+markdown_py is also provided to convert Markdown files to HTML.")
+    (license bsd-3)))
+
+(define-public python2-markdown
+  (package-with-python2 python-markdown))
 
 (define-public python-ptyprocess
   (package
@@ -5528,16 +5509,14 @@ fractional seconds) of a clock which never goes backwards.")
 (define-public python-webob
   (package
     (name "python-webob")
-    (version "1.5.0b0")
+    (version "1.5.1")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/W/WebOb/WebOb-"
-             version ".tar.gz"))
+       (uri (pypi-uri "WebOb" version))
        (sha256
         (base32
-         "140b3iczclk1j0405rvw5gxshqfkhcc8254fj520z3m23cwbql4a"))))
+         "02bhhzijfhv8hmi1i54d4b0v43liwhnywhflvxsv4x3zax9s3afq"))))
     (build-system python-build-system)
     (inputs
       `(("python-nose" ,python-nose)
@@ -5878,19 +5857,16 @@ Python Package Index (PyPI).")
 (define-public python-tlsh
   (package
     (name "python-tlsh")
-    (version "3.4.1")                             ;according to CMakeLists.txt
+    (version "3.4.4")
     (home-page "https://github.com/trendmicro/tlsh")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url home-page)
-                    ;; This is a commit right after 3.4.1; see
-                    ;; <https://github.com/trendmicro/tlsh/issues/9>.
-                    (commit "3ae3f1f")))
+              (method url-fetch)
+              (uri (string-append "https://github.com/trendmicro/tlsh/archive/v"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "12cvnr5ndm5cg6i7lch93id90kgwgrigjgrj8f186nh3h4bf9chj"))
-              (file-name (string-append name "-" version "-checkout"))))
+                "00bhzjqrlh7v538kbkbn8lgx976j1138al3sdhklaizqjvpwyk4r"))
+              (file-name (string-append name "-" version ".tar.gz"))))
     (build-system cmake-build-system)
     (arguments
      '(#:out-of-source? #f
@@ -5926,15 +5902,13 @@ a hash value.")
 (define-public python-libarchive-c
   (package
     (name "python-libarchive-c")
-    (version "2.1")
+    (version "2.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/l/libarchive-c/libarchive-c-"
-                    version ".tar.gz"))
+              (uri (pypi-uri "libarchive-c" version))
               (sha256
                (base32
-                "089lrz6xyrfnk55v35vis6jyqyyl77w093057djyspnd2744wi2n"))))
+                "0z4r7v3dhd6b3120mav05ff08srih176r2rg5k8kn7mjd9pslm2x"))))
     (build-system python-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -6479,15 +6453,14 @@ This allows one to make simple text-mode user interfaces on Unix-like systems")
 (define-public python-pyrfc3339
   (package
     (name "python-pyrfc3339")
-    (version "0.2")
+    (version "1.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/p/"
-                           "pyRFC3339/pyRFC3339-" version ".tar.gz"))
+       (uri (pypi-uri "pyRFC3339" version))
        (sha256
         (base32
-         "1pp648xsjaw9h1xq2mgwzda5wis2ypjmzxlksc1a8grnrdmzy155"))))
+         "0dgm4l9y8jiax5cp6yxjd2i27cq8h33sh81n1wfbmnmqb32cdywd"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pytz" ,python-pytz)))
@@ -6618,3 +6591,34 @@ of the SSL peer.")
     (arguments `(#:python ,python-2))
     (propagated-inputs
      `(("python2-pyopenssl" ,python2-pyopenssl)))))
+
+(define-public python-contextlib2
+  (package
+    (name "python-contextlib2")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "contextlib2" version))
+       (sha256
+        (base32
+         "0cmp131dlh0d0zvw0aza1zd13glvngzk8lb4avks0hm7yxwdr9am"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (zero?
+                      (system*
+                       "python" "test_contextlib2.py", "-v")))))))
+    (home-page "http://contextlib2.readthedocs.org/")
+    (synopsis "Tools for decorators and context managers")
+    (description "This module is primarily a backport of the Python
+3.2 contextlib to earlier Python versions.  Like contextlib, it
+provides utilities for common tasks involving decorators and context
+managers.  It also contains additional features that are not part of
+the standard library.")
+    (license psfl)))
+
+(define-public python2-contextlib2
+  (package-with-python2 python-contextlib2))

@@ -690,7 +690,7 @@ Perform pull-specific actions after operation, see
 open the log file(s)."
   (let* ((args (if (member "--log-file" args)
                    args
-                 (apply #'list (car args) "--log-file" (cdr args))))
+                 (cl-list* (car args) "--log-file" (cdr args))))
          (output (guix-command-output args))
          (files  (split-string output "\n" t)))
     (dolist (file files)
@@ -715,10 +715,9 @@ open the log file(s)."
          (map-file (or wished-map-file (guix-png-file-name)))
          (args (if wished-map-file
                    args
-                 (apply #'list
-                        (car args)
-                        (concat "--map-file=" map-file)
-                        (cdr args)))))
+                 (cl-list* (car args)
+                           (concat "--map-file=" map-file)
+                           (cdr args)))))
     (guix-command-output args)
     (guix-find-file map-file)))
 

@@ -68,7 +68,7 @@ loop.")
     (version "4.20")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://dist.schmorp.de/libev/libev-"
+              (uri (string-append "http://dist.schmorp.de/libev/Attic/libev-"
                                   version
                                   ".tar.gz"))
               (sha256

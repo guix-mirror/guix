@@ -85,7 +85,6 @@ libstore_a_SOURCES =				\
   nix/libstore/store-api.cc			\
   nix/libstore/optimise-store.cc		\
   nix/libstore/local-store.cc			\
-  nix/libstore/remote-store.cc			\
   nix/libstore/build.cc				\
   nix/libstore/pathlocks.cc			\
   nix/libstore/derivations.cc
@@ -95,7 +94,6 @@ libstore_headers =				\
   nix/libstore/pathlocks.hh			\
   nix/libstore/globals.hh			\
   nix/libstore/worker-protocol.hh		\
-  nix/libstore/remote-store.hh			\
   nix/libstore/derivations.hh			\
   nix/libstore/misc.hh				\
   nix/libstore/local-store.hh			\

@@ -30,6 +30,8 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages java)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages ragel)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (guix packages)
@@ -38,12 +40,13 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages web)
   #:use-module (guix build-system ruby))
 
 (define-public ruby
   (package
     (name "ruby")
-    (version "2.2.3")
+    (version "2.2.4")
     (source
      (origin
        (method url-fetch)
@@ -52,7 +55,7 @@
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "19x8gs67klgc3ag815jpin83jn2nv1akgjcgayd6v3h1xplr1v66"))))
+         "0g3ps4q3iz7wj9m45n8xyxzw8nh29ljdqb87b0f6i0p3853gz2yj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -569,6 +572,32 @@ you to generate XML reports of your test runs.  The resulting files can be
 read by a continuous integration system that understands Ant's JUnit report
 format.")
     (home-page "https://github.com/nicksieger/ci_reporter")
+    (license license:expat)))
+
+(define-public ruby-saikuro-treemap
+  (package
+    (name "ruby-saikuro-treemap")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "saikuro_treemap" version))
+              (sha256
+               (base32
+                "0w70nmh43mwfbpq20iindl61siqqr8acmf7p3m7n5ipd61c24950"))))
+    (build-system ruby-build-system)
+    ;; Some of the tests fail because the generated JSON has keys in a
+    ;; different order.  This is a problem with the test suite rather than any
+    ;; of the involved libraries.
+    (arguments `(#:tests? #f))
+    (propagated-inputs
+     `(("ruby-json-pure" ,ruby-json-pure)
+       ("ruby-atoulme-saikuro" ,ruby-atoulme-saikuro)))
+    (synopsis "Generate complexity treemap based on saikuro analysis")
+    (description
+     "This gem generates a treemap showing the complexity of Ruby code on
+which it is run.  It uses Saikuro under the covers to analyze Ruby code
+complexity.")
+    (home-page "http://github.com/ThoughtWorksStudios/saikuro_treemap")
     (license license:expat)))
 
 (define-public ruby-orderedhash
@@ -1432,6 +1461,25 @@ facilities supporting TDD, BDD, mocking, and benchmarking.")
     (home-page "https://github.com/seattlerb/minitest")
     (license license:expat)))
 
+;; This is the last release of Minitest 4, which is used by some packages.
+(define-public ruby-minitest-4
+  (package (inherit ruby-minitest)
+    (version "4.7.5")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "minitest" version))
+              (sha256
+               (base32
+                "03p6iban9gcpcflzp4z901s1hgj9369p6515h967ny6hlqhcf2iy"))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-unsupported-method
+          (lambda _
+            (substitute* "Rakefile"
+              (("self\\.rubyforge_name = .*") ""))
+            #t)))))))
+
 (define-public ruby-minitest-sprint
   (package
     (name "ruby-minitest-sprint")
@@ -1635,16 +1683,26 @@ to reproduce user environments.")
     (home-page "http://github.com/flavorjones/mini_portile")
     (license license:expat)))
 
+(define-public ruby-mini-portile-2
+  (package (inherit ruby-mini-portile)
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "mini_portile2" version))
+              (sha256
+               (base32
+                "056drbn5m4khdxly1asmiik14nyllswr6sh3wallvsywwdiryz8l"))))))
+
 (define-public ruby-nokogiri
   (package
     (name "ruby-nokogiri")
-    (version "1.6.6.2")
+    (version "1.6.7.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "nokogiri" version))
               (sha256
                (base32
-                "1j4qv32qjh67dcrc1yy1h8sqjnny8siyy4s44awla8d6jk361h30"))))
+                "12nwv3lad5k2k73aa1d1xy4x577c143ixks6rs70yp78sinbglk2"))))
     (build-system ruby-build-system)
     (arguments
      ;; Tests fail because Nokogiri can only test with an installed extension,
@@ -1662,7 +1720,7 @@ to reproduce user environments.")
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)))
     (propagated-inputs
-     `(("ruby-mini-portile" ,ruby-mini-portile)))
+     `(("ruby-mini-portile" ,ruby-mini-portile-2)))
     (synopsis "HTML, XML, SAX, and Reader parser for Ruby")
     (description "Nokogiri (鋸) parses and searches XML/HTML, and features
 both CSS3 selector and XPath 1.0 support.")
@@ -1734,6 +1792,54 @@ for select languages.")
 Ruby.  It features syntax highlighting, a plugin architecture, runtime
 invocation, and source and documentation browsing.")
     (home-page "http://pryrepl.org")
+    (license license:expat)))
+
+(define-public ruby-guard
+  (package
+    (name "ruby-guard")
+    (version "2.13.0")
+    (source (origin
+              (method url-fetch)
+              ;; The gem does not include a Rakefile, nor does it contain a
+              ;; gemspec file, nor does it come with the tests.  This is why
+              ;; we fetch the tarball from Github.
+              (uri (string-append "https://github.com/guard/guard/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1hwj0yi17k6f5axrm0k2bb7fq71dlp0zfywmd7pij9iimbppcca0"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f ; tests require cucumber
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-git-ls-files
+          (lambda* (#:key outputs #:allow-other-keys)
+            (substitute* "guard.gemspec"
+              (("git ls-files -z") "find . -type f -print0"))
+            #t))
+         (replace 'build
+          (lambda _
+            (zero? (system* "gem" "build" "guard.gemspec")))))))
+    (propagated-inputs
+     `(("ruby-formatador" ,ruby-formatador)
+       ("ruby-listen" ,ruby-listen)
+       ("ruby-lumberjack" ,ruby-lumberjack)
+       ("ruby-nenv" ,ruby-nenv)
+       ("ruby-notiffany" ,ruby-notiffany)
+       ("ruby-pry" ,ruby-pry)
+       ("ruby-shellany" ,ruby-shellany)
+       ("ruby-thor" ,ruby-thor)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rspec" ,ruby-rspec)))
+    (synopsis "Tool to handle events on file system modifications")
+    (description
+     "Guard is a command line tool to easily handle events on file system
+modifications.  Guard automates various tasks by running custom rules whenever
+file or directories are modified.")
+    (home-page "http://guardgem.org/")
     (license license:expat)))
 
 (define-public ruby-thread-safe
@@ -1892,6 +1998,165 @@ documentation for Ruby code.")
     (home-page "https://github.com/flori/tins")
     (license license:expat)))
 
+(define-public ruby-gem-hadar
+  (package
+    (name "ruby-gem-hadar")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "gem_hadar" version))
+              (sha256
+               (base32
+                "1j8qri4m9wf8nbfv0kakrgsv2x8vg10914xgm6f69nw8zi3i39ws"))))
+    (build-system ruby-build-system)
+    ;; This gem needs itself at development time. We disable rebuilding of the
+    ;; gemspec to avoid this loop.
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build
+          (lambda _
+            (zero? (system* "gem" "build" "gem_hadar.gemspec")))))))
+    (propagated-inputs
+     `(("git" ,git)
+       ("ruby-tins" ,ruby-tins)
+       ("ruby-sdoc" ,ruby-sdoc)))
+    (native-inputs
+     `(("bundler" ,bundler)))
+    (synopsis "Library for the development of Ruby gems")
+    (description
+     "This library contains some useful functionality to support the
+development of Ruby gems.")
+    (home-page "https://github.com/flori/gem_hadar")
+    (license license:expat)))
+
+(define-public ruby-minitest-tu-shim
+  (package
+    (name "ruby-minitest-tu-shim")
+    (version "1.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "minitest_tu_shim" version))
+              (sha256
+               (base32
+                "0xlyh94iirvssix157ng2akr9nqhdygdd0c6094hhv7dqcfrn9fn"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-test-include-path
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "Rakefile"
+              (("Hoe\\.add_include_dirs .*")
+               (string-append "Hoe.add_include_dirs \""
+                              (assoc-ref inputs "ruby-minitest-4")
+                              "/lib/ruby/gems/2.2.0/gems/minitest-"
+                              ,(package-version ruby-minitest-4)
+                              "/lib" "\"")))))
+         (add-before 'check 'fix-test-assumptions
+          (lambda _
+            ;; The test output includes the file name, so a couple of tests
+            ;; fail.  Changing the regular expressions slightly fixes this
+            ;; problem.
+            (substitute* "test/test_mini_test.rb"
+              (("output.sub!\\(.*, 'FILE:LINE'\\)")
+               "output.sub!(/\\/.+-[\\w\\/\\.]+:\\d+/, 'FILE:LINE')")
+              (("gsub\\(/.*, 'FILE:LINE'\\)")
+               "gsub(/\\/.+-[\\w\\/\\.]+:\\d+/, 'FILE:LINE')"))
+            #t)))))
+    (propagated-inputs
+     `(("ruby-minitest-4" ,ruby-minitest-4)))
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)))
+    (synopsis "Adapter library between minitest and test/unit")
+    (description
+     "This library bridges the gap between the small and fast minitest and
+Ruby's large and slower test/unit.")
+    (home-page "https://rubygems.org/gems/minitest_tu_shim")
+    (license license:expat)))
+
+(define-public ruby-term-ansicolor
+  (package
+    (name "ruby-term-ansicolor")
+    (version "1.3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "term-ansicolor" version))
+              (sha256
+               (base32
+                "0ydbbyjmk5p7fsi55ffnkq79jnfqx65c3nj8d9rpgl6sw85ahyys"))))
+    (build-system ruby-build-system)
+    ;; Rebuilding the gemspec seems to require git, even though this is not a
+    ;; git repository, so we just build the gem from the existing gemspec.
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'build
+          (lambda _
+            (zero? (system* "gem" "build" "term-ansicolor.gemspec")))))))
+    (propagated-inputs
+     `(("ruby-tins" ,ruby-tins)))
+    (native-inputs
+     `(("ruby-gem-hadar" ,ruby-gem-hadar)
+       ("ruby-minitest-tu-shim" ,ruby-minitest-tu-shim)))
+    (synopsis "Ruby library to control the attributes of terminal output")
+    (description
+     "This Ruby library uses ANSI escape sequences to control the attributes
+of terminal output.")
+    (home-page "http://flori.github.io/term-ansicolor/")
+    ;; There is no mention of the "or later" clause.
+    (license license:gpl2)))
+
+(define-public ruby-pstree
+  (package
+    (name "ruby-pstree")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "pstree" version))
+              (sha256
+               (base32
+                "1mig1sv5qx1cdyhjaipy8jlh9j8pnja04vprrzihyfr54x0215p1"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-gem-hadar" ,ruby-gem-hadar)
+       ("bundler" ,bundler)))
+    (synopsis "Create a process tree data structure")
+    (description
+     "This library uses the output of the @code{ps} command to create a
+process tree data structure for the current host.")
+    (home-page "http://flori.github.com/pstree")
+    ;; There is no mention of the "or later" clause.
+    (license license:gpl2)))
+
+(define-public ruby-utils
+  (package
+    (name "ruby-utils")
+    (version "0.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "utils" version))
+              (sha256
+               (base32
+                "0vycgscxf3s1xn4yyfsq54zlh082581ga8azybmqgc4pij6iz2cd"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-tins" ,ruby-tins)
+       ("ruby-term-ansicolor" ,ruby-term-ansicolor)
+       ("ruby-pstree" ,ruby-pstree)
+       ("ruby-pry-editline" ,ruby-pry-editline)))
+    (native-inputs
+     `(("ruby-gem-hadar" ,ruby-gem-hadar)
+       ("bundler" ,bundler)))
+    (synopsis "Command line tools for working with Ruby")
+    (description
+     "This package provides assorted command line tools that may be useful
+when working with Ruby code.")
+    (home-page "https://github.com/flori/utils")
+    ;; There is no mention of the "or later" clause.
+    (license license:gpl2)))
+
 (define-public ruby-json
   (package
     (name "ruby-json")
@@ -1911,6 +2176,75 @@ a native C extension.")
     (home-page "http://json-jruby.rubyforge.org/")
     (license (list license:ruby license:gpl2)))) ; GPL2 only
 
+(define-public ruby-json-pure
+  (package
+    (name "ruby-json-pure")
+    (version "1.8.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "json_pure" version))
+              (sha256
+               (base32
+                "025aykr360x6dr1jmg8pmsrx7gr30pws4p1q686vnb48zyw1sc94"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:modules ((srfi srfi-1)
+                  (ice-9 regex)
+                  (rnrs io ports)
+                  (guix build ruby-build-system)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'replace-git-ls-files
+           (lambda _
+             ;; The existing gemspec file already contains a nice list of
+             ;; files that belong to the gem.  We extract the list from the
+             ;; gemspec file and then replace the file list in the Rakefile to
+             ;; get rid of the call to "git ls-files".
+             (let* ((contents (call-with-input-file "json.gemspec" get-string-all))
+                    ;; Guile is unhappy about the #\nul characters in comments.
+                    (filtered (string-filter (lambda (char)
+                                               (not (equal? #\nul char)))
+                                             contents))
+                    (files (match:substring
+                            (string-match "  s\\.files = ([^]]+\\])" filtered) 1)))
+               (substitute* "Rakefile"
+                 (("FileList\\[`git ls-files`\\.split\\(/\\\\n/\\)\\]")
+                  (string-append "FileList" files))))
+             #t)))))
+    (native-inputs
+     `(("ruby-permutation" ,ruby-permutation)
+       ("ruby-utils" ,ruby-utils)
+       ("ragel" ,ragel)
+       ("bundler" ,bundler)))
+    (synopsis "JSON implementation in pure Ruby")
+    (description
+     "This package provides a JSON implementation written in pure Ruby.")
+    (home-page "http://flori.github.com/json")
+    (license license:ruby)))
+
+;; Even though this package only provides bindings for a Mac OSX API it is
+;; required by "ruby-listen" at runtime.
+(define-public ruby-rb-fsevent
+  (package
+    (name "ruby-rb-fsevent")
+    (version "0.9.6")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "rb-fsevent" version))
+              (sha256
+               (base32
+                "1hq57by28iv0ijz8pk9ynih0xdg7vnl1010xjcijfklrcv89a1j2"))))
+    (build-system ruby-build-system)
+    ;; Tests need "guard-rspec", which needs "guard".  However, "guard" needs
+    ;; "listen", which needs "rb-fsevent" at runtime.
+    (arguments `(#:tests? #f))
+    (synopsis "FSEvents API with signals catching")
+    (description
+     "This library provides Ruby bindings for the Mac OSX FSEvents API.")
+    (home-page "https://rubygems.org/gems/rb-fsevent")
+    (license license:expat)))
+
 (define-public ruby-listen
   (package
     (name "ruby-listen")
@@ -1925,8 +2259,8 @@ a native C extension.")
     (build-system ruby-build-system)
     (arguments '(#:tests? #f)) ; no tests
     (propagated-inputs
-     ;; FIXME: omitting "ruby-rb-fsevent" which is only for MacOS.
-     `(("ruby-rb-inotify" ,ruby-rb-inotify)))
+     `(("ruby-rb-inotify" ,ruby-rb-inotify)
+       ("ruby-rb-fsevent" ,ruby-rb-fsevent)))
     (synopsis "Listen to file modifications")
     (description "The Listen gem listens to file modifications and notifies
 you about the changes.")
@@ -1960,6 +2294,121 @@ multibyte strings, internationalization, time zones, and testing.")
     (home-page "http://www.rubyonrails.org")
     (license license:expat)))
 
+(define-public ruby-crass
+  (package
+    (name "ruby-crass")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "crass" version))
+              (sha256
+               (base32
+                "1c377r8g7m58y22803iyjgqkkvnnii0pymskda1pardxrzaighj9"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-minitest" ,ruby-minitest)))
+    (synopsis "Pure Ruby CSS parser")
+    (description
+     "Crass is a pure Ruby CSS parser based on the CSS Syntax Level 3 spec.")
+    (home-page "https://github.com/rgrove/crass/")
+    (license license:expat)))
+
+(define-public ruby-nokogumbo
+  (package
+    (name "ruby-nokogumbo")
+    (version "1.4.6")
+    (source (origin
+              ;; We use the git reference, because there's no Rakefile in the
+              ;; published gem and the tarball on Github is outdated.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/rubys/nokogumbo.git")
+                    (commit "d56f954d20a")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+               (base32
+                "0bnppjy96xiadrsrc9dp8y6wvdwnkfa930n7acrp0mqm4qywl2wl"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:modules ((guix build ruby-build-system)
+                  (guix build utils)
+                  (ice-9 rdelim))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'build-gemspec
+          (lambda _
+            (substitute* "Rakefile"
+              ;; Build Makefile even without a copy of gumbo-parser sources
+              (("'gumbo-parser/src',") "")
+              ;; We don't bundle gumbo-parser sources
+              (("'gumbo-parser/src/\\*',") "")
+              (("'gumbo-parser/visualc/include/\\*',") "")
+              ;; The definition of SOURCES will be cut in gemspec, and
+              ;; "FileList" will be undefined.
+              (("SOURCES \\+ FileList\\[")
+               "['ext/nokogumboc/extconf.rb', 'ext/nokogumboc/nokogumbo.c', "))
+
+            ;; Copy the Rakefile and cut out the gemspec.
+            (copy-file "Rakefile" ".gemspec")
+            (with-atomic-file-replacement ".gemspec"
+              (lambda (in out)
+                (let loop ((line (read-line in 'concat))
+                           (skipping? #t))
+                  (if (eof-object? line)
+                      #t
+                      (let ((skip-next? (if skipping?
+                                            (not (string-prefix? "SPEC =" line))
+                                            (string-prefix? "end" line))))
+                        (when (or (not skipping?)
+                                  (and skipping? (not skip-next?)))
+                          (format #t "~a" line)
+                          (display line out))
+                        (loop (read-line in 'concat) skip-next?))))))
+            #t)))))
+    (inputs
+     `(("gumbo-parser" ,gumbo-parser)))
+    (propagated-inputs
+     `(("ruby-nokogiri" ,ruby-nokogiri)))
+    (synopsis "Ruby bindings to the Gumbo HTML5 parser")
+    (description
+     "Nokogumbo allows a Ruby program to invoke the Gumbo HTML5 parser and
+access the result as a Nokogiri parsed document.")
+    (home-page "https://github.com/rubys/nokogumbo/")
+    (license license:asl2.0)))
+
+(define-public ruby-sanitize
+  (package
+    (name "ruby-sanitize")
+    (version "4.0.0")
+    (source (origin
+              (method url-fetch)
+              ;; The gem does not include the Rakefile, so we download the
+              ;; release tarball from Github.
+              (uri (string-append "https://github.com/rgrove/"
+                                  "sanitize/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "055xnj38l60gxnnng76kpy2l2jbrp0byjdyq17jw79w7l4b40znr"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-crass" ,ruby-crass)
+       ("ruby-nokogiri" ,ruby-nokogiri)
+       ("ruby-nokogumbo" ,ruby-nokogumbo)))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-minitest" ,ruby-minitest)
+       ("ruby-redcarpet" ,ruby-redcarpet)
+       ("ruby-yard" ,ruby-yard)))
+    (synopsis "Whitelist-based HTML and CSS sanitizer")
+    (description
+     "Sanitize is a whitelist-based HTML and CSS sanitizer.  Given a list of
+acceptable elements, attributes, and CSS properties, Sanitize will remove all
+unacceptable HTML and/or CSS from a string.")
+    (home-page "https://github.com/rgrove/sanitize/")
+    (license license:expat)))
+
 (define-public ruby-ox
   (package
     (name "ruby-ox")
@@ -1981,6 +2430,45 @@ written as a native C extension.  It was designed to be an alternative to
 Nokogiri and other Ruby XML parsers for generic XML parsing and as an
 alternative to Marshal for Object serialization. ")
     (home-page "http://www.ohler.com/ox")
+    (license license:expat)))
+
+(define-public ruby-redcloth
+  (package
+    (name "ruby-redcloth")
+    (version "4.2.9")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "RedCloth" version))
+              (sha256
+               (base32
+                "06pahxyrckhgb7alsxwhhlx1ib2xsx33793finj01jk8i054bkxl"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         ;; Redcloth has complicated rake tasks to build various versions for
+         ;; multiple targets using RVM.  We don't want this so we just use the
+         ;; existing gemspec.
+         (replace 'build
+          (lambda _
+            (zero? (system* "gem" "build" "redcloth.gemspec"))))
+         ;; Make sure that the "redcloth" executable finds required Ruby
+         ;; libraries.
+         (add-after 'install 'wrap-bin-redcloth
+          (lambda* (#:key outputs #:allow-other-keys)
+            (wrap-program (string-append (assoc-ref outputs "out")
+                                         "/bin/redcloth")
+              `("GEM_HOME" ":" prefix (,(getenv "GEM_HOME"))))
+            #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-diff-lcs" ,ruby-diff-lcs)
+       ("ruby-rspec-2" ,ruby-rspec-2)))
+    (synopsis "Textile markup language parser for Ruby")
+    (description
+     "RedCloth is a Ruby parser for the Textile markup language.")
+    (home-page "http://redcloth.org")
     (license license:expat)))
 
 (define-public ruby-pg
@@ -2031,6 +2519,109 @@ build on.  It provides breakpoint handling and bindings for stack frames among
 other things and it comes with a command line interface.")
     (home-page "http://github.com/deivid-rodriguez/byebug")
     (license license:bsd-2)))
+
+(define-public ruby-netrc
+  (package
+    (name "ruby-netrc")
+    (version "0.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "netrc" version))
+              (sha256
+               (base32
+                "0gzfmcywp1da8nzfqsql2zqi648mfnx6qwkig3cv36n9m0yy676y"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; There is no Rakefile and minitest can only run one file at once,
+           ;; so we have to iterate over all test files.
+           (lambda _
+             (and (map (lambda (file)
+                         (zero? (system* "ruby" "-Itest" file)))
+                       (find-files "./test" "test_.*\\.rb"))))))))
+    (native-inputs
+     `(("ruby-minitest" ,ruby-minitest)))
+    (synopsis "Library to read and update netrc files")
+    (description
+     "This library can read and update netrc files, preserving formatting
+including comments and whitespace.")
+    (home-page "https://github.com/geemus/netrc")
+    (license license:expat)))
+
+(define-public ruby-unf-ext
+  (package
+    (name "ruby-unf-ext")
+    (version "0.0.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "unf_ext" version))
+              (sha256
+               (base32
+                "0ly2ms6c3irmbr1575ldyh52bz2v0lzzr2gagf0p526k12ld2n5b"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'build 'build-ext
+           (lambda _ (zero? (system* "rake" "compile:unf_ext")))))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)
+       ("ruby-test-unit" ,ruby-test-unit)))
+    (synopsis "Unicode normalization form support library")
+    (description
+     "This package provides unicode normalization form support for Ruby.")
+    (home-page "https://github.com/knu/ruby-unf_ext")
+    (license license:expat)))
+
+(define-public ruby-tdiff
+  (package
+    (name "ruby-tdiff")
+    (version "0.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "tdiff" version))
+              (sha256
+               (base32
+                "0k41jbvn8qq4mgrixnhlk742b971d136i8wpbcv2cczvi22xpc86"))))
+    (build-system ruby-build-system)
+    (native-inputs
+     `(("ruby-rspec-2" ,ruby-rspec-2)
+       ("ruby-yard" ,ruby-yard)
+       ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
+    (synopsis "Calculate the differences between two tree-like structures")
+    (description
+     "This library provides functions to calculate the differences between two
+tree-like structures.  It is similar to Ruby's built-in @code{TSort} module.")
+    (home-page "https://github.com/postmodern/tdiff")
+    (license license:expat)))
+
+(define-public ruby-nokogiri-diff
+  (package
+    (name "ruby-nokogiri-diff")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "nokogiri-diff" version))
+              (sha256
+               (base32
+                "0njr1s42war0bj1axb2psjvk49l74a8wzr799wckqqdcb6n51lc1"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-tdiff" ,ruby-tdiff)
+       ("ruby-nokogiri" ,ruby-nokogiri)))
+    (native-inputs
+     `(("ruby-rspec-2" ,ruby-rspec-2)
+       ("ruby-yard" ,ruby-yard)
+       ("ruby-rubygems-tasks" ,ruby-rubygems-tasks)))
+    (synopsis "Calculate the differences between two XML/HTML documents")
+    (description
+     "@code{Nokogiri::Diff} adds the ability to calculate the
+differences (added or removed nodes) between two XML/HTML documents.")
+    (home-page "https://github.com/postmodern/nokogiri-diff")
+    (license license:expat)))
 
 (define-public ruby-rack
   (package
@@ -2198,6 +2789,85 @@ language.  It enables the user to generate consistent, usable documentation
 that can be exported to a number of formats very easily, and also supports
 extending for custom Ruby constructs such as custom class level definitions.")
     (home-page "http://yardoc.org")
+    (license license:expat)))
+
+(define-public ruby-clap
+  (package
+    (name "ruby-clap")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "clap" version))
+              (sha256
+               (base32
+                "190m05k3pca72c1h8k0fnvby15m303zi0lpb9c478ad19wqawa5q"))))
+    (build-system ruby-build-system)
+    ;; Clap needs cutest for running tests, but cutest needs clap.
+    (arguments `(#:tests? #f))
+    (synopsis "Command line argument parsing for simple applications")
+    (description
+     "Clap provides command line argument parsing features.  It covers the
+simple case of executing code based on the flags or parameters passed.")
+    (home-page "https://github.com/djanowski/cutest")
+    (license license:expat)))
+
+(define-public ruby-cutest
+  (package
+    (name "ruby-cutest")
+    (version "1.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "cutest" version))
+              (sha256
+               (base32
+                "1mldhjn62g53vx4gq2qdqg2lgjvyrqxa8d0khf8347bbfgi16d32"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-clap" ,ruby-clap)))
+    (synopsis "Run tests in separate processes")
+    (description
+     "Cutest runs tests in separate processes to avoid shared state.")
+    (home-page "https://github.com/djanowski/cutest")
+    (license license:expat)))
+
+(define-public ruby-pygmentize
+  (package
+    (name "ruby-pygmentize")
+    (version "0.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (rubygems-uri "pygmentize" version))
+              (sha256
+               (base32
+                "1pxryhkiwvsz6xzda3bvqwz5z8ggzl1cdglf8qbcf4bb7akirdpb"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-pygmentize-path
+          (lambda _
+            (substitute* "lib/pygmentize.rb"
+              (("\"/usr/bin/env python.*")
+               (string-append "\"" (which "pygmentize") "\"\n")))
+            #t))
+         (add-after 'build 'do-not-use-vendor-directory
+          (lambda _
+            ;; Remove bundled pygments sources
+            ;; FIXME: ruby-build-system does not support snippets.
+            (delete-file-recursively "vendor")
+            (substitute* "pygmentize.gemspec"
+              (("\"vendor/\\*\\*/\\*\",") ""))
+            #t)))))
+    (inputs
+     `(("pygments" ,python-pygments)))
+    (native-inputs
+     `(("ruby-cutest" ,ruby-cutest)
+       ("ruby-nokogiri" ,ruby-nokogiri)))
+    (synopsis "Thin Ruby wrapper around pygmentize")
+    (description
+     "Pygmentize provides a simple way to call pygmentize from within a Ruby
+application.")
+    (home-page "https://github.com/djanowski/pygmentize")
     (license license:expat)))
 
 (define-public ruby-eventmachine

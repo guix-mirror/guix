@@ -191,7 +191,8 @@ This package contains the binaries.")
          (alist-cons-after
           'patch-source-shebangs 'texmf-config
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let* ((share (string-append (assoc-ref outputs "out") "/share"))
+            (let* ((out (assoc-ref outputs "out"))
+                   (share (string-append out "/share"))
                    (texmfroot (string-append share "/texmf-dist/web2c"))
                    (texmfcnf (string-append texmfroot "/texmf.cnf"))
                    (texlive-bin (assoc-ref inputs "texlive-bin"))
@@ -201,6 +202,10 @@ This package contains the binaries.")
               (substitute* texmfcnf
                 (("TEXMFROOT = \\$SELFAUTOPARENT")
                 (string-append "TEXMFROOT = " share)))
+              ;; Register paths in texmfcnf.lua, needed for context.
+              (substitute* (string-append texmfroot "/texmfcnf.lua")
+                (("selfautodir:") out)
+                (("selfautoparent:") (string-append share "/")))
               ;; Set path to TeXLive Perl modules
               (setenv "PERL5LIB"
                       (string-append (getenv "PERL5LIB") ":" tlpkg))

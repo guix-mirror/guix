@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +23,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 regex)
   #:use-module (system foreign)
   #:autoload   (system repl repl) (start-repl)
   #:use-module (srfi srfi-1)
@@ -33,6 +34,9 @@
             find-partition-by-label
             find-partition-by-uuid
             canonicalize-device-spec
+
+            uuid->string
+            string->uuid
 
             MS_RDONLY
             MS_NOSUID
@@ -213,6 +217,11 @@ or #f if none was found."
                (disk-partitions))
          (cut string-append "/dev/" <>)))
 
+
+;;;
+;;; UUIDs.
+;;;
+
 (define-syntax %network-byte-order
   (identifier-syntax (endianness big)))
 
@@ -228,6 +237,41 @@ like \"6b700d61-5550-48a1-874c-a3d86998990e\"."
     (format #f "~8,'0x-~4,'0x-~4,'0x-~4,'0x-~12,'0x"
             time-low time-mid time-hi clock-seq node)))
 
+(define %uuid-rx
+  ;; The regexp of a UUID.
+  (make-regexp "^([[:xdigit:]]{8})-([[:xdigit:]]{4})-([[:xdigit:]]{4})-([[:xdigit:]]{4})-([[:xdigit:]]{12})$"))
+
+(define (string->uuid str)
+  "Parse STR as a DCE UUID (see <https://tools.ietf.org/html/rfc4122>) and
+return its contents as a 16-byte bytevector.  Return #f if STR is not a valid
+UUID representation."
+  (and=> (regexp-exec %uuid-rx str)
+         (lambda (match)
+           (letrec-syntax ((hex->number
+                            (syntax-rules ()
+                              ((_ index)
+                               (string->number (match:substring match index)
+                                               16))))
+                           (put!
+                            (syntax-rules ()
+                              ((_ bv index (number len) rest ...)
+                               (begin
+                                 (bytevector-uint-set! bv index number
+                                                       (endianness big) len)
+                                 (put! bv (+ index len) rest ...)))
+                              ((_ bv index)
+                               bv))))
+             (let ((time-low  (hex->number 1))
+                   (time-mid  (hex->number 2))
+                   (time-hi   (hex->number 3))
+                   (clock-seq (hex->number 4))
+                   (node      (hex->number 5))
+                   (uuid      (make-bytevector 16)))
+               (put! uuid 0
+                     (time-low 4) (time-mid 2) (time-hi 2)
+                     (clock-seq 2) (node 6)))))))
+
+
 (define* (canonicalize-device-spec spec #:optional (title 'any))
   "Return the device name corresponding to SPEC.  TITLE is a symbol, one of
 the following:
@@ -251,9 +295,12 @@ the following:
     ;; The realm of canonicalization.
     (if (eq? title 'any)
         (if (string? spec)
-            (if (string-prefix? "/" spec)
-                'device
-                'label)
+            ;; The "--root=SPEC" kernel command-line option always provides a
+            ;; string, but the string can represent a device, a UUID, or a
+            ;; label.  So check for all three.
+            (cond ((string-prefix? "/" spec) 'device)
+                  ((string->uuid spec) 'uuid)
+                  (else 'label))
             'uuid)
         title))
 
@@ -279,7 +326,11 @@ the following:
      ;; Resolve the label.
      (resolve find-partition-by-label spec identity))
     ((uuid)
-     (resolve find-partition-by-uuid spec uuid->string))
+     (resolve find-partition-by-uuid
+              (if (string? spec)
+                  (string->uuid spec)
+                  spec)
+              uuid->string))
     (else
      (error "unknown device title" title))))
 

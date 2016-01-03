@@ -30,6 +30,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix cvs-download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system cmake)
@@ -435,11 +436,12 @@ used to validate and fix HTML data.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.samba.org/~obnox/" name "/download/"
-                    name "-" version ".tar.bz2"))
+                    "https://download.banu.com/tinyproxy/"
+                    (version-major+minor version)
+                    "/tinyproxy-" version ".tar.gz"))
               (sha256
                (base32
-                "0vl9igw7vm924rs6d6bkib7zfclxnlf9s8rmml1sfwj7xda9nmdy"))))
+                "05y0y2q9j10x72y1fipya6bmc8hjcdf3kfw7dh8ahczpy341c938"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -1894,6 +1896,30 @@ are invoked.")
 kinds of HTML parsing operations.")
     (home-page "http://search.cpan.org/dist/HTML-Tagset/")))
 
+(define-public perl-html-template
+  (package
+    (name "perl-html-template")
+    (version "2.95")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/W/WO/WONKO/"
+                                  "HTML-Template-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07ahpfgidxsw2yb7y8i7bbr8s64aq6qgq832h9jswmksxbd0l43q"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/HTML-Template")
+    (synopsis "HTML-like templates")
+    (description
+     "This module attempts to make using HTML templates simple and natural.
+It extends standard HTML with a few new HTML-esque tags: @code{<TMPL_VAR>},
+@code{<TMPL_LOOP>}, @code{<TMPL_INCLUDE>}, @code{<TMPL_IF>},
+@code{<TMPL_ELSE>} and @code{<TMPL_UNLESS>}.  The file written with HTML and
+these new tags is called a template.  Using this module you fill in the values
+for the variables, loops and branches declared in the template.  This allows
+you to separate design from the data.")
+    (license (package-license perl))))
+
 (define-public perl-http-body
   (package
     (name "perl-http-body")
@@ -3003,3 +3029,34 @@ the package implements a framework for performing fully customized requests
 where data can be processed either in memory, on disk, or streaming via the
 callback or connection interfaces.")
     (license l:expat)))
+
+(define-public gumbo-parser
+  (package
+    (name "gumbo-parser")
+    (version "0.10.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/google/"
+                                  "gumbo-parser/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bgg2kbj311pqdzw2v33za7k66g1rv44kkvvnz2gnpaasi9k0ii8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; tests require bundling googletest sources
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+          (lambda _ (zero? (system* "sh" "autogen.sh")))))))
+    ;; The release tarball lacks the generated files.
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (home-page "https://github.com/google/gumbo-parser")
+    (synopsis "HTML5 parsing library")
+    (description
+     "Gumbo is an implementation of the HTML5 parsing algorithm implemented as
+a pure C99 library.")
+    (license l:asl2.0)))

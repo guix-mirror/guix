@@ -64,6 +64,17 @@ Use `guix-time-format'."
   "Return one-line string from a multi-line STR."
   (replace-regexp-in-string "\n" " " str))
 
+(defmacro guix-with-indent (indent &rest body)
+  "Evaluate BODY and indent inserted text by INDENT number of spaces."
+  (declare (indent 1) (debug t))
+  (let ((region-beg-var (make-symbol "region-beg"))
+        (indent-var     (make-symbol "indent")))
+    `(let ((,region-beg-var (point))
+           (,indent-var     ,indent))
+       ,@body
+       (unless (zerop ,indent-var)
+         (indent-rigidly ,region-beg-var (point) ,indent-var)))))
+
 (defun guix-format-insert (val &optional face format)
   "Convert VAL into a string and insert it at point.
 If FACE is non-nil, propertize VAL with FACE.
@@ -93,6 +104,28 @@ See `insert-text-button' for the meaning of PROPERTIES."
            :type (or type 'button)
            properties)))
 
+(defun guix-buttonize (value button-type separator &rest properties)
+  "Make BUTTON-TYPE button(s) from VALUE.
+Return a string with button(s).
+
+VALUE should be a string or a list of strings.  If it is a list
+of strings, buttons are separated with SEPARATOR string.
+
+PROPERTIES are passed to `guix-insert-button'."
+  (with-temp-buffer
+    (let ((labels (if (listp value) value (list value))))
+      (guix-mapinsert (lambda (label)
+                        (apply #'guix-insert-button
+                               label button-type properties))
+                      labels
+                      separator))
+    (buffer-substring (point-min) (point-max))))
+
+(defun guix-button-type? (symbol)
+  "Return non-nil, if SYMBOL is a button type."
+  (and symbol
+       (get symbol 'button-category-symbol)))
+
 (defun guix-split-insert (val &optional face col separator)
   "Convert VAL into a string, split it and insert at point.
 
@@ -111,14 +144,11 @@ Separate inserted lines with SEPARATOR."
 
 (defun guix-split-string (str &optional col)
   "Split string STR by lines and return list of result strings.
-If COL is non-nil and STR is a one-line string longer than COL,
-split it into several short lines."
-  (let ((strings (split-string str "\n *")))
-    (if (and col
-             (null (cdr strings))       ; if not multi-line
-             (> (length str) col))
-        (split-string (guix-get-filled-string str col) "\n")
-      strings)))
+If COL is non-nil, fill STR to this column."
+  (let ((str (if col
+                 (guix-get-filled-string str col)
+               str)))
+    (split-string str "\n *" t)))
 
 (defun guix-get-filled-string (str col)
   "Return string by filling STR to column COL."
@@ -144,6 +174,15 @@ add both to the end and to the beginning."
           (t
            (concat separator str separator)))))
 
+(defun guix-hexify (value)
+  "Convert VALUE to string and hexify it."
+  (url-hexify-string (guix-get-string value)))
+
+(defun guix-number->bool (number)
+  "Convert NUMBER to boolean value.
+Return nil, if NUMBER is 0; return t otherwise."
+  (not (zerop number)))
+
 (defun guix-shell-quote-argument (argument)
   "Quote shell command ARGUMENT.
 This function is similar to `shell-quote-argument', but less strict."
@@ -153,6 +192,15 @@ This function is similar to `shell-quote-argument', but less strict."
      "\n" "'\n'"
      (replace-regexp-in-string
       (rx (not (any alnum "-=,./\n"))) "\\\\\\&" argument))))
+
+(defun guix-symbol-title (symbol)
+  "Return SYMBOL's name, a string.
+This is like `symbol-name', but fancier."
+  (if (eq symbol 'id)
+      "ID"
+    (let ((str (replace-regexp-in-string "-" " " (symbol-name symbol))))
+      (concat (capitalize (substring str 0 1))
+              (substring str 1)))))
 
 (defun guix-command-symbol (&optional args)
   "Return symbol by concatenating 'guix' and ARGS (strings)."
@@ -175,6 +223,15 @@ If NO-MESSAGE? is non-nil, do not display a message about it."
 See also `guix-copy-as-kill'."
   (guix-copy-as-kill (guix-command-string args) no-message?))
 
+(defun guix-completing-read (prompt table &optional predicate
+                             require-match initial-input
+                             hist def inherit-input-method)
+  "Same as `completing-read' but return nil instead of an empty string."
+  (let ((res (completing-read prompt table predicate
+                              require-match initial-input
+                              hist def inherit-input-method)))
+    (unless (string= "" res) res)))
+
 (defun guix-completing-read-multiple (prompt table &optional predicate
                                       require-match initial-input
                                       hist def inherit-input-method)
@@ -192,6 +249,14 @@ See also `guix-copy-as-kill'."
 Return time value."
   (require 'org)
   (org-read-date nil t nil prompt))
+
+(defun guix-read-file-name (prompt &optional dir default-filename
+                                   mustmatch initial predicate)
+  "Read file name.
+This function is similar to `read-file-name' except it also
+expands the file name."
+  (expand-file-name (read-file-name prompt dir default-filename
+                                    mustmatch initial predicate)))
 
 (defcustom guix-find-file-function #'find-file
   "Function used to find a file.
@@ -226,6 +291,15 @@ single argument."
      (while (re-search-forward ,regexp nil t)
        ,@body)))
 
+(defmacro guix-while-null (&rest body)
+  "Evaluate BODY until its result becomes non-nil."
+  (declare (indent 0) (debug t))
+  (let ((result-var (make-symbol "result")))
+    `(let (,result-var)
+       (while (null ,result-var)
+         (setq ,result-var ,@body))
+       ,result-var)))
+
 (defun guix-modify (object modifiers)
   "Apply MODIFIERS to OBJECT.
 OBJECT is passed as an argument to the first function from
@@ -237,8 +311,57 @@ modifier call."
     (guix-modify (funcall (car modifiers) object)
                  (cdr modifiers))))
 
+(defmacro guix-keyword-args-let (args varlist &rest body)
+  "Parse ARGS, bind variables from VARLIST and eval BODY.
+
+Find keyword values in ARGS, bind them to variables according to
+VARLIST, then evaluate BODY.
+
+ARGS is a keyword/value property list.
+
+Each element of VARLIST has a form:
+
+  (SYMBOL KEYWORD [DEFAULT-VALUE])
+
+SYMBOL is a varible name.  KEYWORD is a symbol that will be
+searched in ARGS for an according value.  If the value of KEYWORD
+does not exist, bind SYMBOL to DEFAULT-VALUE or nil.
+
+The rest arguments (that present in ARGS but not in VARLIST) will
+be bound to `%foreign-args' variable.
+
+Example:
+
+  (guix-keyword-args-let '(:two 8 :great ! :guix is)
+      ((one :one 1)
+       (two :two 2)
+       (foo :smth))
+    (list one two foo %foreign-args))
+
+  => (1 8 nil (:guix is :great !))"
+  (declare (indent 2))
+  (let ((args-var (make-symbol "args")))
+    `(let (,@(mapcar (lambda (spec)
+                       (pcase-let ((`(,name ,_ ,val) spec))
+                         (list name val)))
+                     varlist)
+           (,args-var ,args)
+           %foreign-args)
+       (while ,args-var
+         (pcase ,args-var
+           (`(,key ,val . ,rest-args)
+            (cl-case key
+              ,@(mapcar (lambda (spec)
+                          (pcase-let ((`(,name ,key ,_) spec))
+                            `(,key (setq ,name val))))
+                        varlist)
+              (t (setq %foreign-args
+                       (cl-list* key val %foreign-args))))
+            (setq ,args-var rest-args))))
+       ,@body)))
+
 
-;;; Alist accessors
+;;; Alist procedures
 
 (defmacro guix-define-alist-accessor (name assoc-fun)
   "Define NAME function to access alist values using ASSOC-FUN."
@@ -256,6 +379,48 @@ accessed with KEYS."
 (guix-define-alist-accessor guix-assq-value assq)
 (guix-define-alist-accessor guix-assoc-value assoc)
 
+(defun guix-alist-put (value alist &rest keys)
+  "Put (add or replace if exists) VALUE to ALIST using KEYS.
+Return the new alist.
+
+ALIST is alist of alists of alists ... which can be consecutively
+accessed with KEYS.
+
+Example:
+
+  (guix-alist-put
+   'foo
+   '((one (a . 1) (b . 2))
+     (two (m . 7) (n . 8)))
+   'one 'b)
+
+  => ((one (a . 1) (b . foo))
+      (two (m . 7) (n . 8)))"
+  (or keys (error "Keys should be specified"))
+  (guix-alist-put-1 value alist keys))
+
+(defun guix-alist-put-1 (value alist keys)
+  "Subroutine of `guix-alist-put'."
+  (cond
+   ((null keys)
+    value)
+   ((null alist)
+    (list (cons (car keys)
+                (guix-alist-put-1 value nil (cdr keys)))))
+   ((eq (car keys) (caar alist))
+    (cons (cons (car keys)
+                (guix-alist-put-1 value (cdar alist) (cdr keys)))
+          (cdr alist)))
+   (t
+    (cons (car alist)
+          (guix-alist-put-1 value (cdr alist) keys)))))
+
+(defun guix-alist-put! (value variable &rest keys)
+  "Modify alist VARIABLE (symbol) by putting VALUE using KEYS.
+See `guix-alist-put' for details."
+  (set variable
+       (apply #'guix-alist-put value (symbol-value variable) keys)))
+
 
 ;;; Diff
 
@@ -265,6 +430,77 @@ accessed with KEYS."
 (defun guix-diff (old new &optional switches no-async)
   "Same as `diff', but use `guix-diff-switches' as default."
   (diff old new (or switches guix-diff-switches) no-async))
+
+
+;;; Completing readers definers
+
+(defmacro guix-define-reader (name read-fun completions prompt)
+  "Define NAME function to read from minibuffer.
+READ-FUN may be `completing-read', `completing-read-multiple' or
+another function with the same arguments."
+  `(defun ,name (&optional prompt initial-contents)
+     (,read-fun ,(if prompt
+                     `(or prompt ,prompt)
+                   'prompt)
+                ,completions nil nil initial-contents)))
+
+(defmacro guix-define-readers (&rest args)
+  "Define reader functions.
+
+ARGS should have a form [KEYWORD VALUE] ...  The following
+keywords are available:
+
+  - `completions-var' - variable used to get completions.
+
+  - `completions-getter' - function used to get completions.
+
+  - `single-reader', `single-prompt' - name of a function to read
+    a single value, and a prompt for it.
+
+  - `multiple-reader', `multiple-prompt' - name of a function to
+    read multiple values, and a prompt for it.
+
+  - `multiple-separator' - if specified, another
+    `<multiple-reader-name>-string' function returning a string
+    of multiple values separated the specified separator will be
+    defined."
+  (guix-keyword-args-let args
+      ((completions-var    :completions-var)
+       (completions-getter :completions-getter)
+       (single-reader      :single-reader)
+       (single-prompt      :single-prompt)
+       (multiple-reader    :multiple-reader)
+       (multiple-prompt    :multiple-prompt)
+       (multiple-separator :multiple-separator))
+    (let ((completions
+           (cond ((and completions-var completions-getter)
+                  `(or ,completions-var
+                       (setq ,completions-var
+                             (funcall ',completions-getter))))
+                 (completions-var
+                  completions-var)
+                 (completions-getter
+                  `(funcall ',completions-getter)))))
+      `(progn
+         ,(when (and completions-var
+                     (not (boundp completions-var)))
+            `(defvar ,completions-var nil))
+
+         ,(when single-reader
+            `(guix-define-reader ,single-reader guix-completing-read
+                                 ,completions ,single-prompt))
+
+         ,(when multiple-reader
+            `(guix-define-reader ,multiple-reader completing-read-multiple
+                                 ,completions ,multiple-prompt))
+
+         ,(when (and multiple-reader multiple-separator)
+            (let ((name (intern (concat (symbol-name multiple-reader)
+                                        "-string"))))
+              `(defun ,name (&optional prompt initial-contents)
+                 (guix-concat-strings
+                  (,multiple-reader prompt initial-contents)
+                  ,multiple-separator))))))))
 
 
 ;;; Memoizing
@@ -303,9 +539,18 @@ See `defun' for the meaning of arguments."
      ,(or docstring
           (format "Memoized version of `%S'." definition))))
 
-(defvar guix-memoized-font-lock-keywords
+
+(defvar guix-utils-font-lock-keywords
   (eval-when-compile
-    `((,(rx "("
+    `((,(rx "(" (group (or "guix-define-reader"
+                           "guix-define-readers"
+                           "guix-keyword-args-let"
+                           "guix-while-null"
+                           "guix-while-search"
+                           "guix-with-indent"))
+            symbol-end)
+       . 1)
+      (,(rx "("
             (group "guix-memoized-" (or "defun" "defalias"))
             symbol-end
             (zero-or-more blank)
@@ -314,7 +559,7 @@ See `defun' for the meaning of arguments."
        (1 font-lock-keyword-face)
        (2 font-lock-function-name-face nil t)))))
 
-(font-lock-add-keywords 'emacs-lisp-mode guix-memoized-font-lock-keywords)
+(font-lock-add-keywords 'emacs-lisp-mode guix-utils-font-lock-keywords)
 
 (provide 'guix-utils)
 

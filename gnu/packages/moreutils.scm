@@ -28,7 +28,7 @@
 (define-public moreutils
   (package
     (name "moreutils")
-    (version "0.55")
+    (version "0.57")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -36,7 +36,7 @@
                     version ".orig.tar.gz"))
               (sha256
                (base32
-                "1dcah2jx8dbznn8966xl7sf1jrld2qfh6l6xcmx9dsnf8p8mr7fs"))))
+                "078dpkwwwrv8hxnylbc901kib2d1rr3hsja37j6dlpjfcfq58z9s"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)
               ("libxml2" ,libxml2)

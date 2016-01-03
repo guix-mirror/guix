@@ -30,7 +30,7 @@
             non-copyleft
             bsd-style                             ;deprecated!
             cc0
-            cc-by-sa4.0 cc-by3.0
+            cc-by-sa4.0 cc-by-sa3.0 cc-by3.0
             cddl1.0
             cecill-c
             artistic2.0 clarified-artistic
@@ -143,6 +143,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "CC-BY-SA 4.0"
            "http://creativecommons.org/licenses/by-sa/4.0/"
            "Creative Commons Attribution-ShareAlike 4.0 International"))
+
+(define cc-by-sa3.0
+  (license "CC-BY-SA 3.0"
+           "http://creativecommons.org/licenses/by-sa/3.0/"
+           "Creative Commons Attribution-ShareAlike 3.0 Unported"))
 
 (define cc-by3.0
   (license "CC-BY 3.0"

@@ -76,7 +76,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/cryptsetup.scm			\
   gnu/packages/cups.scm				\
   gnu/packages/curl.scm				\
-  gnu/packages/cursynth.scm			\
   gnu/packages/cyrus-sasl.scm			\
   gnu/packages/databases.scm			\
   gnu/packages/datamash.scm			\
@@ -361,6 +360,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/services/desktop.scm			\
   gnu/services/dmd.scm				\
   gnu/services/lirc.scm				\
+  gnu/services/mail.scm				\
   gnu/services/networking.scm			\
   gnu/services/ssh.scm				\
   gnu/services/web.scm				\
@@ -420,7 +420,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
   gnu/packages/patches/binutils-loongson-workaround.patch	\
   gnu/packages/patches/bitlbee-configure-doc-fix.patch		\
-  gnu/packages/patches/bluez-tests.patch			\
   gnu/packages/patches/boost-mips-avoid-m32.patch		\
   gnu/packages/patches/byobu-writable-status.patch		\
   gnu/packages/patches/calibre-drop-unrar.patch			\
@@ -468,7 +467,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/flint-ldconfig.patch			\
   gnu/packages/patches/fltk-shared-lib-defines.patch		\
   gnu/packages/patches/freeimage-CVE-2015-0852.patch		\
-  gnu/packages/patches/fuse-CVE-2015-3202.patch			\
   gnu/packages/patches/gawk-shell.patch				\
   gnu/packages/patches/gcc-arm-link-spec-fix.patch		\
   gnu/packages/patches/gcc-cross-environment-variables.patch	\
@@ -499,6 +497,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/gobject-introspection-cc.patch		\
   gnu/packages/patches/gobject-introspection-girepository.patch	\
   gnu/packages/patches/grep-timing-sensitive-test.patch		\
+  gnu/packages/patches/grub-CVE-2015-8370.patch			\
   gnu/packages/patches/grub-gets-undeclared.patch		\
   gnu/packages/patches/grub-freetype.patch			\
   gnu/packages/patches/guile-1.8-cpp-4.5.patch			\
@@ -514,7 +513,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/hydra-automake-1.15.patch		\
   gnu/packages/patches/hydra-disable-darcs-test.patch		\
   gnu/packages/patches/icecat-avoid-bundled-includes.patch	\
-  gnu/packages/patches/icecat-freetype-2.6.patch		\
   gnu/packages/patches/icu4c-CVE-2014-6585.patch		\
   gnu/packages/patches/icu4c-CVE-2015-1270.patch		\
   gnu/packages/patches/icu4c-CVE-2015-4760.patch		\
@@ -646,6 +644,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/python-3-search-paths.patch		\
   gnu/packages/patches/python-disable-ssl-test.patch		\
   gnu/packages/patches/python-fix-tests.patch			\
+  gnu/packages/patches/python-ipython-inputhook-ctype.patch	\
   gnu/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   gnu/packages/patches/python-configobj-setuptools.patch	\
   gnu/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \

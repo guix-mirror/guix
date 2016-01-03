@@ -176,7 +176,7 @@ omitted or #f, use the first output of PACKAGE."
      (output (or output (car (package-outputs package))))
      (item package)
      (dependencies (delete-duplicates deps))
-     (search-paths (package-native-search-paths package)))))
+     (search-paths (package-transitive-native-search-paths package)))))
 
 (define (packages->manifest packages)
   "Return a list of manifest entries, one for each item listed in PACKAGES.
@@ -469,7 +469,7 @@ MANIFEST."
         (define (install-info info)
           (setenv "PATH" (string-append #+gzip "/bin")) ;for info.gz files
           (zero?
-           (system* (string-append #+texinfo "/bin/install-info")
+           (system* (string-append #+texinfo "/bin/install-info") "--silent"
                     info (string-append #$output "/share/info/dir"))))
 
         (mkdir-p (string-append #$output "/share/info"))
