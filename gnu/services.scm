@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -206,9 +206,20 @@ containing the given entries."
                 (extend system-derivation)))
 
 (define (compute-boot-script _ mexps)
-  (mlet %store-monad ((gexps (sequence %store-monad mexps)))
+  (define %modules
+    '((guix build utils)))
+
+  (mlet* %store-monad ((gexps    (sequence %store-monad mexps))
+                       (modules  (imported-modules %modules))
+                       (compiled (compiled-modules %modules)))
     (gexp->file "boot"
                 #~(begin
+                    (eval-when (expand load eval)
+                      ;; Make sure 'use-modules' below succeeds.
+                      (set! %load-path (cons #$modules %load-path))
+                      (set! %load-compiled-path
+                        (cons #$compiled %load-compiled-path)))
+
                     (use-modules (guix build utils))
 
                     ;; Clean out /tmp and /var/run.
