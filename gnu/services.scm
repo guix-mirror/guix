@@ -63,6 +63,7 @@
 
             system-service-type
             boot-service-type
+            cleanup-service-type
             activation-service-type
             activation-service->script
             %linux-bare-metal-service
@@ -206,36 +207,10 @@ containing the given entries."
                 (extend system-derivation)))
 
 (define (compute-boot-script _ mexps)
-  (define %modules
-    '((guix build utils)))
-
-  (mlet* %store-monad ((gexps    (sequence %store-monad mexps))
-                       (modules  (imported-modules %modules))
-                       (compiled (compiled-modules %modules)))
+  (mlet %store-monad ((gexps (sequence %store-monad mexps)))
     (gexp->file "boot"
-                #~(begin
-                    (eval-when (expand load eval)
-                      ;; Make sure 'use-modules' below succeeds.
-                      (set! %load-path (cons #$modules %load-path))
-                      (set! %load-compiled-path
-                        (cons #$compiled %load-compiled-path)))
-
-                    (use-modules (guix build utils))
-
-                    ;; Clean out /tmp and /var/run.
-                    ;;
-                    ;; XXX This needs to happen before service activations, so
-                    ;; it has to be here, but this also implicitly assumes
-                    ;; that /tmp and /var/run are on the root partition.
-                    (false-if-exception (delete-file-recursively "/tmp"))
-                    (false-if-exception (delete-file-recursively "/var/run"))
-                    (false-if-exception (mkdir "/tmp"))
-                    (false-if-exception (chmod "/tmp" #o1777))
-                    (false-if-exception (mkdir "/var/run"))
-                    (false-if-exception (chmod "/var/run" #o755))
-
-                    ;; Activate the system and spawn dmd.
-                    #$@gexps))))
+                ;; Clean up and activate the system, then spawn dmd.
+                #~(begin #$@gexps))))
 
 (define (boot-script-entry mboot)
   "Return, as a monadic value, an entry for the boot script in the system
@@ -257,6 +232,42 @@ directory."
 (define %boot-service
   ;; The service that produces the boot script.
   (service boot-service-type #t))
+
+(define (cleanup-gexp _)
+  "Return as a monadic value a gexp to clean up /tmp and similar places upon
+boot."
+  (define %modules
+    '((guix build utils)))
+
+  (mlet %store-monad ((modules  (imported-modules %modules))
+                      (compiled (compiled-modules %modules)))
+    (return #~(begin
+                (eval-when (expand load eval)
+                  ;; Make sure 'use-modules' below succeeds.
+                  (set! %load-path (cons #$modules %load-path))
+                  (set! %load-compiled-path
+                    (cons #$compiled %load-compiled-path)))
+
+                (use-modules (guix build utils))
+
+                ;; Clean out /tmp and /var/run.
+                ;;
+                ;; XXX This needs to happen before service activations, so it
+                ;; has to be here, but this also implicitly assumes that /tmp
+                ;; and /var/run are on the root partition.
+                (false-if-exception (delete-file-recursively "/tmp"))
+                (false-if-exception (delete-file-recursively "/var/run"))
+                (false-if-exception (mkdir "/tmp"))
+                (false-if-exception (chmod "/tmp" #o1777))
+                (false-if-exception (mkdir "/var/run"))
+                (false-if-exception (chmod "/var/run" #o755))))))
+
+(define cleanup-service-type
+  ;; Service that cleans things up in /tmp and similar.
+  (service-type (name 'cleanup)
+                (extensions
+                 (list (service-extension boot-service-type
+                                          cleanup-gexp)))))
 
 (define* (file-union name files)                  ;FIXME: Factorize.
   "Return a <computed-file> that builds a directory containing all of FILES.
