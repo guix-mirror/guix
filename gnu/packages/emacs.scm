@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -73,14 +73,20 @@
              (patches (list (search-patch "emacs-exec-path.patch")))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'fix-/bin/pwd
-                 (lambda _
-                   ;; Use `pwd', not `/bin/pwd'.
-                   (substitute* (find-files "." "^Makefile\\.in$")
-                     (("/bin/pwd")
-                      "pwd")))
-                 %standard-phases)))
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'fix-/bin/pwd
+                    (lambda _
+                      ;; Use `pwd', not `/bin/pwd'.
+                      (substitute* (find-files "." "^Makefile\\.in$")
+                        (("/bin/pwd")
+                         "pwd"))))
+                  (add-after 'install 'remove-info.info
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Remove 'info.info', which is provided by Texinfo.
+                      (let ((out (assoc-ref outputs "out")))
+                        (delete-file
+                         (string-append out "/share/info/info.info.gz"))
+                        #t))))))
     (inputs
      `(("gnutls" ,gnutls)
        ("ncurses" ,ncurses)
