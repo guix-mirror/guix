@@ -139,9 +139,8 @@ is implemented.")
     (version "1.9.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://www.apache.org/dist/ant/source/apache-ant-"
-                    version "-src.tar.gz"))
+              (uri (string-append "mirror://apache/ant/source/apache-ant-"
+                                  version "-src.tar.gz"))
               (sha256
                (base32
                 "1396wflczyxjxl603dhxjvd559f289lha9y2f04f71c7hapjl3am"))))
