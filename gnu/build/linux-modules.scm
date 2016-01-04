@@ -144,7 +144,7 @@ true, load its dependencies first (à la 'modprobe'.)  The actual files
 containing modules depended on are obtained by calling LOOKUP-MODULE with the
 module name."
   (define (slurp module)
-    ;; TODO: Use 'mmap' to reduce memory usage.
+    ;; TODO: Use 'finit_module' to reduce memory usage.
     (call-with-input-file file get-bytevector-all))
 
   (when recursive?
