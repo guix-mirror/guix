@@ -212,6 +212,11 @@ VAL is a boolean value."
         (user-error "2 generations should be marked for comparing")
       (sort numbers #'<))))
 
+(defun guix-generation-list-profiles-to-compare ()
+  "Return a sorted list of 2 marked generation profiles for comparing."
+  (mapcar #'guix-generation-current-packages-profile
+          (guix-generation-list-generations-to-compare)))
+
 (defun guix-generation-list-show-added-packages ()
   "List package outputs added to the latest marked generation.
 If 2 generations are marked with \\[guix-list-mark], display
@@ -221,8 +226,8 @@ installed in the other one."
   (guix-buffer-get-display-entries
    'list 'output
    (cl-list* (guix-ui-current-profile)
-             'generation-diff
-             (reverse (guix-generation-list-generations-to-compare)))
+             'profile-diff
+             (reverse (guix-generation-list-profiles-to-compare)))
    'add))
 
 (defun guix-generation-list-show-removed-packages ()
@@ -234,8 +239,8 @@ installed in the other one."
   (guix-buffer-get-display-entries
    'list 'output
    (cl-list* (guix-ui-current-profile)
-             'generation-diff
-             (guix-generation-list-generations-to-compare))
+             'profile-diff
+             (guix-generation-list-profiles-to-compare))
    'add))
 
 (defun guix-generation-list-compare (diff-fun gen-fun)

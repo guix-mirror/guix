@@ -137,10 +137,9 @@ return two values: name and version.  For example, for SPEC
 (define (manifest-entries->package-specifications entries)
   (map manifest-entry->package-specification entries))
 
-(define (generation-package-specifications profile number)
-  "Return a list of package specifications for generation NUMBER."
-  (let ((manifest (profile-manifest
-                   (generation-file-name profile number))))
+(define (profile-package-specifications profile)
+  "Return a list of package specifications for PROFILE."
+  (let ((manifest (profile-manifest profile)))
     (manifest-entries->package-specifications
      (manifest-entries manifest))))
 
@@ -153,11 +152,11 @@ Each element of the list is a list of the package specification and its path."
                  (manifest-entry-item entry)))
          (manifest-entries manifest))))
 
-(define (generation-difference profile number1 number2)
-  "Return a list of package specifications for outputs installed in generation
-NUMBER1 and not installed in generation NUMBER2."
-  (let ((specs1 (generation-package-specifications profile number1))
-        (specs2 (generation-package-specifications profile number2)))
+(define (profile-difference profile1 profile2)
+  "Return a list of package specifications for outputs installed in PROFILE1
+and not installed in PROFILE2."
+  (let ((specs1 (profile-package-specifications profile1))
+        (specs2 (profile-package-specifications profile2)))
     (lset-difference string=? specs1 specs2)))
 
 (define (manifest-entries->hash-table entries)
@@ -698,11 +697,11 @@ See 'entry-sexps' for details."
                       profile))
          (manifest (profile-manifest profile))
          (patterns (if (and (eq? entry-type 'output)
-                            (eq? search-type 'generation-diff))
+                            (eq? search-type 'profile-diff))
                        (match search-vals
-                         ((g1 g2)
+                         ((p1 p2)
                           (map specification->output-pattern
-                               (generation-difference profile g1 g2)))
+                               (profile-difference p1 p2)))
                          (_ '()))
                        (apply (patterns-maker entry-type search-type)
                               manifest search-vals)))
