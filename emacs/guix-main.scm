@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -144,11 +144,10 @@ return two values: name and version.  For example, for SPEC
     (manifest-entries->package-specifications
      (manifest-entries manifest))))
 
-(define (generation-package-specifications+paths profile number)
-  "Return a list of package specifications and paths for generation NUMBER.
+(define (profile->specifications+paths profile)
+  "Return a list of package specifications and paths for PROFILE.
 Each element of the list is a list of the package specification and its path."
-  (let ((manifest (profile-manifest
-                   (generation-file-name profile number))))
+  (let ((manifest (profile-manifest profile)))
     (map (lambda (entry)
            (list (manifest-entry->package-specification entry)
                  (manifest-entry-item entry)))

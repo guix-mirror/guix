@@ -1,6 +1,6 @@
 ;;; guix-ui-generation.el --- Interface for displaying generations  -*- lexical-binding: t -*-
 
-;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -77,6 +77,18 @@ Each element from GENERATIONS is a generation number."
      (guix-make-guile-expression
       'switch-to-generation* profile generation)
      operation-buffer)))
+
+(defun guix-system-generation? ()
+  "Return non-nil, if current generation is a system one."
+  (eq (guix-buffer-current-entry-type)
+      'system-generation))
+
+(defun guix-generation-current-packages-profile (&optional generation)
+  "Return a directory where packages are installed for the
+current profile's GENERATION."
+  (guix-packages-profile (guix-ui-current-profile)
+                         generation
+                         (guix-system-generation?)))
 
 
 ;;; Generation 'info'
@@ -324,14 +336,13 @@ performance."
   "Width of an output name \"column\".
 This variable is used in auxiliary buffers for comparing generations.")
 
-(defun guix-generation-packages (profile generation)
-  "Return a list of sorted packages installed in PROFILE's GENERATION.
+(defun guix-generation-packages (profile)
+  "Return a list of sorted packages installed in PROFILE.
 Each element of the list is a list of the package specification
 and its store path."
   (let ((names+paths (guix-eval-read
                       (guix-make-guile-expression
-                       'generation-package-specifications+paths
-                       profile generation))))
+                       'profile->specifications+paths profile))))
     (sort names+paths
           (lambda (a b)
             (string< (car a) (car b))))))
@@ -360,8 +371,8 @@ Use the full PROFILE file name."
   (indent-to guix-generation-output-name-width 2)
   (insert path "\n"))
 
-(defun guix-generation-insert-packages (buffer profile generation)
-  "Insert package outputs installed in PROFILE's GENERATION in BUFFER."
+(defun guix-generation-insert-packages (buffer profile)
+  "Insert package outputs installed in PROFILE in BUFFER."
   (with-current-buffer buffer
     (setq buffer-read-only nil
           indent-tabs-mode nil)
@@ -369,9 +380,9 @@ Use the full PROFILE file name."
     (mapc (lambda (name+path)
             (guix-generation-insert-package
              (car name+path) (cadr name+path)))
-          (guix-generation-packages profile generation))))
+          (guix-generation-packages profile))))
 
-(defun guix-generation-packages-buffer (profile generation)
+(defun guix-generation-packages-buffer (profile generation &optional system?)
   "Return buffer with package outputs installed in PROFILE's GENERATION.
 Create the buffer if needed."
   (let ((buf-name (guix-generation-packages-buffer-name
@@ -379,19 +390,24 @@ Create the buffer if needed."
     (or (and (null guix-generation-packages-update-buffer)
              (get-buffer buf-name))
         (let ((buf (get-buffer-create buf-name)))
-          (guix-generation-insert-packages buf profile generation)
+          (guix-generation-insert-packages
+           buf
+           (guix-packages-profile profile generation system?))
           buf))))
 
 (defun guix-profile-generation-manifest-file (generation)
   "Return the file name of a GENERATION's manifest.
 GENERATION is a generation number of the current profile."
-  (guix-manifest-file (guix-ui-current-profile) generation))
+  (guix-manifest-file (guix-ui-current-profile)
+                      generation
+                      (guix-system-generation?)))
 
 (defun guix-profile-generation-packages-buffer (generation)
   "Insert GENERATION's package outputs in a buffer and return it.
 GENERATION is a generation number of the current profile."
   (guix-generation-packages-buffer (guix-ui-current-profile)
-                                   generation))
+                                   generation
+                                   (guix-system-generation?)))
 
 
 ;;; Interactive commands
