@@ -1,6 +1,7 @@
 ;;; guix-profiles.el --- Guix profiles
 
-;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
+;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 
 ;; This file is part of GNU Guix.
 
@@ -24,6 +25,10 @@
 (defvar guix-user-profile
   (expand-file-name "~/.guix-profile")
   "User profile.")
+
+(defvar guix-system-profile
+  (concat guix-config-state-directory "/profiles/system")
+  "System profile.")
 
 (defvar guix-default-profile
   (concat guix-config-state-directory
