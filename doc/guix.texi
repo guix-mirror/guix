@@ -10,7 +10,7 @@
 @include version.texi
 
 @copying
-Copyright @copyright{} 2012, 2013, 2014, 2015 Ludovic Courtès@*
+Copyright @copyright{} 2012, 2013, 2014, 2015, 2016 Ludovic Courtès@*
 Copyright @copyright{} 2013, 2014 Andreas Enge@*
 Copyright @copyright{} 2013 Nikita Karetnikov@*
 Copyright @copyright{} 2015 Mathieu Lirzin@*
@@ -1461,6 +1461,21 @@ name: elfutils
 name: gmp
 @dots{}
 @end example
+
+It is also possible to refine search results using several @code{-s}
+flags.  For example, the following command returns a list of board
+games:
+
+@example
+$ guix package -s '\<board\>' -s game | recsel -p name
+name: gnubg
+@dots{}
+@end example
+
+If we were to omit @code{-s game}, we would also get software packages
+that deal with printed circuit boards; removing the angle brackets
+around @code{board} would further add packages that have to do with
+keyboards.
 
 @item --show=@var{package}
 Show details about @var{package}, taken from the list of available packages, in
