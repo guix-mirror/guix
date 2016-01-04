@@ -5,6 +5,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014, 2015 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -873,7 +874,7 @@ command.")
 (define-public tzdata
   (package
     (name "tzdata")
-    (version "2015c")
+    (version "2015g")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -881,7 +882,7 @@ command.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0nin48g5dmkfgckp25bngxchn3sw3yyjss5sq7gs5xspbxgsq3w6"))))
+               "0qb1awqrn3215zd2jikpqnmkzrxwfjf0d3dw2xmnk4c40yzws8xr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -928,7 +929,7 @@ command.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "0bplibiy70dvlrhwqzkzxgmg81j6d2kklvjgi2f1g2zz1nkb3vkz"))))))
+                            "1i3y1kzjiz2j62c7vd4wf85983sqk9x9lg3473njvbdz4kph5r0q"))))))
     (home-page "http://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)
