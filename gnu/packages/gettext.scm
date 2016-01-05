@@ -2,6 +2,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,14 +41,14 @@
 (define-public gnu-gettext
   (package
     (name "gettext")
-    (version "0.19.6")
+    (version "0.19.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gettext/gettext-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0pb9vp4ifymvdmc31ks3xxcnfqgzj8shll39czmk8c1splclqjzd"))))
+               "0gy2b2aydj8r0sapadnjw8cmb8j2rynj28d5qs1mfa800njd51jk"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;8 MiB of HTML
