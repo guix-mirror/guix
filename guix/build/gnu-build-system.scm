@@ -39,6 +39,13 @@
 ;;
 ;; Code:
 
+(define* (set-SOURCE-DATE-EPOCH #:rest _)
+  "Set the 'SOURCE_DATE_EPOCH' environment variable.  This is used by tools
+that incorporate timestamps as a way to tell them to use a fixed timestamp.
+See https://reproducible-builds.org/specs/source-date-epoch/."
+  (setenv "SOURCE_DATE_EPOCH" "1")
+  #t)
+
 (define (first-subdirectory dir)
   "Return the path of the first sub-directory of DIR."
   (file-system-fold (lambda (path stat result)
@@ -549,7 +556,7 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
                          ((_ p ...) `((p . ,p) ...)))))
-    (phases set-paths install-locale unpack
+    (phases set-SOURCE-DATE-EPOCH set-paths install-locale unpack
             patch-usr-bin-file
             patch-source-shebangs configure patch-generated-file-shebangs
             build check install
@@ -576,9 +583,6 @@ in order.  Return #t if all the PHASES succeeded, #f otherwise."
 
   ;; Encoding/decoding errors shouldn't be silent.
   (fluid-set! %default-port-conversion-strategy 'error)
-
-  ;; Avoid non-determinism related to generated timestamps.
-  (setenv "SOURCE_DATE_EPOCH" "1")
 
   ;; The trick is to #:allow-other-keys everywhere, so that each procedure in
   ;; PHASES can pick the keyword arguments it's interested in.
