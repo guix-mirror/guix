@@ -1016,7 +1016,7 @@ Manual}).  There are two important differences though:
 @item
 @code{GUIX_LOCPATH} is honored only by Guix's libc, and not by the libc
 provided by foreign distros.  Thus, using @code{GUIX_LOCPATH} allows you
-to make sure the the foreign distro's programs will not end up loading
+to make sure the foreign distro's programs will not end up loading
 incompatible locale data.
 
 @item
@@ -6479,7 +6479,7 @@ A file-like object containing the ``message of the day''.
 
 @item @code{auto-login} (default: @code{#f})
 When true, this field must be a string denoting the user name under
-which the the system automatically logs in.  When it is @code{#f}, a
+which the system automatically logs in.  When it is @code{#f}, a
 user name and password must be entered to log in.
 
 @item @code{login-program} (default: @code{#f})
@@ -7276,7 +7276,7 @@ Defaults to @samp{"0600"}.
 @end deftypevr
 
 @deftypevr {@code{unix-listener-configuration} parameter} string user
-The user to own the the socket.
+The user to own the socket.
 Defaults to @samp{""}.
 @end deftypevr
 
@@ -7298,7 +7298,7 @@ Defaults to @samp{"0600"}.
 @end deftypevr
 
 @deftypevr {@code{fifo-listener-configuration} parameter} string user
-The user to own the the socket.
+The user to own the socket.
 Defaults to @samp{""}.
 @end deftypevr
 
