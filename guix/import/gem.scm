@@ -117,7 +117,8 @@ VERSION, HASH, HOME-PAGE, DESCRIPTION, DEPENDENCIES, and LICENSES."
          (let ((name         (assoc-ref package "name"))
                (version      (assoc-ref package "version"))
                (hash         (assoc-ref package "sha"))
-               (description  (assoc-ref package "info"))
+               (description  (beautify-description
+                              (assoc-ref package "info")))
                (home-page    (assoc-ref package "homepage_uri"))
                (dependencies (map (lambda (dep)
                                     (let ((name (assoc-ref dep "name")))
