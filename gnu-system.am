@@ -492,7 +492,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/gmp-arm-asm-nothumb.patch		\
   gnu/packages/patches/gmp-faulty-test.patch			\
   gnu/packages/patches/gnucash-price-quotes-perl.patch		\
-  gnu/packages/patches/gnutls-doc-fix.patch			\
   gnu/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   gnu/packages/patches/gobject-introspection-cc.patch		\
   gnu/packages/patches/gobject-introspection-girepository.patch	\

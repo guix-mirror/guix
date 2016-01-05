@@ -107,7 +107,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.4.5")
+    (version "3.4.7")
     (source (origin
              (method url-fetch)
              (uri
@@ -118,8 +118,7 @@ living in the same process.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "1bks1zpmhmnkz2v32dd9b44pz6x0a5w4yi9zzwsd0a078vhbi25g"))
-             (patches (list (search-patch "gnutls-doc-fix.patch")))))
+               "0nifi3mr5jhz608pidkp8cjs4vwfj1m2qczsjrgpnp99615rxgn1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -143,13 +142,6 @@ living in the same process.")
 
        #:phases (modify-phases %standard-phases
                   (add-after
-                   'unpack 'delete-prebuilt-unfixed-info-file
-                   (lambda _
-                     ;; XXX Delete the prebuilt info file, so that it will be
-                     ;; rebuilt with the fixes in gnutls-doc-fix.patch.
-                     (delete-file "doc/gnutls.info")
-                     #t))
-                  (add-after
                    'install 'move-doc
                    (lambda* (#:key outputs #:allow-other-keys)
                      ;; Copy the 4.1 MiB of section 3 man pages to "doc".
@@ -166,7 +158,6 @@ living in the same process.")
                "doc"))                            ;4.1 MiB of man pages
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("texinfo" ,texinfo) ; XXX needed only to replace prebuilt, unfixed docs.
        ("which" ,which)))
     (inputs
      `(("guile" ,guile-2.0)
