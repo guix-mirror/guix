@@ -80,7 +80,7 @@
             ;; that it will be in the same directory as gstreamer's header
             ;; files.
             (setenv "CPATH"
-                    (string-append (getenv "CPATH")
+                    (string-append (getenv "C_INCLUDE_PATH")
                                    ":"
                                    (assoc-ref inputs "gst-plugins-base")
                                    "/include/gstreamer-1.0")))))))

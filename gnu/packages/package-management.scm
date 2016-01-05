@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -340,7 +340,7 @@ symlinks to the files in a common directory such as /usr/local.")
                       (let ((nspr (assoc-ref inputs "nspr"))
                             (nss  (assoc-ref inputs "nss")))
                         (setenv "CPATH"
-                                (string-append (getenv "CPATH") ":"
+                                (string-append (getenv "C_INCLUDE_PATH") ":"
                                                nspr "/include/nspr:"
                                                nss "/include/nss"))
                         (setenv "LIBRARY_PATH"

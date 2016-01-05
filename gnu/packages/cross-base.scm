@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -181,12 +181,14 @@ may be either a libc package or #f.)"
                             (string-append libc "/lib"))
 
                     (let ((cpath   (search-path-as-string->list
-                                    (getenv "CPATH")))
+                                    (getenv "C_INCLUDE_PATH")))
                           (libpath (search-path-as-string->list
                                     (getenv "LIBRARY_PATH"))))
                       (setenv "CPATH"
                               (list->search-path-as-string
                                (remove cross? cpath) ":"))
+                      (for-each unsetenv
+                                '("C_INCLUDE_PATH" "CPLUS_INCLUDE_PATH"))
                       (setenv "LIBRARY_PATH"
                               (list->search-path-as-string
                                (remove cross? libpath) ":"))
