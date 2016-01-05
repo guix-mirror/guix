@@ -143,7 +143,8 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0mn7cz19mn8dcrhkq15h25gl20ammr1wz0j2j3c2vxs6ph7zn8jy"))))
+                "0mn7cz19mn8dcrhkq15h25gl20ammr1wz0j2j3c2vxs6ph7zn8jy"))
+              (patches (list (search-patch "openimageio-boost-1.60.patch")))))
     (build-system cmake-build-system)
     ;; FIXME: To run all tests successfully, test image sets from multiple
     ;; third party sources have to be present.  For details see

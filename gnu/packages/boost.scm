@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -33,7 +34,7 @@
 (define-public boost
   (package
     (name "boost")
-    (version "1.58.0")
+    (version "1.60.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -42,8 +43,7 @@
                     ".tar.bz2"))
               (sha256
                (base32
-                "1rfkqxns60171q62cppiyzj8pmsbwp1l8jd7p6crriryqd7j1z7x"))
-              (patches (list (search-patch "boost-mips-avoid-m32.patch")))))
+                "0fzx6dwqbrkd4bcd8pjv0fpapwmrxxwr8yx9g67lihlsk3zzysk8"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
     (native-inputs
@@ -63,7 +63,8 @@
               ;; so we disable that too.
               ,@(if (string-prefix? "mips64" (or (%current-target-system)
                                                  (%current-system)))
-                    '("--without-context" "--without-coroutine")
+                    '("--without-context"
+                      "--without-coroutine" "--without-coroutine2")
                     '()))))
        `(#:tests? #f
          #:phases

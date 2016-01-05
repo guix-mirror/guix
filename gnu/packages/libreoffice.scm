@@ -25,6 +25,7 @@
                           non-copyleft x11-style))
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
@@ -130,15 +131,18 @@ CSV, CSS and XML.")
                "03ygxyb0vfjv8raif5q62sl33b54wkr5rzgadb8slijm6k281wpn"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("boost" ,boost)
-       ("cppunit" ,cppunit)
+     `(("cppunit" ,cppunit)
        ("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("zlib" ,zlib)))
+    (propagated-inputs                  ; Referenced by .la files
+     `(("boost" ,boost)))
     (arguments
      ;; avoid triggering configure errors by simple inclusion of boost headers
-     `(#:configure-flags '("--disable-werror")))
+     `(#:configure-flags '("--disable-werror"
+                           ;; Avoid undefined library references
+                           "LDFLAGS=-lboost_system")))
     (home-page "http://sourceforge.net/p/libwpd/wiki/librevenge/")
     (synopsis "Document importer for office suites")
     (description "Librevenge is a base library for writing document import
@@ -244,7 +248,8 @@ working with graphics in the WPG (WordPerfect Graphics) format.")
       (uri (string-append "mirror://sourceforge/" name "/" name "-"
                           version ".tar.gz"))
       (sha256 (base32
-               "1dprvk4fibylv24l7gr49gfqbkfgmxynvgssvdcycgpf7n8h4zm8"))))
+               "1dprvk4fibylv24l7gr49gfqbkfgmxynvgssvdcycgpf7n8h4zm8"))
+      (patches (list (search-patch "libcmis-fix-test-onedrive.patch")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("cppunit" ,cppunit)
@@ -805,6 +810,8 @@ and to return information on pronunciations, meanings and synonyms.")
           "--with-system-libs" ; enable all --with-system-* flags
           (string-append "--with-boost-libdir="
                          (assoc-ref %build-inputs "boost") "/lib")
+          ;; Avoid undefined symbols required by boost::spirit
+          "LDFLAGS=-lboost_system"
           ;; Avoid a dependency on ucpp.
           "--with-idlc-cpp=cpp"
           ;; The fonts require an external tarball (crosextrafonts).

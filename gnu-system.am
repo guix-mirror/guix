@@ -421,7 +421,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
   gnu/packages/patches/binutils-loongson-workaround.patch	\
   gnu/packages/patches/bitlbee-configure-doc-fix.patch		\
-  gnu/packages/patches/boost-mips-avoid-m32.patch		\
   gnu/packages/patches/byobu-writable-status.patch		\
   gnu/packages/patches/calibre-drop-unrar.patch			\
   gnu/packages/patches/calibre-no-updates-dialog.patch		\
@@ -434,6 +433,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/cpufrequtils-fix-aclocal.patch		\
   gnu/packages/patches/crda-optional-gcrypt.patch		\
   gnu/packages/patches/crossmap-allow-system-pysam.patch	\
+  gnu/packages/patches/csound-header-ordering.patch		\
   gnu/packages/patches/cssc-gets-undeclared.patch               \
   gnu/packages/patches/cssc-missing-include.patch               \
   gnu/packages/patches/clucene-contribs-lib.patch               \
@@ -533,6 +533,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/libarchive-mtree-filename-length-fix.patch \
   gnu/packages/patches/libbonobo-activation-test-race.patch	\
   gnu/packages/patches/libcanberra-sound-theme-freedesktop.patch \
+  gnu/packages/patches/libcmis-fix-test-onedrive.patch		\
   gnu/packages/patches/libdrm-symbol-check.patch		\
   gnu/packages/patches/libevent-dns-tests.patch			\
   gnu/packages/patches/libmtp-devices.patch			\
@@ -604,6 +605,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/nvi-dbpagesize-binpower.patch		\
   gnu/packages/patches/nvi-db4.patch				\
   gnu/packages/patches/openexr-missing-samples.patch		\
+  gnu/packages/patches/openimageio-boost-1.60.patch		\
   gnu/packages/patches/openjpeg-CVE-2015-6581.patch		\
   gnu/packages/patches/openjpeg-use-after-free-fix.patch	\
   gnu/packages/patches/openssl-runpath.patch			\
