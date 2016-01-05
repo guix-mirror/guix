@@ -37,7 +37,8 @@
             string->license
             license->symbol
 
-            snake-case))
+            snake-case
+            beautify-description))
 
 (define (factorize-uri uri version)
   "Factorize URI, a package tarball URI as a string, such that any occurrences
@@ -136,3 +137,14 @@ to in the (guix licenses) module, or #f if there is no such known license."
   "Return a downcased version of the string STR where underscores are replaced
 with dashes."
   (string-join (string-split (string-downcase str) #\_) "-"))
+
+(define (beautify-description description)
+  "Improve the package DESCRIPTION by turning a beginning sentence fragment
+into a proper sentence and by using two spaces between sentences."
+  (let ((cleaned (if (string-prefix? "A " description)
+                     (string-append "This package provides a"
+                                    (substring description 1))
+                     description)))
+    ;; Use double spacing between sentences
+    (regexp-substitute/global #f "\\. \\b"
+                              cleaned 'pre ".  " 'post)))

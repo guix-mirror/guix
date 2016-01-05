@@ -136,17 +136,6 @@ empty list when the FIELD cannot be found."
                         (string-any char-set:whitespace item)))
                   (map string-trim-both items))))))
 
-(define (beautify-description description)
-  "Improve the package DESCRIPTION by turning a beginning sentence fragment
-into a proper sentence and by using two spaces between sentences."
-  (let ((cleaned (if (string-prefix? "A " description)
-                     (string-append "This package provides a"
-                                    (substring description 1))
-                     description)))
-    ;; Use double spacing between sentences
-    (regexp-substitute/global #f "\\. \\b"
-                              cleaned 'pre ".  " 'post)))
-
 (define (description->package meta)
   "Return the `package' s-expression for a CRAN package from the alist META,
 which was derived from the R package's DESCRIPTION file."
