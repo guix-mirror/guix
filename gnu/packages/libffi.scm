@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,11 +30,11 @@
          ;; available in $includedir where some users expect them.
          '(lambda* (#:key outputs #:allow-other-keys)
             (define out (assoc-ref outputs "out"))
-            (symlink (string-append out "/lib/libffi-3.1/include")
+            (symlink (string-append out "/lib/libffi-3.2.1/include")
                      (string-append out "/include")))))
    (package
     (name "libffi")
-    (version "3.1")
+    (version "3.2.1")
     (source (origin
              (method url-fetch)
              (uri
@@ -41,7 +42,7 @@
                              name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1sznmrhcswwbyqla9y2ximlkzbxks59wjfs3lh7qf8ayranyxzlp"))))
+               "0dya49bnhianl0r65m65xndz6ls2jn1xngyn72gd28ls3n7bnvnh"))))
     (build-system gnu-build-system)
     (arguments `(#:phases (alist-cons-after 'install 'post-install
                                             ,post-install-phase
