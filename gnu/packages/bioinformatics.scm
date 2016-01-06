@@ -48,6 +48,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
@@ -1424,6 +1425,71 @@ short and error-prone DNA sequencing reads.  It can also be applied to predict
 genes in incomplete assemblies or complete genomes.")
     ;; GPL3+ according to private correspondense with the authors.
     (license license:gpl3+)))
+
+(define-public fxtract
+  (let ((util-commit "776ca85a18a47492af3794745efcb4a905113115"))
+    (package
+      (name "fxtract")
+      (version "2.3")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://github.com/ctSkennerton/fxtract/archive/"
+               version ".tar.gz"))
+         (file-name (string-append "ctstennerton-util-"
+                                   (string-take util-commit 7)
+                                   "-checkout"))
+         (sha256
+          (base32
+           "0275cfdhis8517hm01is62062swmi06fxzifq7mr3knbbxjlaiwj"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags (list
+                       (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                       "CC=gcc")
+         #:test-target "fxtract_test"
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'build 'copy-util
+             (lambda* (#:key inputs #:allow-other-keys)
+               (rmdir "util")
+               (copy-recursively (assoc-ref inputs "ctskennerton-util") "util")
+               #t))
+           ;; Do not use make install as this requires additional dependencies.
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out"/bin")))
+                 (install-file "fxtract" bin)
+                 #t))))))
+      (inputs
+       `(("pcre" ,pcre)
+         ("zlib" ,zlib)))
+      (native-inputs
+       ;; ctskennerton-util is licensed under GPL2.
+       `(("ctskennerton-util"
+          ,(origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/ctSkennerton/util.git")
+                   (commit util-commit)))
+             (file-name (string-append
+                         "ctstennerton-util-" util-commit "-checkout"))
+             (sha256
+              (base32
+               "0cls1hd4vgj3f36fpzzg4xc77d6f3hpc60cbpfmn2gdr7ykzzad7"))))))
+      (home-page "https://github.com/ctSkennerton/fxtract")
+      (synopsis "Extract sequences from FASTA and FASTQ files")
+      (description
+       "Fxtract extracts sequences from a protein or nucleotide fastx (FASTA
+or FASTQ) file given a subsequence.  It uses a simple substring search for
+basic tasks but can change to using POSIX regular expressions, PCRE, hash
+lookups or multi-pattern searching as required.  By default fxtract looks in
+the sequence of each record but can also be told to look in the header,
+comment or quality sections.")
+      (license license:expat))))
 
 (define-public grit
   (package
