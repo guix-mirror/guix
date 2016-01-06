@@ -1839,6 +1839,11 @@ result.")
                     "http://kokkinizita.linuxaudio.org"
                     "/linuxaudio/downloads/zita-convolver-"
                     version ".tar.bz2"))
+              (snippet
+               ;; Don't optimize for a specific processor architecture.
+               '(substitute* "libs/Makefile"
+                  (("^CXXFLAGS \\+= -march=native") "")))
+              (modules '((guix build utils)))
               (sha256
                (base32
                 "14qrnczhp5mbwhky64il7kxc4hl1mmh495v60va7i2qnhasr6zmz"))))
