@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -140,6 +140,14 @@
   (strip-keyword-arguments '(#:foo #:bar #:baz)
                            '(a #:foo 42 #:b b #:baz 3
                                #:c c #:bar 4)))
+
+(test-equal "ensure-keyword-arguments"
+  '((#:foo 2)
+    (#:foo 2 #:bar 3)
+    (#:foo 42 #:bar 3))
+  (list (ensure-keyword-arguments '(#:foo 2) '(#:foo 2))
+        (ensure-keyword-arguments '(#:foo 2) '(#:bar 3))
+        (ensure-keyword-arguments '(#:foo 2) '(#:bar 3 #:foo 42))))
 
 (let* ((tree (alist->vhash
               '((0 2 3) (1 3 4) (2) (3 5 6) (4 6) (5) (6))

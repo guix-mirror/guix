@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
@@ -52,6 +52,7 @@
             strip-keyword-arguments
             default-keyword-arguments
             substitute-keyword-arguments
+            ensure-keyword-arguments
 
             <location>
             location
@@ -452,6 +453,45 @@ previous value of the keyword argument."
           (loop rest (cons x before)))
          (()
           (reverse before)))))))
+
+(define (delkw kw lst)
+  "Remove KW and its associated value from LST, a keyword/value list such
+as '(#:foo 1 #:bar 2)."
+  (let loop ((lst    lst)
+             (result '()))
+    (match lst
+      (()
+       (reverse result))
+      ((kw? value rest ...)
+       (if (eq? kw? kw)
+           (append (reverse result) rest)
+           (loop rest (cons* value kw? result)))))))
+
+(define (ensure-keyword-arguments args kw/values)
+  "Force the keywords arguments KW/VALUES in the keyword argument list ARGS.
+For instance:
+
+  (ensure-keyword-arguments '(#:foo 2) '(#:foo 2))
+  => (#:foo 2)
+
+  (ensure-keyword-arguments '(#:foo 2) '(#:bar 3))
+  => (#:foo 2 #:bar 3)
+
+  (ensure-keyword-arguments '(#:foo 2) '(#:bar 3 #:foo 42))
+  => (#:foo 42 #:bar 3)
+"
+  (let loop ((args      args)
+             (kw/values kw/values)
+             (result    '()))
+    (match args
+      (()
+       (append (reverse result) kw/values))
+      ((kw value rest ...)
+       (match (memq kw kw/values)
+         ((_ value . _)
+          (loop rest (delkw kw kw/values) (cons* value kw result)))
+         (#f
+          (loop rest kw/values (cons* value kw result))))))))
 
 (define* (nix-system->gnu-triplet
           #:optional (system (%current-system)) (vendor "unknown"))
