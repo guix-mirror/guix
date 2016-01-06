@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1059,13 +1059,13 @@ using Net::HTTP, supporting reconnection and retry according to RFC 2616.")
 (define-public ruby-power-assert
   (package
     (name "ruby-power-assert")
-    (version "0.2.6")
+    (version "0.2.7")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "power_assert" version))
               (sha256
                (base32
-                "0gbj379jhnff8rbb6m3kzdm282szjz1a021xzxa38d1bnswj2jx3"))))
+                "0ka6w71lcan4wgf111xi3pcn9ma9lhakv31jg8w007nwzi0xfjbi"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))
