@@ -96,10 +96,11 @@ builder, or the distro's final Guile when GUILE is #f."
     (package (inherit p)
       (location (if (pair? loc) (source-properties->location loc) loc))
       (arguments
-       (let ((args (package-arguments p)))
-         `(#:guile ,guile
-           #:implicit-inputs? #f
-           ,@args)))
+       ;; 'ensure-keyword-arguments' guarantees that this procedure is
+       ;; idempotent.
+       (ensure-keyword-arguments (package-arguments p)
+                                 `(#:guile ,guile
+                                   #:implicit-inputs? #f)))
       (replacement
        (let ((replacement (package-replacement p)))
          (and replacement

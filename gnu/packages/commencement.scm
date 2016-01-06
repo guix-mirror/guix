@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
@@ -434,7 +434,8 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                      ("libc" ,glibc-final-with-bootstrap-bash)
                                      ,@(fold alist-delete %boot1-inputs
                                              '("gcc" "libc")))
-                                   (current-source-location)))))
+                                   (current-source-location)
+                                   #:guile %bootstrap-guile))))
 
 (define gettext-boot0
   ;; A minimal gettext used during bootstrap.
