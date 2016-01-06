@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,8 +44,7 @@
                "1qx9f0kprf92r1wxl3sacykla0g04qsi0idypzz24b7xy9ix5579"))
 
              ;; cf. https://bugs.archlinux.org/task/33397
-             (patches (list (search-patch "w3m-fix-compile.patch")))
-             (patch-flags '("-p0"))))
+             (patches (list (search-patch "w3m-libgc.patch")))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f  ; no check target
                  #:phases (alist-cons-before
