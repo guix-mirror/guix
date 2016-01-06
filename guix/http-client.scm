@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2012, 2015 Free Software Foundation, Inc.
 ;;;
@@ -191,7 +191,7 @@ closes PORT, unless KEEP-ALIVE? is true."
  (unless (guile-version>? "2.0.11")
    ;; Guile <= 2.0.9 had a bug whereby 'response-body-port' would read more
    ;; than what 'content-length' says.  See Guile commit 802a25b.
-   ;; Guile <= 2.0.12 had a bug whereby the 'close' method of the response
+   ;; Guile <= 2.0.11 had a bug whereby the 'close' method of the response
    ;; body port would fail with wrong-arg-num.  See Guile commit 5a10e41.
    (module-set! (resolve-module '(web response))
                 'make-delimited-input-port make-delimited-input-port)))
