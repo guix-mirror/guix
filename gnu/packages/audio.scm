@@ -1881,6 +1881,11 @@ engine.")
                     "http://kokkinizita.linuxaudio.org"
                     "/linuxaudio/downloads/zita-resampler-"
                     version ".tar.bz2"))
+              (snippet
+               ;; Don't optimize for a specific processor architecture.
+               '(substitute* '("apps/Makefile" "libs/Makefile")
+                  (("^CXXFLAGS \\+= -march=native") "")))
+              (modules '((guix build utils)))
               (sha256
                (base32
                 "0r9ary5sc3y8vba5pad581ha7mgsrlyai83w7w4x2fmhfy64q0wq"))))
