@@ -28,6 +28,14 @@
 (unless (require 'guix-profiles nil t)
   (defvar guix-user-profile (expand-file-name "~/.guix-profile")))
 
+(defcustom guix-package-enable-at-startup t
+  "If non-nil, activate Emacs packages installed in a user profile.
+Set this variable to nil before requiring `guix-emacs' file to
+avoid loading autoloads of Emacs packages installed in
+`guix-user-profile'."
+  :type 'boolean
+  :group 'guix)
+
 (defcustom guix-emacs-activate-after-operation t
   "Activate Emacs packages after installing.
 If nil, do not load autoloads of the Emacs packages after
@@ -116,6 +124,10 @@ See `guix-emacs-activate-after-operation' for details."
        ;; following code will not work (i.e., the autoloads for this
        ;; profile will not be loaded).
        (guix-emacs-load-autoloads guix-current-profile)))
+
+(when guix-package-enable-at-startup
+  (add-to-list 'load-path (guix-emacs-directory))
+  (guix-emacs-load-autoloads))
 
 (provide 'guix-emacs)
 
