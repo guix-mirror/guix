@@ -255,12 +255,23 @@ boot."
                 ;; XXX This needs to happen before service activations, so it
                 ;; has to be here, but this also implicitly assumes that /tmp
                 ;; and /var/run are on the root partition.
-                (false-if-exception (delete-file-recursively "/tmp"))
-                (false-if-exception (delete-file-recursively "/var/run"))
-                (false-if-exception (mkdir "/tmp"))
-                (false-if-exception (chmod "/tmp" #o1777))
-                (false-if-exception (mkdir "/var/run"))
-                (false-if-exception (chmod "/var/run" #o755))))))
+                (letrec-syntax ((fail-safe (syntax-rules ()
+                                             ((_ exp rest ...)
+                                              (begin
+                                                (catch 'system-error
+                                                  (lambda () exp)
+                                                  (const #f))
+                                                (fail-safe rest ...)))
+                                             ((_)
+                                              #t))))
+                  ;; Ignore I/O errors so the system can boot.
+                  (fail-safe
+                   (delete-file-recursively "/tmp")
+                   (delete-file-recursively "/var/run")
+                   (mkdir "/tmp")
+                   (chmod "/tmp" #o1777)
+                   (mkdir "/var/run")
+                   (chmod "/var/run" #o755)))))))
 
 (define cleanup-service-type
   ;; Service that cleans things up in /tmp and similar.
