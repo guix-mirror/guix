@@ -3482,8 +3482,17 @@ void LocalStore::repairPath(const Path & path)
 
     worker.run(goals);
 
-    if (goal->getExitCode() != Goal::ecSuccess)
-        throw Error(format("cannot repair path `%1%'") % path, worker.exitStatus());
+    if (goal->getExitCode() != Goal::ecSuccess) {
+        /* Since substituting the path didn't work, if we have a valid
+           deriver, then rebuild the deriver. */
+        Path deriver = queryDeriver(path);
+        if (deriver != "" && isValidPath(deriver)) {
+            goals.clear();
+            goals.insert(worker.makeDerivationGoal(deriver, StringSet(), bmRepair));
+            worker.run(goals);
+        } else
+            throw Error(format("cannot repair path `%1%'") % path, worker.exitStatus());
+    }
 }
 
 
