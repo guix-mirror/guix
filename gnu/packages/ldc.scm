@@ -115,4 +115,4 @@ latest DMD frontend and uses LLVM as backend.")
     ;; which is released under the "Boost Software License version 1.0".
     (license (list license:bsd-3
                    license:gpl2+
-                   license:x11-style "http://www.boost.org/LICENSE_1_0.txt"))))
+                   license:boost1.0))))
