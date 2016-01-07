@@ -1065,14 +1065,14 @@ data and settings.")
 (define-public edirect
   (package
     (name "edirect")
-    (version "2.50")
+    (version "3.50")
     (source (origin
               (method url-fetch)
               ;; Note: older versions are not retained.
-              (uri "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/edirect.zip")
+              (uri "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/edirect.tar.gz")
               (sha256
                (base32
-                "08afhz2ph66h8h381hl1mqyxkdi5nbvzsyj9gfw3jfbdijnpi4qj"))))
+                "1cr3gzcs3flmgnnbj5iz93vh9w0fca1ilzi2q82cl63ln3mwvpz0"))))
     (build-system perl-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
@@ -1112,8 +1112,6 @@ data and settings.")
        ("perl-uri" ,perl-uri)
        ("perl-www-robotrules" ,perl-www-robotrules)
        ("perl" ,perl)))
-    (native-inputs
-     `(("unzip" ,unzip)))
     (home-page "http://www.ncbi.nlm.nih.gov/books/NBK179288/")
     (synopsis "Tools for accessing the NCBI's set of databases")
     (description
