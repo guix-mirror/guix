@@ -1434,6 +1434,7 @@ availability of packages:
 
 @item --search=@var{regexp}
 @itemx -s @var{regexp}
+@cindex searching for packages
 List the available packages whose name, synopsis, or description matches
 @var{regexp}.  Print all the meta-data of matching packages in
 @code{recutils} format (@pxref{Top, GNU recutils databases,, recutils,
@@ -1476,6 +1477,19 @@ If we were to omit @code{-s game}, we would also get software packages
 that deal with printed circuit boards; removing the angle brackets
 around @code{board} would further add packages that have to do with
 keyboards.
+
+And now for a more elaborate example.  The following command searches
+for cryptographic libraries, filters out Haskell, Perl, Python, and Ruby
+libraries, and prints the name and synopsis of the matching packages:
+
+@example
+$ guix package -s crypto -s library | \
+    recsel -e '! (name ~ "^(ghc|perl|python|ruby)")' -p name,synopsis
+@end example
+
+@noindent
+@xref{Selection Expressions,,, recutils, GNU recutils manual}, for more
+information on @dfn{selection expressions} for @code{recsel -e}.
 
 @item --show=@var{package}
 Show details about @var{package}, taken from the list of available packages, in
