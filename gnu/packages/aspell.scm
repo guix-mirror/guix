@@ -132,3 +132,10 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "0ip6nq43hcr7vvzbv4lwwmlwgfa60hrhsldh9xy3zg2prv6bcaaw")))
+
+(define-public aspell-dict-it
+  (aspell-dictionary "it" "Italian"
+                     #:version "2.2_20050523-0"
+                     #:sha256
+                     (base32
+                      "1gdf7bc1a0kmxsmphdqq8pl01h667mjsj6hihy6kqy14k5qdq69v")))
