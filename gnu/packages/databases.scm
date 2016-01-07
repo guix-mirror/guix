@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -338,7 +339,7 @@ types are supported, as is encryption.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.8.11.1")
+   (version "3.10.0")
    (source (origin
             (method url-fetch)
             ;; TODO: Download from sqlite.org once this bug :
@@ -369,7 +370,7 @@ types are supported, as is encryption.")
                    ))
             (sha256
              (base32
-              "1dnkl4qr1dgaprbyf3jddfiynkhxnin86qabni47wjlc0fnb16gv"))))
+              "0hhhv6si0pyf5i8bv7a71953m0b4gk6s3j2h09caf7vif0njkk23"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments
