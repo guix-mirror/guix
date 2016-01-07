@@ -186,7 +186,10 @@ Try \"M-x guix-search-by-name\"."
                             search-type search-vals)
   "Display an appropriate message after displaying ENTRIES."
   (let* ((type-spec (guix-assq-value guix-messages
-                                     entry-type search-type))
+                                     (if (eq entry-type 'system-generation)
+                                         'generation
+                                       entry-type)
+                                     search-type))
          (fun-or-count-spec (car type-spec)))
     (if (functionp fun-or-count-spec)
         (funcall fun-or-count-spec profile entries search-vals)

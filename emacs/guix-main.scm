@@ -61,7 +61,8 @@
  (guix scripts lint)
  (guix scripts package)
  (guix scripts pull)
- (gnu packages))
+ (gnu packages)
+ (gnu system))
 
 (define-syntax-rule (first-or-false lst)
   (and (not (null? lst))
@@ -758,6 +759,38 @@ See 'entry-sexps' for details."
                                     params)))
     (map ->sexp generations)))
 
+(define system-generation-boot-parameters
+  (memoize
+   (lambda (profile generation)
+     "Return boot parameters for PROFILE's system GENERATION."
+     (let* ((gen-file   (generation-file-name profile generation))
+            (param-file (string-append gen-file "/parameters")))
+       (call-with-input-file param-file read-boot-parameters)))))
+
+(define (system-generation-param-alist profile)
+  "Return an alist of system generation parameters and procedures for
+PROFILE."
+  (append (generation-param-alist profile)
+          `((label       . ,(lambda (gen)
+                              (boot-parameters-label
+                               (system-generation-boot-parameters
+                                profile gen))))
+            (root-device . ,(lambda (gen)
+                              (boot-parameters-root-device
+                               (system-generation-boot-parameters
+                                profile gen))))
+            (kernel      . ,(lambda (gen)
+                              (boot-parameters-kernel
+                               (system-generation-boot-parameters
+                                profile gen)))))))
+
+(define (system-generation-sexps profile params search-type search-vals)
+  "Return an alist with information about system generations."
+  (let ((generations (find-generations profile search-type search-vals))
+        (->sexp (object-transformer (system-generation-param-alist profile)
+                                    params)))
+    (map ->sexp generations)))
+
 
 ;;; Getting package/output/generation entries (alists).
 
@@ -802,6 +835,9 @@ parameter/value pairs."
     ((generation)
      (generation-sexps profile params
                        search-type search-vals))
+    ((system-generation)
+     (system-generation-sexps profile params
+                              search-type search-vals))
     (else (entry-type-error entry-type))))
 
 

@@ -14,6 +14,7 @@ Please send Guix bug reports to bug-guix@gnu.org.
 
 ** Package management
 
+*** Emacs interface for system generations
 *** Emacs interface for hydra.gnu.org
 *** Changes in Emacs interface variables
 In the following names, BUFFER-TYPE means "info" or "list";
