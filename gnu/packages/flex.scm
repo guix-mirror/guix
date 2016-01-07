@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,15 +32,14 @@
 (define flex
   (package
     (name "flex")
-    (version "2.5.37")
+    (version "2.6.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/flex/flex-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0ah5mi4j62b85a9rllv1004mzjb5cd0mn4glvz13p88rpx77pahp"))
-             (patches (list (search-patch "flex-bison-tests.patch")))))
+               "1sdqx63yadindzafrq1w31ajblf9gl1c301g068s20s7bbpi3ri4"))))
     (build-system gnu-build-system)
     (inputs
      (let ((bison-for-tests
