@@ -3927,8 +3927,7 @@ barplots or heatmaps.")
                (base32
                 "0f16ryy5f012hvksrwlmm33bcl7lw97i2jvhbnwfwl03j4w7nhc1"))))
     (properties
-     `((upstream-name . "BiocGenerics")
-       (r-repository . bioconductor)))
+     `((upstream-name . "BiocGenerics")))
     (build-system r-build-system)
     (home-page "http://bioconductor.org/packages/BiocGenerics")
     (synopsis "S4 generic functions for Bioconductor")
@@ -3970,8 +3969,7 @@ abnormal copy number.")
                (base32
                 "12iibcs63m9iy7f45wgjcqsna2dnqwckphk682389grshz0g4x66"))))
     (properties
-     `((upstream-name . "S4Vectors")
-       (r-repository . bioconductor)))
+     `((upstream-name . "S4Vectors")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)))
@@ -3998,8 +3996,7 @@ S4Vectors package itself.")
                (base32
                 "0hi5k1j5jm4xrg1l506g279qw1xkvp1gg1zgsjzpbng4vx4k4iyl"))))
     (properties
-     `((upstream-name . "IRanges")
-       (r-repository . bioconductor)))
+     `((upstream-name . "IRanges")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
@@ -4028,8 +4025,7 @@ possible.")
                (base32
                 "1j2n1v1mrw1fxn7cyffz112pm76wd6gy9q9qwlsfv3brbsqbvdbf"))))
     (properties
-     `((upstream-name . "GenomeInfoDb")
-       (r-repository . bioconductor)))
+     `((upstream-name . "GenomeInfoDb")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
@@ -4055,8 +4051,7 @@ names in their natural, rather than lexicographic, order.")
                (base32
                 "0havwyr6xqk7w0rmbwfj9jq1djz7wzdz7w39adhklwzwz9l4ih3a"))))
     (properties
-     `((upstream-name . "XVector")
-       (r-repository . bioconductor)))
+     `((upstream-name . "XVector")))
     (build-system r-build-system)
     (arguments
      `(#:phases
@@ -4092,8 +4087,7 @@ names in their natural, rather than lexicographic, order.")
                (base32
                 "1jffvcs0jsi7q4l3pvjj6r73vll80csgkljvhqp0g2ixc43jjng9"))))
     (properties
-     `((upstream-name . "GenomicRanges")
-       (r-repository . bioconductor)))
+     `((upstream-name . "GenomicRanges")))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-biocgenerics" ,r-biocgenerics)
