@@ -55,14 +55,7 @@
      (obsolete
       (0 "No obsolete packages in profile '%s'." profile)
       (1 "A single obsolete package in profile '%s'." profile)
-      (many "%d obsolete packages in profile '%s'." count profile))
-     (generation
-      (0 "No packages installed in generation %d of profile '%s'."
-         val profile)
-      (1 "A single package installed in generation %d of profile '%s'."
-         val profile)
-      (many "%d packages installed in generation %d of profile '%s'."
-            count val profile)))
+      (many "%d obsolete packages in profile '%s'." count profile)))
 
     (output
      (id
@@ -91,13 +84,6 @@
       (0 "No obsolete package outputs in profile '%s'." profile)
       (1 "A single obsolete package output in profile '%s'." profile)
       (many "%d obsolete package outputs in profile '%s'." count profile))
-     (generation
-      (0 "No package outputs installed in generation %d of profile '%s'."
-         val profile)
-      (1 "A single package output installed in generation %d of profile '%s'."
-         val profile)
-      (many "%d package outputs installed in generation %d of profile '%s'."
-            count val profile))
      (profile-diff
       guix-message-outputs-by-diff))
 

@@ -668,7 +668,6 @@ ENTRIES is a list of installed manifest entries."
        (id               . ,(apply-to-rest ids->package-patterns))
        (name             . ,(apply-to-rest specifications->package-patterns))
        (installed        . ,manifest-package-proc)
-       (generation       . ,manifest-package-proc)
        (obsolete         . ,(apply-to-first obsolete-package-patterns))
        (regexp           . ,regexp-proc)
        (all-available    . ,all-proc)
@@ -677,7 +676,6 @@ ENTRIES is a list of installed manifest entries."
        (id               . ,(apply-to-rest ids->output-patterns))
        (name             . ,(apply-to-rest specifications->output-patterns))
        (installed        . ,manifest-output-proc)
-       (generation       . ,manifest-output-proc)
        (obsolete         . ,(apply-to-first obsolete-output-patterns))
        (regexp           . ,regexp-proc)
        (all-available    . ,all-proc)
@@ -692,10 +690,7 @@ ENTRIES is a list of installed manifest entries."
                               search-type search-vals)
   "Return information about packages or package outputs.
 See 'entry-sexps' for details."
-  (let* ((profile (if (eq? search-type 'generation)
-                      (generation-file-name profile (car search-vals))
-                      profile))
-         (manifest (profile-manifest profile))
+  (let* ((manifest (profile-manifest profile))
          (patterns (if (and (eq? entry-type 'output)
                             (eq? search-type 'profile-diff))
                        (match search-vals

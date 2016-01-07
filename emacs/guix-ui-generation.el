@@ -127,8 +127,9 @@ current profile's GENERATION."
    (lambda (btn)
      (guix-buffer-get-display-entries
       'list guix-package-list-type
-      (list (guix-ui-current-profile)
-            'generation (button-get btn 'number))
+      (list (guix-generation-current-packages-profile
+             (button-get btn 'number))
+            'installed)
       'add))
    "Show installed packages for this generation"
    'number number)
@@ -202,8 +203,8 @@ VAL is a boolean value."
   "List installed packages for the generation at point."
   (interactive)
   (guix-package-get-display
-   (guix-ui-current-profile)
-   'generation (guix-list-current-id)))
+   (guix-generation-current-packages-profile (guix-list-current-id))
+   'installed))
 
 (defun guix-generation-list-generations-to-compare ()
   "Return a sorted list of 2 marked generations for comparing."
