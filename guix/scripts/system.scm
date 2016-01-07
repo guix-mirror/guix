@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -191,39 +192,6 @@ the ownership of '~a' may be incorrect!~%")
 
 
 ;;;
-;;; Boot parameters
-;;;
-
-(define-record-type* <boot-parameters>
-  boot-parameters make-boot-parameters boot-parameters?
-  (label            boot-parameters-label)
-  (root-device      boot-parameters-root-device)
-  (kernel           boot-parameters-kernel)
-  (kernel-arguments boot-parameters-kernel-arguments))
-
-(define (read-boot-parameters port)
-  "Read boot parameters from PORT and return the corresponding
-<boot-parameters> object or #f if the format is unrecognized."
-  (match (read port)
-    (('boot-parameters ('version 0)
-                       ('label label) ('root-device root)
-                       ('kernel linux)
-                       rest ...)
-     (boot-parameters
-      (label label)
-      (root-device root)
-      (kernel linux)
-      (kernel-arguments
-       (match (assq 'kernel-arguments rest)
-         ((_ args) args)
-         (#f       '())))))                       ;the old format
-    (x                                            ;unsupported format
-     (warning (_ "unrecognized boot parameters for '~a'~%")
-              system)
-     #f)))
-
-
-;;;
 ;;; Reconfiguration.
 ;;;
 
@@ -285,22 +253,24 @@ it atomically, and then run OS's activation script."
   "Return a list of 'menu-entry' for the generations of PROFILE."
   (define (system->grub-entry system number time)
     (unless-file-not-found
-     (let ((file (string-append system "/parameters")))
-       (match (call-with-input-file file read-boot-parameters)
-         (($ <boot-parameters> label root kernel kernel-arguments)
-          (menu-entry
-           (label (string-append label " (#"
-                                 (number->string number) ", "
-                                 (seconds->string time) ")"))
-           (linux kernel)
-           (linux-arguments
-            (cons* (string-append "--root=" root)
-                   #~(string-append "--system=" #$system)
-                   #~(string-append "--load=" #$system "/boot")
-                   kernel-arguments))
-           (initrd #~(string-append #$system "/initrd"))))
-         (#f                                      ;invalid format
-          #f)))))
+     (let* ((file             (string-append system "/parameters"))
+            (params           (call-with-input-file file
+                                read-boot-parameters))
+            (label            (boot-parameters-label params))
+            (root             (boot-parameters-root-device params))
+            (kernel           (boot-parameters-kernel params))
+            (kernel-arguments (boot-parameters-kernel-arguments params)))
+       (menu-entry
+        (label (string-append label " (#"
+                              (number->string number) ", "
+                              (seconds->string time) ")"))
+        (linux kernel)
+        (linux-arguments
+         (cons* (string-append "--root=" root)
+                #~(string-append "--system=" #$system)
+                #~(string-append "--load=" #$system "/boot")
+                kernel-arguments))
+        (initrd #~(string-append #$system "/initrd"))))))
 
   (let* ((numbers (generation-numbers profile))
          (systems (map (cut generation-file-name profile <>)
@@ -366,18 +336,17 @@ list of services."
   (unless (zero? number)
     (let* ((generation (generation-file-name profile number))
            (param-file (string-append generation "/parameters"))
-           (params     (call-with-input-file param-file read-boot-parameters)))
+           (params     (call-with-input-file param-file read-boot-parameters))
+           (label      (boot-parameters-label params))
+           (root       (boot-parameters-root-device params))
+           (kernel     (boot-parameters-kernel params)))
       (display-generation profile number)
       (format #t (_ "  file name: ~a~%") generation)
       (format #t (_ "  canonical file name: ~a~%") (readlink* generation))
-      (match params
-        (($ <boot-parameters> label root kernel)
-         ;; TRANSLATORS: Please preserve the two-space indentation.
-         (format #t (_ "  label: ~a~%") label)
-         (format #t (_ "  root device: ~a~%") root)
-         (format #t (_ "  kernel: ~a~%") kernel))
-        (_
-         #f)))))
+      ;; TRANSLATORS: Please preserve the two-space indentation.
+      (format #t (_ "  label: ~a~%") label)
+      (format #t (_ "  root device: ~a~%") root)
+      (format #t (_ "  kernel: ~a~%") kernel))))
 
 (define* (list-generations pattern #:optional (profile %system-profile))
   "Display in a human-readable format all the system generations matching
