@@ -1882,7 +1882,7 @@ It works with most newer systems.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://dl.lm-sensors.org/i2c-tools/releases/i2c-tools-"
+                    "http://jdelvare.nerim.net/mirror/i2c-tools/i2c-tools-"
                     version ".tar.bz2"))
               (sha256
                (base32
@@ -1896,7 +1896,7 @@ It works with most newer systems.")
        #:phases (alist-delete 'configure %standard-phases)))
     (inputs
      `(("perl" ,perl)))
-    (home-page "http://www.lm-sensors.org/wiki/I2CTools")
+    (home-page "http://jdelvare.nerim.net/devel.html#i2ctools")
     (synopsis "I2C tools for Linux")
     (description
      "The i2c-tools package contains a heterogeneous set of I2C tools for
