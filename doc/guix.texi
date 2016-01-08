@@ -6714,6 +6714,13 @@ several commands to interact with the daemon and configure networking:
 and @command{wicd-curses} user interfaces.
 @end deffn
 
+@cindex NetworkManager
+@deffn {Scheme Procedure} network-manager-service @
+       [#:network-manager @var{network-manager}]
+Return a service that runs NetworkManager, a network connection manager
+that attempting to keep active network connectivity when available.
+@end deffn
+
 @deffn {Scheme Procedure} ntp-service [#:ntp @var{ntp}] @
   [#:name-service @var{%ntp-servers}]
 Return a service that runs the daemon from @var{ntp}, the
