@@ -38,6 +38,16 @@
        (base32
         "1qgn5psfyhbrnap275xjfrzppf5a83fb67gpql0kfqv37al869gm"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-aspell
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin/aspell (string-append (assoc-ref outputs "out")
+                                              "/bin/aspell")))
+               (wrap-program bin/aspell
+                 '("ASPELL_CONF" "" =
+                   ("${ASPELL_CONF:-\"dict-dir ${GUIX_PROFILE:-$HOME/.guix-profile}/lib/aspell\"}")))))))))
     (inputs `(("perl" ,perl)))
     (home-page "http://aspell.net/")
     (synopsis "Spell checker")
