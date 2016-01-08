@@ -7,8 +7,10 @@ Modifications:
   Remove optional patching in nss/Makefile.
   Include -L$libdir in output from "nss-config --libs".
 
---- nss-3.17.1/nss/config/Makefile
-+++ nss-3.17.1/nss/config/Makefile
+Later adapted to apply cleanly to nss-3.21.
+
+--- nss-3.21/nss/config/Makefile
++++ nss-3.21/nss/config/Makefile
 @@ -0,0 +1,40 @@
 +CORE_DEPTH = ..
 +DEPTH      = ..
@@ -50,8 +52,8 @@ Modifications:
 +
 +dummy: all export libs
 +
---- nss-3.17.1/nss/config/nss-config.in
-+++ nss-3.17.1/nss/config/nss-config.in
+--- nss-3.21/nss/config/nss-config.in
++++ nss-3.21/nss/config/nss-config.in
 @@ -0,0 +1,145 @@
 +#!/bin/sh
 +
@@ -198,8 +200,8 @@ Modifications:
 +      echo $libdirs
 +fi
 +
---- nss-3.17.1/nss/config/nss.pc.in
-+++ nss-3.17.1/nss/config/nss.pc.in
+--- nss-3.21/nss/config/nss.pc.in
++++ nss-3.21/nss/config/nss.pc.in
 @@ -0,0 +1,12 @@
 +prefix=@prefix@
 +exec_prefix=@exec_prefix@
@@ -213,14 +215,11 @@ Modifications:
 +Libs: -L${libdir} -lssl3 -lsmime3 -lnss3 -lnssutil3
 +Cflags: -I${includedir}
 +
---- nss-3.17.1/nss/manifest.mn
-+++ nss-3.17.1/nss/manifest.mn
-@@ -10,7 +10,7 @@
+--- nss-3.21/nss/manifest.mn
++++ nss-3.21/nss/manifest.mn
+@@ -10,4 +10,4 @@
  
  RELEASE = nss
  
--DIRS = coreconf lib cmd
-+DIRS = coreconf lib cmd config
- 
- ifdef NSS_BUILD_GTESTS
- DIRS += external_tests
+-DIRS = coreconf lib cmd external_tests
++DIRS = coreconf lib cmd external_tests config
