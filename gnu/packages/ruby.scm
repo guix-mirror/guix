@@ -1212,15 +1212,18 @@ It allows writing tests, checking results and automated testing in Ruby.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'add-test-unit-to-search-path
-          (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "Rakefile"
-              (("t\\.libs << \"test\"" line)
-               (string-append line "; t.libs << \""
-                              (assoc-ref inputs "ruby-test-unit")
-                              "/lib/ruby/gems/2.2.0/gems/test-unit-"
-                              ,(package-version ruby-test-unit)
-                              "/lib\"")))
-            #t)))))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((test-unit (assoc-ref inputs "ruby-test-unit"))
+                    (test-unit-home (gem-home test-unit
+                                              ,(package-version ruby))))
+               (substitute* "Rakefile"
+                 (("t\\.libs << \"test\"" line)
+                  (string-append line "; t.libs << \""
+                                 test-unit-home
+                                 "/gems/test-unit-"
+                                 ,(package-version ruby-test-unit)
+                                 "/lib\""))))
+             #t)))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-test-unit" ,ruby-test-unit)))
@@ -1274,15 +1277,18 @@ as a base class when writing classes that depend upon
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'add-test-unit-to-search-path
-          (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "Rakefile"
-              (("t\\.libs << \"test\"" line)
-               (string-append line "; t.libs << \""
-                              (assoc-ref inputs "ruby-test-unit")
-                              "/lib/ruby/gems/2.2.0/gems/test-unit-"
-                              ,(package-version ruby-test-unit)
-                              "/lib\"")))
-            #t)))))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((test-unit (assoc-ref inputs "ruby-test-unit"))
+                    (test-unit-home (gem-home test-unit ,(package-version
+                                                          ruby))))
+               (substitute* "Rakefile"
+                 (("t\\.libs << \"test\"" line)
+                  (string-append line "; t.libs << \""
+                                 test-unit-home
+                                 "/gems/test-unit-"
+                                 ,(package-version ruby-test-unit)
+                                 "/lib\""))))
+             #t)))))
     (propagated-inputs
      `(("ruby-blankslate" ,ruby-blankslate)))
     (native-inputs
@@ -1311,13 +1317,16 @@ knowing anything about the constructor.")
        (modify-phases %standard-phases
          (add-after 'unpack 'add-test-unit-to-search-path
           (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "Rakefile"
-              (("t\\.libs << \"test\"" line)
-               (string-append line "; t.libs << \""
-                              (assoc-ref inputs "ruby-test-unit")
-                              "/lib/ruby/gems/2.2.0/gems/test-unit-"
-                              ,(package-version ruby-test-unit)
-                              "/lib\"")))
+            (let* ((test-unit (assoc-ref inputs "ruby-test-unit"))
+                   (test-unit-home (gem-home test-unit ,(package-version
+                                                         ruby))))
+              (substitute* "Rakefile"
+                (("t\\.libs << \"test\"" line)
+                 (string-append line "; t.libs << \""
+                                test-unit-home
+                                "/gems/test-unit-"
+                                ,(package-version ruby-test-unit)
+                                "/lib\""))))
             #t)))))
     (propagated-inputs
      `(("ruby-instantiator" ,ruby-instantiator)
@@ -1381,13 +1390,16 @@ conversion to (X)HTML.")
        (modify-phases %standard-phases
          (add-after 'unpack 'add-test-unit-to-search-path
           (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "Rakefile"
-              (("t\\.libs << 'test'" line)
-               (string-append line "; t.libs << \""
-                              (assoc-ref inputs "ruby-test-unit")
-                              "/lib/ruby/gems/2.2.0/gems/test-unit-"
-                              ,(package-version ruby-test-unit)
-                              "/lib\"")))
+            (let* ((test-unit (assoc-ref inputs "ruby-test-unit"))
+                   (test-unit-home (gem-home test-unit
+                                             ,(package-version ruby))))
+              (substitute* "Rakefile"
+                (("t\\.libs << 'test'" line)
+                 (string-append line "; t.libs << \""
+                                test-unit-home
+                                "/gems/test-unit-"
+                                ,(package-version ruby-test-unit)
+                                "/lib\""))))
             #t))
          (add-before 'check 'use-latest-redcarpet
           (lambda _
@@ -2047,13 +2059,17 @@ development of Ruby gems.")
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-test-include-path
           (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "Rakefile"
-              (("Hoe\\.add_include_dirs .*")
-               (string-append "Hoe.add_include_dirs \""
-                              (assoc-ref inputs "ruby-minitest-4")
-                              "/lib/ruby/gems/2.2.0/gems/minitest-"
-                              ,(package-version ruby-minitest-4)
-                              "/lib" "\"")))))
+             (let* ((minitest (assoc-ref inputs "ruby-minitest-4"))
+                    (minitest-home (gem-home minitest
+                                             ,(package-version ruby))))
+               (substitute* "Rakefile"
+                 (("Hoe\\.add_include_dirs .*")
+                  (string-append "Hoe.add_include_dirs \""
+                                 minitest-home
+                                 "/gems/minitest-"
+                                 ,(package-version ruby-minitest-4)
+                                 "/lib" "\""))))
+             #t))
          (add-before 'check 'fix-test-assumptions
           (lambda _
             ;; The test output includes the file name, so a couple of tests
