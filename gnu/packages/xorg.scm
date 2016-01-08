@@ -4,6 +4,7 @@
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
+;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -5375,14 +5376,14 @@ Intrinsics (Xt) Library.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "320")
+    (version "322")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://ftp.invisible-island.net/xterm/"
                                   "xterm-" version ".tgz"))
               (sha256
                (base32
-                "19r4rs5pjq944m7aiqligazf6wgmv4f023x3bx183h1l8dbvn3d6"))))
+                "1mh9s5g3fs64iimnl7axk0isb5306dyshisxlv5gr8vn7ysl3nws"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-256-color"
