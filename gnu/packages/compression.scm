@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,7 +40,7 @@
 (define-public zlib
   (package
     (name "zlib")
-    (version "1.2.7")
+    (version "1.2.8")
     (source
      (origin
       (method url-fetch)
@@ -50,7 +50,7 @@
                                  version ".tar.gz")))
       (sha256
        (base32
-        "1i96gsdvxqb6skp9a58bacf1wxamwi9m9pg4yn7cpf7g7239r77s"))))
+        "039agw5rqvqny92cpkrfn243x2gd4xn13hs3xi6isk55d2vqqr9n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-replace
