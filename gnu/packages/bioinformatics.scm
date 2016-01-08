@@ -41,6 +41,7 @@
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages machine-learning)
