@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
@@ -41,12 +41,13 @@
 ;;
 ;; Code:
 
-(define (pypi-uri name version)
+(define* (pypi-uri name version #:optional (extension ".tar.gz"))
   "Return a URI string for the Python package hosted on the Python Package
-Index (PyPI) corresponding to NAME and VERSION."
+Index (PyPI) corresponding to NAME and VERSION.  EXTENSION is the file name
+extension, such as '.tar.gz'."
   (string-append "https://pypi.python.org/packages/source/"
                  (string-take name 1) "/" name "/"
-                 name "-" version ".tar.gz"))
+                 name "-" version extension))
 
 (define %python-build-system-modules
   ;; Build-side modules imported by default.
