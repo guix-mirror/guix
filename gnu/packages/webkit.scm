@@ -40,6 +40,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libreoffice)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -52,14 +53,14 @@
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.8.5")
+    (version "2.10.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "082dw0d8jxvsapx30ypmy5h2srzfzi42c3zr9pbkzx1m959hq7rx"))))
+                "0mghsbfnmmf6nsf7cb3ah76s77aigkzf3k6kw96wgh6all6jdy6v"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -105,6 +106,7 @@
        ("gst-plugins-base" ,gst-plugins-base)
        ("gtk+-2" ,gtk+-2)
        ("harfbuzz" ,harfbuzz)
+       ("hyphen" ,hyphen)
        ("icu4c" ,icu4c)
        ("libjpeg" ,libjpeg)
        ("libnotify" ,libnotify)
