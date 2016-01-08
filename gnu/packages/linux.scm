@@ -1809,7 +1809,7 @@ country-specific regulations for the wireless spectrum.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://dl.lm-sensors.org/lm-sensors/releases/lm_sensors-"
+                    "ftp://ftp.netroedge.com/pub/lm-sensors/lm_sensors-"
                     version ".tar.bz2"))
               (sha256
                (base32
@@ -1867,7 +1867,7 @@ country-specific regulations for the wireless spectrum.")
               (string-append (assoc-ref inputs "coreutils")
                              "/bin/readlink -f"))))
          %standard-phases))))
-    (home-page "http://www.lm-sensors.org/")
+    (home-page "http://jdelvare.nerim.net/devel.html#lmsensors")
     (synopsis "Utilities to read temperature/voltage/fan sensors")
     (description
      "Lm-sensors is a hardware health monitoring package for Linux.  It allows
