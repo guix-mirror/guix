@@ -30,6 +30,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages texlive)
   #:use-module (gnu packages base)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages avahi)
@@ -55,9 +56,13 @@
     (name "mit-scheme")
     (version "9.2")
     (source #f)                                   ; see below
+    (outputs '("out" "doc"))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no "check" target
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
        #:phases
        (modify-phases %standard-phases
          (replace 'unpack
@@ -83,11 +88,48 @@
                        (string-prefix? "i686" system))
                    (zero? (system* "make" "compile-microcode"))
                    (zero? (system* "./etc/make-liarc.sh"
-                                   (string-append "--prefix=" out))))))))))
+                                   (string-append "--prefix=" out)))))))
+         (add-after 'configure 'configure-doc
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (with-directory-excursion "../doc"
+               (let* ((out (assoc-ref outputs "out"))
+                      (bash (assoc-ref inputs "bash"))
+                      (bin/sh (string-append bash "/bin/sh")))
+                 (system* bin/sh "./configure"
+                          (string-append "--prefix=" out)
+                          (string-append "SHELL=" bin/sh))
+                 (substitute* '("Makefile" "make-common")
+                   (("/lib/mit-scheme/doc")
+                    (string-append "/share/doc/" ,name "-" ,version)))
+                 #t))))
+         (add-after 'build 'build-doc
+           (lambda* _
+             (with-directory-excursion "../doc"
+               (zero? (system* "make")))))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc"))
+                    (old-doc-dir (string-append out "/share/doc"))
+                    (new-doc/mit-scheme-dir
+                     (string-append doc "/share/doc/" ,name "-" ,version)))
+               (with-directory-excursion "../doc"
+                 (for-each (lambda (target)
+                             (system* "make" target))
+                           '("install-config" "install-info-gz" "install-man"
+                             "install-html" "install-pdf")))
+               (mkdir-p new-doc/mit-scheme-dir)
+               (copy-recursively
+                (string-append old-doc-dir "/" ,name "-" ,version)
+                new-doc/mit-scheme-dir)
+               (delete-file-recursively old-doc-dir)
+               #t))))))
+    (native-inputs
+     `(("texlive" ,texlive)
+       ("texinfo" ,texinfo)
+       ("m4" ,m4)))
     (inputs
-     `(("texinfo" ,texinfo)
-       ("m4" ,m4)
-       ("libx11" ,libx11)
+     `(("libx11" ,libx11)
 
        ("source"
 
