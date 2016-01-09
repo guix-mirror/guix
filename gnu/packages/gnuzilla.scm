@@ -267,7 +267,7 @@ standards.")
 (define-public icecat
   (package
     (name "icecat")
-    (version "38.5.0-gnu1")
+    (version "38.5.2-gnu1")
     (source
      (origin
       (method url-fetch)
@@ -276,7 +276,7 @@ standards.")
                           name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "1bf20mpvx84jsa0dan2hhfc49f30v0wasikv7sh3cg8mwp62faj6"))
+        "0m18xyb0rd02yaw9xd5z4bab1wr2599iszzqhm86c134jv5vk6cg"))
       (patches (map search-patch '("icecat-avoid-bundled-includes.patch")))
       (modules '((guix build utils)))
       (snippet
