@@ -54,7 +54,7 @@
 (define-public r
   (package
     (name "r")
-    (version "3.2.2")
+    (version "3.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -62,7 +62,7 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "07a6s865bjnh7w0fqsrkv1pva76w99v86w0w787qpdil87km54cw"))))
+                "1hdnv77ralzcx5k5b88jq1r8l6zqnywpq00g2qs949rqh63psfxr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
