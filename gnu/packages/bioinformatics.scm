@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
@@ -207,7 +207,7 @@ computational cluster.")
 (define-public bedtools
   (package
     (name "bedtools")
-    (version "2.24.0")
+    (version "2.25.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/arq5x/bedtools2/archive/v"
@@ -215,8 +215,7 @@ computational cluster.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0lnxrjvs3nnmb4bmskag1wg3h2hd80przz5q3xd0bvs7vyxrvpbl"))
-              (patches (list (search-patch "bedtools-32bit-compilation.patch")))))
+                "1ywcy3yfwzhl905b51l0ffjia55h75vv3mw5xkvib04pp6pj548m"))))
     (build-system gnu-build-system)
     (native-inputs `(("python" ,python-2)))
     (inputs `(("samtools" ,samtools)
@@ -225,16 +224,6 @@ computational cluster.")
      '(#:test-target "test"
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'patch-makefile-SHELL-definition
-           (lambda _
-             ;; patch-makefile-SHELL cannot be used here as it does not
-             ;; yet patch definitions with `:='.  Since changes to
-             ;; patch-makefile-SHELL result in a full rebuild, features
-             ;; of patch-makefile-SHELL are reimplemented here.
-             (substitute* "Makefile"
-               (("^SHELL := .*$")
-                (string-append "SHELL := " (which "bash") " -e \n")))
-             #t))
          (delete 'configure)
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)

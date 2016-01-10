@@ -416,7 +416,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/avidemux-install-to-lib.patch		\
   gnu/packages/patches/avrdude-fix-libusb.patch			\
   gnu/packages/patches/bash-completion-directories.patch	\
-  gnu/packages/patches/bedtools-32bit-compilation.patch         \
   gnu/packages/patches/bowtie-fix-makefile.patch		\
   gnu/packages/patches/bigloo-gc-shebangs.patch			\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
