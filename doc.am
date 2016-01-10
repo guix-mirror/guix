@@ -1,6 +1,7 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
+# Copyright © 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -65,16 +66,16 @@ DOT_OPTIONS =					\
   -Nfontsize=9 -Nheight=.1 -Nwidth=.1
 
 .dot.png:
-	$(DOT) -Tpng $(DOT_OPTIONS) < "$<" > "$@.tmp"
-	mv "$@.tmp" "$@"
+	$(DOT) -Tpng $(DOT_OPTIONS) < "$<" > "$(srcdir)/$@.tmp"
+	mv "$(srcdir)/$@.tmp" "$(srcdir)/$@"
 
 .dot.pdf:
-	$(DOT) -Tpdf $(DOT_OPTIONS) < "$<" > "$@.tmp"
-	mv "$@.tmp" "$@"
+	$(DOT) -Tpdf $(DOT_OPTIONS) < "$<" > "$(srcdir)/$@.tmp"
+	mv "$(srcdir)/$@.tmp" "$(srcdir)/$@"
 
 .dot.eps:
-	$(DOT) -Teps $(DOT_OPTIONS) < "$<" > "$@.tmp"
-	mv "$@.tmp" "$@"
+	$(DOT) -Teps $(DOT_OPTIONS) < "$<" > "$(srcdir)/$@.tmp"
+	mv "$(srcdir)/$@.tmp" "$(srcdir)/$@"
 
 .png.eps:
 	convert "$<" "$@-tmp.eps"
