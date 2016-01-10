@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -129,30 +129,29 @@
       #:tests? ,(not (string-prefix? "mips64" (or (%current-target-system)
                                                   (%current-system))))
       #:phases
-       (alist-cons-after
-        'install 'postinst
-         (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
-           (let* ((out (assoc-ref outputs "out"))
-                  (share (string-append out "/share"))
-                  (texlive-extra (assoc-ref inputs "texlive-extra-src"))
-                  (unpack (assoc-ref %standard-phases 'unpack))
-                  (patch-source-shebangs
-                    (assoc-ref %standard-phases 'patch-source-shebangs)))
-             ;; Create symbolic links for the latex variants and their
-             ;; man pages.
-             (with-directory-excursion (string-append out "/bin/")
-               (for-each symlink
-               '("pdftex" "pdftex"   "xetex"   "luatex")
-               '("latex"  "pdflatex" "xelatex" "lualatex")))
-             (with-directory-excursion (string-append share "/man/man1/")
-               (symlink "luatex.1" "lualatex.1"))
-             ;; Unpack texlive-extra and install tlpkg.
-             (mkdir "texlive-extra")
-             (with-directory-excursion "texlive-extra"
-               (apply unpack (list #:source texlive-extra))
-               (apply patch-source-shebangs (list #:source texlive-extra))
-               (system* "mv" "tlpkg" share))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'install 'postint
+           (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+             (let* ((out (assoc-ref outputs "out"))
+                    (share (string-append out "/share"))
+                    (texlive-extra (assoc-ref inputs "texlive-extra-src"))
+                    (unpack (assoc-ref %standard-phases 'unpack))
+                    (patch-source-shebangs
+                      (assoc-ref %standard-phases 'patch-source-shebangs)))
+               ;; Create symbolic links for the latex variants and their
+               ;; man pages.
+               (with-directory-excursion (string-append out "/bin/")
+                 (for-each symlink
+                 '("pdftex" "pdftex"   "xetex"   "luatex")
+                 '("latex"  "pdflatex" "xelatex" "lualatex")))
+               (with-directory-excursion (string-append share "/man/man1/")
+                 (symlink "luatex.1" "lualatex.1"))
+               ;; Unpack texlive-extra and install tlpkg.
+               (mkdir "texlive-extra")
+               (with-directory-excursion "texlive-extra"
+                 (apply unpack (list #:source texlive-extra))
+                 (apply patch-source-shebangs (list #:source texlive-extra))
+                 (system* "mv" "tlpkg" share))))))))
    (synopsis "TeX Live, a package of the TeX typesetting system")
    (description
     "TeX Live provides a comprehensive TeX document production system.
@@ -182,42 +181,40 @@ This package contains the binaries.")
                  (guix build utils)
                  (srfi srfi-26))
       #:phases
-        (alist-cons-before
-         'texmf-config 'install
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let ((share (string-append (assoc-ref outputs "out") "/share")))
-             (mkdir-p share)
-             (system* "mv" "texmf-dist" share)))
-         (alist-cons-after
-          'patch-source-shebangs 'texmf-config
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (share (string-append out "/share"))
-                   (texmfroot (string-append share "/texmf-dist/web2c"))
-                   (texmfcnf (string-append texmfroot "/texmf.cnf"))
-                   (texlive-bin (assoc-ref inputs "texlive-bin"))
-                   (texbin (string-append texlive-bin "/bin"))
-                   (tlpkg (string-append texlive-bin "/share/tlpkg")))
-              ;; Register SHARE as TEXMFROOT in texmf.cnf.
-              (substitute* texmfcnf
-                (("TEXMFROOT = \\$SELFAUTOPARENT")
-                (string-append "TEXMFROOT = " share)))
-              ;; Register paths in texmfcnf.lua, needed for context.
-              (substitute* (string-append texmfroot "/texmfcnf.lua")
-                (("selfautodir:") out)
-                (("selfautoparent:") (string-append share "/")))
-              ;; Set path to TeXLive Perl modules
-              (setenv "PERL5LIB"
-                      (string-append (getenv "PERL5LIB") ":" tlpkg))
-              ;; Configure the texmf-dist tree; inspired from
-              ;; http://slackbuilds.org/repository/13.37/office/texlive/
-              (setenv "PATH" (string-append (getenv "PATH") ":" texbin))
-              (setenv "TEXMFCNF" texmfroot)
-              (system* "updmap-sys" "--nohash" "--syncwithtrees")
-              (system* "mktexlsr")
-              (system* "fmtutil-sys" "--all")))
-          (map (cut assq <> %standard-phases)
-               '(set-paths unpack patch-source-shebangs))))))
+        (modify-phases (map (cut assq <> %standard-phases)
+                            '(set-paths unpack patch-source-shebangs))
+          (add-after 'patch-source-shebangs 'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((share (string-append (assoc-ref outputs "out") "/share")))
+                (mkdir-p share)
+                (system* "mv" "texmf-dist" share))))
+          (add-after 'install 'texmf-config
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (share (string-append out "/share"))
+                     (texmfroot (string-append share "/texmf-dist/web2c"))
+                     (texmfcnf (string-append texmfroot "/texmf.cnf"))
+                     (texlive-bin (assoc-ref inputs "texlive-bin"))
+                     (texbin (string-append texlive-bin "/bin"))
+                     (tlpkg (string-append texlive-bin "/share/tlpkg")))
+                ;; Register SHARE as TEXMFROOT in texmf.cnf.
+                (substitute* texmfcnf
+                  (("TEXMFROOT = \\$SELFAUTOPARENT")
+                  (string-append "TEXMFROOT = " share)))
+                ;; Register paths in texmfcnf.lua, needed for context.
+                (substitute* (string-append texmfroot "/texmfcnf.lua")
+                  (("selfautodir:") out)
+                  (("selfautoparent:") (string-append share "/")))
+                ;; Set path to TeXLive Perl modules
+                (setenv "PERL5LIB"
+                        (string-append (getenv "PERL5LIB") ":" tlpkg))
+                ;; Configure the texmf-dist tree; inspired from
+                ;; http://slackbuilds.org/repository/13.37/office/texlive/
+                (setenv "PATH" (string-append (getenv "PATH") ":" texbin))
+                (setenv "TEXMFCNF" texmfroot)
+                (system* "updmap-sys" "--nohash" "--syncwithtrees")
+                (system* "mktexlsr")
+                (system* "fmtutil-sys" "--all")))))))
    (synopsis "TeX Live, a package of the TeX typesetting system")
    (description
     "TeX Live provides a comprehensive TeX document production system.
