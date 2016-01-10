@@ -61,22 +61,22 @@
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
-       (alist-cons-before
-        'configure 'replace-bin-sh
-        (lambda _
-          (substitute* '("Makefile.in"
-                         "ext/pty/pty.c"
-                         "io.c"
-                         "lib/mkmf.rb"
-                         "process.c"
-                         "test/rubygems/test_gem_ext_configure_builder.rb"
-                         "test/rdoc/test_rdoc_parser.rb"
-                         "test/ruby/test_rubyoptions.rb"
-                         "test/ruby/test_process.rb"
-                         "test/ruby/test_system.rb"
-                         "tool/rbinstall.rb")
-            (("/bin/sh") (which "sh"))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'replace-bin-sh
+           (lambda _
+             (substitute* '("Makefile.in"
+                            "ext/pty/pty.c"
+                            "io.c"
+                            "lib/mkmf.rb"
+                            "process.c"
+                            "test/rubygems/test_gem_ext_configure_builder.rb"
+                            "test/rdoc/test_rdoc_parser.rb"
+                            "test/ruby/test_rubyoptions.rb"
+                            "test/ruby/test_process.rb"
+                            "test/ruby/test_system.rb"
+                            "tool/rbinstall.rb")
+               (("/bin/sh") (which "sh")))
+             #t)))))
     (inputs
      `(("readline" ,readline)
        ("openssl" ,openssl)
