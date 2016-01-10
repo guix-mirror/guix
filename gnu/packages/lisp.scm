@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -215,12 +216,15 @@ an interpreter, a compiler, a debugger, and much more.")
        (sha256
         (base32 "0ab9lw056yf6y0rjmx3iirn5n59pmssqxf00fbmpyl6qsnpaja1d"))))
     (build-system gnu-build-system)
+    (outputs '("out" "doc"))
     ;; Bootstrap with CLISP.
     (native-inputs
      `(("clisp" ,clisp)
        ("which" ,which)
        ("inetutils" ,inetutils)         ;for hostname(1)
-       ("ed" ,ed)))
+       ("ed" ,ed)
+       ("texlive" ,texlive)
+       ("texinfo" ,texinfo)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -275,7 +279,24 @@ an interpreter, a compiler, a debugger, and much more.")
                                             (assoc-ref outputs "out"))))))
          (replace 'install
            (lambda _
-             (zero? (system* "sh" "install.sh")))))
+             (zero? (system* "sh" "install.sh"))))
+         (add-after 'build 'build-doc
+           (lambda _
+             (with-directory-excursion "doc/manual"
+               (and  (zero? (system* "make" "info"))
+                     (zero? (system* "make" "dist"))))))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (assoc-ref outputs "doc"))
+                    (old-doc-dir (string-append out "/share/doc"))
+                    (new-doc/sbcl-dir (string-append doc "/share/doc/sbcl")))
+               (rmdir (string-append old-doc-dir "/sbcl/html"))
+               (mkdir-p new-doc/sbcl-dir)
+               (copy-recursively (string-append old-doc-dir "/sbcl")
+                                 new-doc/sbcl-dir)
+               (delete-file-recursively old-doc-dir)
+               #t))))
          ;; No 'check' target, though "make.sh" (build phase) runs tests.
          #:tests? #f))
     (home-page "http://www.sbcl.org/")
