@@ -224,25 +224,25 @@ computational cluster.")
     (arguments
      '(#:test-target "test"
        #:phases
-       (alist-cons-after
-        'unpack 'patch-makefile-SHELL-definition
-        (lambda _
-          ;; patch-makefile-SHELL cannot be used here as it does not
-          ;; yet patch definitions with `:='.  Since changes to
-          ;; patch-makefile-SHELL result in a full rebuild, features
-          ;; of patch-makefile-SHELL are reimplemented here.
-          (substitute* "Makefile"
-            (("^SHELL := .*$") (string-append "SHELL := " (which "bash") " -e \n"))))
-        (alist-delete
-         'configure
-         (alist-replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-              (for-each (lambda (file)
-                          (install-file file bin))
-                        (find-files "bin" ".*"))))
-          %standard-phases)))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-makefile-SHELL-definition
+           (lambda _
+             ;; patch-makefile-SHELL cannot be used here as it does not
+             ;; yet patch definitions with `:='.  Since changes to
+             ;; patch-makefile-SHELL result in a full rebuild, features
+             ;; of patch-makefile-SHELL are reimplemented here.
+             (substitute* "Makefile"
+               (("^SHELL := .*$")
+                (string-append "SHELL := " (which "bash") " -e \n")))
+             #t))
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+               (for-each (lambda (file)
+                           (install-file file bin))
+                         (find-files "bin" ".*")))
+             #t)))))
     (home-page "https://github.com/arq5x/bedtools2")
     (synopsis "Tools for genome analysis and arithmetic")
     (description
