@@ -659,6 +659,16 @@ Laurens Hammond and Don Leslie.")
                (base32
                 "1fi2m4gmvxdi260821y09lxsimq82yv4k5bbgk3kyc3x1nyhn7vx"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-sse-flags
+           (lambda* (#:key system #:allow-other-keys)
+             (when (not (or (string-prefix? "x86_64" system)
+                            (string-prefix? "i686" system)))
+               (substitute* "bristol/Makefile.in"
+                 (("-msse -mfpmath=sse") "")))
+             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
