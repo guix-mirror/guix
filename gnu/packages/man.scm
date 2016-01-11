@@ -3,7 +3,7 @@
 ;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -129,15 +129,20 @@ the traditional flat-text whatis databases.")
 (define-public man-pages
   (package
     (name "man-pages")
-    (version "3.82")
+    (version "4.04")
     (source (origin
               (method url-fetch)
-              (uri (string-append
+              (uri
+                (list
+                  (string-append
                     "mirror://kernel.org/linux/docs/man-pages/man-pages-"
-                    version ".tar.xz"))
+                    version ".tar.xz")
+                  (string-append
+                    "mirror://kernel.org/linux/docs/man-pages/Archive/"
+                    "man-pages-" version ".tar.xz")))
               (sha256
                (base32
-                "1c8q618shf469nfp55qrwjv9630fgq5abfk946xya9hw1bfp6wjl"))))
+                "0v8zxq4scfixy3pjpw9ankvv5v8frv62khv4xm1jpkswyq6rbqcg"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-delete 'configure %standard-phases)
