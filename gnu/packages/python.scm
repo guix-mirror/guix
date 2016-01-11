@@ -2182,6 +2182,18 @@ compatible install in a way that is very close to the on-disk format.")
 than Python’s urllib2 library.")
     (license asl2.0)))
 
+;; Some software requires an older version of Requests, notably Docker
+;; Compose.
+(define-public python-requests-2.7
+  (package (inherit python-requests)
+    (version "2.7.0")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "requests" version))
+             (sha256
+              (base32
+               "0gdr9dxm24amxpbyqpbh3lbwxc2i42hnqv50sigx568qssv3v2ir"))))))
+
 (define-public python2-requests
   (package-with-python2 python-requests))
 
