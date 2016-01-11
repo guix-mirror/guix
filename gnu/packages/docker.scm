@@ -71,3 +71,37 @@ management tool.")
 pseudo-terminal (PTY) allocated to a Docker container using the Python
 client.")
     (license license:asl2.0)))
+
+(define-public docker-compose
+  (package
+    (name "docker-compose")
+    (version "1.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "docker-compose" version))
+       (sha256
+        (base32
+         "0ksg7hm2yvc977968dixxisrhcmvskzpcx3pz0v1kazrdqp7xakr"))))
+    (build-system python-build-system)
+    ;; TODO: Tests require running Docker daemon.
+    (arguments '(#:tests? #f))
+    (inputs
+     `(("python-docker-py" ,python-docker-py)
+       ("python-dockerpty" ,python-dockerpty)
+       ("python-docopt" ,python-docopt)
+       ("python-enum34" ,python-enum34)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-requests" ,python-requests-2.7)
+       ("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)
+       ("python-texttable" ,python-texttable)
+       ("python-websocket-client" ,python-websocket-client)))
+    (home-page "https://www.docker.com/")
+    (synopsis "Multi-container orchestration for Docker")
+    (description "Docker Compose is a tool for defining and running
+multi-container Docker applications.  A Compose file is used to configure an
+application’s services.  Then, using a single command, the containers are
+created and all the services are started as specified in the configuration.")
+    (license license:asl2.0)))
