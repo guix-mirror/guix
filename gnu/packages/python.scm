@@ -6679,3 +6679,30 @@ tables.")
 
 (define-public python2-texttable
   (package-with-python2 python-texttable))
+
+(define-public python-websocket-client
+  (package
+    (name "python-websocket-client")
+    (version "0.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/w"
+                           "/websocket-client/websocket_client-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1prdx6d49f1cff17kzj15bnz09palfdgc1m5dkq9jd4mr90n4ak8"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-six" ,python-six))) ; for tests
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/liris/websocket-client")
+    (synopsis "WebSocket client for Python")
+    (description "The Websocket-client module provides the low level APIs for
+WebSocket usage in Python programs.")
+    (license lgpl2.1+)))
+
+(define-public python2-websocket-client
+  (package-with-python2 python-websocket-client))
