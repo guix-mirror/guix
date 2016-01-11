@@ -2224,7 +2224,7 @@ version numbers.")
 (define-public python-jsonschema
   (package
     (name "python-jsonschema")
-    (version "2.4.0")
+    (version "2.5.1")
     (source (origin
              (method url-fetch)
              (uri
@@ -2233,10 +2233,11 @@ version numbers.")
                version ".tar.gz"))
              (sha256
               (base32
-               "1yik3031ziygvq66rj3mzfqdgxj29sg1bkfc46wsgi7lnbqs560j"))))
+               "0hddbqjm4jq63y8jf44nswina1crjs16l9snb6m3vvgyg31klrrn"))))
     (build-system python-build-system)
     (inputs
-     `(("python-setuptools" ,python-setuptools)))
+     `(("python-setuptools" ,python-setuptools)
+       ("python-vcversioner" ,python-vcversioner)))
     (home-page "http://github.com/Julian/jsonschema")
     (synopsis "Implementation of JSON Schema for Python")
     (description
