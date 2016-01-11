@@ -50,3 +50,24 @@
     (description "Docker-Py is a Python client for the Docker container
 management tool.")
     (license license:asl2.0)))
+
+(define-public python-dockerpty
+  (package
+    (name "python-dockerpty")
+    (version "0.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "dockerpty" version))
+       (sha256
+        (base32
+         "0za6rr349641wv76ww9l3zcic2xyxrirlxpnzl4296h897648455"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/d11wtq/dockerpty")
+    (synopsis "Python library to use the pseudo-TTY of a Docker container")
+    (description "Docker PTY provides the functionality needed to operate the
+pseudo-terminal (PTY) allocated to a Docker container using the Python
+client.")
+    (license license:asl2.0)))
