@@ -6657,3 +6657,25 @@ the standard library.")
 
 (define-public python2-contextlib2
   (package-with-python2 python-contextlib2))
+
+(define-public python-texttable
+  (package
+    (name "python-texttable")
+    (version "0.8.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "texttable" version))
+       (sha256
+        (base32
+         "0bkhs4dx9s6g7fpb969hygq56hyz4ncfamlynw72s0n6nqfbd1w5"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; no tests
+    (home-page "https://github.com/foutaise/texttable/")
+    (synopsis "Python module for creating simple ASCII tables")
+    (description "Texttable is a Python module for creating simple ASCII
+tables.")
+    (license lgpl2.1+)))
+
+(define-public python2-texttable
+  (package-with-python2 python-texttable))
