@@ -105,11 +105,12 @@ may be either a libc package or #f.)"
                                "--disable-libcilkrts")
                              `( ;; Disable features not needed at this stage.
                                "--disable-shared" "--enable-static"
+                               "--enable-languages=c,c++"
 
-                               ;; Disable C++ because libstdc++'s configure
-                               ;; script otherwise fails with "Link tests are not
-                               ;; allowed after GCC_NO_EXECUTABLES."
-                               "--enable-languages=c"
+                               ;; libstdc++ cannot be built at this stage
+                               ;; ("Link tests are not allowed after
+                               ;; GCC_NO_EXECUTABLES.").
+                               "--disable-libstdc++-v3"
 
                                "--disable-threads" ;libgcc, would need libc
                                "--disable-libatomic"
