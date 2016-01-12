@@ -2556,7 +2556,7 @@ by the @code{#:configure-flags} argument.
 
 @item build
 Run @code{make} with the list of flags specified with
-@code{#:make-flags}.  If the @code{#:parallel-builds?} argument is true
+@code{#:make-flags}.  If the @code{#:parallel-build?} argument is true
 (the default), build with @code{make -j}.
 
 @item check
