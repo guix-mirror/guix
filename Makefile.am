@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 # Copyright © 2015 Alex Kost <alezost@gmail.com>
 #
@@ -135,6 +135,18 @@ MODULES =					\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
 
+if HAVE_GUILE_JSON
+
+MODULES +=					\
+  guix/import/json.scm				\
+  guix/import/pypi.scm				\
+  guix/scripts/import/pypi.scm			\
+  guix/import/cpan.scm				\
+  guix/scripts/import/gem.scm			\
+  guix/import/gem.scm
+
+endif
+
 if BUILD_SYSCALLS_MODULE
 
 MODULES +=					\
@@ -191,6 +203,11 @@ clean-go:
 	-$(RM) -f $(GOBJECTS)
 
 
+# Test extensions; has to be unconditional.
+TEST_EXTENSIONS = .scm .sh
+
+if CAN_RUN_TESTS
+
 SCM_TESTS =					\
   tests/base32.scm				\
   tests/base64.scm				\
@@ -233,14 +250,6 @@ SCM_TESTS =					\
 
 if HAVE_GUILE_JSON
 
-MODULES +=					\
-  guix/import/json.scm				\
-  guix/import/pypi.scm				\
-  guix/scripts/import/pypi.scm			\
-  guix/import/cpan.scm				\
-  guix/scripts/import/gem.scm			\
-  guix/import/gem.scm
-
 SCM_TESTS += 					\
   tests/pypi.scm				\
   tests/cpan.scm				\
@@ -272,8 +281,6 @@ endif BUILD_DAEMON
 
 TESTS = $(SCM_TESTS) $(SH_TESTS)
 
-TEST_EXTENSIONS = .scm .sh
-
 AM_TESTS_ENVIRONMENT = abs_top_srcdir="$(abs_top_srcdir)"
 
 SCM_LOG_COMPILER = $(top_builddir)/test-env $(GUILE)
@@ -288,6 +295,22 @@ AM_SH_LOG_FLAGS = -x -e
 tests/guix-gc.log:							\
   $(patsubst %.sh,%.log,$(filter-out tests/guix-gc.sh,$(SH_TESTS)))	\
   $(SCM_TESTS:%.scm=%.log)
+
+else !CAN_RUN_TESTS
+
+TESTS =
+SH_TESTS =
+SCM_TESTS =
+
+# Automake always generates a 'check' target, so better not override it.
+check-local:
+	@echo
+	@echo "Cannot run tests because file name limits would be exceeded." >&2
+	@echo "Look for 'length' in the 'config.log' file for details." >&2
+	@echo
+	@exit 1
+
+endif !CAN_RUN_TESTS
 
 # Public key used to sign substitutes from hydra.gnu.org.
 dist_pkgdata_DATA = hydra.gnu.org.pub

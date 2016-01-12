@@ -215,7 +215,8 @@ AC_DEFUN([GUIX_TEST_HASH_BANG_LENGTH], [
 dnl GUIX_CHECK_FILE_NAME_LIMITS
 dnl
 dnl GNU/Linux has a couple of silly limits that we can easily run into.
-dnl Make sure everything is fine with the current settings.
+dnl Make sure everything is fine with the current settings.  Set $1 to
+dnl 'yes' if tests can run, 'no' otherwise.
 AC_DEFUN([GUIX_CHECK_FILE_NAME_LIMITS], [
   AC_REQUIRE([GUIX_SOCKET_FILE_NAME_LENGTH])
   AC_REQUIRE([GUIX_TEST_SOCKET_FILE_NAME_LENGTH])
@@ -228,10 +229,14 @@ AC_DEFUN([GUIX_CHECK_FILE_NAME_LIMITS], [
   if test "$ac_cv_guix_test_socket_file_name_length" -ge ]SOCKET_FILE_NAME_LIMIT[; then
     AC_MSG_WARN([socket file name limit may be exceeded when running tests])
   fi
+
+  $1=yes
   if test "$ac_cv_guix_hash_bang_length" -ge ]LINUX_HASH_BANG_LIMIT[; then
+    $1=no
     AC_MSG_ERROR([store directory '$storedir' would lead to overly long hash-bang lines])
   fi
   if test "$ac_cv_guix_test_hash_bang_length" -ge ]LINUX_HASH_BANG_LIMIT[; then
+    $1=no
     AC_MSG_WARN([test directory '$ac_cv_guix_test_root' may lead to overly long hash-bang lines])
   fi
 ])
