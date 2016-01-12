@@ -998,6 +998,10 @@ consecutive build results are not bit-for-bit identical.  Note that this
 setting can be overridden by clients such as @command{guix build}
 (@pxref{Invoking guix build}).
 
+When used in conjunction with @option{--keep-failed}, the differing
+output is kept in the store, under @file{/gnu/store/@dots{}-check}.
+This makes it easy to look for differences between the two results.
+
 @item --debug
 Produce debugging output.
 
