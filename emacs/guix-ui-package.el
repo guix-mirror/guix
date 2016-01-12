@@ -939,6 +939,17 @@ Interactively with prefix, prompt for PROFILE."
                             (or params guix-package-search-params)))
 
 ;;;###autoload
+(defun guix-search-by-name (regexp &optional profile)
+  "Search for Guix packages matching REGEXP in a package name.
+If PROFILE is nil, use `guix-current-profile'.
+Interactively with prefix, prompt for PROFILE."
+  (interactive
+   (list (read-string "Package name by regexp: "
+                      nil 'guix-package-search-history)
+         (guix-ui-read-profile)))
+  (guix-search-by-regexp regexp '(name) profile))
+
+;;;###autoload
 (defun guix-installed-packages (&optional profile)
   "Display information about installed Guix packages.
 If PROFILE is nil, use `guix-current-profile'.
