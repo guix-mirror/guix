@@ -192,6 +192,7 @@ to be modified."
 (guix-command-define-argument-improver
     guix-command-improve-build-argument
   '(("--no-grafts"   :char ?g)
+    ("--file"        :fun guix-read-file-name)
     ("--root"        :fun guix-read-file-name)
     ("--sources"     :char ?S :fun guix-read-source-type :switch? nil)
     ("--with-source" :fun guix-read-file-name)))
