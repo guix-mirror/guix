@@ -262,7 +262,8 @@ INPUT is the current partially completed string."
         (complete (guix-pcomplete-all-packages)))
        ((option? "-p" "--profile")
         (complete* (pcomplete-dirs)))
-       ((option? "-m" "--manifest")
+       ((or (option? "-f" "--install-from-file")
+            (option? "-m" "--manifest"))
         (complete* (pcomplete-entries)))))
 
      ((and (command? "archive" "build" "size")
@@ -270,7 +271,9 @@ INPUT is the current partially completed string."
       (complete* guix-help-system-types))
 
      ((and (command? "build")
-           (option? "-r" "--root"))
+           (or (option? "-f" "--file")
+               (option? "-r" "--root")
+               (string= "--with-source" option)))
       (complete* (pcomplete-entries)))
 
      ((and (command? "graph")
