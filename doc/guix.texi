@@ -4332,6 +4332,10 @@ substitutes are genuine (@pxref{Substitutes}), or whether the build result
 of a package is deterministic.  @xref{Invoking guix challenge}, for more
 background information and tools.
 
+When used in conjunction with @option{--keep-failed}, the differing
+output is kept in the store, under @file{/gnu/store/@dots{}-check}.
+This makes it easy to look for differences between the two results.
+
 @item --derivations
 @itemx -d
 Return the derivation paths, not the output paths, of the given
