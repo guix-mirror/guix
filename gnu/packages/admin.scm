@@ -700,7 +700,8 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0263gi6i19fyzzc488n0qw3m518i39f6a7qmrfvahk9j10bkh5j3"))))
+                "0263gi6i19fyzzc488n0qw3m518i39f6a7qmrfvahk9j10bkh5j3"))
+              (patches (list (search-patch "sudo-CVE-2015-5602.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
