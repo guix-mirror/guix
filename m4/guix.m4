@@ -1,5 +1,5 @@
 dnl GNU Guix --- Functional package management for GNU
-dnl Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+dnl Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 dnl Copyright © 2014 Mark H Weaver <mhw@netris.org>
 dnl
 dnl This file is part of GNU Guix.
@@ -204,6 +204,14 @@ AC_DEFUN([GUIX_HASH_BANG_LENGTH], [
     [ac_cv_guix_hash_bang_length=`echo -n "$storedir/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bootstrap-binaries-0/bin/bash" | wc -c`])
 ])
 
+dnl GUIX_TEST_HASH_BANG_LENGTH
+AC_DEFUN([GUIX_TEST_HASH_BANG_LENGTH], [
+  AC_REQUIRE([GUIX_TEST_ROOT_DIRECTORY])
+  AC_CACHE_CHECK([the length of a hash bang line used in tests],
+    [ac_cv_guix_test_hash_bang_length],
+    [ac_cv_guix_test_hash_bang_length=`echo -n "$ac_cv_guix_test_root/store/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bootstrap-binaries-0/bin/bash" | wc -c`])
+])
+
 dnl GUIX_CHECK_FILE_NAME_LIMITS
 dnl
 dnl GNU/Linux has a couple of silly limits that we can easily run into.
@@ -212,6 +220,7 @@ AC_DEFUN([GUIX_CHECK_FILE_NAME_LIMITS], [
   AC_REQUIRE([GUIX_SOCKET_FILE_NAME_LENGTH])
   AC_REQUIRE([GUIX_TEST_SOCKET_FILE_NAME_LENGTH])
   AC_REQUIRE([GUIX_HASH_BANG_LENGTH])
+  AC_REQUIRE([GUIX_TEST_HASH_BANG_LENGTH])
 
   if test "$ac_cv_guix_socket_file_name_length" -ge ]SOCKET_FILE_NAME_LIMIT[; then
     AC_MSG_ERROR([socket file name would exceed the maxium allowed length])
@@ -221,6 +230,9 @@ AC_DEFUN([GUIX_CHECK_FILE_NAME_LIMITS], [
   fi
   if test "$ac_cv_guix_hash_bang_length" -ge ]LINUX_HASH_BANG_LIMIT[; then
     AC_MSG_ERROR([store directory '$storedir' would lead to overly long hash-bang lines])
+  fi
+  if test "$ac_cv_guix_test_hash_bang_length" -ge ]LINUX_HASH_BANG_LIMIT[; then
+    AC_MSG_WARN([test directory '$ac_cv_guix_test_root' may lead to overly long hash-bang lines])
   fi
 ])
 
