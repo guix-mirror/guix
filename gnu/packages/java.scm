@@ -277,7 +277,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
         (lambda* (#:key source inputs #:allow-other-keys)
           (and (zero? (system* "tar" "xvf" source))
                (begin
-                 (chdir (string-append ,name "-" ,version))
+                 (chdir (string-append "icedtea6-" ,version))
                  (mkdir "openjdk.src")
                  (with-directory-excursion "openjdk.src"
                    (copy-file (assoc-ref inputs "openjdk6-src")
