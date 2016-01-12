@@ -1,7 +1,7 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
-# Copyright © 2013, 2014, 2015 Mark H Weaver <mhw@netris.org>
+# Copyright © 2013, 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 #
 # This file is part of GNU Guix.
 #
@@ -612,6 +612,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/patchelf-rework-for-arm.patch		\
   gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   gnu/packages/patches/patch-hurd-path-max.patch		\
+  gnu/packages/patches/perl-CVE-2015-8607.patch			\
   gnu/packages/patches/perl-autosplit-default-time.patch	\
   gnu/packages/patches/perl-deterministic-ordering.patch	\
   gnu/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \

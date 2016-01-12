@@ -51,7 +51,8 @@
                              "perl-autosplit-default-time.patch"
                              "perl-source-date-epoch.patch"
                              "perl-deterministic-ordering.patch"
-                             "perl-no-build-time.patch")))))
+                             "perl-no-build-time.patch"
+                             "perl-CVE-2015-8607.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
