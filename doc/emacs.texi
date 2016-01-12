@@ -155,7 +155,7 @@ Display all installed packages.
 Display obsolete packages (the packages that are installed in a profile
 but cannot be found among available packages).
 
-@item M-x guix-search-by-name
+@item M-x guix-packages-by-name
 Display package(s) with the specified name.
 
 @item M-x guix-search-by-regexp

@@ -912,15 +912,15 @@ See `guix-package-info-type'."
   "A history of minibuffer prompts.")
 
 ;;;###autoload
-(defun guix-search-by-name (name &optional profile)
-  "Search for Guix packages by NAME.
+(defun guix-packages-by-name (name &optional profile)
+  "Display Guix packages with NAME.
 NAME is a string with name specification.  It may optionally contain
 a version number.  Examples: \"guile\", \"guile-2.0.11\".
 
 If PROFILE is nil, use `guix-current-profile'.
 Interactively with prefix, prompt for PROFILE."
   (interactive
-   (list (read-string "Package name: " nil 'guix-package-search-history)
+   (list (guix-read-package-name)
          (guix-ui-read-profile)))
   (guix-package-get-display profile 'name name))
 
