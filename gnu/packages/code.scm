@@ -111,18 +111,17 @@ highlighting your own code that seemed comprehensible when you wrote it.")
              (string-append "--with-sqlite3="
                             (assoc-ref %build-inputs "sqlite")))
 
-       #:phases (alist-cons-after
-                 'install 'post-install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Install the Emacs Lisp file in the right place.
-                   (let* ((out  (assoc-ref outputs "out"))
-                          (data (string-append out "/share/gtags"))
-                          (lisp (string-append out "/share/emacs/site-lisp")))
-                     (install-file (string-append data "/gtags.el")
-                                   lisp)
-                     (delete-file (string-append data "/gtags.el"))
-                     #t))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+        (add-after 'install 'post-install
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Install the Emacs Lisp file in the right place.
+            (let* ((out  (assoc-ref outputs "out"))
+                   (data (string-append out "/share/gtags"))
+                   (lisp (string-append out "/share/emacs/site-lisp")))
+              (install-file (string-append data "/gtags.el") lisp)
+              (delete-file (string-append data "/gtags.el"))
+              #t))))))
     (home-page "http://www.gnu.org/software/global/")
     (synopsis "Cross-environment source code tag system")
     (description
