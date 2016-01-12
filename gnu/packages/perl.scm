@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
+;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,14 +38,14 @@
   ;; Yeah, Perl...  It is required early in the bootstrap process by Linux.
   (package
     (name "perl")
-    (version "5.22.0")
+    (version "5.22.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.cpan.org/src/5.0/perl-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0g5bl8sdpzx9gx2g5jq3py4bj07z2ylk7s1qn0fvsss2yl3hhs8c"))
+               "09wg24w5syyafyv87l6z8pxwz4bjgcdj996bx5844k6m9445sirb"))
              (patches (map search-patch
                            '("perl-no-sys-dirs.patch"
                              "perl-autosplit-default-time.patch"
