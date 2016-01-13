@@ -6962,3 +6962,25 @@ files for use with Python.")
 Blog, News or Announcements section to a Sphinx website.")
     (home-page "https://bitbucket.org/prometheus/sphinxcontrib-newsfeed")
     (license bsd-2)))
+
+(define-public python-args
+  (package
+    (name "python-args")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "args" version))
+              (sha256
+               (base32
+                "057qzi46h5dmxdqknsbrssn78lmqjlnm624iqdhrnpk26zcbi1d7"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/kennethreitz/args")
+    (synopsis "Command-line argument parser")
+    (description
+     "This library provides a Python module to parse command-line arguments.")
+    (license bsd-3)))
+
+(define-public python2-args
+  (package-with-python2 python-args))
