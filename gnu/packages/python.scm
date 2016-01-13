@@ -6984,3 +6984,28 @@ Blog, News or Announcements section to a Sphinx website.")
 
 (define-public python2-args
   (package-with-python2 python-args))
+
+(define-public python-clint
+  (package
+    (name "python-clint")
+    (version "0.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "clint" version))
+              (sha256
+               (base32
+                "1an5lkkqk1zha47198p42ji3m94xmzx1a03dn7866m87n4r4q8h5"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-args" ,python-args)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/kennethreitz/clint")
+    (synopsis "Command-line interface tools")
+    (description
+     "Clint is a Python module filled with a set of tools for developing
+command-line applications, including tools for colored and indented
+output, progress bar display, and pipes.")
+    (license isc)))
+
+(define-public python2-clint
+  (package-with-python2 python-clint))
