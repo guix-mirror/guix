@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -593,7 +593,16 @@ Common Platform Enumeration (CPE) name."
 
 (define package-vulnerabilities
   (let ((lookup (delay (vulnerabilities->lookup-proc
-                        (current-vulnerabilities)))))
+                        ;; Catch networking errors to allow network-less
+                        ;; operation.
+                        (catch 'getaddrinfo-error
+                          (lambda ()
+                            (current-vulnerabilities))
+                          (lambda (key errcode)
+                            (warn (_ "failed to lookup NIST host: ~a~%")
+                                  (gai-strerror errcode))
+                            (warn (_ "assuming no CVE vulnerabilities~%"))
+                            '()))))))
     (lambda (package)
       "Return a list of vulnerabilities affecting PACKAGE."
       ((force lookup)

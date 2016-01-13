@@ -320,7 +320,8 @@ tools (analyzer, mono/stereo tools, crossovers).")
                     version "/Csound" version ".tar.gz"))
               (sha256
                (base32
-                "0a1sni6lr7qpwywpggbkp0ia3h9bwwgf9i87gsag8ra2h30v82hd"))))
+                "0a1sni6lr7qpwywpggbkp0ia3h9bwwgf9i87gsag8ra2h30v82hd"))
+              (patches (list (search-patch "csound-header-ordering.patch")))))
     (build-system cmake-build-system)
     (arguments
      ;; Work around this error on x86_64 with libc 2.22+:
@@ -1081,7 +1082,16 @@ software.")
        #:configure-flags
        (list (string-append "--boost-includes="
                             (assoc-ref %build-inputs "boost")
-                            "/include"))))
+                            "/include"))
+       #:phases (modify-phases %standard-phases
+                  (add-before
+                   'configure 'set-flags
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     ;; See e.g. https://github.com/lvtk/lvtk/issues/21
+                     (setenv "LDFLAGS"
+                             (string-append
+                              "-L" (assoc-ref inputs "boost") "/lib "
+                              "-lboost_system")))))))
     (inputs
      `(("boost" ,boost)
        ("lv2" ,lv2)))
@@ -1839,6 +1849,11 @@ result.")
                     "http://kokkinizita.linuxaudio.org"
                     "/linuxaudio/downloads/zita-convolver-"
                     version ".tar.bz2"))
+              (snippet
+               ;; Don't optimize for a specific processor architecture.
+               '(substitute* "libs/Makefile"
+                  (("^CXXFLAGS \\+= -march=native") "")))
+              (modules '((guix build utils)))
               (sha256
                (base32
                 "14qrnczhp5mbwhky64il7kxc4hl1mmh495v60va7i2qnhasr6zmz"))))
@@ -1881,6 +1896,11 @@ engine.")
                     "http://kokkinizita.linuxaudio.org"
                     "/linuxaudio/downloads/zita-resampler-"
                     version ".tar.bz2"))
+              (snippet
+               ;; Don't optimize for a specific processor architecture.
+               '(substitute* '("apps/Makefile" "libs/Makefile")
+                  (("^CXXFLAGS \\+= -march=native") "")))
+              (modules '((guix build utils)))
               (sha256
                (base32
                 "0r9ary5sc3y8vba5pad581ha7mgsrlyai83w7w4x2fmhfy64q0wq"))))

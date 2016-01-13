@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2012, 2015 Free Software Foundation, Inc.
 ;;;
@@ -188,13 +188,33 @@ closes PORT, unless KEEP-ALIVE? is true."
 
    (make-custom-binary-input-port "delimited input port" read! #f #f close))
 
+ (define (read-header-line port)
+   "Read an HTTP header line and return it without its final CRLF or LF.
+Raise a 'bad-header' exception if the line does not end in CRLF or LF,
+or if EOF is reached."
+   (match (%read-line port)
+     (((? string? line) . #\newline)
+      ;; '%read-line' does not consider #\return a delimiter; so if it's
+      ;; there, remove it.  We are more tolerant than the RFC in that we
+      ;; tolerate LF-only endings.
+      (if (string-suffix? "\r" line)
+          (string-drop-right line 1)
+          line))
+     ((line . _)                                ;EOF or missing delimiter
+      ((@@ (web http) bad-header) 'read-header-line line))))
+
  (unless (guile-version>? "2.0.11")
    ;; Guile <= 2.0.9 had a bug whereby 'response-body-port' would read more
    ;; than what 'content-length' says.  See Guile commit 802a25b.
-   ;; Guile <= 2.0.12 had a bug whereby the 'close' method of the response
+   ;; Guile <= 2.0.11 had a bug whereby the 'close' method of the response
    ;; body port would fail with wrong-arg-num.  See Guile commit 5a10e41.
    (module-set! (resolve-module '(web response))
-                'make-delimited-input-port make-delimited-input-port)))
+                'make-delimited-input-port make-delimited-input-port)
+
+   ;; Guile <= 2.0.11 was affected by <http://bugs.gnu.org/22273>.  See Guile
+   ;; commit 4c7732c.
+   (when (module-variable %web-http 'read-line*)
+     (module-set! %web-http 'read-line* read-header-line))))
 
 ;; XXX: Work around <http://bugs.gnu.org/13095>, present in Guile
 ;; up to 2.0.7.

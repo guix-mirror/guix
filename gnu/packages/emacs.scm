@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -74,14 +74,20 @@
                             (search-patch "emacs-source-date-epoch.patch")))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'fix-/bin/pwd
-                 (lambda _
-                   ;; Use `pwd', not `/bin/pwd'.
-                   (substitute* (find-files "." "^Makefile\\.in$")
-                     (("/bin/pwd")
-                      "pwd")))
-                 %standard-phases)))
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'fix-/bin/pwd
+                    (lambda _
+                      ;; Use `pwd', not `/bin/pwd'.
+                      (substitute* (find-files "." "^Makefile\\.in$")
+                        (("/bin/pwd")
+                         "pwd"))))
+                  (add-after 'install 'remove-info.info
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Remove 'info.info', which is provided by Texinfo.
+                      (let ((out (assoc-ref outputs "out")))
+                        (delete-file
+                         (string-append out "/share/info/info.info.gz"))
+                        #t))))))
     (inputs
      `(("gnutls" ,gnutls)
        ("ncurses" ,ncurses)
@@ -1006,6 +1012,27 @@ and stored in memory.")
     (home-page "https://github.com/magnars/dash.el")
     (synopsis "Modern list library for Emacs")
     (description "This package provides a modern list API library for Emacs.")
+    (license license:gpl3+)))
+
+(define-public emacs-undo-tree
+  (package
+    (name "emacs-undo-tree")
+    (version "0.6.4")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "http://dr-qubit.org/git/undo-tree.git")
+                    (commit "release/0.6.4")))
+              (file-name (string-append name "-" version "-checkout"))
+              (sha256
+                (base32
+                  "0b6hnv6bq1g5np5q2yw9r9aj1cxpp14akm21br7vpb7wp01fv4b3"))))
+    (build-system emacs-build-system)
+    (home-page "http://www.dr-qubit.org/emacs.php")
+    (synopsis "Treat undo history as a tree")
+    (description "Tree-like interface to Emacs undo system, providing
+graphical tree presentation of all previous states of buffer that
+allows easily move between them.")
     (license license:gpl3+)))
 
 (define-public emacs-s

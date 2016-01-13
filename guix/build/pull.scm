@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 threads)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -33,75 +35,10 @@
 ;;;
 ;;; Code:
 
-(define (call-with-process thunk)
-  "Run THUNK in a separate process that will return 0 if THUNK terminates
-normally, and 1 if an exception is raised."
-  (match (primitive-fork)
-    (0
-     (catch #t
-       (lambda ()
-         (thunk)
-         (primitive-exit 0))
-       (lambda (key . args)
-         (print-exception (current-error-port) #f key args)
-         (primitive-exit 1))))
-    (pid
-     #t)))
-
-(define* (report-build-progress total completed cont
-                                #:optional (log-port (current-error-port)))
-  "Report that COMPLETED out of TOTAL files have been completed, and call
-CONT."
-  (display #\cr log-port)
-  (format log-port "compiling...\t~5,1f% of ~d files" ;FIXME: i18n
-          (* 100. (/ completed total)) total)
-  (force-output log-port)
-  (cont))
-
-(define* (p-for-each proc lst
-                     #:optional (max-processes (current-processor-count))
-                     #:key (progress report-build-progress))
-  "Invoke PROC for each element of LST in a separate process, using up to
-MAX-PROCESSES processes in parallel.  Call PROGRESS at each step, passing it
-the continuation.  Raise an error if one of the processes exit with non-zero."
-  (define total
-    (length lst))
-
-  (define (wait-for-one-process)
-    (match (waitpid WAIT_ANY)
-      ((_ . status)
-       (unless (zero? (status:exit-val status))
-         (error "process failed" proc status)))))
-
-  (let loop ((lst       lst)
-             (running   0)
-             (completed 0))
-    (match lst
-      (()
-       (or (zero? running)
-           (let ((running   (- running 1))
-                 (completed (+ completed 1)))
-             (wait-for-one-process)
-             (progress total completed
-                       (lambda ()
-                         (loop lst running completed))))))
-      ((head . tail)
-       (if (< running max-processes)
-           (let ((running (+ 1 running)))
-             (call-with-process (cut proc head))
-             (progress total completed
-                       (lambda ()
-                         (loop tail running completed))))
-           (let ((running   (- running 1))
-                 (completed (+ completed 1)))
-             (wait-for-one-process)
-             (progress total completed
-                       (lambda ()
-                         (loop lst running completed)))))))))
-
 (define* (build-guix out source
                      #:key gcrypt
-                     (debug-port (%make-void-port "w")))
+                     (debug-port (%make-void-port "w"))
+                     (log-port (current-error-port)))
   "Build and install Guix in directory OUT using SOURCE, a directory
 containing the source code.  Write any debugging output to DEBUG-PORT."
   (setvbuf (current-output-port) _IOLBF)
@@ -130,33 +67,57 @@ containing the source code.  Write any debugging output to DEBUG-PORT."
     (set! %load-path (cons out %load-path))
     (set! %load-compiled-path (cons out %load-compiled-path))
 
-    ;; Compile the .scm files.  Do that in independent processes, à la
-    ;; 'make -j', to work around <http://bugs.gnu.org/15602> (FIXME).
-    ;; This ensures correctness, but is overly conservative and slow.
-    ;; The solution initially implemented (and described in the bug
-    ;; above) was slightly faster but consumed memory proportional to the
-    ;; number of modules, which quickly became unacceptable.
-    (p-for-each (lambda (file)
-                  (let ((go (string-append (string-drop-right file 4)
-                                           ".go")))
-                    (format debug-port "~%compiling '~a'...~%" file)
-                    (parameterize ((current-warning-port debug-port))
-                      (compile-file file
-                                    #:output-file go
-                                    #:opts
-                                    %auto-compilation-options))))
-
-                (filter (cut string-suffix? ".scm" <>)
-
-                        ;; Build guix/*.scm before gnu/*.scm to speed
-                        ;; things up.
-                        (sort (find-files out "\\.scm")
-                              (let ((guix (string-append out "/guix"))
-                                    (gnu  (string-append out "/gnu")))
-                                (lambda (a b)
-                                  (or (and (string-prefix? guix a)
-                                           (string-prefix? gnu b))
-                                      (string<? a b))))))))
+    ;; Compile the .scm files.  Load all the files before compiling them to
+    ;; work around <http://bugs.gnu.org/15602> (FIXME).
+    (let* ((files
+            ;; Load guix/ modules before gnu/ modules to get somewhat steadier
+            ;; progress reporting.
+            (sort (filter (cut string-suffix? ".scm" <>)
+                          (find-files out "\\.scm"))
+                  (let ((guix (string-append out "/guix"))
+                        (gnu  (string-append out "/gnu")))
+                    (lambda (a b)
+                      (or (and (string-prefix? guix a)
+                               (string-prefix? gnu  b))
+                          (string<? a b))))))
+           (total (length files)))
+      (let loop ((files files)
+                 (completed 0))
+        (match files
+          (() *unspecified*)
+          ((file . files)
+           (display #\cr log-port)
+           (format log-port "loading...\t~5,1f% of ~d files" ;FIXME: i18n
+                   (* 100. (/ completed total)) total)
+           (force-output log-port)
+           (format debug-port "~%loading '~a'...~%" file)
+           ;; Turn "<out>/foo/bar.scm" into (foo bar).
+           (let* ((relative-file (string-drop file (+ (string-length out) 1)))
+                  (module-path (string-drop-right relative-file 4))
+                  (module-name (map string->symbol
+                                    (string-split module-path #\/))))
+             (parameterize ((current-warning-port debug-port))
+               (resolve-interface module-name)))
+           (loop files (+ 1 completed)))))
+      (newline)
+      (let ((mutex (make-mutex))
+            (completed 0))
+        (par-for-each
+         (lambda (file)
+           (with-mutex mutex
+             (display #\cr log-port)
+             (format log-port "compiling...\t~5,1f% of ~d files" ;FIXME: i18n
+                     (* 100. (/ completed total)) total)
+             (force-output log-port)
+             (format debug-port "~%compiling '~a'...~%" file))
+           (let ((go (string-append (string-drop-right file 4) ".go")))
+             (parameterize ((current-warning-port (%make-void-port "w")))
+               (compile-file file
+                             #:output-file go
+                             #:opts %auto-compilation-options)))
+           (with-mutex mutex
+             (set! completed (+ 1 completed))))
+         files))))
 
   ;; Remove the "fake" (guix config).
   (delete-file (string-append out "/guix/config.scm"))

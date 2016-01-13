@@ -1,0 +1,90 @@
+This patch fixes a failing unit test by feeding buildNormalizedPath to the
+tzdata properly.  Three other tests are disabled, one assumes /root and the
+two others use networking.  Not bad out of almost 700 tests!
+
+by Pjotr Prins <pjotr.guix@thebird.nl>
+
+diff --git a/std/datetime.d b/std/datetime.d
+index 8e4ed3b..6c15bc5 100644
+--- a/std/datetime.d
++++ b/std/datetime.d
+@@ -28018,6 +28018,7 @@ public:
+             The default directory where the TZ Database files are. It's empty
+             for Windows, since Windows doesn't have them.
+           +/
++          
+         enum defaultTZDatabaseDir = "/usr/share/zoneinfo/";
+     }
+     else version(Windows)
+@@ -28069,14 +28070,13 @@ assert(tz.dstName == "PDT");
+         import std.range : retro;
+         import std.format : format;
+ 
+-        name = strip(name);
+-
+         enforce(tzDatabaseDir.exists(), new DateTimeException(format("Directory %s does not exist.", tzDatabaseDir)));
+         enforce(tzDatabaseDir.isDir, new DateTimeException(format("%s is not a directory.", tzDatabaseDir)));
+ 
+-        immutable file = buildNormalizedPath(tzDatabaseDir, name);
++        auto filename = "./" ~ strip(name); // make sure the prefix is not stripped
++        immutable file = buildNormalizedPath(tzDatabaseDir, filename);
+ 
+-        enforce(file.exists(), new DateTimeException(format("File %s does not exist.", file)));
++        enforce(file.exists(), new DateTimeException(format("File %s does not exist in %s.", file, tzDatabaseDir)));
+         enforce(file.isFile, new DateTimeException(format("%s is not a file.", file)));
+ 
+         auto tzFile = File(file);
+diff --git a/std/path.d b/std/path.d
+index 254d8f0..b0fc04d 100644
+--- a/std/path.d
++++ b/std/path.d
+@@ -3080,8 +3080,11 @@ unittest
+         }
+         else
+         {
++            pragma(msg, "test disabled on GNU Guix");
++/*
+             assert(expandTilde("~root") == "/root", expandTilde("~root"));
+             assert(expandTilde("~root/") == "/root/", expandTilde("~root/"));
++*/
+         }
+         assert(expandTilde("~Idontexist/hey") == "~Idontexist/hey");
+     }
+diff --git a/std/socket.d b/std/socket.d
+index b85d1c9..7fbf346 100644
+--- a/std/socket.d
++++ b/std/socket.d
+@@ -517,6 +517,8 @@ class Protocol
+ 
+ unittest
+ {
++    pragma(msg, "test disabled on GNU Guix");
++/*
+     // getprotobyname,number are unimplemented on Android
+     softUnittest({
+         Protocol proto = new Protocol;
+@@ -530,6 +532,7 @@ unittest
+         assert(proto.name == "tcp");
+         assert(proto.aliases.length == 1 && proto.aliases[0] == "TCP");
+     });
++*/
+ }
+ 
+ 
+@@ -859,6 +862,8 @@ class InternetHost
+ 
+ unittest
+ {
++    pragma(msg, "test disabled on GNU Guix");
++    /*
+     InternetHost ih = new InternetHost;
+ 
+     ih.getHostByAddr(0x7F_00_00_01);
+@@ -889,6 +894,7 @@ unittest
+         //      writefln("aliases[%d] = %s", i, s);
+         // }
+     });
++    */
+ }
+ 
+ 

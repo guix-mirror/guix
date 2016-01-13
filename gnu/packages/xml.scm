@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -707,3 +708,27 @@ Cflags: -I${includedir}
 C++ programming langauge.")
     (home-page "http://www.grinninglizard.com/tinyxml/index.html")
     (license license:zlib)))
+
+(define-public xmlstarlet
+ (package
+   (name "xmlstarlet")
+   (version "1.6.1")
+   (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/xmlstar/xmlstarlet/"
+                          version "/xmlstarlet-" version ".tar.gz"))
+      (sha256
+       (base32
+        "1jp737nvfcf6wyb54fla868yrr39kcbijijmjpyk4lrpyg23in0m"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("libxslt" ,libxslt)
+      ("libxml2" ,libxml2)))
+   (home-page "http://xmlstar.sourceforge.net/")
+   (synopsis "Command line XML toolkit")
+   (description "XMLStarlet is a set of command line utilities which can be
+used to transform, query, validate, and edit XML documents.  XPath is used to
+match and extract data, and elements can be added, deleted or modified using
+XSLT and EXSLT.")
+   (license license:x11)))

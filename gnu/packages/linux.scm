@@ -211,7 +211,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "4.3.3")
+  (let* ((version "4.4")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -285,7 +285,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "1z43kzs1pzwq5mkyh7zk8nq38sxlswp65824v54dzwngyc252a18"))))
+               "1839xsaifs7vvyblzin8jps0gqi10xmz1l9p4x0j27vmdj39jgpm"))))
     (build-system gnu-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
@@ -1784,7 +1784,7 @@ country-specific regulations for the wireless spectrum.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://dl.lm-sensors.org/lm-sensors/releases/lm_sensors-"
+                    "ftp://ftp.netroedge.com/pub/lm-sensors/lm_sensors-"
                     version ".tar.bz2"))
               (sha256
                (base32
@@ -1842,7 +1842,7 @@ country-specific regulations for the wireless spectrum.")
               (string-append (assoc-ref inputs "coreutils")
                              "/bin/readlink -f"))))
          %standard-phases))))
-    (home-page "http://www.lm-sensors.org/")
+    (home-page "http://jdelvare.nerim.net/devel.html#lmsensors")
     (synopsis "Utilities to read temperature/voltage/fan sensors")
     (description
      "Lm-sensors is a hardware health monitoring package for Linux.  It allows
@@ -1857,7 +1857,7 @@ It works with most newer systems.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://dl.lm-sensors.org/i2c-tools/releases/i2c-tools-"
+                    "http://jdelvare.nerim.net/mirror/i2c-tools/i2c-tools-"
                     version ".tar.bz2"))
               (sha256
                (base32
@@ -1871,7 +1871,7 @@ It works with most newer systems.")
        #:phases (alist-delete 'configure %standard-phases)))
     (inputs
      `(("perl" ,perl)))
-    (home-page "http://www.lm-sensors.org/wiki/I2CTools")
+    (home-page "http://jdelvare.nerim.net/devel.html#i2ctools")
     (synopsis "I2C tools for Linux")
     (description
      "The i2c-tools package contains a heterogeneous set of I2C tools for

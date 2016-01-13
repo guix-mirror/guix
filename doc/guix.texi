@@ -10,7 +10,7 @@
 @include version.texi
 
 @copying
-Copyright @copyright{} 2012, 2013, 2014, 2015 Ludovic Courtès@*
+Copyright @copyright{} 2012, 2013, 2014, 2015, 2016 Ludovic Courtès@*
 Copyright @copyright{} 2013, 2014 Andreas Enge@*
 Copyright @copyright{} 2013 Nikita Karetnikov@*
 Copyright @copyright{} 2015 Mathieu Lirzin@*
@@ -1016,7 +1016,7 @@ Manual}).  There are two important differences though:
 @item
 @code{GUIX_LOCPATH} is honored only by Guix's libc, and not by the libc
 provided by foreign distros.  Thus, using @code{GUIX_LOCPATH} allows you
-to make sure the the foreign distro's programs will not end up loading
+to make sure the foreign distro's programs will not end up loading
 incompatible locale data.
 
 @item
@@ -1434,6 +1434,7 @@ availability of packages:
 
 @item --search=@var{regexp}
 @itemx -s @var{regexp}
+@cindex searching for packages
 List the available packages whose name, synopsis, or description matches
 @var{regexp}.  Print all the meta-data of matching packages in
 @code{recutils} format (@pxref{Top, GNU recutils databases,, recutils,
@@ -1461,6 +1462,34 @@ name: elfutils
 name: gmp
 @dots{}
 @end example
+
+It is also possible to refine search results using several @code{-s}
+flags.  For example, the following command returns a list of board
+games:
+
+@example
+$ guix package -s '\<board\>' -s game | recsel -p name
+name: gnubg
+@dots{}
+@end example
+
+If we were to omit @code{-s game}, we would also get software packages
+that deal with printed circuit boards; removing the angle brackets
+around @code{board} would further add packages that have to do with
+keyboards.
+
+And now for a more elaborate example.  The following command searches
+for cryptographic libraries, filters out Haskell, Perl, Python, and Ruby
+libraries, and prints the name and synopsis of the matching packages:
+
+@example
+$ guix package -s crypto -s library | \
+    recsel -e '! (name ~ "^(ghc|perl|python|ruby)")' -p name,synopsis
+@end example
+
+@noindent
+@xref{Selection Expressions,,, recutils, GNU recutils manual}, for more
+information on @dfn{selection expressions} for @code{recsel -e}.
 
 @item --show=@var{package}
 Show details about @var{package}, taken from the list of available packages, in
@@ -2527,7 +2556,7 @@ by the @code{#:configure-flags} argument.
 
 @item build
 Run @code{make} with the list of flags specified with
-@code{#:make-flags}.  If the @code{#:parallel-builds?} argument is true
+@code{#:make-flags}.  If the @code{#:parallel-build?} argument is true
 (the default), build with @code{make -j}.
 
 @item check
@@ -6464,7 +6493,7 @@ A file-like object containing the ``message of the day''.
 
 @item @code{auto-login} (default: @code{#f})
 When true, this field must be a string denoting the user name under
-which the the system automatically logs in.  When it is @code{#f}, a
+which the system automatically logs in.  When it is @code{#f}, a
 user name and password must be entered to log in.
 
 @item @code{login-program} (default: @code{#f})
@@ -6683,6 +6712,13 @@ This service adds the @var{wicd} package to the global profile, providing
 several commands to interact with the daemon and configure networking:
 @command{wicd-client}, a graphical user interface, and the @command{wicd-cli}
 and @command{wicd-curses} user interfaces.
+@end deffn
+
+@cindex NetworkManager
+@deffn {Scheme Procedure} network-manager-service @
+       [#:network-manager @var{network-manager}]
+Return a service that runs NetworkManager, a network connection manager
+that attempting to keep active network connectivity when available.
 @end deffn
 
 @deffn {Scheme Procedure} ntp-service [#:ntp @var{ntp}] @
@@ -7261,7 +7297,7 @@ Defaults to @samp{"0600"}.
 @end deftypevr
 
 @deftypevr {@code{unix-listener-configuration} parameter} string user
-The user to own the the socket.
+The user to own the socket.
 Defaults to @samp{""}.
 @end deftypevr
 
@@ -7283,7 +7319,7 @@ Defaults to @samp{"0600"}.
 @end deftypevr
 
 @deftypevr {@code{fifo-listener-configuration} parameter} string user
-The user to own the the socket.
+The user to own the socket.
 Defaults to @samp{""}.
 @end deftypevr
 
@@ -10131,7 +10167,16 @@ re-create them if needed (more on that later).
 
 The figure above shows the very beginning of the dependency graph of the
 distribution, corresponding to the package definitions of the @code{(gnu
-packages bootstrap)} module.  At this level of detail, things are
+packages bootstrap)} module.  A similar figure can be generated with
+@command{guix graph} (@pxref{Invoking guix graph}), along the lines of:
+
+@example
+guix graph -t derivation \
+  -e '(@@@@ (gnu packages bootstrap) %bootstrap-gcc)' \
+  | dot -Tps > t.ps
+@end example
+
+At this level of detail, things are
 slightly complex.  First, Guile itself consists of an ELF executable,
 along with many source and compiled Scheme files that are dynamically
 loaded when it runs.  This gets stored in the @file{guile-2.0.7.tar.xz}
@@ -10167,9 +10212,6 @@ etc., at which point we have a working C tool chain.
 
 @unnumberedsubsec Building the Build Tools
 
-@c TODO: Add a package-level dependency graph generated from (gnu
-@c packages base).
-
 Bootstrapping is complete when we have a full tool chain that does not
 depend on the pre-built bootstrap tools discussed above.  This
 no-dependency requirement is verified by checking whether the files of
@@ -10178,17 +10220,40 @@ directories of the bootstrap inputs.  The process that leads to this
 ``final'' tool chain is described by the package definitions found in
 the @code{(gnu packages commencement)} module.
 
+The @command{guix graph} command allows us to ``zoom out'' compared to
+the graph above, by looking at the level of package objects instead of
+individual derivations---remember that a package may translate to
+several derivations, typically one derivation to download its source,
+one to build the Guile modules it needs, and one to actually build the
+package from source.  The command:
+
+@example
+guix graph -t bag \
+  -e '(@@@@ (gnu packages commencement)
+          glibc-final-with-bootstrap-bash)' | dot -Tps > t.ps
+@end example
+
+@noindent
+produces the dependency graph leading to the ``final'' C
+library@footnote{You may notice the @code{glibc-intermediate} label,
+suggesting that it is not @emph{quite} final, but as a good
+approximation, we will consider it final.}, depicted below.
+
+@image{images/bootstrap-packages,6in,,Dependency graph of the early packages}
+
 @c See <http://lists.gnu.org/archive/html/gnu-system-discuss/2012-10/msg00000.html>.
 The first tool that gets built with the bootstrap binaries is
-GNU Make, which is a prerequisite for all the following packages.
-From there Findutils and Diffutils get built.
+GNU@tie{}Make---noted @code{make-boot0} above---which is a prerequisite
+for all the following packages.  From there Findutils and Diffutils get
+built.
 
 Then come the first-stage Binutils and GCC, built as pseudo cross
 tools---i.e., with @code{--target} equal to @code{--host}.  They are
 used to build libc.  Thanks to this cross-build trick, this libc is
 guaranteed not to hold any reference to the initial tool chain.
 
-From there the final Binutils and GCC are built.  GCC uses @code{ld}
+From there the final Binutils and GCC (not shown above) are built.
+GCC uses @code{ld}
 from the final Binutils, and links programs against the just-built libc.
 This tool chain is used to build the other packages used by Guix and by
 the GNU Build System: Guile, Bash, Coreutils, etc.

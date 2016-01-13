@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
@@ -230,21 +230,24 @@ specified in MANIFEST, a manifest object."
 ;;; Package specifications.
 ;;;
 
-(define (find-packages-by-description rx)
-  "Return the list of packages whose name, synopsis, or description matches
-RX."
+(define (find-packages-by-description regexps)
+  "Return the list of packages whose name matches one of REGEXPS, or whose
+synopsis or description matches all of REGEXPS."
   (define version<? (negate version>=?))
+
+  (define (matches-all? str)
+    (every (cut regexp-exec <> str) regexps))
+
+  (define (matches-one? str)
+    (find (cut regexp-exec <> str) regexps))
 
   (sort
    (fold-packages (lambda (package result)
-                    (define matches?
-                      (cut regexp-exec rx <>))
-
-                    (if (or (matches? (package-name package))
+                    (if (or (matches-one? (package-name package))
                             (and=> (package-synopsis package)
-                                   (compose matches? P_))
+                                   (compose matches-all? P_))
                             (and=> (package-description package)
-                                   (compose matches? P_)))
+                                   (compose matches-all? P_)))
                         (cons package result)
                         result))
                   '())
@@ -696,11 +699,15 @@ processed, #f otherwise."
                                       (package-name p2))))))
          #t))
 
-      (('search regexp)
-       (let ((regexp (make-regexp* regexp regexp/icase)))
+      (('search _)
+       (let* ((patterns (filter-map (match-lambda
+                                      (('query 'search rx) rx)
+                                      (_                   #f))
+                                    opts))
+              (regexps  (map (cut make-regexp* <> regexp/icase) patterns)))
          (leave-on-EPIPE
           (for-each (cute package->recutils <> (current-output-port))
-                    (find-packages-by-description regexp)))
+                    (find-packages-by-description regexps)))
          #t))
 
       (('show requested-name)

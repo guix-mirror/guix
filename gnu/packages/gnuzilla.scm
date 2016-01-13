@@ -167,7 +167,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.20.2")
+    (version "3.21")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -178,7 +178,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "11pjjcp0mvcyx0ildyz20s9jlqzxsb6a9jlvcq5x1g3zsmckl6hl"))
+                "0fbjx3xsdm4gjc1gyzy2z315cvyw7yilsm7p9w75rpbwgl15nyiz"))
               ;; Create nss.pc and nss-config.
               (patches (list (search-patch "nss-pkgconfig.patch")))))
     (build-system gnu-build-system)
@@ -205,6 +205,7 @@ in the Mozilla clients.")
        (alist-replace
         'configure
         (lambda* (#:key system inputs #:allow-other-keys)
+          (setenv "CC" "gcc")
           ;; Tells NSS to build for the 64-bit ABI if we are 64-bit system.
           (when (string-prefix? "x86_64" system)
             (setenv "USE_64" "1"))
@@ -266,7 +267,7 @@ standards.")
 (define-public icecat
   (package
     (name "icecat")
-    (version "38.5.0-gnu1")
+    (version "38.5.2-gnu1")
     (source
      (origin
       (method url-fetch)
@@ -275,7 +276,7 @@ standards.")
                           name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "1bf20mpvx84jsa0dan2hhfc49f30v0wasikv7sh3cg8mwp62faj6"))
+        "0m18xyb0rd02yaw9xd5z4bab1wr2599iszzqhm86c134jv5vk6cg"))
       (patches (map search-patch '("icecat-avoid-bundled-includes.patch")))
       (modules '((guix build utils)))
       (snippet

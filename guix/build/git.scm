@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,23 +37,28 @@ recursively.  Return #t on success, #f otherwise."
   ;; in advance anyway.
   (setenv "GIT_SSL_NO_VERIFY" "true")
 
-  (let ((args `("clone" ,@(if recursive? '("--recursive") '())
-                ,url ,directory)))
-    (and (zero? (apply system* git-command args))
-         (with-directory-excursion directory
-           (system* git-command "tag" "-l")
-           (and (zero? (system* git-command "checkout" commit))
-                (begin
-                  ;; The contents of '.git' vary as a function of the current
-                  ;; status of the Git repo.  Since we want a fixed output, this
-                  ;; directory needs to be taken out.
-                  (delete-file-recursively ".git")
+  ;; We cannot use "git clone --recursive" since the following "git checkout"
+  ;; effectively removes sub-module checkouts as of Git 2.6.3.
+  (and (zero? (system* git-command "clone" url directory))
+       (with-directory-excursion directory
+         (system* git-command "tag" "-l")
+         (and (zero? (system* git-command "checkout" commit))
+              (begin
+                (when recursive?
+                  ;; Now is the time to fetch sub-modules.
+                  (unless (zero? (system* git-command "submodule" "update"
+                                          "--init" "--recursive"))
+                    (error "failed to fetch sub-modules" url))
 
-                  (when recursive?
-                    ;; In sub-modules, '.git' is a flat file, not a directory,
-                    ;; so we can use 'find-files' here.
-                    (for-each delete-file-recursively
-                              (find-files directory "^\\.git$")))
-                  #t))))))
+                  ;; In sub-modules, '.git' is a flat file, not a directory,
+                  ;; so we can use 'find-files' here.
+                  (for-each delete-file-recursively
+                            (find-files directory "^\\.git$")))
+
+                ;; The contents of '.git' vary as a function of the current
+                ;; status of the Git repo.  Since we want a fixed output, this
+                ;; directory needs to be taken out.
+                (delete-file-recursively ".git")
+                #t)))))
 
 ;;; git.scm ends here

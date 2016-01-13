@@ -307,6 +307,7 @@ Example:
     (description       . ,package-description-string)
     (home-url          . ,package-home-page)
     (outputs           . ,package-outputs)
+    (systems           . ,package-supported-systems)
     (non-unique        . ,(negate package-unique?))
     (inputs            . ,(lambda (pkg)
                             (package-inputs-names

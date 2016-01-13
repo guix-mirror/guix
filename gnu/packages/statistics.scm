@@ -27,6 +27,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages haskell)
@@ -53,7 +54,7 @@
 (define-public r
   (package
     (name "r")
-    (version "3.2.2")
+    (version "3.2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -61,7 +62,7 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "07a6s865bjnh7w0fqsrkv1pva76w99v86w0w787qpdil87km54cw"))))
+                "1hdnv77ralzcx5k5b88jq1r8l6zqnywpq00g2qs949rqh63psfxr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -1496,4 +1497,449 @@ grobs.")
 @code{grid} graphics, notably to arrange multiple grid-based plots on a page,
 and draw tables.")
     (license license:gpl2+)))
+
+(define-public r-rsqlite
+  (package
+    (name "r-rsqlite")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "RSQLite" version))
+              (sha256
+               (base32
+                "08b1syv8z887gxiw8i09dpqh0zisfb6ihq6qqr01zipvkahzq34f"))))
+    (properties `((upstream-name . "RSQLite")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dbi" ,r-dbi)))
+    (home-page "https://github.com/rstats-db/RSQLite")
+    (synopsis "SQLite interface for R")
+    (description
+     "This package embeds the SQLite database engine in R and provides an
+interface compliant with the DBI package.  The source for the SQLite
+engine (version 3.8.6) is included.")
+    (license license:lgpl2.0+)))
+
+(define-public r-rcurl
+  (package
+    (name "r-rcurl")
+    (version "1.95-0.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/extra/src/"
+                                  "contrib/RCurl_" version ".tar.gz"))
+              (sha256
+               (base32
+                "0l7qi45jxlf898n0jazabnam1yyczvqfdknd00bdirhhiplpd1sc"))))
+    (properties `((upstream-name . "RCurl")))
+    (build-system r-build-system)
+    (inputs
+     `(("libcurl" ,curl)))
+    (propagated-inputs
+     `(("r-bitops" ,r-bitops)))
+    (home-page "http://www.omegahat.org/RCurl")
+    (synopsis "General network client interface for R")
+    (description
+     "The package allows one to compose general HTTP requests and provides
+convenient functions to fetch URIs, GET and POST forms, etc. and process the
+results returned by the Web server.  This provides a great deal of control
+over the HTTP/FTP/... connection and the form of the request while providing a
+higher-level interface than is available just using R socket connections.
+Additionally, the underlying implementation is robust and extensive,
+supporting FTP/FTPS/TFTP (uploads and downloads), SSL/HTTPS, telnet, dict,
+ldap, and also supports cookies, redirects, authentication, etc.")
+    (license license:bsd-3)))
+
+(define-public r-xml
+  (package
+    (name "r-xml")
+    (version "3.98-1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "XML" version))
+              (sha256
+               (base32
+                "0j9ayp8a35g0227a4zd8nbmvnbfnj5w687jal6qvj4lbhi3va7sy"))))
+    (properties
+     `((upstream-name . "XML")))
+    (build-system r-build-system)
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (propagated-inputs
+     `(("r-rcurl" ,r-rcurl)))
+    (home-page "http://www.omegahat.org/RSXML")
+    (synopsis "Tools for parsing and generating XML within R")
+    (description
+     "Many approaches for both reading and creating XML (and HTML)
+documents (including DTDs), both local and accessible via HTTP or FTP.  Also
+offers access to an XPath \"interpreter\".")
+    (license license:bsd-2)))
+
+(define-public r-lambda-r
+  (package
+    (name "r-lambda-r")
+    (version "1.1.7")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "lambda.r" version))
+              (sha256
+               (base32
+                "1lxzrwyminc3dfb07pbn1rmj45kplxgsb17b06pzflj728knbqwa"))))
+    (properties `((upstream-name . "lambda.r")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/lambda.r")
+    (synopsis "Functional programming extension for R")
+    (description
+     "This package provides a language extension to efficiently write
+functional programs in R.  Syntax extensions include multi-part function
+definitions, pattern matching, guard statements, built-in (optional) type
+safety.")
+    (license license:lgpl3+)))
+
+(define-public r-futile-options
+  (package
+    (name "r-futile-options")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "futile.options" version))
+              (sha256
+               (base32
+                "1hp82h6xqq5cck67h7lpf22n3j7mg3v1mla5y5ivnzrrb7iyr17f"))))
+    (properties
+     `((upstream-name . "futile.options")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/futile.options")
+    (synopsis "Options management framework")
+    (description
+     "The futile.options subsystem provides an easy user-defined options
+management system that is properly scoped.  This means that options created
+via @code{futile.options} are fully self-contained and will not collide with
+options defined in other packages.")
+    (license license:lgpl3+)))
+
+(define-public r-futile-logger
+  (package
+    (name "r-futile-logger")
+    (version "1.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "futile.logger" version))
+              (sha256
+               (base32
+                "1plld1icxrcay7llplbd4i8inpg97crpnczk58mbk26j8glqbr51"))))
+    (properties `((upstream-name . "futile.logger")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-futile-options" ,r-futile-options)
+       ("r-lambda-r" ,r-lambda-r)))
+    (home-page "http://cran.r-project.org/web/packages/futile.logger")
+    (synopsis "Logging utility for R")
+    (description
+     "This package provides a simple yet powerful logging utility.  Based
+loosely on log4j, futile.logger takes advantage of R idioms to make logging a
+convenient and easy to use replacement for @code{cat} and @code{print}
+statements.")
+    (license license:lgpl3+)))
+
+(define-public r-snow
+  (package
+    (name "r-snow")
+    (version "0.4-1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "snow" version))
+              (sha256
+               (base32
+                "19r2yq8aqw99vwyx81p6ay4afsfqffal1wzvizk3dj882s2n4j8w"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/snow")
+    (synopsis "Support for simple parallel computing in R")
+    (description
+     "The snow package provides support for simple parallel computing on a
+network of workstations using R.  A master R process calls @code{makeCluster}
+to start a cluster of worker processes; the master process then uses functions
+such as @code{clusterCall} and @code{clusterApply} to execute R code on the
+worker processes and collect and return the results on the master.")
+    (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-sparsem
+  (package
+    (name "r-sparsem")
+    (version "1.7")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "SparseM" version))
+              (sha256
+               (base32
+                "0s9kab5khk7daqf6nfp1wm1qnhkssnnwnymisfwyk3kz4q5maqfz"))))
+    (properties
+     `((upstream-name . "SparseM")))
+    (build-system r-build-system)
+    (home-page "http://www.econ.uiuc.edu/~roger/research/sparse/sparse.html")
+    (synopsis "Sparse linear algebra")
+    (description
+     "This package provides some basic linear algebra functionality for sparse
+matrices.  It includes Cholesky decomposition and backsolving as well as
+standard R subsetting and Kronecker products.")
+    (license license:gpl2+)))
+
+(define-public r-dt
+  (package
+    (name "r-dt")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "DT" version))
+              (sha256
+               (base32
+                "0mj7iiy1gglw7kixybmb7kr1bcl5r006zcb3klkw7p6vvvzdm6qj"))))
+    (properties
+     `((upstream-name . "DT")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-htmltools" ,r-htmltools)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-magrittr" ,r-magrittr)))
+    (home-page "http://rstudio.github.io/DT")
+    (synopsis "R wrapper of the DataTables JavaScript library")
+    (description
+     "This package allows for data objects in R to be rendered as HTML tables
+using the JavaScript library 'DataTables' (typically via R Markdown or Shiny).
+The 'DataTables' library has been included in this R package.")
+    ;; The DT package as a whole is distributed under GPLv3.  The DT package
+    ;; inludes other software components under different licenses:
+    ;;
+    ;;   * Expat: jQuery, jquery.highlight.js, DataTables
+    ;;   * ASL2.0: selectize.js
+    ;;   * WTFPL: noUiSlider
+    (license (list license:gpl3
+                   license:expat
+                   license:asl2.0
+                   (license:non-copyleft "http://www.wtfpl.net/txt/copying/")))))
+
+(define-public r-base64enc
+  (package
+    (name "r-base64enc")
+    (version "0.1-3")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "base64enc" version))
+              (sha256
+               (base32
+                "13b89fhg1nx7zds82a0biz847ixphg9byf5zl2cw9kab6s56v1bd"))))
+    (build-system r-build-system)
+    (home-page "http://www.rforge.net/base64enc")
+    (synopsis "Tools for Base64 encoding")
+    (description
+     "This package provides tools for handling Base64 encoding.  It is more
+flexible than the orphaned \"base64\" package.")
+    (license license:gpl2+)))
+
+(define-public r-r-methodss3
+  (package
+    (name "r-r-methodss3")
+    (version "1.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "R.methodsS3" version))
+              (sha256
+               (base32
+                "1dg4bbrwr8jcsqisjrrwxs942mrjq72zw8yvl2br4djdm0md8zz5"))))
+    (properties `((upstream-name . "R.methodsS3")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/R.methodsS3")
+    (synopsis "S3 methods simplified")
+    (description
+     "This package provides methods that simplify the setup of S3 generic
+functions and S3 methods.  Major effort has been made in making definition of
+methods as simple as possible with a minimum of maintenance for package
+developers.  For example, generic functions are created automatically, if
+missing, and naming conflict are automatically solved, if possible.  The
+method @code{setMethodS3()} is a good start for those who in the future may
+want to migrate to S4.")
+    (license license:lgpl2.1+)))
+
+(define-public r-r-oo
+  (package
+    (name "r-r-oo")
+    (version "1.19.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "R.oo" version))
+              (sha256
+               (base32
+                "15rm1qb9a212bqazhcpk7m48hcp7jq8rh4yhd9c6zfyvdqszfmsb"))))
+    (properties `((upstream-name . "R.oo")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-r-methodss3" ,r-r-methodss3)))
+    (home-page "https://github.com/HenrikBengtsson/R.oo")
+    (synopsis "R object-oriented programming with or without references")
+    (description
+     "This package provides methods and classes for object-oriented
+programming in R with or without references.  Large effort has been made on
+making definition of methods as simple as possible with a minimum of
+maintenance for package developers.")
+    (license license:lgpl2.1+)))
+
+(define-public r-r-utils
+  (package
+    (name "r-r-utils")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "R.utils" version))
+              (sha256
+               (base32
+                "03pi6pkcsq65fv7cn4x74cj050dc8x5d4xyg930p6f7flk788xaz"))))
+    (properties `((upstream-name . "R.utils")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-r-methodss3" ,r-r-methodss3)
+       ("r-r-oo" ,r-r-oo)))
+    (home-page "https://github.com/HenrikBengtsson/R.utils")
+    (synopsis "Various programming utilities")
+    (description
+     "This package provides utility functions useful when programming and
+developing R packages.")
+    (license license:lgpl2.1+)))
+
+(define-public r-r-cache
+  (package
+    (name "r-r-cache")
+    (version "0.12.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "R.cache" version))
+              (sha256
+               (base32
+                "006x52w9r8phw5hgqmyp0bz8z42vn8p5yibibnzi1sfa1xlw8iyx"))))
+    (properties `((upstream-name . "R.cache")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-digest" ,r-digest)
+       ("r-r-methodss3" ,r-r-methodss3)
+       ("r-r-oo" ,r-r-oo)
+       ("r-r-utils" ,r-r-utils)))
+    (home-page "https://github.com/HenrikBengtsson/R.cache")
+    (synopsis "Light-weight caching of objects and results")
+    (description
+     "This package provides methods for caching or memoization of objects and
+results.  With this package, any R object can be cached in a key-value storage
+where the key can be an arbitrary set of R objects.  The cache memory is
+persistent (on the file system).")
+    (license license:lgpl2.1+)))
+
+(define-public r-r-rsp
+  (package
+    (name "r-r-rsp")
+    (version "0.20.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "R.rsp" version))
+              (sha256
+               (base32
+                "06vq9qq5hdz3hqc99q82622mab6ix7jwap20h4za6ap6gnwqs0fv"))))
+    (properties `((upstream-name . "R.rsp")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-r-cache" ,r-r-cache)
+       ("r-r-methodss3" ,r-r-methodss3)
+       ("r-r-oo" ,r-r-oo)
+       ("r-r-utils" ,r-r-utils)))
+    (home-page "https://github.com/HenrikBengtsson/R.rsp")
+    (synopsis "Dynamic generation of scientific reports")
+    (description
+     "The RSP markup language provides a powerful markup for controlling the
+content and output of LaTeX, HTML, Markdown, AsciiDoc, Sweave and knitr
+documents (and more), e.g. @code{Today's date is <%=Sys.Date()%>}.  Contrary
+to many other literate programming languages, with RSP it is straightforward
+to loop over mixtures of code and text sections, e.g.  in month-by-month
+summaries.  RSP has also several preprocessing directives for incorporating
+static and dynamic contents of external files (local or online) among other
+things.  RSP is ideal for self-contained scientific reports and R package
+vignettes.")
+    (license license:lgpl2.1+)))
+
+(define-public r-matrixstats
+  (package
+    (name "r-matrixstats")
+    (version "0.15.0")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "matrixStats" version))
+              (sha256
+               (base32
+                "1068k85s6rlwfzlszw790c2rndydvrsw7rpck6k6z17896m8drfa"))))
+    (properties `((upstream-name . "matrixStats")))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-r-rsp" ,r-r-rsp))) ;used to build vignettes
+    (home-page "https://github.com/HenrikBengtsson/matrixStats")
+    (synopsis "Methods applying to vectors and matrix rows and columns")
+    (description
+     "This package provides methods operating on rows and columns of matrices,
+e.g.  @code{rowMedians()}, @code{rowRanks()}, and @code{rowSds()}.  There are
+also some vector-based methods, e.g. @code{binMeans()}, @code{madDiff()} and
+@code{weightedMedians()}.  All methods have been optimized for speed and
+memory usage.")
+    (license license:artistic2.0)))
+
+(define-public r-viridis
+  (package
+    (name "r-viridis")
+    (version "0.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "viridis" version))
+              (sha256
+               (base32
+                "0zz9i874s1fwhl9bcbiprlzaz7zsy1rj6c729zn3k525d63qbnj7"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-ggplot2" ,r-ggplot2)
+       ("r-gridextra" ,r-gridextra)))
+    (home-page "https://github.com/sjmgarnier/viridis")
+    (synopsis "Matplotlib default color map")
+    (description
+     "This package is a port of the new @url{matplotlib,
+http://matplotlib.org/} color maps (@code{viridis}--the default--,
+@code{magma}, @code{plasma}, and @code{inferno}) to R.  These color maps are
+designed in such a way that they will analytically be perfectly
+perceptually-uniform, both in regular form and also when converted to
+black-and-white.  They are also designed to be perceived by readers with the
+most common form of color blindness.")
+    (license license:x11)))
+
+(define-public r-plotly
+  (package
+    (name "r-plotly")
+    (version "2.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "plotly" version))
+              (sha256
+               (base32
+                "16pqycns8qf0y1j21n009qf242lv0izwyidlx40zv88izxhg1vs0"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-base64enc" ,r-base64enc)
+       ("r-digest" ,r-digest)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-htmlwidgets" ,r-htmlwidgets)
+       ("r-httr" ,r-httr)
+       ("r-jsonlite" ,r-jsonlite)
+       ("r-magrittr" ,r-magrittr)
+       ("r-plyr" ,r-plyr)
+       ("r-viridis" ,r-viridis)))
+    (home-page "https://plot.ly/r")
+    (synopsis "Create interactive web graphics")
+    (description
+     "This package enables the translation of ggplot2 graphs to an interactive
+web-based version and/or the creation of custom web-based visualizations
+directly from R.  Once uploaded to a plotly account, plotly graphs (and the
+data behind them) can be viewed and modified in a web browser.")
+    (license license:x11)))
 

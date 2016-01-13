@@ -81,7 +81,7 @@
          'build
          (lambda* (#:key inputs outputs #:allow-other-keys)
            (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
-             (setenv "JAVA_HOME" (assoc-ref inputs "icedtea6"))
+             (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
 
              ;; Build shared libraries.  Users of SWT have to set the system
              ;; property swt.library.path to the "lib" directory of this
@@ -115,7 +115,7 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("unzip" ,unzip)
-       ("icedtea6" ,icedtea6 "jdk")))
+       ("jdk" ,icedtea "jdk")))
     (home-page "https://www.eclipse.org/swt/")
     (synopsis "Widget toolkit for Java")
     (description
@@ -184,9 +184,9 @@ and is best suited to building Java projects.  Ant uses XML to describe the
 build process and its dependencies, whereas Make uses Makefile format.")
     (license license:asl2.0)))
 
-(define-public icedtea6
+(define-public icedtea-6
   (package
-    (name "icedtea6")
+    (name "icedtea")
     (version "1.13.9")
     (source (origin
               (method url-fetch)
@@ -265,7 +265,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
            "--without-rhino"
            "--disable-downloading"
            "--disable-tests" ;they are run in the check phase instead
-           ,(string-append "--with-openjdk-src-dir=" "./openjdk")
+           "--with-openjdk-src-dir=./openjdk.src"
            ,(string-append "--with-javac=" jdk "/bin/javac")
            ,(string-append "--with-ecj-jar=" ecj)
            ,(string-append "--with-gcj=" gcj)
@@ -277,9 +277,9 @@ build process and its dependencies, whereas Make uses Makefile format.")
         (lambda* (#:key source inputs #:allow-other-keys)
           (and (zero? (system* "tar" "xvf" source))
                (begin
-                 (chdir (string-append ,name "-" ,version))
-                 (mkdir "openjdk")
-                 (with-directory-excursion "openjdk"
+                 (chdir (string-append "icedtea6-" ,version))
+                 (mkdir "openjdk.src")
+                 (with-directory-excursion "openjdk.src"
                    (copy-file (assoc-ref inputs "openjdk6-src")
                               "openjdk6-src.tar.xz")
                    (zero? (system* "tar" "xvf" "openjdk6-src.tar.xz"))))))
@@ -302,7 +302,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
           (lambda _
             ;; buildtree.make generates shell scripts, so we need to replace
             ;; the generated shebang
-            (substitute* '("openjdk/hotspot/make/linux/makefiles/buildtree.make")
+            (substitute* '("openjdk.src/hotspot/make/linux/makefiles/buildtree.make")
               (("/bin/sh") (which "bash")))
 
             (let ((corebin (string-append
@@ -311,8 +311,8 @@ build process and its dependencies, whereas Make uses Makefile format.")
                             (assoc-ref %build-inputs "binutils") "/bin/"))
                   (grepbin (string-append
                             (assoc-ref %build-inputs "grep") "/bin/")))
-              (substitute* '("openjdk/jdk/make/common/shared/Defs-linux.gmk"
-                             "openjdk/corba/make/common/shared/Defs-linux.gmk")
+              (substitute* '("openjdk.src/jdk/make/common/shared/Defs-linux.gmk"
+                             "openjdk.src/corba/make/common/shared/Defs-linux.gmk")
                 (("UNIXCOMMAND_PATH  = /bin/")
                  (string-append "UNIXCOMMAND_PATH = " corebin))
                 (("USRBIN_PATH  = /usr/bin/")
@@ -326,8 +326,8 @@ build process and its dependencies, whereas Make uses Makefile format.")
                  (string-append "DEF_OBJCOPY = " (which "objcopy"))))
 
               ;; fix hard-coded utility paths
-              (substitute* '("openjdk/jdk/make/common/shared/Defs-utils.gmk"
-                             "openjdk/corba/make/common/shared/Defs-utils.gmk")
+              (substitute* '("openjdk.src/jdk/make/common/shared/Defs-utils.gmk"
+                             "openjdk.src/corba/make/common/shared/Defs-utils.gmk")
                 (("ECHO *=.*echo")
                  (string-append "ECHO = " (which "echo")))
                 (("^GREP *=.*grep")
@@ -370,7 +370,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
               ;; Some of these timestamps cause problems as they are more than
               ;; 10 years ago, failing the build process.
               (substitute*
-                  "openjdk/jdk/src/share/classes/java/util/CurrencyData.properties"
+                  "openjdk.src/jdk/src/share/classes/java/util/CurrencyData.properties"
                 (("AZ=AZM;2005-12-31-20-00-00;AZN") "AZ=AZN")
                 (("MZ=MZM;2006-06-30-22-00-00;MZN") "MZ=MZN")
                 (("RO=ROL;2005-06-30-21-00-00;RON") "RO=RON")
@@ -417,7 +417,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
             (alist-cons-before
              'check 'fix-hotspot-tests
              (lambda _
-               (with-directory-excursion "openjdk/hotspot/test/"
+               (with-directory-excursion "openjdk.src/hotspot/test/"
                  (substitute* "jprt.config"
                    (("PATH=\"\\$\\{path4sdk\\}\"")
                     (string-append "PATH=" (getenv "PATH")))
@@ -432,7 +432,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
              (alist-cons-before
               'check 'fix-jdk-tests
               (lambda _
-                (with-directory-excursion "openjdk/jdk/test/"
+                (with-directory-excursion "openjdk.src/jdk/test/"
                   (substitute* "com/sun/jdi/JdbReadTwiceTest.sh"
                     (("/bin/pwd") (which "pwd")))
                   (substitute* "com/sun/jdi/ShellScaffold.sh"
@@ -514,7 +514,8 @@ build process and its dependencies, whereas Make uses Makefile format.")
                (alist-replace
                 'install
                 (lambda* (#:key outputs #:allow-other-keys)
-                  (let ((doc (string-append (assoc-ref outputs "doc") "/share/doc/" ,name))
+                  (let ((doc (string-append (assoc-ref outputs "doc")
+                                            "/share/doc/icedtea"))
                         (jre (assoc-ref outputs "out"))
                         (jdk (assoc-ref outputs "jdk")))
                     (copy-recursively "openjdk.build/docs" doc)
@@ -575,7 +576,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
     ;; same license as both GNU Classpath and OpenJDK.
     (license license:gpl2+)))
 
-(define-public icedtea7
+(define-public icedtea-7
   (let* ((version "2.6.3")
          (drop (lambda (name hash)
                  (origin
@@ -584,8 +585,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                          "http://icedtea.classpath.org/download/drops/"
                          "/icedtea7/" version "/" name ".tar.bz2"))
                    (sha256 (base32 hash))))))
-    (package (inherit icedtea6)
-      (name "icedtea7")
+    (package (inherit icedtea-6)
       (version version)
       (source (origin
                 (method url-fetch)
@@ -616,51 +616,42 @@ build process and its dependencies, whereas Make uses Makefile format.")
          #:tests? #f
          ;; Apparently, the C locale is needed for some of the tests.
          #:locale "C"
-         ,@(substitute-keyword-arguments (package-arguments icedtea6)
+         ,@(substitute-keyword-arguments (package-arguments icedtea-6)
+             ((#:modules modules)
+              `((ice-9 match)
+                (srfi srfi-26)
+                ,@modules))
              ((#:configure-flags flags)
-              `(delete "--with-openjdk-src-dir=./openjdk"
-                       ;; TODO: package pcsc and sctp, and add to inputs
-                       (append '("--disable-system-pcsc"
-                                 "--disable-system-sctp")
-                               ,flags)))
+              ;; TODO: package pcsc and sctp, and add to inputs
+              `(append '("--disable-system-pcsc"
+                         "--disable-system-sctp")
+                       ,flags))
              ((#:phases phases)
               `(modify-phases ,phases
-                 (replace
-                  'unpack
-                  (lambda* (#:key source inputs #:allow-other-keys)
-                    (let ((target (string-append "icedtea-" ,version))
-                          (unpack (lambda (drop dir)
-                                    (mkdir dir)
-                                    (zero? (system* "tar" "xvjf"
-                                                    (assoc-ref inputs drop)
-                                                    "-C" dir
-                                                    "--strip-components=1")))))
-                      (and (zero? (system* "tar" "xvf" source))
-                           (chdir target)
-                           (unpack "openjdk-drop" "openjdk")
-                           (unpack "corba-drop"   "openjdk/corba")
-                           (unpack "jdk-drop"     "openjdk/jdk")
-                           (unpack "hotspot-drop" "openjdk/hotspot")
-
-                           ;; The build framework checks the tarballs, so we
-                           ;; need to keep them around even though we have
-                           ;; already unpacked some of them for patching.
-                           (begin
-                             (copy-file (assoc-ref inputs "openjdk-drop")
-                                        "openjdk.tar.bz2")
-                             (copy-file (assoc-ref inputs "corba-drop")
-                                        "corba.tar.bz2")
-                             (copy-file (assoc-ref inputs "hotspot-drop")
-                                        "hotspot.tar.bz2")
-                             (copy-file (assoc-ref inputs "jaxp-drop")
-                                        "jaxp.tar.bz2")
-                             (copy-file (assoc-ref inputs "jaxws-drop")
-                                        "jaxws.tar.bz2")
-                             (copy-file (assoc-ref inputs "jdk-drop")
-                                        "jdk.tar.bz2")
-                             (copy-file (assoc-ref inputs "langtools-drop")
-                                        "langtools.tar.bz2")
-                             #t)))))
+                 (replace 'unpack
+                   (lambda* (#:key source inputs #:allow-other-keys)
+                     (let ((target (string-append "icedtea-" ,version))
+                           (unpack (lambda* (name #:optional dir)
+                                     (let ((dir (or dir
+                                                    (string-drop-right name 5))))
+                                       (mkdir dir)
+                                       (zero? (system* "tar" "xvf"
+                                                       (assoc-ref inputs name)
+                                                       "-C" dir
+                                                       "--strip-components=1"))))))
+                       (mkdir target)
+                       (and
+                        (zero? (system* "tar" "xvf" source
+                                        "-C" target "--strip-components=1"))
+                        (chdir target)
+                        (unpack "openjdk-src" "openjdk.src")
+                        (with-directory-excursion "openjdk.src"
+                          (for-each unpack
+                                    (filter (cut string-suffix? "-drop" <>)
+                                            (map (match-lambda
+                                                   ((name . _) name))
+                                                 inputs))))
+                        #t))))
                  (replace
                   'set-additional-paths
                   (lambda* (#:key inputs #:allow-other-keys)
@@ -670,7 +661,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                                              (str  (read-line port)))
                                         (close-pipe port)
                                         str)))
-                      (substitute* "openjdk/jdk/make/common/shared/Sanity.gmk"
+                      (substitute* "openjdk.src/jdk/make/common/shared/Sanity.gmk"
                         (("ALSA_INCLUDE=/usr/include/alsa/version.h")
                          (string-append "ALSA_INCLUDE="
                                         (assoc-ref inputs "alsa-lib")
@@ -698,7 +689,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                  (add-after
                   'unpack 'fix-x11-extension-include-path
                   (lambda* (#:key inputs #:allow-other-keys)
-                    (substitute* "openjdk/jdk/make/sun/awt/mawt.gmk"
+                    (substitute* "openjdk.src/jdk/make/sun/awt/mawt.gmk"
                       (((string-append "\\$\\(firstword \\$\\(wildcard "
                                        "\\$\\(OPENWIN_HOME\\)"
                                        "/include/X11/extensions\\).*$"))
@@ -719,14 +710,14 @@ build process and its dependencies, whereas Make uses Makefile format.")
                        (string-append "PATH=" (getenv "PATH"))))
                     (substitute* "test/jtreg/com/sun/javatest/util/SysEnv.java"
                       (("/usr/bin/env") (which "env")))
-                    (substitute* "openjdk/hotspot/test/test_env.sh"
+                    (substitute* "openjdk.src/hotspot/test/test_env.sh"
                       (("/bin/rm") (which "rm"))
                       (("/bin/cp") (which "cp"))
                       (("/bin/mv") (which "mv")))
                     #t))
                  (delete 'patch-patches))))))
       (native-inputs
-       `(("openjdk-drop"
+       `(("openjdk-src"
           ,(drop "openjdk"
                  "0vflz0hhq4arykvvmsv3yas4yk9i0jm57287iqvs3a4832xjcpcy"))
          ("corba-drop"
@@ -747,5 +738,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
          ("hotspot-drop"
           ,(drop "hotspot"
                  "03pggsrhkzpjnj939vhr3b7mcrhfp22b7yg3hkx52kcv8dqkg3yx"))
-         ,@(fold alist-delete (package-native-inputs icedtea6)
+         ,@(fold alist-delete (package-native-inputs icedtea-6)
                  '("openjdk6-src")))))))
+
+(define-public icedtea icedtea-7)

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.68)
-AC_INIT([GNU Guix], [0.9.0], [bug-guix@gnu.org], [guix],
+AC_INIT([GNU Guix], [0.9.1], [bug-guix@gnu.org], [guix],
   [http://www.gnu.org/software/guix/])
 AC_CONFIG_AUX_DIR([build-aux])
 
@@ -60,7 +60,8 @@ AC_SUBST([guix_localstatedir])
 AC_SUBST([guix_sysconfdir])
 AC_SUBST([guix_sbindir])
 
-GUIX_CHECK_FILE_NAME_LIMITS
+GUIX_CHECK_FILE_NAME_LIMITS([can_run_tests])
+AM_CONDITIONAL([CAN_RUN_TESTS], [test "x$can_run_tests" = "xyes"])
 
 dnl We require pkg.m4 (from pkg-config) and guile.m4 (from Guile.)
 dnl Make sure they are available.

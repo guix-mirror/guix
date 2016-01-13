@@ -109,11 +109,11 @@ package definition."
 
 (define %cran-url "http://cran.r-project.org/web/packages/")
 
-(define (cran-fetch name)
+(define (fetch-description base-url name)
   "Return an alist of the contents of the DESCRIPTION file for the R package
 NAME, or #f on failure.  NAME is case-sensitive."
   ;; This API always returns the latest release of the module.
-  (let ((url (string-append %cran-url name "/DESCRIPTION")))
+  (let ((url (string-append base-url name "/DESCRIPTION")))
     (description->alist (read-string (http-fetch url)))))
 
 (define (listify meta field)
@@ -196,7 +196,7 @@ which was derived from the R package's DESCRIPTION file."
 (define (cran->guix-package package-name)
   "Fetch the metadata for PACKAGE-NAME from cran.r-project.org, and return the
 `package' s-expression corresponding to that package, or #f on failure."
-  (let ((module-meta (cran-fetch package-name)))
+  (let ((module-meta (fetch-description %cran-url package-name)))
     (and=> module-meta description->package)))
 
 
@@ -204,27 +204,33 @@ which was derived from the R package's DESCRIPTION file."
 ;;; Updater.
 ;;;
 
+(define (package->upstream-name package)
+  "Return the upstream name of the PACKAGE."
+  (let* ((properties (package-properties package))
+         (upstream-name (and=> properties
+                               (cut assoc-ref <> 'upstream-name))))
+    (if upstream-name
+        upstream-name
+        (match (package-source package)
+          ((? origin? origin)
+           (match (origin-uri origin)
+             ((url rest ...)
+              (let ((end   (string-rindex url #\_))
+                    (start (string-rindex url #\/)))
+                ;; The URL ends on
+                ;; (string-append "/" name "_" version ".tar.gz")
+                (substring url start end)))
+             (_ #f)))
+          (_ #f)))))
+
 (define (latest-release package)
   "Return an <upstream-source> for the latest release of PACKAGE."
 
-  (define (package->cran-name package)
-    (match (package-source package)
-      ((? origin? origin)
-       (match (origin-uri origin)
-         ((url rest ...)
-          (let ((end   (string-rindex url #\_))
-                (start (string-rindex url #\/)))
-            ;; The URL ends on
-            ;; (string-append "/" name "_" version ".tar.gz")
-            (substring url start end)))
-         (_ #f)))
-    (_ #f)))
-
-  (define cran-name
-    (package->cran-name (specification->package package)))
+  (define upstream-name
+    (package->upstream-name (specification->package package)))
 
   (define meta
-    (cran-fetch cran-name))
+    (fetch-description %cran-url upstream-name))
 
   (and meta
        (let ((version (assoc-ref meta "Version")))
@@ -232,7 +238,7 @@ which was derived from the R package's DESCRIPTION file."
          (upstream-source
           (package package)
           (version version)
-          (urls (cran-uri cran-name version))))))
+          (urls (cran-uri upstream-name version))))))
 
 (define (cran-package? package)
   "Return true if PACKAGE is an R package from CRAN."

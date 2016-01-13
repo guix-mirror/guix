@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +23,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages lout)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages plotutils)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages ghostscript))
@@ -30,14 +31,14 @@
 (define-public skribilo
   (package
     (name "skribilo")
-    (version "0.9.2")
+    (version "0.9.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/skribilo/skribilo-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0wwi996403wzcp8s8iyc2p6w7f9v39lwmy35ysdd3wc31i5dy19q"))))
+               "04d8xa76jvlz25jnc6p1gzsplwcwcqrmi3f7ixdhddhl1chyz66y"))))
     (build-system gnu-build-system)
     (arguments
      ;; Make the modules available under the usual location.
@@ -61,6 +62,8 @@
                  %standard-phases)
 
        #:parallel-build? #f))
+
+    (native-inputs `(("pkg-config" ,pkg-config)))
 
     (inputs `(("guile" ,guile-2.0)
               ("imagemagick" ,imagemagick)

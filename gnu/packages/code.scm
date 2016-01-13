@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -91,14 +92,14 @@ highlighting your own code that seemed comprehensible when you wrote it.")
 (define-public global                             ; a global variable
   (package
     (name "global")
-    (version "6.5.1")
+    (version "6.5.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/global/global-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1y34nbazsw2p6r2jhv27z15qvm9mhy5xjchpz8pwps00shkm578f"))))
+               "07qx3dbjwkbd1dn42qs7zgj77rxdj2psfrf7bx7yx9al38f87z60"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("libltdl" ,libltdl)
@@ -110,18 +111,17 @@ highlighting your own code that seemed comprehensible when you wrote it.")
              (string-append "--with-sqlite3="
                             (assoc-ref %build-inputs "sqlite")))
 
-       #:phases (alist-cons-after
-                 'install 'post-install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Install the Emacs Lisp file in the right place.
-                   (let* ((out  (assoc-ref outputs "out"))
-                          (data (string-append out "/share/gtags"))
-                          (lisp (string-append out "/share/emacs/site-lisp")))
-                     (install-file (string-append data "/gtags.el")
-                                   lisp)
-                     (delete-file (string-append data "/gtags.el"))
-                     #t))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+        (add-after 'install 'post-install
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Install the Emacs Lisp file in the right place.
+            (let* ((out  (assoc-ref outputs "out"))
+                   (data (string-append out "/share/gtags"))
+                   (lisp (string-append out "/share/emacs/site-lisp")))
+              (install-file (string-append data "/gtags.el") lisp)
+              (delete-file (string-append data "/gtags.el"))
+              #t))))))
     (home-page "http://www.gnu.org/software/global/")
     (synopsis "Cross-environment source code tag system")
     (description

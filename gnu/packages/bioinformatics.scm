@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
@@ -41,12 +41,14 @@
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages machine-learning)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
@@ -56,6 +58,7 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages textutils)
+  #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages web)
@@ -205,7 +208,7 @@ computational cluster.")
 (define-public bedtools
   (package
     (name "bedtools")
-    (version "2.24.0")
+    (version "2.25.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/arq5x/bedtools2/archive/v"
@@ -213,8 +216,7 @@ computational cluster.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0lnxrjvs3nnmb4bmskag1wg3h2hd80przz5q3xd0bvs7vyxrvpbl"))
-              (patches (list (search-patch "bedtools-32bit-compilation.patch")))))
+                "1ywcy3yfwzhl905b51l0ffjia55h75vv3mw5xkvib04pp6pj548m"))))
     (build-system gnu-build-system)
     (native-inputs `(("python" ,python-2)))
     (inputs `(("samtools" ,samtools)
@@ -222,25 +224,15 @@ computational cluster.")
     (arguments
      '(#:test-target "test"
        #:phases
-       (alist-cons-after
-        'unpack 'patch-makefile-SHELL-definition
-        (lambda _
-          ;; patch-makefile-SHELL cannot be used here as it does not
-          ;; yet patch definitions with `:='.  Since changes to
-          ;; patch-makefile-SHELL result in a full rebuild, features
-          ;; of patch-makefile-SHELL are reimplemented here.
-          (substitute* "Makefile"
-            (("^SHELL := .*$") (string-append "SHELL := " (which "bash") " -e \n"))))
-        (alist-delete
-         'configure
-         (alist-replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-              (for-each (lambda (file)
-                          (install-file file bin))
-                        (find-files "bin" ".*"))))
-          %standard-phases)))))
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+               (for-each (lambda (file)
+                           (install-file file bin))
+                         (find-files "bin" ".*")))
+             #t)))))
     (home-page "https://github.com/arq5x/bedtools2")
     (synopsis "Tools for genome analysis and arithmetic")
     (description
@@ -1064,14 +1056,14 @@ data and settings.")
 (define-public edirect
   (package
     (name "edirect")
-    (version "2.50")
+    (version "3.50")
     (source (origin
               (method url-fetch)
               ;; Note: older versions are not retained.
-              (uri "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/edirect.zip")
+              (uri "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/edirect.tar.gz")
               (sha256
                (base32
-                "08afhz2ph66h8h381hl1mqyxkdi5nbvzsyj9gfw3jfbdijnpi4qj"))))
+                "1cr3gzcs3flmgnnbj5iz93vh9w0fca1ilzi2q82cl63ln3mwvpz0"))))
     (build-system perl-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
@@ -1111,8 +1103,6 @@ data and settings.")
        ("perl-uri" ,perl-uri)
        ("perl-www-robotrules" ,perl-www-robotrules)
        ("perl" ,perl)))
-    (native-inputs
-     `(("unzip" ,unzip)))
     (home-page "http://www.ncbi.nlm.nih.gov/books/NBK179288/")
     (synopsis "Tools for accessing the NCBI's set of databases")
     (description
@@ -1436,6 +1426,71 @@ genes in incomplete assemblies or complete genomes.")
     ;; GPL3+ according to private correspondense with the authors.
     (license license:gpl3+)))
 
+(define-public fxtract
+  (let ((util-commit "776ca85a18a47492af3794745efcb4a905113115"))
+    (package
+      (name "fxtract")
+      (version "2.3")
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append
+               "https://github.com/ctSkennerton/fxtract/archive/"
+               version ".tar.gz"))
+         (file-name (string-append "ctstennerton-util-"
+                                   (string-take util-commit 7)
+                                   "-checkout"))
+         (sha256
+          (base32
+           "0275cfdhis8517hm01is62062swmi06fxzifq7mr3knbbxjlaiwj"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:make-flags (list
+                       (string-append "PREFIX=" (assoc-ref %outputs "out"))
+                       "CC=gcc")
+         #:test-target "fxtract_test"
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-before 'build 'copy-util
+             (lambda* (#:key inputs #:allow-other-keys)
+               (rmdir "util")
+               (copy-recursively (assoc-ref inputs "ctskennerton-util") "util")
+               #t))
+           ;; Do not use make install as this requires additional dependencies.
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out"/bin")))
+                 (install-file "fxtract" bin)
+                 #t))))))
+      (inputs
+       `(("pcre" ,pcre)
+         ("zlib" ,zlib)))
+      (native-inputs
+       ;; ctskennerton-util is licensed under GPL2.
+       `(("ctskennerton-util"
+          ,(origin
+             (method git-fetch)
+             (uri (git-reference
+                   (url "https://github.com/ctSkennerton/util.git")
+                   (commit util-commit)))
+             (file-name (string-append
+                         "ctstennerton-util-" util-commit "-checkout"))
+             (sha256
+              (base32
+               "0cls1hd4vgj3f36fpzzg4xc77d6f3hpc60cbpfmn2gdr7ykzzad7"))))))
+      (home-page "https://github.com/ctSkennerton/fxtract")
+      (synopsis "Extract sequences from FASTA and FASTQ files")
+      (description
+       "Fxtract extracts sequences from a protein or nucleotide fastx (FASTA
+or FASTQ) file given a subsequence.  It uses a simple substring search for
+basic tasks but can change to using POSIX regular expressions, PCRE, hash
+lookups or multi-pattern searching as required.  By default fxtract looks in
+the sequence of each record but can also be told to look in the header,
+comment or quality sections.")
+      (license license:expat))))
+
 (define-public grit
   (package
     (name "grit")
@@ -1643,7 +1698,7 @@ from high-throughput sequencing assays.")
                        '(configure install check)))))
     (native-inputs
      `(("ant" ,ant)
-       ("jdk" ,icedtea6 "jdk")))
+       ("jdk" ,icedtea "jdk")))
     (home-page "http://samtools.github.io/htsjdk/")
     (synopsis "Java API for high-throughput sequencing data (HTS) formats")
     (description
@@ -1737,6 +1792,55 @@ data.  It also provides the bgzip, htsfile, and tabix utilities.")
 to measure the reproducibility of findings identified from replicate
 experiments and provide highly stable thresholds based on reproducibility.")
     (license license:gpl3+)))
+
+(define-public jellyfish
+  (package
+    (name "jellyfish")
+    (version "2.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/gmarcais/Jellyfish/"
+                                  "releases/download/v" version
+                                  "/jellyfish-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0a6xnynqy2ibfbfz86b9g2m2dgm7f1469pmymkpam333gi3p26nk"))))
+    (build-system gnu-build-system)
+    (outputs '("out"      ;for library
+               "ruby"     ;for Ruby bindings
+               "python")) ;for Python bindings
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--enable-ruby-binding="
+                            (assoc-ref %outputs "ruby"))
+             (string-append "--enable-python-binding="
+                            (assoc-ref %outputs "python")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-SHELL-variable
+           (lambda _
+             ;; generator_manager.hpp either uses /bin/sh or $SHELL
+             ;; to run tests.
+             (setenv "SHELL" (which "bash"))
+             #t)))))
+    (native-inputs
+     `(("bc" ,bc)
+       ("time" ,time)
+       ("ruby" ,ruby)
+       ("python" ,python-2)))
+    (synopsis "Tool for fast counting of k-mers in DNA")
+    (description
+     "Jellyfish is a tool for fast, memory-efficient counting of k-mers in
+DNA.  A k-mer is a substring of length k, and counting the occurrences of all
+such substrings is a central step in many analyses of DNA sequence.  Jellyfish
+is a command-line program that reads FASTA and multi-FASTA files containing
+DNA sequences.  It outputs its k-mer counts in a binary format, which can be
+translated into a human-readable text format using the @code{jellyfish dump}
+command, or queried for specific k-mers with @code{jellyfish query}.")
+    (home-page "http://www.genome.umd.edu/jellyfish.html")
+    ;; The combined work is published under the GPLv3 or later.  Individual
+    ;; files such as lib/jsoncpp.cpp are released under the Expat license.
+    (license (list license:gpl3+ license:expat))))
 
 (define-public macs
   (package
@@ -2284,7 +2388,7 @@ distribution, coverage uniformity, strand specificity, etc.")
 (define-public samtools
   (package
     (name "samtools")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
@@ -2293,38 +2397,23 @@ distribution, coverage uniformity, strand specificity, etc.")
                        version "/samtools-" version ".tar.bz2"))
        (sha256
         (base32
-         "1akdqb685pk9xk1nb6sa9aq8xssjjhvvc06kp4cpdqvz2157l3j2"))))
+         "03mnf0mhbfwhqlqfslrhfnw68s3g0fs1as354i9a584mqw1l1smy"))))
     (build-system gnu-build-system)
     (arguments
-     `(;; There are 87 test failures when building on non-64-bit architectures
-       ;; due to invalid test data.  This has since been fixed upstream (see
-       ;; <https://github.com/samtools/samtools/pull/307>), but as there has
-       ;; not been a new release we disable the tests for all non-64-bit
-       ;; systems.
-       #:tests? ,(string=? (or (%current-system) (%current-target-system))
-                           "x86_64-linux")
-       #:modules ((ice-9 ftw)
+     `(#:modules ((ice-9 ftw)
                   (ice-9 regex)
                   (guix build gnu-build-system)
                   (guix build utils))
-       #:make-flags (list "LIBCURSES=-lncurses"
-                          (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:configure-flags (list "--with-ncurses")
        #:phases
        (alist-cons-after
-        'unpack
-        'patch-tests
-        (lambda* (#:key inputs #:allow-other-keys)
-          (let ((bash (assoc-ref inputs "bash")))
-            (substitute* "test/test.pl"
-              ;; The test script calls out to /bin/bash
-              (("/bin/bash")
-               (string-append bash "/bin/bash"))
-              ;; There are two failing tests upstream relating to the "stats"
-              ;; subcommand in test_usage_subcommand ("did not have Usage"
-              ;; and "usage did not mention samtools stats"), so we disable
-              ;; them.
-              (("(test_usage_subcommand\\(.*\\);)" cmd)
-               (string-append "unless ($subcommand eq 'stats') {" cmd "};")))))
+        'unpack 'patch-tests
+        (lambda _
+          (substitute* "test/test.pl"
+            ;; The test script calls out to /bin/bash
+            (("/bin/bash") (which "bash")))
+          #t)
         (alist-cons-after
          'install 'install-library
          (lambda* (#:key outputs #:allow-other-keys)
@@ -2339,7 +2428,7 @@ distribution, coverage uniformity, strand specificity, etc.")
                           (install-file file include))
                         (scandir "." (lambda (name) (string-match "\\.h$" name))))
               #t))
-          (alist-delete 'configure %standard-phases))))))
+          %standard-phases)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("ncurses" ,ncurses)
               ("perl" ,perl)
@@ -2489,7 +2578,7 @@ simultaneously.")
             `(modify-phases ,phases
                (replace 'enter-dir (lambda _ (chdir "ngs-java") #t)))))))
     (inputs
-     `(("jdk" ,icedtea6 "jdk")
+     `(("jdk" ,icedtea "jdk")
        ("ngs-sdk" ,ngs-sdk)))
     (synopsis "Java bindings for NGS SDK")))
 
@@ -3416,6 +3505,495 @@ genomic annotations and alignments is playing a central role when it comes to
 analyzing high-throughput sequencing data (a.k.a. NGS data).  The
 GenomicRanges package defines general purpose containers for storing and
 manipulating genomic intervals and variables defined along a genome.")
+    (license license:artistic2.0)))
+
+(define-public r-biobase
+  (package
+    (name "r-biobase")
+    (version "2.30.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "Biobase" version))
+              (sha256
+               (base32
+                "1qasjpq3kw8h7qw8cin3bjvv1256hqr1mm24fq3v0ymxzlb66szi"))))
+    (properties
+     `((upstream-name . "Biobase")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)))
+    (home-page "http://bioconductor.org/packages/Biobase")
+    (synopsis "Base functions for Bioconductor")
+    (description
+     "This package provides functions that are needed by many other packages
+on Bioconductor or which replace R functions.")
+    (license license:artistic2.0)))
+
+(define-public r-annotationdbi
+  (package
+    (name "r-annotationdbi")
+    (version "1.32.2")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "AnnotationDbi" version))
+              (sha256
+               (base32
+                "08ncdjvq0l44kqyiv32kn9wnbw1xgfb6qjfzfbjpqrcfp1jygz9j"))))
+    (properties
+     `((upstream-name . "AnnotationDbi")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-dbi" ,r-dbi)
+       ("r-iranges" ,r-iranges)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "http://bioconductor.org/packages/AnnotationDbi")
+    (synopsis "Annotation database interface")
+    (description
+     "This package provides user interface and database connection code for
+annotation data packages using SQLite data storage.")
+    (license license:artistic2.0)))
+
+(define-public r-biomart
+  (package
+    (name "r-biomart")
+    (version "2.26.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "biomaRt" version))
+              (sha256
+               (base32
+                "1s709055abj2gd35g6nnk5d2ai5ii09iir270l2xika6pi62gj3f"))))
+    (properties
+     `((upstream-name . "biomaRt")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-rcurl" ,r-rcurl)
+       ("r-xml" ,r-xml)))
+    (home-page "http://bioconductor.org/packages/biomaRt")
+    (synopsis "Interface to BioMart databases")
+    (description
+     "biomaRt provides an interface to a growing collection of databases
+implementing the @url{BioMart software suite, http://www.biomart.org}.  The
+package enables retrieval of large amounts of data in a uniform way without
+the need to know the underlying database schemas or write complex SQL queries.
+Examples of BioMart databases are Ensembl, COSMIC, Uniprot, HGNC, Gramene,
+Wormbase and dbSNP mapped to Ensembl.  These major databases give biomaRt
+users direct access to a diverse set of data and enable a wide range of
+powerful online queries from gene annotation to database mining.")
+    (license license:artistic2.0)))
+
+(define-public r-biocparallel
+  (package
+    (name "r-biocparallel")
+    (version "1.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "BiocParallel" version))
+              (sha256
+               (base32
+                "1f5mndx66vampcsq0n66afg6x851crl0h3nyv2nyp9bsgzj9cdzq"))))
+    (properties
+     `((upstream-name . "BiocParallel")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-futile-logger" ,r-futile-logger)
+       ("r-snow" ,r-snow)))
+    (home-page "http://bioconductor.org/packages/BiocParallel")
+    (synopsis "Bioconductor facilities for parallel evaluation")
+    (description
+     "This package provides modified versions and novel implementation of
+functions for parallel evaluation, tailored to use with Bioconductor
+objects.")
+    (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-biostrings
+  (package
+    (name "r-biostrings")
+    (version "2.38.2")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "Biostrings" version))
+              (sha256
+               (base32
+                "1afp9szc8ci6jn0m3hrrqh6df65cpw3v1dcnl6xir3d3m3lwwmk4"))))
+    (properties
+     `((upstream-name . "Biostrings")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xvector" ,r-xvector)))
+    (home-page "http://bioconductor.org/packages/Biostrings")
+    (synopsis "String objects and algorithms for biological sequences")
+    (description
+     "This package provides memory efficient string containers, string
+matching algorithms, and other utilities, for fast manipulation of large
+biological sequences or sets of sequences.")
+    (license license:artistic2.0)))
+
+(define-public r-rsamtools
+  (package
+    (name "r-rsamtools")
+    (version "1.22.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "Rsamtools" version))
+              (sha256
+               (base32
+                "1yc3nzzms3igjwr4l9yd3wdac95glcs08b4cfp7disyly0wcskjd"))))
+    (properties
+     `((upstream-name . "Rsamtools")))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-system-zlib
+           (lambda _
+             (substitute* "DESCRIPTION"
+               (("zlibbioc, ") ""))
+             (substitute* "NAMESPACE"
+               (("import\\(zlibbioc\\)") ""))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biostrings" ,r-biostrings)
+       ("r-bitops" ,r-bitops)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xvector" ,r-xvector)))
+    (home-page "http://bioconductor.org/packages/release/bioc/html/Rsamtools.html")
+    (synopsis "Interface to samtools, bcftools, and tabix")
+    (description
+     "This package provides an interface to the 'samtools', 'bcftools', and
+'tabix' utilities for manipulating SAM (Sequence Alignment / Map), FASTA,
+binary variant call (BCF) and compressed indexed tab-delimited (tabix)
+files.")
+    (license license:expat)))
+
+(define-public r-summarizedexperiment
+  (package
+    (name "r-summarizedexperiment")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "SummarizedExperiment" version))
+              (sha256
+               (base32
+                "0w1dwp99p6i7sc3cn0ir3dr8ksgxwjf16675h5i8n6gbv4rl9lz6"))))
+    (properties
+     `((upstream-name . "SummarizedExperiment")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-s4vectors" ,r-s4vectors)))
+    (home-page "http://bioconductor.org/packages/SummarizedExperiment")
+    (synopsis "Container for representing genomic ranges by sample")
+    (description
+     "The SummarizedExperiment container contains one or more assays, each
+represented by a matrix-like object of numeric or other mode.  The rows
+typically represent genomic ranges of interest and the columns represent
+samples.")
+    (license license:artistic2.0)))
+
+(define-public r-genomicalignments
+  (package
+    (name "r-genomicalignments")
+    (version "1.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "GenomicAlignments" version))
+              (sha256
+               (base32
+                "03pxzkmwcpl0d7a09ahan0nllfv7qw2i7w361w6af2s4n3xwrniz"))))
+    (properties
+     `((upstream-name . "GenomicAlignments")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biocparallel" ,r-biocparallel)
+       ("r-biostrings" ,r-biostrings)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)))
+    (home-page "http://bioconductor.org/packages/GenomicAlignments")
+    (synopsis "Representation and manipulation of short genomic alignments")
+    (description
+     "This package provides efficient containers for storing and manipulating
+short genomic alignments (typically obtained by aligning short reads to a
+reference genome).  This includes read counting, computing the coverage,
+junction detection, and working with the nucleotide content of the
+alignments.")
+    (license license:artistic2.0)))
+
+(define-public r-rtracklayer
+  (package
+    (name "r-rtracklayer")
+    (version "1.30.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "rtracklayer" version))
+              (sha256
+               (base32
+                "1if31hg56islx5vwydpgs5gkyas26kyvv2ljv1c7jikpm62w14qv"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-system-zlib
+           (lambda _
+             (substitute* "DESCRIPTION"
+               (("zlibbioc, ") ""))
+             (substitute* "NAMESPACE"
+               (("import\\(zlibbioc\\)") ""))
+             #t)))))
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rcurl" ,r-rcurl)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xml" ,r-xml)
+       ("r-xvector" ,r-xvector)))
+    (home-page "http://bioconductor.org/packages/rtracklayer")
+    (synopsis "R interface to genome browsers and their annotation tracks")
+    (description
+     "rtracklayer is an extensible framework for interacting with multiple
+genome browsers (currently UCSC built-in) and manipulating annotation tracks
+in various formats (currently GFF, BED, bedGraph, BED15, WIG, BigWig and 2bit
+built-in).  The user may export/import tracks to/from the supported browsers,
+as well as query and modify the browser state, such as the current viewport.")
+    (license license:artistic2.0)))
+
+(define-public r-genomicfeatures
+  (package
+    (name "r-genomicfeatures")
+    (version "1.22.7")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "GenomicFeatures" version))
+              (sha256
+               (base32
+                "1jb4s49ar5j9qslpd3kfdg2wrl4q7ciysd55h9a7zvspymxcngq8"))))
+    (properties
+     `((upstream-name . "GenomicFeatures")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-biomart" ,r-biomart)
+       ("r-biostrings" ,r-biostrings)
+       ("r-dbi" ,r-dbi)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rcurl" ,r-rcurl)
+       ("r-rsqlite" ,r-rsqlite)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xvector" ,r-xvector)))
+    (home-page "http://bioconductor.org/packages/GenomicFeatures")
+    (synopsis "Tools for working with transcript centric annotations")
+    (description
+     "This package provides a set of tools and methods for making and
+manipulating transcript centric annotations.  With these tools the user can
+easily download the genomic locations of the transcripts, exons and cds of a
+given organism, from either the UCSC Genome Browser or a BioMart
+database (more sources will be supported in the future).  This information is
+then stored in a local database that keeps track of the relationship between
+transcripts, exons, cds and genes.  Flexible methods are provided for
+extracting the desired features in a convenient format.")
+    (license license:artistic2.0)))
+
+(define-public r-go-db
+  (package
+    (name "r-go-db")
+    (version "3.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "GO.db" version))
+              (sha256
+               (base32
+                "00gariag9ampz82dh0xllrc26r85d7vdcwc0vca5zdy147rwxr7f"))))
+    (properties
+     `((upstream-name . "GO.db")))
+    (build-system r-build-system)
+    (home-page "http://bioconductor.org/packages/GO.db")
+    (synopsis "Annotation maps describing the entire Gene Ontology")
+    (description
+     "The purpose of this GO.db annotation package is to provide detailed
+information about the latest version of the Gene Ontologies.")
+    (license license:artistic2.0)))
+
+(define-public r-topgo
+  (package
+    (name "r-topgo")
+    (version "2.22.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "topGO" version))
+              (sha256
+               (base32
+                "029j9nb39b8l9xlzsp83pmjr8ap247aia387yzaa1yyw8klapdaf"))))
+    (properties
+     `((upstream-name . "topGO")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biobase" ,r-biobase)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-go-db" ,r-go-db)
+       ("r-sparsem" ,r-sparsem)))
+    (home-page "http://bioconductor.org/packages/topGO")
+    (synopsis "Enrichment analysis for gene ontology")
+    (description
+     "The topGO package provides tools for testing @dfn{gene ontology} (GO)
+terms while accounting for the topology of the GO graph.  Different test
+statistics and different methods for eliminating local similarities and
+dependencies between GO terms can be implemented and applied.")
+    ;; Any version of the LGPL applies.
+    (license license:lgpl2.1+)))
+
+(define-public r-bsgenome
+  (package
+    (name "r-bsgenome")
+    (version "1.38.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "BSgenome" version))
+              (sha256
+               (base32
+                "130w0m6q8kkca7gyz1aqj5jjhalwvwi6rk2yvbjrnj4gpnncyrd2"))))
+    (properties
+     `((upstream-name . "BSgenome")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)
+       ("r-biostrings" ,r-biostrings)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-s4vectors" ,r-s4vectors)
+       ("r-xvector" ,r-xvector)))
+    (home-page "http://bioconductor.org/packages/BSgenome")
+    (synopsis "Infrastructure for Biostrings-based genome data packages")
+    (description
+     "This package provides infrastructure shared by all Biostrings-based
+genome data packages and support for efficient SNP representation.")
+    (license license:artistic2.0)))
+
+(define-public r-impute
+  (package
+    (name "r-impute")
+    (version "1.44.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "impute" version))
+              (sha256
+               (base32
+                "0y4x5jk7gsf4xn56jrkdcdnxpcfll4h6ivncd7n4snmzixldvmvw"))))
+    (inputs
+     `(("gfortran" ,gfortran)))
+    (build-system r-build-system)
+    (home-page "http://bioconductor.org/packages/impute")
+    (synopsis "Imputation for microarray data")
+    (description
+     "This package provides a function to impute missing gene expression
+microarray data, using nearest neighbor averaging.")
+    (license license:gpl2+)))
+
+(define-public r-seqpattern
+  (package
+    (name "r-seqpattern")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "seqPattern" version))
+              (sha256
+               (base32
+                "0p9zj6bic7sa0hb2bjm988kkk5n9r1kvlbqkzvy702f642n0j53i"))))
+    (properties
+     `((upstream-name . "seqPattern")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-iranges" ,r-iranges)
+       ("r-plotrix" ,r-plotrix)))
+    (home-page "http://bioconductor.org/packages/seqPattern")
+    (synopsis "Visualising oligonucleotide patterns and motif occurrences")
+    (description
+     "This package provides tools to visualize oligonucleotide patterns and
+sequence motif occurrences across a large set of sequences centred at a common
+reference point and sorted by a user defined feature.")
+    (license license:gpl3+)))
+
+(define-public r-genomation
+  (package
+    (name "r-genomation")
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "genomation" version))
+              (sha256
+               (base32
+                "1mzs995snwim13qk9kz4q3nczpnbsy1allwp4whfq0cflg2mndfr"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-data-table" ,r-data-table)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicalignments" ,r-genomicalignments)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridbase" ,r-gridbase)
+       ("r-impute" ,r-impute)
+       ("r-iranges" ,r-iranges)
+       ("r-matrixstats" ,r-matrixstats)
+       ("r-plotrix" ,r-plotrix)
+       ("r-plyr" ,r-plyr)
+       ("r-readr" ,r-readr)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-rtracklayer" ,r-rtracklayer)
+       ("r-seqpattern" ,r-seqpattern)))
+    (home-page "http://bioinformatics.mdc-berlin.de/genomation/")
+    (synopsis "Summary, annotation and visualization of genomic data")
+    (description
+     "This package provides a package for summary and annotation of genomic
+intervals.  Users can visualize and quantify genomic intervals over
+pre-defined functional regions, such as promoters, exons, introns, etc.  The
+genomic intervals represent regions with a defined chromosome position, which
+may be associated with a score, such as aligned reads from HT-seq experiments,
+TF binding sites, methylation scores, etc.  The package can use any tabular
+genomic feature data as long as it has minimal information on the locations of
+genomic intervals.  In addition, it can use BAM or BigWig files as input.")
     (license license:artistic2.0)))
 
 (define-public r-qtl

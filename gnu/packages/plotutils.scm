@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,11 +22,21 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages algebra)
+  #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages texlive)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages))
 
@@ -156,3 +167,61 @@ just-in-time graph generation, handles date and time data nicely, and has
 basic statistical capabilities.  It allows significant user control over
 colors, styles, options and details.")
     (license license:gpl2+)))
+
+(define-public asymptote
+  (package
+    (name "asymptote")
+    (version "2.35")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/asymptote/"
+                                  version "/asymptote-" version ".src.tgz"))
+              (sha256
+               (base32
+                "11f28vxw0ybhvl7vxmqcdwvw7y6gz55ykw9ybgzb2px6lsvgag7z"))
+              (patches (list (search-patch "asymptote-gsl2.patch")))))
+    (build-system gnu-build-system)
+    ;; Note: The 'asy' binary retains a reference to docdir for use with its
+    ;; "help" command in interactive mode, so adding a "doc" output is not
+    ;; currently useful.
+    (native-inputs
+     `(("gs" ,ghostscript)              ;For tests
+       ("texinfo" ,texinfo)             ;For generating documentation
+       ("texlive" ,texlive)             ;For tests and documentation
+       ("perl" ,perl)))
+    (inputs
+     `(("fftw" ,fftw)
+       ("freeglut" ,freeglut)
+       ("gsl" ,gsl)
+       ("libgc" ,libgc)
+       ("python" ,python-2)
+       ("readline" ,readline)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--enable-gc=" (assoc-ref %build-inputs "libgc"))
+             (string-append "--with-latex="
+                            (assoc-ref %outputs "out")
+                            "/share/texmf/tex/latex")
+             (string-append "--with-context="
+                            (assoc-ref %outputs "out")
+                            "/share/texmf/tex/context/third"))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'patch-pdf-viewer
+                    (lambda _
+                      ;; Default to a free pdf viewer
+                      (substitute* "settings.cc"
+                        (("defaultPDFViewer=\"acroread\"")
+                         "defaultPDFViewer=\"gv\"")))))))
+    (home-page "http://asymptote.sourceforge.net")
+    (synopsis "Script-based vector graphics language")
+    (description
+     "Asymptote is a powerful descriptive vector graphics language for
+technical drawing, inspired by MetaPost but with an improved C++-like syntax.
+Asymptote provides for figures the same high-quality level of typesetting that
+LaTeX does for scientific text.")
+    ;; Most source files do not contain license statements, but the README
+    ;; contains: "All source files in the Asymptote project, unless explicitly
+    ;; noted otherwise, are released under version 3 (or later) of the GNU
+    ;; Lesser General Public License"
+    (license license:lgpl3+)))

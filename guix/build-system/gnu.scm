@@ -96,10 +96,11 @@ builder, or the distro's final Guile when GUILE is #f."
     (package (inherit p)
       (location (if (pair? loc) (source-properties->location loc) loc))
       (arguments
-       (let ((args (package-arguments p)))
-         `(#:guile ,guile
-           #:implicit-inputs? #f
-           ,@args)))
+       ;; 'ensure-keyword-arguments' guarantees that this procedure is
+       ;; idempotent.
+       (ensure-keyword-arguments (package-arguments p)
+                                 `(#:guile ,guile
+                                   #:implicit-inputs? #f)))
       (replacement
        (let ((replacement (package-replacement p)))
          (and replacement
@@ -177,9 +178,10 @@ use `--strip-all' as the arguments to `strip'."
               flags)))))
     (replacement (and=> (package-replacement p) static-package))))
 
-(define* (dist-package p source)
+(define* (dist-package p source #:key (phases '%dist-phases))
   "Return a package that runs takes source files from the SOURCE directory,
-runs `make distcheck' and whose result is one or more source tarballs."
+runs `make distcheck' and whose result is one or more source tarballs.  The
+exact build phases are defined by PHASES."
   (let ((s source))
     (package (inherit p)
       (name (string-append (package-name p) "-dist"))
@@ -198,7 +200,7 @@ runs `make distcheck' and whose result is one or more source tarballs."
             `((guix build gnu-dist)
               ,@modules))
            ((#:phases _)
-            '%dist-phases))))
+            phases))))
       (native-inputs
        ;; Add autotools & co. as inputs.
        (let ((ref (lambda (module var)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,11 +60,10 @@
   "Return the derivation of the default "
   (package-derivation store (default-guile) system))
 
-(define (store-monad-language)
-  "Return a compiler language for the store monad."
-  (let* ((store (open-connection))
-         (guile (or (%guile-for-build)
-                    (default-guile-derivation store))))
+(define (store-monad-language store)
+  "Return a compiler language for the store monad using STORE."
+  (let ((guile (or (%guile-for-build)
+                   (default-guile-derivation store))))
     (monad-language %store-monad
                     (cut run-with-store store <>
                          #:guile-for-build guile)
@@ -84,10 +83,11 @@ Run EXP through the store monad."
 (define-meta-command ((enter-store-monad guix) repl)
   "enter-store-monad
 Enter a REPL for values in the store monad."
-  (let ((new (make-repl (store-monad-language))))
-    ;; Force interpretation so that our specially-crafted language evaluator
-    ;; is actually used.
-    (repl-option-set! new 'interp #t)
-    (run-repl new)))
+  (with-store store
+    (let ((new (make-repl (store-monad-language store))))
+      ;; Force interpretation so that our specially-crafted language evaluator
+      ;; is actually used.
+      (repl-option-set! new 'interp #t)
+      (run-repl new))))
 
 ;;; monad-repl.scm ends here

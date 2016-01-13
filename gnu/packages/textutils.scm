@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Roel Janssen <roel@gnu.org>
 ;;;
@@ -25,6 +25,7 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages python))
 
@@ -95,7 +96,7 @@ libenca and several charset conversion libraries and tools.")
 (define-public utf8proc
   (package
     (name "utf8proc")
-    (version "1.1.6")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
@@ -104,23 +105,15 @@ libenca and several charset conversion libraries and tools.")
              version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0wmsi672knii0q70wh6a3ll0gv7qk33c50zbpzasrs3b16bqy659"))))
+        (base32 "1k48as5kjkar4yj3dwxyll8ykj4k723ib5a6mnw1g86q3zi0zdl3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;no "check" target
-       #:make-flags '("CC=gcc")
+       #:make-flags (list "CC=gcc"
+                          (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
-       (alist-replace
-        'install
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((lib (string-append (assoc-ref outputs "out") "/lib/"))
-                (include (string-append (assoc-ref outputs "out") "/include/")))
-            (install-file "utf8proc.h" include)
-            (for-each (lambda (file)
-                        (install-file file lib))
-                      '("libutf8proc.a" "libutf8proc.so"))))
-        ;; no configure script
-        (alist-delete 'configure %standard-phases))))
+       (modify-phases %standard-phases
+         (delete 'configure))))
     (home-page "http://julialang.org/utf8proc/")
     (synopsis "C library for processing UTF-8 Unicode data")
     (description "utf8proc is a small C library that provides Unicode
@@ -201,3 +194,26 @@ files.  This file format is more compact and more readable than XML.  And
 unlike XML, it is type-aware, so it is not necessary to do string parsing in
 application code.")
     (license license:lgpl2.1+)))
+
+(define-public pfff
+  (package
+    (name "pfff")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/pfff/pfff/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "00m553aa277iarxj6dalmklyb64r7ias49bfwzbacsfg8h3kar8m"))))
+    (build-system cmake-build-system)
+    (home-page "http://biit.cs.ut.ee/pfff/")
+    (synopsis "Probabilistic fast file fingerprinting tool")
+    (description
+     "pfff is a tool for calculating a compact digital fingerprint of a file
+by sampling randomly from the file instead of reading it in full.
+Consequently, the computation has a flat performance characteristic,
+correlated with data variation rather than file size.  pfff can be as reliable
+as existing hashing techniques, with provably negligible risk of collisions.")
+    (license license:bsd-3)))

@@ -463,14 +463,14 @@ script files.")
 (define-public gmsh
   (package
     (name "gmsh")
-    (version "2.8.4")
+    (version "2.11.0")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://www.geuz.org/gmsh/src/gmsh-"
                           version "-source.tgz"))
       (sha256
-       (base32 "0jv2yvk28w86rx5mvjkb0w12ff2jxih7axnpvznpd295lg5jg7hr"))
+       (base32 "1ilplibvjgf7a905grpnclrvkmqy9fgrpl7xyp3w4yl1qc682v9b"))
       (modules '((guix build utils)))
       (snippet
        ;; Remove non-free METIS code
@@ -489,7 +489,15 @@ script files.")
     (arguments
      `(#:configure-flags `("-DENABLE_METIS:BOOL=OFF"
                            "-DENABLE_BUILD_SHARED:BOOL=ON"
-                           "-DENABLE_BUILD_DYNAMIC:BOOL=ON")))
+                           "-DENABLE_BUILD_DYNAMIC:BOOL=ON")
+       #:phases (modify-phases %standard-phases
+                  (replace
+                   'check
+                   (lambda _
+                     (zero? (system* "make" "test"
+                                     ;; Disable this test.  See
+                                     ;; https://geuz.org/trac/gmsh/ticket/271
+                                     "ARGS=-E component8_in_a_box")))))))
     (home-page "http://www.geuz.org/gmsh/")
     (synopsis "3D finite element grid generator")
     (description "Gmsh is a 3D finite element grid generator with a built-in

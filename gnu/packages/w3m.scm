@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,8 +44,10 @@
                "1qx9f0kprf92r1wxl3sacykla0g04qsi0idypzz24b7xy9ix5579"))
 
              ;; cf. https://bugs.archlinux.org/task/33397
-             (patches (list (search-patch "w3m-fix-compile.patch")))
-             (patch-flags '("-p0"))))
+             (patches (list (search-patch "w3m-libgc.patch")
+                            (search-patch "w3m-force-ssl_verify_server-on.patch")
+                            (search-patch "w3m-disable-sslv2-and-sslv3.patch")
+                            (search-patch "w3m-disable-weak-ciphers.patch")))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f  ; no check target
                  #:phases (alist-cons-before

@@ -522,7 +522,8 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0mj6xn40py9r9lvzg633fal81xfwfm89d9mvz7jk4lmwk0g49imj"))))
+              "0mj6xn40py9r9lvzg633fal81xfwfm89d9mvz7jk4lmwk0g49imj"))
+            (patches (list (search-patch "gtk2-respect-GUIX_GTK2_PATH.patch")))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (propagated-inputs
@@ -557,7 +558,11 @@ is part of the GNOME accessibility project.")
          ;; FIXME: re-enable tests requiring an X server
          (substitute* "gtk/Makefile.in"
            (("SUBDIRS = theme-bits . tests") "SUBDIRS = theme-bits .")))
-      %standard-phases)))
+       %standard-phases)))
+   (native-search-paths
+    (list (search-path-specification
+           (variable "GUIX_GTK2_PATH")
+           (files '("lib/gtk-2.0")))))
    (synopsis "Cross-platform toolkit for creating graphical user interfaces")
    (description
     "GTK+, or the GIMP Toolkit, is a multi-platform toolkit for creating
@@ -578,7 +583,8 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0lp1hn0qydxx03bianzzr0a4maqzsvylrkzr7c3p0050qihwbgjx"))))
+              "0lp1hn0qydxx03bianzzr0a4maqzsvylrkzr7c3p0050qihwbgjx"))
+            (patches (list (search-patch "gtk3-respect-GUIX_GTK3_PATH.patch")))))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
@@ -637,7 +643,11 @@ application suites.")
                  (loaders.cache (find-files librsvg "^loaders\\.cache$")))
             (wrap-program prog
               `("GDK_PIXBUF_MODULE_FILE" = ,loaders.cache))))
-        %standard-phases))))))
+        %standard-phases))))
+   (native-search-paths
+    (list (search-path-specification
+           (variable "GUIX_GTK3_PATH")
+           (files '("lib/gtk-3.0")))))))
 
 ;;;
 ;;; Guile bindings.

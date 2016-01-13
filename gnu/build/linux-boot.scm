@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -381,7 +381,6 @@ to it are lost."
          (start-repl))
 
        (display "loading kernel modules...\n")
-       (current-module-debugging-port (current-output-port))
        (for-each (cut load-linux-module* <>
                       #:lookup-module lookup-module)
                  (map lookup-module linux-modules))

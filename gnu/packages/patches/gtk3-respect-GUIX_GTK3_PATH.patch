@@ -1,0 +1,38 @@
+This patch makes GTK+ look for additional modules in a list of directories
+specified by the environment variable "GUIX_GTK3_PATH".  This can be used
+instead of "GTK_PATH" to make GTK+ find modules that are incompatible with
+other major versions of GTK+.
+
+--- a/gtk/gtkmodules.c	2015-09-20 20:09:05.060590217 +0200
++++ b/gtk/gtkmodules.c	2015-09-20 20:10:33.423124833 +0200
+@@ -52,6 +52,7 @@
+ get_module_path (void)
+ {
+   const gchar *module_path_env;
++  const gchar *module_guix_gtk3_path_env;
+   const gchar *exe_prefix;
+   gchar *module_path;
+   gchar *default_dir;
+@@ -61,6 +62,7 @@
+     return result;
+ 
+   module_path_env = g_getenv ("GTK_PATH");
++  module_guix_gtk3_path_env = g_getenv ("GUIX_GTK3_PATH");
+   exe_prefix = g_getenv ("GTK_EXE_PREFIX");
+ 
+   if (exe_prefix)
+@@ -68,7 +70,13 @@
+   else
+     default_dir = g_build_filename (_gtk_get_libdir (), "gtk-3.0", NULL);
+ 
+-  if (module_path_env)
++  if (module_guix_gtk3_path_env && module_path_env)
++    module_path = g_build_path (G_SEARCHPATH_SEPARATOR_S,
++				module_guix_gtk3_path_env, module_path_env, default_dir, NULL);
++  else if (module_guix_gtk3_path_env)
++    module_path = g_build_path (G_SEARCHPATH_SEPARATOR_S,
++				module_guix_gtk3_path_env, default_dir, NULL);
++  else if (module_path_env)
+     module_path = g_build_path (G_SEARCHPATH_SEPARATOR_S,
+ 				module_path_env, default_dir, NULL);
+   else

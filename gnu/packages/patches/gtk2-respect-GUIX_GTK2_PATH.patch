@@ -1,0 +1,46 @@
+This patch makes GTK+ look for additional modules in a list of directories
+specified by the environment variable "GUIX_GTK2_PATH".  This can be used
+instead of "GTK_PATH" to make GTK+ find modules that are incompatible with
+other major versions of GTK+.
+
+--- a/gtk/gtkmodules.c	2014-09-29 22:02:17.000000000 +0200
++++ b/gtk/gtkmodules.c	2015-12-02 18:41:53.306396938 +0100
+@@ -55,6 +55,7 @@
+ get_module_path (void)
+ {
+   const gchar *module_path_env;
++  const gchar *module_guix_gtk2_path_env;
+   const gchar *exe_prefix;
+   const gchar *home_dir;
+   gchar *home_gtk_dir = NULL;
+@@ -70,6 +71,7 @@
+     home_gtk_dir = g_build_filename (home_dir, ".gtk-2.0", NULL);
+ 
+   module_path_env = g_getenv ("GTK_PATH");
++  module_guix_gtk2_path_env = g_getenv ("GUIX_GTK2_PATH");
+   exe_prefix = g_getenv ("GTK_EXE_PREFIX");
+ 
+   if (exe_prefix)
+@@ -77,9 +79,21 @@
+   else
+     default_dir = g_build_filename (GTK_LIBDIR, "gtk-2.0", NULL);
+ 
+-  if (module_path_env && home_gtk_dir)
++  if (module_guix_gtk2_path_env && module_path_env && home_gtk_dir)
++    module_path = g_build_path (G_SEARCHPATH_SEPARATOR_S,
++				module_guix_gtk2_path_env, module_path_env, home_gtk_dir, default_dir, NULL);
++  else if (module_guix_gtk2_path_env && home_gtk_dir)
++    module_path = g_build_path (G_SEARCHPATH_SEPARATOR_S,
++				module_guix_gtk2_path_env, home_gtk_dir, default_dir, NULL);
++  else if (module_guix_gtk2_path_env && module_path_env)
++    module_path = g_build_path (G_SEARCHPATH_SEPARATOR_S,
++				module_guix_gtk2_path_env, module_path_env, default_dir, NULL);
++  else if (module_path_env && home_gtk_dir)
+     module_path = g_build_path (G_SEARCHPATH_SEPARATOR_S,
+ 				module_path_env, home_gtk_dir, default_dir, NULL);
++  else if (module_guix_gtk2_path_env)
++    module_path = g_build_path (G_SEARCHPATH_SEPARATOR_S,
++				module_guix_gtk2_path_env, default_dir, NULL);
+   else if (module_path_env)
+     module_path = g_build_path (G_SEARCHPATH_SEPARATOR_S,
+ 				module_path_env, default_dir, NULL);

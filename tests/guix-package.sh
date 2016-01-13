@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 #
 # This file is part of GNU Guix.
@@ -30,9 +30,10 @@ readlink_base ()
 
 module_dir="t-guix-package-$$"
 profile="t-profile-$$"
-rm -f "$profile"
+tmpfile="t-guix-package-file-$$"
+rm -f "$profile" "$tmpfile"
 
-trap 'rm -f "$profile" "$profile-"[0-9]* ; rm -rf "$module_dir" t-home-'"$$" EXIT
+trap 'rm -f "$profile" "$profile-"[0-9]* "$tmpfile"; rm -rf "$module_dir" t-home-'"$$" EXIT
 
 # Use `-e' with a non-package expression.
 if guix package --bootstrap -e +;
@@ -95,6 +96,19 @@ export LC_MESSAGES
 test "`guix package -s "An example GNU package" | grep ^name:`" = \
     "name: hello"
 test -z "`guix package -s "n0t4r341p4ck4g3"`"
+
+# Search with one and then two regexps.
+# First we get printed circuit boards *and* board games.
+guix package -s '\<board\>' > "$tmpfile"
+grep '^name: pcb' "$tmpfile"
+grep '^name: gnubg' "$tmpfile"
+
+# Second we get only board games.
+guix package -s '\<board\>' -s game > "$tmpfile"
+grep -v '^name: pcb' "$tmpfile" > /dev/null
+grep '^name: gnubg' "$tmpfile"
+
+rm -f "$tmpfile"
 
 # Make sure `--search' can display all the packages.
 guix package --search="" > /dev/null

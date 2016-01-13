@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
@@ -402,14 +402,14 @@ connection alive.")
                                       bind-release-version)))
     (package
       (name "isc-dhcp")
-      (version "4.3.3")
+      (version "4.3.3-P1")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "http://ftp.isc.org/isc/dhcp/"
                                     version "/dhcp-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "1pjy4lylx7dww1fp2mk5ikya5vxaf97z70279j81n74vn12ljg2m"))))
+                  "08crcsmg4dm2v533aq3883ik8mf4vvvd6r998r4vrgx1zxnqj7n1"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f
@@ -700,12 +700,13 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0263gi6i19fyzzc488n0qw3m518i39f6a7qmrfvahk9j10bkh5j3"))))
+                "0263gi6i19fyzzc488n0qw3m518i39f6a7qmrfvahk9j10bkh5j3"))
+              (patches (list (search-patch "sudo-CVE-2015-5602.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
        (list "--with-logpath=/var/log/sudo.log"
-             "--with-rundir=/run/sudo"
+             "--with-rundir=/var/run/sudo"    ;must be cleaned up at boot time
              "--with-vardir=/var/db/sudo"
              "--with-iologdir=/var/log/sudo-io"
 
