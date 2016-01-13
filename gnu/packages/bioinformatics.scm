@@ -2388,7 +2388,7 @@ distribution, coverage uniformity, strand specificity, etc.")
 (define-public samtools
   (package
     (name "samtools")
-    (version "1.2")
+    (version "1.3")
     (source
      (origin
        (method url-fetch)
@@ -2397,38 +2397,23 @@ distribution, coverage uniformity, strand specificity, etc.")
                        version "/samtools-" version ".tar.bz2"))
        (sha256
         (base32
-         "1akdqb685pk9xk1nb6sa9aq8xssjjhvvc06kp4cpdqvz2157l3j2"))))
+         "03mnf0mhbfwhqlqfslrhfnw68s3g0fs1as354i9a584mqw1l1smy"))))
     (build-system gnu-build-system)
     (arguments
-     `(;; There are 87 test failures when building on non-64-bit architectures
-       ;; due to invalid test data.  This has since been fixed upstream (see
-       ;; <https://github.com/samtools/samtools/pull/307>), but as there has
-       ;; not been a new release we disable the tests for all non-64-bit
-       ;; systems.
-       #:tests? ,(string=? (or (%current-system) (%current-target-system))
-                           "x86_64-linux")
-       #:modules ((ice-9 ftw)
+     `(#:modules ((ice-9 ftw)
                   (ice-9 regex)
                   (guix build gnu-build-system)
                   (guix build utils))
-       #:make-flags (list "LIBCURSES=-lncurses"
-                          (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:make-flags (list (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:configure-flags (list "--with-ncurses")
        #:phases
        (alist-cons-after
-        'unpack
-        'patch-tests
-        (lambda* (#:key inputs #:allow-other-keys)
-          (let ((bash (assoc-ref inputs "bash")))
-            (substitute* "test/test.pl"
-              ;; The test script calls out to /bin/bash
-              (("/bin/bash")
-               (string-append bash "/bin/bash"))
-              ;; There are two failing tests upstream relating to the "stats"
-              ;; subcommand in test_usage_subcommand ("did not have Usage"
-              ;; and "usage did not mention samtools stats"), so we disable
-              ;; them.
-              (("(test_usage_subcommand\\(.*\\);)" cmd)
-               (string-append "unless ($subcommand eq 'stats') {" cmd "};")))))
+        'unpack 'patch-tests
+        (lambda _
+          (substitute* "test/test.pl"
+            ;; The test script calls out to /bin/bash
+            (("/bin/bash") (which "bash")))
+          #t)
         (alist-cons-after
          'install 'install-library
          (lambda* (#:key outputs #:allow-other-keys)
@@ -2443,7 +2428,7 @@ distribution, coverage uniformity, strand specificity, etc.")
                           (install-file file include))
                         (scandir "." (lambda (name) (string-match "\\.h$" name))))
               #t))
-          (alist-delete 'configure %standard-phases))))))
+          %standard-phases)))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("ncurses" ,ncurses)
               ("perl" ,perl)
