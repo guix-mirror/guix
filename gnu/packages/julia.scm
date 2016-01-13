@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,8 +43,8 @@
   #:use-module (ice-9 match))
 
 (define libuv-julia
-  (let ((commit "030481e9d659fd46702ab747caf2cbbe19d537ba")
-        (revision "1"))
+  (let ((commit "07730c4bd595b4d45a498a8ee0bcd53878ff7c10")
+        (revision "2"))
     (package (inherit libuv)
       (name "libuv-julia")
       (version (string-append "0.11.26." revision "-" (string-take commit 8)))
@@ -56,7 +56,7 @@
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1ss63wfr2hghc8kb6ciry394gp6x58haz8vaj57l5mp80z04gd54"))))
+                  "1r0d4wb41w8k3bi9sjr7kapk1ag131ss2fbqa4jz4gnrzvw94sqx"))))
       (build-system gnu-build-system)
       (arguments
        (substitute-keyword-arguments (package-arguments libuv)
@@ -68,7 +68,7 @@
 (define-public julia
   (package
     (name "julia")
-    (version "0.4.2")
+    (version "0.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -76,7 +76,7 @@
                     version "/julia-" version "-full.tar.gz"))
               (sha256
                (base32
-                "0sikirixvryf8z3d0skig22fpip64jk001qsha98iwsrcfiqpyds"))))
+                "1i8k847d8n9v37xg69grpl51dysx36p0phwf0d1qxpsqixdg579b"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
