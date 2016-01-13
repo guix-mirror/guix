@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +47,7 @@
              (guix build-system gnu)
              (gnu packages version-control)
              (gnu packages package-management)
+             (gnu packages imagemagick)
              (gnu packages graphviz)
              (gnu packages man)
              (srfi srfi-1)
@@ -72,12 +73,25 @@
 (define (tarball-package checkout)
   "Return a package that does `make distcheck' from CHECKOUT, a directory
 containing a Git checkout of Guix."
-  (dist-package (package
-                  (inherit guix)
-                  (native-inputs `(("graphviz" ,graphviz)
-                                   ("help2man" ,help2man)
-                                   ,@(package-native-inputs guix))))
-                checkout))
+  (let ((guix (@@ (gnu packages package-management) guix)))
+    (dist-package (package
+                    (inherit guix)
+                    (arguments (package-arguments guix))
+                    (native-inputs `(("imagemagick" ,imagemagick)
+                                     ,@(package-native-inputs guix))))
+                  checkout
+
+                  #:phases
+                  '(modify-phases %dist-phases
+                     (add-before 'build 'build-daemon
+                       ;; Build 'guix-daemon' first so that help2man
+                       ;; successfully creates 'guix-daemon.1'.
+                       (lambda _
+                         (let ((n (number->string
+                                   (parallel-job-count))))
+                           (zero? (system* "make"
+                                           "nix/libstore/schema.sql.hh"
+                                           "guix-daemon" "-j" n)))))))))
 
 (define (hydra-jobs store arguments)
   "Return Hydra jobs."
