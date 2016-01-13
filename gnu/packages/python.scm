@@ -7009,3 +7009,26 @@ output, progress bar display, and pipes.")
 
 (define-public python2-clint
   (package-with-python2 python-clint))
+
+(define-public python-astor
+  (package
+    (name "python-astor")
+    (version "0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "astor" version))
+              (sha256
+               (base32
+                "1fdafq5hkis1fxqlmhw0sn44zp2ar46nxhbc22cvwg7hsd8z5gsa"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/berkerpeksag/astor")
+    (synopsis "Read and write Python ASTs")
+    (description
+     "Astor is designed to allow easy manipulation of Python source via the
+Abstract Syntax Tree.")
+    (license bsd-3)))
+
+(define-public python2-astor
+  (package-with-python2 python-astor))
