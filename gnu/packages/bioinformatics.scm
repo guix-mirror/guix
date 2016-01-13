@@ -4257,6 +4257,32 @@ genomic feature data as long as it has minimal information on the locations of
 genomic intervals.  In addition, it can use BAM or BigWig files as input.")
     (license license:artistic2.0)))
 
+(define-public r-org-hs-eg-db
+  (package
+    (name "r-org-hs-eg-db")
+    (version "3.2.3")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "org.Hs.eg.db_" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xicgkbh6xkvs74s1piafqac63dyz2ycdyil4pj4ghhxx2sabm6p"))))
+    (properties
+     `((upstream-name . "org.Hs.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "http://www.bioconductor.org/packages/org.Hs.eg.db/")
+    (synopsis "Genome wide annotation for Human")
+    (description
+     "This package provides mappings from Entrez gene identifiers to various
+annotations for the human genome.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
