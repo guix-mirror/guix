@@ -7032,3 +7032,28 @@ Abstract Syntax Tree.")
 
 (define-public python2-astor
   (package-with-python2 python-astor))
+
+(define-public python-rply
+  (package
+    (name "python-rply")
+    (version "0.7.4")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "rply" version))
+              (sha256
+               (base32
+                "12rp1d9ba7nvd5rhaxi6xzx1rm67r1k1ylsrkzhpwnphqpb06cvj"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-appdirs" ,python-appdirs)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/alex/rply")
+    (synopsis "Parser generator for Python")
+    (description
+     "This package provides a pure Python based parser generator, that also
+works with RPython.  It is a more-or-less direct port of David Bazzley's PLY,
+with a new public API, and RPython support.")
+    (license bsd-3)))
+
+(define-public python2-rply
+  (package-with-python2 python-rply))
