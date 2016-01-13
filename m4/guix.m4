@@ -175,9 +175,9 @@ AC_DEFUN([GUIX_TEST_ROOT_DIRECTORY], [
     [ac_cv_guix_test_root="`pwd`/test-tmp"])
 ])
 
-dnl 'BINPRM_BUF_SIZE' constant in Linux.  The Hurd has a limit
-dnl of about a page (see exec/hashexec.c.)
-m4_define([LINUX_HASH_BANG_LIMIT], 128)
+dnl 'BINPRM_BUF_SIZE' constant in Linux (we leave room for the trailing zero.)
+dnl The Hurd has a limit of about a page (see exec/hashexec.c.)
+m4_define([LINUX_HASH_BANG_LIMIT], 127)
 
 dnl Hardcoded 'sun_path' length in <sys/un.h>.
 m4_define([SOCKET_FILE_NAME_LIMIT], 108)
