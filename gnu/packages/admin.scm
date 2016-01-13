@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages linux)
@@ -49,6 +51,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages texinfo)
@@ -1456,3 +1459,40 @@ cryptographic key.  Clients within this security realm can create and validate
 credentials without the use of root privileges, reserved ports, or
 platform-specific methods.")
     (license license:gpl3+)))
+
+(define-public audit
+  (package
+    (name "audit")
+    (version "2.4.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://people.redhat.com/sgrubb/audit/"
+                                  "audit-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1q1q51dvxscbi4kbakmd4bn0xrvwwaiwvaya79925cbrqwzxsg77"))))
+    (build-system gnu-build-system)
+    (home-page "http://people.redhat.com/sgrubb/audit/")
+    (arguments
+     `(#:configure-flags (list "--with-python=no")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             ;; In the build environmnte /etc/passwd does not contain an entry
+             ;; for root/0, so we have to patch the expected value.
+             (substitute* "auparse/test/auparse_test.ref"
+               (("=0 \\(root\\)") "=0 (unknown(0))"))
+             #t)))))
+    (inputs
+     `(("openldap" ,openldap)
+       ("openssl" ,openssl)
+       ("sasl" ,cyrus-sasl)))
+    (synopsis "User-space component to the Linux auditing system")
+    (description
+     "auditd is the user-space component to the Linux auditing system, which
+allows logging of system calls made by user-land processes.  It's responsible
+for writing audit records to the disk.  Viewing the logs is done with the
+@code{ausearch} or @code{aureport} utilities.  Configuring the audit rules is
+done with the @code{auditctl} utility.")
+    (license license:gpl2+)))
