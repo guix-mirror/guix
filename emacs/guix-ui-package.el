@@ -349,6 +349,10 @@ formatted with this string, an action button is inserted.")
                    'name (button-label btn))
              'add)))
 
+(define-button-type 'guix-package-heading
+  :supertype 'guix-package-name
+  'face 'guix-package-info-heading)
+
 (define-button-type 'guix-package-source
   :supertype 'guix
   'face 'guix-package-info-source
@@ -362,8 +366,7 @@ formatted with this string, an action button is inserted.")
   "Insert package ENTRY heading (name specification) at point."
   (guix-insert-button
    (guix-package-entry->name-specification entry)
-   'guix-package-name
-   'face 'guix-package-info-heading))
+   'guix-package-heading))
 
 (defun guix-package-info-insert-systems (systems entry)
   "Insert supported package SYSTEMS at point."
