@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Vicente Vera Parra <vicentemvp@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1676,6 +1676,8 @@ worker processes and collect and return the results on the master.")
                 "0s9kab5khk7daqf6nfp1wm1qnhkssnnwnymisfwyk3kz4q5maqfz"))))
     (properties
      `((upstream-name . "SparseM")))
+    (inputs
+     `(("gfortran" ,gfortran)))
     (build-system r-build-system)
     (home-page "http://www.econ.uiuc.edu/~roger/research/sparse/sparse.html")
     (synopsis "Sparse linear algebra")
