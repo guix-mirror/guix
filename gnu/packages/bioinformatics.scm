@@ -3839,6 +3839,8 @@ extracting the desired features in a convenient format.")
     (properties
      `((upstream-name . "GO.db")))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
     (home-page "http://bioconductor.org/packages/GO.db")
     (synopsis "Annotation maps describing the entire Gene Ontology")
     (description
