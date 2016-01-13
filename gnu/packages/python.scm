@@ -7057,3 +7057,30 @@ with a new public API, and RPython support.")
 
 (define-public python2-rply
   (package-with-python2 python-rply))
+
+(define-public python-hy
+  (package
+    (name "python-hy")
+    (version "0.11.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "hy" version))
+              (sha256
+               (base32
+                "1msqv747iz12r73mz4qvsmlwkddwjvrahlrk7ysrcz07h7dsscxs"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-astor" ,python-astor)
+       ("python-clint" ,python-clint)
+       ("python-rply" ,python-rply)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "http://hylang.org/")
+    (synopsis "Lisp frontend to Python")
+    (description
+     "Hy is a dialect of Lisp that's embedded in Python.  Since Hy transforms
+its Lisp code into the Python Abstract Syntax Tree, you have the whole world of
+Python at your fingertips, in Lisp form.")
+    (license license:expat)))
+
+(define-public python2-hy
+  (package-with-python2 python-hy))
