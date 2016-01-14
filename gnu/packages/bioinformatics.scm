@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
@@ -603,7 +603,7 @@ errors at the end of reads.")
 (define-public bowtie
   (package
     (name "bowtie")
-    (version "2.2.4")
+    (version "2.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BenLangmead/bowtie2/archive/v"
@@ -611,42 +611,36 @@ errors at the end of reads.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "15dnbqippwvhyh9zqjhaxkabk7lm1xbh1nvar1x4b5kwm117zijn"))
+                "1ssfvymxfrap6f9pf86s9bvsbqdgka4abr2r7j3mgr4w1l289m86"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
-                  (("^CC = .*$") "CC = gcc")
-                  (("^CPP = .*$") "CPP = g++")
                   ;; replace BUILD_HOST and BUILD_TIME for deterministic build
                   (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
-                  (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\"")))
-              (patches (list (search-patch "bowtie-fix-makefile.patch")))))
+                  (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\"")))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)
               ("perl-clone" ,perl-clone)
               ("perl-test-deep" ,perl-test-deep)
               ("perl-test-simple" ,perl-test-simple)
-              ("python" ,python-2)))
+              ("python" ,python-2)
+              ("tbb" ,tbb)))
     (arguments
-     '(#:make-flags '("allall")
+     '(#:make-flags
+       (list "allall"
+             "WITH_TBB=1"
+             (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (alist-delete
         'configure
         (alist-replace
-         'install
+         'check
          (lambda* (#:key outputs #:allow-other-keys)
-           (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-             (for-each (lambda (file)
-                         (install-file file bin))
-                       (find-files "." "bowtie2.*"))))
-         (alist-replace
-          'check
-          (lambda* (#:key outputs #:allow-other-keys)
-            (system* "perl"
-                     "scripts/test/simple_tests.pl"
-                     "--bowtie2=./bowtie2"
-                     "--bowtie2-build=./bowtie2-build"))
-          %standard-phases)))))
+           (system* "perl"
+                    "scripts/test/simple_tests.pl"
+                    "--bowtie2=./bowtie2"
+                    "--bowtie2-build=./bowtie2-build"))
+         %standard-phases))))
     (home-page "http://bowtie-bio.sourceforge.net/bowtie2/index.shtml")
     (synopsis "Fast and sensitive nucleotide sequence read aligner")
     (description
