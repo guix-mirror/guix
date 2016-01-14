@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +31,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -218,8 +219,9 @@ compatible to GNU Pth.")
        ("libksba" ,libksba)
        ("npth" ,npth)
        ("openldap" ,openldap)
-       ("zlib" ,zlib)
-       ("readline" ,readline)))
+       ("readline" ,readline)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
    (arguments
     `(#:phases
        (alist-cons-before
