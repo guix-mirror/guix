@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
@@ -195,7 +195,9 @@ output is indexed in many ways to simplify browsing.")
               (base32
                "0dl6vfi2lzz8alnklwxzfz624b95hb1ipjvd3mk177flmddcf24r"))
              (patches
-              (list (search-patch "automake-skip-amhello-tests.patch")))))
+              (map search-patch
+                   '("automake-regexp-syntax.patch"
+                     "automake-skip-amhello-tests.patch")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,(autoconf-wrapper))
