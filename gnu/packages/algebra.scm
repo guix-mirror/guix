@@ -26,6 +26,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages texlive)
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -125,12 +126,13 @@ solve the shortest vector problem.")
               (base32
                 "0c8l83a0gjq73r9hndsrzkypwxvnnm4pxkkzbg6jm95m80nzwh11"))))
    (build-system gnu-build-system)
+   (native-inputs `(("texlive" ,texlive-minimal)))
    (inputs `(("gmp" ,gmp)
              ("libx11" ,libx11)
              ("perl" ,perl)
              ("readline" ,readline)))
    (arguments
-    '(#:make-flags '("gp")
+    '(#:make-flags '("all")
       ;; FIXME: building the documentation requires tex; once this is
       ;; available, replace "gp" by "all"
       #:test-target "dobench"
