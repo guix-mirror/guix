@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
@@ -374,14 +374,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "2.8.4")
+    (version "2.8.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "07wmvp05zanmg3rm539dd0j7h1fi2fk0mcvmv01hjbpy92kq0qwb"))))
+               "1iqa5w96l8ic3axm2pqnb1wsyn4bmlldznj24wrwplfjcyi87yvn"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
