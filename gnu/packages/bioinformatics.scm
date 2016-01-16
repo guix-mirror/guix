@@ -2548,6 +2548,41 @@ RNA-Seq, the MISO model uses Bayesian inference to compute the probability
 that a read originated from a particular isoform.")
     (license license:gpl2)))
 
+(define-public muscle
+  (package
+    (name "muscle")
+    (version "3.8.1551")
+    (source (origin
+              (method url-fetch/tarbomb)
+              (file-name (string-append name "-" version))
+              (uri (string-append
+                    "http://www.drive5.com/muscle/muscle_src_"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0bj8kj7sdizy3987zx6w7axihk40fk8rn76mpbqqjcnd64i5a367"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags (list "LDLIBS = -lm")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'check
+           ;; There are no tests, so just test if it runs.
+           (lambda _ (zero? (system* "./muscle" "-version"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "muscle" bin)))))))
+    (home-page "http://www.drive5.com/muscle")
+    (synopsis "Multiple sequence alignment program")
+    (description
+     "MUSCLE aims to be a fast and accurate multiple sequence alignment
+program for nucleotide and protein sequences.")
+    ;; License information found in 'muscle -h' and usage.cpp.
+    (license license:public-domain)))
+
 (define-public orfm
   (package
     (name "orfm")
