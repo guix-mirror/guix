@@ -8842,6 +8842,50 @@ The @code{base-initrd} procedure also handles common use cases that
 involves using the system as a QEMU guest, or as a ``live'' system whose
 root file system is volatile.
 
+The initial RAM disk produced by @code{base-initrd} honors several
+options passed on the Linux kernel command line (that is, arguments
+passed @i{via} GRUB's @code{linux} command, or with QEMU's
+@code{-append} option), notably:
+
+@table @code
+@item --load=@var{boot}
+Tell the initial RAM disk to load @var{boot}, a file containing a Scheme
+program, once it has mounted the root file system.
+
+GuixSD uses this option to yield control to a boot program that runs the
+service activation programs and then spawns GNU@tie{}dmd, the
+initialization system.
+
+@item --root=@var{root}
+Mount @var{root} as the root file system.  @var{root} can be a device
+device name like @code{/dev/sda1}, a partition label, or a partition
+UUID.
+
+@item --system=@var{system}
+Have @file{/run/booted-system} and @file{/run/current-system} point to
+@var{system}.
+
+@item modprobe.blacklist=@var{modules}@dots{}
+@cindex module, black-listing
+@cindex black list, of kernel modules
+Instruct the initial RAM disk as well as the @command{modprobe} command
+(from the kmod package) to refuse to load @var{modules}.  @var{modules}
+must be a comma-separated list of module names---e.g.,
+@code{usbkbd,9pnet}.
+
+@item --repl
+Start a read-eval-print loop (REPL) from the initial RAM disk before it
+tries to load kernel modules and to mount the root file system.  Our
+marketing team calls it @dfn{boot-to-Guile}.  The Schemer in you will
+love it.  @xref{Using Guile Interactively,,, guile, GNU Guile Reference
+Manual}, for more information on Guile's REPL.
+
+@end table
+
+Now that you know all the features that initial RAM disks produced by
+@code{base-initrd} provide, here is how to use it and customize it
+further.
+
 @deffn {Monadic Procedure} base-initrd @var{file-systems} @
        [#:qemu-networking? #f] [#:virtio? #f] [#:volatile-root? #f] @
        [#:extra-modules '()] [#:mapped-devices '()]
