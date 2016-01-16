@@ -77,7 +77,7 @@ the package."
             (bytevector-u8-set! bv i (read-byte i))
             (loop (1+ i)))))))
 
-(define (make-gem-sexp name version hash home-page description
+(define (make-gem-sexp name version hash home-page synopsis description
                        dependencies licenses)
   "Return the `package' s-expression for a Ruby package with the given NAME,
 VERSION, HASH, HOME-PAGE, DESCRIPTION, DEPENDENCIES, and LICENSES."
@@ -101,7 +101,7 @@ VERSION, HASH, HOME-PAGE, DESCRIPTION, DEPENDENCIES, and LICENSES."
                          (,'unquote
                           ,(string->symbol name))))
                      dependencies)))))
-     (synopsis ,description)    ; nothing better to use
+     (synopsis ,synopsis)
      (description ,description)
      (home-page ,home-page)
      (license ,(match licenses
@@ -117,6 +117,7 @@ VERSION, HASH, HOME-PAGE, DESCRIPTION, DEPENDENCIES, and LICENSES."
          (let ((name         (assoc-ref package "name"))
                (version      (assoc-ref package "version"))
                (hash         (assoc-ref package "sha"))
+               (synopsis     (assoc-ref package "info")) ; nothing better to use
                (description  (beautify-description
                               (assoc-ref package "info")))
                (home-page    (assoc-ref package "homepage_uri"))
@@ -129,5 +130,5 @@ VERSION, HASH, HOME-PAGE, DESCRIPTION, DEPENDENCIES, and LICENSES."
                                               "runtime")))
                (licenses     (map string->license
                                   (assoc-ref package "licenses"))))
-           (make-gem-sexp name version hash home-page
+           (make-gem-sexp name version hash home-page synopsis
                           description dependencies licenses)))))
