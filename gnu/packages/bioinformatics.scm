@@ -3141,6 +3141,49 @@ optimized for modern read lengths of 100 bases or higher, and takes advantage
 of these reads to align data quickly through a hash-based indexing scheme.")
     (license license:asl2.0)))
 
+(define-public sortmerna
+  (package
+    (name "sortmerna")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/biocore/sortmerna/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1670a92x1vvkacnvgr2i5xac3ls6lp4pc3n0bccnmllsnymggcf0"))))
+    (build-system gnu-build-system)
+    (outputs '("out"      ;for binaries
+               "db"))     ;for sequence databases
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin"))
+                    (db    (assoc-ref outputs "db"))
+                    (share
+                     (string-append db "/share/sortmerna/rRNA_databases")))
+               (install-file "sortmerna" bin)
+               (install-file "indexdb_rna" bin)
+               (for-each (lambda (file)
+                           (install-file file share))
+                         (find-files "rRNA_databases" ".*fasta"))
+               #t))))))
+    (home-page "http://bioinfo.lifl.fr/RNA/sortmerna")
+    (synopsis "Biological sequence analysis tool for NGS reads")
+    (description
+     "SortMeRNA is a biological sequence analysis tool for filtering, mapping
+and operational taxonomic unit (OTU) picking of next generation
+sequencing (NGS) reads.  The core algorithm is based on approximate seeds and
+allows for fast and sensitive analyses of nucleotide sequences.  The main
+application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
+    (license license:lgpl3)))
+
 (define-public star
   (package
     (name "star")
