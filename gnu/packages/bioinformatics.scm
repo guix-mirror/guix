@@ -2456,18 +2456,21 @@ viewer.")
        (sha256
         (base32 "1m33xsfwz0s8qi45lylagfllqg7fphf4dr0780rsvw75av9wk06h"))))
     (arguments
-     (substitute-keyword-arguments (package-arguments samtools)
-       ((#:tests? tests) #f) ;no "check" target
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'install
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((bin (string-append
-                                  (assoc-ref outputs "out") "/bin")))
-                        (mkdir-p bin)
-                        (copy-file "samtools"
-                                   (string-append bin "/samtools")))))
-           (delete 'patch-tests)))))))
+     `(#:tests? #f ;no "check" target
+       ,@(substitute-keyword-arguments (package-arguments samtools)
+           ((#:make-flags flags)
+            `(cons "LIBCURSES=-lncurses" ,flags))
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (replace 'install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((bin (string-append
+                               (assoc-ref outputs "out") "/bin")))
+                     (mkdir-p bin)
+                     (copy-file "samtools"
+                                (string-append bin "/samtools")))))
+               (delete 'patch-tests)
+               (delete 'configure))))))))
 
 (define-public mosaik
   (let ((commit "5c25216d"))
