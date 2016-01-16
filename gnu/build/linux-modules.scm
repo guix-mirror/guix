@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,6 +96,11 @@ contains module names, not actual file names."
       name
       (dot-ko name)))
 
+(define (file-name->module-name file)
+  "Return the module name corresponding to FILE, stripping the trailing '.ko',
+etc."
+  (basename file ".ko"))
+
 (define* (recursive-module-dependencies files
                                         #:key (lookup-module dot-ko))
   "Return the topologically-sorted list of file names of the modules depended
@@ -130,6 +135,22 @@ LOOKUP-MODULE to the module name."
       (((modules . _) ...)
        modules))))
 
+(define (module-black-list)
+  "Return the black list of modules that must not be loaded.  This black list
+is specified using 'modprobe.blacklist=MODULE1,MODULE2,...' on the kernel
+command line; it is honored by libkmod."
+  (define parameter
+    "modprobe.blacklist=")
+
+  (let ((command (call-with-input-file "/proc/cmdline"
+                   get-string-all)))
+    (append-map (lambda (arg)
+                  (if (string-prefix? parameter arg)
+                      (string-tokenize (string-drop arg (string-length parameter))
+                                       %not-comma)
+                      '()))
+                (string-tokenize command))))
+
 (define (module-loaded? module)
   "Return #t if MODULE is already loaded.  MODULE must be a Linux module name,
 not a file name."
@@ -138,29 +159,44 @@ not a file name."
 (define* (load-linux-module* file
                              #:key
                              (recursive? #t)
-                             (lookup-module dot-ko))
-  "Load Linux module from FILE, the name of a `.ko' file.  When RECURSIVE? is
-true, load its dependencies first (à la 'modprobe'.)  The actual files
-containing modules depended on are obtained by calling LOOKUP-MODULE with the
-module name."
+                             (lookup-module dot-ko)
+                             (black-list (module-black-list)))
+  "Load Linux module from FILE, the name of a '.ko' file; return true on
+success, false otherwise.  When RECURSIVE? is true, load its dependencies
+first (à la 'modprobe'.)  The actual files containing modules depended on are
+obtained by calling LOOKUP-MODULE with the module name.  Modules whose name
+appears in BLACK-LIST are not loaded."
   (define (slurp module)
     ;; TODO: Use 'finit_module' to reduce memory usage.
     (call-with-input-file file get-bytevector-all))
 
-  (when recursive?
-    (for-each (cut load-linux-module* <> #:lookup-module lookup-module)
-              (map lookup-module (module-dependencies file))))
+  (define (black-listed? module)
+    (let ((result (member module black-list)))
+      (when result
+        (format (current-module-debugging-port)
+                "not loading module '~a' because it's black-listed~%"
+                module))
+      result))
 
-  (format (current-module-debugging-port)
-          "loading Linux module from '~a'...~%" file)
+  (define (load-dependencies file)
+    (let ((dependencies (module-dependencies file)))
+      (every (cut load-linux-module* <> #:lookup-module lookup-module)
+             (map lookup-module dependencies))))
 
-  (catch 'system-error
-    (lambda ()
-      (load-linux-module (slurp file)))
-    (lambda args
-      ;; If this module was already loaded and we're in modprobe style, ignore
-      ;; the error.
-      (unless (and recursive? (= EEXIST (system-error-errno args)))
-        (apply throw args)))))
+  (and (not (black-listed? (file-name->module-name file)))
+       (or (not recursive?)
+           (load-dependencies file))
+       (begin
+         (format (current-module-debugging-port)
+                 "loading Linux module from '~a'...~%" file)
+
+         (catch 'system-error
+           (lambda ()
+             (load-linux-module (slurp file)))
+           (lambda args
+             ;; If this module was already loaded and we're in modprobe style, ignore
+             ;; the error.
+             (or (and recursive? (= EEXIST (system-error-errno args)))
+                 (apply throw args)))))))
 
 ;;; linux-modules.scm ends here
