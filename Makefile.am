@@ -241,7 +241,8 @@ SCM_TESTS =					\
   tests/cve.scm					\
   tests/file-systems.scm			\
   tests/services.scm				\
-  tests/containers.scm
+  tests/containers.scm				\
+  tests/import-utils.scm
 
 if HAVE_GUILE_JSON
 

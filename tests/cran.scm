@@ -86,16 +86,6 @@ Date/Publication: 2015-07-14 14:15:16
   '()
   ((@@ (guix import cran) listify) simple-alist "BadList"))
 
-(test-equal "beautify-description: use double spacing"
-  "This is a package.  It is great.  Trust me Mr.  Hendrix."
-  ((@@ (guix import cran) beautify-description)
-   "This is a package. It is great. Trust me Mr. Hendrix."))
-
-(test-equal "beautify-description: transform fragment into sentence"
-  "This package provides a function to establish world peace"
-  ((@@ (guix import cran) beautify-description)
-   "A function to establish world peace"))
-
 (test-assert "description->package"
   ;; Replace network resources with sample data.
   (mock ((guix build download) url-fetch
