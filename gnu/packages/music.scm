@@ -462,11 +462,7 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
        ("pygtk" ,python2-pygtk)
        ("gettext" ,gnu-gettext)
        ("gtk" ,gtk+)
-       ;; TODO: Lilypond is optional.  Produces errors at build time:
-       ;;   Drawing systems...Error: /undefinedresult in --glyphshow--
-       ;; Fontconfig is needed to fix one of the errors, but other similar
-       ;; errors remain.
-       ;;("lilypond" ,lilypond)
+       ("lilypond" ,lilypond)
        ("librsvg" ,librsvg) ; needed at runtime for icons
        ("libpng" ,libpng) ; needed at runtime for icons
        ;; players needed at runtime
@@ -480,8 +476,6 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
        ("txt2man" ,txt2man)
        ("libxml2" ,libxml2) ; for tests
        ("ghostscript" ,ghostscript)
-       ;;("fontconfig" ,fontconfig) ; only needed with lilypond
-       ;;("freetype" ,freetype) ; only needed with lilypond
        ("texinfo" ,texinfo)))
     (home-page "https://www.gnu.org/software/solfege/")
     (synopsis "Ear training")
