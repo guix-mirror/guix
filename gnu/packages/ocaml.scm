@@ -286,14 +286,14 @@ concrete syntax of the language (Quotations, Syntax Extensions).")
 (define-public hevea
   (package
     (name "hevea")
-    (version "2.23")
+    (version "2.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://hevea.inria.fr/old/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1f9pj48518ixhjxbviv2zx27v4anp92zgg3x704g1s5cki2w33nv"))))
+                "14fns13wlnpiv9i05841kvi3cq4b9v2sw5x3ff6ziws28q701qnd"))))
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
@@ -301,7 +301,12 @@ concrete syntax of the language (Quotations, Syntax Extensions).")
      `(#:tests? #f  ; no test suite
        #:make-flags (list (string-append "PREFIX=" %output))
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
+                  (delete 'configure)
+                  (add-before 'build 'patch-/bin/sh
+                    (lambda _
+                      (substitute* "_tags"
+                        (("/bin/sh") (which "sh")))
+                      #t)))))
     (home-page "http://hevea.inria.fr/")
     (synopsis "LaTeX to HTML translator")
     (description
