@@ -208,6 +208,8 @@ supports HTTPS, HTTPS and GnuTLS.")
    (inputs
     `(("glpk" ,glpk)
       ("gnurl" ,gnurl)
+      ("gstreamer" ,gstreamer)
+      ("gst-plugins-base" ,gst-plugins-base)
       ("gnutls" ,gnutls)
       ("libextractor" ,libextractor)
       ("libgcrypt" ,libgcrypt)
