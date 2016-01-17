@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -179,7 +179,7 @@ loaded at boot time in the order in which they appear."
     ;; Modules added to the initrd and loaded from the initrd.
     `("ahci"                                  ;for SATA controllers
       "usb-storage" "uas"                     ;for the installation image etc.
-      "usbkbd" "usbhid"                       ;USB keyboards, for debugging
+      "usbhid"                                ;USB keyboards, for debugging
       "dm-crypt" "xts"                        ;for encrypted root partitions
       ,@(if (string-match "^(x86_64|i[3-6]86)-" (%current-system))
             '("pata_acpi" "pata_atiixp"    ;for ATA controllers
