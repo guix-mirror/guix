@@ -4,6 +4,7 @@
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,7 +50,7 @@
             imlib2
             ipa
             lgpl2.0 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3 lgpl3+
-            mpl1.1 mpl2.0
+            mpl1.0 mpl1.1 mpl2.0
             ms-pl
             ncsa
             openldap2.8 openssl
@@ -301,6 +302,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "LGPL 3+"
            "https://www.gnu.org/licenses/lgpl.html"
            "https://www.gnu.org/licenses/license-list#LGPLv3"))
+
+(define mpl1.0
+  (license "MPL 1.0"
+           "http://www.mozilla.org/MPL/1.0/"
+           "https://www.gnu.org/licenses/license-list.html#MPL"))
 
 (define mpl1.1
   (license "MPL 1.1"
