@@ -177,6 +177,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/kodi.scm				\
   gnu/packages/language.scm			\
   gnu/packages/ldc.scm				\
+  gnu/packages/lego.scm				\
   gnu/packages/less.scm				\
   gnu/packages/lesstif.scm			\
   gnu/packages/libcanberra.scm			\
