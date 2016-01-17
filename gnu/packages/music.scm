@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1040,3 +1040,41 @@ graphically in the terminal.  It is built on a full-featured subtractive
 synthesis engine.  Notes and parameter changes may be entered via MIDI or the
 computer's keyboard.")
     (license license:gpl3+)))
+
+(define-public qtractor
+  (package
+    (name "qtractor")
+    (version "0.7.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://downloads.sourceforge.net/qtractor/"
+                                  "qtractor-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vy4297myyqk0k58nzybgvgklckhngpdcnmp98k0rq98dirclbl7"))))
+    (build-system gnu-build-system)
+    (arguments `(#:tests? #f)) ; no "check" target
+    (inputs
+     `(("qt" ,qt)
+       ("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("libsndfile" ,libsndfile)
+       ("ladspa" ,ladspa)
+       ("lv2" ,lv2)
+       ("lilv" ,lilv)
+       ("suil" ,suil)
+       ("libsamplerate" ,libsamplerate)
+       ("libvorbis" ,libvorbis)
+       ("libmad" ,libmad)
+       ("rubberband" ,rubberband)
+       ("liblo" ,liblo)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://qtractor.sourceforge.net/")
+    (synopsis "Audio/MIDI multi-track sequencer")
+    (description
+     "Qtractor is an Audio/MIDI multi-track sequencer application.  It uses
+JACK for audio and ALSA sequencer for MIDI as multimedia infrastructures and
+follows a traditional multi-track tape recorder control paradigm.")
+    (license license:gpl2+)))
