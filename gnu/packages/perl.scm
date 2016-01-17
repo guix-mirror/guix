@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
@@ -663,6 +663,7 @@ type for perl.")
         (base32
          "09ifd6v0c94vr20n9yr1dxgcp7hyscqq851szdip7y24bd26nlbc"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Class-Factory-Util")
     (synopsis "Utility methods for factory classes")
     (description "This module exports methods useful for factory classes.")
@@ -1356,6 +1357,7 @@ Date::Calc.")
         (base32
          "0zd0wbf91i49753rnf7m1lw197hdl5r97mxy0n43zdmcmhvkb3qq"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (arguments
      ;; Tests would require tzdata for timezone information, but tzdata is in
      ;; (gnu packages base) which would create a circular dependency.  TODO:
@@ -1717,6 +1719,7 @@ edges (mainly concerning timezone detection and selection).")
         (base32
          "0g71sma9jy0fjm619hcrcsb9spg2y03vjxx36y8k1xpa2553sr7m"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Devel-CheckBin")
     (synopsis "Check that a command is available")
     (description "Devel::CheckBin is a perl module that checks whether a
@@ -6159,12 +6162,13 @@ MYMETA.yml.")
      `(("perl-cpan-meta" ,perl-cpan-meta)))
     (home-page "http://search.cpan.org/dist/Module-Build")
     (synopsis "Build and install Perl modules")
-    (description "\"Module::Build\" is a system for building, testing, and
-installing Perl modules.  It is meant to be an alternative to
-\"ExtUtils::MakeMaker\".  Developers may alter the behavior of the module
+    (description "@code{Module::Build} is a system for building, testing, and
+installing Perl modules; it used to be part of Perl itself until version 5.22,
+which dropped it.  It is meant to be an alternative to
+@code{ExtUtils::MakeMaker}.  Developers may alter the behavior of the module
 through subclassing in a much more straightforward way than with
-\"MakeMaker\".  It also does not require a \"make\" on your system - most of
-the \"Module::Build\" code is pure-perl and written in a cross-platform way.")
+@code{MakeMaker}.  It also does not require a @command{make} on your
+system---most of the @code{Module::Build} code is pure-Perl.")
     (license (package-license perl))))
 
 (define-public perl-parse-cpan-meta

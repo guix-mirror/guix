@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
@@ -1558,7 +1558,8 @@ development server with Starman.")
          "1nkyb1m1g5r47xykflf68dplanih5p15njv82frbgbsms34kp1sg"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-io-stringy" ,perl-io-stringy))) ;for IO::Scalar
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-io-stringy" ,perl-io-stringy))) ;for IO::Scalar
     (home-page "http://search.cpan.org/dist/CGI-Simple")
     (synopsis "CGI interface that is CGI.pm compliant")
     (description "CGI::Simple provides a relatively lightweight drop in
