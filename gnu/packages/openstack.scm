@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -304,7 +304,12 @@ portions of your testing code.")
     (license asl2.0)))
 
 (define-public python2-requests-mock
-  (package-with-python2 python-requests-mock))
+  (let ((requests-mock (package-with-python2 python-requests-mock)))
+    (package (inherit requests-mock)
+      (propagated-inputs
+       `(("python2-requests" ,python2-requests)
+         ,@(alist-delete "python-requests"
+                         (package-propagated-inputs requests-mock)))))))
 
 (define-public python-stevedore
   (package
@@ -387,7 +392,12 @@ common features used in Tempest.")
     (license asl2.0)))
 
 (define-public python2-tempest-lib
-  (package-with-python2 python-tempest-lib))
+  (let ((tempest-lib (package-with-python2 python-tempest-lib)))
+    (package (inherit tempest-lib)
+      (propagated-inputs
+       `(("python2-jsonschema", python2-jsonschema)
+         ,@(alist-delete "python-jsonschema"
+                         (package-propagated-inputs tempest-lib)))))))
 
 ;; Packages from the Oslo library
 (define-public python-oslo.config
@@ -596,7 +606,9 @@ from the OpenStack project.")
     (license asl2.0)))
 
 (define-public python2-oslosphinx
-  (package-with-python2 python-oslosphinx))
+  (let ((oslosphinx (package-with-python2 python-oslosphinx)))
+    (package (inherit oslosphinx)
+      (propagated-inputs `(("python2-requests" ,python2-requests))))))
 
 (define-public python-oslotest
   (package
@@ -745,11 +757,17 @@ LDAP.")
 (define-public python2-keystoneclient
   (let ((keystoneclient (package-with-python2 python-keystoneclient)))
     (package (inherit keystoneclient)
+      (propagated-inputs
+       `(("python2-requests" ,python2-requests)
+         ,@(alist-delete "python-requests"
+                         (package-propagated-inputs keystoneclient))))
       (native-inputs
        `(("python2-oauthlib" ,python2-oauthlib)
-         ,@(alist-delete
-            "python-oauthlib"
-            (package-native-inputs keystoneclient)))))))
+         ("python2-oslosphinx" ,python2-oslosphinx)
+         ("python2-requests-mock" ,python2-requests-mock)
+         ("python2-tempest-lib" ,python2-tempest-lib)
+         ,@(fold alist-delete (package-native-inputs keystoneclient)
+            '("python-oauthlib" "python-oslosphinx" "python-requests-mock" "python-tempest-lib")))))))
 
 (define-public python-swiftclient
   (package
@@ -798,9 +816,11 @@ permanence.")
     (package (inherit swiftclient)
       (propagated-inputs
        `(("python2-futures" ,python2-futures)
-         ,@(package-propagated-inputs swiftclient)))
+         ("python2-requests" ,python2-requests)
+         ,@(alist-delete "python-requests"
+                         (package-propagated-inputs swiftclient))))
       (native-inputs
        `(("python2-keystoneclient" ,python2-keystoneclient)
-         ,@(alist-delete
-            "python-keystoneclient"
-            (package-native-inputs swiftclient)))))))
+         ("python2-oslosphinx" ,python2-oslosphinx)
+         ,@(fold alist-delete (package-native-inputs swiftclient)
+            '("python-keystoneclient" "python-oslosphinx")))))))

@@ -14,7 +14,7 @@
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 Chris Marusich <cmmarusich@gmail.com>
 ;;;
@@ -2144,7 +2144,13 @@ installed with a newer @code{pip} or with wheel's own command line utility.")
     (license license:expat)))
 
 (define-public python2-wheel
-  (package-with-python2 python-wheel))
+  (let ((wheel (package-with-python2 python-wheel)))
+    (package (inherit wheel)
+      (native-inputs
+       `(("python2-functools32" ,python2-functools32)
+         ("python2-jsonschema" ,python2-jsonschema)
+         ,@(alist-delete "python-jsonschema"
+                         (package-native-inputs wheel)))))))
 
 (define-public python-requests
   (package
@@ -2184,7 +2190,12 @@ than Python’s urllib2 library.")
                "0gdr9dxm24amxpbyqpbh3lbwxc2i42hnqv50sigx568qssv3v2ir"))))))
 
 (define-public python2-requests
-  (package-with-python2 python-requests))
+  (let ((requests (package-with-python2 python-requests)))
+    (package (inherit requests)
+      (propagated-inputs
+       `(("python2-wheel" ,python2-wheel)
+         ,@(alist-delete "python-wheel"
+                         (package-propagated-inputs requests)))))))
 
 (define-public python-vcversioner
   (package
@@ -2234,7 +2245,11 @@ version numbers.")
     (license license:expat)))
 
 (define-public python2-jsonschema
-  (package-with-python2 python-jsonschema))
+  (let ((jsonschema (package-with-python2 python-jsonschema)))
+    (package (inherit jsonschema)
+      (inputs
+       `(("python2-functools32" ,python2-functools32)
+         ,@(package-inputs jsonschema))))))
 
 (define-public python-unidecode
   (package
@@ -4290,11 +4305,13 @@ computing.")
          ,@(alist-delete "python-terminado"
                          (package-propagated-inputs ipython))))
       (inputs
-       `(("python2-mock" ,python2-mock)
+       `(("python2-jsonschema" ,python2-jsonschema)
+         ("python2-mock" ,python2-mock)
          ("python2-matplotlib" ,python2-matplotlib)
          ("python2-numpy" ,python2-numpy)
+         ("python2-requests" ,python2-requests)
          ,@(fold alist-delete (package-inputs ipython)
-                 '("python-matplotlib" "python-numpy")))))))
+                 '("python-jsonschema" "python-matplotlib" "python-numpy" "python-requests")))))))
 
 (define-public python-isodate
   (package
@@ -7144,6 +7161,7 @@ authenticated session objects providing things like keep-alive.")
 (define-public python2-rauth
   (let ((rauth (package-with-python2 python-rauth)))
     (package (inherit rauth)
+      (propagated-inputs `(("python2-requests" ,python2-requests)))
       (native-inputs
        `(("python2-unittest2", python2-unittest2)
          ,@(package-native-inputs rauth))))))
