@@ -502,6 +502,13 @@ on a recent machine; subsequent runs will be faster because the store
 that is created for test purposes will already have various things in
 cache.
 
+It is also possible to run a subset of the tests by defining the
+@code{TESTS} makefile variable as in this example:
+
+@example
+make check TESTS="tests/store.scm tests/cpio.scm"
+@end example
+
 Upon failure, please email @email{bug-guix@@gnu.org} and attach the
 @file{test-suite.log} file.  When @file{tests/@var{something}.scm}
 fails, please also attach the @file{@var{something}.log} file available
