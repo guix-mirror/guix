@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -316,6 +317,22 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)
     (home-page "http://www.gnu.org/software/linux-libre/"))))
+
+;; This older version of linux-libre is being added because it was found
+;; that newer versions (or at least 4.3.3) of linux-libre were not reading
+;; the hardware clock on (at least Libreboot-enabled) Thinkpad x200
+;; machines.  See <http://bugs.gnu.org/22274>.
+
+(define-public linux-libre-4.2.5
+  (package
+    (inherit linux-libre)
+    (version "4.2.5")
+    (source (origin
+             (method url-fetch)
+             (uri (linux-libre-urls version))
+             (sha256
+              (base32
+               "13ar9sghm2g5w2km9x2d07q3lh81rz286d6slklv56qanm24chzx"))))))
 
 
 ;;;
