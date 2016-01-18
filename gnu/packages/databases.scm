@@ -3,7 +3,7 @@
 ;;; Copyright © 2012, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
@@ -202,7 +202,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.0.20")
+    (version "10.0.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -210,7 +210,7 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0ywb730l68mxvmpik1x2ndbdaaks6dmc17pxspspm5wlqxinjkrs"))))
+                "0x52gfxk7zr84al83x62s4gh7mbngahy1svafdkbwd18i5lysvhm"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
