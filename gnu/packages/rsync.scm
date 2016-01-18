@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,14 +31,14 @@
 (define-public rsync
   (package
    (name "rsync")
-   (version "3.1.0")
+   (version "3.1.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://rsync.samba.org/ftp/rsync/src/rsync-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0kirw8wglqvwi1v8bwxp373g03xg857h59j5k3mmgff9gzvj7jl1"))))
+              "1hm1q04hz15509f0p9bflw4d6jzfvpm1d36dxjwihk1wzakn5ypc"))))
    (build-system gnu-build-system)
    (inputs `(("perl" ,perl)
              ("acl" ,acl)))
