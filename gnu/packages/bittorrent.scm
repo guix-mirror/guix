@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (gnu packages libevent)
@@ -33,6 +35,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages check)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages tls))
@@ -148,3 +151,44 @@ full encryption, DHT, PEX, and Magnet Links.  It can also be controlled via
 XML-RPC over SCGI.")
     (home-page "https://github.com/rakshasa/rtorrent")
     (license l:gpl2+)))
+
+(define-public transmission-remote-cli
+  (package
+    (name "transmission-remote-cli")
+    (version "1.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/fagga/"
+                                  "transmission-remote-cli/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1y0hkpcjf6jw9xig8yf484hbhy63nip0pkchx401yxj81m25l4z9"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; only supports Python 2
+       #:tests? #f ; no test suite
+       #:phases (modify-phases %standard-phases
+                  ;; The software is just a Python script that must be
+                  ;; copied into place.
+                  (delete 'build)
+                  (replace 'install
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (bin (string-append out "/bin"))
+                             (man (string-append out "/share/man/man1"))
+                             ;; FIXME install zsh completions
+                             (completions (string-append out "/etc/bash_completion.d")))
+                        (install-file "transmission-remote-cli" bin)
+                        (install-file "transmission-remote-cli.1" man)
+                        (install-file
+                          (string-append
+                            "completion/bash/"
+                            "transmission-remote-cli-bash-completion.sh")
+                          completions)))))))
+    (synopsis "Console client for the Transmission BitTorrent daemon")
+    (description "Transmission-remote-cli is a console client, with a curses
+interface, for the Transmission BitTorrent daemon.")
+    (home-page "https://github.com/fagga/transmission-remote-cli")
+    (license l:gpl3+)))
