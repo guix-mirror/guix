@@ -11,7 +11,7 @@
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;;
@@ -1180,7 +1180,7 @@ is programmed in Haskell.")
 (define-public manaplus
   (package
     (name "manaplus")
-    (version "1.5.12.5")
+    (version "1.6.1.16")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1188,7 +1188,7 @@ is programmed in Haskell.")
                     version "/manaplus-" version ".tar.xz"))
               (sha256
                (base32
-                "0kmd743q40v82221wj8b09n30lqiwl7096v3m7ki3ynsgszkm326"))))
+                "1vrsjvdbdzbnqmr8sp110b2d93kp5yfnifsn6zjm60kdvvbphdir"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
