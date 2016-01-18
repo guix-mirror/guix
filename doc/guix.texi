@@ -634,6 +634,11 @@ This way, the value of @code{TMPDIR} does not leak inside build
 environments, which avoids discrepancies in cases where build processes
 capture the name of their build tree.
 
+@vindex http_proxy
+The daemon also honors the @code{http_proxy} environment variable for
+HTTP downloads it performs, be it for fixed-output derivations
+(@pxref{Derivations}) or for substitutes (@pxref{Substitutes}).
+
 If you are installing Guix as an unprivileged user, it is still possible
 to run @command{guix-daemon} provided you pass @code{--disable-chroot}.
 However, build processes will not be isolated from one another, and not
@@ -1684,6 +1689,14 @@ will be downloaded, when possible, for future builds.
 Guix ignores substitutes that are not signed, or that are not signed by
 one of the keys listed in the ACL.  It also detects and raises an error
 when attempting to use a substitute that has been tampered with.
+
+@vindex http_proxy
+Substitutes are downloaded over HTTP.  The @code{http_proxy} environment
+variable can be set in the environment of @command{guix-daemon} and is
+honored for downloads of substitutes.  Note that the value of
+@code{http_proxy} in the environment where @command{guix build},
+@command{guix package}, and other client commands are run has
+@emph{absolutely no effect}.
 
 The substitute mechanism can be disabled globally by running
 @code{guix-daemon} with @code{--no-substitutes} (@pxref{Invoking
