@@ -409,7 +409,7 @@ things in between.")
 (define-public libshout
   (package
     (name "libshout")
-    (version "2.3.1")
+    (version "2.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -417,7 +417,7 @@ things in between.")
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0vlj4dxfxg06xhvv0z2zjjlrjh5di2m28w7v16zcygsy99mmyg6g"))))
+                "0kgjpf8jkgyclw11nilxi8vyjk4s8878x23qyxnvybbgqbgbib7k"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
