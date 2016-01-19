@@ -785,20 +785,20 @@ projects while introducing many more.")
                 "15v7qw0ydyxn08ksb6lxn1l51pxgpwgshdwd3275yrr5hs86fv9h"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (setenv "CONFIG_SHELL" (which "bash"))
-                   (let ((out (assoc-ref outputs "out")))
-                     (setenv "LDFLAGS"
-                             (string-append "-Wl,-rpath=" out "/lib"))
-                     (zero? (system* "./configure"
-                                     "--enable-shared"
-                                     "--as=yasm"
-                                     ;; Limit size to avoid CVE-2015-1258
-                                     "--size-limit=16384x16384"
-                                     (string-append "--prefix=" out)))))
-                 %standard-phases)
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "CONFIG_SHELL" (which "bash"))
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "LDFLAGS"
+                       (string-append "-Wl,-rpath=" out "/lib"))
+               (zero? (system* "./configure"
+                               "--enable-shared"
+                               "--as=yasm"
+                               ;; Limit size to avoid CVE-2015-1258
+                               "--size-limit=16384x16384"
+                               (string-append "--prefix=" out)))))))
        #:tests? #f)) ; no check target
     (native-inputs
      `(("perl" ,perl)
