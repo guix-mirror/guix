@@ -3019,19 +3019,25 @@ of these reads to align data quickly through a hash-based indexing scheme.")
 (define-public star
   (package
     (name "star")
-    (version "2.4.2a")
+    (version "2.5.1b")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/alexdobin/STAR/archive/STAR_"
-                    version ".tar.gz"))
+              (uri (string-append "https://github.com/alexdobin/STAR/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1c3rnm7r5l0kl3d04gl1g7938xqf1c2l0mla87rlplqg1hcns5mc"))
+                "0wzcfhkg10apnh0y73xlarfa79xxwxdizicbdl11wb48awk44iq4"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "source/Makefile"
-                  (("/bin/rm") "rm")))))
+               '(begin
+                  (substitute* "source/Makefile"
+                    (("/bin/rm") "rm"))
+                  ;; Remove pre-built binaries and bundled htslib sources.
+                  (delete-file-recursively "bin/MacOSX_x86_64")
+                  (delete-file-recursively "bin/Linux_x86_64")
+                  (delete-file-recursively "source/htslib")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;no check target
@@ -3040,6 +3046,23 @@ of these reads to align data quickly through a hash-based indexing scheme.")
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source-dir
            (lambda _ (chdir "source") #t))
+         (add-after 'enter-source-dir 'do-not-use-bundled-htslib
+           (lambda _
+             (substitute* "Makefile"
+               (("(Depend.list: \\$\\(SOURCES\\) parametersDefault\\.xxd) htslib"
+                 _ prefix) prefix))
+             (substitute* '("BAMfunctions.cpp"
+                            "signalFromBAM.h"
+                            "bam_cat.h"
+                            "bam_cat.c"
+                            "STAR.cpp"
+                            "bamRemoveDuplicates.cpp")
+               (("#include \"htslib/([^\"]+\\.h)\"" _ header)
+                (string-append "#include <" header ">")))
+             (substitute* "IncludeDefine.h"
+               (("\"htslib/(htslib/[^\"]+.h)\"" _ header)
+                (string-append "<" header ">")))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
@@ -3049,7 +3072,8 @@ of these reads to align data quickly through a hash-based indexing scheme.")
     (native-inputs
      `(("vim" ,vim))) ; for xxd
     (inputs
-     `(("zlib" ,zlib)))
+     `(("htslib" ,htslib)
+       ("zlib" ,zlib)))
     (home-page "https://github.com/alexdobin/STAR")
     (synopsis "Universal RNA-seq aligner")
     (description
