@@ -328,7 +328,11 @@ you to define complex tempo maps for entire songs or performances.")
 music.  Music is input in a text file containing control sequences which are
 interpreted by LilyPond to produce the final document.  It is extendable with
 Guile.")
-    (license license:gpl3+)))
+    (license license:gpl3+)
+
+    ;; On armhf and mips64el, building the documentation sometimes leads to
+    ;; more than an hour of silence, so double the max silent time.
+    (properties `((max-silent-time . 7200)))))
 
 (define-public non-sequencer
   ;; The latest tagged release is three years old and uses a custom build
