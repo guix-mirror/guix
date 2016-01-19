@@ -654,6 +654,73 @@ gapped, local, and paired-end alignment modes.")
     (supported-systems '("x86_64-linux"))
     (license license:gpl3+)))
 
+(define-public tophat
+  (package
+    (name "tophat")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://ccb.jhu.edu/software/tophat/downloads/tophat-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "168zlzykq622zbgkh90a90f1bdgsxkscq2zxzbj8brq80hbjpyp7"))
+              (patches (list (search-patch "tophat-build-with-later-seqan.patch")))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove bundled SeqAn and samtools
+                  (delete-file-recursively "src/SeqAn-1.3")
+                  (delete-file-recursively "src/samtools-0.1.18")
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:parallel-build? #f ; not supported
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-system-samtools
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/Makefile.in"
+               (("(noinst_LIBRARIES = )\\$\\(SAMLIB\\)" _ prefix) prefix)
+               (("\\$\\(SAMPROG\\): \\$\\(SAMLIB\\)") "")
+               (("SAMPROG = samtools_0\\.1\\.18") "")
+               (("\\$\\(samtools_0_1_18_SOURCES\\)") "")
+               (("am__EXEEXT_1 = samtools_0\\.1\\.18\\$\\(EXEEXT\\)") ""))
+             (substitute* '("src/common.cpp"
+                            "src/tophat.py")
+               (("samtools_0.1.18") (which "samtools")))
+             (substitute* '("src/common.h"
+                            "src/bam2fastx.cpp")
+               (("#include \"bam.h\"") "#include <samtools/bam.h>")
+               (("#include \"sam.h\"") "#include <samtools/sam.h>"))
+             (substitute* '("src/bwt_map.h"
+                            "src/map2gtf.h"
+                            "src/align_status.h")
+               (("#include <bam.h>") "#include <samtools/bam.h>")
+               (("#include <sam.h>") "#include <samtools/sam.h>"))
+             #t)))))
+    (inputs
+     `(("boost" ,boost)
+       ("bowtie" ,bowtie)
+       ("samtools" ,samtools-0.1)
+       ("ncurses" ,ncurses)
+       ("python" ,python-2)
+       ("perl" ,perl)
+       ("zlib" ,zlib)
+       ("seqan" ,seqan)))
+    (home-page "http://ccb.jhu.edu/software/tophat/index.shtml")
+    (synopsis "Spliced read mapper for RNA-Seq data")
+    (description
+     "TopHat is a fast splice junction mapper for nucleotide sequence
+reads produced by the RNA-Seq method.  It aligns RNA-Seq reads to
+mammalian-sized genomes using the ultra high-throughput short read
+aligner Bowtie, and then analyzes the mapping results to identify
+splice junctions between exons.")
+    ;; TopHat is released under the Boost Software License, Version 1.0
+    ;; See https://github.com/infphilo/tophat/issues/11#issuecomment-121589893
+    (license license:boost1.0)))
+
 (define-public bwa
   (package
     (name "bwa")
