@@ -349,7 +349,7 @@ decoding .opus files.")
 (define opusfile
   (package
     (name "opusfile")
-    (version "0.6")
+    (version "0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -357,7 +357,7 @@ decoding .opus files.")
                     ".tar.gz"))
               (sha256
                (base32
-                "19iys2kld75k0210b807i4illrdmj3cmmnrgxlc9y4vf6mxp2a14"))))
+                "00f3wwjv3hxwg05g22s6mkkxikz80ljsn70g39cmi43jph9ysawy"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("opus" ,opus)))
