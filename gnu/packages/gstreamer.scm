@@ -180,12 +180,11 @@ This package provides the core library and elements.")
                             (assoc-ref %outputs "doc")
                             "/share/gtk-doc/html"))
        #:phases
-       (alist-cons-before
-        'configure 'patch
-        (lambda _
-          (substitute* "tests/check/libs/pbutils.c"
-            (("/bin/sh") (which "sh"))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch
+           (lambda _
+             (substitute* "tests/check/libs/pbutils.c"
+               (("/bin/sh") (which "sh"))))))))
     (home-page "http://gstreamer.freedesktop.org/")
     (synopsis
      "Plugins for the GStreamer multimedia library")
