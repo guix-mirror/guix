@@ -1040,6 +1040,6 @@ deliver it in various ways.")
      ;; Why point to a source file?  Well, all the individual files have a
      ;; copy of this license in their headers, but there's no seprate file
      ;; with that information.
-     (non-copyleft "file://command.c"))))
+     (non-copyleft "https://github.com/nicm/fdm/blob/master/command.c"))))
 
 ;;; mail.scm ends here
