@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -153,6 +153,8 @@ options handled by 'set-build-options-from-command-line', and listed in
   (display (_ "
   -K, --keep-failed      keep build tree of failed builds"))
   (display (_ "
+  -k, --keep-going       keep going when some of the derivations fail"))
+  (display (_ "
   -n, --dry-run          do not build the derivations"))
   (display (_ "
       --fallback         fall back to building when the substituter fails"))
@@ -183,6 +185,7 @@ options handled by 'set-build-options-from-command-line', and listed in
   ;; TODO: Add more options.
   (set-build-options store
                      #:keep-failed? (assoc-ref opts 'keep-failed?)
+                     #:keep-going? (assoc-ref opts 'keep-going?)
                      #:rounds (assoc-ref opts 'rounds)
                      #:build-cores (or (assoc-ref opts 'cores) 0)
                      #:max-build-jobs (or (assoc-ref opts 'max-jobs) 1)
@@ -213,6 +216,11 @@ options handled by 'set-build-options-from-command-line', and listed in
                 (lambda (opt name arg result . rest)
                   (apply values
                          (alist-cons 'keep-failed? #t result)
+                         rest)))
+        (option '(#\k "keep-going") #f #f
+                (lambda (opt name arg result . rest)
+                  (apply values
+                         (alist-cons 'keep-going? #t result)
                          rest)))
         (option '("rounds") #t #f
                 (lambda (opt name arg result . rest)

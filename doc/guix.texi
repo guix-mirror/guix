@@ -3973,6 +3973,14 @@ Keep the build tree of failed builds.  Thus, if a build fail, its build
 tree is kept under @file{/tmp}, in a directory whose name is shown at
 the end of the build log.  This is useful when debugging build issues.
 
+@item --keep-going
+@itemx -k
+Keep going when some of the derivations fail to build; return only once
+all the builds have either completed or failed.
+
+The default behavior is to stop as soon as one of the specified
+derivations has failed.
+
 @item --dry-run
 @itemx -n
 Do not build the derivations.
