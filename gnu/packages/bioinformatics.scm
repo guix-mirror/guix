@@ -3037,15 +3037,15 @@ of these reads to align data quickly through a hash-based indexing scheme.")
      '(#:tests? #f ;no check target
        #:make-flags '("STAR")
        #:phases
-       (alist-cons-after
-        'unpack 'enter-source-dir (lambda _ (chdir "source"))
-        (alist-replace
-         'install
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-             (install-file "STAR" bin)))
-         (alist-delete
-          'configure %standard-phases)))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-source-dir
+           (lambda _ (chdir "source") #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+               (install-file "STAR" bin))
+             #t))
+         (delete 'configure))))
     (native-inputs
      `(("vim" ,vim))) ; for xxd
     (inputs
