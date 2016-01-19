@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,12 +19,14 @@
 
 (define-module (gnu packages openstack)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module ((guix licenses)
                 #:select (asl2.0))
-  #:use-module (guix packages))
+  #:use-module (guix packages)
+  #:use-module (srfi srfi-1))
 
 (define-public python-bandit
   (package
@@ -302,7 +304,12 @@ portions of your testing code.")
     (license asl2.0)))
 
 (define-public python2-requests-mock
-  (package-with-python2 python-requests-mock))
+  (let ((requests-mock (package-with-python2 python-requests-mock)))
+    (package (inherit requests-mock)
+      (propagated-inputs
+       `(("python2-requests" ,python2-requests)
+         ,@(alist-delete "python-requests"
+                         (package-propagated-inputs requests-mock)))))))
 
 (define-public python-stevedore
   (package
@@ -385,7 +392,12 @@ common features used in Tempest.")
     (license asl2.0)))
 
 (define-public python2-tempest-lib
-  (package-with-python2 python-tempest-lib))
+  (let ((tempest-lib (package-with-python2 python-tempest-lib)))
+    (package (inherit tempest-lib)
+      (propagated-inputs
+       `(("python2-jsonschema", python2-jsonschema)
+         ,@(alist-delete "python-jsonschema"
+                         (package-propagated-inputs tempest-lib)))))))
 
 ;; Packages from the Oslo library
 (define-public python-oslo.config
@@ -594,7 +606,9 @@ from the OpenStack project.")
     (license asl2.0)))
 
 (define-public python2-oslosphinx
-  (package-with-python2 python-oslosphinx))
+  (let ((oslosphinx (package-with-python2 python-oslosphinx)))
+    (package (inherit oslosphinx)
+      (propagated-inputs `(("python2-requests" ,python2-requests))))))
 
 (define-public python-oslotest
   (package
@@ -679,3 +693,134 @@ handling.")
 
 (define-public python2-oslo.utils
   (package-with-python2 python-oslo.utils))
+
+(define-public python-keystoneclient
+  (package
+    (name "python-keystoneclient")
+    (version "1.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-keystoneclient" version))
+        (sha256
+         (base32
+          "1w4csvkah67rfpxylxnvs2s3594i0f9isy8pf4gnsqs5zirvjaa4"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-sphinx" ,python-sphinx)
+       ;; and some packages for the tests
+       ("openssl" ,openssl)
+       ("python-coverage" ,python-coverage)
+       ("python-discover" ,python-discover)
+       ("python-fixtures" ,python-fixtures)
+       ("python-hacking" ,python-hacking)
+       ("python-keyring" ,python-keyring)
+       ("python-lxml" ,python-lxml)
+       ("python-mock" ,python-mock)
+       ("python-mox3" ,python-mox3)
+       ("python-oauthlib" ,python-oauthlib)
+       ("python-oslosphinx" ,python-oslosphinx)
+       ("python-oslotest" ,python-oslotest)
+       ("python-pycrypto" ,python-pycrypto)
+       ("python-requests-mock" ,python-requests-mock)
+       ("python-temptest-lib" ,python-tempest-lib)
+       ("python-testrepository" ,python-testrepository)
+       ("python-testresources" ,python-testresources)
+       ("python-testtools" ,python-testtools)
+       ("python-webob" ,python-webob)))
+    (propagated-inputs
+     `(("python-babel" ,python-babel)
+       ("python-debtcollector" ,python-debtcollector)
+       ("python-iso8601" ,python-iso8601)
+       ("python-netaddr" ,python-netaddr)
+       ("python-oslo.config" ,python-oslo.config)
+       ("python-oslo.i18n" ,python-oslo.i18n)
+       ("python-oslo.serialization" ,python-oslo.serialization)
+       ("python-oslo.utils" ,python-oslo.utils)
+       ("python-pbr" ,python-pbr)
+       ("python-prettytable" ,python-prettytable)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)
+       ("python-stevedore" ,python-stevedore)))
+    (home-page "http://www.openstack.org/")
+    (synopsis "Client Library for OpenStack Identity")
+    (description
+     "Python-keystoneclient is the identity service used by OpenStack for
+authentication (authN) and high-level authorization (authZ).  It currently
+supports token-based authN with user/service authZ, and is scalable to support
+OAuth, SAML, and OpenID in future versions.  Out of the box, Keystone uses
+SQLite for its identity store database, with the option to connect to external
+LDAP.")
+    (license asl2.0)))
+
+(define-public python2-keystoneclient
+  (let ((keystoneclient (package-with-python2 python-keystoneclient)))
+    (package (inherit keystoneclient)
+      (propagated-inputs
+       `(("python2-requests" ,python2-requests)
+         ,@(alist-delete "python-requests"
+                         (package-propagated-inputs keystoneclient))))
+      (native-inputs
+       `(("python2-oauthlib" ,python2-oauthlib)
+         ("python2-oslosphinx" ,python2-oslosphinx)
+         ("python2-requests-mock" ,python2-requests-mock)
+         ("python2-tempest-lib" ,python2-tempest-lib)
+         ,@(fold alist-delete (package-native-inputs keystoneclient)
+            '("python-oauthlib" "python-oslosphinx" "python-requests-mock" "python-tempest-lib")))))))
+
+(define-public python-swiftclient
+  (package
+    (name "python-swiftclient")
+    (version "2.6.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "python-swiftclient" version))
+        (sha256
+         (base32
+          "1j33l4z9vqh0scfncl4fxg01zr1hgqxhhai6gvcih1gccqm4nd7p"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pbr", python-pbr)
+       ("python-setuptools" ,python-setuptools)
+       ("python-sphinx" ,python-sphinx)
+       ;; The folloing packages are needed for the tests.
+       ("python-coverage" ,python-coverage)
+       ("python-discover" ,python-discover)
+       ("python-hacking" ,python-hacking)
+       ("python-mock" ,python-mock)
+       ("python-oslosphinx" ,python-oslosphinx)
+       ("python-keystoneclient" ,python-keystoneclient)
+       ("python-testrepository" ,python-testrepository)
+       ("python-testtools" ,python-testtools)))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (home-page "http://www.openstack.org/")
+    (synopsis "OpenStack Object Storage API Client Library")
+    (description
+     "OpenStack Object Storage (code-named Swift) creates redundant, scalable
+object storage using clusters of standardized servers to store petabytes of
+accessible data.  It is not a file system or real-time data storage system, but
+rather a long-term storage system for a more permanent type of static data that
+can be retrieved, leveraged, and then updated if necessary.  Primary examples of
+data that best fit this type of storage model are virtual machine images, photo
+storage, email storage and backup archiving.  Having no central \"brain\" or
+master point of control provides greater scalability, redundancy and
+permanence.")
+  (license asl2.0)))
+
+(define-public python2-swiftclient
+  (let ((swiftclient (package-with-python2 python-swiftclient)))
+    (package (inherit swiftclient)
+      (propagated-inputs
+       `(("python2-futures" ,python2-futures)
+         ("python2-requests" ,python2-requests)
+         ,@(alist-delete "python-requests"
+                         (package-propagated-inputs swiftclient))))
+      (native-inputs
+       `(("python2-keystoneclient" ,python2-keystoneclient)
+         ("python2-oslosphinx" ,python2-oslosphinx)
+         ,@(fold alist-delete (package-native-inputs swiftclient)
+            '("python-keystoneclient" "python-oslosphinx")))))))

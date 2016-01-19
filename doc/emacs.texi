@@ -155,13 +155,18 @@ Display all installed packages.
 Display obsolete packages (the packages that are installed in a profile
 but cannot be found among available packages).
 
-@item M-x guix-search-by-name
+@item M-x guix-packages-by-name
 Display package(s) with the specified name.
 
 @item M-x guix-search-by-regexp
 Search for packages by a specified regexp.  By default ``name'',
 ``synopsis'' and ``description'' of the packages will be searched.  This
 can be changed by modifying @code{guix-package-search-params} variable.
+
+@item M-x guix-search-by-name
+Search for packages with names matching a specified regexp.  This
+command is the same as @code{guix-search-by-regexp}, except only a
+package ``name'' is searched.
 
 @end table
 
@@ -189,6 +194,14 @@ List generations matching time period.  You will be prompted for the
 period using Org mode time prompt based on Emacs calendar (@pxref{The
 date/time prompt,,, org, The Org Manual}).
 
+@end table
+
+Analogously on GuixSD you can also display system generations:
+
+@table @kbd
+@item M-x guix-system-generations
+@item M-x guix-last-system-generations
+@item M-x guix-system-generations-by-time
 @end table
 
 You can also invoke the @command{guix pull} command (@pxref{Invoking

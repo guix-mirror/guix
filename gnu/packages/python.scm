@@ -14,7 +14,7 @@
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 Chris Marusich <cmmarusich@gmail.com>
 ;;;
@@ -1016,31 +1016,16 @@ doing practical, real world data analysis in Python.")
 (define-public python-tzlocal
   (package
     (name "python-tzlocal")
-    (version "1.1.1")
+    (version "1.2")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/t/"
-                          "tzlocal/tzlocal-" version ".zip"))
+      (uri (pypi-uri "tzlocal" version))
       (sha256
        (base32
-        "1m3y918c3chf41fwg2bx4w42bqsjzn3dyvvcmwwy13c8gj6zssv9"))))
+        "12wsw2fl3adrqrwghasld57bhqdrzn0crblqrci1p5acd0ni53s3"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("unzip" ,unzip)
-       ("python-setuptools" ,python-setuptools)))
-    (inputs `(("python-pytz" ,python-pytz)))
-    (arguments
-     `(#:phases
-       (alist-replace
-        'unpack
-        (lambda _
-          (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
-                                      "/bin/unzip"))
-                (source (assoc-ref %build-inputs "source")))
-            (and (zero? (system* unzip source))
-                 (chdir (string-append "tzlocal-" ,version)))))
-        %standard-phases)))
+    (propagated-inputs `(("python-pytz" ,python-pytz)))
     (home-page "https://github.com/regebro/tzlocal")
     (synopsis
      "Local timezone information for Python")
@@ -1627,18 +1612,18 @@ and many external plugins.")
         (sha256
           (base32
            "1lf9jsmhqk5nc4w3kzwglmdzjvmi7ajvrsnwv826j3bn0wzx8c92"))))
-  (build-system python-build-system)
-  (propagated-inputs
-   `(("python-coverage" ,python-coverage)
-     ("python-pytest" ,python-pytest)))
-  (native-inputs
-   `(("python-setuptools" ,python-setuptools)))
-  (home-page "https://github.com/pytest-dev/pytest-cov")
-  (synopsis "Pytest plugin for measuring coverage")
-  (description
-   "Pytest-cov produces coverage reports.  It supports centralised testing and
-distributed testing in both load and each modes.  It also supports coverage
-of subprocesses.")
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-pytest" ,python-pytest)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/pytest-dev/pytest-cov")
+    (synopsis "Pytest plugin for measuring coverage")
+    (description
+     "Pytest-cov produces coverage reports.  It supports centralised testing and
+distributed testing in both @code{load} and @code{each} modes.  It also
+supports coverage of subprocesses.")
   (license license:expat)))
 
 (define-public python2-pytest-cov
@@ -2136,28 +2121,38 @@ with sensible defaults out of the box.")
   (package
     (name "python-wheel")
     (version "0.26.0")
-      (source
-        (origin
-          (method url-fetch)
-          (uri (pypi-uri "wheel" version))
-          (sha256
-            (base32
-             "032k1ajijbqnv0z0k88bhf75mdimi18fcmm28mss90610lw3bbga"))))
-  (build-system python-build-system)
-  (native-inputs
-   `(("python-setuptools" ,python-setuptools)
-     ("python-jsonschema" ,python-jsonschema)
-     ("python-pytest-cov" ,python-pytest-cov)))
-  (home-page "https://bitbucket.org/pypa/wheel/")
-  (synopsis "Built-package format for Python")
-  (description
-   "A wheel is a ZIP-format archive with a specially formatted filename and the
-.whl extension.  It is designed to contain all the files for a PEP 376
-compatible install in a way that is very close to the on-disk format.")
-  (license license:expat)))
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "wheel" version))
+        (sha256
+         (base32
+          "032k1ajijbqnv0z0k88bhf75mdimi18fcmm28mss90610lw3bbga"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-jsonschema" ,python-jsonschema)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (home-page "https://bitbucket.org/pypa/wheel/")
+    (synopsis "Format for built Python packages")
+    (description
+     "A wheel is a ZIP-format archive with a specially formatted filename and
+the @code{.whl} extension.  It is designed to contain all the files for a PEP
+376 compatible install in a way that is very close to the on-disk format.  Many
+packages will be properly installed with only the @code{Unpack} step and the
+unpacked archive preserves enough information to @code{Spread} (copy data and
+scripts to their final locations) at any later time.  Wheel files can be
+installed with a newer @code{pip} or with wheel's own command line utility.")
+    (license license:expat)))
 
 (define-public python2-wheel
-  (package-with-python2 python-wheel))
+  (let ((wheel (package-with-python2 python-wheel)))
+    (package (inherit wheel)
+      (native-inputs
+       `(("python2-functools32" ,python2-functools32)
+         ("python2-jsonschema" ,python2-jsonschema)
+         ,@(alist-delete "python-jsonschema"
+                         (package-native-inputs wheel)))))))
 
 (define-public python-requests
   (package
@@ -2184,13 +2179,54 @@ compatible install in a way that is very close to the on-disk format.")
 than Python’s urllib2 library.")
     (license asl2.0)))
 
+;; Some software requires an older version of Requests, notably Docker
+;; Compose.
+(define-public python-requests-2.7
+  (package (inherit python-requests)
+    (version "2.7.0")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "requests" version))
+             (sha256
+              (base32
+               "0gdr9dxm24amxpbyqpbh3lbwxc2i42hnqv50sigx568qssv3v2ir"))))))
+
 (define-public python2-requests
-  (package-with-python2 python-requests))
+  (let ((requests (package-with-python2 python-requests)))
+    (package (inherit requests)
+      (propagated-inputs
+       `(("python2-wheel" ,python2-wheel)
+         ,@(alist-delete "python-wheel"
+                         (package-propagated-inputs requests)))))))
+
+(define-public python-vcversioner
+  (package
+    (name "python-vcversioner")
+    (version "2.14.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "vcversioner" version))
+       (sha256
+        (base32
+         "11ivq1bm7v0yb4nsfbv9m7g7lyjn112gbvpjnjz8nv1fx633dm5c"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (synopsis "Python library for version number discovery")
+    (description "Vcversioner is a Python library that inspects tagging
+information in a variety of version control systems in order to discover
+version numbers.")
+    (home-page "https://github.com/habnabit/vcversioner")
+    (license isc)))
+
+(define-public python2-vcversioner
+  (package-with-python2 python-vcversioner))
 
 (define-public python-jsonschema
   (package
     (name "python-jsonschema")
-    (version "2.4.0")
+    (version "2.5.1")
     (source (origin
              (method url-fetch)
              (uri
@@ -2199,10 +2235,11 @@ than Python’s urllib2 library.")
                version ".tar.gz"))
              (sha256
               (base32
-               "1yik3031ziygvq66rj3mzfqdgxj29sg1bkfc46wsgi7lnbqs560j"))))
+               "0hddbqjm4jq63y8jf44nswina1crjs16l9snb6m3vvgyg31klrrn"))))
     (build-system python-build-system)
     (inputs
-     `(("python-setuptools" ,python-setuptools)))
+     `(("python-setuptools" ,python-setuptools)
+       ("python-vcversioner" ,python-vcversioner)))
     (home-page "http://github.com/Julian/jsonschema")
     (synopsis "Implementation of JSON Schema for Python")
     (description
@@ -2210,7 +2247,11 @@ than Python’s urllib2 library.")
     (license license:expat)))
 
 (define-public python2-jsonschema
-  (package-with-python2 python-jsonschema))
+  (let ((jsonschema (package-with-python2 python-jsonschema)))
+    (package (inherit jsonschema)
+      (inputs
+       `(("python2-functools32" ,python2-functools32)
+         ,@(package-inputs jsonschema))))))
 
 (define-public python-unidecode
   (package
@@ -4266,11 +4307,13 @@ computing.")
          ,@(alist-delete "python-terminado"
                          (package-propagated-inputs ipython))))
       (inputs
-       `(("python2-mock" ,python2-mock)
+       `(("python2-jsonschema" ,python2-jsonschema)
+         ("python2-mock" ,python2-mock)
          ("python2-matplotlib" ,python2-matplotlib)
          ("python2-numpy" ,python2-numpy)
+         ("python2-requests" ,python2-requests)
          ,@(fold alist-delete (package-inputs ipython)
-                 '("python-matplotlib" "python-numpy")))))))
+                 '("python-jsonschema" "python-matplotlib" "python-numpy" "python-requests")))))))
 
 (define-public python-isodate
   (package
@@ -4341,13 +4384,22 @@ and written in Python.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/u/urwid/urwid-"
-             version ".tar.gz"))
+       (uri (pypi-uri "urwid" version))
        (sha256
         (base32
          "18mb0yy94sjc434rd61m2sfnw27sa0nyrszpj5a9r9zh7fnlzw19"))))
     (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Disable failing test. Bug filed upstream:
+         ;; https://github.com/wardi/urwid/issues/164
+         ;; TODO: check again for python-urwid > 1.3.0 or python > 3.4.3.
+         (add-after 'unpack 'disable-failing-test
+          (lambda _
+            (substitute* "urwid/tests/test_event_loops.py"
+              (("test_remove_watch_file")
+                "disable_remove_watch_file")))))))
     (native-inputs `(("python-setuptools" ,python-setuptools)))
     (home-page "http://urwid.org")
     (synopsis "Console user interface library for Python")
@@ -5613,6 +5665,32 @@ suitable for a wide range of protocols based on the ASN.1 specification.")
 (define-public python2-pyasn1
   (package-with-python2 python-pyasn1))
 
+(define-public python-pyasn1-modules
+  (package
+    (name "python-pyasn1-modules")
+    (version "0.0.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pyasn1-modules" version))
+        (sha256
+         (base32
+          "0drqgw81xd3fxdlg89kgd79zzrabvfncvkbybi2wr6w2y4s1jmhh"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-pyasn1" ,python-pyasn1)))
+    (home-page "http://sourceforge.net/projects/pyasn1/")
+    (synopsis "ASN.1 codec implementations")
+    (description
+     "Pyasn1-modules is a collection of Python modules providing ASN.1 types and
+implementations of ASN.1-based codecs and protocols.")
+    (license bsd-3)))
+
+(define-public python2-pyasn1-modules
+  (package-with-python2 python-pyasn1-modules))
+
 (define-public python2-ipaddress
   (package
     (name "python2-ipaddress")
@@ -6622,3 +6700,557 @@ the standard library.")
 
 (define-public python2-contextlib2
   (package-with-python2 python-contextlib2))
+
+(define-public python-texttable
+  (package
+    (name "python-texttable")
+    (version "0.8.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "texttable" version))
+       (sha256
+        (base32
+         "0bkhs4dx9s6g7fpb969hygq56hyz4ncfamlynw72s0n6nqfbd1w5"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; no tests
+    (home-page "https://github.com/foutaise/texttable/")
+    (synopsis "Python module for creating simple ASCII tables")
+    (description "Texttable is a Python module for creating simple ASCII
+tables.")
+    (license lgpl2.1+)))
+
+(define-public python2-texttable
+  (package-with-python2 python-texttable))
+
+(define-public python-websocket-client
+  (package
+    (name "python-websocket-client")
+    (version "0.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/w"
+                           "/websocket-client/websocket_client-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1prdx6d49f1cff17kzj15bnz09palfdgc1m5dkq9jd4mr90n4ak8"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-six" ,python-six))) ; for tests
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/liris/websocket-client")
+    (synopsis "WebSocket client for Python")
+    (description "The Websocket-client module provides the low level APIs for
+WebSocket usage in Python programs.")
+    (license lgpl2.1+)))
+
+(define-public python2-websocket-client
+  (package-with-python2 python-websocket-client))
+
+(define-public python-atomicwrites
+  (package
+    (name "python-atomicwrites")
+    (version "0.1.8")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "atomicwrites" version))
+             (sha256
+              (base32
+               "13nwk0gw0yb61pnf5vxs3fvhav6q3zrf08x9ggc93bnk5fsssx1j"))))
+    (build-system python-build-system)
+    (synopsis "Atomic file writes in Python")
+    (description "Library for atomic file writes using platform dependent tools
+for atomic filesystem operations.")
+    (home-page "https://github.com/untitaker/python-atomicwrites")
+    (license license:expat)))
+
+(define-public python-requests-toolbelt
+  (package
+    (name "python-requests-toolbelt")
+    (version "0.5.0")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "requests-toolbelt" version))
+             (sha256
+              (base32
+               "1kbms1s52dhb98vbpaprr15b0ijdbqp500lpfsyjccpd8cjkyngk"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (synopsis "Extensions to python-requests")
+    (description "This is a toolbelt of useful classes and functions to be used
+with python-requests.")
+    (home-page "https://github.com/sigmavirus24/requests-toolbelt")
+    (license asl2.0)))
+
+(define-public python-click-threading
+  (package
+    (name "python-click-threading")
+    (version "0.1.2")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "click-threading" version))
+             (sha256
+              (base32
+               "0jmrv4334lfxa2ss53c06dafdwqbk1pb3ihd26izn5igw1bm8145"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-click" ,python-click)))
+    (synopsis "Utilities for multithreading in Click")
+    (description "This package provides utilities for multithreading in Click
+applications.")
+    (home-page "https://github.com/click-contrib/click-threading")
+    (license license:expat)))
+
+(define-public python-click-log
+  (package
+    (name "python-click-log")
+    (version "0.1.1")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "click-log" version))
+             (sha256
+              (base32
+               "1z3jdwjmwax159zrnyx830xa968rfqrpkm04ad5xqyh0269ydiqb"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-click" ,python-click)))
+    (synopsis "Logging for click applications")
+    (description "This package provides a Python library for logging Click
+applications.")
+    (home-page "https://github.com/click-contrib/click-log")
+    (license license:expat)))
+
+(define-public python-apipkg
+  (package
+    (name "python-apipkg")
+    (version "1.4")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "apipkg" version))
+             (sha256
+              (base32
+               "1iks5701qnp3dlr3q1d9qm68y2plp2m029irhpz92a44psfkjf1f"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)))
+    (synopsis "Namespace control and lazy-import mechanism")
+    (description "With apipkg you can control the exported namespace of a Python
+package and greatly reduce the number of imports for your users.  It is a small
+pure Python module that works on virtually all Python versions.")
+    (home-page "https://bitbucket.org/hpk42/apipkg")
+    (license license:expat)))
+
+(define-public python-execnet
+  (package
+    (name "python-execnet")
+    (version "1.4.1")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "execnet" version))
+             (sha256
+              (base32
+               "1rpk1vyclhg911p3hql0m0nrpq7q7mysxnaaw6vs29cpa6kx8vgn"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
+    (propagated-inputs
+     `(("python-apipkg" ,python-apipkg)))
+    (synopsis "Rapid multi-Python deployment")
+    (description "Execnet provides a share-nothing model with
+channel-send/receive communication for distributing execution across many
+Python interpreters across version, platform and network barriers.  It has a
+minimal and fast API targetting the following uses:
+@enumerate
+@item distribute tasks to (many) local or remote CPUs
+@item write and deploy hybrid multi-process applications
+@item write scripts to administer multiple environments
+@end enumerate")
+    (home-page "http://codespeak.net/execnet/")
+    (license license:expat)))
+
+;;; The software provided by this package was integrated into pytest 2.8.
+(define-public python-pytest-cache
+  (package
+    (name "python-pytest-cache")
+    (version "1.0")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "pytest-cache" version))
+             (sha256
+              (base32
+               "1a873fihw4rhshc722j4h6j7g3nj7xpgsna9hhg3zn6ksknnhx5y"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-execnet" ,python-execnet)))
+    (synopsis "Py.test plugin with mechanisms for caching across test runs")
+    (description "The pytest-cache plugin provides tools to rerun failures from
+the last py.test invocation.")
+    (home-page "https://bitbucket.org/hpk42/pytest-cache/")
+    (license license:expat)))
+
+(define-public python-pytest-localserver
+  (package
+    (name "python-pytest-localserver")
+    (version "0.3.4")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "pytest-localserver" version ".zip"))
+             (sha256
+              (base32
+               "050q505a7gnsz7vqidw0w5dvxjb2flzi7z734agpjzmsl85c2bcx"))))
+    (build-system python-build-system)
+    (arguments
+      `(#:phases (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "py.test" "--genscript=runtests.py"))
+             (zero? (system* "py.test")))))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-requests" ,python-requests)
+       ("python-six" ,python-six)
+       ("python-werkzeug" ,python-werkzeug)))
+    (synopsis "Py.test plugin to test server connections locally")
+    (description "Pytest-localserver is a plugin for the pytest testing
+framework which enables you to test server connections locally.")
+    (home-page "https://pypi.python.org/pypi/pytest-localserver")
+    (license license:expat)))
+
+(define-public python-wsgi-intercept
+  (package
+    (name "python-wsgi-intercept")
+    (version "0.10.3")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "wsgi_intercept" version))
+             (sha256
+              (base32
+               "0xyfchacywb1mql84270mcidsqc5ssyspd18yacjk82x2xc68h0r"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-httplib2" ,python-httplib2)
+       ("python-requests" ,python-requests)))
+    (synopsis "Puts a WSGI application in place of a real URI for testing")
+    (description "Wsgi_intercept installs a WSGI application in place of a real
+URI for testing.  Testing a WSGI application normally involves starting a
+server at a local host and port, then pointing your test code to that address.
+Instead, this library lets you intercept calls to any specific host/port
+combination and redirect them into a WSGI application importable by your test
+program.  Thus, you can avoid spawning multiple processes or threads to test
+your Web app.")
+    (home-page "https://github.com/cdent/wsgi-intercept")
+    (license license:expat)))
+
+(define-public python-pytest-xprocess
+  (package
+    (name "python-pytest-xprocess")
+    (version "0.9.1")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "pytest-xprocess" version))
+             (sha256
+              (base32
+               "17zlql1xqw3ywcgwwbqmw633aly99lab12hm02asr8awvg5603pp"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-pytest-cache" ,python-pytest-cache)
+       ("python-psutil" ,python-psutil)))
+    (synopsis "Pytest plugin to manage external processes across test runs")
+    (description "Pytest-xprocess is an experimental py.test plugin for managing
+processes across test runs.")
+    (home-page "https://bitbucket.org/pytest-dev/pytest-xprocess")
+    (license license:expat)))
+
+(define-public python-icalendar
+  (package
+    (name "python-icalendar")
+    (version "3.9.1")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "icalendar" version))
+             (sha256
+              (base32
+               "0fhrczdj3jxy5bvswphp3vys7vwv5c9bpwg7asykqwa3z6253q6q"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-dateutil-2" ,python-dateutil-2)
+       ("python-pytz" ,python-pytz)))
+    (synopsis "Python library for parsing iCalendar files")
+    (description "The icalendar package is a parser/generator of iCalendar
+files for use with Python.")
+    (home-page "https://github.com/collective/icalendar")
+    (license bsd-2)))
+
+(define-public python-sphinxcontrib-newsfeed
+  (package
+    (name "python-sphinxcontrib-newsfeed")
+    (version "0.1.4")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "sphinxcontrib-newsfeed" version))
+             (sha256
+              (base32
+               "1d7gam3mn8v4in4p16yn3v10vps7nnaz6ilw99j4klij39dqd37p"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-docutils" ,python-docutils)
+       ("python-sphinx" ,python-sphinx)))
+    (synopsis "News Feed extension for Sphinx")
+    (description "Sphinxcontrib-newsfeed is an extension for adding a simple
+Blog, News or Announcements section to a Sphinx website.")
+    (home-page "https://bitbucket.org/prometheus/sphinxcontrib-newsfeed")
+    (license bsd-2)))
+
+(define-public python-args
+  (package
+    (name "python-args")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "args" version))
+              (sha256
+               (base32
+                "057qzi46h5dmxdqknsbrssn78lmqjlnm624iqdhrnpk26zcbi1d7"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/kennethreitz/args")
+    (synopsis "Command-line argument parser")
+    (description
+     "This library provides a Python module to parse command-line arguments.")
+    (license bsd-3)))
+
+(define-public python2-args
+  (package-with-python2 python-args))
+
+(define-public python-clint
+  (package
+    (name "python-clint")
+    (version "0.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "clint" version))
+              (sha256
+               (base32
+                "1an5lkkqk1zha47198p42ji3m94xmzx1a03dn7866m87n4r4q8h5"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-args" ,python-args)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/kennethreitz/clint")
+    (synopsis "Command-line interface tools")
+    (description
+     "Clint is a Python module filled with a set of tools for developing
+command-line applications, including tools for colored and indented
+output, progress bar display, and pipes.")
+    (license isc)))
+
+(define-public python2-clint
+  (package-with-python2 python-clint))
+
+(define-public python-astor
+  (package
+    (name "python-astor")
+    (version "0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "astor" version))
+              (sha256
+               (base32
+                "1fdafq5hkis1fxqlmhw0sn44zp2ar46nxhbc22cvwg7hsd8z5gsa"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/berkerpeksag/astor")
+    (synopsis "Read and write Python ASTs")
+    (description
+     "Astor is designed to allow easy manipulation of Python source via the
+Abstract Syntax Tree.")
+    (license bsd-3)))
+
+(define-public python2-astor
+  (package-with-python2 python-astor))
+
+(define-public python-rply
+  (package
+    (name "python-rply")
+    (version "0.7.4")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "rply" version))
+              (sha256
+               (base32
+                "12rp1d9ba7nvd5rhaxi6xzx1rm67r1k1ylsrkzhpwnphqpb06cvj"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-appdirs" ,python-appdirs)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/alex/rply")
+    (synopsis "Parser generator for Python")
+    (description
+     "This package provides a pure Python based parser generator, that also
+works with RPython.  It is a more-or-less direct port of David Bazzley's PLY,
+with a new public API, and RPython support.")
+    (license bsd-3)))
+
+(define-public python2-rply
+  (package-with-python2 python-rply))
+
+(define-public python-hy
+  (package
+    (name "python-hy")
+    (version "0.11.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "hy" version))
+              (sha256
+               (base32
+                "1msqv747iz12r73mz4qvsmlwkddwjvrahlrk7ysrcz07h7dsscxs"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-astor" ,python-astor)
+       ("python-clint" ,python-clint)
+       ("python-rply" ,python-rply)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "http://hylang.org/")
+    (synopsis "Lisp frontend to Python")
+    (description
+     "Hy is a dialect of Lisp that's embedded in Python.  Since Hy transforms
+its Lisp code into the Python Abstract Syntax Tree, you have the whole world of
+Python at your fingertips, in Lisp form.")
+    (license license:expat)))
+
+(define-public python2-hy
+  (package-with-python2 python-hy))
+
+(define-public python-rauth
+  (package
+    (name "python-rauth")
+    (version "0.7.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "rauth" version))
+        (sha256
+         (base32
+          "00pq7zw429hhza9c0qzxiqp77m653jv09z92nralnmzwdf6pzicf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:test-target "check"))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)))
+    (home-page "https://github.com/litl/rauth")
+    (synopsis "Python library for OAuth 1.0/a, 2.0, and Ofly")
+    (description
+     "Rauth is a Python library for OAuth 1.0/a, 2.0, and Ofly.  It also
+provides service wrappers for convenient connection initialization and
+authenticated session objects providing things like keep-alive.")
+    (license license:expat)))
+
+(define-public python2-rauth
+  (let ((rauth (package-with-python2 python-rauth)))
+    (package (inherit rauth)
+      (propagated-inputs `(("python2-requests" ,python2-requests)))
+      (native-inputs
+       `(("python2-unittest2", python2-unittest2)
+         ,@(package-native-inputs rauth))))))
+
+(define-public python2-functools32
+  (package
+    (name "python2-functools32")
+    (version "3.2.3-2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "functools32" version))
+        (sha256
+         (base32
+          "0v8ya0b58x47wp216n1zamimv4iw57cxz3xxhzix52jkw3xks9gn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f)) ; no test target
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)))
+    (home-page "https://github.com/MiCHiLU/python-functools32")
+    (synopsis
+     "Backport of the functools module from Python 3.2.3")
+    (description
+     "This package is a backport of the @code{functools} module from Python
+3.2.3 for use with older versions of Python and PyPy.")
+    (license license:expat)))
+
+(define-public python-futures
+  (package
+    (name "python-futures")
+    (version "3.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "futures" version))
+        (sha256
+         (base32
+          "1vcb34dqhzkhbq1957vdjszhhm5y3j9ba88dgwhqx2zynhmk9qig"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/agronholm/pythonfutures")
+    (synopsis
+     "Backport of the concurrent.futures package from Python 3.2")
+    (description
+     "The concurrent.futures module provides a high-level interface for
+asynchronously executing callables.  This package backports the
+concurrent.futures package from Python 3.2")
+    (license bsd-3)))
+
+(define-public python2-futures
+  (package-with-python2 python-futures))
+
+(define-public python-urllib3
+  (package
+    (name "python-urllib3")
+    (version "1.13.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "urllib3" version))
+        (sha256
+         (base32
+          "10rrbr6c6k7j5dvfsyj4b2gsgxg9gggnn708qixf6ll57xqivfkf"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ;; some packages for tests
+       ("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)
+       ("python-tornado" ,python-tornado)))
+    (propagated-inputs
+     `(;; packages for https security
+       ("python-certifi" ,python-certifi)
+       ("python-ndg-httpsclient" ,python-ndg-httpsclient)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pyopenssl" ,python-pyopenssl)))
+    (home-page "http://urllib3.readthedocs.org/")
+    (synopsis "HTTP library with thread-safe connection pooling")
+    (description
+     "Urllib3 supports features left out of urllib and urllib2 libraries.  It
+can reuse the same socket connection for multiple requests, it can POST files,
+supports url redirection and retries, and also gzip and deflate decoding.")
+    (license license:expat)))
+
+(define-public python2-urllib3
+  (package-with-python2 python-urllib3))

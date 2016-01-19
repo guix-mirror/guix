@@ -502,6 +502,13 @@ on a recent machine; subsequent runs will be faster because the store
 that is created for test purposes will already have various things in
 cache.
 
+It is also possible to run a subset of the tests by defining the
+@code{TESTS} makefile variable as in this example:
+
+@example
+make check TESTS="tests/store.scm tests/cpio.scm"
+@end example
+
 Upon failure, please email @email{bug-guix@@gnu.org} and attach the
 @file{test-suite.log} file.  When @file{tests/@var{something}.scm}
 fails, please also attach the @file{@var{something}.log} file available
@@ -626,6 +633,11 @@ where @var{name} is the derivation name---e.g., @code{coreutils-8.24}.
 This way, the value of @code{TMPDIR} does not leak inside build
 environments, which avoids discrepancies in cases where build processes
 capture the name of their build tree.
+
+@vindex http_proxy
+The daemon also honors the @code{http_proxy} environment variable for
+HTTP downloads it performs, be it for fixed-output derivations
+(@pxref{Derivations}) or for substitutes (@pxref{Substitutes}).
 
 If you are installing Guix as an unprivileged user, it is still possible
 to run @command{guix-daemon} provided you pass @code{--disable-chroot}.
@@ -1677,6 +1689,14 @@ will be downloaded, when possible, for future builds.
 Guix ignores substitutes that are not signed, or that are not signed by
 one of the keys listed in the ACL.  It also detects and raises an error
 when attempting to use a substitute that has been tampered with.
+
+@vindex http_proxy
+Substitutes are downloaded over HTTP.  The @code{http_proxy} environment
+variable can be set in the environment of @command{guix-daemon} and is
+honored for downloads of substitutes.  Note that the value of
+@code{http_proxy} in the environment where @command{guix build},
+@command{guix package}, and other client commands are run has
+@emph{absolutely no effect}.
 
 The substitute mechanism can be disabled globally by running
 @code{guix-daemon} with @code{--no-substitutes} (@pxref{Invoking
@@ -8841,6 +8861,50 @@ system declaration like this:
 The @code{base-initrd} procedure also handles common use cases that
 involves using the system as a QEMU guest, or as a ``live'' system whose
 root file system is volatile.
+
+The initial RAM disk produced by @code{base-initrd} honors several
+options passed on the Linux kernel command line (that is, arguments
+passed @i{via} GRUB's @code{linux} command, or with QEMU's
+@code{-append} option), notably:
+
+@table @code
+@item --load=@var{boot}
+Tell the initial RAM disk to load @var{boot}, a file containing a Scheme
+program, once it has mounted the root file system.
+
+GuixSD uses this option to yield control to a boot program that runs the
+service activation programs and then spawns GNU@tie{}dmd, the
+initialization system.
+
+@item --root=@var{root}
+Mount @var{root} as the root file system.  @var{root} can be a device
+device name like @code{/dev/sda1}, a partition label, or a partition
+UUID.
+
+@item --system=@var{system}
+Have @file{/run/booted-system} and @file{/run/current-system} point to
+@var{system}.
+
+@item modprobe.blacklist=@var{modules}@dots{}
+@cindex module, black-listing
+@cindex black list, of kernel modules
+Instruct the initial RAM disk as well as the @command{modprobe} command
+(from the kmod package) to refuse to load @var{modules}.  @var{modules}
+must be a comma-separated list of module names---e.g.,
+@code{usbkbd,9pnet}.
+
+@item --repl
+Start a read-eval-print loop (REPL) from the initial RAM disk before it
+tries to load kernel modules and to mount the root file system.  Our
+marketing team calls it @dfn{boot-to-Guile}.  The Schemer in you will
+love it.  @xref{Using Guile Interactively,,, guile, GNU Guile Reference
+Manual}, for more information on Guile's REPL.
+
+@end table
+
+Now that you know all the features that initial RAM disks produced by
+@code{base-initrd} provide, here is how to use it and customize it
+further.
 
 @deffn {Monadic Procedure} base-initrd @var{file-systems} @
        [#:qemu-networking? #f] [#:virtio? #f] [#:volatile-root? #f] @

@@ -462,11 +462,7 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
        ("pygtk" ,python2-pygtk)
        ("gettext" ,gnu-gettext)
        ("gtk" ,gtk+)
-       ;; TODO: Lilypond is optional.  Produces errors at build time:
-       ;;   Drawing systems...Error: /undefinedresult in --glyphshow--
-       ;; Fontconfig is needed to fix one of the errors, but other similar
-       ;; errors remain.
-       ;;("lilypond" ,lilypond)
+       ("lilypond" ,lilypond)
        ("librsvg" ,librsvg) ; needed at runtime for icons
        ("libpng" ,libpng) ; needed at runtime for icons
        ;; players needed at runtime
@@ -480,8 +476,6 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
        ("txt2man" ,txt2man)
        ("libxml2" ,libxml2) ; for tests
        ("ghostscript" ,ghostscript)
-       ;;("fontconfig" ,fontconfig) ; only needed with lilypond
-       ;;("freetype" ,freetype) ; only needed with lilypond
        ("texinfo" ,texinfo)))
     (home-page "https://www.gnu.org/software/solfege/")
     (synopsis "Ear training")
@@ -659,6 +653,16 @@ Laurens Hammond and Don Leslie.")
                (base32
                 "1fi2m4gmvxdi260821y09lxsimq82yv4k5bbgk3kyc3x1nyhn7vx"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-sse-flags
+           (lambda* (#:key system #:allow-other-keys)
+             (when (not (or (string-prefix? "x86_64" system)
+                            (string-prefix? "i686" system)))
+               (substitute* "bristol/Makefile.in"
+                 (("-msse -mfpmath=sse") "")))
+             #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
@@ -818,14 +822,14 @@ browser.")
 (define-public drumstick
   (package
     (name "drumstick")
-    (version "1.0.1")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/drumstick/"
                                   version "/drumstick-" version ".tar.bz2"))
               (sha256
                (base32
-                "0mxgix85b2qqs859z91cxik5x0s60dykqiflbj62px9akvf91qdv"))))
+                "0l47gy9yywrc860db5g3wdqg8yc8qdb2lqq6wvw1dfim5j0vbail"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f  ; no test target
@@ -864,14 +868,15 @@ backends, including ALSA, OSS, Network and FluidSynth.")
 (define-public vmpk
   (package
     (name "vmpk")
-    (version "0.6.1")
+    (version "0.6.2a")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/vmpk/vmpk/"
-                                  version "/vmpk-" version ".tar.bz2"))
+                                  (string-drop-right version 1)
+                                  "/vmpk-" version ".tar.bz2"))
               (sha256
                (base32
-                "0ranldd033bd31m9d2vkbkn9zp1k46xbaysllai2i95rf1nhirqc"))))
+                "0259iikvxnfdiifrh02g8xgcxikrkca4nhd3an8xzx0bd6bk8ifi"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f  ; no test target

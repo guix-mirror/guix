@@ -55,14 +55,7 @@
      (obsolete
       (0 "No obsolete packages in profile '%s'." profile)
       (1 "A single obsolete package in profile '%s'." profile)
-      (many "%d obsolete packages in profile '%s'." count profile))
-     (generation
-      (0 "No packages installed in generation %d of profile '%s'."
-         val profile)
-      (1 "A single package installed in generation %d of profile '%s'."
-         val profile)
-      (many "%d packages installed in generation %d of profile '%s'."
-            count val profile)))
+      (many "%d obsolete packages in profile '%s'." count profile)))
 
     (output
      (id
@@ -91,14 +84,7 @@
       (0 "No obsolete package outputs in profile '%s'." profile)
       (1 "A single obsolete package output in profile '%s'." profile)
       (many "%d obsolete package outputs in profile '%s'." count profile))
-     (generation
-      (0 "No package outputs installed in generation %d of profile '%s'."
-         val profile)
-      (1 "A single package output installed in generation %d of profile '%s'."
-         val profile)
-      (many "%d package outputs installed in generation %d of profile '%s'."
-            count val profile))
-     (generation-diff
+     (profile-diff
       guix-message-outputs-by-diff))
 
     (generation
@@ -183,25 +169,27 @@ Try \"M-x guix-search-by-name\"."
                      "matching time period '%s' - '%s'.")
              str-beg profile time-beg time-end)))
 
-(defun guix-message-outputs-by-diff (profile entries generations)
-  "Display a message for outputs searched by GENERATIONS difference."
+(defun guix-message-outputs-by-diff (_ entries profiles)
+  "Display a message for outputs searched by PROFILES difference."
   (let* ((count (length entries))
          (str-beg (guix-message-string-entries count 'output))
-         (gen1 (car  generations))
-         (gen2 (cadr generations)))
+         (profile1 (car  profiles))
+         (profile2 (cadr profiles)))
     (cl-multiple-value-bind (new old str-action)
-        (if (> gen1 gen2)
-            (list gen1 gen2 "added to")
-          (list gen2 gen1 "removed from"))
-      (message (concat "%s %s generation %d comparing with "
-                       "generation %d of profile '%s'.")
-               str-beg str-action new old profile))))
+        (if (string-lessp profile2 profile1)
+            (list profile1 profile2 "added to")
+          (list profile2 profile1 "removed from"))
+      (message "%s %s profile '%s' comparing with profile '%s'."
+               str-beg str-action new old))))
 
 (defun guix-result-message (profile entries entry-type
                             search-type search-vals)
   "Display an appropriate message after displaying ENTRIES."
   (let* ((type-spec (guix-assq-value guix-messages
-                                     entry-type search-type))
+                                     (if (eq entry-type 'system-generation)
+                                         'generation
+                                       entry-type)
+                                     search-type))
          (fun-or-count-spec (car type-spec)))
     (if (functionp fun-or-count-spec)
         (funcall fun-or-count-spec profile entries search-vals)

@@ -3,7 +3,7 @@
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Alex Vong <alexvong1995@gmail.com>
@@ -692,7 +692,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.14.0")
+    (version "0.15.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -700,14 +700,14 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "0cqjwl0xyg0sv1jflipfkvqjg32y0kqfh4gc3lyhqgv0hgs3fa84"))
+                "1p0b83048g66icpz5n66v3k4ldr1z0rmg5d2rr7kcbspm1xj2cbx"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python-docutils" ,python-docutils)))
-    ;; Missing features: libguess, Wayland, VDPAU, V4L2
+    ;; Missing features: libguess, Wayland, V4L2
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("enca" ,enca)
@@ -724,6 +724,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
        ("libdvdnav" ,libdvdnav)
        ("libjpeg" ,libjpeg)
        ("libva" ,libva)
+       ("libvdpau" ,libvdpau)
        ("libx11" ,libx11)
        ("libxext" ,libxext)
        ("libxinerama" ,libxinerama)
@@ -754,6 +755,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
           (lambda* (#:key inputs #:allow-other-keys)
             (copy-file (assoc-ref inputs "waf") "waf")
             (setenv "CC" "gcc"))))
+       #:configure-flags (list "--enable-gpl3" "--enable-zsh-comp")
        ;; No check function defined.
        #:tests? #f))
     (home-page "http://mpv.io/")
@@ -1299,3 +1301,53 @@ from many input sources such as webcams, X11 (for screencasting), PulseAudio,
 and JACK.")
     (home-page "https://obsproject.com")
     (license license:gpl2+)))
+
+(define-public libvdpau
+  (package
+    (name "libvdpau")
+    (version "1.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://secure.freedesktop.org/~aplattner/vdpau/"
+                            name "-" version ".tar.bz2"))
+        (sha256
+         (base32
+          "0dnpb0yh7v6rvckx82kxg045rd9rbsw25wjv7ad5n8h94s9h2yl5"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dri2proto" ,dri2proto)
+       ("libx11" ,libx11 "out")
+       ("libxext" ,libxext)))
+    (home-page "https://wiki.freedesktop.org/www/Software/VDPAU/")
+    (synopsis "Video Decode and Presentation API")
+    (description "VDPAU is the Video Decode and Presentation API for UNIX.  It
+provides an interface to video decode acceleration and presentation hardware
+present in modern GPUs.")
+    (license (license:x11-style "file://COPYING"))))
+
+(define-public vdpauinfo
+  (package
+    (name "vdpauinfo")
+    (version "1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://secure.freedesktop.org/~aplattner/vdpau/"
+                            name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1i2b0k9h8r0lnxlrkgqzmrjakgaw3f1ygqqwzx8w6676g85rcm20"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("libx11" ,libx11)))
+    (propagated-inputs
+     `(("libvdpau" ,libvdpau)))
+    (home-page "https://wiki.freedesktop.org/www/Software/VDPAU/")
+    (synopsis "Tool to query the capabilities of a VDPAU implementation")
+    (description "Vdpauinfo is a tool to query the capabilities of a VDPAU
+implementation.")
+    (license (license:x11-style "file://COPYING"))))

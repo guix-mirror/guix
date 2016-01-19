@@ -164,11 +164,6 @@ endif BUILD_DAEMON_OFFLOAD
 # Internal module with test suite support.
 dist_noinst_DATA = guix/tests.scm
 
-# Because of the autoload hack in (guix build download), we must build it
-# first to avoid errors on systems where (gnutls) is unavailable.
-guix/scripts/download.go: guix/build/download.go
-guix/download.go: guix/build/download.go
-
 # Linux-Libre configurations.
 KCONFIGS =					\
   gnu/packages/linux-libre-i686.conf		\
@@ -325,6 +320,7 @@ EXTRA_DIST =						\
   CODE-OF-CONDUCT					\
   .dir-locals.el					\
   build-aux/build-self.scm				\
+  build-aux/compile-all.scm				\
   build-aux/hydra/gnu-system.scm			\
   build-aux/hydra/demo-os.scm				\
   build-aux/hydra/guix.scm				\
@@ -364,31 +360,21 @@ CLEANFILES =					\
   $(GOBJECTS)					\
   $(SCM_TESTS:tests/%.scm=%.log)
 
-AM_V_GUILEC = $(AM_V_GUILEC_$(V))
-AM_V_GUILEC_ = $(AM_V_GUILEC_$(AM_DEFAULT_VERBOSITY))
-AM_V_GUILEC_0 = @echo "  GUILEC" $@;
-
-# Flags passed to 'guild compile'.
-GUILD_COMPILE_FLAGS =				\
-  -Wformat -Wunbound-variable -Warity-mismatch
-
 # Unset 'GUILE_LOAD_COMPILED_PATH' altogether while compiling.  Otherwise, if
 # $GUILE_LOAD_COMPILED_PATH contains $(moduledir), we may find .go files in
 # there that are newer than the local .scm files (for instance because the
 # user ran 'make install' recently).  When that happens, we end up loading
 # those previously-installed .go files, which may be stale, thereby breaking
 # the whole thing.
-#
-# XXX: Use the C locale for when Guile lacks
-# <http://git.sv.gnu.org/cgit/guile.git/commit/?h=stable-2.0&id=e2c6bf3866d1186c60bacfbd4fe5037087ee5e3f>.
-.scm.go:
-	$(AM_V_GUILEC)$(MKDIR_P) `dirname "$@"` ;			\
+%.go: make-go ; @:
+make-go: $(MODULES) guix/config.scm guix/tests.scm
+	$(AM_V_at)echo "Compiling Scheme modules..." ;			\
 	unset GUILE_LOAD_COMPILED_PATH ;				\
-	LC_ALL=C							\
+	host=$(host) srcdir="$(top_srcdir)"				\
 	$(top_builddir)/pre-inst-env					\
-	$(GUILD) compile -L "$(top_builddir)" -L "$(top_srcdir)"	\
-	  $(GUILD_COMPILE_FLAGS) --target="$(host)"			\
-	  -o "$@" "$<"
+	$(GUILE) -L "$(top_builddir)" -L "$(top_srcdir)"		\
+	  --no-auto-compile 						\
+	  -s "$(top_srcdir)"/build-aux/compile-all.scm $^
 
 SUFFIXES = .go
 
@@ -480,6 +466,6 @@ assert-final-inputs-self-contained:
 	$(top_builddir)/pre-inst-env "$(GUILE)"				\
 	  "$(top_srcdir)/build-aux/check-final-inputs-self-contained.scm"
 
-.PHONY: sync-descriptions gen-ChangeLog gen-AUTHORS clean-go
+.PHONY: sync-descriptions gen-ChangeLog gen-AUTHORS clean-go make-go
 .PHONY: assert-no-store-file-names assert-binaries-available
 .PHONY: assert-final-inputs-self-contained

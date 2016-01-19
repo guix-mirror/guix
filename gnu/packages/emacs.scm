@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -324,7 +324,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public magit
   (package
     (name "magit")
-    (version "2.3.1")
+    (version "2.4.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -332,7 +332,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
                    version "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1wnx034adkwhbsydd10il2099hpzz351kp39sri8s1yd43f795gf"))))
+               "1wbam4l36061mj79qlgzrv4xbzhk2dk6gnv45610zwfnf24ikdsp"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-no-x)))

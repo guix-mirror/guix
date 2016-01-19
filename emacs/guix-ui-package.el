@@ -349,6 +349,10 @@ formatted with this string, an action button is inserted.")
                    'name (button-label btn))
              'add)))
 
+(define-button-type 'guix-package-heading
+  :supertype 'guix-package-name
+  'face 'guix-package-info-heading)
+
 (define-button-type 'guix-package-source
   :supertype 'guix
   'face 'guix-package-info-source
@@ -362,8 +366,7 @@ formatted with this string, an action button is inserted.")
   "Insert package ENTRY heading (name specification) at point."
   (guix-insert-button
    (guix-package-entry->name-specification entry)
-   'guix-package-name
-   'face 'guix-package-info-heading))
+   'guix-package-heading))
 
 (defun guix-package-info-insert-systems (systems entry)
   "Insert supported package SYSTEMS at point."
@@ -909,15 +912,15 @@ See `guix-package-info-type'."
   "A history of minibuffer prompts.")
 
 ;;;###autoload
-(defun guix-search-by-name (name &optional profile)
-  "Search for Guix packages by NAME.
+(defun guix-packages-by-name (name &optional profile)
+  "Display Guix packages with NAME.
 NAME is a string with name specification.  It may optionally contain
 a version number.  Examples: \"guile\", \"guile-2.0.11\".
 
 If PROFILE is nil, use `guix-current-profile'.
 Interactively with prefix, prompt for PROFILE."
   (interactive
-   (list (read-string "Package name: " nil 'guix-package-search-history)
+   (list (guix-read-package-name)
          (guix-ui-read-profile)))
   (guix-package-get-display profile 'name name))
 
@@ -934,6 +937,17 @@ Interactively with prefix, prompt for PROFILE."
          nil (guix-ui-read-profile)))
   (guix-package-get-display profile 'regexp regexp
                             (or params guix-package-search-params)))
+
+;;;###autoload
+(defun guix-search-by-name (regexp &optional profile)
+  "Search for Guix packages matching REGEXP in a package name.
+If PROFILE is nil, use `guix-current-profile'.
+Interactively with prefix, prompt for PROFILE."
+  (interactive
+   (list (read-string "Package name by regexp: "
+                      nil 'guix-package-search-history)
+         (guix-ui-read-profile)))
+  (guix-search-by-regexp regexp '(name) profile))
 
 ;;;###autoload
 (defun guix-installed-packages (&optional profile)

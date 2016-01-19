@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,7 +61,8 @@
  (guix scripts lint)
  (guix scripts package)
  (guix scripts pull)
- (gnu packages))
+ (gnu packages)
+ (gnu system))
 
 (define-syntax-rule (first-or-false lst)
   (and (not (null? lst))
@@ -137,28 +138,26 @@ return two values: name and version.  For example, for SPEC
 (define (manifest-entries->package-specifications entries)
   (map manifest-entry->package-specification entries))
 
-(define (generation-package-specifications profile number)
-  "Return a list of package specifications for generation NUMBER."
-  (let ((manifest (profile-manifest
-                   (generation-file-name profile number))))
+(define (profile-package-specifications profile)
+  "Return a list of package specifications for PROFILE."
+  (let ((manifest (profile-manifest profile)))
     (manifest-entries->package-specifications
      (manifest-entries manifest))))
 
-(define (generation-package-specifications+paths profile number)
-  "Return a list of package specifications and paths for generation NUMBER.
+(define (profile->specifications+paths profile)
+  "Return a list of package specifications and paths for PROFILE.
 Each element of the list is a list of the package specification and its path."
-  (let ((manifest (profile-manifest
-                   (generation-file-name profile number))))
+  (let ((manifest (profile-manifest profile)))
     (map (lambda (entry)
            (list (manifest-entry->package-specification entry)
                  (manifest-entry-item entry)))
          (manifest-entries manifest))))
 
-(define (generation-difference profile number1 number2)
-  "Return a list of package specifications for outputs installed in generation
-NUMBER1 and not installed in generation NUMBER2."
-  (let ((specs1 (generation-package-specifications profile number1))
-        (specs2 (generation-package-specifications profile number2)))
+(define (profile-difference profile1 profile2)
+  "Return a list of package specifications for outputs installed in PROFILE1
+and not installed in PROFILE2."
+  (let ((specs1 (profile-package-specifications profile1))
+        (specs2 (profile-package-specifications profile2)))
     (lset-difference string=? specs1 specs2)))
 
 (define (manifest-entries->hash-table entries)
@@ -670,7 +669,6 @@ ENTRIES is a list of installed manifest entries."
        (id               . ,(apply-to-rest ids->package-patterns))
        (name             . ,(apply-to-rest specifications->package-patterns))
        (installed        . ,manifest-package-proc)
-       (generation       . ,manifest-package-proc)
        (obsolete         . ,(apply-to-first obsolete-package-patterns))
        (regexp           . ,regexp-proc)
        (all-available    . ,all-proc)
@@ -679,7 +677,6 @@ ENTRIES is a list of installed manifest entries."
        (id               . ,(apply-to-rest ids->output-patterns))
        (name             . ,(apply-to-rest specifications->output-patterns))
        (installed        . ,manifest-output-proc)
-       (generation       . ,manifest-output-proc)
        (obsolete         . ,(apply-to-first obsolete-output-patterns))
        (regexp           . ,regexp-proc)
        (all-available    . ,all-proc)
@@ -694,16 +691,13 @@ ENTRIES is a list of installed manifest entries."
                               search-type search-vals)
   "Return information about packages or package outputs.
 See 'entry-sexps' for details."
-  (let* ((profile (if (eq? search-type 'generation)
-                      (generation-file-name profile (car search-vals))
-                      profile))
-         (manifest (profile-manifest profile))
+  (let* ((manifest (profile-manifest profile))
          (patterns (if (and (eq? entry-type 'output)
-                            (eq? search-type 'generation-diff))
+                            (eq? search-type 'profile-diff))
                        (match search-vals
-                         ((g1 g2)
+                         ((p1 p2)
                           (map specification->output-pattern
-                               (generation-difference profile g1 g2)))
+                               (profile-difference p1 p2)))
                          (_ '()))
                        (apply (patterns-maker entry-type search-type)
                               manifest search-vals)))
@@ -765,6 +759,38 @@ See 'entry-sexps' for details."
                                     params)))
     (map ->sexp generations)))
 
+(define system-generation-boot-parameters
+  (memoize
+   (lambda (profile generation)
+     "Return boot parameters for PROFILE's system GENERATION."
+     (let* ((gen-file   (generation-file-name profile generation))
+            (param-file (string-append gen-file "/parameters")))
+       (call-with-input-file param-file read-boot-parameters)))))
+
+(define (system-generation-param-alist profile)
+  "Return an alist of system generation parameters and procedures for
+PROFILE."
+  (append (generation-param-alist profile)
+          `((label       . ,(lambda (gen)
+                              (boot-parameters-label
+                               (system-generation-boot-parameters
+                                profile gen))))
+            (root-device . ,(lambda (gen)
+                              (boot-parameters-root-device
+                               (system-generation-boot-parameters
+                                profile gen))))
+            (kernel      . ,(lambda (gen)
+                              (boot-parameters-kernel
+                               (system-generation-boot-parameters
+                                profile gen)))))))
+
+(define (system-generation-sexps profile params search-type search-vals)
+  "Return an alist with information about system generations."
+  (let ((generations (find-generations profile search-type search-vals))
+        (->sexp (object-transformer (system-generation-param-alist profile)
+                                    params)))
+    (map ->sexp generations)))
+
 
 ;;; Getting package/output/generation entries (alists).
 
@@ -809,6 +835,9 @@ parameter/value pairs."
     ((generation)
      (generation-sexps profile params
                        search-type search-vals))
+    ((system-generation)
+     (system-generation-sexps profile params
+                              search-type search-vals))
     (else (entry-type-error entry-type))))
 
 

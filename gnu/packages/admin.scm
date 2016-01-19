@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
@@ -1318,3 +1318,62 @@ able to adapt itself dynamically to the overall system load.  Children
 processes and threads of the specified process may optionally share the same
 limits.")
     (license license:gpl2+)))
+
+(define-public autojump
+  (package
+    (name "autojump")
+    (version "22.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/wting/autojump/archive/"
+                           "release-v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xglj7nb8xczaqy2dhn78drqdwqj64rqpymxhqmmwwqzfaqassw1"))))
+    (build-system gnu-build-system)
+    (native-inputs                      ;for tests
+     `(("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (inputs
+     `(("python" ,python-wrapper)))
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (delete 'build)
+                  (replace 'check
+                    (lambda _
+                      (zero?
+                       (system* "python" "tests/autojump_utils_test.py"))))
+                  (replace 'install
+                    ;; The install.py script doesn't allow system installation
+                    ;; into an arbitrary prefix, so do our own install.
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (bin (string-append out "/bin"))
+                             (share (string-append out "/share/autojump"))
+                             (py (string-append out "/lib/python"
+                                                ,(version-major+minor
+                                                  (package-version python-wrapper))
+                                                "/site-packages"))
+                             (man (string-append out "/share/man/man1")))
+                        (install-file "bin/autojump" bin)
+                        (for-each (λ (f) (install-file f py))
+                                  (find-files "bin" "\\.py$"))
+                        (for-each (λ (f) (install-file f share))
+                                  (find-files "bin" "autojump\\..*$"))
+                        (substitute* (string-append share "/autojump.sh")
+                          (("/usr/local") out))
+                        (install-file "docs/autojump.1" man)
+                        (wrap-program (string-append bin "/autojump")
+                          `("PYTHONPATH" ":" prefix (,py)))
+                        #t))))))
+    (home-page "https://github.com/wting/autojump")
+    (synopsis "Shell extension for filesystem navigation")
+    (description
+     "Autojump provides a faster way to navigate your filesystem, with a \"cd
+command that learns\".  It works by maintaining a database of the directories
+you use the most from the command line and allows you to \"jump\" to
+frequently used directories by typing only a small pattern.")
+    (license license:gpl3+)))

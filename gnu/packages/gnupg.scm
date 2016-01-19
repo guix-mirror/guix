@@ -31,6 +31,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
@@ -218,8 +219,9 @@ compatible to GNU Pth.")
        ("libksba" ,libksba)
        ("npth" ,npth)
        ("openldap" ,openldap)
-       ("zlib" ,zlib)
-       ("readline" ,readline)))
+       ("readline" ,readline)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
    (arguments
     `(#:phases
        (alist-cons-before

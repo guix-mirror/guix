@@ -751,22 +751,39 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
 (define-public glade3
   (package
     (name "glade")
-    (version "3.8.5")
+    (version "3.18.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
                                   (version-major+minor version)  "/"
-                                  name "3-" version ".tar.xz"))
+                                  name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0d97df5pfkrh5670a98r3d3w8zlbh1jcax6cvq6j6a20vzjgd9aq"))))
+                "0lk4nvd5s8px9i0pbq7bncikgn2lpx7vjh787d3cvzpvwx3cxnzc"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; needs X, GL, and software rendering
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'fix-docbook
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "man/Makefile.in"
+               (("http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl")
+                (string-append (assoc-ref inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-"
+                               ,(package-version docbook-xsl)
+                               "/manpages/docbook.xsl")))
+             #t)))))
     (inputs
-     `(("gtk+" ,gtk+-2)
+     `(("gtk+" ,gtk+)
        ("libxml2" ,libxml2)))
     (native-inputs
      `(("intltool" ,intltool)
-       ("python" ,python)
+       ("itstool" ,itstool)
+       ("libxslt" ,libxslt) ;for xsltproc
+       ("docbook-xml" ,docbook-xml-4.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("python" ,python-2)
        ("pkg-config" ,pkg-config)))
     (home-page "https://glade.gnome.org")
     (synopsis "GTK+ rapid application development tool")

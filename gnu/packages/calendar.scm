@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,9 +22,16 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build utils)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages dav)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages icu4c)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages python))
 
 (define-public libical
   (package
@@ -50,3 +58,70 @@
      "Libical is an implementation of the iCalendar protocols and protocol
 data units.")
     (license lgpl2.1)))
+
+(define-public khal
+  (package
+    (name "khal")
+    (version "0.7.0")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "khal" version))
+             (sha256
+              (base32
+               "00llxj7cv31mjsx0j6zxmyi9s1q20yvfkn025xcy8cv1ylfwic66"))
+             (modules '((guix build utils)))
+             ;; Patch broken path in 'doc' Makefile.
+             ;; Patch sent upstream: https://github.com/geier/khal/pull/307
+             (snippet
+               '(substitute* "doc/source/Makefile"
+                 (("../../../khal/khal/settings/khal.spec")
+                  "../../khal/settings/khal.spec" )))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+        ;; Bug reported: https://github.com/geier/khal/issues/309
+        (add-after 'unpack 'disable-test
+          (lambda _
+            (substitute* "tests/khalendar_test.py"
+                         (("test_only_update_old_event")
+                          "disabled_only_update_old_event"))))
+        ;; Building the manpage requires khal to be installed.
+        (add-after 'install 'manpage
+          (lambda* (#:key outputs #:allow-other-keys)
+            (setenv "PYTHONPATH"
+                    (string-append
+                      (getenv "PYTHONPATH") ":" (assoc-ref outputs "out")))
+            (zero? (system* "make" "--directory=doc/" "man"))
+            (install-file
+              "doc/build/man/khal.1"
+              (string-append (assoc-ref outputs "out") "/share/man/man1"))))
+        ;; The tests require us to choose a timezone.
+        (replace 'check
+          (lambda* (#:key inputs #:allow-other-keys)
+            (setenv "TZ"
+                    (string-append (assoc-ref inputs "tzdata")
+                                   "/share/zoneinfo/Zulu"))
+            (zero? (system* "py.test" "tests")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ;; Required for tests
+       ("tzdata" ,tzdata)
+       ;; Required to build manpage
+       ("python-sphinxcontrib-newsfeed" ,python-sphinxcontrib-newsfeed)
+       ("python-sphinx" ,python-sphinx)))
+    (inputs
+     `(("sqlite" ,sqlite)))
+    (propagated-inputs
+     `(("python-configobj" ,python-configobj)
+       ("python-dateutil-2" ,python-dateutil-2)
+       ("python-icalendar" ,python-icalendar)
+       ("python-tzlocal" ,python-tzlocal)
+       ("python-urwid" ,python-urwid)
+       ("python-pyxdg" ,python-pyxdg)
+       ("vdirsyncer" ,vdirsyncer)))
+    (synopsis "Console calendar program")
+    (description "Khal is a standards based console calendar program,
+able to synchronize with CalDAV servers through vdirsyncer.")
+    (home-page "http://lostpackets.de/khal/")
+    (license expat)))

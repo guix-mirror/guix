@@ -88,6 +88,14 @@
             operating-system-locale-directory
             operating-system-boot-script
 
+            boot-parameters
+            boot-parameters?
+            boot-parameters-label
+            boot-parameters-root-device
+            boot-parameters-kernel
+            boot-parameters-kernel-arguments
+            read-boot-parameters
+
             local-host-aliases
             %setuid-programs
             %base-packages
@@ -708,5 +716,38 @@ this file is the reconstruction of GRUB menu entries for old configurations."
                                    (kernel-arguments
                                     #$(operating-system-kernel-arguments os))
                                    (initrd #$initrd)))))
+
+
+;;;
+;;; Boot parameters
+;;;
+
+(define-record-type* <boot-parameters>
+  boot-parameters make-boot-parameters boot-parameters?
+  (label            boot-parameters-label)
+  (root-device      boot-parameters-root-device)
+  (kernel           boot-parameters-kernel)
+  (kernel-arguments boot-parameters-kernel-arguments))
+
+(define (read-boot-parameters port)
+  "Read boot parameters from PORT and return the corresponding
+<boot-parameters> object or #f if the format is unrecognized."
+  (match (read port)
+    (('boot-parameters ('version 0)
+                       ('label label) ('root-device root)
+                       ('kernel linux)
+                       rest ...)
+     (boot-parameters
+      (label label)
+      (root-device root)
+      (kernel linux)
+      (kernel-arguments
+       (match (assq 'kernel-arguments rest)
+         ((_ args) args)
+         (#f       '())))))                       ;the old format
+    (x                                            ;unsupported format
+     (warning (_ "unrecognized boot parameters for '~a'~%")
+              system)
+     #f)))
 
 ;;; system.scm ends here

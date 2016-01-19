@@ -80,6 +80,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/databases.scm			\
   gnu/packages/datamash.scm			\
   gnu/packages/datastructures.scm		\
+  gnu/packages/dav.scm				\
   gnu/packages/dc.scm				\
   gnu/packages/debug.scm			\
   gnu/packages/dejagnu.scm			\
@@ -89,6 +90,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/djvu.scm				\
   gnu/packages/dns.scm				\
   gnu/packages/docbook.scm			\
+  gnu/packages/docker.scm			\
   gnu/packages/doxygen.scm			\
   gnu/packages/dunst.scm			\
   gnu/packages/dvtm.scm				\
@@ -417,7 +419,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/avidemux-install-to-lib.patch		\
   gnu/packages/patches/avrdude-fix-libusb.patch			\
   gnu/packages/patches/bash-completion-directories.patch	\
-  gnu/packages/patches/bowtie-fix-makefile.patch		\
   gnu/packages/patches/bigloo-gc-shebangs.patch			\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
   gnu/packages/patches/binutils-loongson-workaround.patch	\

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +28,7 @@
 (define-public sxiv
   (package
     (name "sxiv")
-    (version "1.3.1")
+    (version "1.3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -37,7 +37,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "03hxy5ff7xbs15rhlbpgx8xmvmpjlffp0m4528975hg16sqa2c4s"))))
+                "0lxnd33gaw4drhdwbkk94wzrjyhh64d57jq2ps7ffmqgizg6hlwz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ; no check target

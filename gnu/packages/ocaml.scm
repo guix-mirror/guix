@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
+;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module ((guix licenses) #:hide (zlib))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix svn-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -36,6 +38,8 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages texlive)
+  #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages lynx)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages ncurses)
@@ -282,14 +286,14 @@ concrete syntax of the language (Quotations, Syntax Extensions).")
 (define-public hevea
   (package
     (name "hevea")
-    (version "2.23")
+    (version "2.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://hevea.inria.fr/old/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1f9pj48518ixhjxbviv2zx27v4anp92zgg3x704g1s5cki2w33nv"))))
+                "14fns13wlnpiv9i05841kvi3cq4b9v2sw5x3ff6ziws28q701qnd"))))
     (build-system gnu-build-system)
     (inputs
      `(("ocaml" ,ocaml)))
@@ -297,7 +301,12 @@ concrete syntax of the language (Quotations, Syntax Extensions).")
      `(#:tests? #f  ; no test suite
        #:make-flags (list (string-append "PREFIX=" %output))
        #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
+                  (delete 'configure)
+                  (add-before 'build 'patch-/bin/sh
+                    (lambda _
+                      (substitute* "_tags"
+                        (("/bin/sh") (which "sh")))
+                      #t)))))
     (home-page "http://hevea.inria.fr/")
     (synopsis "LaTeX to HTML translator")
     (description
@@ -496,16 +505,65 @@ libpanel, librsvg and quartz.")
     (version "2.48.3")
     (source
       (origin
-        (method url-fetch)
-          (uri (string-append "https://www.seas.upenn.edu/~bcpierce/unison/"
-                              "download/releases/stable/unison-" version
-                              ".tar.gz"))
-          (sha256
-            (base32
-              "10sln52rnnsj213jy3166m0q97qpwnrwl6mm529xfy10x3xkq3gl"))))
+        (method svn-fetch)
+        (uri (svn-reference
+              (url (string-append "https://webdav.seas.upenn.edu/svn/"
+                                  "unison/branches/"
+                                  (version-major+minor version)))
+              (revision 535)))
+        (file-name (string-append name "-" version "-checkout"))
+        (sha256
+         (base32
+          "0486s53wyayicj9f2raj2dvwvk4xyzar219rccc1iczdwixm4x05"))
+        (modules '((guix build utils)
+                   (ice-9 rdelim)
+                   (ice-9 regex)
+                   (srfi srfi-1)))
+        (snippet
+         `(begin
+            ;; The svn revision in the release tarball appears to be
+            ;; artificially manipulated in order to set the desired point
+            ;; version number.  Because the point version is calculated during
+            ;; the build, we can offset pointVersionOrigin by the desired
+            ;; point version and write that into "Rev: %d".  We do this rather
+            ;; than hardcoding the necessary revision number, for
+            ;; maintainability.
+            (with-atomic-file-replacement "src/mkProjectInfo.ml"
+              (lambda (in out)
+                (let ((pt-ver (string->number (third (string-split ,version #\.))))
+                      (pt-rx  (make-regexp "^let pointVersionOrigin = ([0-9]+)"))
+                      (rev-rx (make-regexp "Rev: [0-9]+")))
+                  (let loop ((pt-origin #f))
+                    (let ((line (read-line in 'concat)))
+                      (cond
+                       ((regexp-exec pt-rx line)
+                        => (lambda (m)
+                             (display line out)
+                             (loop (string->number (match:substring m 1)))))
+                       ((regexp-exec rev-rx line)
+                        => (lambda (m)
+                             (format out "~aRev: ~d~a"
+                                     (match:prefix m)
+                                     (+ pt-origin pt-ver)
+                                     (match:suffix m))
+                             (dump-port in out))) ;done
+                       (else
+                        (display line out)
+                        (loop pt-origin))))))))
+            ;; Without the '-fix' argument, the html file produced does not
+            ;; have functioning internal hyperlinks.
+            (substitute* "doc/Makefile"
+              (("hevea unison") "hevea -fix unison"))))))
     (build-system gnu-build-system)
+    (outputs '("out"
+               "doc"))                  ; 1.9 MiB of documentation
     (native-inputs
-     `(("ocaml" ,ocaml)))
+     `(("ocaml" ,ocaml)
+       ;; For documentation
+       ("ghostscript" ,ghostscript)
+       ("texlive" ,texlive)
+       ("hevea" ,hevea)
+       ("lynx" ,lynx)))
     (arguments
      `(#:parallel-build? #f
        #:parallel-tests? #f
@@ -522,7 +580,30 @@ libpanel, librsvg and quartz.")
                       (bin (string-append out "/bin")))
                  (mkdir-p bin)
                  (setenv "HOME" out) ; forces correct INSTALLDIR in Makefile
-                 #t))))))
+                 #t)))
+           (add-after 'install 'install-doc
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let ((doc (string-append (assoc-ref outputs "doc")
+                                         "/share/doc/unison")))
+                 (mkdir-p doc)
+                 ;; This file needs write-permissions, because it's
+                 ;; overwritten by 'docs' during documentation generation.
+                 (chmod "src/strings.ml" #o600)
+                 (and (zero? (system* "make" "docs"
+                                      "TEXDIRECTIVES=\\\\draftfalse"))
+                      (begin
+                        (for-each (lambda (f)
+                                    (install-file f doc))
+                                  (map (lambda (ext)
+                                         (string-append
+                                          "doc/unison-manual." ext))
+                                       ;; Install only html documentation,
+                                       ;; since the build is currently
+                                       ;; non-reproducible with the ps, pdf,
+                                       ;; and dvi docs.
+                                       '(;;"ps" "pdf" "dvi"
+                                         "html")))
+                        #t))))))))
     (home-page "https://www.cis.upenn.edu/~bcpierce/unison/")
     (synopsis "File synchronizer")
     (description

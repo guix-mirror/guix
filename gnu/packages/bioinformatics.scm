@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2014, 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
@@ -603,7 +603,7 @@ errors at the end of reads.")
 (define-public bowtie
   (package
     (name "bowtie")
-    (version "2.2.4")
+    (version "2.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/BenLangmead/bowtie2/archive/v"
@@ -611,42 +611,36 @@ errors at the end of reads.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "15dnbqippwvhyh9zqjhaxkabk7lm1xbh1nvar1x4b5kwm117zijn"))
+                "1ssfvymxfrap6f9pf86s9bvsbqdgka4abr2r7j3mgr4w1l289m86"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
-                  (("^CC = .*$") "CC = gcc")
-                  (("^CPP = .*$") "CPP = g++")
                   ;; replace BUILD_HOST and BUILD_TIME for deterministic build
                   (("-DBUILD_HOST=.*") "-DBUILD_HOST=\"\\\"guix\\\"\"")
-                  (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\"")))
-              (patches (list (search-patch "bowtie-fix-makefile.patch")))))
+                  (("-DBUILD_TIME=.*") "-DBUILD_TIME=\"\\\"0\\\"\"")))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)
               ("perl-clone" ,perl-clone)
               ("perl-test-deep" ,perl-test-deep)
               ("perl-test-simple" ,perl-test-simple)
-              ("python" ,python-2)))
+              ("python" ,python-2)
+              ("tbb" ,tbb)))
     (arguments
-     '(#:make-flags '("allall")
+     '(#:make-flags
+       (list "allall"
+             "WITH_TBB=1"
+             (string-append "prefix=" (assoc-ref %outputs "out")))
        #:phases
        (alist-delete
         'configure
         (alist-replace
-         'install
+         'check
          (lambda* (#:key outputs #:allow-other-keys)
-           (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-             (for-each (lambda (file)
-                         (install-file file bin))
-                       (find-files "." "bowtie2.*"))))
-         (alist-replace
-          'check
-          (lambda* (#:key outputs #:allow-other-keys)
-            (system* "perl"
-                     "scripts/test/simple_tests.pl"
-                     "--bowtie2=./bowtie2"
-                     "--bowtie2-build=./bowtie2-build"))
-          %standard-phases)))))
+           (system* "perl"
+                    "scripts/test/simple_tests.pl"
+                    "--bowtie2=./bowtie2"
+                    "--bowtie2-build=./bowtie2-build"))
+         %standard-phases))))
     (home-page "http://bowtie-bio.sourceforge.net/bowtie2/index.shtml")
     (synopsis "Fast and sensitive nucleotide sequence read aligner")
     (description
@@ -2079,7 +2073,7 @@ that a read originated from a particular isoform.")
 (define-public orfm
   (package
     (name "orfm")
-    (version "0.4.1")
+    (version "0.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2087,12 +2081,16 @@ that a read originated from a particular isoform.")
                     version "/orfm-" version ".tar.gz"))
               (sha256
                (base32
-                "05fmw145snk646ly076zby0fjav0k7ysbclck5d4s9pmgcfpijc2"))))
+                "0vb6d771gl4mix8bwx919x5ayy9pkj44n7ki336nz3rz2rx4c7gk"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
+    (native-inputs
+     `(("ruby-bio-commandeer" ,ruby-bio-commandeer)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby" ,ruby)))
     (synopsis "Simple and not slow open reading frame (ORF) caller")
     (description
-     "An ORF caller finds stretches of DNA that when translated are not
+     "An ORF caller finds stretches of DNA that, when translated, are not
 interrupted by stop codons.  OrfM finds and prints these ORFs.")
     (home-page "https://github.com/wwood/OrfM")
     (license license:lgpl3+)))
@@ -2458,18 +2456,21 @@ viewer.")
        (sha256
         (base32 "1m33xsfwz0s8qi45lylagfllqg7fphf4dr0780rsvw75av9wk06h"))))
     (arguments
-     (substitute-keyword-arguments (package-arguments samtools)
-       ((#:tests? tests) #f) ;no "check" target
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'install
-                    (lambda* (#:key outputs #:allow-other-keys)
-                      (let ((bin (string-append
-                                  (assoc-ref outputs "out") "/bin")))
-                        (mkdir-p bin)
-                        (copy-file "samtools"
-                                   (string-append bin "/samtools")))))
-           (delete 'patch-tests)))))))
+     `(#:tests? #f ;no "check" target
+       ,@(substitute-keyword-arguments (package-arguments samtools)
+           ((#:make-flags flags)
+            `(cons "LIBCURSES=-lncurses" ,flags))
+           ((#:phases phases)
+            `(modify-phases ,phases
+               (replace 'install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((bin (string-append
+                               (assoc-ref outputs "out") "/bin")))
+                     (mkdir-p bin)
+                     (copy-file "samtools"
+                                (string-append bin "/samtools")))))
+               (delete 'patch-tests)
+               (delete 'configure))))))))
 
 (define-public mosaik
   (let ((commit "5c25216d"))
@@ -3841,6 +3842,8 @@ extracting the desired features in a convenient format.")
     (properties
      `((upstream-name . "GO.db")))
     (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
     (home-page "http://bioconductor.org/packages/GO.db")
     (synopsis "Annotation maps describing the entire Gene Ontology")
     (description

@@ -1,6 +1,6 @@
 ;;; guix-base.el --- Common definitions   -*- lexical-binding: t -*-
 
-;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -91,14 +91,25 @@ For the meaning of location, see `guix-find-location'."
   "Return the file name of a PROFILE's GENERATION."
   (format "%s-%s-link" profile generation))
 
-(defun guix-manifest-file (profile &optional generation)
+(defun guix-packages-profile (profile &optional generation system?)
+  "Return a directory where packages are installed for the
+PROFILE's GENERATION.
+
+If SYSTEM? is non-nil, then PROFILE is considered to be a system
+profile.  Unlike usual profiles, for a system profile, packages
+are placed in 'profile' subdirectory."
+  (let ((profile (if generation
+                     (guix-generation-file profile generation)
+                   profile)))
+    (if system?
+        (expand-file-name "profile" profile)
+      profile)))
+
+(defun guix-manifest-file (profile &optional generation system?)
   "Return the file name of a PROFILE's manifest.
-If GENERATION number is specified, return manifest file name for
-this generation."
+See `guix-packages-profile'."
   (expand-file-name "manifest"
-                    (if generation
-                        (guix-generation-file profile generation)
-                      profile)))
+                    (guix-packages-profile profile generation system?)))
 
 ;;;###autoload
 (defun guix-edit (id-or-name)
