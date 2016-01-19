@@ -1,6 +1,6 @@
 ;;; guix-read.el --- Minibuffer readers
 
-;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -57,6 +57,10 @@
            (guix-eval-read (guix-make-guile-expression
                             'package-names-lists)))
    #'string<))
+
+(guix-memoized-defun guix-license-names ()
+  "Return a list of names of available licenses."
+  (guix-eval-read (guix-make-guile-expression 'license-names)))
 
 
 ;;; Readers
@@ -121,6 +125,11 @@
  :multiple-reader guix-read-package-names
  :multiple-prompt "Package,s: "
  :multiple-separator " ")
+
+(guix-define-readers
+ :completions-getter guix-license-names
+ :single-reader guix-read-license-name
+ :single-prompt "License: ")
 
 (provide 'guix-read)
 

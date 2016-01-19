@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
+# Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -37,6 +37,7 @@ ELFILES =					\
   emacs/guix-hydra-jobset.el			\
   emacs/guix-info.el				\
   emacs/guix-init.el				\
+  emacs/guix-license.el				\
   emacs/guix-list.el				\
   emacs/guix-messages.el			\
   emacs/guix-pcomplete.el			\

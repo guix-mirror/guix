@@ -1042,3 +1042,33 @@ Return #t if the shell command was executed successfully."
 ;; See the comment to 'guix-package-names' function in "guix-popup.el".
 (define (package-names-lists)
   (map list (package-names)))
+
+
+;;; Licenses
+
+(define %licenses
+  (delay
+    (filter license?
+            (module-map (lambda (_ var)
+                          (variable-ref var))
+                        (resolve-interface '(guix licenses))))))
+
+(define (licenses)
+  (force %licenses))
+
+(define (license-names)
+  "Return a list of names of available licenses."
+  (map license-name (licenses)))
+
+(define lookup-license
+  (memoize
+   (lambda (name)
+     "Return a license by its name."
+     (find (lambda (l)
+             (string=? name (license-name l)))
+           (licenses)))))
+
+(define (lookup-license-uri name)
+  "Return a license URI by its name."
+  (and=> (lookup-license name)
+         license-uri))
