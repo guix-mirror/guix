@@ -35,6 +35,7 @@
 (require 'guix-entry)
 (require 'guix-utils)
 (require 'guix-hydra-build)
+(require 'guix-license)
 
 (guix-ui-define-entry-type package)
 (guix-ui-define-entry-type output)
@@ -220,7 +221,7 @@ ENTRIES is a list of package entries to get info about packages."
             (source simple guix-package-info-insert-source)
             (location format (format guix-package-location))
             (home-url format (format guix-url))
-            (license format (format guix-package-info-license))
+            (license format (format guix-package-license))
             (systems format guix-package-info-insert-systems)
             (inputs format (format guix-package-input))
             (native-inputs format (format guix-package-native-input))
@@ -337,6 +338,13 @@ formatted with this string, an action button is inserted.")
   'help-echo "Find location of this package"
   'action (lambda (btn)
             (guix-find-location (button-label btn))))
+
+(define-button-type 'guix-package-license
+  :supertype 'guix
+  'face 'guix-package-info-license
+  'help-echo "Browse license URL"
+  'action (lambda (btn)
+            (guix-browse-license-url (button-label btn))))
 
 (define-button-type 'guix-package-name
   :supertype 'guix
@@ -767,7 +775,7 @@ for all ARGS."
             (dependencies simple (indent guix-file))
             (location format (format guix-package-location))
             (home-url format (format guix-url))
-            (license format (format guix-package-info-license))
+            (license format (format guix-package-license))
             (systems format guix-package-info-insert-systems)
             (inputs format (format guix-package-input))
             (native-inputs format (format guix-package-native-input))

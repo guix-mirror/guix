@@ -355,6 +355,7 @@ emacs, The GNU Emacs Manual}) which can be used to:
 @item install/remove a package;
 @item jump to a package location;
 @item browse home page of a package;
+@item browse license URL;
 @item describe packages from ``Inputs'' fields.
 @end itemize
 
