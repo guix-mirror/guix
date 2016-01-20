@@ -1,7 +1,7 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
-# Copyright © 2013, 2014, 2015 Mark H Weaver <mhw@netris.org>
+# Copyright © 2013, 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 #
 # This file is part of GNU Guix.
 #
@@ -565,6 +565,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/libwmf-CVE-2015-4695.patch		\
   gnu/packages/patches/libwmf-CVE-2015-4696.patch		\
   gnu/packages/patches/libxslt-CVE-2015-7995.patch		\
+  gnu/packages/patches/linux-libre-CVE-2016-0728.patch		\
   gnu/packages/patches/lirc-localstatedir.patch			\
   gnu/packages/patches/libpthread-glibc-preparation.patch	\
   gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\
