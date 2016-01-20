@@ -403,6 +403,12 @@ MATCH-PARAMS is a list of parameters that REGEXP can match."
   (let ((re (make-regexp regexp regexp/icase)))
     (matching-packages (cut package-match? <> re))))
 
+(define (packages-by-license license)
+  "Return a list of packages with LICENSE."
+  (matching-packages
+   (lambda (package)
+     (memq license (list-maybe (package-license package))))))
+
 (define (all-available-packages)
   "Return a list of all available packages."
   (matching-packages (const #t)))
@@ -663,6 +669,9 @@ ENTRIES is a list of installed manifest entries."
          (manifest-output-proc  (apply-to-first manifest-output-patterns))
          (regexp-proc           (lambda (_ regexp params . __)
                                   (packages-by-regexp regexp params)))
+         (license-proc          (lambda (_ license-name)
+                                  (packages-by-license
+                                   (lookup-license license-name))))
          (all-proc              (lambda _ (all-available-packages)))
          (newest-proc           (lambda _ (newest-available-packages))))
     `((package
@@ -671,6 +680,7 @@ ENTRIES is a list of installed manifest entries."
        (installed        . ,manifest-package-proc)
        (obsolete         . ,(apply-to-first obsolete-package-patterns))
        (regexp           . ,regexp-proc)
+       (license          . ,license-proc)
        (all-available    . ,all-proc)
        (newest-available . ,newest-proc))
       (output
@@ -679,6 +689,7 @@ ENTRIES is a list of installed manifest entries."
        (installed        . ,manifest-output-proc)
        (obsolete         . ,(apply-to-first obsolete-output-patterns))
        (regexp           . ,regexp-proc)
+       (license          . ,license-proc)
        (all-available    . ,all-proc)
        (newest-available . ,newest-proc)))))
 

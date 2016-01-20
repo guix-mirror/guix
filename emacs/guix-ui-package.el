@@ -35,6 +35,7 @@
 (require 'guix-entry)
 (require 'guix-utils)
 (require 'guix-hydra-build)
+(require 'guix-read)
 (require 'guix-license)
 
 (guix-ui-define-entry-type package)
@@ -931,6 +932,17 @@ Interactively with prefix, prompt for PROFILE."
    (list (guix-read-package-name)
          (guix-ui-read-profile)))
   (guix-package-get-display profile 'name name))
+
+;;;###autoload
+(defun guix-packages-by-license (license &optional profile)
+  "Display Guix packages with LICENSE.
+LICENSE is a license name string.
+If PROFILE is nil, use `guix-current-profile'.
+Interactively with prefix, prompt for PROFILE."
+  (interactive
+   (list (guix-read-license-name)
+         (guix-ui-read-profile)))
+  (guix-package-get-display profile 'license license))
 
 ;;;###autoload
 (defun guix-search-by-regexp (regexp &optional params profile)

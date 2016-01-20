@@ -158,6 +158,9 @@ but cannot be found among available packages).
 @item M-x guix-packages-by-name
 Display package(s) with the specified name.
 
+@item M-x guix-packages-by-license
+Display package(s) with the specified license.
+
 @item M-x guix-search-by-regexp
 Search for packages by a specified regexp.  By default ``name'',
 ``synopsis'' and ``description'' of the packages will be searched.  This

@@ -36,6 +36,10 @@
      (name
       ,(lambda (_ entries names)
          (guix-message-packages-by-name entries 'package names)))
+     (license
+      ,(lambda (_ entries licenses)
+         (apply #'guix-message-packages-by-license
+                entries 'package licenses)))
      (regexp
       (0 "No packages matching '%s'." val)
       (1 "A single package matching '%s'." val)
@@ -64,6 +68,10 @@
      (name
       ,(lambda (_ entries names)
          (guix-message-packages-by-name entries 'output names)))
+     (license
+      ,(lambda (_ entries licenses)
+         (apply #'guix-message-packages-by-license
+                entries 'output licenses)))
      (regexp
       (0 "No package outputs matching '%s'." val)
       (1 "A single package output matching '%s'." val)
@@ -157,6 +165,13 @@ Try \"M-x guix-search-by-name\"."
                                          names ", "))
                     (concat "with name "
                             (guix-message-string-name (car names))))))
+    (message "%s %s." str-beg str-end)))
+
+(defun guix-message-packages-by-license (entries entry-type license)
+  "Display a message for packages or outputs searched by LICENSE."
+  (let* ((count (length entries))
+         (str-beg (guix-message-string-entries count entry-type))
+         (str-end (format "with license '%s'" license)))
     (message "%s %s." str-beg str-end)))
 
 (defun guix-message-generations-by-time (profile entries times)
