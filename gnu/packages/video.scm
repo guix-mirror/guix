@@ -1326,6 +1326,7 @@ be used for realtime video capture via Linux-specific APIs.")
        ("mesa" ,mesa)
        ("pulseaudio" ,pulseaudio)
        ("qt" ,qt)
+       ("v4l-utils" ,v4l-utils)
        ("zlib" ,zlib)))
     (synopsis "Live streaming software")
     (description "Open Broadcaster Software provides a graphical interface for
