@@ -764,6 +764,7 @@ mailboxes.  Currently Maildir and IMAP are supported types.")
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-email-simple" ,perl-email-simple)
+       ("perl-module-pluggable" ,perl-module-pluggable)
        ("perl-mro-compat" ,perl-mro-compat)))
     (home-page "http://search.cpan.org/dist/Email-Abstract")
     (synopsis "Interface to mail representations")
