@@ -5700,17 +5700,23 @@ above, such as @code{host-name} and @code{bootloader}, are mandatory.
 Others, such as @code{packages} and @code{services}, can be omitted, in
 which case they get a default value.
 
+Below we discuss the effect of some of the most important fields
+(@pxref{operating-system Reference}, for details about all the available
+fields), and how to @dfn{instantiate} the operating system using
+@command{guix system}.
+
+@unnumberedsubsubsec Globally-Visible Packages
+
 @vindex %base-packages
-The @code{packages} field lists
-packages that will be globally visible on the system, for all user
-accounts---i.e., in every user's @code{PATH} environment variable---in
-addition to the per-user profiles (@pxref{Invoking guix package}).  The
-@var{%base-packages} variable provides all the tools one would expect
-for basic user and administrator tasks---including the GNU Core
-Utilities, the GNU Networking Utilities, the GNU Zile lightweight text
-editor, @command{find}, @command{grep}, etc.  The example above adds
-tcpdump to those, taken from the @code{(gnu packages admin)} module
-(@pxref{Package Modules}).
+The @code{packages} field lists packages that will be globally visible
+on the system, for all user accounts---i.e., in every user's @code{PATH}
+environment variable---in addition to the per-user profiles
+(@pxref{Invoking guix package}).  The @var{%base-packages} variable
+provides all the tools one would expect for basic user and administrator
+tasks---including the GNU Core Utilities, the GNU Networking Utilities,
+the GNU Zile lightweight text editor, @command{find}, @command{grep},
+etc.  The example above adds tcpdump to those, taken from the @code{(gnu
+packages admin)} module (@pxref{Package Modules}).
 
 @findex specification->package
 Referring to packages by variable name, like @var{tcpdump} above, has
@@ -5731,6 +5737,8 @@ version:
                          '("tcpdump" "htop" "gnupg-2.0"))
                     %base-packages)))
 @end lisp
+
+@unnumberedsubsubsec System Services
 
 @vindex %base-services
 The @code{services} field lists @dfn{system services} to be made
@@ -5780,10 +5788,24 @@ more, would look like this:
 @xref{Desktop Services}, for the exact list of services provided by
 @var{%desktop-services}.  @xref{X.509 Certificates}, for background
 information about the @code{nss-certs} package that is used here.
-@xref{operating-system Reference}, for details about all the available
-@code{operating-system} fields.
 
-Assuming the above snippet is stored in the @file{my-system-config.scm}
+Again, @var{%desktop-services} is just a list of service objects.  If
+you want to remove services from there, you can do so using the
+procedures for list filtering (@pxref{SRFI-1 Filtering and
+Partitioning,,, guile, GNU Guile Reference Manual}).  For instance, the
+following expression returns a list that contains all the services in
+@var{%desktop-services} minus the Avahi service:
+
+@example
+(remove (lambda (service)
+          (eq? (service-kind service) avahi-service-type))
+        %desktop-services)
+@end example
+
+@unnumberedsubsubsec Instantiating the System
+
+Assuming the @code{operating-system} declaration
+is stored in the @file{my-system-config.scm}
 file, the @command{guix system reconfigure my-system-config.scm} command
 instantiates that configuration, and makes it the default GRUB boot
 entry (@pxref{Invoking guix system}).
@@ -5805,6 +5827,8 @@ something went wrong with the latest generation.  Reassuring, no?  The
 @command{guix system list-generations} command lists the system
 generations available on disk.
 
+@unnumberedsubsubsec The Programming Interface
+
 At the Scheme level, the bulk of an @code{operating-system} declaration
 is instantiated with the following monadic procedure (@pxref{The Store
 Monad}):
@@ -5817,6 +5841,11 @@ The output of the derivation is a single directory that refers to all
 the packages, configuration files, and other supporting files needed to
 instantiate @var{os}.
 @end deffn
+
+This procedure is provided by the @code{(gnu system)} module.  Along
+with @code{(gnu services)} (@pxref{Services}), this module contains the
+guts of GuixSD.  Make sure to visit it!
+
 
 @node operating-system Reference
 @subsection @code{operating-system} Reference
