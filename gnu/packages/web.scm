@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1542,6 +1542,34 @@ application classes.")
     (synopsis "Catalyst development server with Starman")
     (description "This module provides a Catalyst extension to replace the
 development server with Starman.")
+    (license (package-license perl))))
+
+(define-public perl-cgi
+  (package
+    (name "perl-cgi")
+    (version "4.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/L/LE/LEEJO/"
+                           "CGI-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06hk9zzvlix1yi95wlkb1ykdxgl6lscm7452gkwr2snsb8iybczg"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)
+       ("perl-test-nowarnings" ,perl-test-nowarnings)
+       ("perl-test-warn" ,perl-test-warn)))
+    (propagated-inputs
+     `(("perl-html-parser" ,perl-html-parser)))
+    (home-page "http://search.cpan.org/dist/CGI")
+    (synopsis "Handle Common Gateway Interface requests and responses")
+    (description "CGI.pm is a stable, complete and mature solution for
+processing and preparing HTTP requests and responses.  Major features include
+processing form submissions, file uploads, reading and writing cookies, query
+string generation and manipulation, and processing and preparing HTTP
+headers.")
     (license (package-license perl))))
 
 (define-public perl-cgi-simple
