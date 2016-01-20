@@ -47,8 +47,6 @@
        ("flex" ,flex)
        ("libxml2" ,libxml2) ; provides xmllint for the tests
        ("python" ,python-2))) ; for creating the documentation
-    (propagated-inputs
-     `(("graphviz" ,graphviz)))
     (arguments
      `(#:test-target "tests"))
     (home-page "http://www.stack.nl/~dimitri/doxygen/")
