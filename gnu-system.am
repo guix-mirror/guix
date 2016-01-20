@@ -1,6 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-# Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
+# Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 # Copyright © 2013, 2014, 2015 Mark H Weaver <mhw@netris.org>
 #
 # This file is part of GNU Guix.
@@ -408,6 +408,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/agg-am_c_prototype.patch			\
   gnu/packages/patches/alsa-lib-mips-atomic-fix.patch		\
   gnu/packages/patches/apr-skip-getservbyname-test.patch	\
+  gnu/packages/patches/arb-ldconfig.patch			\
   gnu/packages/patches/asymptote-gsl2.patch			\
   gnu/packages/patches/ath9k-htc-firmware-binutils.patch	\
   gnu/packages/patches/ath9k-htc-firmware-gcc.patch		\
