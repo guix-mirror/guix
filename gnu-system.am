@@ -627,6 +627,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/perl-net-ssleay-disable-ede-test.patch	\
   gnu/packages/patches/perl-no-build-time.patch			\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
+  gnu/packages/patches/perl-module-pluggable-search.patch	\
   gnu/packages/patches/perl-source-date-epoch.patch		\
   gnu/packages/patches/perl-tk-x11-discover.patch		\
   gnu/packages/patches/pidgin-add-search-path.patch		\

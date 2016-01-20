@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -3075,6 +3075,26 @@ implementations.")
 CPAN (or CPAN-like) distributions that are clean, simple, minimalist, act in a
 strictly correct manner with ExtUtils::MakeMaker, and will run on any Perl
 installation version 5.005 or newer.")
+    (license (package-license perl))))
+
+(define-public perl-module-pluggable
+  (package
+    (name "perl-module-pluggable")
+    (version "5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SI/SIMONW/"
+                           "Module-Pluggable-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1px6qmszmfc69v36vd8d92av4nkrif6xf4nrj3xv647xwi2svwmk"))
+       (patches (list (search-patch "perl-module-pluggable-search.patch")))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Module-Pluggable")
+    (synopsis "Give your Perl module the ability to have plugins")
+    (description "This module provides a simple but extensible way of having
+'plugins' for your Perl module.")
     (license (package-license perl))))
 
 (define-public perl-module-runtime
