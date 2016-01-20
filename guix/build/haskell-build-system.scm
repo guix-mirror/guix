@@ -192,7 +192,8 @@ given Haskell package."
       (let loop ((collecting #f)
                  (deps '()))
         (let* ((line (read-line port))
-               (field (and=> (regexp-exec field-rx line)
+               (field (and=> (and (not (eof-object? line))
+                                  (regexp-exec field-rx line))
                              (cut match:substring <> 1))))
           (cond
            ((and=> field (cut string=? <> "depends"))
@@ -200,7 +201,7 @@ given Haskell package."
             ;; so drop those characters.  A line may list more than one .conf.
             (let ((d (string-tokenize (string-drop line 8))))
               (loop #t (append d deps))))
-           ((and collecting field)
+           ((or (eof-object? line) (and collecting field))
             (begin
               (close-port port)
               (reverse! deps)))
