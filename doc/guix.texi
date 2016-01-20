@@ -399,6 +399,21 @@ for instance with:
 # ln -s /var/guix/profiles/per-user/root/guix-profile/bin/guix
 @end example
 
+It is also a good idea to make the Info version of this manual available
+there:
+
+@example
+# mkdir -p /usr/local/share/info
+# cd /usr/local/share/info
+# for i in /var/guix/profiles/per-user/root/guix-profile/share/info/* ;
+  do ln -s $i ; done
+@end example
+
+That way, assuming @file{/usr/local/share/info} is in the search path,
+running @command{info guix} will open this manual (@pxref{Other Info
+Directories,,, texinfo, GNU Texinfo}, for more details on changing the
+Info search path.)
+
 @item
 To use substitutes from @code{hydra.gnu.org} (@pxref{Substitutes}),
 authorize them:
