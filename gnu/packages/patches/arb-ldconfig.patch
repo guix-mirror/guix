@@ -1,23 +1,15 @@
-Common subdirectories: arb-2.8.1.orig/acb and arb-2.8.1/acb
-Common subdirectories: arb-2.8.1.orig/acb_calc and arb-2.8.1/acb_calc
-Common subdirectories: arb-2.8.1.orig/acb_hypgeom and arb-2.8.1/acb_hypgeom
-Common subdirectories: arb-2.8.1.orig/acb_mat and arb-2.8.1/acb_mat
-Common subdirectories: arb-2.8.1.orig/acb_modular and arb-2.8.1/acb_modular
-Common subdirectories: arb-2.8.1.orig/acb_poly and arb-2.8.1/acb_poly
-Common subdirectories: arb-2.8.1.orig/arb and arb-2.8.1/arb
-Common subdirectories: arb-2.8.1.orig/arb_calc and arb-2.8.1/arb_calc
-Common subdirectories: arb-2.8.1.orig/arb_mat and arb-2.8.1/arb_mat
-Common subdirectories: arb-2.8.1.orig/arb_poly and arb-2.8.1/arb_poly
-Common subdirectories: arb-2.8.1.orig/arf and arb-2.8.1/arf
-Common subdirectories: arb-2.8.1.orig/bernoulli and arb-2.8.1/bernoulli
-Common subdirectories: arb-2.8.1.orig/doc and arb-2.8.1/doc
-Common subdirectories: arb-2.8.1.orig/examples and arb-2.8.1/examples
-Common subdirectories: arb-2.8.1.orig/fmpr and arb-2.8.1/fmpr
-Common subdirectories: arb-2.8.1.orig/fmprb and arb-2.8.1/fmprb
-Common subdirectories: arb-2.8.1.orig/fmpz_extras and arb-2.8.1/fmpz_extras
-Common subdirectories: arb-2.8.1.orig/hypgeom and arb-2.8.1/hypgeom
-Common subdirectories: arb-2.8.1.orig/mag and arb-2.8.1/mag
-diff -u arb-2.8.1.orig/Makefile.in arb-2.8.1/Makefile.in
+diff -u -r arb-2.8.1.orig/configure arb-2.8.1/configure
+--- arb-2.8.1.orig/configure	2015-12-31 17:30:01.000000000 +0100
++++ arb-2.8.1/configure	2016-01-20 16:41:41.336726596 +0100
+@@ -647,6 +647,7 @@
+ echo "ARB_SHARED=$SHARED" >> Makefile
+ echo "ARB_LIB=$ARB_LIB" >> Makefile
+ echo "ARB_LIBNAME=$ARB_LIBNAME" >> Makefile
++echo "ARB_MAJOR=$ARB_MAJOR" >> Makefile
+ echo "ARB_SOLIB=$ARB_SOLIB" >> Makefile
+ echo "EXEEXT=$EXEEXT" >> Makefile
+ echo "PREFIX=$PREFIX" >> Makefile
+diff -u -r arb-2.8.1.orig/Makefile.in arb-2.8.1/Makefile.in
 --- arb-2.8.1.orig/Makefile.in	2015-12-31 17:30:01.000000000 +0100
 +++ arb-2.8.1/Makefile.in	2016-01-20 16:30:32.575298517 +0100
 @@ -101,6 +101,7 @@
@@ -28,4 +20,3 @@ diff -u arb-2.8.1.orig/Makefile.in arb-2.8.1/Makefile.in
  
  libarb.a: $(OBJS) $(LIB_SOURCES) $(EXT_SOURCES) $(HEADERS) $(EXT_HEADERS) | build build/interfaces
  	$(AT)$(foreach ext, $(EXTENSIONS), $(foreach dir, $(patsubst $(ext)/%.h, %, $(wildcard $(ext)/*.h)), mkdir -p build/$(dir); BUILD_DIR=$(CURDIR)/build/$(dir); export BUILD_DIR; MOD_DIR=$(dir); export MOD_DIR; $(MAKE) -f $(CURDIR)/Makefile.subdirs -C $(ext)/$(dir) static || exit $$?;))
-Common subdirectories: arb-2.8.1.orig/partitions and arb-2.8.1/partitions
