@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,14 +64,14 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public bind-utils
   (package
     (name "bind-utils")
-    (version "9.10.3-P2")
+    (version "9.10.3-P3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.isc.org/isc/bind9/" version
                                   "/bind-" version ".tar.gz"))
               (sha256
                (base32
-                "1kbfzml37sx4r2xi4gq48ji8w5kckd1f6gdn6pk6njqdmh8ijv2a"))))
+                "10yblk8qbb85qxakzdjy5qmqvqj4rlcqsqvlkriglampzg8i0239"))))
     (build-system gnu-build-system)
     (inputs
      ;; it would be nice to add GeoIP and gssapi once there is package
