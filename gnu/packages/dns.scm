@@ -91,18 +91,24 @@ and BOOTP/TFTP for network booting of diskless machines.")
                             (assoc-ref %build-inputs "mysql"))
              (string-append "--with-pkcs11="
                             (assoc-ref %build-inputs "p11-kit")))
+       #:modules ((srfi srfi-1)
+                  (srfi srfi-26)
+                  ,@%gnu-build-system-modules)
        #:phases
-       (modify-phases %standard-phases
-         (replace 'build
-           (lambda _
-             (and (zero? (system* "make" "-C" "lib/dns"))
-                  (zero? (system* "make" "-C" "lib/isc"))
-                  (zero? (system* "make" "-C" "lib/bind9"))
-                  (zero? (system* "make" "-C" "lib/isccfg"))
-                  (zero? (system* "make" "-C" "lib/lwres"))
-                  (zero? (system* "make" "-C" "bin/dig")))))
-         (replace 'install
-           (lambda _ (zero? (system* "make" "-C" "bin/dig" "install")))))))
+       (let ((libs '("dns" "isc" "bind9" "isccfg" "lwres"))
+             (bins '("dig")))
+         (modify-phases %standard-phases
+           (replace 'build
+             (lambda _
+               (every (lambda (dir)
+                        (zero? (system* "make" "-C" dir)))
+                      (append (map (cut string-append "lib/" <>) libs)
+                              (map (cut string-append "bin/" <>) bins)))))
+           (replace 'install
+             (lambda _
+               (every (lambda (dir)
+                        (zero? (system* "make" "-C" dir "install")))
+                      (map (cut string-append "bin/" <>) bins))))))))
     (home-page "https://www.isc.org/downloads/bind/")
     (synopsis "Tools for querying nameservers")
     (description
