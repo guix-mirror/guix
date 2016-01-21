@@ -245,7 +245,7 @@ developers consider to have good quality code and correct functionality.")
 (define-public gst-plugins-ugly
   (package
     (name "gst-plugins-ugly")
-    (version "1.6.1")
+    (version "1.6.3")
     (source
      (origin
        (method url-fetch)
@@ -253,7 +253,7 @@ developers consider to have good quality code and correct functionality.")
                            name "/" name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0mvasl1pwq70w2kmrkcrg77kggl5q7jqybi7fkvy3vr28c7gkhqc"))))
+         "0r6h3ys5n90jv3c06crxzcac561z07s4h04hy5i8ybw8qyvzgv1g"))))
     (build-system gnu-build-system)
     (inputs
      `(("gst-plugins-base" ,gst-plugins-base)
