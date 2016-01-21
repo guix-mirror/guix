@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -91,19 +92,17 @@ and BOOTP/TFTP for network booting of diskless machines.")
              (string-append "--with-pkcs11="
                             (assoc-ref %build-inputs "p11-kit")))
        #:phases
-       (alist-replace
-        'build
-        (lambda _
-          (and (zero? (system* "make" "-C" "lib/dns"))
-               (zero? (system* "make" "-C" "lib/isc"))
-               (zero? (system* "make" "-C" "lib/bind9"))
-               (zero? (system* "make" "-C" "lib/isccfg"))
-               (zero? (system* "make" "-C" "lib/lwres"))
-               (zero? (system* "make" "-C" "bin/dig"))))
-        (alist-replace
-         'install
-         (lambda _ (zero? (system* "make" "-C" "bin/dig" "install")))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (replace 'build
+           (lambda _
+             (and (zero? (system* "make" "-C" "lib/dns"))
+                  (zero? (system* "make" "-C" "lib/isc"))
+                  (zero? (system* "make" "-C" "lib/bind9"))
+                  (zero? (system* "make" "-C" "lib/isccfg"))
+                  (zero? (system* "make" "-C" "lib/lwres"))
+                  (zero? (system* "make" "-C" "bin/dig")))))
+         (replace 'install
+           (lambda _ (zero? (system* "make" "-C" "bin/dig" "install")))))))
     (home-page "https://www.isc.org/downloads/bind/")
     (synopsis "Tools for querying nameservers")
     (description
