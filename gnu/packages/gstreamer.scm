@@ -185,16 +185,16 @@ for the GStreamer multimedia library.")
 (define-public gst-plugins-good
   (package
     (name "gst-plugins-good")
-    (version "1.6.1")
+    (version "1.6.3")
     (source
      (origin
       (method url-fetch)
       (uri (string-append
-            "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-"
-            version ".tar.xz"))
+            "https://gstreamer.freedesktop.org/src/" name "/"
+            name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0darc3058kbnql3mnlpizl0sq0hhli7vkm0rpqb7nywz14abim46"))))
+        "0xx16h0q63gs3pxlzdflnpyssba3vcrh1qnzplg4d0ra1fvrvc94"))))
     (build-system gnu-build-system)
     (inputs
      `(("aalib" ,aalib)
@@ -228,7 +228,7 @@ for the GStreamer multimedia library.")
           'unpack 'disable-failing-rtprtx-tests
           (lambda _
             ;; Disable rtprtx tests that frequently fail.
-            ;; XXX FIXME: Try removing this for version > 1.6.1.
+            ;; XXX FIXME: Try removing this for version > 1.6.3.
             (substitute* "tests/check/elements/rtprtx.c"
               (("tcase_add_test \\(tc_chain,\
  (test_rtxsender_max_size_packets|test_rtxreceive_data_reconstruction)\\);" all)
