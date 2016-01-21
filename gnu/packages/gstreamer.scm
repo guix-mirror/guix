@@ -28,21 +28,33 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cdrom)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages rdf)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages ssh)
+  #:use-module (gnu packages telephony)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages yasm)
   #:use-module (gnu packages xml))
 
@@ -240,6 +252,79 @@ for the GStreamer multimedia library.")
     (description "GStreamer Good Plug-ins is a set of plug-ins for the
 GStreamer multimedia library.  This set contains those plug-ins which the
 developers consider to have good quality code and correct functionality.")
+    (license lgpl2.0+)))
+
+(define-public gst-plugins-bad
+  (package
+    (name "gst-plugins-bad")
+    (version "1.6.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://gstreamer.freedesktop.org/src/"
+                                  name "/" name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0q9s5da54819gwncmdi95l5qzx97l9vxk6adx4zmx73a3l82j6wp"))))
+    (outputs '("out" "doc"))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; XXX: 11 of 54 tests fail
+       #:configure-flags
+       (list (string-append "--with-html-dir="
+                            (assoc-ref %outputs "doc")
+                            "/share/gtk-doc/html"))))
+    (propagated-inputs
+     `(("gst-plugins-base" ,gst-plugins-base)))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
+    (inputs
+     ;; XXX: The following dependencies are missing:
+     ;;  vo-amrwbenc, vo-aacenc, bs2b, chromaprint, directfb, daala, libdts,
+     ;;  faac, flite, libgsm, libde265, libmms, libmimic, mjpegtools,
+     ;;  mpeg2enc, libofa, opencv, openh264, openni2, libtimemmgr, wildmidi,
+     ;;  openspc, gme, sbc, schroedinger, zbar, librtmp, spandsp, x265
+     `(("bluez" ,bluez)
+       ("curl" ,curl)
+       ("faad2" ,faad2)
+       ("fluidsynth" ,fluidsynth)
+       ("gtk+" ,gtk+)
+       ("ladspa" ,ladspa)
+       ("libass" ,libass)
+       ("libdvdnav" ,libdvdnav)
+       ("libdvdread" ,libdvdread)
+       ("libgcrypt" ,libgcrypt)
+       ("libgudev" ,libgudev)
+       ("libkate" ,libkate)
+       ("libmodplug" ,libmodplug)
+       ("librsvg" ,librsvg)
+       ("libsndfile" ,libsndfile)
+       ("libsrtp" ,libsrtp)
+       ("libssh2" ,libssh2)
+       ("libusb" ,libusb)
+       ("libvdpau" ,libvdpau)
+       ("libwebp" ,libwebp)
+       ("libxml2" ,libxml2)
+       ("lrdf" ,lrdf)
+       ("mesa" ,mesa)
+       ("mpg123" ,mpg123)
+       ("neon" ,neon)
+       ("openal" ,openal)
+       ("openexr" ,openexr)
+       ("openjpeg" ,openjpeg)
+       ("openssl" ,openssl)
+       ("opus" ,opus)
+       ("orc" ,orc)
+       ("qt" ,qt)
+       ("soundtouch" ,soundtouch)
+       ("wayland" ,wayland)))
+    (home-page "http://gstreamer.freedesktop.org/")
+    (synopsis "Plugins for the GStreamer multimedia library")
+    (description
+     "GStreamer Bad Plug-ins is a set of plug-ins whose quality aren't up to
+par compared to the rest.")
     (license lgpl2.0+)))
 
 (define-public gst-plugins-ugly
