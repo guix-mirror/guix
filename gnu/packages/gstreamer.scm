@@ -131,15 +131,15 @@ This package provides the core library and elements.")
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
-    (version "1.6.1")
+    (version "1.6.3")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://gstreamer.freedesktop.org/src/" name "/"
+      (uri (string-append "https://gstreamer.freedesktop.org/src/" name "/"
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "18sbyjcp281zb3bsqji3pglsdsxi0s6ai7rx90sx8cpflkxdqcwm"))))
+        "0xbskifk95rw7jd85sqjrmqh2kys1bpi0inrxyapx1x4vf7ly5dn"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs
