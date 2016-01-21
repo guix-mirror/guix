@@ -96,7 +96,7 @@ and BOOTP/TFTP for network booting of diskless machines.")
                   ,@%gnu-build-system-modules)
        #:phases
        (let ((libs '("dns" "isc" "bind9" "isccfg" "lwres"))
-             (bins '("dig")))
+             (bins '("dig" "nsupdate")))
          (modify-phases %standard-phases
            (replace 'build
              (lambda _
