@@ -4002,7 +4002,7 @@ genomic intervals.  In addition, it can use BAM or BigWig files as input.")
 (define-public r-qtl
  (package
   (name "r-qtl")
-  (version "1.37-11")
+  (version "1.38-4")
   (source
    (origin
     (method url-fetch)
@@ -4010,7 +4010,7 @@ genomic intervals.  In addition, it can use BAM or BigWig files as input.")
                         version ".tar.gz"))
     (sha256
      (base32
-      "0h20d36mww7ljp51pfs66xq33yq4b4fwq9nsh02dpmfhlaxgx1xi"))))
+      "0rv9xhp8lyldpgwxqirhyjqvg07dr5x4x1x2jpyj37dada9ccyx3"))))
   (build-system r-build-system)
   (home-page "http://rqtl.org/")
   (synopsis "R package for analyzing QTL experiments in genetics")
