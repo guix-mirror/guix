@@ -6358,7 +6358,7 @@ using the @code{locale} field of the @code{operating-system} declaration
 That locale must be among the @dfn{locale definitions} that are known to
 the system---and these are specified in the @code{locale-definitions}
 slot of @code{operating-system}.  The default value includes locale
-definition for some widely used locales, but not for all the available
+definitions for some widely used locales, but not for all the available
 locales, in order to save space.
 
 If the locale specified in the @code{locale} field is not among the
