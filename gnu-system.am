@@ -547,6 +547,9 @@ dist_patch_DATA =						\
   gnu/packages/patches/libmad-frame-length.patch		\
   gnu/packages/patches/libmad-mips-newgcc.patch			\
   gnu/packages/patches/libtheora-config-guess.patch		\
+  gnu/packages/patches/libtiff-CVE-2015-8665+CVE-2015-8683.patch \
+  gnu/packages/patches/libtiff-oob-accesses-in-decode.patch	\
+  gnu/packages/patches/libtiff-oob-write-in-nextdecode.patch	\
   gnu/packages/patches/libtool-skip-tests2.patch		\
   gnu/packages/patches/libsndfile-CVE-2014-9496.patch		\
   gnu/packages/patches/libsndfile-CVE-2015-7805.patch		\

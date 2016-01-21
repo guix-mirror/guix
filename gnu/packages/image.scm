@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
@@ -131,13 +131,17 @@ maximum quality factor.")
 (define-public libtiff
   (package
    (name "libtiff")
-   (version "4.0.5")
+   (version "4.0.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.remotesensing.org/pub/libtiff/tiff-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "171hgy4mylwmvdm7gp6ffjva81m4j56v3fbqsbfl7avzxn1slpp2"))))
+                     "136nf1rj9dp5jgv1p7z4dk0xy3wki1w0vfjbk82f645m0w4samsd"))
+            (patches (map search-patch
+                          '("libtiff-oob-accesses-in-decode.patch"
+                            "libtiff-oob-write-in-nextdecode.patch"
+                            "libtiff-CVE-2015-8665+CVE-2015-8683.patch")))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.3 MiB of HTML documentation
