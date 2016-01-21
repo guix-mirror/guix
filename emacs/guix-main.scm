@@ -1083,3 +1083,25 @@ Return #t if the shell command was executed successfully."
   "Return a license URI by its name."
   (and=> (lookup-license name)
          license-uri))
+
+(define %license-param-alist
+  `((id      . ,license-name)
+    (name    . ,license-name)
+    (url     . ,license-uri)
+    (comment . ,license-comment)))
+
+(define license->sexp
+  (object-transformer %license-param-alist))
+
+(define (find-licenses search-type . search-values)
+  "Return a list of licenses depending on SEARCH-TYPE and SEARCH-VALUES."
+  (case search-type
+    ((id name)
+     (let ((names search-values))
+       (filter-map lookup-license names)))
+    ((all)
+     (licenses))))
+
+(define (license-entries search-type . search-values)
+  (map license->sexp
+       (apply find-licenses search-type search-values)))

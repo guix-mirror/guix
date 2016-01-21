@@ -9,6 +9,7 @@ Guix convenient and fun.
 @menu
 * Initial Setup: Emacs Initial Setup.	Preparing @file{~/.emacs}.
 * Package Management: Emacs Package Management.	Managing packages and generations.
+* Licenses: Emacs Licenses.		Interface for licenses of Guix packages.
 * Popup Interface: Emacs Popup Interface.	Magit-like interface for guix commands.
 * Prettify Mode: Emacs Prettify.	Abbreviating @file{/gnu/store/@dots{}} file names.
 * Build Log Mode: Emacs Build Log.	Highlighting Guix build logs.
@@ -516,6 +517,27 @@ buffers.
 @itemx guix-info-fill
 @itemx guix-info-delimiter
 Various settings for ``info'' buffers.
+
+@end table
+
+
+@node Emacs Licenses
+@section Licenses
+
+If you want to browse the URL of a particular license, or to look at a
+list of licenses, you may use the following commands:
+
+@table @kbd
+
+@item M-x guix-browse-license-url
+Choose a license from a completion list to browse its URL using
+@code{browse-url} function (@pxref{Browse-URL,,, emacs, The GNU Emacs
+Manual}).
+
+@item M-x guix-licenses
+Display a list of available licenses.  You can press @kbd{@key{RET}}
+there to display packages with this license in the same way as @kbd{M-x
+guix-packages-by-license} would do (@pxref{Emacs Commands}).
 
 @end table
 
