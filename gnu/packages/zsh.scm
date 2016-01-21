@@ -23,6 +23,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (guix packages)
   #:use-module (guix download)
+;  #:use-module (guix build utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses))
 
@@ -42,28 +43,39 @@
                (base32
                 "11shllzhq53fg8ngy3bgbmpf09fn2czifg7hsb41nxi3410mpvcl"))))
     (build-system gnu-build-system)
-    (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre")
-                 #:phases (alist-cons-before
-                           'configure 'fix-sh
-                           (lambda _
-                             ;; Some of the files are ISO-8859-1 encoded.
-                             (with-fluids ((%default-port-encoding #f))
-                               (substitute*
-                                   '("configure"
-                                     "configure.ac"
-                                     "Src/exec.c"
-                                     "Src/mkmakemod.sh"
-                                     "Config/installfns.sh"
-                                     "Config/defs.mk.in"
-                                     "Test/E01options.ztst"
-                                     "Test/A05execution.ztst"
-                                     "Test/A01grammar.ztst"
-                                     "Test/A06assign.ztst"
-                                     "Test/B02typeset.ztst"
-                                     "Completion/Unix/Command/_init_d"
-                                     "Util/preconfig")
-                                 (("/bin/sh") (which "sh")))))
-                           %standard-phases)))
+    (arguments `(#:parallel-build? #f
+                 #:configure-flags '("--with-tcsetpgrp" "--enable-pcre")
+                 #:make-flags '("ZTST_verbose=2")
+                 #:phases (modify-phases %standard-phases
+                            (add-before 'configure 'fix-sh
+                              (lambda _
+                                ;; Some of the files are ISO-8859-1 encoded.
+                                (with-fluids ((%default-port-encoding #f))
+                                  (substitute*
+                                      '("configure"
+                                        "configure.ac"
+                                        "Src/exec.c"
+                                        "Src/mkmakemod.sh"
+                                        "Config/installfns.sh"
+                                        "Config/defs.mk.in"
+                                        "Test/E01options.ztst"
+                                        "Test/A05execution.ztst"
+                                        "Test/A01grammar.ztst"
+                                        "Test/A06assign.ztst"
+                                        "Test/B02typeset.ztst"
+                                        "Completion/Unix/Command/_init_d"
+                                        "Util/preconfig")
+                                    (("/bin/sh") (which "sh"))))))
+;                            (add-before 'check 'provide-zsh-interpreter
+;                              (lambda _ 
+;                                (substitute* "Test/runtests.zsh"
+;                                  (("#!/bin/zsh -f")
+;                                   (string-append "#!" (getcwd) "/Src/zsh -f")))
+;                                (substitute* "Test/ztst.zsh"
+;                                  (("#!/bin/zsh -f")
+;                                   (string-append "#!" (getcwd) "/Src/zsh -f")))
+;                               ))
+                            )))
     (native-inputs `(("autoconf", autoconf)))
     (inputs `(("ncurses", ncurses)
               ("pcre", pcre)
