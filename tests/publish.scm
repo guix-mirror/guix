@@ -16,6 +16,9 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
+;; Avoid interference.
+(unsetenv "http_proxy")
+
 (define-module (test-publish)
   #:use-module (guix scripts publish)
   #:use-module (guix tests)
@@ -62,6 +65,7 @@
              (connect conn AF_INET (inet-pton AF_INET "127.0.0.1") 6789))
       (loop))))
 
+
 (test-begin "publish")
 
 (test-equal "/nix-cache-info"
