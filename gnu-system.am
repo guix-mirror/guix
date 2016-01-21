@@ -42,6 +42,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/attr.scm				\
   gnu/packages/audacity.scm			\
   gnu/packages/audio.scm			\
+  gnu/packages/augeas.scm			\
   gnu/packages/autogen.scm			\
   gnu/packages/autotools.scm			\
   gnu/packages/avahi.scm			\
