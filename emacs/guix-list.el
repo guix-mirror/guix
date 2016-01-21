@@ -38,6 +38,11 @@
   "Face used for file names."
   :group 'guix-list-faces)
 
+(defface guix-list-url
+  '((t :inherit guix-info-url))
+  "Face used for URLs."
+  :group 'guix-list-faces)
+
 (defface guix-list-time
   '((t :inherit guix-info-time))
   "Face used for time stamps."
@@ -221,6 +226,14 @@ VAL may be nil."
         'action (lambda (btn) (find-file (button-label btn)))
         'follow-link t
         'help-echo "Find file"))
+
+(defun guix-list-get-url (url &optional _)
+  "Return URL button specification for `tabulated-list-entries'."
+  (list url
+        'face 'guix-list-url
+        'action (lambda (btn) (browse-url (button-label btn)))
+        'follow-link t
+        'help-echo "Browse URL"))
 
 
 ;;; 'List' lines
