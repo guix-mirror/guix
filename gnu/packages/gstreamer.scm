@@ -83,7 +83,7 @@ arrays of data.")
 (define-public gstreamer
   (package
     (name "gstreamer")
-    (version "1.6.1")
+    (version "1.6.3")
     (source
      (origin
       (method url-fetch)
@@ -92,7 +92,7 @@ arrays of data.")
             version ".tar.xz"))
       (sha256
        (base32
-        "172w1bpnkn6mm1wi37n03apdbb6cdkykhzjf1vfxchcd7hhkyflp"))))
+        "093zldafh7xh3lrlwzm7j0vvjz6k9ca83wqil40gfz5qcy6mdy92"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
