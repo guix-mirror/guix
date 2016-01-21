@@ -16,7 +16,7 @@ Please send Guix bug reports to bug-guix@gnu.org.
 
 *** Emacs interface for system generations
 *** Emacs interface for hydra.gnu.org
-*** Changes in Emacs interface variables
+*** Changes in Emacs interface variables and faces
 In the following names, BUFFER-TYPE means "info" or "list";
 ENTRY-TYPE means "package", "output" or "generation".
 
@@ -30,6 +30,7 @@ ENTRY-TYPE means "package", "output" or "generation".
 - guix-buffer-name-function -> guix-ui-buffer-name-function
 - guix-update-after-operation -> guix-ui-update-after-operation
 - guix-search-params -> guix-package-search-params
+- guix-BUFFER-TYPE-file-path (face) -> guix-BUFFER-TYPE-file-name
 
 **** Replaced
 - guix-list-column-format, guix-list-column-value-methods ->

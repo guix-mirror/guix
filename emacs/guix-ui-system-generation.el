@@ -71,7 +71,7 @@ SEARCH-VALUES."
             (current guix-generation-list-get-current 10 t)
             (label nil 40 t)
             (time guix-list-get-time 20 t)
-            (path guix-list-get-file-path 30 t))
+            (path guix-list-get-file-name 30 t))
   :titles guix-generation-list-titles
   :sort-key '(number . t)
   :marks '((delete . ?D)))

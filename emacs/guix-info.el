@@ -42,9 +42,9 @@
   "Face used for titles of parameters."
   :group 'guix-info-faces)
 
-(defface guix-info-file-path
+(defface guix-info-file-name
   '((t :inherit link))
-  "Face used for file paths."
+  "Face used for file names."
   :group 'guix-info-faces)
 
 (defface guix-info-url
@@ -337,7 +337,7 @@ BUTTON-OR-FACE is a button type)."
 
 (define-button-type 'guix-file
   :supertype 'guix
-  'face 'guix-info-file-path
+  'face 'guix-info-file-name
   'help-echo "Find file"
   'action (lambda (btn)
             (guix-find-file (button-label btn))))

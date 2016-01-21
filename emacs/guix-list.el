@@ -33,9 +33,9 @@
 
 (guix-define-buffer-type list)
 
-(defface guix-list-file-path
-  '((t :inherit guix-info-file-path))
-  "Face used for file paths."
+(defface guix-list-file-name
+  '((t :inherit guix-info-file-name))
+  "Face used for file names."
   :group 'guix-list-faces)
 
 (defface guix-list-time
@@ -214,10 +214,10 @@ VAL may be nil."
   (guix-get-string (guix-get-time-string seconds)
                    'guix-list-time))
 
-(defun guix-list-get-file-path (path &optional _)
-  "Return PATH button specification for `tabulated-list-entries'."
-  (list path
-        'face 'guix-list-file-path
+(defun guix-list-get-file-name (file-name &optional _)
+  "Return FILE-NAME button specification for `tabulated-list-entries'."
+  (list file-name
+        'face 'guix-list-file-name
         'action (lambda (btn) (find-file (button-label btn)))
         'follow-link t
         'help-echo "Find file"))

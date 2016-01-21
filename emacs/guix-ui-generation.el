@@ -166,7 +166,7 @@ current profile's GENERATION."
   :format '((number nil 5 guix-list-sort-numerically-0 :right-align t)
             (current guix-generation-list-get-current 10 t)
             (time guix-list-get-time 20 t)
-            (path guix-list-get-file-path 30 t))
+            (path guix-list-get-file-name 30 t))
   :titles '((number . "N."))
   :sort-key '(number . t)
   :marks '((delete . ?D)))
