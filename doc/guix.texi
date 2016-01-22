@@ -8977,7 +8977,7 @@ Now that you know all the features that initial RAM disks produced by
 further.
 
 @deffn {Monadic Procedure} base-initrd @var{file-systems} @
-       [#:qemu-networking? #f] [#:virtio? #f] [#:volatile-root? #f] @
+       [#:qemu-networking? #f] [#:virtio? #t] [#:volatile-root? #f] @
        [#:extra-modules '()] [#:mapped-devices '()]
 Return a monadic derivation that builds a generic initrd.  @var{file-systems} is
 a list of file-systems to be mounted by the initrd, possibly in addition to
