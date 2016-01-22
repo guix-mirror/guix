@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -190,11 +190,13 @@ tools that process C/C++ code.")
              ;; afl only supports using a single afl-qemu-trace executable, so
              ;; we only build qemu for the native target.
              (arguments
-              `(#:configure-flags
-                (list (string-append "--target-list=" ,machine "-linux-user"))
-                #:modules ((srfi srfi-1)
+              `(#:modules ((srfi srfi-1)
                            ,@%gnu-build-system-modules)
                 ,@(substitute-keyword-arguments (package-arguments qemu-2.3.0)
+                    ((#:configure-flags config-flags)
+                     ``(,(string-append "--target-list=" ,machine "-linux-user")
+                        ,@(remove (λ (f) (string-prefix? "--target-list=" f))
+                                  ,config-flags)))
                     ((#:phases qemu-phases)
                      `(modify-phases ,qemu-phases
                         (add-after
