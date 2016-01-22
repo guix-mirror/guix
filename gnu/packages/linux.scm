@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1261,7 +1261,7 @@ processes currently causing I/O.")
 (define-public fuse
   (package
     (name "fuse")
-    (version "2.9.4")
+    (version "2.9.5")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -1272,7 +1272,7 @@ processes currently causing I/O.")
                        "/fuse-" version ".tar.gz")))
               (sha256
                (base32
-                "1qbwp63a2bp0bchabkwiyzszi9x5krlk2pwk2is6g35gyszw1sbb"))))
+                "1dfvbi1p57svbv2sfnbqwpnsk219spvjnlapf35azhgzqlf3g7sp"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (arguments
