@@ -64,7 +64,12 @@
                    name version ".tar.gz"))
              (sha256
               (base32
-               "1fig2wf4f10v43mqx67y68z6h77sy900d1w0pz9qarrqx57rc7ij"))))
+               "1fig2wf4f10v43mqx67y68z6h77sy900d1w0pz9qarrqx57rc7ij"))
+             (modules '((guix build utils)))
+             (snippet
+              ;; Fix incompatibility with Perl 5.22+.
+              '(substitute* '("js/src/config/milestone.pl")
+                 (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE")))))
     (build-system gnu-build-system)
     (native-inputs
       `(("perl", perl)
@@ -103,7 +108,12 @@ in C/C++.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1n1phk8r3l8icqrrap4czplnylawa0ddc2cc4cgdz46x3lrkybz6"))))
+                "1n1phk8r3l8icqrrap4czplnylawa0ddc2cc4cgdz46x3lrkybz6"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Fix incompatibility with Perl 5.22+.
+               '(substitute* '("js/src/config/milestone.pl")
+                  (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE")))))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
