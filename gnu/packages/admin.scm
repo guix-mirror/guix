@@ -6,7 +6,6 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1378,25 +1377,3 @@ command that learns\".  It works by maintaining a database of the directories
 you use the most from the command line and allows you to \"jump\" to
 frequently used directories by typing only a small pattern.")
     (license license:gpl3+)))
-
-(define-public iftop
-  (package
-    (name "iftop")
-    (version "1.0pre4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://www.ex-parrot.com/~pdw/iftop/download"
-                                  "/iftop-" version ".tar.gz"))
-              (sha256
-               (base32
-                "15sgkdyijb7vbxpxjavh5qm5nvyii3fqcg9mzvw7fx8s6zmfwczp"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("libpcap" ,libpcap)
-        ("ncurses" ,ncurses)))
-    (synopsis "Monitor network usage")
-    (description "Iftop does for network usage what @command{top} does
-for CPU usage.  It listens to network traffic on a named interface and
-displays a table of current bandwidth usage by pairs of hosts.")
-    (home-page "http://www.ex-parrot.com/~pdw/iftop/")
-    (license license:gpl3)))
