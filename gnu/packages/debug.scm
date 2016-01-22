@@ -169,7 +169,7 @@ tools that process C/C++ code.")
                    (_                "UNSUPPORTED"))))
     (package
       (name "american-fuzzy-lop")
-      (version "1.86b")             ;It seems all releases have the 'b' suffix
+      (version "1.96b")             ;It seems all releases have the 'b' suffix
       (source
        (origin
          (method url-fetch)
@@ -177,7 +177,7 @@ tools that process C/C++ code.")
                              "afl-" version ".tgz"))
          (sha256
           (base32
-           "1by9ncf6lgcyibzqwyla34jv64sd66mn8zhgjz2pcgsds51qwn0r"))))
+           "0z7j231p6v2h1dxxijgdzj1lq1lxr8cxllwf6iyv7p4ki5pv1gh3"))))
       (build-system gnu-build-system)
       (inputs
        `(("custom-qemu"
@@ -238,8 +238,8 @@ tools that process C/C++ code.")
                      (lambda* (#:key inputs outputs #:allow-other-keys)
                        (let ((qemu (assoc-ref inputs "custom-qemu"))
                              (out  (assoc-ref outputs "out")))
-                         (copy-file (string-append qemu "/bin/qemu-" ,machine)
-                                    (string-append out "/bin/afl-qemu-trace"))
+                         (symlink (string-append qemu "/bin/qemu-" ,machine)
+                                  (string-append out "/bin/afl-qemu-trace"))
                          #t)))
                     (delete 'check))))
       (supported-systems (fold delete
