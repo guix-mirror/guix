@@ -181,7 +181,7 @@ loaded at boot time in the order in which they appear."
     `("ahci"                                  ;for SATA controllers
       "usb-storage" "uas"                     ;for the installation image etc.
       "usbhid" "hid-generic" "hid-apple"      ;keyboards during early boot
-      "dm-crypt" "xts"                        ;for encrypted root partitions
+      "dm-crypt" "xts" "serpent_generic" "wp512" ;for encrypted root partitions
       ,@(if (string-match "^(x86_64|i[3-6]86)-" (%current-system))
             '("pata_acpi" "pata_atiixp"    ;for ATA controllers
               "isci")                      ;for SAS controllers like Intel C602
