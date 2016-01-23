@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -520,7 +520,7 @@ MailCore 2.")
 (define-public claws-mail
   (package
     (name "claws-mail")
-    (version "3.13.1")
+    (version "3.13.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -528,7 +528,7 @@ MailCore 2.")
                     ".tar.xz"))
               (sha256
                (base32
-                "049av7r0xhjjjm1p93l2ns3xisvn125v3ncqar23cqjzgcichg5d"))))
+                "1l8ankx0qpq1ix1an8viphcf11ksh53jsrm1xjmq8cjbh5910wva"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("bogofilter" ,bogofilter)
