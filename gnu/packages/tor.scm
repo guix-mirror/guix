@@ -104,7 +104,7 @@ rejects UDP traffic from the application you're using.")
 (define-public privoxy
   (package
     (name "privoxy")
-    (version "3.0.21")
+    (version "3.0.24")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/ijbswa/Sources/"
@@ -112,7 +112,7 @@ rejects UDP traffic from the application you're using.")
                                  version "-stable-src.tar.gz"))
              (sha256
               (base32
-               "1f6xb7aa47p90c26vqaw74y6drs9gpnhxsgby3mx0awdjh0ydisy"))))
+               "04mhkz5g713i2crvjd6s783hhrlsjjjlfb9llbaf13ghg3fgd0d3"))))
     (build-system gnu-build-system)
     (arguments
      '(;; The default 'sysconfdir' is $out/etc; change that to
