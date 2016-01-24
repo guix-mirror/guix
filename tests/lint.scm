@@ -2,7 +2,7 @@
 ;;; Copyright © 2012, 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
+;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -308,10 +308,7 @@ requests."
      (with-warnings
        (let ((pkg (dummy-package "x"
                     (source
-                     (origin
-                       (method url-fetch)
-                       (uri "someurl")
-                       (sha256 "somesha")
+                     (dummy-origin
                        (patches (list "/path/to/y.patch")))))))
          (check-patch-file-names pkg)))
      "file names of patches should start with the package name")))
@@ -322,10 +319,7 @@ requests."
      (with-warnings
        (let ((pkg (dummy-package "x"
                     (source
-                     (origin
-                       (method url-fetch)
-                       (uri "someurl")
-                       (sha256 "somesha")
+                     (dummy-origin
                        (patches
                         (list (search-patch "this-patch-does-not-exist!"))))))))
          (check-patch-file-names pkg)))
