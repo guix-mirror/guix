@@ -10131,6 +10131,40 @@ If we also wanted GTK+ 3.8.2, this would be packaged as
     ...))
 @end example
 
+@c See <https://lists.gnu.org/archive/html/guix-devel/2016-01/msg00425.html>,
+@c for a discussion of what follows.
+@cindex version number, for VCS snapshots
+Occasionally, we package snapshots of upstream's version control system
+(VCS) instead of formal releases.  This should remain exceptional,
+because it is up to upstream developers to clarify what the stable
+release is.  Yet, it is sometimes necessary.  So, what should we put in
+the @code{version} field?
+
+Clearly, we need to make the commit identifier of the VCS snapshot
+visible in the version string, but we also need to make sure that the
+version string is monotonically increasing so that @command{guix package
+--upgrade} can determine which version is newer.  Since commit
+identifiers, notably with Git, are not monotonically increasing, we add
+a revision number that we increase each time we upgrade to a newer
+snapshot.  The resulting version string looks like this:
+
+@example
+2.0.11-3.cabba9e
+  ^    ^    ^
+  |    |    `-- upstream commit ID
+  |    |
+  |    `--- Guix package revision
+  |
+latest upstream version
+@end example
+
+It is a good idea to strip commit identifiers in the @code{version}
+field to, say, 7 digits.  It avoids an aesthetic annoyance (assuming
+aesthetics have a role to play here) as well as problems related to OS
+limits such as the maximum shebang length (127 bytes for the Linux
+kernel.)  It is best to use the full commit identifiers in
+@code{origin}s, though, to avoid ambiguities.
+
 @node Synopses and Descriptions
 @subsection Synopses and Descriptions
 
