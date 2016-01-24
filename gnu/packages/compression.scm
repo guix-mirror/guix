@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,8 +33,10 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages valgrind)
   #:use-module ((srfi srfi-1) #:select (last)))
 
@@ -659,3 +662,29 @@ multiple processors and multiple cores when compressing data.")
     ;; Things under zopfli/ are under ASL2.0, but 4 files at the top-level,
     ;; written by Mark Adler, are under another non-copyleft license.
     (license license:asl2.0)))
+
+(define-public pixz
+  (package
+    (name "pixz")
+    (version "1.0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/vasi/pixz/releases/download/v" version
+                    "/pixz-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1s3j7zw6j5zi3fhdxg287ndr3wf6swac7z21mqd1pyiln530gi82"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("libarchive" ,libarchive)))
+    (home-page "https://github.com/vasi/pixz")
+    (synopsis "Parallel indexing implementation of LZMA")
+    (description
+     "The existing XZ Utils provide great compression in the .xz file format,
+but they produce just one big block of compressed data.  Pixz instead produces
+a collection of smaller blocks which makes random access to the original data
+possible and can compress in parallel.  This is especially useful for large
+tarballs.")
+    (license license:bsd-2)))
