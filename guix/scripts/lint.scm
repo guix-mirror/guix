@@ -413,24 +413,21 @@ warning for PACKAGE mentionning the FIELD."
 (define (check-patch-file-names package)
   "Emit a warning if the patches requires by PACKAGE are badly named or if the
 patch could not be found."
-  (guard (c ((message-condition? c)               ;raised by 'search-patch'
+  (guard (c ((message-condition? c)     ;raised by 'search-patch'
              (emit-warning package (condition-message c)
                            'patch-file-names)))
-    (let ((patches   (and=> (package-source package) origin-patches))
-          (name      (package-name package)))
-      (when (and patches
-                 (any (match-lambda
-                        ((? string? patch)
-                         (let ((file (basename patch)))
-                           (not (eq? (string-contains file name) 0))))
-                        (_
-                         ;; This must be an <origin> or something like that.
-                         #f))
-                      patches))
-        (emit-warning package
-                      (_ "file names of patches should start with \
-the package name")
-                      'patch-file-names)))))
+    (unless (every (match-lambda        ;patch starts with package name?
+                     ((? string? patch)
+                      (and=> (string-contains (basename patch)
+                                              (package-name package))
+                             zero?))
+                     (_  #f))     ;must be an <origin> or something like that.
+                   (or (and=> (package-source package) origin-patches)
+                       '()))
+      (emit-warning
+       package
+       (_ "file names of patches should start with the package name")
+       'patch-file-names))))
 
 (define (escape-quotes str)
   "Replace any quote character in STR by an escaped quote character."
