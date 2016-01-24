@@ -52,7 +52,7 @@ EXTRA_DIST           += $(OS_CONFIG_EXAMPLES_TEXI)
 MAINTAINERCLEANFILES  = $(OS_CONFIG_EXAMPLES_TEXI)
 
 doc/os-config-%.texi: gnu/system/examples/%.tmpl
-	$(MKDIR_P) "`dirname "$@"`"
+	$(AM_V_GEN)$(MKDIR_P) "`dirname $@`";	\
 	cp "$<" "$@"
 
 infoimagedir = $(infodir)/images
@@ -79,7 +79,7 @@ DOT_OPTIONS =					\
 	mv "$(srcdir)/$@.tmp" "$(srcdir)/$@"
 
 .png.eps:
-	convert "$<" "$@-tmp.eps"
+	$(AM_V_GEN)convert "$<" "$@-tmp.eps"; \
 	mv "$@-tmp.eps" "$@"
 
 # We cannot add new dependencies to `doc/guix.pdf' & co. (info "(automake)

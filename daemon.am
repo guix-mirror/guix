@@ -1,5 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -155,7 +156,7 @@ noinst_HEADERS =						\
   $(guix_daemon_headers)
 
 nix/libstore/schema.sql.hh: nix/libstore/schema.sql
-	$(GUILE) --no-auto-compile -c				\
+	$(AM_V_GEN)$(GUILE) --no-auto-compile -c		\
 	  "(use-modules (rnrs io ports))			\
 	   (call-with-output-file \"$@\"			\
 	     (lambda (out)					\
@@ -185,9 +186,9 @@ nodist_systemdservice_DATA = etc/guix-daemon.service
 
 etc/guix-daemon.service: etc/guix-daemon.service.in	\
 			 $(top_builddir)/config.status
-	$(MKDIR_P) "`dirname "$@"`"
+	$(AM_V_GEN)$(MKDIR_P) "`dirname $@`";				\
 	$(SED) -e 's|@''bindir''@|$(bindir)|' <				\
-	       "$(srcdir)/etc/guix-daemon.service.in" > "$@.tmp"
+	       "$(srcdir)/etc/guix-daemon.service.in" > "$@.tmp";	\
 	mv "$@.tmp" "$@"
 
 # The '.conf' job for Upstart.
@@ -196,9 +197,9 @@ nodist_upstartjob_DATA = etc/guix-daemon.conf
 
 etc/guix-daemon.conf: etc/guix-daemon.conf.in	\
 			 $(top_builddir)/config.status
-	$(MKDIR_P) "`dirname "$@"`"
+	$(AM_V_GEN)$(MKDIR_P) "`dirname $@`";				\
 	$(SED) -e 's|@''bindir''@|$(bindir)|' <				\
-	       "$(srcdir)/etc/guix-daemon.conf.in" > "$@.tmp"
+	       "$(srcdir)/etc/guix-daemon.conf.in" > "$@.tmp";		\
 	mv "$@.tmp" "$@"
 
 EXTRA_DIST +=					\

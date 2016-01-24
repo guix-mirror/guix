@@ -420,7 +420,7 @@ include emacs.am
 
 # The self-contained tarball.
 guix-binary.%.tar.xz:
-	-GUIX_PACKAGE_PATH= \
+	$(AM_V_GEN)GUIX_PACKAGE_PATH= \
 	$(top_builddir)/pre-inst-env "$(GUILE)"			\
 	  "$(top_srcdir)/build-aux/make-binary-tarball.scm" "$*" "$@"
 
@@ -431,11 +431,11 @@ dist-hook: assert-no-store-file-names
 distcheck-hook: assert-binaries-available assert-final-inputs-self-contained
 
 sync-descriptions:
-	-GUIX_PACKAGE_PATH= \
+	$(AM_V_at)GUIX_PACKAGE_PATH= \
 	 $(top_builddir)/pre-inst-env guix lint --checkers=gnu-description
 
 gen-ChangeLog:
-	if test -d .git; then				\
+	$(AM_V_GEN)if test -d .git; then		\
 	  $(top_srcdir)/build-aux/gitlog-to-changelog	\
 	    > $(distdir)/cl-t;				\
 	  rm -f $(distdir)/ChangeLog;			\
@@ -443,7 +443,7 @@ gen-ChangeLog:
 	fi
 
 gen-AUTHORS:
-	if test -d .git; then					\
+	$(AM_V_GEN)if test -d .git; then			\
 	  rm -f "$(distdir)/AUTHORS";				\
 	  $(top_builddir)/pre-inst-env "$(GUILE)"		\
 	    "$(top_srcdir)/build-aux/generate-authors.scm"	\
@@ -452,7 +452,7 @@ gen-AUTHORS:
 
 # Make sure we're not shipping a file that embeds a local /gnu/store file name.
 assert-no-store-file-names:
-	if grep -r --exclude=*.texi --exclude=*.info				\
+	$(AM_V_at)if grep -r --exclude=*.texi --exclude=*.info			\
 	     "$(storedir)/[a-z0-9]{32}-" $(distdir) ;				\
 	then									\
 	  echo "error: store file names embedded in the distribution" >&2 ;	\
@@ -461,12 +461,12 @@ assert-no-store-file-names:
 
 # Make sure hydra.gnu.org has the important binaries.
 assert-binaries-available:
-	$(top_builddir)/pre-inst-env "$(GUILE)"				\
+	$(AM_V_at)$(top_builddir)/pre-inst-env "$(GUILE)"			\
 	  "$(top_srcdir)/build-aux/check-available-binaries.scm"
 
 # Make sure the final inputs don't refer to bootstrap tools.
 assert-final-inputs-self-contained:
-	$(top_builddir)/pre-inst-env "$(GUILE)"				\
+	$(AM_V_at)$(top_builddir)/pre-inst-env "$(GUILE)"			\
 	  "$(top_srcdir)/build-aux/check-final-inputs-self-contained.scm"
 
 .PHONY: sync-descriptions gen-ChangeLog gen-AUTHORS clean-go make-go
