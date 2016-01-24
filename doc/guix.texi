@@ -6832,13 +6832,14 @@ and lines for hidden services added via @code{tor-hidden-service}.  Run
 @command{man tor} for information about the configuration file.
 @end deffn
 
+@cindex hidden service
 @deffn {Scheme Procedure} tor-hidden-service @var{name} @var{mapping}
 Define a new Tor @dfn{hidden service} called @var{name} and implementing
 @var{mapping}.  @var{mapping} is a list of port/host tuples, such as:
 
 @example
- '((22 \"127.0.0.1:22\")
-   (80 \"127.0.0.1:8080\"))
+ '((22 "127.0.0.1:22")
+   (80 "127.0.0.1:8080"))
 @end example
 
 In this example, port 22 of the hidden service is mapped to local port 22, and
