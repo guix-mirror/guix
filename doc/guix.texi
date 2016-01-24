@@ -769,7 +769,7 @@ machines, since offloading works by invoking the @code{guix archive} and
 this is the case by running:
 
 @example
-lsh build-machine guile -c '(use-modules (guix config))'
+lsh build-machine guile -c "'(use-modules (guix config))'"
 @end example
 
 There's one last thing to do once @file{machines.scm} is in place.  As
