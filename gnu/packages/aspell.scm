@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,10 +89,10 @@ dictionaries, including personal ones.")
 
 (define-public aspell-dict-en
   (aspell-dictionary "en" "English"
-                     #:version "7.1-0"
+                     #:version "2016.01.19-0"
                      #:sha256
                      (base32
-                      "02ldfiny4iakgfgy4sdrzjqdzi7l1rmb6y30lv31kfy5x31g77gz")))
+                      "01h4cl4lngp6mcfbyb47cjrc2gspyg2519dvknd97ki896nx7vcn")))
 
 (define-public aspell-dict-eo
   (aspell-dictionary "eo" "Esperanto"
