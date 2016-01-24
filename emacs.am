@@ -1,5 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
+# Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -60,7 +61,7 @@ dist_lisp_DATA =				\
 nodist_lisp_DATA = emacs/guix-config.el
 
 $(AUTOLOADS): $(ELFILES)
-	$(EMACS) --batch --eval						\
+	$(AM_V_EMACS)$(EMACS) --batch --eval				\
 	  "(let ((backup-inhibited t)					\
 	         (generated-autoload-file				\
 	          (expand-file-name \"$(AUTOLOADS)\" \"$(srcdir)\")))	\

@@ -484,3 +484,7 @@ AM_V_DL_0 = @echo "  DL      " $@;
 AM_V_DOT = $(AM_V_DOT_$(V))
 AM_V_DOT_ = $(AM_V_DOT_$(AM_DEFAULT_VERBOSITY))
 AM_V_DOT_0 = @echo "  DOT     " $@;
+
+AM_V_EMACS = $(AM_V_EMACS_$(V))
+AM_V_EMACS_ = $(AM_V_EMACS_$(AM_DEFAULT_VERBOSITY))
+AM_V_EMACS_0 = @echo "  EMACS   " $@;
