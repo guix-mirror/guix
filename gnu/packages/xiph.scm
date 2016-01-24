@@ -152,7 +152,7 @@ stereo encoding, and voice activity detection.")
 (define ao
   (package
     (name "ao")
-    (version "1.1.0")
+    (version "1.2.0")
     (source
      (origin
       (method url-fetch)
@@ -160,7 +160,7 @@ stereo encoding, and voice activity detection.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1m0v2y6bhr4iwsgdkc7b3y0qgpvpv1ifbxsy8n8ahsvjn6wmppi9"))))
+        "1bwwv1g9lchaq6qmhvj1pp3hnyqr64ydd4j38x94pmprs4d27b83"))))
     (build-system gnu-build-system)
     ;; FIXME: Add further backends, see the summary printed after configure.
     ;; XXX: Should back-ends be pushed to different outputs?  For instance,
