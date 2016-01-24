@@ -2,7 +2,7 @@
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
+;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -417,15 +417,12 @@ patch could not be found."
              (emit-warning package (condition-message c)
                            'patch-file-names)))
     (let ((patches   (and=> (package-source package) origin-patches))
-          (name      (package-name package))
-          (full-name (package-full-name package)))
+          (name      (package-name package)))
       (when (and patches
                  (any (match-lambda
                         ((? string? patch)
                          (let ((file (basename patch)))
-                           (not (or (eq? (string-contains file name) 0)
-                                    (eq? (string-contains file full-name)
-                                         0)))))
+                           (not (eq? (string-contains file name) 0))))
                         (_
                          ;; This must be an <origin> or something like that.
                          #f))
