@@ -278,7 +278,7 @@ name of its URI."
                           (lambda (package port)
                             (let ((loc    (package-location package))
                                   (format simple-format))
-                              (format port "#<package ~a-~a ~a~a>"
+                              (format port "#<package ~a@~a ~a~a>"
                                       (package-name package)
                                       (package-version package)
                                       (if loc

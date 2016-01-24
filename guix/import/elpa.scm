@@ -121,7 +121,7 @@ REPO."
 
 (set-record-type-printer! <elpa-package>
                           (lambda (package port)
-                            (format port "#<elpa-package ~a-~a>"
+                            (format port "#<elpa-package ~a@~a>"
                                       (elpa-package-name package)
                                       (elpa-package-version package))))
 

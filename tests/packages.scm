@@ -58,7 +58,7 @@
 (test-begin "packages")
 
 (test-assert "printer with location"
-  (string-match "^#<package foo-0 foo.scm:42 [[:xdigit:]]+>$"
+  (string-match "^#<package foo@0 foo.scm:42 [[:xdigit:]]+>$"
                 (with-output-to-string
                   (lambda ()
                     (write
@@ -66,7 +66,7 @@
                        (location (make-location "foo.scm" 42 7))))))))
 
 (test-assert "printer without location"
-  (string-match "^#<package foo-0 [[:xdigit:]]+>$"
+  (string-match "^#<package foo@0 [[:xdigit:]]+>$"
                 (with-output-to-string
                   (lambda ()
                     (write

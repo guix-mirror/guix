@@ -608,7 +608,7 @@ If #f use the function 'port-filename' to obtain it."
 
 (set-record-type-printer! <cabal-package>
                           (lambda (package port)
-                            (format port "#<cabal-package ~a-~a>"
+                            (format port "#<cabal-package ~a@~a>"
                                       (cabal-package-name package)
                                       (cabal-package-version package))))
 
