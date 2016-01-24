@@ -54,11 +54,11 @@ ELFILES =					\
 
 if HAVE_EMACS
 
-dist_lisp_DATA =				\
-  $(ELFILES)					\
-  $(AUTOLOADS)
+dist_lisp_DATA = $(ELFILES)
 
-nodist_lisp_DATA = emacs/guix-config.el
+nodist_lisp_DATA = 		\
+  emacs/guix-config.el		\
+  $(AUTOLOADS)
 
 $(AUTOLOADS): $(ELFILES)
 	$(AM_V_EMACS)$(EMACS) --batch --eval				\
@@ -67,5 +67,7 @@ $(AUTOLOADS): $(ELFILES)
 	          (expand-file-name \"$(AUTOLOADS)\" \"$(srcdir)\")))	\
 	     (update-directory-autoloads				\
 	      (expand-file-name \"emacs\" \"$(srcdir)\")))"
+
+CLEANFILES += $(AUTOLOADS)
 
 endif HAVE_EMACS
