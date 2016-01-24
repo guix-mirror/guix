@@ -15,8 +15,8 @@ Copyright @copyright{} 2013, 2014 Andreas Enge@*
 Copyright @copyright{} 2013 Nikita Karetnikov@*
 Copyright @copyright{} 2015 Mathieu Lirzin@*
 Copyright @copyright{} 2014 Pierre-Antoine Rault@*
-Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer
-Copyright @copyright{} 2015 Leo Famulari
+Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
+Copyright @copyright{} 2015, 2016 Leo Famulari
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -175,6 +175,7 @@ System Configuration
 * Initial RAM Disk::            Linux-Libre bootstrapping.
 * GRUB Configuration::          Configuring the boot loader.
 * Invoking guix system::        Instantiating a system configuration.
+* Running GuixSD in a VM::      How to run GuixSD in a virtual machine.
 * Defining Services::           Adding new service definitions.
 
 Services
@@ -5694,6 +5695,7 @@ instance to support new system services.
 * Initial RAM Disk::            Linux-Libre bootstrapping.
 * GRUB Configuration::          Configuring the boot loader.
 * Invoking guix system::        Instantiating a system configuration.
+* Running GuixSD in a VM::      How to run GuixSD in a virtual machine.
 * Defining Services::           Adding new service definitions.
 @end menu
 
@@ -9195,7 +9197,8 @@ in @var{file} that stands alone.  Use the @option{--image-size} option
 to specify the size of the image.
 
 When using @code{vm-image}, the returned image is in qcow2 format, which
-the QEMU emulator can efficiently use.
+the QEMU emulator can efficiently use. @xref{Running GuixSD in a VM},
+for more information on how to run the image in a virtual machine.
 
 When using @code{disk-image}, a raw disk image is produced; it can be
 copied as is to a USB stick, for instance.  Assuming @code{/dev/sdc} is
@@ -9334,6 +9337,57 @@ graph} of dmd services of the operating system defined in @var{file}.
 
 @end table
 
+@node Running GuixSD in a VM
+@subsection Running GuixSD in a virtual machine
+
+One way to run GuixSD in a virtual machine (VM) is to build a GuixSD
+virtual machine image using @command{guix system vm-image}
+(@pxref{Invoking guix system}).  The returned image is in qcow2 format,
+which the @uref{http://qemu.org/, QEMU emulator} can efficiently use.
+
+To run the image in QEMU, copy it out of the store (@pxref{The Store})
+and give yourself permission to write to the copy.  When invoking QEMU,
+you must choose a system emulator that is suitable for your hardware
+platform.  Here is a minimal QEMU invocation that will boot the result
+of @command{guix system vm-image} on x86_64 hardware:
+
+@example
+$ qemu-system-x86_64 \
+   -net user -net nic,model=virtio \
+   -enable-kvm -m 256 /tmp/qemu-image
+@end example
+
+Here is what each of these options means:
+
+@table @code
+@item qemu-system-x86_64
+This specifies the hardware platform to emulate.  This should match the
+host.
+
+@item -net user
+Enable the unprivileged user-mode network stack.  The guest OS can
+access the host but not vice versa.  This is the simplest way to get the
+guest OS online.  If you don't choose a network stack, the boot will
+fail.
+
+@item -net nic,model=virtio
+You must create a network interface of a given model.  If you don't
+create a NIC, the boot will fail.  Assuming your hardware platform is
+x86_64, you can get a list of available NIC models by running
+@command{qemu-system-x86_64 -net nic,model=help}.
+
+@item -enable-kvm
+If your system has hardware virtualization extensions, enabling the
+Linux kernel's virtual machine support (KVM) will make things run
+faster.
+
+@item -m 256
+RAM available to the guest OS, in mebibytes.  Defaults to 128@tie{}MiB,
+which may be insufficent for some operations.
+
+@item /tmp/qemu-image
+The file name of the qcow2 image.
+@end table
 
 @node Defining Services
 @subsection Defining Services
