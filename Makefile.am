@@ -2,6 +2,7 @@
 # Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 # Copyright © 2015 Alex Kost <alezost@gmail.com>
+# Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -471,3 +472,11 @@ assert-final-inputs-self-contained:
 .PHONY: sync-descriptions gen-ChangeLog gen-AUTHORS clean-go make-go
 .PHONY: assert-no-store-file-names assert-binaries-available
 .PHONY: assert-final-inputs-self-contained
+
+## -------------- ##
+## Silent rules.  ##
+## -------------- ##
+
+AM_V_DL = $(AM_V_DL_$(V))
+AM_V_DL_ = $(AM_V_DL_$(AM_DEFAULT_VERBOSITY))
+AM_V_DL_0 = @echo "  DL      " $@;

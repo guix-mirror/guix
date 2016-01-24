@@ -56,7 +56,7 @@
 (match (command-line)
   ((_ file expected-hash)
    (let ((uri (file-name->uri file)))
-     (format #t "downloading file `~a' from `~a'...~%"
+     (format #t "downloading file `~a'~%from `~a'...~%"
              file (uri->string uri))
      (let*-values (((resp data) (http-get uri #:decode-body? #f))
                    ((hash)      (bytevector->base16-string (sha256 data)))
