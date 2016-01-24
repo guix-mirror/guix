@@ -480,3 +480,7 @@ assert-final-inputs-self-contained:
 AM_V_DL = $(AM_V_DL_$(V))
 AM_V_DL_ = $(AM_V_DL_$(AM_DEFAULT_VERBOSITY))
 AM_V_DL_0 = @echo "  DL      " $@;
+
+AM_V_DOT = $(AM_V_DOT_$(V))
+AM_V_DOT_ = $(AM_V_DOT_$(AM_DEFAULT_VERBOSITY))
+AM_V_DOT_0 = @echo "  DOT     " $@;
