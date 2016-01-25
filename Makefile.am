@@ -240,8 +240,10 @@ SCM_TESTS =					\
   tests/challenge.scm				\
   tests/cve.scm					\
   tests/file-systems.scm			\
+  tests/system.scm				\
   tests/services.scm				\
-  tests/containers.scm
+  tests/containers.scm				\
+  tests/import-utils.scm
 
 if HAVE_GUILE_JSON
 

@@ -654,6 +654,73 @@ gapped, local, and paired-end alignment modes.")
     (supported-systems '("x86_64-linux"))
     (license license:gpl3+)))
 
+(define-public tophat
+  (package
+    (name "tophat")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://ccb.jhu.edu/software/tophat/downloads/tophat-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "168zlzykq622zbgkh90a90f1bdgsxkscq2zxzbj8brq80hbjpyp7"))
+              (patches (list (search-patch "tophat-build-with-later-seqan.patch")))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove bundled SeqAn and samtools
+                  (delete-file-recursively "src/SeqAn-1.3")
+                  (delete-file-recursively "src/samtools-0.1.18")
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:parallel-build? #f ; not supported
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-system-samtools
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "src/Makefile.in"
+               (("(noinst_LIBRARIES = )\\$\\(SAMLIB\\)" _ prefix) prefix)
+               (("\\$\\(SAMPROG\\): \\$\\(SAMLIB\\)") "")
+               (("SAMPROG = samtools_0\\.1\\.18") "")
+               (("\\$\\(samtools_0_1_18_SOURCES\\)") "")
+               (("am__EXEEXT_1 = samtools_0\\.1\\.18\\$\\(EXEEXT\\)") ""))
+             (substitute* '("src/common.cpp"
+                            "src/tophat.py")
+               (("samtools_0.1.18") (which "samtools")))
+             (substitute* '("src/common.h"
+                            "src/bam2fastx.cpp")
+               (("#include \"bam.h\"") "#include <samtools/bam.h>")
+               (("#include \"sam.h\"") "#include <samtools/sam.h>"))
+             (substitute* '("src/bwt_map.h"
+                            "src/map2gtf.h"
+                            "src/align_status.h")
+               (("#include <bam.h>") "#include <samtools/bam.h>")
+               (("#include <sam.h>") "#include <samtools/sam.h>"))
+             #t)))))
+    (inputs
+     `(("boost" ,boost)
+       ("bowtie" ,bowtie)
+       ("samtools" ,samtools-0.1)
+       ("ncurses" ,ncurses)
+       ("python" ,python-2)
+       ("perl" ,perl)
+       ("zlib" ,zlib)
+       ("seqan" ,seqan)))
+    (home-page "http://ccb.jhu.edu/software/tophat/index.shtml")
+    (synopsis "Spliced read mapper for RNA-Seq data")
+    (description
+     "TopHat is a fast splice junction mapper for nucleotide sequence
+reads produced by the RNA-Seq method.  It aligns RNA-Seq reads to
+mammalian-sized genomes using the ultra high-throughput short read
+aligner Bowtie, and then analyzes the mapping results to identify
+splice junctions between exons.")
+    ;; TopHat is released under the Boost Software License, Version 1.0
+    ;; See https://github.com/infphilo/tophat/issues/11#issuecomment-121589893
+    (license license:boost1.0)))
+
 (define-public bwa
   (package
     (name "bwa")
@@ -914,6 +981,64 @@ time.")
 files between different genome assemblies.  It supports most commonly used
 file formats including SAM/BAM, Wiggle/BigWig, BED, GFF/GTF, VCF.")
     (license license:gpl2+)))
+
+(define-public cufflinks
+  (package
+    (name "cufflinks")
+    (version "2.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://cole-trapnell-lab.github.io/"
+                                  "cufflinks/assets/downloads/cufflinks-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1bnm10p8m7zq4qiipjhjqb24csiqdm1pwc8c795z253r2xk6ncg8"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list
+        ;; The includes for "eigen" are located in a subdirectory.
+        (string-append "EIGEN_CPPFLAGS="
+                       "-I" (assoc-ref %build-inputs "eigen")
+                       "/include/eigen3/")
+        ;; Cufflinks must be linked with various boost libraries.
+        (string-append "LDFLAGS="
+                       (string-join '("-lboost_system"
+                                      "-lboost_serialization"
+                                      "-lboost_thread"))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-search-for-bam
+          (lambda _
+            (substitute* '("ax_bam.m4"
+                           "configure"
+                           "src/hits.h")
+              (("<bam/sam\\.h>") "<samtools/sam.h>")
+              (("<bam/bam\\.h>") "<samtools/bam.h>")
+              (("<bam/version\\.hpp>") "<samtools/version.h>"))
+            #t)))
+       #:configure-flags
+       (list (string-append "--with-bam="
+                            (assoc-ref %build-inputs "samtools")))))
+    (inputs
+     `(("eigen" ,eigen)
+       ("samtools" ,samtools-0.1)
+       ("htslib" ,htslib)
+       ("boost" ,boost)
+       ("python" ,python-2)
+       ("zlib" ,zlib)))
+    (home-page "http://cole-trapnell-lab.github.io/cufflinks/")
+    (synopsis "Transcriptome assembly and RNA-Seq expression analysis")
+    (description
+     "Cufflinks assembles RNA transcripts, estimates their abundances,
+and tests for differential expression and regulation in RNA-Seq
+samples.  It accepts aligned RNA-Seq reads and assembles the
+alignments into a parsimonious set of transcripts.  Cufflinks then
+estimates the relative abundances of these transcripts based on how
+many reads support each one, taking into account biases in library
+preparation protocols.")
+    (license license:boost1.0)))
 
 (define-public cutadapt
   (package
@@ -3016,40 +3141,107 @@ optimized for modern read lengths of 100 bases or higher, and takes advantage
 of these reads to align data quickly through a hash-based indexing scheme.")
     (license license:asl2.0)))
 
+(define-public sortmerna
+  (package
+    (name "sortmerna")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://github.com/biocore/sortmerna/archive/"
+             version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1670a92x1vvkacnvgr2i5xac3ls6lp4pc3n0bccnmllsnymggcf0"))))
+    (build-system gnu-build-system)
+    (outputs '("out"      ;for binaries
+               "db"))     ;for sequence databases
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (bin   (string-append out "/bin"))
+                    (db    (assoc-ref outputs "db"))
+                    (share
+                     (string-append db "/share/sortmerna/rRNA_databases")))
+               (install-file "sortmerna" bin)
+               (install-file "indexdb_rna" bin)
+               (for-each (lambda (file)
+                           (install-file file share))
+                         (find-files "rRNA_databases" ".*fasta"))
+               #t))))))
+    (home-page "http://bioinfo.lifl.fr/RNA/sortmerna")
+    (synopsis "Biological sequence analysis tool for NGS reads")
+    (description
+     "SortMeRNA is a biological sequence analysis tool for filtering, mapping
+and operational taxonomic unit (OTU) picking of next generation
+sequencing (NGS) reads.  The core algorithm is based on approximate seeds and
+allows for fast and sensitive analyses of nucleotide sequences.  The main
+application of SortMeRNA is filtering rRNA from metatranscriptomic data.")
+    (license license:lgpl3)))
+
 (define-public star
   (package
     (name "star")
-    (version "2.4.2a")
+    (version "2.5.1b")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/alexdobin/STAR/archive/STAR_"
-                    version ".tar.gz"))
+              (uri (string-append "https://github.com/alexdobin/STAR/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1c3rnm7r5l0kl3d04gl1g7938xqf1c2l0mla87rlplqg1hcns5mc"))
+                "0wzcfhkg10apnh0y73xlarfa79xxwxdizicbdl11wb48awk44iq4"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "source/Makefile"
-                  (("/bin/rm") "rm")))))
+               '(begin
+                  (substitute* "source/Makefile"
+                    (("/bin/rm") "rm"))
+                  ;; Remove pre-built binaries and bundled htslib sources.
+                  (delete-file-recursively "bin/MacOSX_x86_64")
+                  (delete-file-recursively "bin/Linux_x86_64")
+                  (delete-file-recursively "source/htslib")
+                  #t))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;no check target
        #:make-flags '("STAR")
        #:phases
-       (alist-cons-after
-        'unpack 'enter-source-dir (lambda _ (chdir "source"))
-        (alist-replace
-         'install
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
-             (install-file "STAR" bin)))
-         (alist-delete
-          'configure %standard-phases)))))
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-source-dir
+           (lambda _ (chdir "source") #t))
+         (add-after 'enter-source-dir 'do-not-use-bundled-htslib
+           (lambda _
+             (substitute* "Makefile"
+               (("(Depend.list: \\$\\(SOURCES\\) parametersDefault\\.xxd) htslib"
+                 _ prefix) prefix))
+             (substitute* '("BAMfunctions.cpp"
+                            "signalFromBAM.h"
+                            "bam_cat.h"
+                            "bam_cat.c"
+                            "STAR.cpp"
+                            "bamRemoveDuplicates.cpp")
+               (("#include \"htslib/([^\"]+\\.h)\"" _ header)
+                (string-append "#include <" header ">")))
+             (substitute* "IncludeDefine.h"
+               (("\"htslib/(htslib/[^\"]+.h)\"" _ header)
+                (string-append "<" header ">")))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+               (install-file "STAR" bin))
+             #t))
+         (delete 'configure))))
     (native-inputs
      `(("vim" ,vim))) ; for xxd
     (inputs
-     `(("zlib" ,zlib)))
+     `(("htslib" ,htslib)
+       ("zlib" ,zlib)))
     (home-page "https://github.com/alexdobin/STAR")
     (synopsis "Universal RNA-seq aligner")
     (description
@@ -4002,7 +4194,7 @@ genomic intervals.  In addition, it can use BAM or BigWig files as input.")
 (define-public r-qtl
  (package
   (name "r-qtl")
-  (version "1.37-11")
+  (version "1.38-4")
   (source
    (origin
     (method url-fetch)
@@ -4010,7 +4202,7 @@ genomic intervals.  In addition, it can use BAM or BigWig files as input.")
                         version ".tar.gz"))
     (sha256
      (base32
-      "0h20d36mww7ljp51pfs66xq33yq4b4fwq9nsh02dpmfhlaxgx1xi"))))
+      "0rv9xhp8lyldpgwxqirhyjqvg07dr5x4x1x2jpyj37dada9ccyx3"))))
   (build-system r-build-system)
   (home-page "http://rqtl.org/")
   (synopsis "R package for analyzing QTL experiments in genetics")

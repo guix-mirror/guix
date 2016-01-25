@@ -5,7 +5,7 @@
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -293,7 +293,7 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
 (define opus
   (package
     (name "opus")
-    (version "1.1.1")
+    (version "1.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -301,7 +301,7 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
                     ".tar.gz"))
               (sha256
                (base32
-                "07iplfwim26b6k1bqjyciaqvihps9rk5gi8385axa83ppmbgz14v"))))
+                "1z87x5c5x951lhnm70iqr2gqn15wns5cqsw8nnkvl48jwdw00a8f"))))
     (build-system gnu-build-system)
     (synopsis "Versatile audio codec")
     (description
@@ -349,7 +349,7 @@ decoding .opus files.")
 (define opusfile
   (package
     (name "opusfile")
-    (version "0.6")
+    (version "0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -357,7 +357,7 @@ decoding .opus files.")
                     ".tar.gz"))
               (sha256
                (base32
-                "19iys2kld75k0210b807i4illrdmj3cmmnrgxlc9y4vf6mxp2a14"))))
+                "00f3wwjv3hxwg05g22s6mkkxikz80ljsn70g39cmi43jph9ysawy"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("opus" ,opus)))
@@ -409,7 +409,7 @@ things in between.")
 (define-public libshout
   (package
     (name "libshout")
-    (version "2.3.1")
+    (version "2.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -417,7 +417,7 @@ things in between.")
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0vlj4dxfxg06xhvv0z2zjjlrjh5di2m28w7v16zcygsy99mmyg6g"))))
+                "0kgjpf8jkgyclw11nilxi8vyjk4s8878x23qyxnvybbgqbgbib7k"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

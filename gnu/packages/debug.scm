@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -169,7 +169,7 @@ tools that process C/C++ code.")
                    (_                "UNSUPPORTED"))))
     (package
       (name "american-fuzzy-lop")
-      (version "1.86b")             ;It seems all releases have the 'b' suffix
+      (version "1.96b")             ;It seems all releases have the 'b' suffix
       (source
        (origin
          (method url-fetch)
@@ -177,7 +177,7 @@ tools that process C/C++ code.")
                              "afl-" version ".tgz"))
          (sha256
           (base32
-           "1by9ncf6lgcyibzqwyla34jv64sd66mn8zhgjz2pcgsds51qwn0r"))))
+           "0z7j231p6v2h1dxxijgdzj1lq1lxr8cxllwf6iyv7p4ki5pv1gh3"))))
       (build-system gnu-build-system)
       (inputs
        `(("custom-qemu"
@@ -190,11 +190,13 @@ tools that process C/C++ code.")
              ;; afl only supports using a single afl-qemu-trace executable, so
              ;; we only build qemu for the native target.
              (arguments
-              `(#:configure-flags
-                (list (string-append "--target-list=" ,machine "-linux-user"))
-                #:modules ((srfi srfi-1)
+              `(#:modules ((srfi srfi-1)
                            ,@%gnu-build-system-modules)
                 ,@(substitute-keyword-arguments (package-arguments qemu-2.3.0)
+                    ((#:configure-flags config-flags)
+                     ``(,(string-append "--target-list=" ,machine "-linux-user")
+                        ,@(remove (λ (f) (string-prefix? "--target-list=" f))
+                                  ,config-flags)))
                     ((#:phases qemu-phases)
                      `(modify-phases ,qemu-phases
                         (add-after
@@ -236,8 +238,8 @@ tools that process C/C++ code.")
                      (lambda* (#:key inputs outputs #:allow-other-keys)
                        (let ((qemu (assoc-ref inputs "custom-qemu"))
                              (out  (assoc-ref outputs "out")))
-                         (copy-file (string-append qemu "/bin/qemu-" ,machine)
-                                    (string-append out "/bin/afl-qemu-trace"))
+                         (symlink (string-append qemu "/bin/qemu-" ,machine)
+                                  (string-append out "/bin/afl-qemu-trace"))
                          #t)))
                     (delete 'check))))
       (supported-systems (fold delete

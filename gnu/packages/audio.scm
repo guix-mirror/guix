@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1535,14 +1535,14 @@ surround and reverb.")
 (define-public libxmp
   (package
     (name "libxmp")
-    (version "4.3.8")
+    (version "4.3.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/xmp/libxmp/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0h06091hlpgc6ds4pjmfq8sx4snw7av3nhny180q4pwfyasjb6ny"))))
+                "1gm5xa0ca7ypcbj3bkmj3k1vvzl7nkch8gjyrm8p1a9vgzr0n761"))))
     (build-system gnu-build-system)
     (home-page "http://xmp.sourceforge.net/")
     (synopsis "Module player library")

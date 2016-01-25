@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2014, 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -1265,6 +1265,39 @@ functionality of the system is provided via an assortment of ready to use
 tools, XML authoring components, and an extensible plug-in based API.")
     (license license:lgpl2.1+)))
 
+(define-public v4l-utils
+  (package
+    (name "v4l-utils")
+    (version "1.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://linuxtv.org/downloads/v4l-utils"
+                                  "/v4l-utils-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0cqv8drw0z0kfmz4f50a8kzbrz6vbj6j6q78030hgshr7yq1jqig"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "--with-udevdir="
+                            (assoc-ref %outputs "out")
+                            "/lib/udev"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("glu" ,glu)
+       ("libjpeg" ,libjpeg)
+       ("libx11" ,libx11)
+       ("qt" ,qt)
+       ("eudev" ,eudev)))
+    (synopsis "Realtime video capture utilities for Linux")
+    (description "The v4l-utils provide a series of libraries and utilities to
+be used for realtime video capture via Linux-specific APIs.")
+    (home-page "https://linuxtv.org/wiki/index.php/V4l-utils")
+    ;; libv4l2 is LGPL2.1+, while utilities are GPL2 only.
+    (license (list license:lgpl2.1+ license:gpl2))))
+
 (define-public obs
   (package
     (name "obs")
@@ -1293,6 +1326,7 @@ tools, XML authoring components, and an extensible plug-in based API.")
        ("mesa" ,mesa)
        ("pulseaudio" ,pulseaudio)
        ("qt" ,qt)
+       ("v4l-utils" ,v4l-utils)
        ("zlib" ,zlib)))
     (synopsis "Live streaming software")
     (description "Open Broadcaster Software provides a graphical interface for

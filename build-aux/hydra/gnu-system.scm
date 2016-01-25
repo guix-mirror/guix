@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -78,6 +78,9 @@
     (license . ,(package-license package))
     (home-page . ,(package-home-page package))
     (maintainers . ("bug-guix@gnu.org"))
+    (max-silent-time . ,(or (assoc-ref (package-properties package)
+                                       'max-silent-time)
+                            3600))                ; 1 hour by default
     (timeout . ,(or (assoc-ref (package-properties package) 'timeout)
                     72000)))) ; 20 hours by default
 

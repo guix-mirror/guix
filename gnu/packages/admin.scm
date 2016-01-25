@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -392,7 +393,7 @@ connection alive.")
          (bind-minor-version "9")
          (bind-patch-version "8")
          (bind-release-type "-P")
-         (bind-release-version "2")
+         (bind-release-version "3")
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -508,7 +509,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "0agkpmpna7s67la13krn4xlhwhdjpazmljxlq0zbjdwnw4k1k17m"))))
+                      "01qa17479jghy90lb2j8b1bpg3ay6k6aaajpigyirwzsvyc9yj3a"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
@@ -1377,3 +1378,25 @@ command that learns\".  It works by maintaining a database of the directories
 you use the most from the command line and allows you to \"jump\" to
 frequently used directories by typing only a small pattern.")
     (license license:gpl3+)))
+
+(define-public iftop
+  (package
+    (name "iftop")
+    (version "1.0pre4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.ex-parrot.com/~pdw/iftop/download"
+                                  "/iftop-" version ".tar.gz"))
+              (sha256
+               (base32
+                "15sgkdyijb7vbxpxjavh5qm5nvyii3fqcg9mzvw7fx8s6zmfwczp"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("libpcap" ,libpcap)
+        ("ncurses" ,ncurses)))
+    (synopsis "Monitor network usage")
+    (description "Iftop does for network usage what @command{top} does
+for CPU usage.  It listens to network traffic on a named interface and
+displays a table of current bandwidth usage by pairs of hosts.")
+    (home-page "http://www.ex-parrot.com/~pdw/iftop/")
+    (license license:gpl3)))

@@ -41,7 +41,7 @@
   "Return #t if user namespaces can be created by unprivileged users."
   (let ((userns-file "/proc/sys/kernel/unprivileged_userns_clone"))
     (if (file-exists? userns-file)
-        (string=? "1" (call-with-input-file userns-file read-string))
+        (eqv? #\1 (call-with-input-file userns-file read-char))
         #t)))
 
 (define (setgroups-supported?)

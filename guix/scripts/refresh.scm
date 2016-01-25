@@ -195,6 +195,7 @@ unavailable optional dependencies such as Guile-JSON."
                  %gnome-updater
                  %elpa-updater
                  %cran-updater
+                 %bioconductor-updater
                  ((guix import pypi) => %pypi-updater)))
 
 (define (lookup-updater name)

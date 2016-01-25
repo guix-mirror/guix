@@ -32,7 +32,7 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://jxself.org/" name ".tar.gz"))
+      (uri (string-append "https://jxself.org/" name ".tar.gz"))
       (sha256
        (base32
         "1hjcpy5439qs3v2zykis7hsi0i17zjs62gks3zd8mnfw9ni4i2h3"))))

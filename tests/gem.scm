@@ -69,7 +69,7 @@
            (("bundler" ('unquote 'bundler))
             ("ruby-bar" ('unquote 'ruby-bar)))))
          ('synopsis "A cool gem")
-         ('description "A cool gem")
+         ('description "This package provides a cool gem")
          ('home-page "https://example.com")
          ('license ('list 'expat 'asl2.0)))
        #t)

@@ -151,6 +151,33 @@
          ;; the contents.
          (valid-path? %store (derivation->output-path drv)))))
 
+(test-assert "derivation fails but keep going"
+  ;; In keep-going mode, 'build-derivations' should fail because of D1, but it
+  ;; must return only after D2 has succeeded.
+  (with-store store
+    (let* ((d1 (derivation %store "fails"
+                           %bash `("-c" "false")
+                           #:inputs `((,%bash))))
+           (d2 (build-expression->derivation %store "sleep-then-succeed"
+                                             `(begin
+                                                ,(random-text)
+                                                ;; XXX: Hopefully that's long
+                                                ;; enough that D1 has already
+                                                ;; failed.
+                                                (sleep 2)
+                                                (mkdir %output)))))
+      (set-build-options %store
+                         #:use-substitutes? #f
+                         #:keep-going? #t)
+      (guard (c ((nix-protocol-error? c)
+                 (and (= 100 (nix-protocol-error-status c))
+                      (string-contains (nix-protocol-error-message c)
+                                       (derivation-file-name d1))
+                      (not (valid-path? %store (derivation->output-path d1)))
+                      (valid-path? %store (derivation->output-path d2)))))
+        (build-derivations %store (list d1 d2))
+        #f))))
+
 (test-assert "identical files are deduplicated"
   (let* ((build1  (add-text-to-store %store "one.sh"
                                      "echo hello, world > \"$out\"\n"

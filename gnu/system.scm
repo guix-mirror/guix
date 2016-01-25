@@ -79,6 +79,7 @@
             operating-system-locale-libcs
             operating-system-mapped-devices
             operating-system-file-systems
+            operating-system-store-file-system
             operating-system-activation-script
 
             operating-system-derivation
@@ -678,12 +679,34 @@ listed in OS.  The C library expects to find it under
                  (package-version kernel)
                  " (alpha)"))
 
+(define (store-file-system file-systems)
+  "Return the file system object among FILE-SYSTEMS that contains the store."
+  (match (filter (lambda (fs)
+                   (and (file-system-mount? fs)
+                        (not (memq 'bind-mount (file-system-flags fs)))
+                        (string-prefix? (file-system-mount-point fs)
+                                        (%store-prefix))))
+                 file-systems)
+    ((and candidates (head . tail))
+     (reduce (lambda (fs1 fs2)
+               (if (> (string-length (file-system-mount-point fs1))
+                      (string-length (file-system-mount-point fs2)))
+                   fs1
+                   fs2))
+             head
+             candidates))))
+
+(define (operating-system-store-file-system os)
+  "Return the file system that contains the store of OS."
+  (store-file-system (operating-system-file-systems os)))
+
 (define* (operating-system-grub.cfg os #:optional (old-entries '()))
   "Return the GRUB configuration file for OS.  Use OLD-ENTRIES to populate the
 \"old entries\" menu."
   (mlet* %store-monad
       ((system      (operating-system-derivation os))
        (root-fs ->  (operating-system-root-file-system os))
+       (store-fs -> (operating-system-store-file-system os))
        (kernel ->   (operating-system-kernel os))
        (root-device -> (if (eq? 'uuid (file-system-title root-fs))
                            (uuid->string (file-system-device root-fs))
@@ -698,7 +721,8 @@ listed in OS.  The C library expects to find it under
                                                     "/boot")
                                    (operating-system-kernel-arguments os)))
                            (initrd #~(string-append #$system "/initrd"))))))
-    (grub-configuration-file (operating-system-bootloader os) entries
+    (grub-configuration-file (operating-system-bootloader os)
+                             store-fs entries
                              #:old-entries old-entries)))
 
 (define (operating-system-parameters-file os)

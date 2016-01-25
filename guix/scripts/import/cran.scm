@@ -42,6 +42,8 @@
   (display (_ "Usage: guix import cran PACKAGE-NAME
 Import and convert the CRAN package for PACKAGE-NAME.\n"))
   (display (_ "
+  -a, --archive=ARCHIVE  specify the archive repository"))
+  (display (_ "
   -h, --help             display this help and exit"))
   (display (_ "
   -V, --version          display version information and exit"))
@@ -57,6 +59,10 @@ Import and convert the CRAN package for PACKAGE-NAME.\n"))
          (option '(#\V "version") #f #f
                  (lambda args
                    (show-version-and-exit "guix import cran")))
+         (option '(#\a "archive") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'repo (string->symbol arg)
+                               (alist-delete 'repo result))))
          %standard-import-options))
 
 
@@ -82,7 +88,8 @@ Import and convert the CRAN package for PACKAGE-NAME.\n"))
                            (reverse opts))))
     (match args
       ((package-name)
-       (let ((sexp (cran->guix-package package-name)))
+       (let ((sexp (cran->guix-package package-name
+                                       (or (assoc-ref opts 'repo) 'cran))))
          (unless sexp
            (leave (_ "failed to download description for package '~a'~%")
                   package-name))

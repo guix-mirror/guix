@@ -399,6 +399,21 @@ for instance with:
 # ln -s /var/guix/profiles/per-user/root/guix-profile/bin/guix
 @end example
 
+It is also a good idea to make the Info version of this manual available
+there:
+
+@example
+# mkdir -p /usr/local/share/info
+# cd /usr/local/share/info
+# for i in /var/guix/profiles/per-user/root/guix-profile/share/info/* ;
+  do ln -s $i ; done
+@end example
+
+That way, assuming @file{/usr/local/share/info} is in the search path,
+running @command{info guix} will open this manual (@pxref{Other Info
+Directories,,, texinfo, GNU Texinfo}, for more details on changing the
+Info search path.)
+
 @item
 To use substitutes from @code{hydra.gnu.org} (@pxref{Substitutes}),
 authorize them:
@@ -754,7 +769,7 @@ machines, since offloading works by invoking the @code{guix archive} and
 this is the case by running:
 
 @example
-lsh build-machine guile -c '(use-modules (guix config))'
+lsh build-machine guile -c "'(use-modules (guix config))'"
 @end example
 
 There's one last thing to do once @file{machines.scm} is in place.  As
@@ -3973,6 +3988,14 @@ Keep the build tree of failed builds.  Thus, if a build fail, its build
 tree is kept under @file{/tmp}, in a directory whose name is shown at
 the end of the build log.  This is useful when debugging build issues.
 
+@item --keep-going
+@itemx -k
+Keep going when some of the derivations fail to build; return only once
+all the builds have either completed or failed.
+
+The default behavior is to stop as soon as one of the specified
+derivations has failed.
+
 @item --dry-run
 @itemx -n
 Do not build the derivations.
@@ -4271,17 +4294,33 @@ guix import cpan Acme::Boolean
 
 @item cran
 @cindex CRAN
+@cindex Bioconductor
 Import meta-data from @uref{http://cran.r-project.org/, CRAN}, the
 central repository for the @uref{http://r-project.org, GNU@tie{}R
 statistical and graphical environment}.
 
-Information is extracted from the package's DESCRIPTION file.
+Information is extracted from the package's @code{DESCRIPTION} file.
 
 The command command below imports meta-data for the @code{Cairo}
 R package:
 
 @example
 guix import cran Cairo
+@end example
+
+When @code{--archive=bioconductor} is added, meta-data is imported from
+@uref{http://www.bioconductor.org/, Bioconductor}, a repository of R
+packages for for the analysis and comprehension of high-throughput
+genomic data in bioinformatics.
+
+Information is extracted from a package's @code{DESCRIPTION} file
+published on the web interface of the Bioconductor SVN repository.
+
+The command command below imports meta-data for the @code{GenomicRanges}
+R package:
+
+@example
+guix import cran --archive=bioconductor GenomicRanges
 @end example
 
 @item nix
@@ -4482,6 +4521,8 @@ the updater for GNOME packages;
 the updater for @uref{http://elpa.gnu.org/, ELPA} packages;
 @item cran
 the updater for @uref{http://cran.r-project.org/, CRAN} packages;
+@item bioconductor
+the updater for @uref{http://www.bioconductor.org/, Bioconductor} R packages;
 @item pypi
 the updater for @uref{https://pypi.python.org, PyPI} packages.
 @end table
@@ -5674,17 +5715,23 @@ above, such as @code{host-name} and @code{bootloader}, are mandatory.
 Others, such as @code{packages} and @code{services}, can be omitted, in
 which case they get a default value.
 
+Below we discuss the effect of some of the most important fields
+(@pxref{operating-system Reference}, for details about all the available
+fields), and how to @dfn{instantiate} the operating system using
+@command{guix system}.
+
+@unnumberedsubsubsec Globally-Visible Packages
+
 @vindex %base-packages
-The @code{packages} field lists
-packages that will be globally visible on the system, for all user
-accounts---i.e., in every user's @code{PATH} environment variable---in
-addition to the per-user profiles (@pxref{Invoking guix package}).  The
-@var{%base-packages} variable provides all the tools one would expect
-for basic user and administrator tasks---including the GNU Core
-Utilities, the GNU Networking Utilities, the GNU Zile lightweight text
-editor, @command{find}, @command{grep}, etc.  The example above adds
-tcpdump to those, taken from the @code{(gnu packages admin)} module
-(@pxref{Package Modules}).
+The @code{packages} field lists packages that will be globally visible
+on the system, for all user accounts---i.e., in every user's @code{PATH}
+environment variable---in addition to the per-user profiles
+(@pxref{Invoking guix package}).  The @var{%base-packages} variable
+provides all the tools one would expect for basic user and administrator
+tasks---including the GNU Core Utilities, the GNU Networking Utilities,
+the GNU Zile lightweight text editor, @command{find}, @command{grep},
+etc.  The example above adds tcpdump to those, taken from the @code{(gnu
+packages admin)} module (@pxref{Package Modules}).
 
 @findex specification->package
 Referring to packages by variable name, like @var{tcpdump} above, has
@@ -5705,6 +5752,8 @@ version:
                          '("tcpdump" "htop" "gnupg-2.0"))
                     %base-packages)))
 @end lisp
+
+@unnumberedsubsubsec System Services
 
 @vindex %base-services
 The @code{services} field lists @dfn{system services} to be made
@@ -5754,10 +5803,24 @@ more, would look like this:
 @xref{Desktop Services}, for the exact list of services provided by
 @var{%desktop-services}.  @xref{X.509 Certificates}, for background
 information about the @code{nss-certs} package that is used here.
-@xref{operating-system Reference}, for details about all the available
-@code{operating-system} fields.
 
-Assuming the above snippet is stored in the @file{my-system-config.scm}
+Again, @var{%desktop-services} is just a list of service objects.  If
+you want to remove services from there, you can do so using the
+procedures for list filtering (@pxref{SRFI-1 Filtering and
+Partitioning,,, guile, GNU Guile Reference Manual}).  For instance, the
+following expression returns a list that contains all the services in
+@var{%desktop-services} minus the Avahi service:
+
+@example
+(remove (lambda (service)
+          (eq? (service-kind service) avahi-service-type))
+        %desktop-services)
+@end example
+
+@unnumberedsubsubsec Instantiating the System
+
+Assuming the @code{operating-system} declaration
+is stored in the @file{my-system-config.scm}
 file, the @command{guix system reconfigure my-system-config.scm} command
 instantiates that configuration, and makes it the default GRUB boot
 entry (@pxref{Invoking guix system}).
@@ -5779,6 +5842,8 @@ something went wrong with the latest generation.  Reassuring, no?  The
 @command{guix system list-generations} command lists the system
 generations available on disk.
 
+@unnumberedsubsubsec The Programming Interface
+
 At the Scheme level, the bulk of an @code{operating-system} declaration
 is instantiated with the following monadic procedure (@pxref{The Store
 Monad}):
@@ -5791,6 +5856,11 @@ The output of the derivation is a single directory that refers to all
 the packages, configuration files, and other supporting files needed to
 instantiate @var{os}.
 @end deffn
+
+This procedure is provided by the @code{(gnu system)} module.  Along
+with @code{(gnu services)} (@pxref{Services}), this module contains the
+guts of GuixSD.  Make sure to visit it!
+
 
 @node operating-system Reference
 @subsection @code{operating-system} Reference
@@ -6288,7 +6358,7 @@ using the @code{locale} field of the @code{operating-system} declaration
 That locale must be among the @dfn{locale definitions} that are known to
 the system---and these are specified in the @code{locale-definitions}
 slot of @code{operating-system}.  The default value includes locale
-definition for some widely used locales, but not for all the available
+definitions for some widely used locales, but not for all the available
 locales, in order to save space.
 
 If the locale specified in the @code{locale} field is not among the
@@ -6762,13 +6832,14 @@ and lines for hidden services added via @code{tor-hidden-service}.  Run
 @command{man tor} for information about the configuration file.
 @end deffn
 
+@cindex hidden service
 @deffn {Scheme Procedure} tor-hidden-service @var{name} @var{mapping}
 Define a new Tor @dfn{hidden service} called @var{name} and implementing
 @var{mapping}.  @var{mapping} is a list of port/host tuples, such as:
 
 @example
- '((22 \"127.0.0.1:22\")
-   (80 \"127.0.0.1:8080\"))
+ '((22 "127.0.0.1:22")
+   (80 "127.0.0.1:8080"))
 @end example
 
 In this example, port 22 of the hidden service is mapped to local port 22, and
@@ -8907,7 +8978,7 @@ Now that you know all the features that initial RAM disks produced by
 further.
 
 @deffn {Monadic Procedure} base-initrd @var{file-systems} @
-       [#:qemu-networking? #f] [#:virtio? #f] [#:volatile-root? #f] @
+       [#:qemu-networking? #f] [#:virtio? #t] [#:volatile-root? #f] @
        [#:extra-modules '()] [#:mapped-devices '()]
 Return a monadic derivation that builds a generic initrd.  @var{file-systems} is
 a list of file-systems to be mounted by the initrd, possibly in addition to
@@ -10059,6 +10130,40 @@ If we also wanted GTK+ 3.8.2, this would be packaged as
     (version "3.8.2")
     ...))
 @end example
+
+@c See <https://lists.gnu.org/archive/html/guix-devel/2016-01/msg00425.html>,
+@c for a discussion of what follows.
+@cindex version number, for VCS snapshots
+Occasionally, we package snapshots of upstream's version control system
+(VCS) instead of formal releases.  This should remain exceptional,
+because it is up to upstream developers to clarify what the stable
+release is.  Yet, it is sometimes necessary.  So, what should we put in
+the @code{version} field?
+
+Clearly, we need to make the commit identifier of the VCS snapshot
+visible in the version string, but we also need to make sure that the
+version string is monotonically increasing so that @command{guix package
+--upgrade} can determine which version is newer.  Since commit
+identifiers, notably with Git, are not monotonically increasing, we add
+a revision number that we increase each time we upgrade to a newer
+snapshot.  The resulting version string looks like this:
+
+@example
+2.0.11-3.cabba9e
+  ^    ^    ^
+  |    |    `-- upstream commit ID
+  |    |
+  |    `--- Guix package revision
+  |
+latest upstream version
+@end example
+
+It is a good idea to strip commit identifiers in the @code{version}
+field to, say, 7 digits.  It avoids an aesthetic annoyance (assuming
+aesthetics have a role to play here) as well as problems related to OS
+limits such as the maximum shebang length (127 bytes for the Linux
+kernel.)  It is best to use the full commit identifiers in
+@code{origin}s, though, to avoid ambiguities.
 
 @node Synopses and Descriptions
 @subsection Synopses and Descriptions

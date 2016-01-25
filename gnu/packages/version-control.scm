@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
@@ -1004,7 +1004,7 @@ modification time.")
 (define-public myrepos
   (package
     (name "myrepos")
-    (version "1.20151022")
+    (version "1.20160123")
     (source
      (origin
        (method url-fetch)
@@ -1013,7 +1013,7 @@ modification time.")
              version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "0c93lqsngpsxsca7nygk4qhidr40ijgih86q81x1mfcwbs0gbds8"))))
+        (base32 "1723cg5haplz2w9dwdzp6ds1ip33cx3awmj4wnb0h4yq171v5lqk"))))
     (build-system gnu-build-system)
     (inputs
      `(("perl" ,perl)))

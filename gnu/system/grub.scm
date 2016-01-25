@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +25,7 @@
   #:use-module (guix gexp)
   #:use-module (guix download)
   #:use-module (gnu artwork)
+  #:use-module (gnu system file-systems)
   #:autoload   (gnu packages grub) (grub)
   #:autoload   (gnu packages inkscape) (inkscape)
   #:autoload   (gnu packages imagemagick) (imagemagick)
@@ -153,10 +154,12 @@ WIDTH/HEIGHT, or #f if none was found."
         (with-monad %store-monad
           (return #f)))))
 
-(define (eye-candy config system port)
+(define (eye-candy config root-fs system port)
   "Return in %STORE-MONAD a gexp that writes to PORT (a port-valued gexp) the
 'grub.cfg' part concerned with graphics mode, background images, colors, and
-all that."
+all that.  ROOT-FS is a file-system object denoting the root file system where
+the store is.  SYSTEM must be the target system string---e.g.,
+\"x86_64-linux\"."
   (define setup-gfxterm-body
     ;; Intel systems need to be switched into graphics mode, whereas most
     ;; other modern architectures have no other mode and therefore don't need
@@ -179,15 +182,18 @@ all that."
       (string-append (symbol->string (assoc-ref colors 'fg)) "/"
                      (symbol->string (assoc-ref colors 'bg)))))
 
+  (define font-file
+    #~(string-append #$grub "/share/grub/unicode.pf2"))
+
   (mlet* %store-monad ((image (grub-background-image config)))
     (return (and image
                  #~(format #$port "
 function setup_gfxterm {~a}
 
 # Set 'root' to the partition that contains /gnu/store.
-search --file --set ~a/share/grub/unicode.pf2
+~a
 
-if loadfont ~a/share/grub/unicode.pf2; then
+if loadfont ~a; then
   setup_gfxterm
 fi
 
@@ -200,7 +206,9 @@ else
   set menu_color_highlight=white/blue
 fi~%"
                            #$setup-gfxterm-body
-                           #$grub #$grub
+                           #$(grub-root-search root-fs font-file)
+                           #$font-file
+
                            #$image
                            #$(theme-colors grub-theme-color-normal)
                            #$(theme-colors grub-theme-color-highlight))))))
@@ -210,13 +218,31 @@ fi~%"
 ;;; Configuration file.
 ;;;
 
-(define* (grub-configuration-file config entries
+(define (grub-root-search root-fs file)
+  "Return the GRUB 'search' command to look for ROOT-FS, which contains FILE,
+a gexp.  The result is a gexp that can be inserted in the grub.cfg-generation
+code."
+  (case (file-system-title root-fs)
+    ;; Preferably refer to ROOT-FS by its UUID or label.  This is more
+    ;; efficient and less ambiguous, see <>.
+    ((uuid)
+     (format #f "search --fs-uuid --set ~a"
+             (uuid->string (file-system-device root-fs))))
+    ((label)
+     (format #f "search --label --set ~a"
+             (file-system-device root-fs)))
+    (else
+     ;; As a last resort, look for any device containing FILE.
+     #~(format #f "search --file --set ~a" #$file))))
+
+(define* (grub-configuration-file config store-fs entries
                                   #:key
                                   (system (%current-system))
                                   (old-entries '()))
   "Return the GRUB configuration file corresponding to CONFIG, a
-<grub-configuration> object.  OLD-ENTRIES is taken to be a list of menu
-entries corresponding to old generations of the system."
+<grub-configuration> object, and where the store is available at STORE-FS, a
+<file-system> object.  OLD-ENTRIES is taken to be a list of menu entries
+corresponding to old generations of the system."
   (define linux-image-name
     (if (string-prefix? "mips" system)
         "vmlinuz"
@@ -229,18 +255,18 @@ entries corresponding to old generations of the system."
     (match-lambda
      (($ <menu-entry> label linux arguments initrd)
       #~(format port "menuentry ~s {
-  # Set 'root' to the partition that contains the kernel.
-  search --file --set ~a/~a~%
-
+  ~a
   linux ~a/~a ~a
   initrd ~a
 }~%"
                 #$label
-                #$linux #$linux-image-name
+                #$(grub-root-search store-fs
+                                    #~(string-append #$linux "/"
+                                                     #$linux-image-name))
                 #$linux #$linux-image-name (string-join (list #$@arguments))
                 #$initrd))))
 
-  (mlet %store-monad ((sugar (eye-candy config system #~port)))
+  (mlet %store-monad ((sugar (eye-candy config store-fs system #~port)))
     (define builder
       #~(call-with-output-file #$output
           (lambda (port)

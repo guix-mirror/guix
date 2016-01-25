@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +26,8 @@
   #:use-module (gnu packages admin)
   #:use-module (guix records)
   #:use-module (guix gexp)
-  #:export (avahi-service))
+  #:export (avahi-service
+            avahi-service-type))
 
 ;;; Commentary:
 ;;;
