@@ -70,14 +70,14 @@
 (define-public alsa-modular-synth
   (package
     (name "alsa-modular-synth")
-    (version "2.1.1")
+    (version "2.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/alsamodular/ams-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1nb7qzzqlqa2x8h797jbwi18ihnfkxqg9lyi0c4nvf8ybwzxkzd2"))))
+                "1azbrhpfk4nnybr7kgmc7w6al6xnzppg853vas8gmkh185kk11l0"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
