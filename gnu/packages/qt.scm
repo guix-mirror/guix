@@ -182,7 +182,12 @@ X11 (yet).")
        ("ruby" ,ruby)
        ("which" ,(@ (gnu packages base) which))))
     (arguments
-     `(#:phases
+     `(;; FIXME: Disabling parallel building is a quick hack to avoid the
+       ;; failure described in
+       ;; https://lists.gnu.org/archive/html/guix-devel/2016-01/msg00837.html
+       ;; A more structural fix is needed.
+       #:parallel-build? #f
+       #:phases
          (alist-replace
           'configure
           (lambda* (#:key outputs #:allow-other-keys)

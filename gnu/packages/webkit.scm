@@ -149,6 +149,11 @@ HTML/CSS applications to full-fledged web browsers.")
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
+       ;; FIXME: Disabling parallel building is a quick hack to avoid the
+       ;; failure described in
+       ;; https://lists.gnu.org/archive/html/guix-devel/2016-01/msg00837.html
+       ;; A more structural fix is needed.
+       #:parallel-build? #f
        #:phases (modify-phases %standard-phases
                   (add-after
                    'unpack 'set-gcc
@@ -163,7 +168,12 @@ HTML/CSS applications to full-fledged web browsers.")
   (package (inherit webkitgtk-2.4)
     (name "webkitgtk-gtk2")
     (arguments
-     `(#:configure-flags
+     `(;; FIXME: Disabling parallel building is a quick hack to avoid the
+       ;; failure described in
+       ;; https://lists.gnu.org/archive/html/guix-devel/2016-01/msg00837.html
+       ;; A more structural fix is needed.
+       #:parallel-build? #f
+       #:configure-flags
        '("--enable-webkit2=no"
          "--with-gtk=2.0")
        ,@(package-arguments webkitgtk-2.4)))
