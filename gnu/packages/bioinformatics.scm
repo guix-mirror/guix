@@ -2647,7 +2647,7 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
 (define-public ngs-sdk
   (package
     (name "ngs-sdk")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
      (origin
        (method url-fetch)
@@ -2657,7 +2657,7 @@ Roche 454, Ion Torrent and Pacific BioSciences SMRT.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0rvq61zfw2h9jcz6a33b9xrl20r7s5a9rldvv6rs2qy42khpmf5j"))))
+         "15074fdi94c6pjy83hhk22r86kfvzpaz2i07h3rqg9yy6x3w0pk2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; not supported
