@@ -194,7 +194,7 @@ Defining Services
 * Service Composition::         The model for composing services.
 * Service Types and Services::  Types and services.
 * Service Reference::           API reference.
-* dmd Services::                A particular type of service.
+* Shepherd Services::           A particular type of service.
 
 Packaging Guidelines
 
@@ -5614,7 +5614,7 @@ ext2/ext3/ext4 file systems.
 Once that is done, mount the target root partition under @file{/mnt}.
 
 @item
-Lastly, run @code{deco start cow-store /mnt}.
+Lastly, run @code{herd start cow-store /mnt}.
 
 This will make @file{/gnu/store} copy-on-write, such that packages added
 to it during the installation phase will be written to the target disk
@@ -6511,22 +6511,22 @@ Configuration System}).  System services are typically daemons launched
 when the system boots, or other actions needed at that time---e.g.,
 configuring network access.
 
-Services are managed by GNU@tie{}dmd (@pxref{Introduction,,, dmd, GNU
-dmd Manual}).  On a running system, the @command{deco} command allows
-you to list the available services, show their status, start and stop
-them, or do other specific operations (@pxref{Jump Start,,, dmd, GNU dmd
-Manual}).  For example:
+Services are managed by the GNU@tie{}Shepherd (@pxref{Introduction,,,
+shepherd, The GNU Shepherd Manual}).  On a running system, the
+@command{herd} command allows you to list the available services, show
+their status, start and stop them, or do other specific operations
+(@pxref{Jump Start,,, shepherd, The GNU Shepherd Manual}).  For example:
 
 @example
-# deco status dmd
+# herd status
 @end example
 
 The above command, run as @code{root}, lists the currently defined
-services.  The @command{deco doc} command shows a synopsis of the given
+services.  The @command{herd doc} command shows a synopsis of the given
 service:
 
 @example
-# deco doc nscd
+# herd doc nscd
 Run libc's name service cache daemon (nscd).
 @end example
 
@@ -6535,9 +6535,9 @@ have the effect you would expect.  For instance, the commands below stop
 the nscd service and restart the Xorg display server:
 
 @example
-# deco stop nscd
+# herd stop nscd
 Service nscd has been stopped.
-# deco restart xorg-server
+# herd restart xorg-server
 Service xorg-server has been stopped.
 Service xorg-server has been started.
 @end example
@@ -8966,7 +8966,7 @@ Tell the initial RAM disk to load @var{boot}, a file containing a Scheme
 program, once it has mounted the root file system.
 
 GuixSD uses this option to yield control to a boot program that runs the
-service activation programs and then spawns GNU@tie{}dmd, the
+service activation programs and then spawns the GNU@tie{}Shepherd, the
 initialization system.
 
 @item --root=@var{root}
@@ -9351,8 +9351,9 @@ produces a PDF file showing the extension relations among services.
 @anchor{system-dmd-graph}
 @item dmd-graph
 Emit in Dot/Graphviz format to standard output the @dfn{dependency
-graph} of dmd services of the operating system defined in @var{file}.
-@xref{dmd Services}, for more information and for an example graph.
+graph} of shepherd services of the operating system defined in
+@var{file}.  @xref{Shepherd Services}, for more information and for an
+example graph.
 
 @end table
 
@@ -9419,7 +9420,7 @@ them in the first place?  And what is a service anyway?
 * Service Composition::         The model for composing services.
 * Service Types and Services::  Types and services.
 * Service Reference::           API reference.
-* dmd Services::                A particular type of service.
+* Shepherd Services::           A particular type of service.
 @end menu
 
 @node Service Composition
@@ -9442,16 +9443,16 @@ directory.
 
 @cindex service extensions
 GuixSD services are connected by @dfn{extensions}.  For instance, the
-secure shell service @emph{extends} dmd---GuixSD's initialization system,
-running as PID@tie{}1---by giving it the command lines to start and stop
-the secure shell daemon (@pxref{Networking Services,
-@code{lsh-service}}); the UPower service extends the D-Bus service by
-passing it its @file{.service} specification, and extends the udev
-service by passing it device management rules (@pxref{Desktop Services,
-@code{upower-service}}); the Guix daemon service extends dmd by passing
-it the command lines to start and stop the daemon, and extends the
-account service by passing it a list of required build user accounts
-(@pxref{Base Services}).
+secure shell service @emph{extends} the Shepherd---GuixSD's
+initialization system, running as PID@tie{}1---by giving it the command
+lines to start and stop the secure shell daemon (@pxref{Networking
+Services, @code{lsh-service}}); the UPower service extends the D-Bus
+service by passing it its @file{.service} specification, and extends the
+udev service by passing it device management rules (@pxref{Desktop
+Services, @code{upower-service}}); the Guix daemon service extends the
+Shepherd by passing it the command lines to start and stop the daemon,
+and extends the account service by passing it a list of required build
+user accounts (@pxref{Base Services}).
 
 All in all, services and their ``extends'' relations form a directed
 acyclic graph (DAG).  If we represent services as boxes and extensions
@@ -9515,9 +9516,10 @@ In this example, @var{guix-service-type} extends three services:
 
 @table @var
 @item dmd-root-service-type
-The @var{guix-dmd-service} procedure defines how the dmd service is
+The @var{guix-dmd-service} procedure defines how the Shepherd service is
 extended.  Namely, it returns a @code{<dmd-service>} object that defines
-how @command{guix-daemon} is started and stopped (@pxref{dmd Services}).
+how @command{guix-daemon} is started and stopped (@pxref{Shepherd
+Services}).
 
 @item account-service-type
 This extension for this service is computed by @var{guix-accounts},
@@ -9776,21 +9778,21 @@ extend it by passing it lists of packages to add to the system profile.
 @end defvr
 
 
-@node dmd Services
-@subsubsection dmd Services
+@node Shepherd Services
+@subsubsection Shepherd Services
 
 @cindex PID 1
 @cindex init system
 The @code{(gnu services dmd)} provides a way to define services managed
-by GNU@tie{}dmd, which is GuixSD initialization system---the first
-process that is started when the system boots, aka. PID@tie{}1
-(@pxref{Introduction,,, dmd, GNU dmd Manual}).
+by the GNU@tie{}Shepherd, which is GuixSD initialization system---the
+first process that is started when the system boots, aka. PID@tie{}1
+(@pxref{Introduction,,, shepherd, The GNU Shepherd Manual}).
 
-Services in dmd can depend on each other.  For instance, the SSH daemon
-may need to be started after the syslog daemon has been started, which
-in turn can only happen once all the file systems have been mounted.
-The simple operating system defined earlier (@pxref{Using the
-Configuration System}) results in a service graph like this:
+Services in the Shepherd can depend on each other.  For instance, the
+SSH daemon may need to be started after the syslog daemon has been
+started, which in turn can only happen once all the file systems have
+been mounted.  The simple operating system defined earlier (@pxref{Using
+the Configuration System}) results in a service graph like this:
 
 @image{images/dmd-graph,,5in,Typical dmd service graph.}
 
@@ -9803,19 +9805,19 @@ of type @var{dmd-root-service-type}; it can be extended by passing it
 lists of @code{<dmd-service>} objects.
 
 @deftp {Data Type} dmd-service
-The data type representing a service managed by dmd.
+The data type representing a service managed by the Shepherd.
 
 @table @asis
 @item @code{provision}
 This is a list of symbols denoting what the service provides.
 
-These are the names that may be passed to @command{deco start},
-@command{deco status}, and similar commands (@pxref{Invoking deco,,,
-dmd, GNU dmd Manual}).  @xref{Slots of services, the @code{provides}
-slot,, dmd, GNU dmd Manual}, for details.
+These are the names that may be passed to @command{herd start},
+@command{herd status}, and similar commands (@pxref{Invoking herd,,,
+shepherd, The GNU Shepherd Manual}).  @xref{Slots of services, the
+@code{provides} slot,, shepherd, The GNU Shepherd Manual}, for details.
 
 @item @code{requirements} (default: @code{'()})
-List of symbols denoting the dmd services this one depends on.
+List of symbols denoting the Shepherd services this one depends on.
 
 @item @code{respawn?} (default: @code{#t})
 Whether to restart the service when it stops, for instance when the
@@ -9823,20 +9825,21 @@ underlying process dies.
 
 @item @code{start}
 @itemx @code{stop} (default: @code{#~(const #f)})
-The @code{start} and @code{stop} fields refer to dmd's facilities to
-start and stop processes (@pxref{Service De- and Constructors,,, dmd,
-GNU dmd Manual}).  They are given as G-expressions that get expanded in
-the dmd configuration file (@pxref{G-Expressions}).
+The @code{start} and @code{stop} fields refer to the Shepherd's
+facilities to start and stop processes (@pxref{Service De- and
+Constructors,,, shepherd, The GNU Shepherd Manual}).  They are given as
+G-expressions that get expanded in the Shepherd configuration file
+(@pxref{G-Expressions}).
 
 @item @code{documentation}
 A documentation string, as shown when running:
 
 @example
-deco doc @var{service-name}
+herd doc @var{service-name}
 @end example
 
 where @var{service-name} is one of the symbols in @var{provision}
-(@pxref{Invoking deco,,, dmd, GNU dmd Manual}).
+(@pxref{Invoking herd,,, shepherd, The GNU Shepherd Manual}).
 
 @item @code{modules} (default: @var{%default-modules})
 This is the list of modules that must be in scope when @code{start} and
@@ -9844,17 +9847,17 @@ This is the list of modules that must be in scope when @code{start} and
 
 @item @code{imported-modules} (default: @var{%default-imported-modules})
 This is the list of modules to import in the execution environment of
-dmd.
+the Shepherd.
 
 @end table
 @end deftp
 
 @defvr {Scheme Variable} dmd-root-service-type
-The service type for the dmd ``root service''---i.e., PID@tie{}1.
+The service type for the Shepherd ``root service''---i.e., PID@tie{}1.
 
 This is the service type that extensions target when they want to create
-dmd services (@pxref{Service Types and Services}, for an example).  Each
-extension must pass a list of @code{<dmd-service>}.
+shepherd services (@pxref{Service Types and Services}, for an example).
+Each extension must pass a list of @code{<dmd-service>}.
 @end defvr
 
 @defvr {Scheme Variable} %dmd-root-service
