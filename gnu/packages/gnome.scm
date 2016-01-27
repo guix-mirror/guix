@@ -45,6 +45,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages djvu)
   #:use-module (gnu packages dns)
@@ -4565,3 +4566,41 @@ properties, screen resolution, and other GNOME parameters.")
      "GNOME Shell provides core user interface functions for the GNOME desktop,
 like switching to windows and launching applications.")
     (license license:gpl2+)))
+
+(define-public gtk-vnc
+  (package
+    (name "gtk-vnc")
+    (version "0.5.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1rwwdh7lb16xdmy76ca6mpqfc3zfl3a4bkcr0qb6hs6ffrxak2j8"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--with-gtk=3.0")))
+    (propagated-inputs
+     `(("gtk+" ,gtk+))) ; required by gtk-vnc-2.0.pc.
+    (inputs
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("gnutls" ,gnutls)
+       ("libgcrypt" ,libgcrypt)
+       ("pulseaudio" ,pulseaudio)))
+    (native-inputs
+     `(("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (home-page "https://wiki.gnome.org/Projects/gtk-vnc")
+    (synopsis "VNC viewer widget for GTK+")
+    (description
+     "GTK-VNC is a VNC viewer widget for GTK+, used by remote desktop viewing
+applications, for instance the Vinagre client, GNOME Boxes and virt-viewer.
+GTK-VNC implements client side RFB protocol and authentication extensions such
+as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
+    (license license:lgpl2.1+)))
