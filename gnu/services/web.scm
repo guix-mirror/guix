@@ -79,7 +79,7 @@
          (system* (string-append #$nginx "/bin/nginx")
                   "-c" #$config-file "-t")))))
 
-(define nginx-dmd-service
+(define nginx-shepherd-service
   (match-lambda
     (($ <nginx-configuration> nginx log-directory run-directory config-file)
      (let* ((nginx-binary #~(string-append #$nginx "/sbin/nginx"))
@@ -90,7 +90,7 @@
                     (system* #$nginx-binary "-c" #$config-file #$@args))))))
 
        ;; TODO: Add 'reload' action.
-       (list (dmd-service
+       (list (shepherd-service
               (provision '(nginx))
               (documentation "Run the nginx daemon.")
               (requirement '(user-processes loopback))
@@ -100,8 +100,8 @@
 (define nginx-service-type
   (service-type (name 'nginx)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          nginx-dmd-service)
+                 (list (service-extension shepherd-root-service-type
+                                          nginx-shepherd-service)
                        (service-extension activation-service-type
                                           nginx-activation)
                        (service-extension account-service-type

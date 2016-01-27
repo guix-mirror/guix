@@ -93,11 +93,11 @@
       (use-modules (guix build utils))
       (mkdir-p "/var/run/avahi-daemon")))
 
-(define (avahi-dmd-service config)
-  "Return a list of <dmd-service> for CONFIG."
+(define (avahi-shepherd-service config)
+  "Return a list of <shepherd-service> for CONFIG."
   (let ((config (configuration-file config))
         (avahi  (avahi-configuration-avahi config)))
-    (list (dmd-service
+    (list (shepherd-service
            (documentation "Run the Avahi mDNS/DNS-SD responder.")
            (provision '(avahi-daemon))
            (requirement '(dbus-system networking))
@@ -111,8 +111,8 @@
   (let ((avahi-package (compose list avahi-configuration-avahi)))
     (service-type (name 'avahi)
                   (extensions
-                   (list (service-extension dmd-root-service-type
-                                            avahi-dmd-service)
+                   (list (service-extension shepherd-root-service-type
+                                            avahi-shepherd-service)
                          (service-extension dbus-root-service-type
                                             avahi-package)
                          (service-extension account-service-type

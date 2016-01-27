@@ -9491,7 +9491,7 @@ with a simple example, the service type for the Guix build daemon
   (service-type
    (name 'guix)
    (extensions
-    (list (service-extension dmd-root-service-type guix-dmd-service)
+    (list (service-extension shepherd-root-service-type guix-shepherd-service)
           (service-extension account-service-type guix-accounts)
           (service-extension activation-service-type guix-activation)))))
 @end example
@@ -9515,11 +9515,11 @@ exception is the @dfn{boot service type}, which is the ultimate service.
 In this example, @var{guix-service-type} extends three services:
 
 @table @var
-@item dmd-root-service-type
-The @var{guix-dmd-service} procedure defines how the Shepherd service is
-extended.  Namely, it returns a @code{<dmd-service>} object that defines
-how @command{guix-daemon} is started and stopped (@pxref{Shepherd
-Services}).
+@item shepherd-root-service-type
+The @var{guix-shepherd-service} procedure defines how the Shepherd
+service is extended.  Namely, it returns a @code{<shepherd-service>}
+object that defines how @command{guix-daemon} is started and stopped
+(@pxref{Shepherd Services}).
 
 @item account-service-type
 This extension for this service is computed by @var{guix-accounts},
@@ -9558,8 +9558,8 @@ The service type for an @emph{extensible} service looks like this:
 (define udev-service-type
   (service-type (name 'udev)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          udev-dmd-service)))
+                 (list (service-extension shepherd-root-service-type
+                                          udev-shepherd-service)))
 
                 (compose concatenate)       ;concatenate the list of rules
                 (extend (lambda (config rules)
@@ -9573,7 +9573,7 @@ The service type for an @emph{extensible} service looks like this:
 This is the service type for the
 @uref{https://wiki.gentoo.org/wiki/Project:Eudev, eudev device
 management daemon}.  Compared to the previous example, in addition to an
-extension of @var{dmd-root-service-type}, we see two new fields:
+extension of @var{shepherd-root-service-type}, we see two new fields:
 
 @table @code
 @item compose
@@ -9801,11 +9801,11 @@ You can actually generate such a graph for any operating system
 definition using the @command{guix system dmd-graph} command
 (@pxref{system-dmd-graph, @command{guix system dmd-graph}}).
 
-The @var{%dmd-root-service} is a service object representing PID@tie{}1,
-of type @var{dmd-root-service-type}; it can be extended by passing it
-lists of @code{<dmd-service>} objects.
+The @var{%shepherd-root-service} is a service object representing
+PID@tie{}1, of type @var{shepherd-root-service-type}; it can be extended
+by passing it lists of @code{<shepherd-service>} objects.
 
-@deftp {Data Type} dmd-service
+@deftp {Data Type} shepherd-service
 The data type representing a service managed by the Shepherd.
 
 @table @asis
@@ -9853,15 +9853,15 @@ the Shepherd.
 @end table
 @end deftp
 
-@defvr {Scheme Variable} dmd-root-service-type
+@defvr {Scheme Variable} shepherd-root-service-type
 The service type for the Shepherd ``root service''---i.e., PID@tie{}1.
 
 This is the service type that extensions target when they want to create
 shepherd services (@pxref{Service Types and Services}, for an example).
-Each extension must pass a list of @code{<dmd-service>}.
+Each extension must pass a list of @code{<shepherd-service>}.
 @end defvr
 
-@defvr {Scheme Variable} %dmd-root-service
+@defvr {Scheme Variable} %shepherd-root-service
 This service represents PID@tie{}1.
 @end defvr
 

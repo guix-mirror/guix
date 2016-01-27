@@ -148,8 +148,8 @@
                 (compose identity)
                 (extend append)))
 
-(define %root-file-system-dmd-service
-  (dmd-service
+(define %root-file-system-shepherd-service
+  (shepherd-service
    (documentation "Take care of the root file system.")
    (provision '(root-file-system))
    (start #~(const #t))
@@ -181,37 +181,37 @@
    (respawn? #f)))
 
 (define root-file-system-service-type
-  (dmd-service-type 'root-file-system
-                    (const %root-file-system-dmd-service)))
+  (shepherd-service-type 'root-file-system
+                         (const %root-file-system-shepherd-service)))
 
 (define (root-file-system-service)
   "Return a service whose sole purpose is to re-mount read-only the root file
 system upon shutdown (aka. cleanly \"umounting\" root.)
 
 This service must be the root of the service dependency graph so that its
-'stop' action is invoked when dmd is the only process left."
+'stop' action is invoked when shepherd is the only process left."
   (service root-file-system-service-type #f))
 
-(define (file-system->dmd-service-name file-system)
+(define (file-system->shepherd-service-name file-system)
   "Return the symbol that denotes the service mounting and unmounting
 FILE-SYSTEM."
   (symbol-append 'file-system-
                  (string->symbol (file-system-mount-point file-system))))
 
-(define (mapped-device->dmd-service-name md)
-  "Return the symbol that denotes the dmd service of MD, a <mapped-device>."
+(define (mapped-device->shepherd-service-name md)
+  "Return the symbol that denotes the shepherd service of MD, a <mapped-device>."
   (symbol-append 'device-mapping-
                  (string->symbol (mapped-device-target md))))
 
-(define dependency->dmd-service-name
+(define dependency->shepherd-service-name
   (match-lambda
     ((? mapped-device? md)
-     (mapped-device->dmd-service-name md))
+     (mapped-device->shepherd-service-name md))
     ((? file-system? fs)
-     (file-system->dmd-service-name fs))))
+     (file-system->shepherd-service-name fs))))
 
-(define (file-system-dmd-service file-system)
-  "Return a list containing the dmd service for @var{file-system}."
+(define (file-system-shepherd-service file-system)
+  "Return a list containing the shepherd service for @var{file-system}."
   (let ((target  (file-system-mount-point file-system))
         (device  (file-system-device file-system))
         (type    (file-system-type file-system))
@@ -221,10 +221,10 @@ FILE-SYSTEM."
         (dependencies (file-system-dependencies file-system)))
     (if (file-system-mount? file-system)
         (list
-         (dmd-service
-          (provision (list (file-system->dmd-service-name file-system)))
+         (shepherd-service
+          (provision (list (file-system->shepherd-service-name file-system)))
           (requirement `(root-file-system
-                         ,@(map dependency->dmd-service-name dependencies)))
+                         ,@(map dependency->shepherd-service-name dependencies)))
           (documentation "Check, mount, and unmount the given file system.")
           (start #~(lambda args
                      ;; FIXME: Use or factorize with 'mount-file-system'.
@@ -276,11 +276,11 @@ FILE-SYSTEM."
 
 (define file-system-service-type
   ;; TODO(?): Make this an extensible service that takes <file-system> objects
-  ;; and returns a list of <dmd-service>.
+  ;; and returns a list of <shepherd-service>.
   (service-type (name 'file-system)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          file-system-dmd-service)
+                 (list (service-extension shepherd-root-service-type
+                                          file-system-shepherd-service)
                        (service-extension fstab-service-type
                                           identity)))))
 
@@ -290,10 +290,10 @@ object."
   (service file-system-service-type file-system))
 
 (define user-unmount-service-type
-  (dmd-service-type
+  (shepherd-service-type
    'user-file-systems
    (lambda (known-mount-points)
-     (dmd-service
+     (shepherd-service
       (documentation "Unmount manually-mounted file systems.")
       (provision '(user-file-systems))
       (start #~(const #t))
@@ -328,15 +328,15 @@ in KNOWN-MOUNT-POINTS when it is stopped."
   "/etc/shepherd/do-not-kill")
 
 (define user-processes-service-type
-  (dmd-service-type
+  (shepherd-service-type
    'user-processes
    (match-lambda
      ((requirements grace-delay)
-      (dmd-service
+      (shepherd-service
        (documentation "When stopped, terminate all user processes.")
        (provision '(user-processes))
        (requirement (cons* 'root-file-system 'user-file-systems
-                           (map file-system->dmd-service-name
+                           (map file-system->shepherd-service-name
                                 requirements)))
        (start #~(const #t))
        (stop #~(lambda _
@@ -410,7 +410,7 @@ that the root file system can be re-mounted read-only, just before
 rebooting/halting.  Processes still running GRACE-DELAY seconds after SIGTERM
 has been sent are terminated with SIGKILL.
 
-The returned service will depend on 'root-file-system' and on all the dmd
+The returned service will depend on 'root-file-system' and on all the shepherd
 services corresponding to FILE-SYSTEMS.
 
 All the services that spawn processes must depend on this one so that they are
@@ -457,10 +457,10 @@ strings or string-valued gexps."
 ;;;
 
 (define host-name-service-type
-  (dmd-service-type
+  (shepherd-service-type
    'host-name
    (lambda (name)
-     (dmd-service
+     (shepherd-service
       (documentation "Initialize the machine's host name.")
       (provision '(host-name))
       (start #~(lambda _
@@ -490,10 +490,10 @@ strings or string-valued gexps."
            (zero? (cdr (waitpid pid))))))))
 
 (define console-keymap-service-type
-  (dmd-service-type
+  (shepherd-service-type
    'console-keymap
    (lambda (file)
-     (dmd-service
+     (shepherd-service
       (documentation (string-append "Load console keymap (loadkeys)."))
       (provision '(console-keymap))
       (start #~(lambda _
@@ -506,12 +506,12 @@ strings or string-valued gexps."
   (service console-keymap-service-type file))
 
 (define console-font-service-type
-  (dmd-service-type
+  (shepherd-service-type
    'console-font
    (match-lambda
      ((tty font)
       (let ((device (string-append "/dev/" tty)))
-        (dmd-service
+        (shepherd-service
          (documentation "Load a Unicode console font.")
          (provision (list (symbol-append 'console-font-
                                          (string->symbol tty))))
@@ -568,12 +568,12 @@ strings or string-valued gexps."
                           #:motd
                           (mingetty-configuration-motd conf))))
 
-(define mingetty-dmd-service
+(define mingetty-shepherd-service
   (match-lambda
     (($ <mingetty-configuration> mingetty tty motd auto-login login-program
                                  login-pause? allow-empty-passwords?)
      (list
-      (dmd-service
+      (shepherd-service
        (documentation "Run mingetty on an tty.")
        (provision (list (symbol-append 'term- (string->symbol tty))))
 
@@ -598,8 +598,8 @@ strings or string-valued gexps."
 
 (define mingetty-service-type
   (service-type (name 'mingetty)
-                (extensions (list (service-extension dmd-root-service-type
-                                                     mingetty-dmd-service)
+                (extensions (list (service-extension shepherd-root-service-type
+                                                     mingetty-shepherd-service)
                                   (service-extension pam-root-service-type
                                                      mingetty-pam-service)))))
 
@@ -711,11 +711,11 @@ the tty to run, among other things."
                                 (string-concatenate
                                  (map cache->config caches)))))))
 
-(define (nscd-dmd-service config)
-  "Return a dmd service for CONFIG, an <nscd-configuration> object."
+(define (nscd-shepherd-service config)
+  "Return a shepherd service for CONFIG, an <nscd-configuration> object."
   (let ((nscd.conf     (nscd.conf-file config))
         (name-services (nscd-configuration-name-services config)))
-    (list (dmd-service
+    (list (shepherd-service
            (documentation "Run libc's name service cache daemon (nscd).")
            (provision '(nscd))
            (requirement '(user-processes))
@@ -747,8 +747,8 @@ the tty to run, among other things."
                 (extensions
                  (list (service-extension activation-service-type
                                           (const nscd-activation))
-                       (service-extension dmd-root-service-type
-                                          nscd-dmd-service)))
+                       (service-extension shepherd-root-service-type
+                                          nscd-shepherd-service)))
 
                 ;; This can be extended by providing additional name services
                 ;; such as nss-mdns.
@@ -767,10 +767,10 @@ Service Switch}, for an example."
   (service nscd-service-type config))
 
 (define syslog-service-type
-  (dmd-service-type
+  (shepherd-service-type
    'syslog
    (lambda (config-file)
-     (dmd-service
+     (shepherd-service
       (documentation "Run the syslog daemon (syslogd).")
       (provision '(syslogd))
       (requirement '(user-processes))
@@ -885,13 +885,13 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
 (define %default-guix-configuration
   (guix-configuration))
 
-(define (guix-dmd-service config)
-  "Return a <dmd-service> for the Guix daemon service with CONFIG."
+(define (guix-shepherd-service config)
+  "Return a <shepherd-service> for the Guix daemon service with CONFIG."
   (match config
     (($ <guix-configuration> guix build-group build-accounts authorize-key?
                              use-substitutes? substitute-urls extra-options
                              lsof lsh)
-     (list (dmd-service
+     (list (shepherd-service
             (documentation "Run the Guix daemon.")
             (provision '(guix-daemon))
             (requirement '(user-processes))
@@ -941,7 +941,7 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
   (service-type
    (name 'guix)
    (extensions
-    (list (service-extension dmd-root-service-type guix-dmd-service)
+    (list (service-extension shepherd-root-service-type guix-shepherd-service)
           (service-extension account-service-type guix-accounts)
           (service-extension activation-service-type guix-activation)
           (service-extension profile-service-type
@@ -963,10 +963,10 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
   (host    guix-publish-configuration-host        ;string
            (default "localhost")))
 
-(define guix-publish-dmd-service
+(define guix-publish-shepherd-service
   (match-lambda
     (($ <guix-publish-configuration> guix port host)
-     (list (dmd-service
+     (list (shepherd-service
             (provision '(guix-publish))
             (requirement '(guix-daemon))
             (start #~(make-forkexec-constructor
@@ -989,8 +989,8 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
 (define guix-publish-service-type
   (service-type (name 'guix-publish)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          guix-publish-dmd-service)
+                 (list (service-extension shepherd-root-service-type
+                                          guix-publish-shepherd-service)
                        (service-extension account-service-type
                                           (const %guix-publish-accounts))))))
 
@@ -1070,8 +1070,8 @@ item of @var{packages}."
   (udev-rule "90-kvm.rules"
              "KERNEL==\"kvm\", GROUP=\"kvm\", MODE=\"0660\"\n"))
 
-(define udev-dmd-service
-  ;; Return a <dmd-service> for UDEV with RULES.
+(define udev-shepherd-service
+  ;; Return a <shepherd-service> for UDEV with RULES.
   (match-lambda
     (($ <udev-configuration> udev rules)
      (let* ((rules     (udev-rules-union (cons* udev kvm-udev-rule rules)))
@@ -1082,7 +1082,7 @@ item of @var{packages}."
                                                     "udev_rules=\"~a/lib/udev/rules.d\"\n"
                                                     #$rules))))))
        (list
-        (dmd-service
+        (shepherd-service
          (provision '(udev))
 
          ;; Udev needs /dev to be a 'devtmpfs' mount so that new device nodes can
@@ -1154,8 +1154,8 @@ item of @var{packages}."
 (define udev-service-type
   (service-type (name 'udev)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          udev-dmd-service)))
+                 (list (service-extension shepherd-root-service-type
+                                          udev-shepherd-service)))
 
                 (compose concatenate)           ;concatenate the list of rules
                 (extend (lambda (config rules)
@@ -1172,11 +1172,11 @@ extra rules from the packages listed in @var{rules}."
            (udev-configuration (udev udev) (rules rules))))
 
 (define device-mapping-service-type
-  (dmd-service-type
+  (shepherd-service-type
    'device-mapping
    (match-lambda
      ((target open close)
-      (dmd-service
+      (shepherd-service
        (provision (list (symbol-append 'device-mapping- (string->symbol target))))
        (requirement '(udev))
        (documentation "Map a device node using Linux's device mapper.")
@@ -1192,7 +1192,7 @@ gexp, to open it, and evaluate @var{close} to close it."
            (list target open close)))
 
 (define swap-service-type
-  (dmd-service-type
+  (shepherd-service-type
    'swap
    (lambda (device)
      (define requirement
@@ -1201,7 +1201,7 @@ gexp, to open it, and evaluate @var{close} to close it."
                                 (string->symbol (basename device))))
            '()))
 
-     (dmd-service
+     (shepherd-service
       (provision (list (symbol-append 'swap- (string->symbol device))))
       (requirement `(udev ,@requirement))
       (documentation "Enable the given swap device.")
@@ -1223,10 +1223,10 @@ gexp, to open it, and evaluate @var{close} to close it."
   (gpm      gpm-configuration-gpm)                ;package
   (options  gpm-configuration-options))           ;list of strings
 
-(define gpm-dmd-service
+(define gpm-shepherd-service
   (match-lambda
     (($ <gpm-configuration> gpm options)
-     (list (dmd-service
+     (list (shepherd-service
             (requirement '(udev))
             (provision '(gpm))
             (start #~(lambda ()
@@ -1254,8 +1254,8 @@ gexp, to open it, and evaluate @var{close} to close it."
 (define gpm-service-type
   (service-type (name 'gpm)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          gpm-dmd-service)))))
+                 (list (service-extension shepherd-root-service-type
+                                          gpm-shepherd-service)))))
 
 (define* (gpm-service #:key (gpm gpm)
                       (options '("-m" "/dev/input/mice" "-t" "ps2")))

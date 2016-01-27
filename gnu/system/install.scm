@@ -164,10 +164,10 @@ current store is on a RAM disk."
                (rmdir "/.rw-store"))))))
 
 (define cow-store-service-type
-  (dmd-service-type
+  (shepherd-service-type
    'cow-store
    (lambda _
-     (dmd-service
+     (shepherd-service
       (requirement '(root-file-system user-processes))
       (provision '(cow-store))
       (documentation

@@ -303,11 +303,11 @@ a container or that of a \"bare metal\" system."
     (cons* (service system-service-type entries)
            %boot-service
 
-           ;; %DMD-ROOT-SERVICE must come first so that the gexp that execs
-           ;; dmd comes last in the boot script (XXX).  Likewise, the cleanup
-           ;; service must come last so that its gexp runs before activation
-           ;; code.
-           %dmd-root-service
+           ;; %SHEPHERD-ROOT-SERVICE must come first so that the gexp that
+           ;; execs shepherd comes last in the boot script (XXX).  Likewise,
+           ;; the cleanup service must come last so that its gexp runs before
+           ;; activation code.
+           %shepherd-root-service
            %activation-service
            (service cleanup-service-type #f)
 

@@ -1,5 +1,5 @@
 digraph "Service Type Dependencies" {
-  dmd [shape = box, fontname = Helvetica];
+  shepherd [shape = box, fontname = Helvetica];
   pam [shape = box, fontname = Helvetica];
   etc [shape = box, fontname = Helvetica];
   profile [shape = box, fontname = Helvetica];
@@ -7,14 +7,14 @@ digraph "Service Type Dependencies" {
   activation [shape = box, fontname = Helvetica];
   boot [shape = box, fontname = Helvetica];
   system [shape = house, fontname = Helvetica];
-  lshd -> dmd;
+  lshd -> shepherd;
   lshd -> pam;
-  udev -> dmd;
-  nscd -> dmd [label = "extends"];
+  udev -> shepherd;
+  nscd -> shepherd [label = "extends"];
   "nss-mdns" -> nscd;
   "kvm-rules" -> udev;
   colord -> udev;
-  dbus -> dmd;
+  dbus -> shepherd;
   colord -> dbus;
   upower -> udev;
   upower -> dbus;
@@ -23,7 +23,7 @@ digraph "Service Type Dependencies" {
   elogind -> dbus;
   elogind -> udev;
   elogind -> polkit [label = "extends"];
-  dmd -> boot;
+  shepherd -> boot;
   colord -> accounts;
   accounts -> activation;
   accounts -> etc;
@@ -31,7 +31,7 @@ digraph "Service Type Dependencies" {
   activation -> boot;
   pam -> etc;
   elogind -> pam;
-  guix -> dmd;
+  guix -> shepherd;
   guix -> activation;
   guix -> accounts;
   boot -> system;

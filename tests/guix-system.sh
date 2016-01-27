@@ -121,10 +121,10 @@ cat > "$tmpfile" <<EOF
 (use-service-modules networking)
 
 (define buggy-service-type
-  (dmd-service-type
+  (shepherd-service-type
     'buggy
     (lambda _
-      (dmd-service
+      (shepherd-service
         (provision '(buggy!))
         (requirement '(does-not-exist))
         (start #t)))))

@@ -98,7 +98,7 @@ fe80::1%lo0 apps.facebook.com\n")
   (net-tools static-networking-net-tools))
 
 (define static-networking-service-type
-  (dmd-service-type
+  (shepherd-service-type
    'static-networking
    (match-lambda
      (($ <static-networking> interface ip gateway provision
@@ -107,7 +107,7 @@ fe80::1%lo0 apps.facebook.com\n")
 
         ;; TODO: Eventually replace 'route' with bindings for the appropriate
         ;; ioctls.
-        (dmd-service
+        (shepherd-service
 
          ;; Unless we're providing the loopback interface, wait for udev to be up
          ;; and running so that INTERFACE is actually usable.
@@ -171,7 +171,7 @@ gateway."
                               (net-tools net-tools))))
 
 (define dhcp-client-service-type
-  (dmd-service-type
+  (shepherd-service-type
    'dhcp-client
    (lambda (dhcp)
      (define dhclient
@@ -180,7 +180,7 @@ gateway."
      (define pid-file
        "/var/run/dhclient.pid")
 
-     (dmd-service
+     (shepherd-service
       (documentation "Set up networking via DHCP.")
       (requirement '(user-processes udev))
 
@@ -248,7 +248,7 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
             (default ntp))
   (servers  ntp-configuration-servers))
 
-(define ntp-dmd-service
+(define ntp-shepherd-service
   (match-lambda
     (($ <ntp-configuration> ntp servers)
      (let ()
@@ -271,7 +271,7 @@ restrict -6 ::1\n"))
        (define ntpd.conf
          (plain-file "ntpd.conf" config))
 
-       (list (dmd-service
+       (list (shepherd-service
               (provision '(ntpd))
               (documentation "Run the Network Time Protocol (NTP) daemon.")
               (requirement '(user-processes networking))
@@ -292,8 +292,8 @@ restrict -6 ::1\n"))
 (define ntp-service-type
   (service-type (name 'ntp)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          ntp-dmd-service)
+                 (list (service-extension shepherd-root-service-type
+                                          ntp-shepherd-service)
                        (service-extension account-service-type
                                           (const %ntp-accounts))))))
 
@@ -376,12 +376,12 @@ HiddenServicePort ~a ~a~%"
               #t)))
       #:modules '((guix build utils))))))
 
-(define (tor-dmd-service config)
-  "Return a <dmd-service> running TOR."
+(define (tor-shepherd-service config)
+  "Return a <shepherd-service> running TOR."
   (match config
     (($ <tor-configuration> tor)
      (let ((torrc (tor-configuration->torrc config)))
-       (list (dmd-service
+       (list (shepherd-service
               (provision '(tor))
 
               ;; Tor needs at least one network interface to be up, hence the
@@ -421,8 +421,8 @@ HiddenServicePort ~a ~a~%"
 (define tor-service-type
   (service-type (name 'tor)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          tor-dmd-service)
+                 (list (service-extension shepherd-root-service-type
+                                          tor-shepherd-service)
                        (service-extension account-service-type
                                           (const %tor-accounts))
                        (service-extension activation-service-type
@@ -492,7 +492,7 @@ project's documentation} for more information."
   (port bitlbee-configuration-port)
   (extra-settings bitlbee-configuration-extra-settings))
 
-(define bitlbee-dmd-service
+(define bitlbee-shepherd-service
   (match-lambda
     (($ <bitlbee-configuration> bitlbee interface port extra-settings)
      (let ((conf (plain-file "bitlbee.conf"
@@ -504,7 +504,7 @@ project's documentation} for more information."
   DaemonPort = " (number->string port) "
 " extra-settings))))
 
-       (list (dmd-service
+       (list (shepherd-service
               (provision '(bitlbee))
               (requirement '(user-processes loopback))
               (start #~(make-forkexec-constructor
@@ -537,8 +537,8 @@ project's documentation} for more information."
 (define bitlbee-service-type
   (service-type (name 'bitlbee)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          bitlbee-dmd-service)
+                 (list (service-extension shepherd-root-service-type
+                                          bitlbee-shepherd-service)
                        (service-extension account-service-type
                                           (const %bitlbee-accounts))
                        (service-extension activation-service-type
@@ -579,9 +579,9 @@ configuration file."
           (copy-file (string-append #$wicd file-name)
                      file-name)))))
 
-(define (wicd-dmd-service wicd)
-  "Return a dmd service for WICD."
-  (list (dmd-service
+(define (wicd-shepherd-service wicd)
+  "Return a shepherd service for WICD."
+  (list (shepherd-service
          (documentation "Run the Wicd network manager.")
          (provision '(networking))
          (requirement '(user-processes dbus-system loopback))
@@ -593,8 +593,8 @@ configuration file."
 (define wicd-service-type
   (service-type (name 'wicd)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          wicd-dmd-service)
+                 (list (service-extension shepherd-root-service-type
+                                          wicd-shepherd-service)
                        (service-extension dbus-root-service-type
                                           list)
                        (service-extension activation-service-type
@@ -624,9 +624,9 @@ and @command{wicd-curses} user interfaces."
       (use-modules (guix build utils))
       (mkdir-p "/etc/NetworkManager/system-connections")))
 
-(define (network-manager-dmd-service network-manager)
-  "Return a dmd service for NETWORK-MANAGER."
-  (list (dmd-service
+(define (network-manager-shepherd-service network-manager)
+  "Return a shepherd service for NETWORK-MANAGER."
+  (list (shepherd-service
          (documentation "Run the NetworkManager.")
          (provision '(networking))
          (requirement '(user-processes dbus-system loopback))
@@ -639,8 +639,8 @@ and @command{wicd-curses} user interfaces."
 (define network-manager-service-type
   (service-type (name 'network-manager)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          network-manager-dmd-service)
+                 (list (service-extension shepherd-root-service-type
+                                          network-manager-shepherd-service)
                        (service-extension dbus-root-service-type list)
                        (service-extension activation-service-type
                                           (const %network-manager-activation))

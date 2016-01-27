@@ -250,7 +250,7 @@ which should be passed to this script as the first argument.  If not, the
          #:allow-empty-passwords?
          (slim-configuration-allow-empty-passwords? config))))
 
-(define (slim-dmd-service config)
+(define (slim-shepherd-service config)
   (define slim.cfg
     (let ((xinitrc (xinitrc #:fallback-session
                             (slim-configuration-auto-login-session config)))
@@ -285,7 +285,7 @@ reboot_cmd " shepherd "/sbin/reboot\n"
   (define theme
     (slim-configuration-theme config))
 
-  (list (dmd-service
+  (list (shepherd-service
          (documentation "Xorg display server")
          (provision '(xorg-server))
          (requirement '(user-processes host-name udev))
@@ -308,8 +308,8 @@ reboot_cmd " shepherd "/sbin/reboot\n"
 (define slim-service-type
   (service-type (name 'slim)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          slim-dmd-service)
+                 (list (service-extension shepherd-root-service-type
+                                          slim-shepherd-service)
                        (service-extension pam-root-service-type
                                           slim-pam-service)
 

@@ -1574,8 +1574,8 @@ greyed out, instead of only later giving \"not selectable\" popup error.
          #:owner (getpwnam "root")
          #:common-name (format #f "Dovecot service on ~a" (gethostname))))))
 
-(define (dovecot-dmd-service config)
-  "Return a list of <dmd-service> for CONFIG."
+(define (dovecot-shepherd-service config)
+  "Return a list of <shepherd-service> for CONFIG."
   (let* ((config-str
           (cond
            ((opaque-dovecot-configuration? config)
@@ -1589,7 +1589,7 @@ greyed out, instead of only later giving \"not selectable\" popup error.
          (dovecot (if (opaque-dovecot-configuration? config)
                       (opaque-dovecot-configuration-dovecot config)
                       (dovecot-configuration-dovecot config))))
-    (list (dmd-service
+    (list (shepherd-service
            (documentation "Run the Dovecot POP3/IMAP mail server.")
            (provision '(dovecot))
            (requirement '(networking))
@@ -1606,8 +1606,8 @@ greyed out, instead of only later giving \"not selectable\" popup error.
 (define dovecot-service-type
   (service-type (name 'dovecot)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          dovecot-dmd-service)
+                 (list (service-extension shepherd-root-service-type
+                                          dovecot-shepherd-service)
                        (service-extension account-service-type
                                           (const %dovecot-accounts))
                        (service-extension pam-root-service-type

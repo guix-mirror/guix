@@ -103,8 +103,8 @@
                                 (lsh-configuration-host-key config))
             #t)))
 
-(define (lsh-dmd-service config)
-  "Return a <dmd-service> for lsh with CONFIG."
+(define (lsh-shepherd-service config)
+  "Return a <shepherd-service> for lsh with CONFIG."
   (define lsh (lsh-configuration-lsh config))
   (define pid-file (lsh-configuration-pid-file config))
   (define pid-file? (lsh-configuration-pid-file? config))
@@ -151,7 +151,7 @@
         '(networking syslogd)
         '(networking)))
 
-  (list (dmd-service
+  (list (shepherd-service
          (documentation "GNU lsh SSH server")
          (provision '(ssh-daemon))
          (requirement requires)
@@ -168,8 +168,8 @@
 (define lsh-service-type
   (service-type (name 'lsh)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          lsh-dmd-service)
+                 (list (service-extension shepherd-root-service-type
+                                          lsh-shepherd-service)
                        (service-extension pam-root-service-type
                                           lsh-pam-services)
                        (service-extension activation-service-type

@@ -159,10 +159,10 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
                     (execl prog)))
                 (waitpid pid)))))))
 
-(define dbus-dmd-service
+(define dbus-shepherd-service
   (match-lambda
     (($ <dbus-configuration> dbus)
-     (list (dmd-service
+     (list (shepherd-service
             (documentation "Run the D-Bus system daemon.")
             (provision '(dbus-system))
             (requirement '(user-processes))
@@ -174,8 +174,8 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
 (define dbus-root-service-type
   (service-type (name 'dbus)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          dbus-dmd-service)
+                 (list (service-extension shepherd-root-service-type
+                                          dbus-shepherd-service)
                        (service-extension activation-service-type
                                           dbus-activation)
                        (service-extension etc-service-type

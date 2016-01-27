@@ -165,11 +165,11 @@ is set to @var{value} when the bus daemon launches it."
                               "UPOWER_CONF_FILE_NAME"
                               (upower-configuration-file config))))
 
-(define (upower-dmd-service config)
-  "Return a dmd service for UPower with CONFIG."
+(define (upower-shepherd-service config)
+  "Return a shepherd service for UPower with CONFIG."
   (let ((upower (upower-configuration-upower config))
         (config (upower-configuration-file config)))
-    (list (dmd-service
+    (list (shepherd-service
            (documentation "Run the UPower power and battery monitor.")
            (provision '(upower-daemon))
            (requirement '(dbus-system udev))
@@ -186,8 +186,8 @@ is set to @var{value} when the bus daemon launches it."
                 (extensions
                  (list (service-extension dbus-root-service-type
                                           upower-dbus-service)
-                       (service-extension dmd-root-service-type
-                                          upower-dmd-service)
+                       (service-extension shepherd-root-service-type
+                                          upower-shepherd-service)
                        (service-extension activation-service-type
                                           (const %upower-activation))
                        (service-extension udev-service-type
@@ -644,13 +644,13 @@ include the @command{udisksctl} command, part of UDisks, and GNOME Disks."
    ("HybridSleepState" (sleep-list elogind-hybrid-sleep-state))
    ("HybridSleepMode" (sleep-list elogind-hybrid-sleep-mode))))
 
-(define (elogind-dmd-service config)
-  "Return a dmd service for elogind, using @var{config}."
+(define (elogind-shepherd-service config)
+  "Return a shepherd service for elogind, using @var{config}."
   ;; TODO: We could probably rely on service activation but the '.service'
   ;; file currently contains an erroneous 'Exec' line.
   (let ((config-file (elogind-configuration-file config))
         (elogind     (elogind-package config)))
-    (list (dmd-service
+    (list (shepherd-service
            (documentation "Run the elogind login and seat management service.")
            (provision '(elogind))
            (requirement '(dbus-system))
@@ -664,8 +664,8 @@ include the @command{udisksctl} command, part of UDisks, and GNOME Disks."
 (define elogind-service-type
   (service-type (name 'elogind)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          elogind-dmd-service)
+                 (list (service-extension shepherd-root-service-type
+                                          elogind-shepherd-service)
                        (service-extension dbus-root-service-type
                                           (compose list elogind-package))
                        (service-extension udev-service-type

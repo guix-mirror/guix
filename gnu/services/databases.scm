@@ -96,7 +96,7 @@ host	all	all	::1/128 	trust"))
                   (primitive-exit 1))))
              (pid (waitpid pid))))))))
 
-(define postgresql-dmd-service
+(define postgresql-shepherd-service
   (match-lambda
     (($ <postgresql-configuration> postgresql config-file data-directory)
      (let ((start-script
@@ -112,7 +112,7 @@ host	all	all	::1/128 	trust"))
                                        (string-append "--config-file="
                                                       #$config-file)
                                        "-D" #$data-directory)))))
-       (list (dmd-service
+       (list (shepherd-service
               (provision '(postgres))
               (documentation "Run the PostgreSQL daemon.")
               (requirement '(user-processes loopback))
@@ -122,8 +122,8 @@ host	all	all	::1/128 	trust"))
 (define postgresql-service-type
   (service-type (name 'postgresql)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          postgresql-dmd-service)
+                 (list (service-extension shepherd-root-service-type
+                                          postgresql-shepherd-service)
                        (service-extension activation-service-type
                                           postgresql-activation)
                        (service-extension account-service-type

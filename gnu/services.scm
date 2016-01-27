@@ -86,8 +86,8 @@
 ;;; A service type describe how its instances extend instances of other
 ;;; service types.  For instance, some services extend the instance of
 ;;; ACCOUNT-SERVICE-TYPE by providing it with accounts and groups to create;
-;;; others extend DMD-ROOT-SERVICE-TYPE by passing it instances of
-;;; <dmd-service>.
+;;; others extend SHEPHERD-ROOT-SERVICE-TYPE by passing it instances of
+;;; <shepherd-service>.
 ;;;
 ;;; When applicable, the service type defines how it can itself be extended,
 ;;; by providing one procedure to compose extensions, and one procedure to
@@ -209,7 +209,7 @@ containing the given entries."
 (define (compute-boot-script _ mexps)
   (mlet %store-monad ((gexps (sequence %store-monad mexps)))
     (gexp->file "boot"
-                ;; Clean up and activate the system, then spawn dmd.
+                ;; Clean up and activate the system, then spawn shepherd.
                 #~(begin #$@gexps))))
 
 (define (boot-script-entry mboot)

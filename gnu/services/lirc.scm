@@ -48,10 +48,10 @@
       (use-modules (guix build utils))
       (mkdir-p "/var/run/lirc")))
 
-(define lirc-dmd-service
+(define lirc-shepherd-service
   (match-lambda
     (($ <lirc-configuration> lirc device driver config-file options)
-     (list (dmd-service
+     (list (shepherd-service
             (provision '(lircd))
             (documentation "Run the LIRC daemon.")
             (requirement '(user-processes))
@@ -73,8 +73,8 @@
 (define lirc-service-type
   (service-type (name 'lirc)
                 (extensions
-                 (list (service-extension dmd-root-service-type
-                                          lirc-dmd-service)
+                 (list (service-extension shepherd-root-service-type
+                                          lirc-shepherd-service)
                        (service-extension activation-service-type
                                           (const %lirc-activation))))))
 
