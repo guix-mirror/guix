@@ -236,8 +236,8 @@ which should be passed to this script as the first argument.  If not, the
   (theme-name slim-configuration-theme-name)
   (xauth slim-configuration-xauth
          (default xauth))
-  (dmd slim-configuration-dmd
-       (default dmd))
+  (shepherd slim-configuration-shepherd
+            (default shepherd))
   (bash slim-configuration-bash
         (default bash))
   (auto-login-session slim-configuration-auto-login-session)
@@ -257,7 +257,7 @@ which should be passed to this script as the first argument.  If not, the
           (slim    (slim-configuration-slim config))
           (xauth   (slim-configuration-xauth config))
           (startx  (slim-configuration-startx config))
-          (dmd     (slim-configuration-dmd config))
+          (shepherd   (slim-configuration-shepherd config))
           (theme-name (slim-configuration-theme-name config)))
       (mixed-text-file "slim.cfg"  "
 default_path /run/current-system/profile/bin
@@ -272,8 +272,8 @@ login_cmd  exec " xinitrc " %session
 sessiondir /run/current-system/profile/share/xsessions
 session_msg session (F1 to change):
 
-halt_cmd " dmd "/sbin/halt
-reboot_cmd " dmd "/sbin/reboot\n"
+halt_cmd " shepherd "/sbin/halt
+reboot_cmd " shepherd "/sbin/reboot\n"
 (if (slim-configuration-auto-login? config)
     (string-append "auto_login yes\ndefault_user "
                    (slim-configuration-default-user config) "\n")
@@ -323,7 +323,7 @@ reboot_cmd " dmd "/sbin/reboot\n"
                        (default-user "")
                        (theme %default-slim-theme)
                        (theme-name %default-slim-theme-name)
-                       (xauth xauth) (dmd dmd) (bash bash)
+                       (xauth xauth) (shepherd shepherd) (bash bash)
                        (auto-login-session #~(string-append #$windowmaker
                                                             "/bin/wmaker"))
                        (startx (xorg-start-command)))
@@ -358,7 +358,7 @@ theme."
             (allow-empty-passwords? allow-empty-passwords?)
             (auto-login? auto-login?) (default-user default-user)
             (theme theme) (theme-name theme-name)
-            (xauth xauth) (dmd dmd) (bash bash)
+            (xauth xauth) (shepherd shepherd) (bash bash)
             (auto-login-session auto-login-session)
             (startx startx))))
 
