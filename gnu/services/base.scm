@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
@@ -160,12 +160,9 @@
              (call-with-blocked-asyncs
               (lambda ()
                 (let ((null (%make-void-port "w")))
-                  ;; Close 'dmd.log'.
+                  ;; Close 'shepherd.log'.
                   (display "closing log\n")
-                  ;; XXX: Ideally we'd use 'stop-logging', but that one
-                  ;; doesn't actually close the port as of dmd 0.1.
-                  (close-port (@@ (dmd comm) log-output-port))
-                  (set! (@@ (dmd comm) log-output-port) null)
+                  ((@ (shepherd comm) stop-logging))
 
                   ;; Redirect the default output ports..
                   (set-current-output-port null)

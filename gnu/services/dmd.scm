@@ -77,9 +77,9 @@
                     (false-if-exception (close-fdes fd))
                     (loop (+ 1 fd))))
 
-                ;; Start dmd.
-                (execl (string-append #$dmd "/bin/dmd")
-                       "dmd" "--config" #$dmd-conf)))))
+                ;; Start shepherd.
+                (execl (string-append #$shepherd "/bin/shepherd")
+                       "shepherd" "--config" #$dmd-conf)))))
 
 (define dmd-root-service-type
   (service-type
@@ -90,7 +90,7 @@
    (extend append)
    (extensions (list (service-extension boot-service-type dmd-boot-gexp)
                      (service-extension profile-service-type
-                                        (const (list dmd)))))))
+                                        (const (list shepherd)))))))
 
 (define %dmd-root-service
   ;; The root dmd service, aka. PID 1.  Its parameter is a list of
@@ -113,7 +113,7 @@ service that extends DMD-ROOT-SERVICE-TYPE and nothing else."
 
 (define %default-modules
   ;; Default set of modules visible in a service's file.
-  `((dmd service)
+  `((shepherd service)
     (oop goops)
     (guix build utils)
     (guix build syscalls)))
