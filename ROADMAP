@@ -77,6 +77,6 @@ Freenode!
     + build containers like guix-daemon does
     + provide a Plash-like interface in Bash
   - daemon rewritten in Guile
-  - more dmd integration
+  - more shepherd integration
     + monitor network interfaces and start/stop events based on that
     + include a DHCP client written in Scheme

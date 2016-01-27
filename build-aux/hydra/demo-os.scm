@@ -57,7 +57,7 @@ This is an alpha preview of the GNU system.  Welcome.
 
 This image features the GNU Guix package manager, which was used to
 build it (http://www.gnu.org/software/guix/).  The init system is
-GNU dmd (http://www.gnu.org/software/dmd/).
+the GNU Shepherd (http://www.gnu.org/software/shepherd/).
 
 You can log in as 'guest' or 'root' with no password.
 ")

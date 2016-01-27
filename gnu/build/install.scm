@@ -103,7 +103,7 @@ STORE."
     (directory ,store 0 30000 #o1775)
 
     (directory "/etc")
-    (directory "/var/log")                          ; for dmd
+    (directory "/var/log")                          ; for shepherd
     (directory "/var/guix/gcroots")
     (directory "/var/empty")                        ; for no-login accounts
     (directory "/var/db")                           ; for dhclient, etc.
