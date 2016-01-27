@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,20 +26,25 @@
   #:use-module (guix build-system python)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module ((guix licenses) #:prefix l:)
-  #:use-module (gnu packages libevent)
-  #:use-module (gnu packages curl)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages file)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages compression)
-  #:use-module (gnu packages glib)
-  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages adns)
   #:use-module (gnu packages check)
-  #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages python)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages databases)
+  #:use-module (gnu packages file)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages libevent)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages nettle)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages ssh)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages xml))
 
 (define-public transmission
   (package
@@ -192,3 +198,48 @@ XML-RPC over SCGI.")
 interface, for the Transmission BitTorrent daemon.")
     (home-page "https://github.com/fagga/transmission-remote-cli")
     (license l:gpl3+)))
+
+(define-public aria2
+  (package
+    (name "aria2")
+    (version "1.19.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/tatsuhiro-t/aria2/"
+                                  "releases/download/release-" version "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1qwr4al6wlh5f558r0mr1hvdnf7d8ss6qwqn2361k99phk1cdg3a"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-libaria2")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'delete-socket-tests
+           (lambda _
+             (substitute* "test/LpdMessageDispatcherTest.cc"
+               (("CPPUNIT_TEST_SUITE_REGISTRATION\\(LpdMessageDispatcherTest\\);" text)
+                (string-append "// " text)))
+             (substitute* "test/LpdMessageReceiverTest.cc"
+               (("CPPUNIT_TEST_SUITE_REGISTRATION\\(LpdMessageReceiverTest\\);" text)
+                (string-append "// " text))))))))
+    (native-inputs
+     `(("pkg-config", pkg-config)))
+    (inputs
+     `(("c-ares" ,c-ares)
+       ("cppunit" ,cppunit) ; for the tests
+       ("gnutls" ,gnutls)
+       ("gmp" ,gmp)
+       ("libssh2" ,libssh2)
+       ("libxml2" ,libxml2)
+       ("nettle" ,nettle)
+       ("sqlite" ,sqlite)
+       ("zlib" ,zlib)))
+    (home-page "http://aria2.sourceforge.net/")
+    (synopsis "Utility for parallel downloading files")
+    (description
+      "Aria2 is a lightweight, multi-protocol & multi-source command-line
+download utility.  It supports HTTP/HTTPS, FTP, SFTP, BitTorrent and Metalink.
+Aria2 can be manipulated via built-in JSON-RPC and XML-RPC interfaces.")
+    (license l:gpl2+)))
