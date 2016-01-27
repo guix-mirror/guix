@@ -9348,8 +9348,8 @@ $ guix system extension-graph @var{file} | dot -Tpdf > services.pdf
 
 produces a PDF file showing the extension relations among services.
 
-@anchor{system-dmd-graph}
-@item dmd-graph
+@anchor{system-shepherd-graph}
+@item shepherd-graph
 Emit in Dot/Graphviz format to standard output the @dfn{dependency
 graph} of shepherd services of the operating system defined in
 @var{file}.  @xref{Shepherd Services}, for more information and for an
@@ -9795,11 +9795,11 @@ started, which in turn can only happen once all the file systems have
 been mounted.  The simple operating system defined earlier (@pxref{Using
 the Configuration System}) results in a service graph like this:
 
-@image{images/dmd-graph,,5in,Typical dmd service graph.}
+@image{images/shepherd-graph,,5in,Typical shepherd service graph.}
 
 You can actually generate such a graph for any operating system
-definition using the @command{guix system dmd-graph} command
-(@pxref{system-dmd-graph, @command{guix system dmd-graph}}).
+definition using the @command{guix system shepherd-graph} command
+(@pxref{system-shepherd-graph, @command{guix system shepherd-graph}}).
 
 The @var{%shepherd-root-service} is a service object representing
 PID@tie{}1, of type @var{shepherd-root-service-type}; it can be extended

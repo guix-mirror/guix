@@ -1,4 +1,4 @@
-digraph "Guix dmd-service" {
+digraph "Guix shepherd-service" {
   "user-file-systems" [label = "user-file-systems", shape = box, fontname = Helvetica];
   "user-processes" -> "user-file-systems" [color = red];
   "user-processes" [label = "user-processes", shape = box, fontname = Helvetica];

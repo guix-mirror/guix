@@ -620,7 +620,7 @@ command."
       (("size")
        ,(guix-command-make-argument
          :name "view" :char ?v :doc "View map"))
-      (("system" "dmd-graph") ,graph-arg)
+      (("system" "shepherd-graph") ,graph-arg)
       (("system" "extension-graph") ,graph-arg)))
   "Alist of guix commands and additional 'execute' action arguments.")
 
@@ -646,7 +646,7 @@ command."
      ("view" . guix-run-view-graph))
     (("size")
      ("view" . guix-run-view-size-map))
-    (("system" "dmd-graph")
+    (("system" "shepherd-graph")
      ("view" . guix-run-view-graph))
     (("system" "extension-graph")
      ("view" . guix-run-view-graph)))

@@ -578,7 +578,7 @@ GNU Emacs Manual}).
 
 @end itemize
 
-Several commands (@command{guix graph}, @command{guix system dmd-graph}
+Several commands (@command{guix graph}, @command{guix system shepherd-graph}
 and @command{guix system extension-graph}) also have a ``View graph''
 action, which allows you to view a generated graph using @command{dot}
 command (specified by @code{guix-dot-program} variable).  By default a

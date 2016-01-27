@@ -312,17 +312,17 @@ list of services."
    (label service-node-label)
    (edges (lift1 (service-back-edges services) %store-monad))))
 
-(define (dmd-service-node-label service)
+(define (shepherd-service-node-label service)
   "Return a label for a node representing a <shepherd-service>."
   (string-join (map symbol->string (shepherd-service-provision service))))
 
-(define (dmd-service-node-type services)
+(define (shepherd-service-node-type services)
   "Return a node type for SERVICES, a list of <shepherd-service>."
   (node-type
-   (name "dmd-service")
-   (description "the dependency graph of dmd services")
-   (identifier (lift1 dmd-service-node-label %store-monad))
-   (label dmd-service-node-label)
+   (name "shepherd-service")
+   (description "the dependency graph of shepherd services")
+   (identifier (lift1 shepherd-service-node-label %store-monad))
+   (label shepherd-service-node-label)
    (edges (lift1 (shepherd-service-back-edges services) %store-monad))))
 
 
@@ -474,7 +474,7 @@ building anything."
                   #:node-type (service-node-type services)
                   #:reverse-edges? #t)))
 
-(define (export-dmd-graph os port)
+(define (export-shepherd-graph os port)
   "Export the graph of shepherd services of OS to PORT."
   (let* ((services  (operating-system-services os))
          (pid1      (fold-services services
@@ -484,7 +484,7 @@ building anything."
                               (null? (shepherd-service-requirement service)))
                             shepherds)))
     (export-graph sinks (current-output-port)
-                  #:node-type (dmd-service-node-type dmds)
+                  #:node-type (shepherd-service-node-type shepherds)
                   #:reverse-edges? #t)))
 
 
@@ -517,7 +517,7 @@ Build the operating system declared in FILE according to ACTION.\n"))
   (display (_ "\
    extension-graph  emit the service extension graph in Dot format\n"))
   (display (_ "\
-   dmd-graph        emit the graph of dmd services in Dot format\n"))
+   shepherd-graph   emit the graph of shepherd services in Dot format\n"))
 
   (show-build-options-help)
   (display (_ "
@@ -637,8 +637,8 @@ resulting from command-line parsing."
           (case action
             ((extension-graph)
              (export-extension-graph os (current-output-port)))
-            ((dmd-graph)
-             (export-dmd-graph os (current-output-port)))
+            ((shepherd-graph)
+             (export-shepherd-graph os (current-output-port)))
             (else
              (perform-action action os
                              #:dry-run? dry?
@@ -678,7 +678,7 @@ argument list and OPTS is the option alist."
         (let ((action (string->symbol arg)))
           (case action
             ((build container vm vm-image disk-image reconfigure init
-              extension-graph dmd-graph list-generations)
+              extension-graph shepherd-graph list-generations)
              (alist-cons 'action action result))
             (else (leave (_ "~a: unknown action~%") action))))))
 
