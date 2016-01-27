@@ -55,13 +55,13 @@
 
 ;;; Commentary:
 ;;;
-;;; Instantiating system services as a dmd configuration file.
+;;; Instantiating system services as a shepherd configuration file.
 ;;;
 ;;; Code:
 
 
 (define (dmd-boot-gexp services)
-  (mlet %store-monad ((dmd-conf (dmd-configuration-file services)))
+  (mlet %store-monad ((shepherd-conf (shepherd-configuration-file services)))
     (return #~(begin
                 ;; Keep track of the booted system.
                 (false-if-exception (delete-file "/run/booted-system"))
@@ -79,7 +79,7 @@
 
                 ;; Start shepherd.
                 (execl (string-append #$shepherd "/bin/shepherd")
-                       "shepherd" "--config" #$dmd-conf)))))
+                       "shepherd" "--config" #$shepherd-conf)))))
 
 (define dmd-root-service-type
   (service-type
@@ -207,8 +207,8 @@ stored."
                     #:start #$(dmd-service-start service)
                     #:stop #$(dmd-service-stop service)))))
 
-(define (dmd-configuration-file services)
-  "Return the dmd configuration file for SERVICES."
+(define (shepherd-configuration-file services)
+  "Return the shepherd configuration file for SERVICES."
   (define modules
     (delete-duplicates
      (append-map dmd-service-imported-modules services)))
@@ -242,7 +242,7 @@ stored."
                                    (filter dmd-service-auto-start?
                                            services)))))
 
-    (gexp->file "dmd.conf" config)))
+    (gexp->file "shepherd.conf" config)))
 
 (define (dmd-service-back-edges services)
   "Return a procedure that, when given a <dmd-service> from SERVICES, returns
