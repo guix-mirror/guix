@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +21,8 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (gnu packages pkg-config))
 
 (define-public adns
   (package
@@ -53,3 +55,28 @@ functionality.  The library is asynchronous, allowing several concurrent
 calls.  The package also includes several command-line utilities for use in
 scripts.")
     (license gpl3+)))
+
+(define-public c-ares
+  (package
+    (name "c-ares")
+    (version "1.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://c-ares.haxx.se/download/" name "-" version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "1nyka87yf2jfd0y6sspll0yxwb8zi7kyvajrdbjmh4axc5s1cw1x"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://c-ares.haxx.se/")
+    (synopsis "C library for asynchronous DNS requests")
+    (description
+      "C-ares is a C library that performs DNS requests and name resolution
+asynchronously.  It is intended for applications which need to perform DNS
+queries without blocking, or need to perform multiple DNS queries in parallel.
+The primary examples of such applications are servers which communicate with
+multiple clients and programs with graphical user interfaces.")
+    (license (x11-style "http://c-ares.haxx.se/license.html"))))
