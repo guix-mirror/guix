@@ -58,7 +58,8 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages man))
+  #:use-module (gnu packages man)
+  #:use-module (gnu packages autotools))
 
 (define-public dmd
   (let ((base-version "0.2")
@@ -98,6 +99,32 @@ typical init systems.  It provides dependency-handling through a convenient
 interface and is based on GNU Guile.")
       (license license:gpl3+)
       (home-page "http://www.gnu.org/software/dmd/"))))
+
+(define-public shepherd
+  (let ((commit "bc7757cd1f3d0a162e765d0ecebde052765a6a23"))
+    (package
+      (inherit dmd)
+      (name "shepherd")
+      (version (string-append "0.2-1." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://git.savannah.gnu.org/shepherd.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "0ks4yy6ji1s7id09im5jcwrr4y5ss3244hcy7v504cwf21gdkdgq"))))
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'autoreconf
+                      (lambda _
+                        (zero? (system* "autoreconf" "-vfi")))))
+                  ,@(package-arguments dmd)))
+      (native-inputs `(("autoconf" ,(autoconf-wrapper))
+                       ("automake" ,automake)
+                       ("texinfo" ,texinfo)
+                       ("help2man" ,help2man)
+                       ,@(package-native-inputs dmd))))))
 
 (define-public dfc
   (package
