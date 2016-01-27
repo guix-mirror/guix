@@ -178,7 +178,7 @@ the freedesktop.org XDG Base Directory specification.")
      `(("linux-pam" ,linux-pam)
        ("linux-libre-headers" ,linux-libre-headers)
        ("libcap" ,libcap)
-       ("dmd" ,dmd)                          ;for 'halt' and 'reboot', invoked
+       ("shepherd" ,shepherd)                ;for 'halt' and 'reboot', invoked
                                              ;when pressing the power button
        ("dbus" ,dbus)
        ("eudev" ,eudev)))
