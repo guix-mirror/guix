@@ -24,7 +24,7 @@
   #:use-module (guix monads)
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module (guix profiles)
-  #:use-module (gnu services dmd)
+  #:use-module (gnu services shepherd)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages linux)

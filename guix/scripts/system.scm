@@ -40,7 +40,7 @@
   #:use-module (gnu system vm)
   #:use-module (gnu system grub)
   #:use-module (gnu services)
-  #:use-module (gnu services dmd)
+  #:use-module (gnu services shepherd)
   #:use-module (gnu packages grub)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)

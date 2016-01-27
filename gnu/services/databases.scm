@@ -19,7 +19,7 @@
 
 (define-module (gnu services databases)
   #:use-module (gnu services)
-  #:use-module (gnu services dmd)
+  #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages databases)

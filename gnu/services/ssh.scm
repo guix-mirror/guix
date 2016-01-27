@@ -20,7 +20,7 @@
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (gnu services)
-  #:use-module (gnu services dmd)
+  #:use-module (gnu services shepherd)
   #:use-module (gnu system pam)
   #:use-module (gnu packages lsh)
   #:use-module (srfi srfi-26)

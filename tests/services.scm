@@ -18,7 +18,7 @@
 
 (define-module (test-services)
   #:use-module (gnu services)
-  #:use-module (gnu services dmd)
+  #:use-module (gnu services shepherd)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)

@@ -19,7 +19,7 @@
 
 (define-module (gnu services networking)
   #:use-module (gnu services)
-  #:use-module (gnu services dmd)
+  #:use-module (gnu services shepherd)
   #:use-module (gnu services dbus)
   #:use-module (gnu system shadow)
   #:use-module (gnu system pam)

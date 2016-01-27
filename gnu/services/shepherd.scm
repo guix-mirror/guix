@@ -16,7 +16,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu services dmd)
+(define-module (gnu services shepherd)
   #:use-module (guix ui)
   #:use-module (guix sets)
   #:use-module (guix gexp)
@@ -272,4 +272,4 @@ the list of <dmd-service> that depend on it."
   (lambda (service)
     (vhash-foldq* cons '() service edges)))
 
-;;; dmd.scm ends here
+;;; shepherd.scm ends here

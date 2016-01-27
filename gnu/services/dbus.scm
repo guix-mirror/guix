@@ -19,7 +19,7 @@
 
 (define-module (gnu services dbus)
   #:use-module (gnu services)
-  #:use-module (gnu services dmd)
+  #:use-module (gnu services shepherd)
   #:use-module (gnu system shadow)
   #:use-module ((gnu packages glib) #:select (dbus/activation))
   #:use-module (gnu packages admin)

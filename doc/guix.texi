@@ -9783,10 +9783,11 @@ extend it by passing it lists of packages to add to the system profile.
 
 @cindex PID 1
 @cindex init system
-The @code{(gnu services dmd)} provides a way to define services managed
-by the GNU@tie{}Shepherd, which is GuixSD initialization system---the
-first process that is started when the system boots, aka. PID@tie{}1
-(@pxref{Introduction,,, shepherd, The GNU Shepherd Manual}).
+The @code{(gnu services shepherd)} provides a way to define services
+managed by the GNU@tie{}Shepherd, which is GuixSD initialization
+system---the first process that is started when the system boots,
+aka. PID@tie{}1 (@pxref{Introduction,,, shepherd, The GNU Shepherd
+Manual}).
 
 Services in the Shepherd can depend on each other.  For instance, the
 SSH daemon may need to be started after the syslog daemon has been

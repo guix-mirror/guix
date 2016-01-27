@@ -19,7 +19,7 @@
 
 (define-module (gnu services lirc)
   #:use-module (gnu services)
-  #:use-module (gnu services dmd)
+  #:use-module (gnu services shepherd)
   #:use-module (gnu packages lirc)
   #:use-module (guix gexp)
   #:use-module (guix records)

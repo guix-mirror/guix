@@ -22,7 +22,7 @@
 (define-module (gnu services base)
   #:use-module (guix store)
   #:use-module (gnu services)
-  #:use-module (gnu services dmd)
+  #:use-module (gnu services shepherd)
   #:use-module (gnu services networking)
   #:use-module (gnu system pam)
   #:use-module (gnu system shadow)                ; 'user-account', etc.

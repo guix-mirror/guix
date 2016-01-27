@@ -3,7 +3,7 @@
 gnu/packages.scm
 gnu/services.scm
 gnu/system.scm
-gnu/services/dmd.scm
+gnu/services/shepherd.scm
 gnu/system/shadow.scm
 guix/scripts.scm
 guix/scripts/build.scm

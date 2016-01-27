@@ -114,10 +114,10 @@ else
     grep "service 'networking'.*more than once" "$errorfile"
 fi
 
-# Reporting unmet dmd requirements.
+# Reporting unmet shepherd requirements.
 
 cat > "$tmpfile" <<EOF
-(use-modules (gnu) (gnu services dmd))
+(use-modules (gnu) (gnu services shepherd))
 (use-service-modules networking)
 
 (define buggy-service-type
