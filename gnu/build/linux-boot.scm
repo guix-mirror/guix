@@ -242,10 +242,10 @@ the last argument of `mknod'."
 is true, mount ROOT read-only and make it a union with a writable tmpfs using
 UNIONFS."
   (define (mark-as-not-killable pid)
-    ;; Tell the 'user-processes' dmd service that PID must be kept alive when
-    ;; shutting down.
-    (mkdir-p "/root/etc/dmd")
-    (let ((port (open-file "/root/etc/dmd/do-not-kill" "a")))
+    ;; Tell the 'user-processes' shepherd service that PID must be kept alive
+    ;; when shutting down.
+    (mkdir-p "/root/etc/shepherd")
+    (let ((port (open-file "/root/etc/shepherd/do-not-kill" "a")))
       (chmod port #o600)
       (write pid port)
       (newline port)

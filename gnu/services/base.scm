@@ -325,7 +325,7 @@ in KNOWN-MOUNT-POINTS when it is stopped."
 (define %do-not-kill-file
   ;; Name of the file listing PIDs of processes that must survive when halting
   ;; the system.  Typical example is user-space file systems.
-  "/etc/dmd/do-not-kill")
+  "/etc/shepherd/do-not-kill")
 
 (define user-processes-service-type
   (dmd-service-type
