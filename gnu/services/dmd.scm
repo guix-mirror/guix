@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -88,7 +88,9 @@
    ;; list of services provided by the extensions.
    (compose concatenate)
    (extend append)
-   (extensions (list (service-extension boot-service-type dmd-boot-gexp)))))
+   (extensions (list (service-extension boot-service-type dmd-boot-gexp)
+                     (service-extension profile-service-type
+                                        (const (list dmd)))))))
 
 (define %dmd-root-service
   ;; The root dmd service, aka. PID 1.  Its parameter is a list of
