@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
@@ -946,7 +946,9 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
    (extensions
     (list (service-extension dmd-root-service-type guix-dmd-service)
           (service-extension account-service-type guix-accounts)
-          (service-extension activation-service-type guix-activation)))))
+          (service-extension activation-service-type guix-activation)
+          (service-extension profile-service-type
+                             (compose list guix-configuration-guix))))))
 
 (define* (guix-service #:optional (config %default-guix-configuration))
   "Return a service that runs the Guix build daemon according to

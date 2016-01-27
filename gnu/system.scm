@@ -353,7 +353,6 @@ explicitly appear in OS."
   ;; Default set of packages globally visible.  It should include anything
   ;; required for basic administrator tasks.
   (cons* procps psmisc which less zile nano
-         guix
          lsof                                 ;for Guix's 'list-runtime-roots'
          pciutils usbutils
          util-linux inetutils isc-dhcp
