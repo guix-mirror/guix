@@ -8203,3 +8203,33 @@ introspection of @code{zope.interface} instances in code.")
     (inherit (package-with-python2
               (strip-python2-variant python-psycopg2)))
     (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+
+(define-public python-vobject
+  (package
+    (name "python-vobject")
+    (version "0.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "vobject" version))
+              (sha256
+               (base32
+                "1cwzjnrdr9yg2x21wbf3kf59ibnchvj33mygd69yzi178a9gs9gz"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-dateutil-2" ,python-dateutil-2)
+       ("python-pyicu" ,python-pyicu)))
+    (synopsis "Parse and generate vCard and vCalendar files")
+    (description "Vobject is intended to be a full featured Python package for
+parsing and generating vCard and vCalendar files.  Currently, iCalendar files
+are supported and well tested. vCard 3.0 files are supported, and all data
+should be imported, but only a few components are understood in a sophisticated
+way.")
+    (home-page "http://eventable.github.io/vobject/")
+    (license asl2.0)
+    (properties `((python2-variant . ,(delay python2-vobject))))))
+
+(define-public python2-vobject
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-vobject)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
