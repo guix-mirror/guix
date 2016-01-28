@@ -180,7 +180,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (version "1.0.2e")
+   (version "1.0.2f")
    (source (origin
             (method url-fetch)
             (uri (list (string-append "ftp://ftp.openssl.org/source/"
@@ -190,7 +190,7 @@ required structures.")
                                       "/" name "-" version ".tar.gz")))
             (sha256
              (base32
-              "1zqb1rff1wikc62a7vj5qxd1k191m8qif5d05mwdxz2wnzywlg72"))
+              "171fkdg9v6j29d962nh6kb79kfm8kkhy7n9makw39d7jvvj4wawk"))
             (patches (map search-patch
                           '("openssl-runpath.patch"
                             "openssl-c-rehash.patch")))))
@@ -245,27 +245,6 @@ required structures.")
                          (chmod file #o644))
                        (find-files (string-append out "/lib")
                                    "\\.so"))
-             #t)))
-        (add-after
-         'unpack 'fix-broken-symlinks
-         (lambda _
-           ;; Repair the broken symlinks in the openssl-1.0.2e tarball.
-           (let* ((link-prefix "openssl-1.0.2e/")
-                  (link-prefix-length (string-length link-prefix))
-                  (broken-links
-                   (find-files "." (lambda (file stat)
-                                     (and (eq? 'symlink (stat:type stat))
-                                          (string-prefix? link-prefix
-                                                          (readlink file)))))))
-             (when (null? broken-links)
-               (error "The 'fix-broken-symlinks' phase is obsolete; remove it"))
-             (for-each (lambda (file)
-                         (let* ((old-target (readlink file))
-                                (new-target (string-drop old-target
-                                                         link-prefix-length)))
-                           (delete-file file)
-                           (symlink new-target file)))
-                       broken-links)
              #t)))
         (add-before
          'patch-source-shebangs 'patch-tests
