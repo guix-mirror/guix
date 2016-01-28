@@ -396,9 +396,12 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("libcdio-paranoia" ,libcdio-paranoia)
        ("libquvi" ,libquvi)
        ("libtheora" ,libtheora)
+       ("libvdpau" ,libvdpau)
        ("libvorbis" ,libvorbis)
        ("libvpx" ,libvpx)
+       ("libx11" ,libx11)
        ("libx264" ,libx264)
+       ("mesa" ,mesa)
        ("openal" ,openal)
        ("pulseaudio" ,pulseaudio)
        ("soxr" ,soxr)
@@ -465,7 +468,6 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ;;   --enable-libzmq          enable message passing via libzmq [no]
        ;;   --enable-libzvbi         enable teletext support via libzvbi [no]
        ;;   --enable-opencl          enable OpenCL code
-       ;;   --enable-x11grab         enable X11 grabbing [no]
        '("--enable-avresample"
          "--enable-gpl" ; enable optional gpl licensed parts
          "--enable-shared"
@@ -490,6 +492,8 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
          "--enable-libxvid"
          "--enable-libx264"
          "--enable-openal"
+         "--enable-opengl"
+         "--enable-x11grab"
 
          "--enable-runtime-cpudetect"
 
