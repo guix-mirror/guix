@@ -62,6 +62,7 @@
   #:use-module (gnu packages autotools))
 
 (define-public dmd
+  ;; Deprecated.  Kept around "just in case."
   (let ((base-version "0.2")
         (patch-level  "01"))
     (package
@@ -101,30 +102,29 @@ interface and is based on GNU Guile.")
       (home-page "http://www.gnu.org/software/dmd/"))))
 
 (define-public shepherd
-  (let ((commit "bc7757cd1f3d0a162e765d0ecebde052765a6a23"))
-    (package
-      (inherit dmd)
-      (name "shepherd")
-      (version (string-append "0.2-1." (string-take commit 7)))
-      (source (origin
-                (method git-fetch)
-                (uri (git-reference
-                      (url "git://git.savannah.gnu.org/shepherd.git")
-                      (commit commit)))
-                (sha256
-                 (base32
-                  "0ks4yy6ji1s7id09im5jcwrr4y5ss3244hcy7v504cwf21gdkdgq"))))
-      (arguments
-       `(#:phases (modify-phases %standard-phases
-                    (add-after 'unpack 'autoreconf
-                      (lambda _
-                        (zero? (system* "autoreconf" "-vfi")))))
-                  ,@(package-arguments dmd)))
-      (native-inputs `(("autoconf" ,(autoconf-wrapper))
-                       ("automake" ,automake)
-                       ("texinfo" ,texinfo)
-                       ("help2man" ,help2man)
-                       ,@(package-native-inputs dmd))))))
+  (package
+    (name "shepherd")
+    (version "0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://alpha.gnu.org/gnu/dmd/shepherd-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "13mcy2131h7hggqvxbfxyrnbz46aaiaq2agng3x3f789a78n4mnn"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--localstatedir=/var")))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("guile" ,guile-2.0)))
+    (synopsis "System service manager")
+    (description
+     "The GNU Shepherd is a daemon-managing daemon, meaning that it supervises
+the execution of system services, replacing similar functionality found in
+typical init systems.  It provides dependency-handling through a convenient
+interface and is based on GNU Guile.")
+    (license license:gpl3+)
+    (home-page "http://www.gnu.org/software/shepherd/")))
 
 (define-public dfc
   (package
