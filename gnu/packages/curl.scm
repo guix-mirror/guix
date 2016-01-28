@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@suse.cz>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,14 +40,14 @@
 (define-public curl
   (package
    (name "curl")
-   (version "7.45.0")
+   (version "7.47.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://curl.haxx.se/download/curl-"
                                 version ".tar.lzma"))
             (sha256
              (base32
-              "0bamqik0mi2rmai016iakwrwmsz0s5xad1ghkbwsd3zkv08rgkcn"))))
+              "1n284wdqzwb4bkmv0fnh36zl6lhlzy3clw2b7pn28kpgdy09ly7p"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
