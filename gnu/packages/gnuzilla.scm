@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -287,7 +287,27 @@ standards.")
       (sha256
        (base32
         "0m18xyb0rd02yaw9xd5z4bab1wr2599iszzqhm86c134jv5vk6cg"))
-      (patches (map search-patch '("icecat-avoid-bundled-includes.patch")))
+      (patches (map search-patch
+                    '("icecat-avoid-bundled-includes.patch"
+                      "icecat-CVE-2016-1930-pt01.patch"
+                      "icecat-CVE-2016-1930-pt02.patch"
+                      "icecat-CVE-2016-1930-pt03.patch"
+                      "icecat-CVE-2016-1930-pt04.patch"
+                      "icecat-CVE-2016-1930-pt05.patch"
+                      "icecat-CVE-2016-1930-pt06.patch"
+                      "icecat-CVE-2016-1930-pt07.patch"
+                      "icecat-CVE-2016-1930-pt08.patch"
+                      "icecat-CVE-2016-1930-pt09.patch"
+                      "icecat-CVE-2016-1930-pt10.patch"
+                      "icecat-CVE-2016-1930-pt11.patch"
+                      "icecat-CVE-2016-1930-pt12.patch"
+                      "icecat-CVE-2016-1930-pt13.patch"
+                      "icecat-bug-1146335-pt1.patch"
+                      "icecat-bug-1146335-pt2.patch"
+                      "icecat-CVE-2016-1935.patch"
+                      "icecat-CVE-2016-1930-pt14.patch"
+                      "icecat-CVE-2016-1930-pt15.patch"
+                      "icecat-limit-max-buffers-size-for-ANGLE.patch")))
       (modules '((guix build utils)))
       (snippet
        '(begin

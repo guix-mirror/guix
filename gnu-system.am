@@ -517,7 +517,26 @@ dist_patch_DATA =						\
   gnu/packages/patches/hop-linker-flags.patch			\
   gnu/packages/patches/hydra-automake-1.15.patch		\
   gnu/packages/patches/hydra-disable-darcs-test.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt01.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt02.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt03.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt04.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt05.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt06.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt07.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt08.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt09.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt10.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt11.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt12.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt13.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt14.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt15.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1935.patch		\
   gnu/packages/patches/icecat-avoid-bundled-includes.patch	\
+  gnu/packages/patches/icecat-bug-1146335-pt1.patch		\
+  gnu/packages/patches/icecat-bug-1146335-pt2.patch		\
+  gnu/packages/patches/icecat-limit-max-buffers-size-for-ANGLE.patch \
   gnu/packages/patches/icu4c-CVE-2014-6585.patch		\
   gnu/packages/patches/icu4c-CVE-2015-1270.patch		\
   gnu/packages/patches/icu4c-CVE-2015-4760.patch		\
