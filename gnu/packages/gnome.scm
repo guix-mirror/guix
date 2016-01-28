@@ -9,7 +9,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -858,7 +858,7 @@ dealing with different structured file formats.")
 (define-public librsvg
   (package
     (name "librsvg")
-    (version "2.40.11")
+    (version "2.40.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -866,9 +866,7 @@ dealing with different structured file formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "00ifd9wjjjsw0ybk5j6qs4yyh66jj34hjmggy6dhrgfy8ksw06k1"))
-              (patches
-               (list (search-patch "librsvg-tests.patch")))))
+                "014q7gz6mgfa7pfn0lr13qqv568ad8j1sw9d4vksnpazq0zajvjd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

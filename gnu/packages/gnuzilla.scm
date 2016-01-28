@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -64,7 +64,12 @@
                    name version ".tar.gz"))
              (sha256
               (base32
-               "1fig2wf4f10v43mqx67y68z6h77sy900d1w0pz9qarrqx57rc7ij"))))
+               "1fig2wf4f10v43mqx67y68z6h77sy900d1w0pz9qarrqx57rc7ij"))
+             (modules '((guix build utils)))
+             (snippet
+              ;; Fix incompatibility with Perl 5.22+.
+              '(substitute* '("js/src/config/milestone.pl")
+                 (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE")))))
     (build-system gnu-build-system)
     (native-inputs
       `(("perl", perl)
@@ -103,7 +108,12 @@ in C/C++.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1n1phk8r3l8icqrrap4czplnylawa0ddc2cc4cgdz46x3lrkybz6"))))
+                "1n1phk8r3l8icqrrap4czplnylawa0ddc2cc4cgdz46x3lrkybz6"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Fix incompatibility with Perl 5.22+.
+               '(substitute* '("js/src/config/milestone.pl")
+                  (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE")))))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -277,7 +287,27 @@ standards.")
       (sha256
        (base32
         "0m18xyb0rd02yaw9xd5z4bab1wr2599iszzqhm86c134jv5vk6cg"))
-      (patches (map search-patch '("icecat-avoid-bundled-includes.patch")))
+      (patches (map search-patch
+                    '("icecat-avoid-bundled-includes.patch"
+                      "icecat-CVE-2016-1930-pt01.patch"
+                      "icecat-CVE-2016-1930-pt02.patch"
+                      "icecat-CVE-2016-1930-pt03.patch"
+                      "icecat-CVE-2016-1930-pt04.patch"
+                      "icecat-CVE-2016-1930-pt05.patch"
+                      "icecat-CVE-2016-1930-pt06.patch"
+                      "icecat-CVE-2016-1930-pt07.patch"
+                      "icecat-CVE-2016-1930-pt08.patch"
+                      "icecat-CVE-2016-1930-pt09.patch"
+                      "icecat-CVE-2016-1930-pt10.patch"
+                      "icecat-CVE-2016-1930-pt11.patch"
+                      "icecat-CVE-2016-1930-pt12.patch"
+                      "icecat-CVE-2016-1930-pt13.patch"
+                      "icecat-bug-1146335-pt1.patch"
+                      "icecat-bug-1146335-pt2.patch"
+                      "icecat-CVE-2016-1935.patch"
+                      "icecat-CVE-2016-1930-pt14.patch"
+                      "icecat-CVE-2016-1930-pt15.patch"
+                      "icecat-limit-max-buffers-size-for-ANGLE.patch")))
       (modules '((guix build utils)))
       (snippet
        '(begin

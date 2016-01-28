@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,7 +93,11 @@
    (36 "0z6jbyy70lfdm6d3x0sbazbqdxb3xnpn9bmz7madpvrnbd284pxc")
    (37 "04sqr8zkl6s5fccfvb775ppn3ldij5imria9swc39aq0fkfp1w9k")
    (38 "0rv3g14mpgv8br267bf7rmgqlgwnc4v6g3g8y0sjba571i8amgmd")
-   (39 "1v3l3vkc3g2b6fjycqwlakr8xhiw6bmw6q0zd6bi0m0m4bnxr55b")))
+   (39 "1v3l3vkc3g2b6fjycqwlakr8xhiw6bmw6q0zd6bi0m0m4bnxr55b")
+   (40 "0sypv66vsldmc95gwvf7ylz1k7y37vnvdsjg8ajjr6b2j9mkkfw4")
+   (41 "06ic2gdpbi1afik3wqf9d4vh95if4bz8bmhcgr555621dsb35i2f")
+   (42 "06a90k0p6bqc4wk2dsmapna69124an76xvlnlj3xm497vci968dc")))
+
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
 number/base32-hash tuples, directly usable in the 'patch-series' form."
@@ -143,17 +148,18 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
              ;; guile-bash expect.
              (let ((include (string-append (assoc-ref outputs "include")
                                             "/include/bash"))
+                   (includes "^\\./include/[^/]+\\.h$")
                    (headers "^\\./(builtins/|lib/glob/|lib/tilde/|)[^/]+\\.h$"))
                (mkdir-p include)
                (for-each (lambda (file)
-                           (when ((@ (ice-9 regex) string-match) headers file)
-                             (let ((directory (string-append include "/"
-                                                             (dirname file))))
-                               (mkdir-p directory)
-                               (copy-file file
-                                          (string-append directory "/"
-                                                         (basename file))))))
+                           (when (string-match includes file)
+                             (install-file file include))
+                           (when (string-match headers file)
+                             (install-file file
+                                           (string-append include "/"
+                                                          (dirname file)))))
                          (find-files "." "\\.h$"))
+               (delete-file (string-append include "/" "y.tab.h"))
                #t)))
          (version "4.3"))
     (package
@@ -177,8 +183,9 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
      (build-system gnu-build-system)
 
      (outputs '("out"
-                "include"))                       ;headers used by extensions
-     (native-inputs `(("bison" ,bison)))          ;to rebuild the parser
+                "doc"                         ;1.7 MiB of HTML and extra files
+                "include"))                   ;headers used by extensions
+     (native-inputs `(("bison" ,bison)))      ;to rebuild the parser
      (inputs `(("readline" ,readline)
                ("ncurses" ,ncurses)))             ;TODO: add texinfo
      (arguments
@@ -199,10 +206,14 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
         ;; for now.
         #:tests? #f
 
+        #:modules ((ice-9 regex)
+                   (guix build utils)
+                   (guix build gnu-build-system))
+
         #:phases (modify-phases %standard-phases
                    (add-after 'install 'post-install ,post-install-phase)
                    (add-after 'install 'install-headers
-                              ,install-headers-phase))))
+                     ,install-headers-phase))))
      (synopsis "The GNU Bourne-Again SHell")
      (description
       "Bash is the shell, or command-line interpreter, of the GNU system.  It

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,46 +28,41 @@
 (define-public attr
   (package
     (name "attr")
-    (version "2.4.46")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://savannah/attr/attr-"
-                          version ".src.tar.gz"))
-      (sha256
-       (base32
-        "07qf6kb2zk512az481bbnsk9jycn477xpva1a726n5pzlzf9pmnw"))))
+    (version "2.4.47")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/attr/attr-"
+                                  version ".src.tar.gz"))
+              (sha256
+               (base32
+                "0nd8y0m6awc9ahv0ciiwf8gy54c8d3j51pw9xg7f7cn579jjyxr5"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-cons-after
-        'configure 'patch-makefile-SHELL
-        (lambda _
-          (patch-makefile-SHELL "include/buildmacros"))
-        (alist-replace
-         'install
-         (lambda _
-           (zero? (system* "make"
-                           "install"
-                           "install-lib"
-                           "install-dev")))
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-makefile-SHELL
+           (lambda _
+             (patch-makefile-SHELL "include/buildmacros")))
+         (replace 'install
+           (lambda _
+             (zero? (system* "make"
+                             "install"
+                             "install-lib"
+                             "install-dev"))))
+         (replace 'check
+           (lambda* (#:key target #:allow-other-keys)
+             ;; Use the right shell.
+             (substitute* "test/run"
+               (("/bin/sh")
+                (which "bash")))
 
-         ;; When building natively, adjust the test cases.
-         ,(if (%current-target-system)
-              '%standard-phases
-              '(alist-replace 'check
-                              (lambda _
-                                ;; Use the right shell.
-                                (substitute* "test/run"
-                                  (("/bin/sh")
-                                   (which "bash")))
+             ;; When building natively, run the tests.
+             (unless target
+               (system* "make" "tests" "-C" "test"))
 
-                                (system* "make" "tests" "-C" "test")
-
-                                ;; XXX: Ignore the test result since this is
-                                ;; dependent on the underlying file system.
-                                #t)
-                              %standard-phases))))))
+             ;; XXX: Ignore the test result since this is
+             ;; dependent on the underlying file system.
+             #t)))))
     (inputs
      ;; Perl is needed to run tests; remove it from cross builds.
      (if (%current-target-system)

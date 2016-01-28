@@ -6,6 +6,8 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +26,7 @@
 
 (define-module (gnu packages databases)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages language)
   #:use-module (gnu packages linux)
@@ -308,16 +311,18 @@ pictures, sounds, or video.")
 
     ;; Running tests in parallel leads to test failures and crashes in
     ;; torture/utils.
-    (arguments '(#:parallel-tests? #f))
+    (arguments '(#:parallel-tests? #f
+                 #:configure-flags
+                 (list (string-append "--with-bash-headers="
+                                      (assoc-ref %build-inputs "bash:include")
+                                      "/include/bash"))))
 
     (native-inputs `(("emacs" ,emacs-no-x)
                      ("bc" ,bc)
+                     ("bash:include" ,bash "include")
                      ("libuuid", util-linux)))
 
     ;; TODO: Add more optional inputs.
-    ;; FIXME: Our Bash doesn't have development headers (need for the 'readrec'
-    ;; built-in command), but it's not clear how to get them installed.
-    ;; See <https://lists.gnu.org/archive/html/bug-bash/2014-03/msg00125.html>.
     (inputs `(("curl" ,curl)
               ("libgcrypt" ,libgcrypt)
               ("check" ,check)))
@@ -334,7 +339,7 @@ types are supported, as is encryption.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.8.11.1")
+   (version "3.10.0")
    (source (origin
             (method url-fetch)
             ;; TODO: Download from sqlite.org once this bug :
@@ -365,7 +370,7 @@ types are supported, as is encryption.")
                    ))
             (sha256
              (base32
-              "1dnkl4qr1dgaprbyf3jddfiynkhxnin86qabni47wjlc0fnb16gv"))))
+              "0hhhv6si0pyf5i8bv7a71953m0b4gk6s3j2h09caf7vif0njkk23"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments

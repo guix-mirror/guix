@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,6 +38,13 @@
 ;; builder-side code.
 ;;
 ;; Code:
+
+(define* (set-SOURCE-DATE-EPOCH #:rest _)
+  "Set the 'SOURCE_DATE_EPOCH' environment variable.  This is used by tools
+that incorporate timestamps as a way to tell them to use a fixed timestamp.
+See https://reproducible-builds.org/specs/source-date-epoch/."
+  (setenv "SOURCE_DATE_EPOCH" "1")
+  #t)
 
 (define (first-subdirectory dir)
   "Return the path of the first sub-directory of DIR."
@@ -329,7 +336,8 @@ makefiles."
                 (objcopy-command (if target
                                      (string-append target "-objcopy")
                                      "objcopy"))
-                (strip-flags '("--strip-debug"))
+                (strip-flags '("--strip-debug"
+                               "--enable-deterministic-archives"))
                 (strip-directories '("lib" "lib64" "libexec"
                                      "bin" "sbin"))
                 #:allow-other-keys)
@@ -367,7 +375,7 @@ makefiles."
     ;; `bfd_fill_in_gnu_debuglink_section' function.)  No reference to
     ;; DEBUG-OUTPUT is kept because bfd keeps only the basename of the debug
     ;; file.
-    (zero? (system* objcopy-command
+    (zero? (system* objcopy-command "--enable-deterministic-archives"
                     (string-append "--add-gnu-debuglink="
                                    (debug-file file))
                     file)))
@@ -548,7 +556,7 @@ DOCUMENTATION-COMPRESSOR-FLAGS."
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
                          ((_ p ...) `((p . ,p) ...)))))
-    (phases set-paths install-locale unpack
+    (phases set-SOURCE-DATE-EPOCH set-paths install-locale unpack
             patch-usr-bin-file
             patch-source-shebangs configure patch-generated-file-shebangs
             build check install

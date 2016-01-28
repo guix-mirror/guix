@@ -46,7 +46,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.19")
+    (version "1.21")
     (source
      (origin
       (method url-fetch)
@@ -54,7 +54,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "12wpqhjlsw4iaanifbqm2kich6c7x7lm8a7zhy6x5ifm6c9hw4jk"))))
+        "0kdq2cbnk84fr4jqcv689rlxpbyl6bda2cn6y3ll19v3mlydpnxp"))))
     (build-system gnu-build-system)
     (home-page "http://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
@@ -68,14 +68,14 @@ Daemon and possibly more in the future.")
 (define-public libgcrypt
   (package
     (name "libgcrypt")
-    (version "1.6.3")
+    (version "1.6.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0pq2nwfqgggrsh8rk84659d80vfnlkbphwqjwahccd5fjdxr3d21"))))
+               "09k06gs27gxfha07sa9rpf4xh6mvphj9sky7n09ymx75w9zjrg69"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error-host" ,libgpg-error)))

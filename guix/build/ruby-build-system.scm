@@ -27,7 +27,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%standard-phases
-            ruby-build))
+            ruby-build
+            gem-home))
 
 ;; Commentary:
 ;;
@@ -141,3 +142,13 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
 (define* (ruby-build #:key inputs (phases %standard-phases)
                      #:allow-other-keys #:rest args)
   (apply gnu:gnu-build #:inputs inputs #:phases phases args))
+
+(define (gem-home store-path ruby-version)
+  "Return a string to the gem home directory in the store given a STORE-PATH
+and the RUBY-VERSION used to build that ruby package"
+  (string-append
+   store-path
+   "/lib/ruby/gems/"
+   (regexp-substitute #f
+                      (string-match "^[0-9]+\\.[0-9]+" ruby-version)
+                      0 ".0")))

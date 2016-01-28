@@ -308,7 +308,9 @@ data types.")
     (inputs `(("openssl" ,openssl)
               ("zlib" ,zlib)))))
 
-(define* (wrap-python3 python #:optional (name "python-wrapper"))
+(define* (wrap-python3 python
+                       #:optional
+                       (name (string-append (package-name python) "-wrapper")))
   (package (inherit python)
     (name name)
     (source #f)

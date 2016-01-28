@@ -77,7 +77,7 @@ archive_write_set_format_shar.c"
                     ;; Help cmake's bootstrap process to find system libraries
                     (begin
                       (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
-                      (setenv "CMAKE_INCLUDE_PATH" (getenv "CPATH"))
+                      (setenv "CMAKE_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))
                       ;; Get verbose output from failed tests
                       (setenv "CTEST_OUTPUT_ON_FAILURE" "TRUE")))
                   (alist-replace

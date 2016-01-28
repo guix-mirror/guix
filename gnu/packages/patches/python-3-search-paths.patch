@@ -1,5 +1,5 @@
-Make sure the build system honors CPATH and LIBRARY_PATH when looking for
-headers and libraries.
+Make sure the build system honors C_INCLUDE_PATH and LIBRARY_PATH when
+looking for headers and libraries.
 
 --- setup.py	2015-10-07 23:32:58.891329173 +0200
 +++ setup.py	2015-10-07 23:46:29.653349924 +0200
@@ -13,7 +13,7 @@ headers and libraries.
 -                ]
 -            inc_dirs = self.compiler.include_dirs + ['/usr/include']
 +            lib_dirs = os.getenv('LIBRARY_PATH', '').split(os.pathsep)
-+            inc_dirs = os.getenv('CPATH', '').split(os.pathsep)
++            inc_dirs = os.getenv('C_INCLUDE_PATH', '').split(os.pathsep)
          else:
              lib_dirs = self.compiler.library_dirs[:]
              inc_dirs = self.compiler.include_dirs[:]

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -25,6 +26,7 @@
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 vlist)
   #:export (%standard-phases
             haskell-build))
 
@@ -78,6 +80,7 @@ and parameters ~s~%"
                        (((_ . dir) ...)
                         dir)
                        (_ '())))
+         (ghc-path (getenv "GHC_PACKAGE_PATH"))
          (params (append `(,(string-append "--prefix=" out))
                          `(,(string-append "--libdir=" (or lib out) "/lib"))
                          `(,(string-append "--bindir=" (or bin out) "/bin"))
@@ -97,6 +100,10 @@ and parameters ~s~%"
                              '("--enable-tests")
                              '())
                          configure-flags)))
+    ;; Cabal errors if GHC_PACKAGE_PATH is set during 'configure', so unset
+    ;; and restore it.
+    (unsetenv "GHC_PACKAGE_PATH")
+
     ;; For packages where the Cabal build-type is set to "Configure",
     ;; ./configure will be executed.  In these cases, the following
     ;; environment variable is needed to be able to find the shell executable.
@@ -105,7 +112,9 @@ and parameters ~s~%"
     ;; <https://www.haskell.org/cabal/users-guide/developing-packages.html>.
     (when (file-exists? "configure")
       (setenv "CONFIG_SHELL" "sh"))
-    (run-setuphs "configure" params)))
+    (run-setuphs "configure" params)
+
+    (setenv "GHC_PACKAGE_PATH" ghc-path)))
 
 (define* (build #:rest empty)
   "Build a given Haskell package."
@@ -143,6 +152,12 @@ first match and return the content of the group."
       (format #t
               "Compiler ~a not supported~%" name-version)))))
 
+;;; TODO: Move this to (guix build utils)?
+(define-syntax-rule (with-null-error-port exp)
+  "Evaluate EXP with the error port pointing to the bit bucket."
+  (with-error-to-port (%make-void-port "w")
+    (lambda () exp)))
+
 (define (make-ghc-package-database system inputs outputs)
   "Generate the GHC package database."
   (let* ((haskell  (assoc-ref inputs "haskell"))
@@ -150,44 +165,90 @@ first match and return the content of the group."
                        (((_ . dir) ...)
                         dir)
                        (_ '())))
-         (conf-dirs (search-path-as-list
-                     `(,(string-append "lib/"
-                                       (package-name-version haskell)
-                                       "/package.conf.d"))
-                     input-dirs))
+         ;; Silence 'find-files' (see 'evaluate-search-paths')
+         (conf-dirs (with-null-error-port
+                     (search-path-as-list
+                      `(,(string-append "lib/" (package-name-version haskell)))
+                      input-dirs #:pattern ".*\\.conf.d$")))
          (conf-files (append-map (cut find-files <> "\\.conf$") conf-dirs)))
     (mkdir-p %tmp-db-dir)
     (for-each (lambda (file)
-                (copy-file file
-                           (string-append %tmp-db-dir "/" (basename file))))
+                (let ((dest (string-append %tmp-db-dir "/" (basename file))))
+                  (unless (file-exists? dest)
+                    (copy-file file dest))))
               conf-files)
     (zero? (system* "ghc-pkg"
                     (string-append "--package-db=" %tmp-db-dir)
                     "recache"))))
 
 (define* (register #:key name system inputs outputs #:allow-other-keys)
-  "Generate the compiler registration file for a given Haskell package.  Don't
-generate the cache as it would clash in user profiles."
+  "Generate the compiler registration and binary package database files for a
+given Haskell package."
+
+  (define (conf-depends conf-file)
+    ;; Return a list of pkg-ids from the "depends" field in CONF-FILE
+    (let ((port (open-input-file conf-file))
+          (field-rx (make-regexp "^(.*):")))
+      (let loop ((collecting #f)
+                 (deps '()))
+        (let* ((line (read-line port))
+               (field (and=> (and (not (eof-object? line))
+                                  (regexp-exec field-rx line))
+                             (cut match:substring <> 1))))
+          (cond
+           ((and=> field (cut string=? <> "depends"))
+            ;; The first dependency is listed on the same line as "depends:",
+            ;; so drop those characters.  A line may list more than one .conf.
+            (let ((d (string-tokenize (string-drop line 8))))
+              (loop #t (append d deps))))
+           ((or (eof-object? line) (and collecting field))
+            (begin
+              (close-port port)
+              (reverse! deps)))
+           (collecting
+            (loop #t (append (string-tokenize line) deps)))
+           (else (loop #f deps)))))))
+
+  (define (install-transitive-deps conf-file src dest)
+    ;; Copy .conf files from SRC to DEST for dependencies in CONF-FILE, and
+    ;; their dependencies, etc.
+    (let loop ((seen vlist-null)
+               (lst (conf-depends conf-file)))
+      (match lst
+        (() #t)                         ;done
+        ((id . tail)
+         (if (not (vhash-assoc id seen))
+             (let ((dep-conf  (string-append src  "/" id ".conf"))
+                   (dep-conf* (string-append dest "/" id ".conf")))
+               (copy-file dep-conf dep-conf*) ;XXX: maybe symlink instead?
+               (loop (vhash-cons id #t seen)
+                     (append lst (conf-depends dep-conf))))
+             (loop seen tail))))))
+
   (let* ((out (assoc-ref outputs "out"))
          (haskell  (assoc-ref inputs "haskell"))
          (lib (string-append out "/lib"))
          (config-dir (string-append lib "/"
                                     (package-name-version haskell)
-                                    "/package.conf.d"))
+                                    "/" name ".conf.d"))
          (id-rx (make-regexp "^id: *(.*)$"))
          (config-file (string-append out "/" name ".conf"))
          (params
           (list (string-append "--gen-pkg-config=" config-file))))
     (run-setuphs "register" params)
     ;; The conf file is created only when there is a library to register.
-    (when (file-exists? config-file)
-      (mkdir-p config-dir)
-      (let ((config-file-name+id
-             (call-with-ascii-input-file config-file (cut grep id-rx <>))))
-        (rename-file config-file
-                     (string-append config-dir "/" config-file-name+id
-                                    ".conf"))))
-    #t))
+    (or (not (file-exists? config-file))
+        (begin
+          (mkdir-p config-dir)
+          (let* ((config-file-name+id
+                  (call-with-ascii-input-file config-file (cut grep id-rx <>))))
+            (install-transitive-deps config-file %tmp-db-dir config-dir)
+            (rename-file config-file
+                         (string-append config-dir "/"
+                                        config-file-name+id ".conf"))
+            (zero? (system* "ghc-pkg"
+                            (string-append "--package-db=" config-dir)
+                            "recache")))))))
 
 (define* (check #:key tests? test-target #:allow-other-keys)
   "Run the test suite of a given Haskell package."

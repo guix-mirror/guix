@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014, 2016 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,7 +20,7 @@
   #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
@@ -32,38 +32,23 @@
 (define-public doxygen
   (package
     (name "doxygen")
-    (version "1.8.7")
+    (version "1.8.11")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://ftp.stack.nl/pub/users/dimitri/"
                                  name "-" version ".src.tar.gz"))
              (sha256
               (base32
-               "1ng3dv5fninhfi2fj75ghkr5jwsl653fxv2sxhaswj11x2vcdsn6"))
-             (patches (list (search-patch "doxygen-tmake.patch")
-                            (search-patch "doxygen-test.patch")))))
-    (build-system gnu-build-system)
+               "0ja02pm3fpfhc5dkry00kq8mn141cqvdqqpmms373ncbwi38pl35"))
+             (patches (list (search-patch "doxygen-test.patch")))))
+    (build-system cmake-build-system)
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
        ("libxml2" ,libxml2) ; provides xmllint for the tests
-       ("perl" ,perl) ; for the tests
        ("python" ,python-2))) ; for creating the documentation
-    (propagated-inputs
-     `(("graphviz" ,graphviz)))
     (arguments
-     `(#:test-target "test"
-       #:phases
-         (alist-replace
-          'configure
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              ;; do not pass "--enable-fast-install", which makes the
-              ;; configure process fail
-              (zero? (system*
-                      "./configure"
-                      "--prefix" out))))
-          %standard-phases)))
+     `(#:test-target "tests"))
     (home-page "http://www.stack.nl/~dimitri/doxygen/")
     (synopsis "Generate documentation from annotated sources")
     (description "Doxygen is the de facto standard tool for generating

@@ -5,6 +5,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,7 +46,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "4.5")
+    (version "4.7")
     (source
      (origin
       (method url-fetch)
@@ -53,13 +54,9 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1nhvnznhg2aqfrfjxc8v008hjlzkh5831jsfahqk89qrw7fbbcw9"))))
+        "1j8iixynchziw1y39lnibyl5h81m4p78w3i4f28q2vgwjgf801x4"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)
-
-                     ;; XXX: For some reason, libtasn1.info wants to be
-                     ;; rebuilt, so we must provide 'makeinfo'.
-                     ("texinfo" ,texinfo)))
+    (native-inputs `(("perl" ,perl)))
     (home-page "http://www.gnu.org/software/libtasn1/")
     (synopsis "ASN.1 library")
     (description
@@ -110,7 +107,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.4.5")
+    (version "3.4.7")
     (source (origin
              (method url-fetch)
              (uri
@@ -121,8 +118,7 @@ living in the same process.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "1bks1zpmhmnkz2v32dd9b44pz6x0a5w4yi9zzwsd0a078vhbi25g"))
-             (patches (list (search-patch "gnutls-doc-fix.patch")))))
+               "0nifi3mr5jhz608pidkp8cjs4vwfj1m2qczsjrgpnp99615rxgn1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -146,13 +142,6 @@ living in the same process.")
 
        #:phases (modify-phases %standard-phases
                   (add-after
-                   'unpack 'delete-prebuilt-unfixed-info-file
-                   (lambda _
-                     ;; XXX Delete the prebuilt info file, so that it will be
-                     ;; rebuilt with the fixes in gnutls-doc-fix.patch.
-                     (delete-file "doc/gnutls.info")
-                     #t))
-                  (add-after
                    'install 'move-doc
                    (lambda* (#:key outputs #:allow-other-keys)
                      ;; Copy the 4.1 MiB of section 3 man pages to "doc".
@@ -169,7 +158,6 @@ living in the same process.")
                "doc"))                            ;4.1 MiB of man pages
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("texinfo" ,texinfo) ; XXX needed only to replace prebuilt, unfixed docs.
        ("which" ,which)))
     (inputs
      `(("guile" ,guile-2.0)

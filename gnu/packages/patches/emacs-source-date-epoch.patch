@@ -1,0 +1,20 @@
+Honor SOURCE_DATE_EPOCH variable to avoid non-determinism in generated
+"autoloads" files.
+
+--- a/lisp/emacs-lisp/autoload.el
++++ b/lisp/emacs-lisp/autoload.el
+@@ -378,8 +378,12 @@
+   "Insert the section-header line,
+ which lists the file name and which functions are in it, etc."
+   (insert generate-autoload-section-header)
+-  (prin1 `(autoloads ,autoloads ,load-name ,file ,time)
+-	 outbuf)
++  (let* ((env  (getenv "SOURCE_DATE_EPOCH"))
++         (time (if env
++                   (seconds-to-time (string-to-number env))
++                 time)))
++    (prin1 `(autoloads ,autoloads ,load-name ,file ,time)
++           outbuf))
+   (terpri outbuf)
+   ;; Break that line at spaces, to avoid very long lines.
+   ;; Make each sub-line into a comment.

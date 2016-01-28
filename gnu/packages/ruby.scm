@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,7 +46,7 @@
 (define-public ruby
   (package
     (name "ruby")
-    (version "2.2.4")
+    (version "2.3.0")
     (source
      (origin
        (method url-fetch)
@@ -55,28 +55,33 @@
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "0g3ps4q3iz7wj9m45n8xyxzw8nh29ljdqb87b0f6i0p3853gz2yj"))))
+         "15s0dsb5ynf3d2w5gzawnszq5594fqvapv2y7a0qw16przq5l4kh"))
+       (modules '((guix build utils)))
+       (snippet `(begin
+                   ;; Remove bundled libffi
+                   (delete-file-recursively
+                    (string-append "ext/fiddle/libffi-3.2.1"))
+                   #t))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
-       #:parallel-tests? #f
        #:phases
-       (alist-cons-before
-        'configure 'replace-bin-sh
-        (lambda _
-          (substitute* '("Makefile.in"
-                         "ext/pty/pty.c"
-                         "io.c"
-                         "lib/mkmf.rb"
-                         "process.c"
-                         "test/rubygems/test_gem_ext_configure_builder.rb"
-                         "test/rdoc/test_rdoc_parser.rb"
-                         "test/ruby/test_rubyoptions.rb"
-                         "test/ruby/test_process.rb"
-                         "test/ruby/test_system.rb"
-                         "tool/rbinstall.rb")
-            (("/bin/sh") (which "sh"))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'replace-bin-sh-and-remove-libffi
+           (lambda _
+             (substitute* '("Makefile.in"
+                            "ext/pty/pty.c"
+                            "io.c"
+                            "lib/mkmf.rb"
+                            "process.c"
+                            "test/rubygems/test_gem_ext_configure_builder.rb"
+                            "test/rdoc/test_rdoc_parser.rb"
+                            "test/ruby/test_rubyoptions.rb"
+                            "test/ruby/test_process.rb"
+                            "test/ruby/test_system.rb"
+                            "tool/rbinstall.rb")
+               (("/bin/sh") (which "sh")))
+             #t)))))
     (inputs
      `(("readline" ,readline)
        ("openssl" ,openssl)
@@ -94,6 +99,25 @@
 a focus on simplicity and productivity.")
     (home-page "https://ruby-lang.org")
     (license license:ruby)))
+
+(define-public ruby-2.2
+  (package (inherit ruby)
+    (version "2.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
+                           (version-major+minor version)
+                           "/ruby-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0g3ps4q3iz7wj9m45n8xyxzw8nh29ljdqb87b0f6i0p3853gz2yj"))
+       (modules '((guix build utils)))
+       (snippet `(begin
+                   ;; Remove bundled libffi
+                   (delete-file-recursively
+                    (string-append "ext/fiddle/libffi-3.2.1"))
+                   #t))))))
 
 (define-public ruby-2.1
   (package (inherit ruby)
@@ -1059,13 +1083,13 @@ using Net::HTTP, supporting reconnection and retry according to RFC 2616.")
 (define-public ruby-power-assert
   (package
     (name "ruby-power-assert")
-    (version "0.2.6")
+    (version "0.2.7")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "power_assert" version))
               (sha256
                (base32
-                "0gbj379jhnff8rbb6m3kzdm282szjz1a021xzxa38d1bnswj2jx3"))))
+                "0ka6w71lcan4wgf111xi3pcn9ma9lhakv31jg8w007nwzi0xfjbi"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))
@@ -1212,15 +1236,18 @@ It allows writing tests, checking results and automated testing in Ruby.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'add-test-unit-to-search-path
-          (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "Rakefile"
-              (("t\\.libs << \"test\"" line)
-               (string-append line "; t.libs << \""
-                              (assoc-ref inputs "ruby-test-unit")
-                              "/lib/ruby/gems/2.2.0/gems/test-unit-"
-                              ,(package-version ruby-test-unit)
-                              "/lib\"")))
-            #t)))))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((test-unit (assoc-ref inputs "ruby-test-unit"))
+                    (test-unit-home (gem-home test-unit
+                                              ,(package-version ruby))))
+               (substitute* "Rakefile"
+                 (("t\\.libs << \"test\"" line)
+                  (string-append line "; t.libs << \""
+                                 test-unit-home
+                                 "/gems/test-unit-"
+                                 ,(package-version ruby-test-unit)
+                                 "/lib\""))))
+             #t)))))
     (native-inputs
      `(("bundler" ,bundler)
        ("ruby-test-unit" ,ruby-test-unit)))
@@ -1274,15 +1301,18 @@ as a base class when writing classes that depend upon
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'add-test-unit-to-search-path
-          (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "Rakefile"
-              (("t\\.libs << \"test\"" line)
-               (string-append line "; t.libs << \""
-                              (assoc-ref inputs "ruby-test-unit")
-                              "/lib/ruby/gems/2.2.0/gems/test-unit-"
-                              ,(package-version ruby-test-unit)
-                              "/lib\"")))
-            #t)))))
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((test-unit (assoc-ref inputs "ruby-test-unit"))
+                    (test-unit-home (gem-home test-unit ,(package-version
+                                                          ruby))))
+               (substitute* "Rakefile"
+                 (("t\\.libs << \"test\"" line)
+                  (string-append line "; t.libs << \""
+                                 test-unit-home
+                                 "/gems/test-unit-"
+                                 ,(package-version ruby-test-unit)
+                                 "/lib\""))))
+             #t)))))
     (propagated-inputs
      `(("ruby-blankslate" ,ruby-blankslate)))
     (native-inputs
@@ -1311,13 +1341,16 @@ knowing anything about the constructor.")
        (modify-phases %standard-phases
          (add-after 'unpack 'add-test-unit-to-search-path
           (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "Rakefile"
-              (("t\\.libs << \"test\"" line)
-               (string-append line "; t.libs << \""
-                              (assoc-ref inputs "ruby-test-unit")
-                              "/lib/ruby/gems/2.2.0/gems/test-unit-"
-                              ,(package-version ruby-test-unit)
-                              "/lib\"")))
+            (let* ((test-unit (assoc-ref inputs "ruby-test-unit"))
+                   (test-unit-home (gem-home test-unit ,(package-version
+                                                         ruby))))
+              (substitute* "Rakefile"
+                (("t\\.libs << \"test\"" line)
+                 (string-append line "; t.libs << \""
+                                test-unit-home
+                                "/gems/test-unit-"
+                                ,(package-version ruby-test-unit)
+                                "/lib\""))))
             #t)))))
     (propagated-inputs
      `(("ruby-instantiator" ,ruby-instantiator)
@@ -1381,13 +1414,16 @@ conversion to (X)HTML.")
        (modify-phases %standard-phases
          (add-after 'unpack 'add-test-unit-to-search-path
           (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "Rakefile"
-              (("t\\.libs << 'test'" line)
-               (string-append line "; t.libs << \""
-                              (assoc-ref inputs "ruby-test-unit")
-                              "/lib/ruby/gems/2.2.0/gems/test-unit-"
-                              ,(package-version ruby-test-unit)
-                              "/lib\"")))
+            (let* ((test-unit (assoc-ref inputs "ruby-test-unit"))
+                   (test-unit-home (gem-home test-unit
+                                             ,(package-version ruby))))
+              (substitute* "Rakefile"
+                (("t\\.libs << 'test'" line)
+                 (string-append line "; t.libs << \""
+                                test-unit-home
+                                "/gems/test-unit-"
+                                ,(package-version ruby-test-unit)
+                                "/lib\""))))
             #t))
          (add-before 'check 'use-latest-redcarpet
           (lambda _
@@ -2202,13 +2238,17 @@ development of Ruby gems.")
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-test-include-path
           (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "Rakefile"
-              (("Hoe\\.add_include_dirs .*")
-               (string-append "Hoe.add_include_dirs \""
-                              (assoc-ref inputs "ruby-minitest-4")
-                              "/lib/ruby/gems/2.2.0/gems/minitest-"
-                              ,(package-version ruby-minitest-4)
-                              "/lib" "\"")))))
+             (let* ((minitest (assoc-ref inputs "ruby-minitest-4"))
+                    (minitest-home (gem-home minitest
+                                             ,(package-version ruby))))
+               (substitute* "Rakefile"
+                 (("Hoe\\.add_include_dirs .*")
+                  (string-append "Hoe.add_include_dirs \""
+                                 minitest-home
+                                 "/gems/minitest-"
+                                 ,(package-version ruby-minitest-4)
+                                 "/lib" "\""))))
+             #t))
          (add-before 'check 'fix-test-assumptions
           (lambda _
             ;; The test output includes the file name, so a couple of tests
@@ -2931,9 +2971,17 @@ features such as filtering and fine grained logging.")
      `(#:test-target "specs"
        #:phases
        (modify-phases %standard-phases
-         (add-before 'check 'set-HOME
-          ;; $HOME needs to be set to somewhere writeable for tests to run
-          (lambda _ (setenv "HOME" "/tmp") #t)))))
+         (add-before 'check 'set-HOME-and-disable-failing-test
+           (lambda _
+             ;; $HOME needs to be set to somewhere writeable for tests to run
+             (setenv "HOME" "/tmp")
+             ;; Disable tests which fails on Ruby 2.3.  See
+             ;; https://github.com/lsegal/yard/issues/927
+             (substitute* "spec/parser/ruby/ruby_parser_spec.rb"
+               (("comment.type.should == :comment") "")
+               (("comment.docstring_hash_flag.should be_true") "")
+               (("comment.docstring.strip.should == .*") ""))
+             #t)))))
     (native-inputs
      `(("ruby-rspec" ,ruby-rspec-2)
        ("ruby-rack" ,ruby-rack)))

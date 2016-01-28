@@ -1,0 +1,15 @@
+Skip this performance regression test.
+
+The test measures things on the order of 20ms.  On a loaded machine, we
+have seen enough variation that the test would fail.
+
+--- grep-2.22/tests/long-pattern-perf	2016-01-03 12:52:38.491575007 +0100
++++ grep-2.22/tests/long-pattern-perf	2016-01-03 12:53:39.768464687 +0100
+@@ -16,6 +16,7 @@
+ # You should have received a copy of the GNU General Public License
+ # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ 
++exit 77
+ . "${srcdir=.}/init.sh"; path_prepend_ ../src
+ 
+ fail=0

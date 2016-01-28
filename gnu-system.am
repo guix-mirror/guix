@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 # Copyright © 2013, 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 #
@@ -415,6 +415,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/ath9k-htc-firmware-objcopy.patch		\
   gnu/packages/patches/audacity-fix-ffmpeg-binding.patch	\
   gnu/packages/patches/automake-skip-amhello-tests.patch	\
+  gnu/packages/patches/automake-regexp-syntax.patch		\
   gnu/packages/patches/avahi-localstatedir.patch		\
   gnu/packages/patches/avidemux-install-to-lib.patch		\
   gnu/packages/patches/avrdude-fix-libusb.patch			\
@@ -447,11 +448,11 @@ dist_patch_DATA =						\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
   gnu/packages/patches/dfu-programmer-fix-libusb.patch		\
   gnu/packages/patches/doxygen-test.patch			\
-  gnu/packages/patches/doxygen-tmake.patch			\
   gnu/packages/patches/duplicity-piped-password.patch		\
   gnu/packages/patches/duplicity-test_selection-tmp.patch	\
   gnu/packages/patches/elfutils-tests-ptrace.patch		\
   gnu/packages/patches/emacs-exec-path.patch			\
+  gnu/packages/patches/emacs-source-date-epoch.patch		\
   gnu/packages/patches/eudev-rules-directory.patch		\
   gnu/packages/patches/evilwm-lost-focus-bug.patch		\
   gnu/packages/patches/expat-CVE-2015-1283.patch		\
@@ -462,13 +463,13 @@ dist_patch_DATA =						\
   gnu/packages/patches/fasthenry-spUtils.patch			\
   gnu/packages/patches/fasthenry-spSolve.patch			\
   gnu/packages/patches/fasthenry-spFactor.patch			\
-  gnu/packages/patches/findutils-absolute-paths.patch		\
   gnu/packages/patches/findutils-localstatedir.patch		\
+  gnu/packages/patches/findutils-test-xargs.patch		\
   gnu/packages/patches/flashrom-use-libftdi1.patch		\
-  gnu/packages/patches/flex-bison-tests.patch			\
   gnu/packages/patches/flint-ldconfig.patch			\
   gnu/packages/patches/fltk-shared-lib-defines.patch		\
   gnu/packages/patches/freeimage-CVE-2015-0852.patch		\
+  gnu/packages/patches/gawk-fts-test.patch			\
   gnu/packages/patches/gawk-shell.patch				\
   gnu/packages/patches/gcc-arm-link-spec-fix.patch		\
   gnu/packages/patches/gcc-cross-environment-variables.patch	\
@@ -485,6 +486,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/glib-tests-timer.patch			\
   gnu/packages/patches/glib-tests-gapplication.patch		\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
+  gnu/packages/patches/glibc-hurd-extern-inline.patch		\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
   gnu/packages/patches/glibc-locales.patch			\
   gnu/packages/patches/glibc-locale-incompatibility.patch	\
@@ -493,11 +495,10 @@ dist_patch_DATA =						\
   gnu/packages/patches/gmp-arm-asm-nothumb.patch		\
   gnu/packages/patches/gmp-faulty-test.patch			\
   gnu/packages/patches/gnucash-price-quotes-perl.patch		\
-  gnu/packages/patches/gnutls-doc-fix.patch			\
   gnu/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   gnu/packages/patches/gobject-introspection-cc.patch		\
   gnu/packages/patches/gobject-introspection-girepository.patch	\
-  gnu/packages/patches/grep-CVE-2015-1345.patch			\
+  gnu/packages/patches/grep-timing-sensitive-test.patch		\
   gnu/packages/patches/grub-CVE-2015-8370.patch			\
   gnu/packages/patches/grub-gets-undeclared.patch		\
   gnu/packages/patches/grub-freetype.patch			\
@@ -515,7 +516,26 @@ dist_patch_DATA =						\
   gnu/packages/patches/hop-linker-flags.patch			\
   gnu/packages/patches/hydra-automake-1.15.patch		\
   gnu/packages/patches/hydra-disable-darcs-test.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt01.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt02.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt03.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt04.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt05.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt06.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt07.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt08.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt09.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt10.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt11.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt12.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt13.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt14.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1930-pt15.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1935.patch		\
   gnu/packages/patches/icecat-avoid-bundled-includes.patch	\
+  gnu/packages/patches/icecat-bug-1146335-pt1.patch		\
+  gnu/packages/patches/icecat-bug-1146335-pt2.patch		\
+  gnu/packages/patches/icecat-limit-max-buffers-size-for-ANGLE.patch \
   gnu/packages/patches/icu4c-CVE-2014-6585.patch		\
   gnu/packages/patches/icu4c-CVE-2015-1270.patch		\
   gnu/packages/patches/icu4c-CVE-2015-4760.patch		\
@@ -530,6 +550,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/liba52-link-with-libm.patch		\
   gnu/packages/patches/liba52-set-soname.patch			\
   gnu/packages/patches/liba52-use-mtune-not-mcpu.patch		\
+  gnu/packages/patches/libarchive-bsdtar-test.patch		\
   gnu/packages/patches/libarchive-CVE-2013-0211.patch		\
   gnu/packages/patches/libarchive-fix-lzo-test-case.patch	\
   gnu/packages/patches/libarchive-mtree-filename-length-fix.patch \
@@ -545,8 +566,10 @@ dist_patch_DATA =						\
   gnu/packages/patches/libmad-armv7-thumb-pt2.patch		\
   gnu/packages/patches/libmad-frame-length.patch		\
   gnu/packages/patches/libmad-mips-newgcc.patch			\
-  gnu/packages/patches/librsvg-tests.patch			\
   gnu/packages/patches/libtheora-config-guess.patch		\
+  gnu/packages/patches/libtiff-CVE-2015-8665+CVE-2015-8683.patch \
+  gnu/packages/patches/libtiff-oob-accesses-in-decode.patch	\
+  gnu/packages/patches/libtiff-oob-write-in-nextdecode.patch	\
   gnu/packages/patches/libtool-skip-tests2.patch		\
   gnu/packages/patches/libsndfile-CVE-2014-9496.patch		\
   gnu/packages/patches/libsndfile-CVE-2015-7805.patch		\
@@ -619,20 +642,24 @@ dist_patch_DATA =						\
   gnu/packages/patches/patchelf-rework-for-arm.patch		\
   gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   gnu/packages/patches/patch-hurd-path-max.patch		\
+  gnu/packages/patches/perl-CVE-2015-8607.patch			\
   gnu/packages/patches/perl-autosplit-default-time.patch	\
+  gnu/packages/patches/perl-deterministic-ordering.patch	\
   gnu/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
   gnu/packages/patches/perl-gd-options-passthrough-and-fontconfig.patch \
-  gnu/packages/patches/perl-module-pluggable-search.patch	\
   gnu/packages/patches/perl-net-amazon-s3-moose-warning.patch	\
   gnu/packages/patches/perl-net-ssleay-disable-ede-test.patch	\
+  gnu/packages/patches/perl-no-build-time.patch			\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
+  gnu/packages/patches/perl-module-pluggable-search.patch	\
+  gnu/packages/patches/perl-source-date-epoch.patch		\
   gnu/packages/patches/perl-tk-x11-discover.patch		\
   gnu/packages/patches/pidgin-add-search-path.patch		\
   gnu/packages/patches/pingus-sdl-libs-config.patch		\
+  gnu/packages/patches/plink-1.07-unclobber-i.patch		\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/polkit-drop-test.patch			\
   gnu/packages/patches/portaudio-audacity-compat.patch		\
-  gnu/packages/patches/procps-make-3.82.patch			\
   gnu/packages/patches/pt-scotch-build-parallelism.patch	\
   gnu/packages/patches/pulseaudio-fix-mult-test.patch		\
   gnu/packages/patches/pulseaudio-longer-test-timeout.patch	\

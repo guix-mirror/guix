@@ -92,12 +92,15 @@
                                             ,@%bootstrap-inputs)
                                           #:guile %bootstrap-guile)))
      (package (inherit p)
+       (name "diffutils-boot0")
        (arguments `(#:tests? #f         ; the test suite needs diffutils
                     ,@(package-arguments p)))))))
 
 (define findutils-boot0
   (package-with-bootstrap-guile
-   (package-with-explicit-inputs findutils
+   (package-with-explicit-inputs (package
+                                   (inherit findutils)
+                                   (name "findutils-boot0"))
                                  `(("make" ,gnu-make-boot0)
                                    ("diffutils" ,diffutils-boot0) ; for tests
                                    ,@%bootstrap-inputs)
@@ -106,7 +109,9 @@
 
 (define file-boot0
   (package-with-bootstrap-guile
-   (package-with-explicit-inputs file
+   (package-with-explicit-inputs (package
+                                   (inherit file)
+                                   (name "file-boot0"))
                                  `(("make" ,gnu-make-boot0)
                                    ,@%bootstrap-inputs)
                                  (current-source-location)
@@ -204,7 +209,8 @@
                             "--disable-libssp"
                             "--disable-libquadmath"
                             "--disable-decimal-float")
-                      (remove (cut string-match "--enable-languages.*" <>)
+                      (remove (cut string-match
+                                "--(with-system-zlib|enable-languages.*)" <>)
                               ,flags)))
             ((#:phases phases)
              `(alist-cons-after
@@ -230,7 +236,7 @@
                                         (package-full-name lib)
                                         char-set:letter)
                                       ,(package-name lib)))
-                          (list gmp mpfr mpc))))
+                          (list gmp-6.0 mpfr mpc))))
                (alist-cons-after
                 'install 'symlink-libgcc_eh
                 (lambda* (#:key outputs #:allow-other-keys)
@@ -244,7 +250,7 @@
                       (symlink "libgcc.a" "libgcc_eh.a"))))
                 ,phases))))))
 
-     (inputs `(("gmp-source" ,(package-source gmp))
+     (inputs `(("gmp-source" ,(package-source gmp-6.0))
                ("mpfr-source" ,(package-source mpfr))
                ("mpc-source" ,(package-source mpc))
                ("binutils-cross" ,binutils-boot0)
@@ -259,11 +265,25 @@
                                   (package-native-inputs gcc))))))
 
 (define perl-boot0
-  (package-with-bootstrap-guile
-   (package-with-explicit-inputs perl
-                                 %boot0-inputs
-                                 (current-source-location)
-                                 #:guile %bootstrap-guile)))
+  (let ((perl (package
+                (inherit perl)
+                (name "perl-boot0")
+                (arguments
+                 (substitute-keyword-arguments (package-arguments perl)
+                   ((#:phases phases)
+                    `(modify-phases ,phases
+                       ;; Pthread support is missing in the bootstrap compiler
+                       ;; (broken spec file), so disable it.
+                       (add-before 'configure 'disable-pthreads
+                         (lambda _
+                           (substitute* "Configure"
+                             (("^libswanted=(.*)pthread" _ before)
+                              (string-append "libswanted=" before))))))))))))
+   (package-with-bootstrap-guile
+    (package-with-explicit-inputs perl
+                                  %boot0-inputs
+                                  (current-source-location)
+                                  #:guile %bootstrap-guile))))
 
 (define (linux-libre-headers-boot0)
   "Return Linux-Libre header files for the bootstrap environment."
@@ -285,7 +305,7 @@
   ;; Also, use %BOOT0-INPUTS to avoid building Perl once more.
   (let ((texinfo (package (inherit texinfo)
                    (native-inputs '())
-                   (inputs (alist-delete "ncurses" (package-inputs texinfo))))))
+                   (inputs `(("perl" ,perl-boot0))))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs texinfo %boot0-inputs
                                    (current-source-location)
@@ -409,14 +429,22 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                                (current-source-location)
                                                #:guile %bootstrap-guile)))
          (bison (package (inherit bison)
-                  (native-inputs `(("perl" ,perl-boot0)))
                   (propagated-inputs `(("m4" ,m4)))
                   (inputs '())                    ;remove Flex...
-                  (arguments '(#:tests? #f)))))   ;... and thus disable tests
-   (package-with-bootstrap-guile
-    (package-with-explicit-inputs bison %boot0-inputs
-                                  (current-source-location)
-                                  #:guile %bootstrap-guile))))
+                  (arguments
+                   '(#:tests? #f                  ;... and thus disable tests
+
+                     ;; Zero timestamps in liby.a; this must be done
+                     ;; explicitly here because the bootstrap Binutils don't
+                     ;; do that (default is "cru".)
+                     #:make-flags '("ARFLAGS=crD" "RANLIB=ranlib -D"
+                                    "V=1"))))))
+    (package
+      (inherit (package-with-bootstrap-guile
+                (package-with-explicit-inputs bison %boot0-inputs
+                                              (current-source-location)
+                                              #:guile %bootstrap-guile)))
+      (native-inputs `(("perl" ,perl-boot0))))))
 
 (define static-bash-for-glibc
   ;; A statically-linked Bash to be used by GLIBC-FINAL in system(3) & co.
@@ -424,18 +452,19 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                   glibc-final-with-bootstrap-bash
                                   (car (assoc-ref %boot1-inputs "bash"))))
          (bash (package (inherit static-bash)
-                 (native-inputs `(("bison" ,bison-boot1)))
                  (arguments
                   `(#:guile ,%bootstrap-guile
-                    ,@(package-arguments static-bash))))))
-    (package-with-bootstrap-guile
-     (package-with-explicit-inputs bash
-                                   `(("gcc" ,gcc)
-                                     ("libc" ,glibc-final-with-bootstrap-bash)
-                                     ,@(fold alist-delete %boot1-inputs
-                                             '("gcc" "libc")))
-                                   (current-source-location)
-                                   #:guile %bootstrap-guile))))
+                    ,@(package-arguments static-bash)))))
+         (inputs `(("gcc" ,gcc)
+                   ("libc" ,glibc-final-with-bootstrap-bash)
+                   ,@(fold alist-delete %boot1-inputs
+                           '("gcc" "libc")))))
+    (package
+      (inherit (package-with-bootstrap-guile
+                (package-with-explicit-inputs bash inputs
+                                              (current-source-location)
+                                              #:guile %bootstrap-guile)))
+      (native-inputs `(("bison" ,bison-boot1))))))
 
 (define gettext-boot0
   ;; A minimal gettext used during bootstrap.
@@ -527,7 +556,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
      (arguments
       `(#:guile ,%bootstrap-guile
         #:implicit-inputs? #f
-
+        #:allowed-references ("out")
         #:out-of-source? #t
         #:phases (alist-cons-before
                   'configure 'chdir
@@ -549,6 +578,25 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
      (propagated-inputs '())
      (synopsis "GNU C++ standard library (intermediate)"))))
 
+(define zlib-final
+  ;; Zlib used by GCC-FINAL.
+  (package-with-bootstrap-guile
+   (package
+     (inherit zlib)
+     (arguments
+      `(#:guile ,%bootstrap-guile
+        #:implicit-inputs? #f
+        #:allowed-references ("out" ,glibc-final)
+        ,@(package-arguments zlib)))
+     (inputs %boot2-inputs))))
+
+(define ld-wrapper-boot3
+  ;; A linker wrapper that uses the bootstrap Guile.
+  (make-ld-wrapper "ld-wrapper-boot3"
+                   #:binutils binutils-final
+                   #:guile %bootstrap-guile
+                   #:bash (car (assoc-ref %boot2-inputs "bash"))))
+
 (define gcc-final
   ;; The final GCC.
   (package (inherit gcc-boot0)
@@ -563,7 +611,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
      `(#:guile ,%bootstrap-guile
        #:implicit-inputs? #f
 
-       #:allowed-references ("out" "lib"
+       #:allowed-references ("out" "lib" ,zlib-final
                              ,glibc-final ,static-bash-for-glibc)
 
        ;; Things like libasan.so and libstdc++.so NEED ld.so for some
@@ -583,18 +631,16 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                 ((_ rest ...)
                  (loop rest)))))
            ((#:make-flags flags)
-            ;; Since $LIBRARY_PATH and $CPATH are not honored, add the
-            ;; relevant flags.
-            `(cons (string-append "CPPFLAGS=-I"
-                                  (assoc-ref %build-inputs "libstdc++")
-                                  "/include")
-                   (map (lambda (flag)
-                          (if (string-prefix? "LDFLAGS=" flag)
-                              (string-append flag " -L"
-                                             (assoc-ref %build-inputs "libstdc++")
-                                             "/lib")
-                              flag))
-                        ,flags)))
+            ;; Since $LIBRARY_PATH is not honored, add the relevant flags.
+            `(let ((zlib (assoc-ref %build-inputs "zlib")))
+               (map (lambda (flag)
+                      (if (string-prefix? "LDFLAGS=" flag)
+                          (string-append flag " -L"
+                                         (assoc-ref %build-inputs "libstdc++")
+                                         "/lib -L" zlib "/lib -Wl,-rpath="
+                                         zlib "/lib")
+                          flag))
+                    ,flags)))
            ((#:phases phases)
             `(alist-delete 'symlink-libgcc_eh ,phases)))))
 
@@ -606,19 +652,14 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                      ("static-bash" ,static-bash-for-glibc)
                      ,@(package-native-inputs gcc-boot0)))
 
-    (inputs `(("gmp-source" ,(bootstrap-origin (package-source gmp)))
+    (inputs `(("gmp-source" ,(bootstrap-origin (package-source gmp-6.0)))
               ("mpfr-source" ,(package-source mpfr))
               ("mpc-source" ,(package-source mpc))
+              ("ld-wrapper" ,ld-wrapper-boot3)
               ("binutils" ,binutils-final)
               ("libstdc++" ,libstdc++)
+              ("zlib" ,zlib-final)
               ,@%boot2-inputs))))
-
-(define ld-wrapper-boot3
-  ;; A linker wrapper that uses the bootstrap Guile.
-  (make-ld-wrapper "ld-wrapper-boot3"
-                   #:binutils binutils-final
-                   #:guile %bootstrap-guile
-                   #:bash (car (assoc-ref %boot2-inputs "bash"))))
 
 (define %boot3-inputs
   ;; 4th stage inputs.
@@ -629,11 +670,13 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 (define bash-final
   ;; Link with `-static-libgcc' to make sure we don't retain a reference
   ;; to the bootstrap GCC.
-  (package-with-bootstrap-guile
-   (package-with-explicit-inputs (static-libgcc-package bash)
-                                 %boot3-inputs
-                                 (current-source-location)
-                                 #:guile %bootstrap-guile)))
+  (package
+    (inherit (package-with-bootstrap-guile
+              (package-with-explicit-inputs (static-libgcc-package bash)
+                                            %boot3-inputs
+                                            (current-source-location)
+                                            #:guile %bootstrap-guile)))
+    (native-inputs `(("bison" ,bison-boot1)))))
 
 (define %boot4-inputs
   ;; Now use the final Bash.
@@ -703,7 +746,9 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; The final grep.  Gzip holds a reference to it (via zgrep), so it must be
   ;; built before gzip.
   (package-with-bootstrap-guile
-   (package-with-explicit-inputs grep
+   (package-with-explicit-inputs (package
+                                   (inherit grep)
+                                   (native-inputs `(("perl" ,perl-boot0))))
                                  %boot5-inputs
                                  (current-source-location)
                                  #:guile guile-final)))

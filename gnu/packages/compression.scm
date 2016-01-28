@@ -7,7 +7,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -43,7 +43,7 @@
 (define-public zlib
   (package
     (name "zlib")
-    (version "1.2.7")
+    (version "1.2.8")
     (source
      (origin
       (method url-fetch)
@@ -53,7 +53,7 @@
                                  version ".tar.gz")))
       (sha256
        (base32
-        "1i96gsdvxqb6skp9a58bacf1wxamwi9m9pg4yn7cpf7g7239r77s"))))
+        "039agw5rqvqny92cpkrfn243x2gd4xn13hs3xi6isk55d2vqqr9n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-replace
@@ -263,7 +263,7 @@ compressed with pbzip2 can be decompressed with bzip2).")
 (define-public xz
   (package
    (name "xz")
-   (version "5.0.4")
+   (version "5.2.2")
    (source (origin
             (method url-fetch)
             (uri (list (string-append "http://tukaani.org/xz/xz-" version
@@ -272,7 +272,7 @@ compressed with pbzip2 can be decompressed with bzip2).")
                                       version ".tar.gz")))
             (sha256
              (base32
-              "1dl35ca8fdss9z2d6y234gxh24ixq904xksizrjmjr5dimwhax6n"))))
+              "18h2k4jndhzjs8ln3a54qdnfv59y6spxiwh9gpaqniph6iflvpvk"))))
    (build-system gnu-build-system)
    (synopsis "General-purpose data compression")
    (description

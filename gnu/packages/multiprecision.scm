@@ -30,7 +30,7 @@
 (define-public gmp
   (package
    (name "gmp")
-   (version "6.0.0a")
+   (version "6.1.0")
    (source (origin
             (method url-fetch)
             (uri
@@ -38,14 +38,14 @@
                             version ".tar.xz"))
             (sha256
              (base32
-              "0r5pp27cy7ch3dg5v0rsny8bib1zfvrza6027g2mp5f6v8pd6mli"))
+              "12b9s4jn48gbar6dbs5qrlmljdmnq43xy3ji9yjzic0mwp6dmnk8"))
             (patches (map search-patch
-                          '("gmp-arm-asm-nothumb.patch"
-                            "gmp-faulty-test.patch")))))
+                          '("gmp-faulty-test.patch")))))
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)))
    (outputs '("out" "debug"))
-   (arguments `(#:configure-flags
+   (arguments `(#:parallel-tests? #f ; mpz/reuse fails otherwise
+                #:configure-flags
                 '(;; Build a "fat binary", with routines for several
                   ;; sub-architectures.
                   "--enable-fat"
@@ -59,6 +59,24 @@ with a design focus on execution speed.  It is aimed at use in, for example,
 cryptography and computational algebra.")
    (license lgpl3+)
    (home-page "http://gmplib.org/")))
+
+(define-public gmp-6.0
+  ;; We keep this one around to bootstrap GCC, to work around a compilation
+  ;; issue on ARM.  See
+  ;; <https://gmplib.org/list-archives/gmp-bugs/2015-December/003848.html>.
+  (package
+    (inherit gmp)
+    (version "6.0.0a")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gmp/gmp-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0r5pp27cy7ch3dg5v0rsny8bib1zfvrza6027g2mp5f6v8pd6mli"))
+              (patches (map search-patch
+                            '("gmp-arm-asm-nothumb.patch"
+                              "gmp-faulty-test.patch")))))))
 
 (define-public mpfr
   (package

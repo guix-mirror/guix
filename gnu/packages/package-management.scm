@@ -340,7 +340,7 @@ symlinks to the files in a common directory such as /usr/local.")
                       (let ((nspr (assoc-ref inputs "nspr"))
                             (nss  (assoc-ref inputs "nss")))
                         (setenv "CPATH"
-                                (string-append (getenv "CPATH") ":"
+                                (string-append (getenv "C_INCLUDE_PATH") ":"
                                                nspr "/include/nspr:"
                                                nss "/include/nss"))
                         (setenv "LIBRARY_PATH"

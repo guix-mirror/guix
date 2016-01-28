@@ -137,52 +137,61 @@ exec @GUILE@ -c "(load-compiled \"@SELF@.go\") (apply $main (cdr (command-line))
              (string-every (char-set-union (char-set #\.) char-set:digit)
                            (string-drop file (+ index 3)))))))
 
-(define (library-files-linked args)
-  ;; Return the file names of shared libraries explicitly linked against via
-  ;; `-l' or with an absolute file name in ARGS.
-  (define path+files+args
+(define (library-search-path args)
+  ;; Return the library search path as a list of directory names.  The GNU ld
+  ;; manual notes that "[a]ll `-L' options apply to all `-l' options,
+  ;; regardless of the order in which the options appear", so we must compute
+  ;; the search path independently of the -l options.
+  (let loop ((args args)
+             (path '()))
+    (match args
+      (()
+       (reverse path))
+      (("-L" directory . rest)
+       (loop rest (cons directory path)))
+      ((argument . rest)
+       (if (string-prefix? "-L" argument)         ;augment the search path
+           (loop rest
+                 (cons (string-drop argument 2) path))
+           (loop rest path))))))
+
+(define (library-files-linked args library-path)
+  ;; Return the absolute file names of shared libraries explicitly linked
+  ;; against via `-l' or with an absolute file name in ARGS, looking them up
+  ;; in LIBRARY-PATH.
+  (define files+args
     (fold (lambda (argument result)
             (match result
-              ((library-path library-files
-                             ((and flag
-                                   (or "-dynamic-linker" "-plugin"))
-                              . rest))
+              ((library-files ((and flag
+                                    (or "-dynamic-linker" "-plugin"))
+                               . rest))
                ;; When passed '-dynamic-linker ld.so', ignore 'ld.so'; when
                ;; passed '-plugin liblto_plugin.so', ignore
                ;; 'liblto_plugin.so'.  See <http://bugs.gnu.org/20102>.
-               (list library-path
-                     library-files
+               (list library-files
                      (cons* argument flag rest)))
-              ((library-path library-files previous-args)
-               (cond ((string-prefix? "-L" argument) ;augment the search path
-                      (list (append library-path
-                                    (list (string-drop argument 2)))
-                            library-files
-                            (cons argument previous-args)))
-                     ((string-prefix? "-l" argument) ;add library
+              ((library-files previous-args)
+               (cond ((string-prefix? "-l" argument) ;add library
                       (let* ((lib  (string-append "lib"
                                                   (string-drop argument 2)
                                                   ".so"))
                              (full (search-path library-path lib)))
-                        (list library-path
-                              (if full
+                        (list (if full
                                   (cons full library-files)
                                   library-files)
                               (cons argument previous-args))))
                      ((and (string-prefix? %store-directory argument)
                            (shared-library? argument)) ;add library
-                      (list library-path
-                            (cons argument library-files)
+                      (list (cons argument library-files)
                             (cons argument previous-args)))
                      (else
-                      (list library-path
-                            library-files
+                      (list library-files
                             (cons argument previous-args)))))))
-          (list '() '() '())
+          (list '() '())
           args))
 
-  (match path+files+args
-    ((path files arguments)
+  (match files+args
+    ((files arguments)
      (reverse files))))
 
 (define (rpath-arguments library-files)
@@ -211,9 +220,12 @@ impure library ~s~%"
 
 (define (ld-wrapper . args)
   ;; Invoke the real `ld' with ARGS, augmented with `-rpath' switches.
-  (let* ((libs (library-files-linked args))
+  (let* ((path (library-search-path args))
+         (libs (library-files-linked args path))
          (args (append args (rpath-arguments libs))))
     (when %debug?
+      (format (current-error-port)
+              "ld-wrapper: library search path: ~s~%" path)
       (format (current-error-port)
               "ld-wrapper: libraries linked: ~s~%" libs)
       (format (current-error-port)

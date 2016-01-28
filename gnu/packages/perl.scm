@@ -1,9 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
+;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,18 +38,21 @@
   ;; Yeah, Perl...  It is required early in the bootstrap process by Linux.
   (package
     (name "perl")
-    (version "5.16.1")
+    (version "5.22.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.cpan.org/src/5.0/perl-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "15qxzba3a50c9nik5ydgyfp62x7h9vxxn12yd1jgl93hb1wj96km"))
+               "09wg24w5syyafyv87l6z8pxwz4bjgcdj996bx5844k6m9445sirb"))
              (patches (map search-patch
                            '("perl-no-sys-dirs.patch"
                              "perl-autosplit-default-time.patch"
-                             "perl-module-pluggable-search.patch")))))
+                             "perl-source-date-epoch.patch"
+                             "perl-deterministic-ordering.patch"
+                             "perl-no-build-time.patch"
+                             "perl-CVE-2015-8607.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -60,9 +64,15 @@
             (let ((out  (assoc-ref outputs "out"))
                   (libc (assoc-ref inputs "libc")))
               ;; Use the right path for `pwd'.
-              (substitute* "dist/Cwd/Cwd.pm"
+              (substitute* "dist/PathTools/Cwd.pm"
                 (("/bin/pwd")
                  (which "pwd")))
+
+              ;; Build in GNU89 mode to tolerate C++-style comment in libc's
+              ;; <bits/string3.h>.
+              (substitute* "cflags.SH"
+                (("-std=c89")
+                 "-std=gnu89"))
 
               (zero?
                (system* "./Configure"
@@ -158,6 +168,7 @@ differences.")
         (base32
          "1syyqzy462501kn5ma9gl6xbmcahqcn4qpafhsmpz0nd0x2m4l63"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/aliased")
     (synopsis "Use shorter versions of class names")
     (description "The alias module loads the class you specify and exports
@@ -493,6 +504,8 @@ your class.")
         (base32
          "1lilrjy1s0q5hyr0888kf0ifxjyl2iyk4vxil4jsv0sgh39lkgx5"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-class-accessor" ,perl-class-accessor)))
     (home-page "http://search.cpan.org/dist/Class-Accessor-Chained")
@@ -653,6 +666,7 @@ type for perl.")
         (base32
          "09ifd6v0c94vr20n9yr1dxgcp7hyscqq851szdip7y24bd26nlbc"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Class-Factory-Util")
     (synopsis "Utility methods for factory classes")
     (description "This module exports methods useful for factory classes.")
@@ -911,6 +925,8 @@ as defined by two typical specimens of Perl coders.")
         (base32
          "06n6jn3q3xhk57icwip0ihzqixxav6sgp6rrb35hahj1z748y3vi"))))
     (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-module-pluggable" ,perl-module-pluggable)))
     (home-page "http://search.cpan.org/dist/Config-Any")
     (synopsis "Load configuration from different file formats")
     (description "Config::Any provides a facility for Perl applications and
@@ -1168,7 +1184,8 @@ indentation and newlines plus sub deparsing.")
          "1hvi92c4h2angryc6pngw7gbm3ysc2jfmyxk2wh9ia4vdwpbs554"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
      `(("perl-class-accessor-chained" ,perl-class-accessor-chained)))
     (home-page "http://search.cpan.org/dist/Data-Page")
@@ -1346,6 +1363,7 @@ Date::Calc.")
         (base32
          "0zd0wbf91i49753rnf7m1lw197hdl5r97mxy0n43zdmcmhvkb3qq"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (arguments
      ;; Tests would require tzdata for timezone information, but tzdata is in
      ;; (gnu packages base) which would create a circular dependency.  TODO:
@@ -1372,7 +1390,8 @@ time from another, or parsing international times.")
          "0fli1ls298qa8nfki15myxqqqfpxvslxk4j5r3vjk577wfgjrnms"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-fatal" ,perl-test-fatal)
        ("perl-test-warnings" ,perl-test-warnings)))
     (propagated-inputs
      `(("perl-datetime-locale" ,perl-datetime-locale)
@@ -1399,6 +1418,8 @@ time before its creation (in 1582).")
         (base32
          "1b27699zkj68w5ll9chjhs52vmf39f9via6x5r5844as30qh9zxb"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
        ("perl-params-validate" ,perl-params-validate)
@@ -1501,6 +1522,7 @@ to do this without writing reams of structural code.")
        ("perl-datetime-format-builder" ,perl-datetime-format-builder)
        ("perl-datetime-timezone" ,perl-datetime-timezone)
        ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-module-pluggable" ,perl-module-pluggable)
        ("perl-test-mocktime" ,perl-test-mocktime)))
     (home-page "http://search.cpan.org/dist/DateTime-Format-Flexible")
     (synopsis "Parse data/time strings")
@@ -1521,6 +1543,8 @@ give it and parse it into a DateTime object.")
         (base32
          "0cvwk7pigj7czsp81z35h7prxvylkrlk2l0kwvq0v72ykx9zc2cb"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
        ("perl-datetime-event-ical" ,perl-datetime-event-ical)
@@ -1548,7 +1572,8 @@ order to create the appropriate objects.")
          "1qq3adq1y08d0jlmwk9059s5d39hb26f3zjag099gjjyvs5c8yal"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-module-util" ,perl-module-util)
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-module-util" ,perl-module-util)
        ("perl-test-mocktime" ,perl-test-mocktime)))
     (propagated-inputs
      `(("perl-boolean" ,perl-boolean)
@@ -1605,6 +1630,8 @@ takes a string and a pattern and returns the `DateTime` object associated.")
         (base32
          "175grkrxiv012n6ch3z1sip4zprcili6m5zqi3njdk5c1gdvi8ca"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-list-moreutils" ,perl-list-moreutils)
        ("perl-params-validate" ,perl-params-validate)))
@@ -1707,6 +1734,7 @@ edges (mainly concerning timezone detection and selection).")
         (base32
          "0g71sma9jy0fjm619hcrcsb9spg2y03vjxx36y8k1xpa2553sr7m"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Devel-CheckBin")
     (synopsis "Check that a command is available")
     (description "Devel::CheckBin is a perl module that checks whether a
@@ -1941,6 +1969,7 @@ modules separately and deal with them after the module is done installing.")
                (base32
                 "0dsxic78mxy30qvbbdzfyp501hbkwhnbmafqfxipr0yqfy8f2j5g"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Error")
     (synopsis "OO-ish Error/Exception handling for Perl")
     (description "The Error package provides two interfaces.  Firstly Error
@@ -2120,10 +2149,12 @@ module building modules.")
          "090i265f73jlcl5rv250791vw32j9vvl4nd5abc7myg0klb8109w"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
      `(("perl-class-load" ,perl-class-load)
        ("perl-list-moreutils" ,perl-list-moreutils)
+       ("perl-module-pluggable" ,perl-module-pluggable)
        ("perl-moose" ,perl-moose)
        ("perl-moosex-params-validate" ,perl-moosex-params-validate)
        ("perl-moosex-semiaffordanceaccessor"
@@ -3064,6 +3095,26 @@ strictly correct manner with ExtUtils::MakeMaker, and will run on any Perl
 installation version 5.005 or newer.")
     (license (package-license perl))))
 
+(define-public perl-module-pluggable
+  (package
+    (name "perl-module-pluggable")
+    (version "5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/S/SI/SIMONW/"
+                           "Module-Pluggable-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1px6qmszmfc69v36vd8d92av4nkrif6xf4nrj3xv647xwi2svwmk"))
+       (patches (list (search-patch "perl-module-pluggable-search.patch")))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Module-Pluggable")
+    (synopsis "Give your Perl module the ability to have plugins")
+    (description "This module provides a simple but extensible way of having
+'plugins' for your Perl module.")
+    (license (package-license perl))))
+
 (define-public perl-module-runtime
   (package
     (name "perl-module-runtime")
@@ -3077,6 +3128,7 @@ installation version 5.005 or newer.")
         (base32
          "19326f094jmjs6mgpwkyisid54k67w34br8yfh0gvaaml87gwi2c"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Module-Runtime")
     (synopsis "Perl runtime module handling")
     (description "The functions exported by this module deal with runtime
@@ -3096,6 +3148,8 @@ handling of Perl modules, which are normally handled at compile time.")
         (base32
          "0pz23ch78lbpn4kdbm04icgsmbr7jvmxwq1p5m4x2pap8qwd0wqg"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-module-runtime" ,perl-module-runtime)
        ("perl-dist-checkconflicts" ,perl-dist-checkconflicts)))
@@ -3302,7 +3356,8 @@ private methods are not.")
          "1nkzvbsiwldmpn6207ns7rinh860djnw098h6cnvywf429rjnz60"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-deep" ,perl-test-deep)
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-deep" ,perl-test-deep)
        ("perl-test-fatal" ,perl-test-fatal)
        ("perl-test-requires" ,perl-test-requires)
        ("perl-test-trap" ,perl-test-trap)
@@ -3465,6 +3520,7 @@ manually setting up a subclass.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-cpan-meta-check" ,perl-cpan-meta-check)
+       ("perl-module-build" ,perl-module-build)
        ("perl-moosex-role-withoverloading" ,perl-moosex-role-withoverloading)
        ("perl-test-fatal" ,perl-test-fatal)
        ("perl-test-requires" ,perl-test-requires)))
@@ -3597,7 +3653,8 @@ search for traits and some extra attributes.")
          "1iq90s1f0xbmr194q0mhnp9wxqxwwilkbdml040ibqbqvfiz87yh"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-fatal" ,perl-test-fatal)
        ("perl-test-requires" ,perl-test-requires)))
     (propagated-inputs
      `(("perl-carp-clan" ,perl-carp-clan)
@@ -3765,7 +3822,8 @@ Perl (back to 5.6.0).")
          "0msggbg2zbixxjq1fda19h0yygavxndfzc4j4pq11nfghmawjsb0"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-requires" ,perl-test-requires)))
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-requires" ,perl-test-requires)))
     (propagated-inputs
      `(("perl-b-hooks-endofscope" ,perl-b-hooks-endofscope)
        ("perl-namespace-clean" ,perl-namespace-clean)
@@ -4005,7 +4063,8 @@ checking parameters easier.")
          "1wh23i9kkma6493c0q1kvy6wmahd6spg6xm3xbp2ar1iy1xhks5l"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-fatal" ,perl-test-fatal)
        ("perl-test-requires" ,perl-test-requires)))
     (propagated-inputs
      `(("perl-module-implementation" ,perl-module-implementation)))
@@ -4066,6 +4125,7 @@ up inheritance from those modules at the same time.")
         (base32
          "1viaj8jyshcj135la0kgfgzalaw06xnbsg9h54jx09v1342v69lj"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Path-Class")
     (synopsis "Path specification manipulation")
     (description "Path::Class is a module for manipulation of file and
@@ -4125,6 +4185,7 @@ used for writing documentation for Perl and for Perl modules.")
         (base32
          "0f9p3hx0vqx8zg5v24pz0s4zc8ln100c7c91ks681wq02phqj2v7"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (arguments `(#:tests? #f))          ;TODO: Timezone test failures
     (home-page "http://search.cpan.org/dist/POSIX-strftime-Compiler")
     (synopsis "GNU C library compatible strftime for loggers and servers")
@@ -4168,6 +4229,7 @@ Module::Build project, but has been externalized here for general use.")
         (base32
          "165zcf9lpijdpkx82za0g9rx8ckjnhipmcivdkyzshl8jmp1bl4v"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Readonly")
     (synopsis "Create read-only scalars, arrays, hashes")
     (description "This module provides a facility for creating non-modifiable
@@ -4925,6 +4987,8 @@ structures without getting caught in an infinite loop.")
         (base32
          "0rhs4q6qn64ji06ns7lwl6iiiw3mggvd9xk9nkiqvx1jihbplrbw"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-text-diff" ,perl-text-diff)
        ("perl-capture-tiny" ,perl-capture-tiny)))
@@ -5096,6 +5160,7 @@ you test against long strings.")
        ("perl-test-warn" ,perl-test-warn)
        ("perl-universal-can" ,perl-universal-can)
        ("perl-universal-isa" ,perl-universal-isa)))
+    (arguments `(#:tests? #f))          ;TODO: tests require perl-cgi
     (home-page "http://search.cpan.org/dist/Test-MockObject")
     (synopsis "Emulate troublesome interfaces in Perl")
     (description "Test::MockObject allows you to create objects that conform
@@ -5213,6 +5278,7 @@ as flexible as possible to the tester.")
         (base32
          "1hmwwhabyng4jrnll926b4ab73r40w3pfchlrvs0yx6kh6kwwy14"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Test-Pod")
     (synopsis "Check for POD errors in files")
     (description "Check POD files for errors or warnings in a test file, using
@@ -5357,6 +5423,8 @@ a minimum of effort.")
         (base32
          "05b4zc4087imwphls4yksg4chzx9yavbri301gaxas9kv1yhx13w"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-test-tester" ,perl-test-tester)
        ("perl-data-dump" ,perl-data-dump)))
@@ -5471,7 +5539,8 @@ installed.")
        ("perl-test-directory" ,perl-test-directory)))
     (propagated-inputs
      `(("perl-data-tumbler" ,perl-data-tumbler)
-       ("perl-file-homedir" ,perl-file-homedir)))
+       ("perl-file-homedir" ,perl-file-homedir)
+       ("perl-module-pluggable" ,perl-module-pluggable)))
     (home-page "http://search.cpan.org/dist/Test-WriteVariants")
     (synopsis "Dynamic generation of tests")
     (description "The Test::WriteVariants module provides for the dynamic
@@ -5512,6 +5581,7 @@ support.")
         (base32
          "0a6zkchc0apvzkch6z18cx6h97xfiv50r7n4xhg90x8dvk75qzcs"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Text-Aligner")
     (synopsis "Align text")
     (description "Text::Aligner exports a single function, align(), which is
@@ -5594,6 +5664,7 @@ generally slower on larger files.")
         (base32
          "0lr76wrsj8wcxrq4wi8z1640w4dmdbkznp06q744rg3g0bd238d5"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Text-Glob")
     (synopsis "Match globbing patterns against text")
     (description "Text::Glob implements glob(3) style matching that can be
@@ -5632,6 +5703,8 @@ you want to do full file globbing use the File::Glob module instead.")
         (base32
          "02c8v38k639r23dgxwgvsy4myjjzvgdb238kpiffsiz25ab3xp5j"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-text-aligner" ,perl-text-aligner)))
     (home-page "http://search.cpan.org/dist/Text-Table")
@@ -5700,6 +5773,7 @@ as exceptions to standard program flow.")
         (base32
           "0mmg9iyh42syal3z1p2pn9airq65yrkfs66cnqs9nz76jy60pfzs"))))
   (build-system perl-build-system)
+  (native-inputs `(("perl-module-build" ,perl-module-build)))
   (home-page "http://search.cpan.org/dist/Tie-IxHash")
   (synopsis "Ordered associative arrays for Perl")
   (description "This Perl module implements Perl hashes that preserve the
@@ -5829,6 +5903,8 @@ time values and formatting dates into ASCII strings.")
         (base32
          "0bwqyg8z98m8cjw1qcm4wg502n225k33j2fp8ywxkgfjdd1zgllv"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-timedate" ,perl-timedate))) ;For Date::Parse
     (home-page "http://search.cpan.org/dist/Time-Mock")
@@ -5875,7 +5951,8 @@ simple n-ary tree.")
          "1g27xl48q1vr7aikhxg4vvcsj1si8allxz59vmnks61wsw4by7vg"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-exception" ,perl-test-exception)))
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-exception" ,perl-test-exception)))
     (propagated-inputs
      `(("perl-tree-simple" ,perl-tree-simple)
        ("perl-base" ,perl-base)))
@@ -6149,12 +6226,13 @@ MYMETA.yml.")
      `(("perl-cpan-meta" ,perl-cpan-meta)))
     (home-page "http://search.cpan.org/dist/Module-Build")
     (synopsis "Build and install Perl modules")
-    (description "\"Module::Build\" is a system for building, testing, and
-installing Perl modules.  It is meant to be an alternative to
-\"ExtUtils::MakeMaker\".  Developers may alter the behavior of the module
+    (description "@code{Module::Build} is a system for building, testing, and
+installing Perl modules; it used to be part of Perl itself until version 5.22,
+which dropped it.  It is meant to be an alternative to
+@code{ExtUtils::MakeMaker}.  Developers may alter the behavior of the module
 through subclassing in a much more straightforward way than with
-\"MakeMaker\".  It also does not require a \"make\" on your system - most of
-the \"Module::Build\" code is pure-perl and written in a cross-platform way.")
+@code{MakeMaker}.  It also does not require a @command{make} on your
+system---most of the @code{Module::Build} code is pure-Perl.")
     (license (package-license perl))))
 
 (define-public perl-parse-cpan-meta

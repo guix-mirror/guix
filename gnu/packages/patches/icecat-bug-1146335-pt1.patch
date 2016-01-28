@@ -1,0 +1,141 @@
+Copied from: https://hg.mozilla.org/releases/mozilla-esr38/rev/9d14787bd10e
+Mozilla Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1146335
+
+# HG changeset patch
+# User Seth Fowler <mark.seth.fowler@gmail.com>
+# Date 1428627143 25200
+# Node ID 9d14787bd10e6f3013263a2cae0bcc78bebde1db
+# Parent  aaf922ae679685acb5d2b8ffa5f0bf22f1e6987a
+Bug 1146335 (Part 1) - Add assertions and fix style issues in image::Downscaler. r=tn a=lizzard
+
+diff --git a/image/src/Downscaler.cpp b/image/src/Downscaler.cpp
+--- a/image/src/Downscaler.cpp
++++ b/image/src/Downscaler.cpp
+@@ -72,23 +72,25 @@ Downscaler::BeginFrame(const nsIntSize& 
+   mOutputBuffer = aOutputBuffer;
+   mHasAlpha = aHasAlpha;
+ 
+   ResetForNextProgressivePass();
+   ReleaseWindow();
+ 
+   auto resizeMethod = skia::ImageOperations::RESIZE_LANCZOS3;
+ 
+-  skia::resize::ComputeFilters(resizeMethod, mOriginalSize.width,
+-                               mTargetSize.width, 0,
+-                               mTargetSize.width, mXFilter.get());
++  skia::resize::ComputeFilters(resizeMethod,
++                               mOriginalSize.width, mTargetSize.width,
++                               0, mTargetSize.width,
++                               mXFilter.get());
+ 
+-  skia::resize::ComputeFilters(resizeMethod, mOriginalSize.height,
+-                               mTargetSize.height, 0,
+-                               mTargetSize.height, mYFilter.get());
++  skia::resize::ComputeFilters(resizeMethod,
++                               mOriginalSize.height, mTargetSize.height,
++                               0, mTargetSize.height,
++                               mYFilter.get());
+ 
+   // Allocate the buffer, which contains scanlines of the original image.
+   size_t bufferLen = mOriginalSize.width * sizeof(uint32_t);
+   mRowBuffer = MakeUnique<uint8_t[]>(bufferLen);
+   if (MOZ_UNLIKELY(!mRowBuffer)) {
+     return NS_ERROR_OUT_OF_MEMORY;
+   }
+ 
+@@ -126,39 +128,54 @@ void
+ Downscaler::ResetForNextProgressivePass()
+ {
+   mPrevInvalidatedLine = 0;
+   mCurrentOutLine = 0;
+   mCurrentInLine = 0;
+   mLinesInBuffer = 0;
+ }
+ 
++static void
++GetFilterOffsetAndLength(UniquePtr<skia::ConvolutionFilter1D>& aFilter,
++                         int32_t aOutputImagePosition,
++                         int32_t* aFilterOffsetOut,
++                         int32_t* aFilterLengthOut)
++{
++  MOZ_ASSERT(aOutputImagePosition < aFilter->num_values());
++  aFilter->FilterForValue(aOutputImagePosition,
++                          aFilterOffsetOut,
++                          aFilterLengthOut);
++}
++
+ void
+ Downscaler::CommitRow()
+ {
+   MOZ_ASSERT(mOutputBuffer, "Should have a current frame");
+   MOZ_ASSERT(mCurrentInLine < mOriginalSize.height, "Past end of input");
+   MOZ_ASSERT(mCurrentOutLine < mTargetSize.height, "Past end of output");
+ 
+   int32_t filterOffset = 0;
+   int32_t filterLength = 0;
+-  mYFilter->FilterForValue(mCurrentOutLine, &filterOffset, &filterLength);
++  GetFilterOffsetAndLength(mYFilter, mCurrentOutLine,
++                           &filterOffset, &filterLength);
+ 
+   int32_t inLineToRead = filterOffset + mLinesInBuffer;
+   MOZ_ASSERT(mCurrentInLine <= inLineToRead, "Reading past end of input");
+   if (mCurrentInLine == inLineToRead) {
+     skia::ConvolveHorizontally(mRowBuffer.get(), *mXFilter,
+                                mWindow[mLinesInBuffer++], mHasAlpha,
+                                /* use_sse2 = */ true);
+   }
+ 
+   while (mLinesInBuffer == filterLength &&
+          mCurrentOutLine < mTargetSize.height) {
+     DownscaleInputLine();
+-    mYFilter->FilterForValue(mCurrentOutLine, &filterOffset, &filterLength);
++
++    GetFilterOffsetAndLength(mYFilter, mCurrentOutLine,
++                             &filterOffset, &filterLength);
+   }
+ 
+   mCurrentInLine += 1;
+ }
+ 
+ bool
+ Downscaler::HasInvalidation() const
+ {
+@@ -184,16 +201,17 @@ Downscaler::DownscaleInputLine()
+ {
+   typedef skia::ConvolutionFilter1D::Fixed FilterValue;
+ 
+   MOZ_ASSERT(mOutputBuffer);
+   MOZ_ASSERT(mCurrentOutLine < mTargetSize.height, "Writing past end of output");
+ 
+   int32_t filterOffset = 0;
+   int32_t filterLength = 0;
++  MOZ_ASSERT(mCurrentOutLine < mYFilter->num_values());
+   auto filterValues =
+     mYFilter->FilterForValue(mCurrentOutLine, &filterOffset, &filterLength);
+ 
+   uint8_t* outputLine =
+     &mOutputBuffer[mCurrentOutLine * mTargetSize.width * sizeof(uint32_t)];
+   skia::ConvolveVertically(static_cast<const FilterValue*>(filterValues),
+                            filterLength, mWindow.get(), mXFilter->num_values(),
+                            outputLine, mHasAlpha, /* use_sse2 = */ true);
+@@ -202,17 +220,18 @@ Downscaler::DownscaleInputLine()
+ 
+   if (mCurrentOutLine == mTargetSize.height) {
+     // We're done.
+     return;
+   }
+ 
+   int32_t newFilterOffset = 0;
+   int32_t newFilterLength = 0;
+-  mYFilter->FilterForValue(mCurrentOutLine, &newFilterOffset, &newFilterLength);
++  GetFilterOffsetAndLength(mYFilter, mCurrentOutLine,
++                           &newFilterOffset, &newFilterLength);
+ 
+   int diff = newFilterOffset - filterOffset;
+   MOZ_ASSERT(diff >= 0, "Moving backwards in the filter?");
+ 
+   // Shift the buffer. We're just moving pointers here, so this is cheap.
+   mLinesInBuffer -= diff;
+   mLinesInBuffer = max(mLinesInBuffer, 0);
+   for (int32_t i = 0; i < mLinesInBuffer; ++i) {
+

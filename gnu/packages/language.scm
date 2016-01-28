@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,6 +60,7 @@ manipulating such numbers.")
         (base32
          "0drzg9a2dkjxgf00n6jg0jzhd8972bh3j4wdnmdxpqi3zmfqhwcy"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Lingua-EN-Inflect")
     (synopsis "Convert singular to plural")
     (description "Lingua::EN::Inflect provides plural inflections,
@@ -224,6 +225,8 @@ Moreira, V. and Huyck, C.")
         (base32
          "12avh2mnnc7llmmshrr5bgb473fvydxnlqrqbl2815mf2dp4pxcg"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-lingua-pt-stemmer" ,perl-lingua-pt-stemmer)
        ("perl-lingua-stem-fr" ,perl-lingua-stem-fr)
@@ -329,6 +332,7 @@ Lingua::Stem::Snowball::Se.")
         (base32
          "0675v45bbsh7vr7kpf36xs2q79g02iq1kmfw22h20xdk4rzqvkqx"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Snowball-Norwegian")
     (synopsis "Porters stemming algorithm for Norwegian")
     (description "Lingua::Stem::Snowball::No is a perl port of the norwegian
@@ -348,6 +352,7 @@ stemmer at http://snowball.tartarus.org.")
         (base32
          "0agwc12jk5kmabnpsplw3wf4ii5w1zb159cpin44x3srb0sr5apg"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/Snowball-Swedish")
     (synopsis "Porters stemming algorithm for Swedish")
     (description "Lingua::Stem::Snowball::Se is a perl port of the swedish

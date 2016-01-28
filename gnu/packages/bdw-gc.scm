@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -39,7 +39,9 @@
    (arguments
     ;; Make it so that we don't rely on /proc.  This is especially useful in
     ;; an initrd run before /proc is mounted.
-    '(#:configure-flags '("CPPFLAGS=-DUSE_LIBC_PRIVATES")))
+    '(#:configure-flags '("CPPFLAGS=-DUSE_LIBC_PRIVATES"
+                          ;; Install gc_cpp.h et al.
+                          "--enable-cplusplus")))
    (outputs '("out" "debug"))
    (synopsis "The Boehm-Demers-Weiser conservative garbage collector
 for C and C++")
@@ -103,11 +105,4 @@ lock-free code, experiment with thread programming paradigms, etc.")
     (inputs `(("libatomic-ops" ,libatomic-ops)))
 
     ;; 'USE_LIBC_PRIVATES' is now the default.
-    (arguments '())))
-
-;;; TODO: Remove this package once libgc is updated from core-updates.
-(define-public libgc-for-c++
-  (package (inherit libgc)
-    (name "libgc-cxx")
-    (arguments
-     '(#:configure-flags '("--enable-cplusplus"))))) ;install gc_cpp.h et al.
+    (arguments '(#:configure-flags '("--enable-cplusplus")))))

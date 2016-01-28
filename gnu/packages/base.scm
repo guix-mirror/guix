@@ -1,10 +1,11 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014, 2015 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -73,16 +74,18 @@ command-line arguments, multiple languages, and so on.")
 (define-public grep
   (package
    (name "grep")
-   (version "2.21")
+   (version "2.22")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/grep/grep-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1pp5n15qwxrw1pibwjhhgsibyv5cafhamf8lwzjygs6y00fa2i2j"))
-            (patches (list (search-patch "grep-CVE-2015-1345.patch")))))
+              "1srn321x7whlhs5ks36zlcrrmj4iahll8fxwsh1vbz3v04px54fa"))
+            (patches
+             (list (search-patch "grep-timing-sensitive-test.patch")))))
    (build-system gnu-build-system)
+   (native-inputs `(("perl" ,perl)))             ;some of the tests require it
    (synopsis "Print lines matching a pattern")
    (description
      "grep is a tool for finding text inside files.  Text is found by
@@ -206,17 +209,17 @@ interactive means to merge two files.")
 (define-public findutils
   (package
    (name "findutils")
-   (version "4.4.2")
+   (version "4.6.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/findutils/findutils-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0amn0bbwqvsvvsh6drfwz20ydc2czk374lzw5kksbh6bf78k4ks3"))
+              "178nn4dl7wbcw499czikirnkniwnx36argdnqgz4ik9i6zvwkm6y"))
             (patches (map search-patch
-                          '("findutils-absolute-paths.patch"
-                            "findutils-localstatedir.patch")))))
+                          '("findutils-localstatedir.patch"
+                            "findutils-test-xargs.patch")))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags (list
@@ -595,6 +598,15 @@ store.")
                          (string-append "#define _PATH_BSHELL \""
                                         bash "/bin/bash\"\n")))
 
+                      ;; Nscd uses __DATE__ and __TIME__ to create a string to
+                      ;; make sure the client and server come from the same
+                      ;; libc.  Use something deterministic instead.
+                      (substitute* "nscd/nscd_stat.c"
+                        (("static const char compilation\\[21\\] =.*$")
+                         (string-append
+                          "static const char compilation[21] = \""
+                          (string-take (basename out) 20) "\";\n")))
+
                       ;; Make sure we don't retain a reference to the
                       ;; bootstrap Perl.
                       (substitute* "malloc/mtrace.pl"
@@ -862,7 +874,7 @@ command.")
 (define-public tzdata
   (package
     (name "tzdata")
-    (version "2015c")
+    (version "2015g")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -870,7 +882,7 @@ command.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0nin48g5dmkfgckp25bngxchn3sw3yyjss5sq7gs5xspbxgsq3w6"))))
+               "0qb1awqrn3215zd2jikpqnmkzrxwfjf0d3dw2xmnk4c40yzws8xr"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -917,7 +929,7 @@ command.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "0bplibiy70dvlrhwqzkzxgmg81j6d2kklvjgi2f1g2zz1nkb3vkz"))))))
+                            "1i3y1kzjiz2j62c7vd4wf85983sqk9x9lg3473njvbdz4kph5r0q"))))))
     (home-page "http://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)

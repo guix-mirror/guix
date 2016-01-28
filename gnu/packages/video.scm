@@ -1057,7 +1057,7 @@ for use with HTML5 video.")
           (lambda _
             ;; Copy-paste settings from the cmake build system.
             (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
-            (setenv "CMAKE_INCLUDE_PATH" (getenv "CPATH")))
+            (setenv "CMAKE_INCLUDE_PATH" (getenv "C_INCLUDE_PATH")))
           (alist-replace 'build
             (lambda* (#:key inputs outputs #:allow-other-keys)
               (let*

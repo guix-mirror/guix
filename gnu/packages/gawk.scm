@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -19,6 +19,7 @@
 
 (define-module (gnu packages gawk)
   #:use-module (guix licenses)
+  #:use-module (gnu packages)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages libsigsegv)
   #:use-module (guix packages)
@@ -34,7 +35,8 @@
             (uri (string-append "mirror://gnu/gawk/gawk-" version
                                 ".tar.xz"))
             (sha256
-             (base32 "09d6pmx6h3i2glafm0jd1v1iyrs03vcyv2rkz12jisii3vlmbkz3"))))
+             (base32 "09d6pmx6h3i2glafm0jd1v1iyrs03vcyv2rkz12jisii3vlmbkz3"))
+            (patches (list (search-patch "gawk-fts-test.patch")))))
    (build-system gnu-build-system)
    (arguments
     `(#:parallel-tests? #f                ; test suite fails in parallel

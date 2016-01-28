@@ -1,11 +1,11 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -737,6 +737,7 @@ language known as SASS.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-http-message" ,perl-http-message)
+       ("perl-module-build" ,perl-module-build)
        ("perl-test-mocktime" ,perl-test-mocktime)
        ("perl-try-tiny" ,perl-try-tiny)
        ("perl-uri" ,perl-uri)))
@@ -1318,6 +1319,7 @@ MIME type directly to the browser, without being processed through Catalyst.")
        ("perl-io-stringy" ,perl-io-stringy)
        ("perl-json-maybexs" ,perl-json-maybexs)
        ("perl-libwww" ,perl-libwww)
+       ("perl-module-pluggable" ,perl-module-pluggable)
        ("perl-moose" ,perl-moose)
        ("perl-moosex-emulate-class-accessor-fast"
         ,perl-moosex-emulate-class-accessor-fast)
@@ -1544,6 +1546,34 @@ application classes.")
 development server with Starman.")
     (license (package-license perl))))
 
+(define-public perl-cgi
+  (package
+    (name "perl-cgi")
+    (version "4.25")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/L/LE/LEEJO/"
+                           "CGI-" version ".tar.gz"))
+       (sha256
+        (base32
+         "06hk9zzvlix1yi95wlkb1ykdxgl6lscm7452gkwr2snsb8iybczg"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-deep" ,perl-test-deep)
+       ("perl-test-nowarnings" ,perl-test-nowarnings)
+       ("perl-test-warn" ,perl-test-warn)))
+    (propagated-inputs
+     `(("perl-html-parser" ,perl-html-parser)))
+    (home-page "http://search.cpan.org/dist/CGI")
+    (synopsis "Handle Common Gateway Interface requests and responses")
+    (description "CGI.pm is a stable, complete and mature solution for
+processing and preparing HTTP requests and responses.  Major features include
+processing form submissions, file uploads, reading and writing cookies, query
+string generation and manipulation, and processing and preparing HTTP
+headers.")
+    (license (package-license perl))))
+
 (define-public perl-cgi-simple
   (package
     (name "perl-cgi-simple")
@@ -1558,7 +1588,8 @@ development server with Starman.")
          "1nkyb1m1g5r47xykflf68dplanih5p15njv82frbgbsms34kp1sg"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-io-stringy" ,perl-io-stringy))) ;for IO::Scalar
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-io-stringy" ,perl-io-stringy))) ;for IO::Scalar
     (home-page "http://search.cpan.org/dist/CGI-Simple")
     (synopsis "CGI interface that is CGI.pm compliant")
     (description "CGI::Simple provides a relatively lightweight drop in
@@ -1600,6 +1631,8 @@ inputs, in a manner reminiscent of how PHP does.")
         (base32
          "0h6qqdg1yzqkdxp7hqlp0qa7d1y64nilgimxs79dys2ryjfpcknh"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-datetime" ,perl-datetime)
        ("perl-http-date" ,perl-http-date)))
@@ -1694,7 +1727,8 @@ which can be used to parse directory listings.")
                 (search-patch "perl-finance-quote-unuse-mozilla-ca.patch")))))
    (build-system perl-build-system)
    (propagated-inputs
-    `(("perl-datetime" ,perl-datetime)
+    `(("perl-cgi" ,perl-cgi)
+      ("perl-datetime" ,perl-datetime)
       ("perl-html-parser" ,perl-html-parser)
       ("perl-html-tableextract" ,perl-html-tableextract)
       ("perl-html-tree" ,perl-html-tree)
@@ -1841,7 +1875,8 @@ in tables within an HTML document, either as text or encoded element trees.")
          "13qlqbpixw470gnck0xgny8hyjj576m8y24bba2p9ai2lvy76vbx"))))
     (build-system perl-build-system)
     (native-inputs
-     `(("perl-test-fatal" ,perl-test-fatal)))
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-test-fatal" ,perl-test-fatal)))
     (propagated-inputs
      `(("perl-html-parser" ,perl-html-parser)
        ("perl-html-tagset" ,perl-html-tagset)
@@ -1908,6 +1943,8 @@ kinds of HTML parsing operations.")
                (base32
                 "07ahpfgidxsw2yb7y8i7bbr8s64aq6qgq832h9jswmksxbd0l43q"))))
     (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-cgi" ,perl-cgi)))
     (home-page "http://search.cpan.org/dist/HTML-Template")
     (synopsis "HTML-like templates")
     (description
@@ -2166,6 +2203,8 @@ environment from an HTTP::Request.")
         (base32
          "05klpfkss2a6i5ihmvcm27fyar0f2v4ispg2f49agab3va1gix6g"))))
     (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-cgi" ,perl-cgi)))
     (arguments
      ;; See the discussion of a related tests issue at
      ;; https://lists.gnu.org/archive/html/guix-devel/2015-01/msg00346.html
@@ -2236,6 +2275,7 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
         (base32
          "0ky20hmln6waipzqikizyw04vpszf70fgpshz7ib8zv8480ri456"))))
     (build-system perl-build-system)
+    (native-inputs `(("perl-module-build" ,perl-module-build)))
     (home-page "http://search.cpan.org/dist/IO-Socket-IP")
     (synopsis "Family-neutral IP socket supporting both IPv4 and IPv6")
     (description "This module provides a protocol-independent way to use IPv4
@@ -2560,6 +2600,8 @@ already set.")
         (base32
          "1hb8dx7i4vs74n0p737wrvpdnnw6argxrjpr6kj6432zabp8325z"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-plack" ,perl-plack)))
     (home-page "http://search.cpan.org/dist/Plack-Middleware-MethodOverride")
@@ -2784,6 +2826,8 @@ and updated by RFC 2732.")
         (base32
          "0czc4h182s7sx3k123m7qlg7yybnwxgh369hap3c3b6xgrglrhy0"))))
     (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
     (propagated-inputs
      `(("perl-uri" ,perl-uri)))
     (home-page "http://search.cpan.org/dist/URI-Find")
@@ -2851,6 +2895,8 @@ library.")
         (base32
          "1zrw8aadhwy48q51x2z2rqlkwf17bya4j4h3hy89mw783j96rmg9"))))
     (build-system perl-build-system)
+    (native-inputs                      ;only for tests
+     `(("perl-cgi" ,perl-cgi)))
     (propagated-inputs
      `(("perl-html-form" ,perl-html-form)
        ("perl-html-parser" ,perl-html-parser)

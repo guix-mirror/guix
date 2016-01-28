@@ -139,12 +139,6 @@ report only settings not already effective."
        (let* ((values (or (and=> (getenv variable)
                                  (cut string-tokenize* <> separator))
                           '()))
-              ;; Add a trailing slash to force symlinks to be treated as
-              ;; directories when 'find-files' traverses them.
-              (files  (if pattern
-                          (map (cut string-append <> "/") files)
-                          files))
-
               ;; XXX: Silence 'find-files' when it stumbles upon non-existent
               ;; directories (see
               ;; <http://lists.gnu.org/archive/html/guix-devel/2015-01/msg00269.html>.)

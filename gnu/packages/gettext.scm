@@ -2,6 +2,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,50 +41,51 @@
 (define-public gnu-gettext
   (package
     (name "gettext")
-    (version "0.19.6")
+    (version "0.19.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gettext/gettext-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0pb9vp4ifymvdmc31ks3xxcnfqgzj8shll39czmk8c1splclqjzd"))))
+               "0gy2b2aydj8r0sapadnjw8cmb8j2rynj28d5qs1mfa800njd51jk"))))
     (build-system gnu-build-system)
+    (outputs '("out"
+               "doc"))                            ;8 MiB of HTML
     (inputs
      `(("expat" ,expat)))
     (arguments
-     `(#:phases (alist-cons-before
-                 'check 'patch-tests
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (let* ((bash (which "sh")))
-                     ;; Some of the files we're patching are
-                     ;; ISO-8859-1-encoded, so choose it as the default
-                     ;; encoding so the byte encoding is preserved.
-                     (with-fluids ((%default-port-encoding #f))
-                       (substitute*
-                           (find-files "gettext-tools/tests"
-                                       "^(lang-sh|msg(exec|filter)-[0-9])")
-                         (("#![[:blank:]]/bin/sh")
-                          (format #f "#!~a" bash)))
+     `(#:phases
+       (modify-phases %standard-phases
+        (add-before 'check 'patch-tests
+         (lambda* (#:key inputs #:allow-other-keys)
+           (let* ((bash (which "sh")))
+             ;; Some of the files we're patching are
+             ;; ISO-8859-1-encoded, so choose it as the default
+             ;; encoding so the byte encoding is preserved.
+             (with-fluids ((%default-port-encoding #f))
+               (substitute*
+                   (find-files "gettext-tools/tests"
+                               "^(lang-sh|msg(exec|filter)-[0-9])")
+                 (("#![[:blank:]]/bin/sh")
+                  (format #f "#!~a" bash)))
 
-                       (substitute* (cons "gettext-tools/src/msginit.c"
-                                          (find-files "gettext-tools/gnulib-tests"
-                                                      "posix_spawn"))
-                         (("/bin/sh")
-                          bash))
+               (substitute* (cons "gettext-tools/src/msginit.c"
+                                  (find-files "gettext-tools/gnulib-tests"
+                                              "posix_spawn"))
+                 (("/bin/sh")
+                  bash))
 
-                       (substitute* "gettext-tools/src/project-id"
-                         (("/bin/pwd")
-                          "pwd")))))
-                 (alist-cons-before
-                  'configure 'link-expat
-                  (lambda _
-                    ;; Gettext defaults to opening expat via dlopen on
-                    ;; "Linux".  Change to link directly.
-                    (substitute* "gettext-tools/configure"
-                      (("LIBEXPAT=\"-ldl\"") "LIBEXPAT=\"-ldl -lexpat\"")
-                      (("LTLIBEXPAT=\"-ldl\"") "LTLIBEXPAT=\"-ldl -lexpat\"")))
-                  %standard-phases))
+               (substitute* "gettext-tools/src/project-id"
+                 (("/bin/pwd")
+                  "pwd"))))))
+        (add-before 'configure 'link-expat
+         (lambda _
+           ;; Gettext defaults to opening expat via dlopen on
+           ;; "Linux".  Change to link directly.
+           (substitute* "gettext-tools/configure"
+             (("LIBEXPAT=\"-ldl\"") "LIBEXPAT=\"-ldl -lexpat\"")
+             (("LTLIBEXPAT=\"-ldl\"") "LTLIBEXPAT=\"-ldl -lexpat\"")))))
 
        ;; When tests fail, we want to know the details.
        #:make-flags '("VERBOSE=yes")))
