@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -187,7 +188,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
 (define-public icedtea-6
   (package
     (name "icedtea")
-    (version "1.13.9")
+    (version "1.13.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -195,7 +196,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0rf95gsyr849b0nxhc7i0k5pr2iz8a922kg288x7jbgws0pgpq31"))
+                "1mq08sfyfjlfw0c1czjs47303zv4h91s1jc0nhdlra4rbbx0g2d0"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile.in"
@@ -558,10 +559,10 @@ build process and its dependencies, whereas Make uses Makefile format.")
        ("openjdk6-src"
         ,(origin
            (method url-fetch)
-           (uri "https://java.net/downloads/openjdk6/openjdk-6-src-b37-11_nov_2015.tar.gz")
+           (uri "https://java.net/downloads/openjdk6/openjdk-6-src-b38-20_jan_2016.tar.gz")
            (sha256
             (base32
-             "0iqzvx1zmrfhxrp3z9h7bh95c2rmclrhiszmsqwkjb2gngbs29j5"))))
+             "1fapj9w4ahzf5nwvdgi1dsxjyh9dqbcvf9638r60h1by13wjqk5p"))))
        ("lcms" ,lcms)
        ("zlib" ,zlib)
        ("gtk" ,gtk+-2)
