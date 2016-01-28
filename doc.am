@@ -1,7 +1,9 @@
 # GNU Guix --- Functional package management for GNU
+# Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 # Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+# Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -91,55 +93,58 @@ ps-local: $(DOT_FILES=%.dot=$(top_srcdir)/%.eps)		\
 	  $(top_srcdir)/doc/images/coreutils-size-map.eps
 dvi-local: ps-local
 
-
-# Manual pages.
+## ----------- ##
+##  Man pages. ##
+## ----------- ##
 
-doc/guix.1: $(SUBCOMMANDS:%=guix/scripts/%.scm)
-	-$(AM_V_HELP2MAN)LANGUAGE= $(top_builddir)/pre-inst-env		\
-	  $(HELP2MAN) --output="$@" guix
+sub_commands_mans =				\
+  doc/guix-archive.1				\
+  doc/guix-build.1				\
+  doc/guix-challenge.1				\
+  doc/guix-download.1				\
+  doc/guix-edit.1				\
+  doc/guix-environment.1			\
+  doc/guix-gc.1					\
+  doc/guix-hash.1				\
+  doc/guix-import.1				\
+  doc/guix-lint.1				\
+  doc/guix-package.1				\
+  doc/guix-publish.1				\
+  doc/guix-pull.1				\
+  doc/guix-refresh.1				\
+  doc/guix-size.1				\
+  doc/guix-system.1
+
+dist_man1_MANS =				\
+  doc/guix.1					\
+  $(sub_commands_mans)
+
+# Man pages are generated using GNU help2man.
+gen_man = LANGUAGE= $(top_builddir)/pre-inst-env $(HELP2MAN)
+
+# Note: Do not depend on 'scripts/guix' since that would trigger a rebuild
+# even for people building from a tarball.
+doc/guix.1: $(sub_commands_mans)
+	-$(AM_V_HELP2MAN)$(gen_man) --output="$@" `basename "$@" .1`
+
+# Note: The dependency on $(GOBJECTS) is meant to force these docs to be made
+# only after all Guile modules have been compiled.  The 'case' ensures the man
+# pages are only generated if the corresponding script source has been
+# changed.
+doc/guix-%.1: guix/scripts/%.scm $(GOBJECTS)
+	-@case '$?' in \
+	  *$<*) $(AM_V_P) && set -x || echo "  HELP2MAN $@"; \
+	        $(gen_man) --output="$@" "guix $*";; \
+	  *)    : ;; \
+	esac
+
+if BUILD_DAEMON
+
+dist_man1_MANS += doc/guix-daemon.1
 
 # Note: Do not depend on 'guix-daemon' since that would trigger a rebuild even
 # for people building from a tarball.
 doc/guix-daemon.1: nix/nix-daemon/guix-daemon.cc
-	-$(AM_V_HELP2MAN)LANGUAGE= $(top_builddir)/pre-inst-env		\
-	  $(HELP2MAN) --output="$@" guix-daemon
-
-define subcommand-manual-target
-
-doc/guix-$(1).1: guix/scripts/$(1).scm
-	-$$(AM_V_HELP2MAN)LANGUAGE= $(top_builddir)/pre-inst-env	\
-	  $(HELP2MAN) --output="$$@" "guix $(1)"
-
-endef
-
-SUBCOMMANDS :=					\
-  archive					\
-  build						\
-  challenge					\
-  download					\
-  edit						\
-  environment					\
-  gc						\
-  hash						\
-  import					\
-  lint						\
-  package					\
-  publish					\
-  pull						\
-  refresh					\
-  size						\
-  system
-
-$(eval $(foreach subcommand,$(SUBCOMMANDS),			\
-          $(call subcommand-manual-target,$(subcommand))))
-
-dist_man1_MANS =				\
-  doc/guix.1					\
-  $(SUBCOMMANDS:%=doc/guix-%.1)
-
-if BUILD_DAEMON
-
-dist_man1_MANS +=				\
-  doc/guix-daemon.1
+	-$(AM_V_HELP2MAN)$(gen_man) --output="$@" `basename "$@" .1`
 
 endif
