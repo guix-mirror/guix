@@ -6756,7 +6756,14 @@ WebSocket usage in Python programs.")
     (description "Library for atomic file writes using platform dependent tools
 for atomic filesystem operations.")
     (home-page "https://github.com/untitaker/python-atomicwrites")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-atomicwrites))))))
+
+(define-public python2-atomicwrites
+  (package (inherit (package-with-python2
+                     (strip-python2-variant python-atomicwrites)))
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)))))
 
 (define-public python-requests-toolbelt
   (package
