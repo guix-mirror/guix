@@ -40,6 +40,7 @@
             epl1.0
             expat
             freetype
+            giftware
             gpl1 gpl1+ gpl2 gpl2+ gpl3 gpl3+
             gfl1.0
             fdl1.3+
@@ -200,6 +201,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "Freetype"
            "http://directory.fsf.org/wiki/License:Freetype"
            "https://www.gnu.org/licenses/license-list.html#freetype"))
+
+(define giftware
+  (license "Giftware"
+           "http://liballeg.org/license.html"
+           "The Allegro 4 license"))
 
 (define gpl1
   (license "GPL 1"
