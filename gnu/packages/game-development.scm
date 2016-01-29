@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Julian Graham <joolean@gmail.com>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -295,3 +296,41 @@ archive on a per-file basis.")
 programming language.")
     (home-page "https://love2d.org/")
     (license license:zlib)))
+
+(define-public allegro-4
+  (package
+    (name "allegro")
+    (version "4.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.gna.org/allegro/allegro/"
+                                  version "/allegro-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1p0ghkmpc4kwij1z9rzxfv7adnpy4ayi0ifahlns1bdzgmbyf88v"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-build-system
+           (lambda _
+             ;; Build addons as shared libraries.  Trying to set ADDON_LINKAGE
+             ;; via a command line option doesn't work because it is
+             ;; unconditionally clobbered in the build script.
+             (substitute* '("CMakeLists.txt")
+               (("ADDON_LINKAGE STATIC")
+                "ADDON_LINKAGE SHARED"))
+             #t)))))
+    (inputs
+     `(("glu" ,glu)
+       ("libpng" ,libpng)
+       ("libvorbis" ,libvorbis)
+       ("mesa" ,mesa)
+       ("zlib" ,zlib)))
+    (synopsis "Game programming library")
+    (description "Allegro is a library mainly aimed at video game and
+multimedia programming.  It handles common, low-level tasks such as creating
+windows, accepting user input, loading data, drawing images, playing sounds,
+etc.")
+    (home-page "http://liballeg.org")
+    (license license:giftware)))
