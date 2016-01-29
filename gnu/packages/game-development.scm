@@ -25,9 +25,11 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages doxygen)
   #:use-module (gnu packages glib)
@@ -41,6 +43,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
   #:use-module (gnu packages audio)
@@ -51,7 +54,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages lua)
-  #:use-module (gnu packages mp3))
+  #:use-module (gnu packages mp3)
+  #:use-module (gnu packages xml))
 
 (define-public bullet
   (package
@@ -334,3 +338,72 @@ windows, accepting user input, loading data, drawing images, playing sounds,
 etc.")
     (home-page "http://liballeg.org")
     (license license:giftware)))
+
+(define-public aseprite
+  (package
+    (name "aseprite")
+    (version "1.1.1")
+    ;; The release tarball isn't good enough because it's missing some
+    ;; necessary code that is only in git submodules.
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/aseprite/aseprite.git")
+                    (commit "v1.1.1")
+                    (recursive? #t)))
+              (sha256
+               (base32
+                "1yr0l3bc68lyrffrzxgw98zznv8yz5ldl98lyvp6s5grny4s4jyk"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags
+       ;; Use shared libraries instead of building bundled source.
+       (list "-DWITH_WEBP_SUPPORT=1"
+             "-DUSE_SHARED_CURL=1"
+             "-DUSE_SHARED_GIFLIB=1"
+             "-DUSE_SHARED_JPEGLIB=1"
+             "-DUSE_SHARED_ZLIB=1"
+             "-DUSE_SHARED_LIBPNG=1"
+             "-DUSE_SHARED_LIBLOADPNG=1"
+             "-DUSE_SHARED_LIBWEBP=1"
+             "-DUSE_SHARED_TINYXML=1"
+             "-DUSE_SHARED_PIXMAN=1"
+             "-DUSE_SHARED_FREETYPE=1"
+             "-DUSE_SHARED_ALLEGRO4=1"
+             "-DENABLE_UPDATER=0" ; no auto-updates
+             (string-append "-DFREETYPE_INCLUDE_DIR="
+                            (assoc-ref %build-inputs "freetype")
+                            "/include/freetype2"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-freetype-utils
+           (lambda _
+             ;; Fix C preprocessor include directive.
+             (substitute* '("src/app/util/freetype_utils.cpp")
+               (("freetype/") ""))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    ;; TODO: Use a patched Allegro 4 that supports window resizing.  This
+    ;; patched version is bundled with Aseprite, but the patches should be
+    ;; extracted and applied on top of a standalone Allegro 4 package.
+    (inputs
+     `(("allegro" ,allegro-4)
+       ("curl" ,curl)
+       ("freetype" ,freetype)
+       ("giflib" ,giflib)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libwebp" ,libwebp)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxxf86vm" ,libxxf86vm)
+       ("pixman" ,pixman)
+       ("tinyxml" ,tinyxml)
+       ("zlib" ,zlib)))
+    (synopsis "Animated sprite editor and pixel art tool")
+    (description "Aseprite is a tool for creating 2D pixel art for video
+games.  In addition to basic pixel editing features, Aseprite can assist in
+the creation of animations, tiled graphics, texture atlases, and more.")
+    (home-page "http://www.aseprite.org/")
+    (license license:gpl2+)))
