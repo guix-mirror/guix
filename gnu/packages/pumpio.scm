@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,7 @@
 (define-public pumpa
   (package
     (name "pumpa")
-    (version "0.9.1")
+    (version "0.9.2")
     (source (origin
               (method git-fetch) ; no source tarballs
               (uri (git-reference
@@ -38,7 +39,8 @@
                     (commit (string-append "v" version))))
               (sha256
                (base32
-                "14s0m46yqph8bs5rjpmiq42f020j9l3mygan2zj93z6qzypwd07f"))))
+                "09www29s4ldvd6apr73w7r4nmq93rcl2d182fylwgfcnncbvpy8s"))
+              (file-name (string-append name "-" version "-checkout"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
