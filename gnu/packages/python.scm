@@ -37,7 +37,8 @@
   #:use-module ((guix licenses)
                 #:select (asl2.0 bsd-4 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
                           gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+ agpl3+
-                          isc mpl2.0 psfl public-domain x11-style zpl2.1))
+                          isc mpl2.0 psfl public-domain unlicense x11-style
+                          zpl2.1))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages attr)
@@ -7469,3 +7470,31 @@ seamlessly into your existing Python unit testing work flow.")
 
 (define-public python2-hypothesis
   (package-with-python2 python-hypothesis))
+
+(define-public python-pytest-subtesthack
+  (package
+    (name "python-pytest-subtesthack")
+    (version "0.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pytest-subtesthack" version))
+              (sha256
+               (base32
+                "15kzcr5pchf3id4ikdvlv752rc0j4d912n589l4rifp8qsj19l1x"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(;; setuptools required for python-2 variant
+       ("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-pytest" ,python-pytest)))
+    (synopsis "Set-up and tear-down fixtures for unit tests")
+    (description "This plugin allows you to set up and tear down fixtures within
+unit test functions that use @code{py.test}. This is useful for using
+@command{hypothesis} inside py.test, as @command{hypothesis} will call the test
+function multiple times, without setting up or tearing down fixture state as is
+normally the case.")
+    (home-page "https://github.com/untitaker/pytest-subtesthack/")
+    (license unlicense)))
+
+(define-public python2-pytest-subtesthack
+  (package-with-python2 python-pytest-subtesthack))
