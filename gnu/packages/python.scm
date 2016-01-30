@@ -11,7 +11,7 @@
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
-;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -37,7 +37,7 @@
   #:use-module ((guix licenses)
                 #:select (asl2.0 bsd-4 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
                           gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+ agpl3+
-                          isc psfl public-domain x11-style zpl2.1))
+                          isc mpl2.0 psfl public-domain x11-style zpl2.1))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages attr)
@@ -7441,3 +7441,31 @@ interface to the Amazon Web Services (AWS) API.")
    (description "AWS CLI provides a unified command line interface to the
 Amazon Web Services (AWS) API.")
    (license asl2.0)))
+
+(define-public python-hypothesis
+  (package
+    (name "python-hypothesis")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "hypothesis" version))
+              (sha256
+               (base32
+                "1la6mfpvcn640gs2v35iv8b4sh6xdhp9j5ghay0jd86c9n4fkgxr"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(;; setuptools required for python-2 variant
+       ("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-flake8" ,python-flake8)
+       ("python-pytest" ,python-pytest)))
+    (synopsis "Library for property based testing")
+    (description "Hypothesis is a library for testing your Python code against a
+much larger range of examples than you would ever want to write by hand.  It’s
+based on the Haskell library, Quickcheck, and is designed to integrate
+seamlessly into your existing Python unit testing work flow.")
+    (home-page "https://github.com/DRMacIver/hypothesis")
+    (license mpl2.0)))
+
+(define-public python2-hypothesis
+  (package-with-python2 python-hypothesis))
