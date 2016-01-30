@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,13 +52,13 @@ clients.")
 (define-public vdirsyncer
   (package
     (name "vdirsyncer")
-    (version "0.7.5")
+    (version "0.8.1")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "vdirsyncer" version))
              (sha256
               (base32
-               "0dvar4k95n689fgw5gy19mb7ggaw32c8j2gbglr33wn7pbxc2l9z"))))
+               "1abflqw6x30xd2dlj58cr5n62x98kc0ia9f9vr8l64k2z1fjlq78"))))
     (build-system python-build-system)
     (arguments
       `(#:phases (modify-phases %standard-phases
@@ -86,8 +86,10 @@ clients.")
        ("python-setuptools-scm" ,python-setuptools-scm)
        ("python-sphinx" ,python-sphinx)
        ;; Required for testing
+       ("python-hypothesis" ,python-hypothesis)
        ("python-pytest" ,python-pytest)
        ("python-pytest-localserver" ,python-pytest-localserver)
+       ("python-pytest-subtesthack" ,python-pytest-subtesthack)
        ("python-pytest-xprocess" ,python-pytest-xprocess)
        ("python-wsgi-intercept" ,python-wsgi-intercept)
        ("radicale" ,radicale)))
