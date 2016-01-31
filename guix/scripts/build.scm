@@ -41,7 +41,10 @@
             set-build-options-from-command-line
             set-build-options-from-command-line*
             show-build-options-help
+
+            %transformation-options
             options->transformation
+            show-transformation-options-help
 
             guix-build))
 
@@ -139,6 +142,82 @@ the new package's version number from URI."
                ;; Use #:recursive? #t to allow for directories.
                (source (download-to-store store uri
                                           #:recursive? #t))))))
+
+
+;;;
+;;; Transformations.
+;;;
+
+(define (transform-package-source sources)
+  "Return a transformation procedure that replaces package sources with the
+matching URIs given in SOURCES."
+  (define new-sources
+    (map (lambda (uri)
+           (cons (package-name->name+version (basename uri))
+                 uri))
+         sources))
+
+  (lambda (store obj)
+    (let loop ((sources  new-sources)
+               (result   '()))
+      (match obj
+        ((? package? p)
+         (let ((source (assoc-ref sources (package-name p))))
+           (if source
+               (package-with-source store p source)
+               p)))
+        (_
+         obj)))))
+
+(define %transformations
+  ;; Transformations that can be applied to things to build.  The car is the
+  ;; key used in the option alist, and the cdr is the transformation
+  ;; procedure; it is called with two arguments: the store, and a list of
+  ;; things to build.
+  `((with-source . ,transform-package-source)))
+
+(define %transformation-options
+  ;; The command-line interface to the above transformations.
+  (list (option '("with-source") #t #f
+                (lambda (opt name arg result . rest)
+                  (apply values
+                         (cons (alist-cons 'with-source arg result)
+                               rest))))))
+
+(define (show-transformation-options-help)
+  (display (_ "
+      --with-source=SOURCE
+                         use SOURCE when building the corresponding package")))
+
+
+(define (options->transformation opts)
+  "Return a procedure that, when passed an object to build (package,
+derivation, etc.), applies the transformations specified by OPTS."
+  (define applicable
+    ;; List of applicable transformations as symbol/procedure pairs.
+    (filter-map (match-lambda
+                  ((key . transform)
+                   (match (filter-map (match-lambda
+                                        ((k . arg)
+                                         (and (eq? k key) arg)))
+                                      opts)
+                     (()   #f)
+                     (args (cons key (transform args))))))
+                %transformations))
+
+  (lambda (store obj)
+    (fold (match-lambda*
+            (((name . transform) obj)
+             (let ((new (transform store obj)))
+               (when (eq? new obj)
+                 (warning (_ "transformation '~a' had no effect on ~a~%")
+                          name
+                          (if (package? obj)
+                              (package-full-name obj)
+                              obj)))
+               new)))
+          obj
+          applicable)))
 
 
 ;;;
@@ -321,9 +400,6 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   (display (_ "
       --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""))
   (display (_ "
-      --with-source=SOURCE
-                         use SOURCE when building the corresponding package"))
-  (display (_ "
       --no-grafts        do not graft packages"))
   (display (_ "
   -d, --derivations      return the derivation paths of the given packages"))
@@ -336,6 +412,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
       --log-file         return the log file names for the given derivations"))
   (newline)
   (show-build-options-help)
+  (newline)
+  (show-transformation-options-help)
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -369,12 +447,12 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                       (leave (_ "invalid argument: '~a' option argument: ~a, ~
 must be one of 'package', 'all', or 'transitive'~%")
                              name arg)))))
-        (option '("check") #f #f
-                (lambda (opt name arg result . rest)
-                  (apply values
-                         (alist-cons 'build-mode (build-mode check)
-                                     result)
-                         rest)))
+         (option '("check") #f #f
+                 (lambda (opt name arg result . rest)
+                   (apply values
+                          (alist-cons 'build-mode (build-mode check)
+                                      result)
+                          rest)))
          (option '(#\s "system") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'system arg
@@ -401,15 +479,13 @@ must be one of 'package', 'all', or 'transitive'~%")
          (option '("log-file") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'log-file? #t result)))
-         (option '("with-source") #t #f
-                 (lambda (opt name arg result)
-                   (alist-cons 'with-source arg result)))
          (option '("no-grafts") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'graft? #f
                                (alist-delete 'graft? result eq?))))
 
-         %standard-build-options))
+         (append %transformation-options
+                 %standard-build-options)))
 
 (define (options->things-to-build opts)
   "Read the arguments from OPTS and return a list of high-level objects to
@@ -487,63 +563,6 @@ build."
                                                #:system system))))))
                 (map (cut transform store <>)
                      (options->things-to-build opts)))))
-
-(define (transform-package-source sources)
-  "Return a transformation procedure that replaces package sources with the
-matching URIs given in SOURCES."
-  (define new-sources
-    (map (lambda (uri)
-           (cons (package-name->name+version (basename uri))
-                 uri))
-         sources))
-
-  (lambda (store obj)
-    (let loop ((sources  new-sources)
-               (result   '()))
-      (match obj
-        ((? package? p)
-         (let ((source (assoc-ref sources (package-name p))))
-           (if source
-               (package-with-source store p source)
-               p)))
-        (_
-         obj)))))
-
-(define %transformations
-  ;; Transformations that can be applied to things to build.  The car is the
-  ;; key used in the option alist, and the cdr is the transformation
-  ;; procedure; it is called with two arguments: the store, and a list of
-  ;; things to build.
-  `((with-source . ,transform-package-source)))
-
-(define (options->transformation opts)
-  "Return a procedure that, when passed an object to build (package,
-derivation, etc.), applies the transformations specified by OPTS."
-  (define applicable
-    ;; List of applicable transformations as symbol/procedure pairs.
-    (filter-map (match-lambda
-                  ((key . transform)
-                   (match (filter-map (match-lambda
-                                        ((k . arg)
-                                         (and (eq? k key) arg)))
-                                      opts)
-                     (()   #f)
-                     (args (cons key (transform args))))))
-                %transformations))
-
-  (lambda (store obj)
-    (fold (match-lambda*
-            (((name . transform) obj)
-             (let ((new (transform store obj)))
-               (when (eq? new obj)
-                 (warning (_ "transformation '~a' had no effect on ~a~%")
-                          name
-                          (if (package? obj)
-                              (package-full-name obj)
-                              obj)))
-               new)))
-          obj
-          applicable)))
 
 (define (show-build-log store file urls)
   "Show the build log for FILE, falling back to remote logs from URLS if

@@ -3810,6 +3810,7 @@ described in the subsections below.
 
 @menu
 * Common Build Options::        Build options for most commands.
+* Package Transformation Options::    Creating variants of packages.
 * Additional Build Options::    Options specific to 'guix build'.
 @end menu
 
@@ -3939,6 +3940,56 @@ These options are parsed independently, and the result is appended to
 the parsed command-line options.
 @end defvr
 
+
+@node Package Transformation Options
+@subsection Package Transformation Options
+
+@cindex package variants
+Another set of command-line options supported by @command{guix build}
+are @dfn{package transformation options}.  These are options that allow,
+from the command-line, to define @dfn{package variants}---for instance,
+packages built from different source code.  This is a convenient way to
+create customized packages on the fly without having to type in the
+definitions of package variants (@pxref{Defining Packages}).
+
+@table @code
+
+@item --with-source=@var{source}
+Use @var{source} as the source of the corresponding package.
+@var{source} must be a file name or a URL, as for @command{guix
+download} (@pxref{Invoking guix download}).
+
+The ``corresponding package'' is taken to be one specified on the
+command line whose name matches the base of @var{source}---e.g., if
+@var{source} is @code{/src/guile-2.0.10.tar.gz}, the corresponding
+package is @code{guile}.  Likewise, the version string is inferred from
+@var{source}; in the previous example, it's @code{2.0.10}.
+
+This option allows users to try out versions of packages other than the
+one provided by the distribution.  The example below downloads
+@file{ed-1.7.tar.gz} from a GNU mirror and uses that as the source for
+the @code{ed} package:
+
+@example
+guix build ed --with-source=mirror://gnu/ed/ed-1.7.tar.gz
+@end example
+
+As a developer, @code{--with-source} makes it easy to test release
+candidates:
+
+@example
+guix build guile --with-source=../guile-2.0.9.219-e1bb7.tar.xz
+@end example
+
+@dots{} or to build from a checkout in a pristine environment:
+
+@example
+$ git clone git://git.sv.gnu.org/guix.git
+$ guix build guix --with-source=./guix
+@end example
+
+@end table
+
 @node Additional Build Options
 @subsection Additional Build Options
 
@@ -4046,40 +4097,6 @@ to build packages in a complete 32-bit environment.
 Cross-build for @var{triplet}, which must be a valid GNU triplet, such
 as @code{"mips64el-linux-gnu"} (@pxref{Configuration Names, GNU
 configuration triplets,, configure, GNU Configure and Build System}).
-
-@item --with-source=@var{source}
-Use @var{source} as the source of the corresponding package.
-@var{source} must be a file name or a URL, as for @command{guix
-download} (@pxref{Invoking guix download}).
-
-The ``corresponding package'' is taken to be one specified on the
-command line whose name matches the base of @var{source}---e.g., if
-@var{source} is @code{/src/guile-2.0.10.tar.gz}, the corresponding
-package is @code{guile}.  Likewise, the version string is inferred from
-@var{source}; in the previous example, it's @code{2.0.10}.
-
-This option allows users to try out versions of packages other than the
-one provided by the distribution.  The example below downloads
-@file{ed-1.7.tar.gz} from a GNU mirror and uses that as the source for
-the @code{ed} package:
-
-@example
-guix build ed --with-source=mirror://gnu/ed/ed-1.7.tar.gz
-@end example
-
-As a developer, @code{--with-source} makes it easy to test release
-candidates:
-
-@example
-guix build guile --with-source=../guile-2.0.9.219-e1bb7.tar.xz
-@end example
-
-@dots{} or to build from a checkout in a pristine environment:
-
-@example
-$ git clone git://git.sv.gnu.org/guix.git
-$ guix build guix --with-source=./guix
-@end example
 
 @anchor{build-check}
 @item --check
