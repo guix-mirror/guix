@@ -169,12 +169,55 @@ matching URIs given in SOURCES."
         (_
          obj)))))
 
+(define (transform-package-inputs replacement-specs)
+  "Return a procedure that, when passed a package, replaces its direct
+dependencies according to REPLACEMENT-SPECS.  REPLACEMENT-SPECS is a list of
+strings like \"guile=guile@2.1\" meaning that, any direct dependency on a
+package called \"guile\" must be replaced with a dependency on a version 2.1
+of \"guile\"."
+  (define not-equal
+    (char-set-complement (char-set #\=)))
+
+  (define replacements
+    ;; List of name/package pairs.
+    (map (lambda (spec)
+           (match (string-tokenize spec not-equal)
+             ((old new)
+              (cons old (specification->package new)))
+             (_
+              (leave (_ "invalid replacement specification: ~s~%") spec))))
+         replacement-specs))
+
+  (define (rewrite input)
+    (match input
+      ((label (? package? package) outputs ...)
+       (match (assoc-ref replacements (package-name package))
+         (#f  (cons* label (replace package) outputs))
+         (new (cons* label new outputs))))
+      (_
+       input)))
+
+  (define replace
+    (memoize                                      ;XXX: use eq?
+     (lambda (p)
+       (package
+         (inherit p)
+         (inputs (map rewrite (package-inputs p)))
+         (native-inputs (map rewrite (package-native-inputs p)))
+         (propagated-inputs (map rewrite (package-propagated-inputs p)))))))
+
+  (lambda (store obj)
+    (if (package? obj)
+        (replace obj)
+        obj)))
+
 (define %transformations
   ;; Transformations that can be applied to things to build.  The car is the
   ;; key used in the option alist, and the cdr is the transformation
   ;; procedure; it is called with two arguments: the store, and a list of
   ;; things to build.
-  `((with-source . ,transform-package-source)))
+  `((with-source . ,transform-package-source)
+    (with-input  . ,transform-package-inputs)))
 
 (define %transformation-options
   ;; The command-line interface to the above transformations.
@@ -182,12 +225,20 @@ matching URIs given in SOURCES."
                 (lambda (opt name arg result . rest)
                   (apply values
                          (cons (alist-cons 'with-source arg result)
+                               rest))))
+        (option '("with-input") #t #f
+                (lambda (opt name arg result . rest)
+                  (apply values
+                         (cons (alist-cons 'with-input arg result)
                                rest))))))
 
 (define (show-transformation-options-help)
   (display (_ "
       --with-source=SOURCE
-                         use SOURCE when building the corresponding package")))
+                         use SOURCE when building the corresponding package"))
+  (display (_ "
+      --with-input=PACKAGE=REPLACEMENT
+                         replace dependency PACKAGE by REPLACEMENT")))
 
 
 (define (options->transformation opts)

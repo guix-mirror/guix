@@ -22,6 +22,9 @@
   #:use-module (guix packages)
   #:use-module (guix scripts build)
   #:use-module (guix ui)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages busybox)
+  #:use-module (ice-9 match)
   #:use-module (srfi srfi-64))
 
 
@@ -58,6 +61,26 @@
         (and (eq? new p)
              (string-contains (get-output-string port)
                               "had no effect"))))))
+
+(test-assert "options->transformation, with-input"
+  (let* ((p (dummy-package "guix.scm"
+              (inputs `(("foo" ,coreutils)
+                        ("bar" ,grep)
+                        ("baz" ,(dummy-package "chbouib"
+                                  (native-inputs `(("x" ,grep)))))))))
+         (t (options->transformation '((with-input . "coreutils=busybox")
+                                       (with-input . "grep=findutils")))))
+    (with-store store
+      (let ((new (t store p)))
+        (and (not (eq? new p))
+             (match (package-inputs new)
+               ((("foo" dep1) ("bar" dep2) ("baz" dep3))
+                (and (eq? dep1 busybox)
+                     (eq? dep2 findutils)
+                     (string=? (package-name dep3) "chbouib")
+                     (match (package-native-inputs dep3)
+                       ((("x" dep))
+                        (eq? dep findutils)))))))))))
 
 (test-end)
 

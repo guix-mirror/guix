@@ -3995,6 +3995,25 @@ $ git clone git://git.sv.gnu.org/guix.git
 $ guix build guix --with-source=./guix
 @end example
 
+@item --with-input=@var{package}=@var{replacement}
+Replace dependency on @var{package} by a dependency on
+@var{replacement}.  @var{package} must be a package name, and
+@var{replacement} must be a package specification such as @code{guile}
+or @code{guile@@1.8}.
+
+For instance, the following command builds Guix but replaces its
+dependency on the current stable version of Guile with a dependency on
+the development version of Guile, @code{guile-next}:
+
+@example
+guix build --with-input=guile=guile-next guix
+@end example
+
+This is a recursive, deep replacement.  So in this example, both
+@code{guix} and its dependency @code{guile-json} (which also depends on
+@code{guile}) get rebuilt against @code{guile-next}.
+
+However, implicit inputs are left unchanged.
 @end table
 
 @node Additional Build Options

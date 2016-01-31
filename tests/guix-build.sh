@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -146,6 +146,18 @@ rm -f "$result"
 
 # Cross building.
 guix build coreutils --target=mips64el-linux-gnu --dry-run --no-substitutes
+
+# Replacements.
+drv1=`guix build guix --with-input=guile=guile-next -d`
+drv2=`guix build guix -d`
+test "$drv1" != "$drv2"
+
+drv1=`guix build guile -d`
+drv2=`guix build guile --with-input=gimp=ruby -d`
+test "$drv1" = "$drv2"
+
+if guix build guile --with-input=libunistring=something-really-silly
+then false; else true; fi
 
 # Parsing package names and versions.
 guix build -n time		# PASS
