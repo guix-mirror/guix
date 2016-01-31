@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -336,6 +336,7 @@ Use Alt-F2 for documentation.
      (cons (file-system
              (mount-point "/")
              (device "gnu-disk-image")
+             (title 'label)
              (type "ext4"))
            %base-file-systems))
 
