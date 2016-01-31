@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -187,7 +188,7 @@ interfaces (GUIs) in the Tcl language.")
 (define-public perl-tk
   (package
     (name "perl-tk")
-    (version "804.032")
+    (version "804.033")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -195,8 +196,7 @@ interfaces (GUIs) in the Tcl language.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0jarvplhfvnm0shhdm2a5zczlnk9mkf8jvfjiwyhjrr3cy1gl0w0"))
-             (patches (list (search-patch "perl-tk-x11-discover.patch")))))
+               "1bc8bacsf95598yimrxijymb3advrgan73pqxj75qmd20ydnwxc4"))))
     (build-system perl-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libx11" ,libx11)
