@@ -1642,8 +1642,8 @@ Consequently, this command must be used with care.
 @end table
 
 Finally, since @command{guix package} may actually start build
-processes, it supports all the common build options that @command{guix
-build} supports (@pxref{Invoking guix build, common build options}).
+processes, it supports all the common build options (@pxref{Common Build
+Options}).
 
 @node Substitutes
 @section Substitutes
@@ -2139,8 +2139,7 @@ guix archive --export git:gui /gnu/store/...-emacs-24.3 > great.nar
 
 If the specified packages are not built yet, @command{guix archive}
 automatically builds them.  The build process may be controlled with the
-same options that can be passed to the @command{guix build} command
-(@pxref{Invoking guix build, common build options}).
+common build options (@pxref{Common Build Options}).
 
 @c *********************************************************************
 @include emacs.texi
@@ -3779,6 +3778,21 @@ The general syntax is:
 guix build @var{options} @var{package-or-derivation}@dots{}
 @end example
 
+As an example, the following command builds the latest version of Emacs
+and of Guile, displays their build logs, and finally displays the
+resulting directories:
+
+@example
+guix build emacs guile
+@end example
+
+Similarly, the following command builds all the available packages:
+
+@example
+guix build --keep-going \
+  `guix package -A | cut -f1,2 --output-delimiter=@@`
+@end example
+
 @var{package-or-derivation} may be either the name of a package found in
 the software distribution such as @code{coreutils} or
 @code{coreutils-8.20}, or a derivation such as
@@ -3791,7 +3805,145 @@ Scheme expression that evaluates to a package; this is useful when
 disambiguation among several same-named packages or package variants is
 needed.
 
-The @var{options} may be zero or more of the following:
+There may be zero or more @var{options}.  The available options are
+described in the subsections below.
+
+@menu
+* Common Build Options::        Build options for most commands.
+* Additional Build Options::    Options specific to 'guix build'.
+@end menu
+
+@node Common Build Options
+@subsection Common Build Options
+
+A number of options that control the build process are common to
+@command{guix build} and other commands that can spawn builds, such as
+@command{guix package} or @command{guix archive}.  These are the
+following:
+
+@table @code
+
+@item --load-path=@var{directory}
+@itemx -L @var{directory}
+Add @var{directory} to the front of the package module search path
+(@pxref{Package Modules}).
+
+This allows users to define their own packages and make them visible to
+the command-line tools.
+
+@item --keep-failed
+@itemx -K
+Keep the build tree of failed builds.  Thus, if a build fail, its build
+tree is kept under @file{/tmp}, in a directory whose name is shown at
+the end of the build log.  This is useful when debugging build issues.
+
+@item --keep-going
+@itemx -k
+Keep going when some of the derivations fail to build; return only once
+all the builds have either completed or failed.
+
+The default behavior is to stop as soon as one of the specified
+derivations has failed.
+
+@item --dry-run
+@itemx -n
+Do not build the derivations.
+
+@item --fallback
+When substituting a pre-built binary fails, fall back to building
+packages locally.
+
+@item --substitute-urls=@var{urls}
+@anchor{client-substitute-urls}
+Consider @var{urls} the whitespace-separated list of substitute source
+URLs, overriding the default list of URLs of @command{guix-daemon}
+(@pxref{daemon-substitute-urls,, @command{guix-daemon} URLs}).
+
+This means that substitutes may be downloaded from @var{urls}, provided
+they are signed by a key authorized by the system administrator
+(@pxref{Substitutes}).
+
+@item --no-substitutes
+Do not use substitutes for build products.  That is, always build things
+locally instead of allowing downloads of pre-built binaries
+(@pxref{Substitutes}).
+
+@item --rounds=@var{n}
+Build each derivation @var{n} times in a row, and raise an error if
+consecutive build results are not bit-for-bit identical.
+
+This is a useful way to detect non-deterministic builds processes.
+Non-deterministic build processes are a problem because they make it
+practically impossible for users to @emph{verify} whether third-party
+binaries are genuine.  @xref{Invoking guix challenge}, for more.
+
+Note that, currently, the differing build results are not kept around,
+so you will have to manually investigate in case of an error---e.g., by
+stashing one of the build results with @code{guix archive --export},
+then rebuilding, and finally comparing the two results.
+
+@item --no-build-hook
+Do not attempt to offload builds @i{via} the daemon's ``build hook''
+(@pxref{Daemon Offload Setup}).  That is, always build things locally
+instead of offloading builds to remote machines.
+
+@item --max-silent-time=@var{seconds}
+When the build or substitution process remains silent for more than
+@var{seconds}, terminate it and report a build failure.
+
+@item --timeout=@var{seconds}
+Likewise, when the build or substitution process lasts for more than
+@var{seconds}, terminate it and report a build failure.
+
+By default there is no timeout.  This behavior can be restored with
+@code{--timeout=0}.
+
+@item --verbosity=@var{level}
+Use the given verbosity level.  @var{level} must be an integer between 0
+and 5; higher means more verbose output.  Setting a level of 4 or more
+may be helpful when debugging setup issues with the build daemon.
+
+@item --cores=@var{n}
+@itemx -c @var{n}
+Allow the use of up to @var{n} CPU cores for the build.  The special
+value @code{0} means to use as many CPU cores as available.
+
+@item --max-jobs=@var{n}
+@itemx -M @var{n}
+Allow at most @var{n} build jobs in parallel.  @xref{Invoking
+guix-daemon, @code{--max-jobs}}, for details about this option and the
+equivalent @command{guix-daemon} option.
+
+@end table
+
+Behind the scenes, @command{guix build} is essentially an interface to
+the @code{package-derivation} procedure of the @code{(guix packages)}
+module, and to the @code{build-derivations} procedure of the @code{(guix
+derivations)} module.
+
+In addition to options explicitly passed on the command line,
+@command{guix build} and other @command{guix} commands that support
+building honor the @code{GUIX_BUILD_OPTIONS} environment variable.
+
+@defvr {Environment Variable} GUIX_BUILD_OPTIONS
+Users can define this variable to a list of command line options that
+will automatically be used by @command{guix build} and other
+@command{guix} commands that can perform builds, as in the example
+below:
+
+@example
+$ export GUIX_BUILD_OPTIONS="--no-substitutes -c 2 -L /foo/bar"
+@end example
+
+These options are parsed independently, and the result is appended to
+the parsed command-line options.
+@end defvr
+
+@node Additional Build Options
+@subsection Additional Build Options
+
+The command-line options presented below are specific to @command{guix
+build}.
 
 @table @code
 
@@ -3986,130 +4138,6 @@ http://hydra.gnu.org/log/@dots{}-gdb-7.10
 
 You can freely access a huge library of build logs!
 @end table
-
-@cindex common build options
-In addition, a number of options that control the build process are
-common to @command{guix build} and other commands that can spawn builds,
-such as @command{guix package} or @command{guix archive}.  These are the
-following:
-
-@table @code
-
-@item --load-path=@var{directory}
-@itemx -L @var{directory}
-Add @var{directory} to the front of the package module search path
-(@pxref{Package Modules}).
-
-This allows users to define their own packages and make them visible to
-the command-line tools.
-
-@item --keep-failed
-@itemx -K
-Keep the build tree of failed builds.  Thus, if a build fail, its build
-tree is kept under @file{/tmp}, in a directory whose name is shown at
-the end of the build log.  This is useful when debugging build issues.
-
-@item --keep-going
-@itemx -k
-Keep going when some of the derivations fail to build; return only once
-all the builds have either completed or failed.
-
-The default behavior is to stop as soon as one of the specified
-derivations has failed.
-
-@item --dry-run
-@itemx -n
-Do not build the derivations.
-
-@item --fallback
-When substituting a pre-built binary fails, fall back to building
-packages locally.
-
-@item --substitute-urls=@var{urls}
-@anchor{client-substitute-urls}
-Consider @var{urls} the whitespace-separated list of substitute source
-URLs, overriding the default list of URLs of @command{guix-daemon}
-(@pxref{daemon-substitute-urls,, @command{guix-daemon} URLs}).
-
-This means that substitutes may be downloaded from @var{urls}, provided
-they are signed by a key authorized by the system administrator
-(@pxref{Substitutes}).
-
-@item --no-substitutes
-Do not use substitutes for build products.  That is, always build things
-locally instead of allowing downloads of pre-built binaries
-(@pxref{Substitutes}).
-
-@item --rounds=@var{n}
-Build each derivation @var{n} times in a row, and raise an error if
-consecutive build results are not bit-for-bit identical.
-
-This is a useful way to detect non-deterministic builds processes.
-Non-deterministic build processes are a problem because they make it
-practically impossible for users to @emph{verify} whether third-party
-binaries are genuine.  @xref{Invoking guix challenge}, for more.
-
-Note that, currently, the differing build results are not kept around,
-so you will have to manually investigate in case of an error---e.g., by
-stashing one of the build results with @code{guix archive --export},
-then rebuilding, and finally comparing the two results.
-
-@item --no-build-hook
-Do not attempt to offload builds @i{via} the daemon's ``build hook''
-(@pxref{Daemon Offload Setup}).  That is, always build things locally
-instead of offloading builds to remote machines.
-
-@item --max-silent-time=@var{seconds}
-When the build or substitution process remains silent for more than
-@var{seconds}, terminate it and report a build failure.
-
-@item --timeout=@var{seconds}
-Likewise, when the build or substitution process lasts for more than
-@var{seconds}, terminate it and report a build failure.
-
-By default there is no timeout.  This behavior can be restored with
-@code{--timeout=0}.
-
-@item --verbosity=@var{level}
-Use the given verbosity level.  @var{level} must be an integer between 0
-and 5; higher means more verbose output.  Setting a level of 4 or more
-may be helpful when debugging setup issues with the build daemon.
-
-@item --cores=@var{n}
-@itemx -c @var{n}
-Allow the use of up to @var{n} CPU cores for the build.  The special
-value @code{0} means to use as many CPU cores as available.
-
-@item --max-jobs=@var{n}
-@itemx -M @var{n}
-Allow at most @var{n} build jobs in parallel.  @xref{Invoking
-guix-daemon, @code{--max-jobs}}, for details about this option and the
-equivalent @command{guix-daemon} option.
-
-@end table
-
-Behind the scenes, @command{guix build} is essentially an interface to
-the @code{package-derivation} procedure of the @code{(guix packages)}
-module, and to the @code{build-derivations} procedure of the @code{(guix
-derivations)} module.
-
-In addition to options explicitly passed on the command line,
-@command{guix build} and other @command{guix} commands that support
-building honor the @code{GUIX_BUILD_OPTIONS} environment variable.
-
-@defvr {Environment Variable} GUIX_BUILD_OPTIONS
-Users can define this variable to a list of command line options that
-will automatically be used by @command{guix build} and other
-@command{guix} commands that can perform builds, as in the example
-below:
-
-@example
-$ export GUIX_BUILD_OPTIONS="--no-substitutes -c 2 -L /foo/bar"
-@end example
-
-These options are parsed independently, and the result is appended to
-the parsed command-line options.
-@end defvr
 
 
 @node Invoking guix edit
@@ -5118,7 +5146,7 @@ guix environment --container --share=$HOME=/exchange guile -- guile
 @end table
 
 It also supports all of the common build options that @command{guix
-build} supports (@pxref{Invoking guix build, common build options}).
+build} supports (@pxref{Common Build Options}).
 
 @node Invoking guix publish
 @section Invoking @command{guix publish}
@@ -9255,9 +9283,9 @@ This option requires Linux-libre 3.19 or newer.
 
 @end table
 
-@var{options} can contain any of the common build options provided by
-@command{guix build} (@pxref{Invoking guix build}).  In addition,
-@var{options} can contain one of the following:
+@var{options} can contain any of the common build options (@pxref{Common
+Build Options}).  In addition, @var{options} can contain one of the
+following:
 
 @table @option
 @item --system=@var{system}
