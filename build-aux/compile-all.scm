@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (use-modules (system base target)
+             (system base message)
              (ice-9 match)
              (ice-9 threads)
              (guix build utils))
@@ -67,11 +69,12 @@
       (format #t "  GUILEC   ~a~%" go)
       (force-output))
     (mkdir-p (dirname go))
-    (with-target host
-      (lambda ()
-        (compile-file file
-                      #:output-file go
-                      #:opts `(#:warnings ,warnings))))))
+    (with-fluids ((*current-warning-prefix* ""))
+      (with-target host
+        (lambda ()
+          (compile-file file
+                        #:output-file go
+                        #:opts `(#:warnings ,warnings)))))))
 
 (match (command-line)
   ((_ . files)
@@ -81,3 +84,7 @@
        (par-for-each (lambda (file)
                        (compile-file* file mutex))
                      files)))))
+
+;;; Local Variables:
+;;; eval: (put 'with-target 'scheme-indent-function 1)
+;;; End:
