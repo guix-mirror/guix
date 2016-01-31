@@ -379,6 +379,8 @@ Install, remove, or upgrade packages in a single transaction.\n"))
   (newline)
   (show-build-options-help)
   (newline)
+  (show-transformation-options-help)
+  (newline)
   (display (_ "
   -h, --help             display this help and exit"))
   (display (_ "
@@ -511,7 +513,8 @@ kind of search path~%")
                                  result)
                            #f)))
 
-         %standard-build-options))
+         (append %transformation-options
+                 %standard-build-options)))
 
 (define (options->upgrade-predicate opts)
   "Return a predicate based on the upgrade/do-not-upgrade regexps in OPTS
@@ -789,6 +792,12 @@ processed, #f otherwise."
   (define bootstrap? (assoc-ref opts 'bootstrap?))
   (define substitutes? (assoc-ref opts 'substitutes?))
   (define profile  (or (assoc-ref opts 'profile) %current-profile))
+  (define transform (options->transformation opts))
+
+  (define (transform-entry entry)
+    (manifest-entry
+      (inherit entry)
+      (item (transform store (manifest-entry-item entry)))))
 
   ;; First, process roll-backs, generation removals, etc.
   (for-each (match-lambda
@@ -803,8 +812,9 @@ processed, #f otherwise."
   (let* ((manifest    (profile-manifest profile))
          (install     (options->installable opts manifest))
          (remove      (options->removable opts manifest))
-         (transaction (manifest-transaction (install install)
-                                            (remove remove)))
+         (transaction (manifest-transaction
+                       (install (map transform-entry install))
+                       (remove remove)))
          (new         (manifest-perform-transaction manifest transaction)))
 
     (unless (and (null? install) (null? remove))

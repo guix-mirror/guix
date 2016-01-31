@@ -1643,7 +1643,13 @@ Consequently, this command must be used with care.
 
 Finally, since @command{guix package} may actually start build
 processes, it supports all the common build options (@pxref{Common Build
-Options}).
+Options}).  It also support package transformation options, such as
+@option{--with-source} (@pxref{Package Transformation Options}).
+However, note that package transformations are lost when upgrading; to
+preserve transformation across upgrades, you should define your own
+package variant in a Guile module and add it to @code{GUIX_PACKAGE_PATH}
+(@pxref{Defining Packages}).
+
 
 @node Substitutes
 @section Substitutes
@@ -3946,11 +3952,12 @@ the parsed command-line options.
 
 @cindex package variants
 Another set of command-line options supported by @command{guix build}
-are @dfn{package transformation options}.  These are options that allow,
-from the command-line, to define @dfn{package variants}---for instance,
-packages built from different source code.  This is a convenient way to
-create customized packages on the fly without having to type in the
-definitions of package variants (@pxref{Defining Packages}).
+and also @command{guix package} are @dfn{package transformation
+options}.  These are options that allow you to define @dfn{package
+variants}---for instance, packages built from different source code.
+This is a convenient way to create customized packages on the fly
+without having to type in the definitions of package variants
+(@pxref{Defining Packages}).
 
 @table @code
 
