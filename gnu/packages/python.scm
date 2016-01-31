@@ -4459,17 +4459,14 @@ implementation of D-Bus.")
 (define-public python-apsw
   (package
     (name "python-apsw")
-    (version "3.8.7.3-r1")
+    (version "3.9.2-r1")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-              "https://pypi.python.org/packages/source/a/apsw/apsw-"
-              version
-              ".tar.gz"))
+        (uri (pypi-uri "apsw" version))
         (sha256
           (base32
-            "1rgxdypg7hym0qny15rx5khrghx9fkppfgsfa2s8lg917924mv7l"))))
+           "0w4jb0wpx785qw42r3h4fh7gl5w2968q48i7gygybsfxck8nzffs"))))
     (build-system python-build-system)
     (inputs
       `(("python-setuptools" ,python-setuptools)
