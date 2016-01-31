@@ -47,14 +47,14 @@
 (define-public weechat
   (package
     (name "weechat")
-    (version "1.3")
+    (version "1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://weechat.org/files/src/weechat-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "13b7dfs3sn71c51fi0bli5rzlsppil6gg1lzik3k8l43yhhqyv2w"))
+                "19apd3hav77v74j7flicai0843k7wrkr2fd3q2ayvzkgnbrrp1ai"))
               (patches (list (search-patch "weechat-python.patch")))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
