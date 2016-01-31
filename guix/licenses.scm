@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,6 +62,7 @@
             sgifreeb2.0
             silofl1.1
             sleepycat
+            unlicense
             vim
             x11 x11-style
             zpl2.1
@@ -384,6 +386,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "Vim"
            "http://directory.fsf.org/wiki/License:Vim7.2"
            "http://www.gnu.org/licenses/license-list.html#Vim"))
+
+(define unlicense
+  (license "Unlicense"
+           "https://unlicense.org/"
+           "https://www.gnu.org/licenses/license-list.html#Unlicense"))
 
 (define x11
   (license "X11"
