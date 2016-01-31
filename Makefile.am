@@ -243,6 +243,7 @@ SCM_TESTS =					\
   tests/file-systems.scm			\
   tests/system.scm				\
   tests/services.scm				\
+  tests/scripts-build.scm			\
   tests/containers.scm				\
   tests/import-utils.scm
 

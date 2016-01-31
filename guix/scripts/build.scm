@@ -41,6 +41,7 @@
             set-build-options-from-command-line
             set-build-options-from-command-line*
             show-build-options-help
+            options->transformation
 
             guix-build))
 
@@ -484,39 +485,29 @@ build."
                              (set-guile-for-build (default-guile))
                              (gexp->derivation "gexp" gexp
                                                #:system system))))))
-                (transform store (options->things-to-build opts)))))
+                (map (cut transform store <>)
+                     (options->things-to-build opts)))))
 
 (define (transform-package-source sources)
-  "Return a transformation procedure that uses replaces package sources with
-the matching URIs given in SOURCES."
+  "Return a transformation procedure that replaces package sources with the
+matching URIs given in SOURCES."
   (define new-sources
     (map (lambda (uri)
            (cons (package-name->name+version (basename uri))
                  uri))
          sources))
 
-  (lambda (store packages)
-    (let loop ((packages packages)
-               (sources  new-sources)
+  (lambda (store obj)
+    (let loop ((sources  new-sources)
                (result   '()))
-      (match packages
-        (()
-         (unless (null? sources)
-           (warning (_ "sources do not match any package:~{ ~a~}~%")
-                    (match sources
-                      (((name . uri) ...)
-                       uri))))
-         (reverse result))
-        (((? package? p) tail ...)
+      (match obj
+        ((? package? p)
          (let ((source (assoc-ref sources (package-name p))))
-           (loop tail
-                 (alist-delete (package-name p) sources)
-                 (cons (if source
-                           (package-with-source store p source)
-                           p)
-                       result))))
-        ((thing tail ...)
-         (loop tail sources result))))))
+           (if source
+               (package-with-source store p source)
+               p)))
+        (_
+         obj)))))
 
 (define %transformations
   ;; Transformations that can be applied to things to build.  The car is the
@@ -526,19 +517,33 @@ the matching URIs given in SOURCES."
   `((with-source . ,transform-package-source)))
 
 (define (options->transformation opts)
-  "Return a procedure that, when passed a list of things to build (packages,
-derivations, etc.), applies the transformations specified by OPTS."
-  (apply compose
-         (map (match-lambda
-                ((key . transform)
-                 (let ((args (filter-map (match-lambda
-                                           ((k . arg)
-                                            (and (eq? k key) arg)))
-                                         opts)))
-                   (if (null? args)
-                       (lambda (store things) things)
-                       (transform args)))))
-              %transformations)))
+  "Return a procedure that, when passed an object to build (package,
+derivation, etc.), applies the transformations specified by OPTS."
+  (define applicable
+    ;; List of applicable transformations as symbol/procedure pairs.
+    (filter-map (match-lambda
+                  ((key . transform)
+                   (match (filter-map (match-lambda
+                                        ((k . arg)
+                                         (and (eq? k key) arg)))
+                                      opts)
+                     (()   #f)
+                     (args (cons key (transform args))))))
+                %transformations))
+
+  (lambda (store obj)
+    (fold (match-lambda*
+            (((name . transform) obj)
+             (let ((new (transform store obj)))
+               (when (eq? new obj)
+                 (warning (_ "transformation '~a' had no effect on ~a~%")
+                          name
+                          (if (package? obj)
+                              (package-full-name obj)
+                              obj)))
+               new)))
+          obj
+          applicable)))
 
 (define (show-build-log store file urls)
   "Show the build log for FILE, falling back to remote logs from URLS if
