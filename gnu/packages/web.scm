@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
@@ -2292,7 +2292,10 @@ and IPv6 sockets, intended as a replacement for IO::Socket::INET.")
                                   "IO-Socket-SSL-" version ".tar.gz"))
               (sha256
                (base32
-                "1mph52lw6x5v44wf8mw00llzi8pp6k5c4jnrnrvlacrlfv260jb8"))))
+                "1mph52lw6x5v44wf8mw00llzi8pp6k5c4jnrnrvlacrlfv260jb8"))
+              (patches
+               (list
+                (search-patch "perl-io-socket-ssl-openssl-1.0.2f-fix.patch")))))
     (build-system perl-build-system)
     (propagated-inputs `(("perl-net-ssleay" ,perl-net-ssleay)))
     (synopsis "Nearly transparent SSL encapsulation for IO::Socket::INET")
