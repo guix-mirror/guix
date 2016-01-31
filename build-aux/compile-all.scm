@@ -21,7 +21,8 @@
              (ice-9 threads)
              (guix build utils))
 
-(define compile-options '(format unbound-variable arity-mismatch))
+(define warnings
+  '(unsupported-warning format unbound-variable arity-mismatch))
 
 (define host (getenv "host"))
 
@@ -70,7 +71,7 @@
       (lambda ()
         (compile-file file
                       #:output-file go
-                      #:opts compile-options)))))
+                      #:opts `(#:warnings ,warnings))))))
 
 (match (command-line)
   ((_ . files)
