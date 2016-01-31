@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gperf)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages docbook)
@@ -252,6 +254,7 @@ Python.")
     (build-system gnu-build-system)
     (native-inputs
      `(("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)
        ("pkg-config" ,pkg-config)
        ("xmlto" ,xmlto)
        ("xsltproc" ,libxslt)))
