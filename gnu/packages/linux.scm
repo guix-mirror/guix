@@ -324,22 +324,6 @@ It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)
     (home-page "http://www.gnu.org/software/linux-libre/"))))
 
-;; This older version of linux-libre is being added because it was found
-;; that newer versions (or at least 4.3.3) of linux-libre were not reading
-;; the hardware clock on (at least Libreboot-enabled) Thinkpad x200
-;; machines.  See <http://bugs.gnu.org/22274>.
-
-(define-public linux-libre-4.2.5
-  (package
-    (inherit linux-libre)
-    (version "4.2.5")
-    (source (origin
-             (method url-fetch)
-             (uri (linux-libre-urls version))
-             (sha256
-              (base32
-               "13ar9sghm2g5w2km9x2d07q3lh81rz286d6slklv56qanm24chzx"))))))
-
 (define-public linux-libre-4.1
   (package
     (inherit linux-libre)
