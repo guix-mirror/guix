@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2015 David Thompson <dthompson2@worcester.edu>
-;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
@@ -1853,3 +1853,41 @@ usable with any game controller that has at least 4 buttons, theming support,
 and a game metadata scraper.")
     (home-page "http://www.emulationstation.org")
     (license license:expat)))
+
+(define-public pinball
+  (package
+    (name "pinball")
+    (version "0.3.1")
+    (source
+     (origin (method url-fetch)
+             (uri (string-append "mirror://sourceforge/pinball/pinball/"
+                                 "pinball-" version "/"
+                                 "pinball-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1f2whlrfidwfh8lvr8cspcyirc6840r5d1ajm7x99qmngygrhixs"))
+             (patches (map search-patch
+                           '("pinball-const-fix.patch"
+                             "pinball-cstddef.patch"
+                             "pinball-missing-separators.patch"
+                             "pinball-src-deps.patch"
+                             "pinball-system-ltdl.patch")))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("glu" ,glu)
+       ("mesa" ,mesa)
+       ("sdl" ,sdl)
+       ("sdl-image" ,sdl-image)
+       ("sdl-mixer" ,sdl-mixer)))
+    (arguments
+     '(#:configure-flags
+       (list (string-append "CPPFLAGS=-I"
+                            (assoc-ref %build-inputs "sdl-image")
+                            "/include/SDL -I"
+                            (assoc-ref %build-inputs "sdl-mixer")
+                            "/include/SDL"))))
+    (home-page "http://pinball.sourceforge.net")
+    (synopsis "Pinball simulator")
+    (description "The Emilia Pinball Project is a pinball simulator.  There
+are only two levels to play with, but they are very addictive.")
+    (license license:gpl2)))
