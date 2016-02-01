@@ -1,6 +1,6 @@
 ;;; guix-command.el --- Popup interface for guix commands  -*- lexical-binding: t -*-
 
-;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -176,7 +176,8 @@ to be modified."
   '(("--no-substitutes"  :char ?s)
     ("--no-build-hook"   :char ?h)
     ("--max-silent-time" :char ?x)
-    ("--rounds"          :char ?R :fun read-number)))
+    ("--rounds"          :char ?R :fun read-number)
+    ("--with-input"      :char ?W)))
 
 (defun guix-command-improve-common-build-argument (argument)
   (guix-command-modify-argument-from-alist
