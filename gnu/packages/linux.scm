@@ -212,7 +212,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "4.4")
+  (let* ((version "4.4.1")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -286,9 +286,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "1839xsaifs7vvyblzin8jps0gqi10xmz1l9p4x0j27vmdj39jgpm"))
-             (patches
-              (list (search-patch "linux-libre-CVE-2016-0728.patch")))))
+               "1d6wzhbpz0g79iwlkv10qmig518risz9bi3qw8wdn7j2xs7ij1j2"))))
     (build-system gnu-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
