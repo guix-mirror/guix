@@ -66,6 +66,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match))
@@ -338,6 +339,23 @@ It has been modified to remove all non-free binary blobs.")
              (sha256
               (base32
                "13ar9sghm2g5w2km9x2d07q3lh81rz286d6slklv56qanm24chzx"))))))
+
+(define-public linux-libre-4.1
+  (package
+    (inherit linux-libre)
+    (version "4.1.17")
+    (source (origin
+              (method url-fetch)
+              (uri (linux-libre-urls version))
+              (sha256
+               (base32
+                "0mkvj5sab8l2k0mgfca3y4n5g9cxs3px0ysvdwa2zwl52n7dsfk4"))))
+    (native-inputs
+     (let ((conf (kernel-config (or (%current-target-system)
+                                    (%current-system))
+                                #:variant "4.1")))
+       `(,@(alist-delete "kconfig" (package-native-inputs linux-libre))
+         ("kconfig" ,conf))))))
 
 
 ;;;

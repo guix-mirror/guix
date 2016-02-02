@@ -3,6 +3,7 @@
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 # Copyright © 2015 Alex Kost <alezost@gmail.com>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
+# Copyright © 2016 Mark H Weaver <mhw@netris.org>
 #
 # This file is part of GNU Guix.
 #
@@ -168,7 +169,9 @@ dist_noinst_DATA = guix/tests.scm
 # Linux-Libre configurations.
 KCONFIGS =					\
   gnu/packages/linux-libre-i686.conf		\
-  gnu/packages/linux-libre-x86_64.conf
+  gnu/packages/linux-libre-x86_64.conf		\
+  gnu/packages/linux-libre-4.1-i686.conf	\
+  gnu/packages/linux-libre-4.1-x86_64.conf
 
 # Templates, examples.
 EXAMPLES =					\
