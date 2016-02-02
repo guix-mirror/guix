@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <tobias.geerinckx.rice@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -144,3 +145,29 @@ to recover data more efficiently by only reading the necessary blocks.")
      "The dosfstools package includes the mkfs.fat and fsck.fat utilities,
 which respectively make and check MS-DOS FAT filesystems.")
     (license gpl3+)))
+
+(define-public sdparm
+  (package
+    (name "sdparm")
+    (version "1.09")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://sg.danny.cz/sg/p/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0jakqyjwi72zqjzss04bally0xl0lc4710mx8da08vpmir1hfphg"))))
+    (build-system gnu-build-system)
+    (home-page "http://sg.danny.cz/sg/sdparm.html")
+    (synopsis "Provide access to SCSI device parameters")
+    (description
+     "Sdparm reads and modifies SCSI device parameters.  These devices can be
+SCSI disks, in which case the role of @command{sdparm} is similar to its
+namesake: the @command{hdparm} utility originally designed for ATA disks.
+However, @command{sdparm} can be used to access parameters on any device that
+uses a SCSI command set.  Such devices include CD/DVD drives (irrespective of
+transport), SCSI and ATAPI tape drives, and SCSI enclosures.  This utility can
+also send commands associated with starting and stopping the media, loading
+and unloading removable media and some other housekeeping functions.")
+    (license bsd-3)))
