@@ -3144,7 +3144,7 @@ of these reads to align data quickly through a hash-based indexing scheme.")
 (define-public sortmerna
   (package
     (name "sortmerna")
-    (version "2.0")
+    (version "2.1")
     (source
      (origin
        (method url-fetch)
@@ -3154,7 +3154,7 @@ of these reads to align data quickly through a hash-based indexing scheme.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1670a92x1vvkacnvgr2i5xac3ls6lp4pc3n0bccnmllsnymggcf0"))))
+         "1mc5cf1c7xh0h7xb11vh7gqgzx0qvrfa606cb8ixlfg3f2av58s4"))))
     (build-system gnu-build-system)
     (outputs '("out"      ;for binaries
                "db"))     ;for sequence databases
