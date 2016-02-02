@@ -183,8 +183,11 @@ required structures.")
    (version "1.0.2e")
    (source (origin
             (method url-fetch)
-            (uri (string-append "ftp://ftp.openssl.org/source/openssl-" version
-                                ".tar.gz"))
+            (uri (list (string-append "ftp://ftp.openssl.org/source/"
+                                      name "-" version ".tar.gz")
+                       (string-append "ftp://ftp.openssl.org/source/old/"
+                                      (string-take version 5) "/"
+                                      name "-" version ".tar.gz")))
             (sha256
              (base32
               "1zqb1rff1wikc62a7vj5qxd1k191m8qif5d05mwdxz2wnzywlg72"))
