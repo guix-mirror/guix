@@ -66,6 +66,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
+  #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match))
 
@@ -196,20 +197,24 @@
      (base32
       "1hk9swxxc80bmn2zd2qr5ccrjrk28xkypwhl4z0qx4hbivj7qm06"))))
 
-(define (kernel-config system)
+(define* (kernel-config system #:key variant)
   "Return the absolute file name of the Linux-Libre build configuration file
-for SYSTEM, or #f if there is no configuration for SYSTEM."
-  (define (lookup file)
-    (let ((file (string-append "gnu/packages/" file)))
-      (search-path %load-path file)))
-
-  (match system
-    ("i686-linux"
-     (lookup "linux-libre-i686.conf"))
-    ("x86_64-linux"
-     (lookup "linux-libre-x86_64.conf"))
-    (_
-     #f)))
+for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
+  (and-let* ((arch (match system
+                     ("i686-linux"
+                      "i686")
+                     ("x86_64-linux"
+                      "x86_64")
+                     (_
+                      #f)))
+             (name (string-append "linux-libre-"
+                                  (if variant
+                                      (string-append variant "-")
+                                      "")
+                                  arch
+                                  ".conf"))
+             (file (string-append "gnu/packages/" name)))
+    (search-path %load-path file)))
 
 (define-public linux-libre
   (let* ((version "4.4.1")
