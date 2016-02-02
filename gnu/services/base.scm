@@ -29,7 +29,7 @@
   #:use-module (gnu system file-systems)          ; 'file-system', etc.
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
-                #:select (eudev kbd e2fsprogs lvm2 fuse alsa-utils crda gpm))
+                #:select (eudev-with-blkid kbd e2fsprogs lvm2 fuse alsa-utils crda gpm))
   #:use-module ((gnu packages base)
                 #:select (canonical-package glibc))
   #:use-module (gnu packages package-management)
@@ -1165,7 +1165,7 @@ item of @var{packages}."
                               (udev udev)
                               (rules (append initial-rules rules)))))))))
 
-(define* (udev-service #:key (udev eudev) (rules '()))
+(define* (udev-service #:key (udev eudev-with-blkid) (rules '()))
   "Run @var{udev}, which populates the @file{/dev} directory dynamically.  Get
 extra rules from the packages listed in @var{rules}."
   (service udev-service-type

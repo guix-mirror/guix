@@ -371,7 +371,7 @@ explicitly appear in OS."
 
          ;; Get 'insmod' & co. from kmod, not module-init-tools, since udev
          ;; already depends on it anyway.
-         kmod eudev
+         kmod eudev-with-blkid
 
          e2fsprogs kbd
 

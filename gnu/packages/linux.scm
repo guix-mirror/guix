@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -1570,6 +1570,7 @@ from the module-init-tools project.")
 
 (define-public eudev
   ;; The post-systemd fork, maintained by Gentoo.
+  ;; TODO: Merge with 'eudev-with-blkid' below at an opportune time.
   (package
     (name "eudev")
     (version "3.1.5")
@@ -1595,6 +1596,18 @@ from the module-init-tools project.")
 device nodes from /dev/, handles hotplug events and loads drivers at boot
 time.")
     (license license:gpl2+)))
+
+(define-public eudev-with-blkid
+  ;; TODO: Merge with 'eudev' above at an opportune time.
+  (package
+    (inherit eudev)
+    (name "eudev-with-blkid")
+    (inputs
+     ;; When linked against libblkid, eudev can populate /dev/disk/by-label
+     ;; and similar; it also installs the '60-persistent-storage.rules' file,
+     ;; which contains the rules to do that.
+     `(("util-linux" ,util-linux)                 ;for blkid
+       ,@(package-inputs eudev)))))
 
 (define-public lvm2
   (package
