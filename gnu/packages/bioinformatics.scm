@@ -3310,6 +3310,61 @@ features; exactSNP: a SNP caller that discovers SNPs by testing signals
 against local background noises.")
     (license license:gpl3+)))
 
+(define-public stringtie
+  (package
+    (name "stringtie")
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ccb.jhu.edu/software/stringtie/dl/"
+                                  "stringtie-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1cqllsc1maq4kh92isi8yadgzbmnf042hlnalpk3y59aph1z3bfz"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "samtools-0.1.18")
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no test suite
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure)
+         (add-before 'build 'use-system-samtools
+           (lambda _
+             (substitute* "Makefile"
+               (("stringtie: \\$\\{BAM\\}/libbam\\.a")
+                "stringtie: "))
+             (substitute* '("gclib/GBam.h"
+                            "gclib/GBam.cpp")
+               (("#include \"(bam|sam|kstring).h\"" _ header)
+                (string-append "#include <samtools/" header ".h>")))
+             #t))
+         (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+              (install-file "stringtie" bin)
+              #t))))))
+    (inputs
+     `(("samtools" ,samtools-0.1)
+       ("zlib" ,zlib)))
+    (home-page "http://ccb.jhu.edu/software/stringtie/")
+    (synopsis "Transcript assembly and quantification for RNA-Seq data")
+    (description
+     "StringTie is a fast and efficient assembler of RNA-Seq sequence
+alignments into potential transcripts.  It uses a novel network flow algorithm
+as well as an optional de novo assembly step to assemble and quantitate
+full-length transcripts representing multiple splice variants for each gene
+locus.  Its input can include not only the alignments of raw reads used by
+other transcript assemblers, but also alignments of longer sequences that have
+been assembled from those reads.  To identify differentially expressed genes
+between experiments, StringTie's output can be processed either by the
+Cuffdiff or Ballgown programs.")
+    (license license:artistic2.0)))
+
 (define-public vcftools
   (package
     (name "vcftools")
