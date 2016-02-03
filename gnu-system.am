@@ -366,6 +366,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/services/mail.scm				\
   gnu/services/networking.scm			\
   gnu/services/shepherd.scm			\
+  gnu/services/herd.scm				\
   gnu/services/ssh.scm				\
   gnu/services/web.scm				\
   gnu/services/xorg.scm				\

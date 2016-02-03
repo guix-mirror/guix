@@ -40,6 +40,7 @@
             shepherd-service?
             shepherd-service-documentation
             shepherd-service-provision
+            shepherd-service-canonical-name
             shepherd-service-requirement
             shepherd-service-respawn?
             shepherd-service-start
@@ -50,6 +51,8 @@
 
             %default-imported-modules
             %default-modules
+
+            shepherd-service-file
 
             shepherd-service-back-edges))
 
@@ -139,6 +142,9 @@ for a service that extends SHEPHERD-ROOT-SERVICE-TYPE and nothing else."
   (imported-modules shepherd-service-imported-modules  ;list of module names
                     (default %default-imported-modules)))
 
+(define (shepherd-service-canonical-name service)
+  "Return the 'canonical name' of SERVICE."
+  (first (shepherd-service-provision service)))
 
 (define (assert-valid-graph services)
   "Raise an error if SERVICES does not define a valid shepherd service graph,

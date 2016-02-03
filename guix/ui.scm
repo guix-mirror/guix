@@ -95,6 +95,7 @@
             program-name
             guix-warning-port
             warning
+            info
             guix-main))
 
 ;;; Commentary:
@@ -153,6 +154,7 @@ messages."
                      args (... ...))))))))
 
 (define-diagnostic warning "warning: ") ; emit a warning
+(define-diagnostic info "")
 
 (define-diagnostic report-error "error: ")
 (define-syntax-rule (leave args ...)

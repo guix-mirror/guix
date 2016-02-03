@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -41,8 +41,10 @@
   #:use-module (gnu system grub)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu services herd)
   #:use-module (gnu packages grub)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
@@ -209,6 +211,62 @@ the ownership of '~a' may be incorrect!~%")
       (lambda ()
         (environ env)))))
 
+(define (upgrade-shepherd-services os)
+  "Upgrade the Shepherd (PID 1) by unloading obsolete services and loading new
+services specified in OS and not currently running.
+
+This is currently very conservative in that it does not stop or unload any
+running service.  Unloading or stopping the wrong service ('udev', say) could
+bring the system down."
+  (define (essential? service)
+    (memq service '(root shepherd)))
+
+  (define new-services
+    (service-parameters
+     (fold-services (operating-system-services os)
+                    #:target-type shepherd-root-service-type)))
+
+  (define new-service-names
+    (map (compose first shepherd-service-provision)
+         new-services))
+
+  (let-values (((running stopped) (current-services)))
+    (define to-load
+      ;; Only load services that are either new or currently stopped.
+      (remove (lambda (service)
+                (memq (first (shepherd-service-provision service))
+                      running))
+              new-services))
+    (define to-unload
+      ;; Unload services that are (1) no longer required, or (2) are in
+      ;; TO-LOAD.
+      (remove essential?
+              (append (remove (lambda (service)
+                                (memq service new-service-names))
+                              (append running stopped))
+                      (filter (lambda (service)
+                                (memq service stopped))
+                              (map shepherd-service-canonical-name
+                                   to-load)))))
+
+    (for-each (lambda (unload)
+                (info (_ "unloading service '~a'...~%") unload)
+                (unload-service unload))
+              to-unload)
+
+    (with-monad %store-monad
+      (munless (null? to-load)
+        (let ((to-load-names  (map shepherd-service-canonical-name to-load))
+              (to-start       (filter shepherd-service-auto-start? to-load)))
+          (info (_ "loading new services:~{ ~a~}...~%") to-load-names)
+          (mlet %store-monad ((files (mapm %store-monad shepherd-service-file
+                                           to-load)))
+            (load-services (map derivation->output-path files))
+
+            (for-each start-service
+                      (map shepherd-service-canonical-name to-start))
+            (return #t)))))))
+
 (define* (switch-to-system os
                            #:optional (profile %system-profile))
   "Make a new generation of PROFILE pointing to the directory of OS, switch to
@@ -225,14 +283,14 @@ it atomically, and then run OS's activation script."
 
       ;; The activation script may change $PATH, among others, so protect
       ;; against that.
-      (return (save-environment-excursion
-               ;; Tell 'activate-current-system' what the new system is.
-               (setenv "GUIX_NEW_SYSTEM" system)
+      (save-environment-excursion
+       ;; Tell 'activate-current-system' what the new system is.
+       (setenv "GUIX_NEW_SYSTEM" system)
 
-               (primitive-load (derivation->output-path script))))
+       (primitive-load (derivation->output-path script)))
 
-      ;; TODO: Run 'deco reload ...'.
-      )))
+      ;; Finally, try to update system services.
+      (upgrade-shepherd-services os))))
 
 (define-syntax-rule (unless-file-not-found exp)
   (catch 'system-error

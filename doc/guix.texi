@@ -9211,17 +9211,23 @@ running GuixSD.}.
 
 This effects all the configuration specified in @var{file}: user
 accounts, system services, global package list, setuid programs, etc.
+The command starts system services specified in @var{file} that are not
+currently running; if a service is currently running, it does not
+attempt to upgrade it since it would not be possible without stopping it
+first.
 
 It also adds a GRUB menu entry for the new OS configuration, and moves
 entries for older configurations to a submenu---unless
 @option{--no-grub} is passed.
 
+@quotation Note
 @c The paragraph below refers to the problem discussed at
 @c <http://lists.gnu.org/archive/html/guix-devel/2014-08/msg00057.html>.
 It is highly recommended to run @command{guix pull} once before you run
 @command{guix system reconfigure} for the first time (@pxref{Invoking
 guix pull}).  Failing to do that you would see an older version of Guix
 once @command{reconfigure} has completed.
+@end quotation
 
 @item build
 Build the operating system's derivation, which includes all the
