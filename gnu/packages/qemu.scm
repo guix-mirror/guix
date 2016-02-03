@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,35 +51,27 @@
     (sha256 sha256)
     (file-name file-name)))
 
-(define %glib-memory-vtable-patch
-  (qemu-patch "deb847bf"
-              "qemu-glib-memory-vtable.patch"
-              (base32
-               "0afb7rvxy14104jxmhr7m02w5baiz0c7vhq3h642h09jgxrcmzzi")))
-
-(define %glib-duplicate-test-patch
-  (qemu-patch "98cf48f6"
-              "qemu-glib-duplicate-test.patch"
-              (base32
-               "1aicbplzdj5s5y13jmqyvfajay05x9dnkzd197waz8v6kha7d9d5")))
-
 (define-public qemu
   (package
     (name "qemu")
-    (version "2.4.0.1")
+    (version "2.5.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://wiki.qemu-project.org/download/qemu-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1nqv5p94zpnhcaqkifnn83ap7dd0qrb0qiicswbyhhby0f48pzpc"))
-             (patches (list (search-patch "qemu-CVE-2015-6855.patch")
-
-                            ;; These two patches allow QEMU's tests to run
-                            ;; correctly with 'gtester' from the latest GLib.
-                            %glib-memory-vtable-patch
-                            %glib-duplicate-test-patch))))
+               "1m3j6xl7msrniidkvr5pw9d44yba5m7hm42xz8xy77v105s8hhrl"))
+             (patches
+              (map search-patch
+                   '("qemu-virtio-9p-use-accessor-to-get-thread-pool.patch"
+                     "qemu-CVE-2015-8558.patch"
+                     "qemu-CVE-2015-8567.patch"
+                     "qemu-CVE-2016-1922.patch"
+                     "qemu-CVE-2015-8613.patch"
+                     "qemu-CVE-2015-8701.patch"
+                     "qemu-CVE-2015-8743.patch"
+                     "qemu-CVE-2016-1568.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
@@ -120,7 +112,16 @@
                                               (string-append infodir "/" info)))
                                            (find-files "." "\\.info$"))
                                  #t)))))
-                  %standard-phases))))
+                  (alist-cons-before
+                   'check 'disable-test-qga
+                   (lambda _
+                     (substitute* "tests/Makefile"
+                       ;; Comment out the test-qga test, which needs /sys and
+                       ;; fails within the build environment.
+                       (("check-unit-.* tests/test-qga" all)
+                        (string-append "# " all)))
+                     #t)
+                   %standard-phases)))))
 
     (inputs                                       ; TODO: Add optional inputs.
      `(("sdl" ,sdl)
