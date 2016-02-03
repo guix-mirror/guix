@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,7 +45,7 @@
             giftware
             gpl1 gpl1+ gpl2 gpl2+ gpl3 gpl3+
             gfl1.0
-            fdl1.3+
+            fdl1.1+ fdl1.3+
             opl1.0+
             isc
             ijg
@@ -245,6 +246,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "GUST font license 1.0"
            "http://www.gust.org.pl/projects/e-foundry/licenses/GUST-FONT-LICENSE.txt"
            "https://www.gnu.org/licenses/license-list#LPPL-1.3a"))
+
+(define fdl1.1+
+  (license "FDL 1.1+"
+           "https://www.gnu.org/licenses/fdl-1.1"
+           "https://www.gnu.org/licenses/license-list#FDL"))
 
 (define fdl1.3+
   (license "FDL 1.3+"
