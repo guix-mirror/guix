@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
@@ -186,8 +186,8 @@ required structures.")
             (uri (list (string-append "ftp://ftp.openssl.org/source/"
                                       name "-" version ".tar.gz")
                        (string-append "ftp://ftp.openssl.org/source/old/"
-                                      (string-take version 5) "/"
-                                      name "-" version ".tar.gz")))
+                                      (string-trim-right version char-set:letter)
+                                      "/" name "-" version ".tar.gz")))
             (sha256
              (base32
               "1zqb1rff1wikc62a7vj5qxd1k191m8qif5d05mwdxz2wnzywlg72"))
