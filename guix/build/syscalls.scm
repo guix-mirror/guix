@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -625,7 +625,7 @@ to interfaces that are currently up."
 
 (define %interface-line
   ;; Regexp matching an interface line in Linux's /proc/net/dev.
-  (make-regexp "^[[:blank:]]*([[:alnum:]]+):.*$"))
+  (make-regexp "^[[:blank:]]*([[:graph:]]+):.*$"))
 
 (define (all-network-interface-names)
   "Return all the names of the registered network interfaces, including those
