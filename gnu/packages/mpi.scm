@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
+;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,8 +55,12 @@
      `(("libx11" ,libx11)
        ("cairo" ,cairo)
        ("ncurses" ,ncurses)
-       ("numactl" ,numactl)
-       ("expat" ,expat)))
+       ("expat" ,expat)
+       ,@(if (not (string-prefix? "armhf"
+                                  (or (%current-target-system)
+                                      (%current-system))))
+             `(("numactl" ,numactl))
+             '())))
     (propagated-inputs
      ;; hwloc.pc lists it in 'Requires.private'.
      `(("libpciaccess" ,libpciaccess)))
