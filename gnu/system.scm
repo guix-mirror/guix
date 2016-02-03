@@ -465,6 +465,17 @@ else
   export PATH=\"$HOME/.guix-profile/bin:$PATH\"
 fi
 
+# Since 'lshd' does not use pam_env, /etc/environment must be explicitly
+# loaded when someone logs in via SSH.  See <http://bugs.gnu.org/22175>.
+# We need 'PATH' to be defined here, for 'cat' and 'cut'.
+if [ -f /etc/environment -a -n \"$SSH_CLIENT\" \\
+     -a -z \"$LINUX_MODULE_DIRECTORY\" ]
+then
+  . /etc/environment
+  export `cat /etc/environment | cut -d= -f1`
+fi
+
+
 # Allow GStreamer-based applications to find plugins.
 export GST_PLUGIN_PATH=\"$HOME/.guix-profile/lib/gstreamer-1.0\"
 
