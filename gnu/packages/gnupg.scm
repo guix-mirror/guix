@@ -378,7 +378,7 @@ and signature functionality from Python programs.")
 (define-public pius
   (package
    (name "pius")
-   (version "2.2.1")
+   (version "2.2.2")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -386,7 +386,7 @@ and signature functionality from Python programs.")
                   version "/pius-" version ".tar.bz2"))
             (sha256
              (base32
-              "003dwpamq0c7w8q9zpgi4h03rs8rwjm0czkn9s60m91p6aql5f42"))))
+              "0k94mlr7l12mplph7pdgjbampqha47d8mfjq69n4xm80qwbn1rq1"))))
    (build-system python-build-system)
    (inputs `(("perl" ,perl)                ;for 'pius-party-worksheet'
              ("gpg" ,gnupg-2.0)))          ;2.1 fails to talk to gpg-agent 2.0
