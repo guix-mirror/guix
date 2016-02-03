@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -1415,6 +1415,9 @@ file system is as easy as logging into the server with an SSH client.")
        ;; to run, which we can't assume to have.
        #:tests? #f))
 
+    ;; NUMA is apparently not supported on armhf, see
+    ;; http://www.spinics.net/lists/linux-numa/msg01157.html
+    (supported-systems (delete "armhf-linux" %supported-systems))
     (home-page "http://oss.sgi.com/projects/libnuma/")
     (synopsis "Tools for non-uniform memory access (NUMA) machines")
     (description
