@@ -291,7 +291,12 @@ file."
                      (chdir #$output)
                      #$@(map (match-lambda
                                ((target source)
-                                #~(symlink #$source #$target)))
+                                #~(begin
+                                    ;; Stat the source to abort early if it
+                                    ;; does not exist.
+                                    (stat #$source)
+
+                                    (symlink #$source #$target))))
                              files))))
 
 (define (directory-union name things)
