@@ -3542,7 +3542,7 @@ to format Docbook and Mallard documents.")
 (define-public yelp
   (package
     (name "yelp")
-    (version "3.16.1")
+    (version "3.18.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3550,7 +3550,7 @@ to format Docbook and Mallard documents.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1jk7aad1srykhgc3x0hd3q3dnlshmy1ak00alwjzaasxvy6hp0b0"))))
+                "10384lr712xdr8zbi07vqh0cf4nd7ybg1vs05r5cy3kwf6s4wfms"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
@@ -3562,10 +3562,8 @@ to format Docbook and Mallard documents.")
     (inputs
      `(("libxslt" ,libxslt)
        ("sqlite" ,sqlite)
-       ("webkitgtk" ,webkitgtk-2.4)
-       ("yelp-xsl" ,yelp-xsl)
-       ;; XXX: need by libwebkitgtk-3.0.la.
-       ("icu4c" ,(@ (gnu packages icu4c) icu4c))))
+       ("webkitgtk" ,webkitgtk)
+       ("yelp-xsl" ,yelp-xsl)))
     (home-page "https://wiki.gnome.org/Apps/Yelp")
     (synopsis "GNOME help browser")
     (description
