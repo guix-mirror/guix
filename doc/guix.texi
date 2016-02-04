@@ -6044,6 +6044,10 @@ package}).
 @item @code{timezone}
 A timezone identifying string---e.g., @code{"Europe/Paris"}.
 
+You can run the @command{tzselect} command to find out which timezone
+string corresponds to your region.  Choosing an invalid timezone name
+causes @command{guix system} to fail.
+
 @item @code{locale} (default: @code{"en_US.utf8"})
 The name of the default locale (@pxref{Locale Names,,, libc, The GNU C
 Library Reference Manual}).  @xref{Locales}, for more information.
