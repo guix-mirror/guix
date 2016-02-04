@@ -360,7 +360,8 @@ Use Alt-F2 for documentation.
      ;; Explicitly allow for empty passwords.
      (base-pam-services #:allow-empty-passwords? #t))
 
-    (packages (cons* texinfo-4                 ;for the standalone Info reader
+    (packages (cons* (canonical-package glibc) ;for 'tzselect' & co.
+                     texinfo-4                 ;for the standalone Info reader
                      parted ddrescue
                      grub                  ;mostly so xrefs to its manual work
                      cryptsetup
