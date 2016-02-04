@@ -686,13 +686,49 @@ creates the GTK+ 'icon-theme.cache' file for each theme."
                           #:substitutable? #f)
         (return #f))))
 
+(define (xdg-desktop-database manifest)
+  "Return a derivation that builds the @file{mimeinfo.cache} database from
+desktop files.  It's used to query what applications can handle a given
+MIME type."
+  (define desktop-file-utils
+    (module-ref (resolve-interface '(gnu packages gnome))
+                'desktop-file-utils))
+
+  (define build
+    #~(begin
+        (use-modules (srfi srfi-26)
+                     (guix build utils)
+                     (guix build union))
+        (let* ((destdir (string-append #$output "/share/applications"))
+               (appdirs (filter file-exists?
+                                (map (cut string-append <>
+                                          "/share/applications")
+                                     '#$(manifest-inputs manifest))))
+               (update-desktop-database (string-append
+                                         #+desktop-file-utils
+                                         "/bin/update-desktop-database")))
+          (mkdir-p (string-append #$output "/share"))
+          (union-build destdir appdirs
+                       #:log-port (%make-void-port "w"))
+          (zero? (system* update-desktop-database destdir)))))
+
+  ;; Don't run the hook when 'desktop-file-utils' is not installed.
+  (if (manifest-lookup manifest (manifest-pattern (name "desktop-file-utils")))
+      (gexp->derivation "xdg-desktop-database" build
+                        #:modules '((guix build utils)
+                                    (guix build union))
+                        #:local-build? #t
+                        #:substitutable? #f)
+      (with-monad %store-monad (return #f))))
+
 (define %default-profile-hooks
   ;; This is the list of derivation-returning procedures that are called by
   ;; default when making a non-empty profile.
   (list info-dir-file
         ghc-package-cache-file
         ca-certificate-bundle
-        gtk-icon-themes))
+        gtk-icon-themes
+        xdg-desktop-database))
 
 (define* (profile-derivation manifest
                              #:key
