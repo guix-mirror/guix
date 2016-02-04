@@ -932,11 +932,15 @@ manpages.")
   (package
     (name "net-tools")
     (version "1.60")
-    (home-page "http://www.tazenda.demon.co.uk/phil/net-tools/")
+    (home-page "http://net-tools.sourceforge.net/")
     (source (origin
              (method url-fetch)
-             (uri (string-append home-page "/" name "-"
-                                 version ".tar.bz2"))
+             (uri (list (string-append
+                         "mirror://sourceforge/net-tools/net-tools-"
+                         version ".tar.bz2")
+                        (string-append
+                         "http://distro.ibiblio.org/rootlinux/rootlinux-ports"
+                         "/base/net-tools/net-tools-1.60.tar.bz2")))
              (sha256
               (base32
                "0yvxrzk0mzmspr7sa34hm1anw6sif39gyn85w4c5ywfn8inxvr3s"))
