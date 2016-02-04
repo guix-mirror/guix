@@ -30,6 +30,7 @@
 (require 'guix-read)
 (require 'guix-utils)
 (require 'guix-ui)
+(require 'guix-profiles)
 
 (defgroup guix nil
   "Settings for Guix package manager and friends."

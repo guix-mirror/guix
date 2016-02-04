@@ -30,6 +30,7 @@
 (require 'guix-guile)
 (require 'guix-utils)
 (require 'guix-messages)
+(require 'guix-profiles)
 
 (guix-define-groups ui
   :group-doc "\

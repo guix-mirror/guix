@@ -35,6 +35,7 @@
 (require 'guix-guile)
 (require 'guix-entry)
 (require 'guix-utils)
+(require 'guix-profiles)
 
 (guix-ui-define-entry-type generation)
 
