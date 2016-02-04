@@ -1964,13 +1964,13 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
 (define-public macs
   (package
     (name "macs")
-    (version "2.1.0.20140616")
+    (version "2.1.0.20151222")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "MACS2" version))
               (sha256
                (base32
-                "11lmiw6avqhwn75sn59g4lfkrr2kk20r3rgfbx9xfqb8rg9mi2n6"))))
+                "1r2hcz6irhcq7lwbafjks98jbn34hv05avgbdjnp6w6mlfjkf8x5"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2 ; only compatible with Python 2.7
