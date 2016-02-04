@@ -1967,9 +1967,7 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
     (version "2.1.0.20140616")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/M/MACS2/MACS2-"
-                    version ".tar.gz"))
+              (uri (pypi-uri "MACS2" version))
               (sha256
                (base32
                 "11lmiw6avqhwn75sn59g4lfkrr2kk20r3rgfbx9xfqb8rg9mi2n6"))))
