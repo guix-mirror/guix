@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,30 +60,17 @@ themselves.")
   ;; This version is not API-compatible with version 2.  In particular, lsh
   ;; cannot use it yet.  So keep it separate.
   (package (inherit nettle-2)
-    (version "3.1.1")
+    (version "3.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/nettle/nettle-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0k1x57zviysvi91lkk66cg8v819vywm5g5yqs22wppfqcifx5m2z"))))
+                "15wxhk52yc62rx0pddmry66hqm6z5brrrkx4npd3wh9nybg86hpa"))))
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after
-          'configure 'disable-ifunc-init-method
-          (lambda _
-            ;; Work around problems with the ifunc initialization method in
-            ;; nettle.  For details, see
-            ;; <http://lists.lysator.liu.se/pipermail/nettle-bugs/2015/003389.html>
-            ;; and <https://sourceware.org/ml/libc-help/2015-06/msg00010.html>.
-            (substitute* "config.h"
-              (("#define HAVE_LINK_IFUNC 1")
-               "/* #undef HAVE_LINK_IFUNC */"))
-            #t)))
-       ,@(substitute-keyword-arguments (package-arguments nettle-2)
-           ((#:configure-flags flags)
-            ;; Build "fat" binaries where the right implementation is chosen
-            ;; at run time based on CPU features (starting from 3.1.)
-            `(cons "--enable-fat" ,flags)))))))
+     (substitute-keyword-arguments (package-arguments nettle-2)
+       ((#:configure-flags flags)
+        ;; Build "fat" binaries where the right implementation is chosen
+        ;; at run time based on CPU features (starting from 3.1.)
+        `(cons "--enable-fat" ,flags))))))
