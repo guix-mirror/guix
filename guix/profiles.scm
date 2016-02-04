@@ -721,6 +721,42 @@ MIME type."
                         #:substitutable? #f)
       (with-monad %store-monad (return #f))))
 
+(define (xdg-mime-database manifest)
+  "Return a derivation that builds the @file{mime.cache} database from manifest
+entries.  It's used to query the MIME type of a given file."
+  (define shared-mime-info
+    (module-ref (resolve-interface '(gnu packages gnome))
+                'shared-mime-info))
+
+  (define build
+    #~(begin
+        (use-modules (srfi srfi-26)
+                     (guix build utils)
+                     (guix build union))
+        (let* ((datadir (string-append #$output "/share"))
+               (destdir (string-append datadir "/mime"))
+               (mimedirs (filter file-exists?
+                                 (map (cut string-append <>
+                                           "/share/mime")
+                                      '#$(manifest-inputs manifest))))
+               (update-mime-database (string-append
+                                      #+shared-mime-info
+                                      "/bin/update-mime-database")))
+          (mkdir-p datadir)
+          (union-build destdir mimedirs
+                       #:log-port (%make-void-port "w"))
+          (setenv "XDG_DATA_HOME" datadir)
+          (zero? (system* update-mime-database destdir)))))
+
+  ;; Don't run the hook when 'shared-mime-info' is not installed.
+  (if (manifest-lookup manifest (manifest-pattern (name "shared-mime-info")))
+      (gexp->derivation "xdg-mime-database" build
+                        #:modules '((guix build utils)
+                                    (guix build union))
+                        #:local-build? #t
+                        #:substitutable? #f)
+      (with-monad %store-monad (return #f))))
+
 (define %default-profile-hooks
   ;; This is the list of derivation-returning procedures that are called by
   ;; default when making a non-empty profile.
@@ -728,7 +764,8 @@ MIME type."
         ghc-package-cache-file
         ca-certificate-bundle
         gtk-icon-themes
-        xdg-desktop-database))
+        xdg-desktop-database
+        xdg-mime-database))
 
 (define* (profile-derivation manifest
                              #:key
