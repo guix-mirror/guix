@@ -219,6 +219,28 @@ With @kbd{C-u}, make it verbose.
 Once @command{guix pull} has succeeded, the Guix REPL is restared.  This
 allows you to keep using the Emacs interface with the updated Guix.
 
+Finally, there is an Emacs variant of @command{guix edit} command
+(@pxref{Invoking guix edit}):
+
+@table @kbd
+@item M-x guix-edit
+As with @kbd{M-x guix-packages-by-name}, you can press @key{TAB} to
+complete a package name.
+@end table
+
+If you are contributing to Guix, you may find it useful for @kbd{M-x
+guix-edit} to open package files from your git directory.  This can be
+done by setting @code{guix-directory} variable.  For example, after
+this:
+
+@example
+(setq guix-directory "~/src/guix")
+@end example
+
+@kbd{M-x guix-edit guix} opens
+@file{~/src/guix/gnu/packages/package-management.scm} file.
+
+
 @node Emacs General info
 @subsection General information
 
