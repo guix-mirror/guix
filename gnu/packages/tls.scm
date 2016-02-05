@@ -330,7 +330,18 @@ security, and applying best practice development processes.")
          "1x6fd3cw9pq45k71rgmxi91hmdmnbf1xxvlfwv31fmzs5255dlbw"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2))
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'disable-egg-compression
+           (lambda _
+             ;; Do not compress the egg.
+             ;; See <http://bugs.gnu.org/20765>.
+             (let ((port (open-file "setup.cfg" "a")))
+               (display "\n[easy_install]\nzip_ok = 0\n"
+                        port)
+               (close-port port)
+               #t))))))
     ;; TODO: Add optional inputs for testing and building documentation.
     (native-inputs
      `(("python2-mock" ,python2-mock)
