@@ -86,8 +86,7 @@
          (add-after 'build 'install-info
           (lambda _ (zero? (system* "make" "install-info")))))
        #:configure-flags
-       '("--with-lapack"
-         "--with-cairo"
+       '("--with-cairo"
          "--with-libpng"
          "--with-jpeglib"
          "--with-libtiff"
@@ -120,7 +119,6 @@
      `(("cairo" ,cairo)
        ("gfortran" ,gfortran)
        ("icu4c" ,icu4c)
-       ("lapack" ,lapack)
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
