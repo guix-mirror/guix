@@ -57,7 +57,7 @@ If PROFILE is nil, use `guix-user-profile'."
   (expand-file-name "share/emacs/site-lisp"
                     (or profile guix-user-profile)))
 
-(defun guix-emacs-find-autoloads-in-directory (directory)
+(defun guix-emacs-find-autoloads (directory)
   "Return a list of Emacs 'autoloads' files in DIRECTORY.
 The files in the list do not have extensions (.el, .elc)."
   (cl-remove-duplicates
@@ -76,43 +76,49 @@ The files in the list do not have extensions (.el, .elc)."
                       (not (file-directory-p file))))
                 (directory-files directory 'full-name nil 'no-sort)))
 
-(defun guix-emacs-find-autoloads (&optional profile)
-  "Return list of autoloads of Emacs packages installed in PROFILE.
+(defun guix-emacs-directories (&optional profile)
+  "Return the list of directories under PROFILE that contain Emacs packages.
+This includes both `share/emacs/site-lisp/guix.d/PACKAGE'
+sub-directories and `share/emacs/site-lisp' itself.
+
 If PROFILE is nil, use `guix-user-profile'.
-Return nil if there are no emacs packages installed in PROFILE."
-  (let ((elisp-root-dir (guix-emacs-directory profile)))
-    (if (file-directory-p elisp-root-dir)
-        (let ((elisp-pkgs-dir (expand-file-name "guix.d" elisp-root-dir))
-              (root-autoloads (guix-emacs-find-autoloads-in-directory
-                               elisp-root-dir)))
-          (if (file-directory-p elisp-pkgs-dir)
-              (let ((pkgs-autoloads
-                     (cl-mapcan #'guix-emacs-find-autoloads-in-directory
-                                (guix-emacs-subdirs elisp-pkgs-dir))))
-                (append root-autoloads pkgs-autoloads))
-            root-autoloads))
-      (message "Directory '%s' does not exist." elisp-root-dir)
-      nil)))
+Return nil, if Emacs packages are not installed in PROFILE."
+  (let ((root-dir (guix-emacs-directory (or profile guix-user-profile))))
+    (when (file-directory-p root-dir)
+      (let* ((pkgs-dir  (expand-file-name "guix.d" root-dir))
+             (pkgs-dirs (when (file-directory-p pkgs-dir)
+                          (guix-emacs-subdirs pkgs-dir))))
+        (cons root-dir pkgs-dirs)))))
 
 ;;;###autoload
-(defun guix-emacs-load-autoloads (&optional profile)
-  "Load autoloads for Emacs packages installed in PROFILE.
-If PROFILE is nil, use `guix-user-profile'.
-Add autoloads directories to `load-path'."
+(defun guix-emacs-autoload-packages (&rest profiles)
+  "Autoload Emacs packages installed in PROFILES.
+If PROFILES are not specified, use `guix-user-profile'.
+
+'Autoload' means add directories with Emacs packages to
+`load-path' and load 'autoloads' files matching
+`guix-emacs-autoloads-regexp'."
   (interactive (list (if (fboundp 'guix-profile-prompt)
                          (funcall 'guix-profile-prompt)
                        guix-user-profile)))
-  (let* ((autoloads     (guix-emacs-find-autoloads profile))
-         (new-autoloads (cl-nset-difference autoloads
-                                            guix-emacs-autoloads
-                                            :test #'string=)))
-    (dolist (file new-autoloads)
-      (cl-pushnew (directory-file-name (file-name-directory file))
-                  load-path
-                  :test #'string=)
-      (load file 'noerror))
-    (setq guix-emacs-autoloads
-          (append new-autoloads guix-emacs-autoloads))))
+  (let ((profiles (or profiles
+                      (list guix-user-profile))))
+    (dolist (profile profiles)
+      (let ((dirs (guix-emacs-directories profile)))
+        (when dirs
+          (let* ((autoloads     (cl-mapcan #'guix-emacs-find-autoloads
+                                           dirs))
+                 (new-autoloads (cl-nset-difference autoloads
+                                                    guix-emacs-autoloads
+                                                    :test #'string=)))
+            (dolist (dir dirs)
+              (cl-pushnew (directory-file-name dir)
+                          load-path
+                          :test #'string=))
+            (dolist (file new-autoloads)
+              (load file 'noerror))
+            (setq guix-emacs-autoloads
+                  (append new-autoloads guix-emacs-autoloads))))))))
 
 (defun guix-emacs-load-autoloads-maybe ()
   "Load autoloads for Emacs packages if needed.
@@ -123,11 +129,10 @@ See `guix-emacs-activate-after-operation' for details."
        ;; packages can be installed to another profile, and the
        ;; following code will not work (i.e., the autoloads for this
        ;; profile will not be loaded).
-       (guix-emacs-load-autoloads guix-current-profile)))
+       (guix-emacs-autoload-packages guix-current-profile)))
 
 (when guix-package-enable-at-startup
-  (add-to-list 'load-path (guix-emacs-directory))
-  (guix-emacs-load-autoloads))
+  (guix-emacs-autoload-packages))
 
 (provide 'guix-emacs)
 

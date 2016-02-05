@@ -106,7 +106,7 @@ for the built-in Emacs package system (@pxref{Package Installation,,,
 emacs, The GNU Emacs Manual}).
 
 You can activate Emacs packages installed in your profile whenever you
-want using @kbd{M-x@tie{}guix-emacs-load-autoloads}.
+want using @kbd{M-x@tie{}guix-emacs-autoload-packages}.
 
 
 @node Emacs Package Management
