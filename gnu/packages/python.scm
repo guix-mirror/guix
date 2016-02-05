@@ -37,7 +37,7 @@
   #:use-module ((guix licenses)
                 #:select (asl2.0 bsd-4 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
                           gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+ agpl3+
-                          isc mpl2.0 psfl public-domain unlicense x11-style
+                          isc mpl2.0 psfl public-domain repoze unlicense x11-style
                           zpl2.1))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
@@ -8131,3 +8131,28 @@ commands into documents, helping you to keep your command examples up to date.")
     (inherit (package-with-python2
               (strip-python2-variant python-sphinxcontrib-programoutput)))
     (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+
+(define-public python-sphinx-repoze-autointerface
+  (package
+    (name "python-sphinx-repoze-autointerface")
+    (version "0.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "repoze.sphinx.autointerface" version))
+              (sha256
+               (base32
+                "016mv3wbylw278wl7z33y2liyra8ljp08zq1g0anzadh1an5zvwp"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-docutils" ,python-docutils)
+       ("python-sphinx" ,python-sphinx)
+       ("python-zope-interface" ,python-zope-interface)))
+    (synopsis "Auto-generate Sphinx API docs from Zope interfaces")
+    (description "This package defines an extension for the Sphinx documentation
+system.  The extension allows generation of API documentation by
+introspection of @code{zope.interface} instances in code.")
+    (home-page "https://github.com/repoze/repoze.sphinx.autointerface")
+    (license repoze)))
+
+(define-public python2-sphinx-repoze-autointerface
+  (package-with-python2 python-sphinx-repoze-autointerface))
