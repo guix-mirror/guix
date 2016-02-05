@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
@@ -44,7 +44,6 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages doxygen)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages fribidi)
@@ -69,7 +68,6 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages texlive)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
@@ -864,12 +862,9 @@ YouTube.com and a few more sites.")
     (arguments `(#:configure-flags '("--disable-bdjava")))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("doxygen" ,doxygen)
-       ("fontconfig" ,fontconfig)
+     `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
-       ("libxml2" ,libxml2)
-       ("perl" ,perl)                   ;for doxygen
-       ("texlive" ,texlive)))
+       ("libxml2" ,libxml2)))
     (home-page "http://www.videolan.org/developers/libbluray.html")
     (synopsis "Blu-Ray Disc playback library")
     (description
