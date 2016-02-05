@@ -11,7 +11,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1721,7 +1721,7 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.42.1")
+    (version "0.42.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1729,7 +1729,7 @@ libraries written in C.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0d4xzjq6mxrlhnh4i12a1yy90n41m03z8wf8g6wh4hjgx7ly404y"))))
+                "1832mrw2hhgjipbsfsv2fmdnwnar4rkx589ciz008bg8x908mscn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
