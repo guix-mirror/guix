@@ -277,7 +277,7 @@ standards.")
 (define-public icecat
   (package
     (name "icecat")
-    (version "38.5.2-gnu1")
+    (version "38.6.0-gnu1")
     (source
      (origin
       (method url-fetch)
@@ -286,28 +286,9 @@ standards.")
                           name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "0m18xyb0rd02yaw9xd5z4bab1wr2599iszzqhm86c134jv5vk6cg"))
+        "0bd4k5cwr8ynscaxffvj2x3kgky3dmjq0qhpcb931l98bh0103lx"))
       (patches (map search-patch
-                    '("icecat-avoid-bundled-includes.patch"
-                      "icecat-CVE-2016-1930-pt01.patch"
-                      "icecat-CVE-2016-1930-pt02.patch"
-                      "icecat-CVE-2016-1930-pt03.patch"
-                      "icecat-CVE-2016-1930-pt04.patch"
-                      "icecat-CVE-2016-1930-pt05.patch"
-                      "icecat-CVE-2016-1930-pt06.patch"
-                      "icecat-CVE-2016-1930-pt07.patch"
-                      "icecat-CVE-2016-1930-pt08.patch"
-                      "icecat-CVE-2016-1930-pt09.patch"
-                      "icecat-CVE-2016-1930-pt10.patch"
-                      "icecat-CVE-2016-1930-pt11.patch"
-                      "icecat-CVE-2016-1930-pt12.patch"
-                      "icecat-CVE-2016-1930-pt13.patch"
-                      "icecat-bug-1146335-pt1.patch"
-                      "icecat-bug-1146335-pt2.patch"
-                      "icecat-CVE-2016-1935.patch"
-                      "icecat-CVE-2016-1930-pt14.patch"
-                      "icecat-CVE-2016-1930-pt15.patch"
-                      "icecat-limit-max-buffers-size-for-ANGLE.patch")))
+                    '("icecat-avoid-bundled-includes.patch")))
       (modules '((guix build utils)))
       (snippet
        '(begin
