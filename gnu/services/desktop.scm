@@ -675,6 +675,11 @@ include the @command{udisksctl} command, part of UDisks, and GNOME Disks."
                                           (compose list elogind-package))
                        (service-extension polkit-service-type
                                           (compose list elogind-package))
+
+                       ;; Provide the 'loginctl' command.
+                       (service-extension profile-service-type
+                                          (compose list elogind-package))
+
                        ;; TODO: Extend PAM with pam_elogind.so.
                        ))))
 
