@@ -1,0 +1,16 @@
+Fix Makefile, which missed including a necessary library for compiling in the
+0.5.0 release.
+
+See https://github.com/jordansissel/xdotool/pull/81 for more information.
+
+--- xdotool-3.20150503.1/Makefile	2014-10-20 13:05:34.000000000 -0700
++++ xdotool-3.20150503.1/Makefile	2016-02-05 14:44:18.652734272 -0800
+@@ -28,7 +28,7 @@
+ CFLAGS+=-g # TODO(sissel): Comment before release
+ CFLAGS+=$(CPPFLAGS)
+ 
+-DEFAULT_LIBS=-L/usr/X11R6/lib -L/usr/local/lib -lX11 -lXtst -lXinerama
++DEFAULT_LIBS=-L/usr/X11R6/lib -L/usr/local/lib -lX11 -lXtst -lXinerama -lxkbcommon
+ DEFAULT_INC=-I/usr/X11R6/include -I/usr/local/include
+ 
+ XDOTOOL_LIBS=$(shell pkg-config --libs x11 2> /dev/null || echo "$(DEFAULT_LIBS)")  $(shell sh platform.sh extralibs)

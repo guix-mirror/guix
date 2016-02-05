@@ -9,6 +9,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 xd1le <elisp.vim@gmail.com>
 ;;; Copyright © 2015 Florian Paul Schmidt <mista.tapas@gmx.net>
+;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages xorg))
 
 ;; packages outside the x.org system proper
@@ -107,16 +109,17 @@ avoiding password prompts when X11 forwarding has already been setup.")
 (define-public xdotool
   (package
     (name "xdotool")
-    (version "2.20110530.1")
+    (version "3.20150503.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-              "http://semicomplete.googlecode.com/files/" name "-"
-              version ".tar.gz"))
+              "https://github.com/jordansissel/xdotool/releases/download/v"
+              version "/xdotool-" version ".tar.gz"))
         (sha256
           (base32
-           "0rxggg1cy7nnkwidx8x2w3c5f3pk6dh2b6q0q7hp069r3n5jrd77"))))
+           "1lcngsw33fy9my21rdiz1gs474bfdqcfxjrnfggbx4aypn1nhcp8"))
+        (patches (list (search-patch "xdotool-fix-makefile.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; Test suite requires a lot of black magic
@@ -134,7 +137,8 @@ avoiding password prompts when X11 forwarding has already been setup.")
               ("libxext" ,libxext)
               ("libxi" ,libxi)
               ("libxinerama" ,libxinerama)
-              ("libxtst" ,libxtst)))
+              ("libxtst" ,libxtst)
+              ("libxkbcommon" ,libxkbcommon)))
     (home-page "http://www.semicomplete.com/projects/xdotool")
     (synopsis "Fake keyboard/mouse input, window management, and more")
     (description "Xdotool lets you simulate keyboard input and mouse activity,
