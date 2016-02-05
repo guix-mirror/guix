@@ -581,8 +581,10 @@ use 'plain-file' instead~%")
     ("SSL_CERT_DIR" . "/etc/ssl/certs")
     ("SSL_CERT_FILE" . "/etc/ssl/certs/ca-certificates.crt")
     ("GIT_SSL_CAINFO" . "/etc/ssl/certs/ca-certificates.crt")
-    ;; Append the directory of 'site-start.el' to the search path.
-    ("EMACSLOADPATH" . ":/etc/emacs")
+    ;; Prepend the directory of 'site-start.el' to the search path, so
+    ;; that it has higher precedence than the 'site-start.el' file our
+    ;; Emacs package provides.
+    ("EMACSLOADPATH" . "/etc/emacs:")
     ;; By default, applications that use D-Bus, such as Emacs, abort at startup
     ;; when /etc/machine-id is missing.  Make sure these warnings are non-fatal.
     ("DBUS_FATAL_WARNINGS" . "0")))
