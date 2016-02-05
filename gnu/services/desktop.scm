@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -182,18 +182,21 @@ is set to @var{value} when the bus daemon launches it."
            (stop #~(make-kill-destructor))))))
 
 (define upower-service-type
-  (service-type (name 'upower)
-                (extensions
-                 (list (service-extension dbus-root-service-type
-                                          upower-dbus-service)
-                       (service-extension shepherd-root-service-type
-                                          upower-shepherd-service)
-                       (service-extension activation-service-type
-                                          (const %upower-activation))
-                       (service-extension udev-service-type
-                                          (compose
-                                           list
-                                           upower-configuration-upower))))))
+  (let ((upower-package (compose list upower-configuration-upower)))
+    (service-type (name 'upower)
+                  (extensions
+                   (list (service-extension dbus-root-service-type
+                                            upower-dbus-service)
+                         (service-extension shepherd-root-service-type
+                                            upower-shepherd-service)
+                         (service-extension activation-service-type
+                                            (const %upower-activation))
+                         (service-extension udev-service-type
+                                            upower-package)
+
+                         ;; Make the 'upower' command visible.
+                         (service-extension profile-service-type
+                                            upower-package))))))
 
 (define* (upower-service #:key (upower upower)
                          (watts-up-pro? #f)
