@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -859,7 +860,7 @@ library.")
 (define-public atkmm
   (package
     (name "atkmm")
-    (version "2.24.1")
+    (version "2.24.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -867,7 +868,7 @@ library.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "08zd6s5c1q90wm8310mdrb5f2lj8v63wxihrybwyw13xlf6ivi16"))))
+               "1gaqwhviadsmy0fsr47686yglv1p4mpkamj0in127bz2b5bki5gz"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
