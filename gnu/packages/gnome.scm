@@ -4269,7 +4269,7 @@ the available networks and allows users to easily switch between them.")
 (define-public libxml++
   (package
     (name "libxml++")
-    (version "2.91.2")
+    (version "3.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4277,7 +4277,7 @@ the available networks and allows users to easily switch between them.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0h4h7hhh9lg8h34py116517m3wqbzhd5v63k1c6pp1p2a43s18fs"))))
+                "0lkrajbdys5f6w6qwfijih3hnbk4c6809qx2mmxkb7bj2w269wrg"))))
     (build-system gnu-build-system)
     ;; libxml++-3.0.pc refers to all these.
     (propagated-inputs
