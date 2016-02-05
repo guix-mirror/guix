@@ -234,7 +234,8 @@ stored."
             (set! %load-compiled-path
               (cons #$compiled %load-compiled-path)))
 
-          (use-modules (system repl error-handling))
+          (use-modules (srfi srfi-34)
+                       (system repl error-handling))
 
           ;; Arrange to spawn a REPL if loading one of FILES fails.  This is
           ;; better than a kernel panic.
@@ -246,7 +247,16 @@ stored."
           (setenv "PATH" "/run/current-system/profile/bin")
 
           (format #t "starting services...~%")
-          (for-each start
+          (for-each (lambda (service)
+                      ;; In the Shepherd 0.3 the 'start' method can raise
+                      ;; '&action-runtime-error' if it fails, so protect
+                      ;; against it.  (XXX: 'action-runtime-error?' is not
+                      ;; exported is 0.3, hence 'service-error?'.)
+                      (guard (c ((service-error? c)
+                                 (format (current-error-port)
+                                         "failed to start service '~a'~%"
+                                         service)))
+                        (start service)))
                     '#$(append-map shepherd-service-provision
                                    (filter shepherd-service-auto-start?
                                            services)))))
