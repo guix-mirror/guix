@@ -36,13 +36,6 @@ avoid loading autoloads of Emacs packages installed in
   :type 'boolean
   :group 'guix)
 
-(defcustom guix-emacs-activate-after-operation t
-  "Activate Emacs packages after installing.
-If nil, do not load autoloads of the Emacs packages after
-they are successfully installed."
-  :type 'boolean
-  :group 'guix)
-
 (defvar guix-emacs-autoloads nil
   "List of the last loaded Emacs autoloads.")
 
@@ -119,17 +112,6 @@ If PROFILES are not specified, use `guix-user-profile'.
               (load file 'noerror))
             (setq guix-emacs-autoloads
                   (append new-autoloads guix-emacs-autoloads))))))))
-
-(defun guix-emacs-load-autoloads-maybe ()
-  "Load autoloads for Emacs packages if needed.
-See `guix-emacs-activate-after-operation' for details."
-  (and guix-emacs-activate-after-operation
-       ;; FIXME Since a user can work with a non-current profile (using
-       ;; C-u before `guix-search-by-name' and other commands), emacs
-       ;; packages can be installed to another profile, and the
-       ;; following code will not work (i.e., the autoloads for this
-       ;; profile will not be loaded).
-       (guix-emacs-autoload-packages guix-current-profile)))
 
 (when guix-package-enable-at-startup
   (guix-emacs-autoload-packages))

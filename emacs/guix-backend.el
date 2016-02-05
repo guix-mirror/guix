@@ -1,6 +1,6 @@
 ;;; guix-backend.el --- Making and using Guix REPL
 
-;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -53,6 +53,7 @@
 (require 'guix-config)
 (require 'guix-external)
 (require 'guix-emacs)
+(require 'guix-profiles)
 
 (defvar guix-load-path guix-config-emacs-interface-directory
   "Directory with scheme files for \"guix.el\" package.")
@@ -101,6 +102,13 @@ The function is called without arguments."
                  (function :tag "Other function"))
   :group 'guix-repl)
 
+(defcustom guix-emacs-activate-after-operation t
+  "Activate Emacs packages after installing.
+If nil, do not load autoloads of the Emacs packages after
+they are successfully installed."
+  :type 'boolean
+  :group 'guix-repl)
+
 (defvar guix-repl-current-socket nil
   "Name of a socket file used by the current Guix REPL.")
 
@@ -121,7 +129,7 @@ This REPL is used for receiving information only if
   "Hook run before executing an operation in Guix REPL.")
 
 (defvar guix-after-repl-operation-hook
-  '(guix-emacs-load-autoloads-maybe
+  '(guix-repl-autoload-emacs-packages-maybe
     guix-repl-operation-success-message)
   "Hook run after executing successful operation in Guix REPL.")
 
@@ -135,6 +143,17 @@ from operations performed in Guix REPL by a user.")
 This internal variable is used to define what actions should be
 executed after the current operation succeeds.
 See `guix-eval-in-repl' for details.")
+
+(defun guix-repl-autoload-emacs-packages-maybe ()
+  "Load autoloads for Emacs packages if needed.
+See `guix-emacs-activate-after-operation' for details."
+  (and guix-emacs-activate-after-operation
+       ;; FIXME Since a user can work with a non-current profile (using
+       ;; C-u before `guix-search-by-name' and other commands), emacs
+       ;; packages can be installed to another profile, and the
+       ;; following code will not work (i.e., the autoloads for this
+       ;; profile will not be loaded).
+       (guix-emacs-autoload-packages guix-current-profile)))
 
 (defun guix-repl-operation-success-message ()
   "Message telling about successful Guix operation."
