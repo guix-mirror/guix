@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;;
@@ -70,19 +70,37 @@ endpoints.")
             (patches (list (search-patch "vpnc-script.patch")))))
    (build-system gnu-build-system)
    (inputs `(("libgcrypt" ,libgcrypt)
-             ("perl" ,perl)))
+             ("perl" ,perl)
+
+             ;; The following packages provide commands that 'vpnc-script'
+             ;; expects.
+             ("net-tools" ,net-tools)             ;ifconfig, route
+             ("iproute2" ,iproute)))              ;ip
    (arguments
     `(#:tests? #f ; there is no check target
       #:phases
-      (alist-replace
-       'configure
-       (lambda* (#:key outputs #:allow-other-keys)
-         (let ((out (assoc-ref outputs "out")))
-           (substitute* "Makefile"
-             (("PREFIX=/usr/local") (string-append "PREFIX=" out)))
-           (substitute* "Makefile"
-             (("ETCDIR=/etc/vpnc") (string-append "ETCDIR=" out "/etc/vpnc")))))
-       %standard-phases)))
+      (modify-phases %standard-phases
+        (replace 'configure
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (substitute* "Makefile"
+                (("PREFIX=/usr/local") (string-append "PREFIX=" out)))
+              (substitute* "Makefile"
+                (("ETCDIR=/etc/vpnc") (string-append "ETCDIR=" out
+                                                     "/etc/vpnc"))))))
+        (add-after 'install 'wrap-vpnc-script
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            ;; Wrap 'etc/vpnc/vpnc-script' so that it finds the commands it
+            ;; needs.  Assume coreutils/grep/sed are in $PATH.
+            (let ((out (assoc-ref outputs "out")))
+              (wrap-program (string-append out "/etc/vpnc/vpnc-script")
+                `("PATH" ":" prefix
+                  (,(string-append (assoc-ref inputs "net-tools")
+                                   "/sbin")
+                   ,(string-append (assoc-ref inputs "net-tools")
+                                   "/bin")
+                   ,(string-append (assoc-ref inputs "iproute2")
+                                   "/sbin"))))))))))
    (synopsis "Client for Cisco VPN concentrators")
    (description
     "vpnc is a VPN client compatible with Cisco's EasyVPN equipment.
