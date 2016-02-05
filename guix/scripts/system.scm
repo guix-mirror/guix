@@ -211,6 +211,16 @@ the ownership of '~a' may be incorrect!~%")
       (lambda ()
         (environ env)))))
 
+(define-syntax-rule (warn-on-system-error body ...)
+  (catch 'system-error
+    (lambda ()
+      body ...)
+    (lambda (key proc format-string format-args errno . rest)
+      (warning (_ "while talking to shepherd: ~a~%")
+               (apply format #f format-string format-args))
+      (with-monad %store-monad
+        (return #f)))))
+
 (define (upgrade-shepherd-services os)
   "Upgrade the Shepherd (PID 1) by unloading obsolete services and loading new
 services specified in OS and not currently running.
@@ -230,42 +240,44 @@ bring the system down."
     (map (compose first shepherd-service-provision)
          new-services))
 
-  (let-values (((running stopped) (current-services)))
-    (define to-load
-      ;; Only load services that are either new or currently stopped.
-      (remove (lambda (service)
-                (memq (first (shepherd-service-provision service))
-                      running))
-              new-services))
-    (define to-unload
-      ;; Unload services that are (1) no longer required, or (2) are in
-      ;; TO-LOAD.
-      (remove essential?
-              (append (remove (lambda (service)
-                                (memq service new-service-names))
-                              (append running stopped))
-                      (filter (lambda (service)
-                                (memq service stopped))
-                              (map shepherd-service-canonical-name
-                                   to-load)))))
+  ;; Arrange to simply emit a warning if we cannot connect to the shepherd.
+  (warn-on-system-error
+   (let-values (((running stopped) (current-services)))
+     (define to-load
+       ;; Only load services that are either new or currently stopped.
+       (remove (lambda (service)
+                 (memq (first (shepherd-service-provision service))
+                       running))
+               new-services))
+     (define to-unload
+       ;; Unload services that are (1) no longer required, or (2) are in
+       ;; TO-LOAD.
+       (remove essential?
+               (append (remove (lambda (service)
+                                 (memq service new-service-names))
+                               (append running stopped))
+                       (filter (lambda (service)
+                                 (memq service stopped))
+                               (map shepherd-service-canonical-name
+                                    to-load)))))
 
-    (for-each (lambda (unload)
-                (info (_ "unloading service '~a'...~%") unload)
-                (unload-service unload))
-              to-unload)
+     (for-each (lambda (unload)
+                 (info (_ "unloading service '~a'...~%") unload)
+                 (unload-service unload))
+               to-unload)
 
-    (with-monad %store-monad
-      (munless (null? to-load)
-        (let ((to-load-names  (map shepherd-service-canonical-name to-load))
-              (to-start       (filter shepherd-service-auto-start? to-load)))
-          (info (_ "loading new services:~{ ~a~}...~%") to-load-names)
-          (mlet %store-monad ((files (mapm %store-monad shepherd-service-file
-                                           to-load)))
-            (load-services (map derivation->output-path files))
+     (with-monad %store-monad
+       (munless (null? to-load)
+         (let ((to-load-names  (map shepherd-service-canonical-name to-load))
+               (to-start       (filter shepherd-service-auto-start? to-load)))
+           (info (_ "loading new services:~{ ~a~}...~%") to-load-names)
+           (mlet %store-monad ((files (mapm %store-monad shepherd-service-file
+                                            to-load)))
+             (load-services (map derivation->output-path files))
 
-            (for-each start-service
-                      (map shepherd-service-canonical-name to-start))
-            (return #t)))))))
+             (for-each start-service
+                       (map shepherd-service-canonical-name to-start))
+             (return #t))))))))
 
 (define* (switch-to-system os
                            #:optional (profile %system-profile))

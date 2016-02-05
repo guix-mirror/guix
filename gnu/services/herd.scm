@@ -52,20 +52,14 @@ return the socket."
           (connect sock address)
           (setvbuf sock _IOFBF 1024)
           sock)
-        (lambda (key proc format-string format-args errno . rest)
-          (warning (_ "cannot connect to ~a: ~a~%") file
-                   (apply format #f format-string format-args))
-          #f)))))
+        (lambda args
+          (close-port sock)
+          (apply throw args))))))
 
 (define-syntax-rule (with-shepherd connection body ...)
   "Evaluate BODY... with CONNECTION bound to an open socket to PID 1."
   (let ((connection (open-connection)))
-    (and connection
-         (dynamic-wind
-           (const #t)
-           (lambda ()
-             body ...)
-           (const #t)))))
+    body ...))
 
 (define (report-action-error error)
   "Report ERROR, an sexp received by a shepherd client in reply to COMMAND, a
