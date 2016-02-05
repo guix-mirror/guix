@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Vicente Vera Parra <vicentemvp@gmail.com>
+;;; Copyright ©2016 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,8 +86,7 @@
          (add-after 'build 'install-info
           (lambda _ (zero? (system* "make" "install-info")))))
        #:configure-flags
-       '("--with-blas=openblas"
-         "--with-lapack"
+       '("--with-lapack"
          "--with-cairo"
          "--with-libpng"
          "--with-jpeglib"
@@ -117,8 +117,7 @@
        ("which" ,which) ; for tests/Examples/base-Ex.R
        ("xz" ,xz)))
     (inputs
-     `(("openblas" ,openblas)
-       ("cairo" ,cairo)
+     `(("cairo" ,cairo)
        ("gfortran" ,gfortran)
        ("icu4c" ,icu4c)
        ("lapack" ,lapack)
