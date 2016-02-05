@@ -5,6 +5,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
 
 (define-module (gnu packages gnupg)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (gnu packages)
   #:use-module (gnu packages adns)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages openldap)
@@ -331,6 +333,46 @@ programming task, it is suggested that all software should try to use GPGME
 instead.  This way bug fixes or improvements can be done at a central place
 and every application benefits from this.")
     (license license:lgpl2.1+)))
+
+(define-public python-pygpgme
+  (package
+    (name "python-pygpgme")
+    (version "0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pygpgme" version))
+       (sha256
+        (base32
+         "1q82p3gs6lwq8j8dxk4pvrwk3jpww1zqcjrzznl9clh10z28gn2z"))
+       ;; Unfortunately, we have to disable some tests due to some gpg-agent
+       ;; goofiness... see:
+       ;;   https://bugs.launchpad.net/pygpgme/+bug/999949
+       (patches (list (search-patch "pygpgme-disable-problematic-tests.patch")))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'make-build
+           (lambda _
+             (zero? (system* "make" "build"))))
+         (replace 'check
+           (lambda _
+             (zero? (system* "make" "check")))))))
+    (build-system python-build-system)
+    (inputs
+     `(;; setuptools required for python-2 variant
+       ("python-setuptools" ,python-setuptools)
+       ("gnupg" ,gnupg-2.0)
+       ("gpgme" ,gpgme)))
+    (home-page "https://launchpad.net/pygpgme")
+    (synopsis "Python module for working with OpenPGP messages")
+    (description
+     "PyGPGME is a Python module that lets you sign, verify, encrypt and
+decrypt messages using the OpenPGP format by making use of GPGME.")
+    (license license:lgpl2.1+)))
+
+(define-public python2-pygpgme
+  (package-with-python2 python-pygpgme))
 
 (define-public python-gnupg
   (package

@@ -1,0 +1,37 @@
+These tests require a gpg agent to run, and are difficult to get to work right
+in Guix's environment.  For more details, see:
+  https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=713074
+  https://bugs.launchpad.net/pygpgme/+bug/999949
+
+--- pygpgme-0.3/tests/test_encrypt_decrypt.py	2012-02-28 19:10:28.000000000 -0800
++++ pygpgme-0.3/tests/test_encrypt_decrypt.py	2016-02-05 10:21:58.966685384 -0800
+@@ -125,7 +125,7 @@
+         ctx.decrypt(ciphertext, plaintext)
+         self.assertEqual(plaintext.getvalue(), b'Hello World\n')
+ 
+-    def test_encrypt_symmetric(self):
++    def skip_test_encrypt_symmetric(self):
+         plaintext = BytesIO(b'Hello World\n')
+         ciphertext = BytesIO()
+         def passphrase(uid_hint, passphrase_info, prev_was_bad, fd):
+
+--- pygpgme-0.3/tests/test_passphrase.py	2012-02-28 19:04:17.000000000 -0800
++++ pygpgme-0.3/tests/test_passphrase.py	2016-02-05 10:21:47.990630956 -0800
+@@ -30,7 +30,7 @@
+ 
+     import_keys = ['passphrase.pub', 'passphrase.sec']
+ 
+-    def test_sign_without_passphrase_cb(self):
++    def skip_test_sign_without_passphrase_cb(self):
+         ctx = gpgme.Context()
+         key = ctx.get_key('EFB052B4230BBBC51914BCBB54DCBBC8DBFB9EB3')
+         ctx.signers = [key]
+@@ -51,7 +51,7 @@
+         self.prev_was_bad = prev_was_bad
+         os.write(fd, b'test\n')
+ 
+-    def test_sign_with_passphrase_cb(self):
++    def skip_test_sign_with_passphrase_cb(self):
+         ctx = gpgme.Context()
+         key = ctx.get_key('EFB052B4230BBBC51914BCBB54DCBBC8DBFB9EB3')
+         ctx.signers = [key]

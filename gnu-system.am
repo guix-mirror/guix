@@ -665,6 +665,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/pycairo-wscript.patch			\
   gnu/packages/patches/pybugz-encode-error.patch		\
   gnu/packages/patches/pybugz-stty.patch			\
+  gnu/packages/patches/pygpgme-disable-problematic-tests.patch  \
   gnu/packages/patches/pyqt-configure.patch			\
   gnu/packages/patches/python-2-deterministic-build-info.patch	\
   gnu/packages/patches/python-2.7-search-paths.patch		\
