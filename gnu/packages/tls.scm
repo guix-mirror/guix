@@ -375,11 +375,34 @@ security, and applying best practice development processes.")
                 "1wwq8yvfdybf4d0gv4yfddkrg865s7rhng5xg563kks4wza1a2wp"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2))
-    ;; TODO: Add optional inputs for testing building documentation.
+     `(#:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man1 (string-append out "/share/man/man1"))
+                    (man7 (string-append out "/share/man/man7"))
+                    (info (string-append out "/info")))
+               (substitute* "docs/man/letsencrypt.rst"
+                 (("letsencrypt --help all")
+                  (string-append out "/bin/letsencrypt" " --help all")))
+               (and
+                 (zero? (system* "make" "-C" "docs" "man" "info"))
+                 (install-file "docs/_build/texinfo/LetsEncrypt.info" info)
+                 (install-file "docs/_build/man/letsencrypt.1" man1)
+                 (install-file "docs/_build/man/letsencrypt.7" man7)
+                 #t)))))))
+    ;; TODO: Add optional inputs for testing.
     (native-inputs
      `(("python2-nose" ,python2-nose)
-       ("python2-mock" ,python2-mock)))
+       ("python2-mock" ,python2-mock)
+       ;; For documentation
+       ("python2-sphinx" ,python2-sphinx)
+       ("python2-sphinx-rtd-theme" ,python2-sphinx-rtd-theme)
+       ("python2-sphinx-repoze-autointerface" ,python2-sphinx-repoze-autointerface)
+       ("python2-sphinxcontrib-programoutput" ,python2-sphinxcontrib-programoutput)
+       ("texinfo" ,texinfo)))
     (propagated-inputs
      `(("python2-acme" ,python2-acme)
        ("python2-zope-interface" ,python2-zope-interface)
