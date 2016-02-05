@@ -86,7 +86,8 @@ Return nil, if Emacs packages are not installed in PROFILE."
 ;;;###autoload
 (defun guix-emacs-autoload-packages (&rest profiles)
   "Autoload Emacs packages installed in PROFILES.
-If PROFILES are not specified, use `guix-user-profile'.
+If PROFILES are not specified, use a default user and system
+profiles.
 
 'Autoload' means add directories with Emacs packages to
 `load-path' and load 'autoloads' files matching
@@ -95,7 +96,8 @@ If PROFILES are not specified, use `guix-user-profile'.
                          (funcall 'guix-profile-prompt)
                        guix-user-profile)))
   (let ((profiles (or profiles
-                      (list guix-user-profile))))
+                      (list "/run/current-system/profile"
+                            guix-user-profile))))
     (dolist (profile profiles)
       (let ((dirs (guix-emacs-directories profile)))
         (when dirs
