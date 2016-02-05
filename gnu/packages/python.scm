@@ -8104,3 +8104,30 @@ programmatically interfacing with your system's $EDITOR.")
     (inherit (package-with-python2
               (strip-python2-variant python-editor)))
     (inputs `(("python2-setuptools" ,python2-setuptools)))))
+
+(define-public python-sphinxcontrib-programoutput
+  (package
+    (name "python-sphinxcontrib-programoutput")
+    (version "0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sphinxcontrib-programoutput" version))
+              (sha256
+               (base32
+                "098as6z1s0gb4dh5xcr1fd2vpm91zj93jzvgawspxf5s4hqs0xhp"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-docutils" ,python-docutils)
+       ("python-sphinx" ,python-sphinx)))
+    (synopsis "Sphinx extension to include program output")
+    (description "A Sphinx extension to literally insert the output of arbitrary
+commands into documents, helping you to keep your command examples up to date.")
+    (home-page "https://github.com/lunaryorn/sphinxcontrib-programoutput")
+    (license bsd-2)
+    (properties `((python2-variant . ,(delay python2-sphinxcontrib-programoutput))))))
+
+(define-public python2-sphinxcontrib-programoutput
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-sphinxcontrib-programoutput)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
