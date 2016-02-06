@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Aljosha Papsch <misc@rpapsch.de>
+;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,13 +27,17 @@
   #:use-module (guix packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (guix build-system python))
 
 (define-public pwgen
   (package
@@ -185,3 +190,54 @@ passwords that could be guessed by crack by filtering them out, at source.")
      "Libpwquality is a library for password quality checking and generation of
 random passwords that pass the checks.")
     (license license:gpl2+)))
+
+(define-public assword
+  (package
+    (name "assword")
+    (version "0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (list
+                    (string-append
+                     "http://http.debian.net/debian/pool/main/a/assword/"
+                     "assword_" version ".orig.tar.gz")))
+              (sha256
+               (base32
+                "0dl4wizbi0r21wxzykm8s445xbvqim5nabi799dmpkdnnh8i546i"))))
+    (arguments
+     `(#:python ,python-2
+       ;; irritatingly, tests do run but not there are two problems:
+       ;;  - "import gtk" fails for unknown reasons here despite it the
+       ;;    program working (indeed, I've found I have to do a logout and log
+       ;;    back in in after an install order for some mumbo jumbo environment
+       ;;    variable mess to work with pygtk and assword... what's up with
+       ;;    that?)
+       ;;  - even when the tests fail, they don't return a nonzero status,
+       ;;    so I'm not sure how to programmatically get that information
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'manpage
+           (lambda* (#:key outputs #:allow-other-keys)
+             (and
+              (zero? (system* "make" "assword.1"))
+              (install-file
+               "assword.1"
+               (string-append (assoc-ref outputs "out") "/share/man/man1"))))))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("help2man" ,help2man)))
+    (inputs
+     `(("python-setuptools" ,python2-setuptools)
+       ("python2-xdo" ,python2-xdo)
+       ("python2-pygpgme" ,python2-pygpgme)
+       ("python2-pygtk" ,python2-pygtk)))
+    (propagated-inputs
+     `(("xclip" ,xclip)))
+    (home-page "https://finestructure.net/assword/")
+    (synopsis "Password manager")
+    (description "assword is a simple password manager using GPG-wrapped
+JSON files.  It has a command line interface as well as a very simple
+graphical interface, which can even \"type\" your passwords into
+any X11 window.")
+    (license license:gpl3+)))
