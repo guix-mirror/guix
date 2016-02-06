@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -61,6 +61,18 @@ package includes both the tools necessary to produce Info documents from
 their source and the command-line Info reader.  The emphasis of the language
 is on expressing the content semantically, avoiding physical markup commands.")
     (license gpl3+)))
+
+(define-public texinfo-6.1
+  (package
+    (inherit texinfo)
+    (version "6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/texinfo/texinfo-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1ll3d0l8izygdxqz96wfr2631kxahifwdknpgsx2090vw963js5c"))))))
 
 (define-public texinfo-5
   (package (inherit texinfo)

@@ -89,7 +89,8 @@
                 "pwd"))))
          (add-after 'install 'remove-info.info
            (lambda* (#:key outputs #:allow-other-keys)
-             ;; Remove 'info.info', which is provided by Texinfo.
+             ;; Remove 'info.info', which is provided by Texinfo <= 6.0.
+             ;; TODO: Remove this phase when we switch to Texinfo 6.1.
              (let ((out (assoc-ref outputs "out")))
                (delete-file
                 (string-append out "/share/info/info.info.gz"))
