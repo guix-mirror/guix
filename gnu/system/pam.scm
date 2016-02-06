@@ -23,6 +23,7 @@
   #:use-module (gnu services)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module ((guix utils) #:select (%current-system))
   #:export (pam-service
@@ -208,19 +209,50 @@ authenticate to run COMMAND."
 ;;; PAM root service.
 ;;;
 
-(define (/etc-entry services)
-  `(("pam.d" ,(pam-services->directory services))))
+;; Overall PAM configuration: a list of services, plus a procedure that takes
+;; one <pam-service> and returns a <pam-service>.  The procedure is used to
+;; implement cross-cutting concerns such as the use of the 'elogind.so'
+;; session module that keeps track of logged-in users.
+(define-record-type* <pam-configuration>
+  pam-configuration make-pam-configuration? pam-configuration?
+  (services  pam-configuration-services)          ;list of <pam-service>
+  (transform pam-configuration-transform))        ;procedure
+
+(define (/etc-entry config)
+  "Return the /etc/pam.d entry corresponding to CONFIG."
+  (match config
+    (($ <pam-configuration> services transform)
+     (let ((services (map transform services)))
+       `(("pam.d" ,(pam-services->directory services)))))))
+
+(define (extend-configuration initial extensions)
+  "Extend INITIAL with NEW."
+  (let-values (((services procs)
+                (partition pam-service? extensions)))
+    (pam-configuration
+     (services (append (pam-configuration-services initial)
+                       services))
+     (transform (apply compose
+                       (pam-configuration-transform initial)
+                       procs)))))
 
 (define pam-root-service-type
   (service-type (name 'pam)
                 (extensions (list (service-extension etc-service-type
                                                      /etc-entry)))
-                (compose concatenate)
-                (extend append)))
 
-(define (pam-root-service base)
+                ;; Arguments include <pam-service> as well as procedures.
+                (compose concatenate)
+                (extend extend-configuration)))
+
+(define* (pam-root-service base #:key (transform identity))
   "The \"root\" PAM service, which collects <pam-service> instance and turns
-them into a /etc/pam.d directory, including the <pam-service> listed in BASE."
-  (service pam-root-service-type base))
+them into a /etc/pam.d directory, including the <pam-service> listed in BASE.
+TRANSFORM is a procedure that takes a <pam-service> and returns a
+<pam-service>.  It can be used to implement cross-cutting concerns that affect
+all the PAM services."
+  (service pam-root-service-type
+           (pam-configuration (services base)
+                              (transform transform))))
 
 ;;; linux.scm ends here
