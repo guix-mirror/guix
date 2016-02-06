@@ -109,6 +109,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/engineering.scm			\
   %D%/packages/enlightenment.scm		\
   %D%/packages/entr.scm				\
+  %D%/packages/erlang.scm			\
   %D%/packages/fcitx.scm			\
   %D%/packages/feh.scm                          \
   %D%/packages/figlet.scm			\
