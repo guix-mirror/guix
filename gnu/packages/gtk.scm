@@ -9,6 +9,7 @@
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1160,3 +1161,32 @@ can also be used to document application code.")
 Clearlooks, Crux, High Contrast, Industrial, LighthouseBlue, Metal, Mist,
 Redmond95 and ThinIce.")
     (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public murrine
+  (package
+    (name "murrine")
+    (version "0.98.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "129cs5bqw23i76h3nmc29c9mqkm9460iwc8vkl7hs4xr07h8mip9"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       `("--enable-animation"
+         "--enable-animationrtl")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (propagated-inputs
+     `(("gtk+" ,gtk+-2)))
+    (home-page "http://live.gnome.org/GnomeArt")
+    (synopsis "Cairo-based theming engine for GTK+ 2.x")
+    (description
+     "Murrine is a cairo-based GTK+ theming engine.  It is named after the
+glass artworks done by Venicians glass blowers.")
+    (license license:gpl2+)))
