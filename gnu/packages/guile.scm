@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
@@ -195,14 +195,21 @@ without requiring the source code to be rewritten.")
 (define-public guile-next
   (package (inherit guile-2.0)
     (name "guile-next")
-    (version "2.1.1")
+    (version "2.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://alpha.gnu.org/gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0nixmx7as79g8rr8bvznh59pwcc2jd22cfk17v309p57zp2c255r"))))
+                "0p971k3v04jj5klnv145g4172cpcp90arf0wvxxj2aqkg16j9m9c"))
+              (modules '((guix build utils)))
+
+              ;; Remove the pre-built object files.  Instead, build everything
+              ;; from source, at the expense of significantly longer build
+              ;; times (almost 3 hours on a 4-core Intel i5).
+              (snippet '(for-each delete-file
+                                  (find-files "prebuilt" "\\.go$")))))
     (synopsis "Snapshot of what will become version 2.2 of GNU Guile")))
 
 (define-public guile-for-guile-emacs
