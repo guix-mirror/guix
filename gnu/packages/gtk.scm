@@ -1131,3 +1131,32 @@ information.")
 typically used to document the public API of GTK+ and GNOME libraries, but it
 can also be used to document application code.")
     (license license:gpl2+)))
+
+(define-public gtk-engines
+  (package
+    (name "gtk-engines")
+    (version "2.20.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1db65pb0j0mijmswrvpgkdabilqd23x22d95hp5kwxvcramq1dhm"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       `("--enable-animation")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (propagated-inputs
+     `(("gtk+" ,gtk+-2))) ; required by gtk-engines-2.pc
+    (home-page "http://live.gnome.org/GnomeArt")
+    (synopsis "Theming engines for GTK+ 2.x")
+    (description
+     "This package contains the standard GTK+ 2.x theming engines including
+Clearlooks, Crux, High Contrast, Industrial, LighthouseBlue, Metal, Mist,
+Redmond95 and ThinIce.")
+    (license (list license:gpl2+ license:lgpl2.1+))))
