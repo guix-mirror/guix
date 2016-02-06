@@ -664,6 +664,22 @@ include the @command{udisksctl} command, part of UDisks, and GNOME Disks."
                      (list (string-append "ELOGIND_CONF_FILE=" #$config-file))))
            (stop #~(make-kill-destructor))))))
 
+(define (pam-extension-procedure config)
+  "Return an extension for PAM-ROOT-SERVICE-TYPE that ensures that all the PAM
+services use 'pam_elogind.so', a module that allows elogind to keep track of
+logged-in users (run 'loginctl' to see elogind's world view of users and
+seats.)"
+  (define pam-elogind
+    (pam-entry
+     (control "required")
+     (module #~(string-append #$(elogind-package config)
+                              "/lib/security/pam_elogind.so"))))
+
+  (list (lambda (pam)
+          (pam-service
+           (inherit pam)
+           (session (cons pam-elogind (pam-service-session pam)))))))
+
 (define elogind-service-type
   (service-type (name 'elogind)
                 (extensions
@@ -680,8 +696,9 @@ include the @command{udisksctl} command, part of UDisks, and GNOME Disks."
                        (service-extension profile-service-type
                                           (compose list elogind-package))
 
-                       ;; TODO: Extend PAM with pam_elogind.so.
-                       ))))
+                       ;; Extend PAM with pam_elogind.so.
+                       (service-extension pam-root-service-type
+                                          pam-extension-procedure)))))
 
 (define* (elogind-service #:key (config (elogind-configuration)))
   "Return a service that runs the @command{elogind} login and seat management
