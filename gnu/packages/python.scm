@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
@@ -72,6 +72,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages zip)
   #:use-module (gnu packages tcl)
   #:use-module (guix packages)
@@ -7486,3 +7487,30 @@ normally the case.")
 
 (define-public python2-pytest-subtesthack
   (package-with-python2 python-pytest-subtesthack))
+
+(define-public python2-xdo
+  (package
+    (name "python2-xdo")
+    (version "0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://http.debian.net/debian/pool/main/p/python-xdo/"
+                    "python-xdo_" version ".orig.tar.gz"))
+              (sha256
+               (base32
+                "1kl5c1p0dyxf62plnk6fl77ycfb4whwjms16r14dxx8kn90hlqz4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f))  ; no tests provided
+    (inputs
+     `(("xdotool" ,xdotool)
+       ("libX11" ,libx11)))
+    (home-page "https://tracker.debian.org/pkg/python-xdo")
+    (synopsis "Python library for simulating X11 keyboard/mouse input")
+    (description "Provides bindings to libxdo for manipulating X11 via simulated
+input.  (Note that this is mostly a legacy library; you may wish to look at
+python-xdo for newer bindings.)")
+    (license bsd-3)))
+
