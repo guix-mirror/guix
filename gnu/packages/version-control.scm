@@ -1109,15 +1109,16 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
                (base32
                 "196g3jkaybjx11nbr51n0cjps3wjzb145ab76y717diqvvxp5v4r"))))
     (build-system python-build-system)
+    (arguments `(#:python ,python-2))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
+     `(("python2-setuptools" ,python2-setuptools)
        ;; for the tests
-       ("python-six" ,python-six)))
+       ("python2-six" ,python2-six)))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil-2)
-       ("python-futures" ,python-futures)
-       ("python-rauth" ,python-rauth)
-       ("python-swiftclient" ,python-swiftclient)))
+     `(("python2-dateutil" ,python2-dateutil-2)
+       ("python2-futures" ,python2-futures)
+       ("python2-rauth" ,python2-rauth)
+       ("python2-swiftclient" ,python2-swiftclient)))
     (home-page "https://github.com/Schnouki/git-annex-remote-hubic/")
     (synopsis "Use hubic as a git-annex remote")
     (description
