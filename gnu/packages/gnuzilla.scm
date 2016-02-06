@@ -288,7 +288,8 @@ standards.")
        (base32
         "0bd4k5cwr8ynscaxffvj2x3kgky3dmjq0qhpcb931l98bh0103lx"))
       (patches (map search-patch
-                    '("icecat-avoid-bundled-includes.patch")))
+                    '("icecat-avoid-bundled-includes.patch"
+                      "icecat-re-enable-DHE-cipher-suites.patch")))
       (modules '((guix build utils)))
       (snippet
        '(begin
