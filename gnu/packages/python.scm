@@ -5900,16 +5900,14 @@ library.")
 (define-public python-pip
   (package
     (name "python-pip")
-    (version "7.1.2")
+    (version "8.0.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/pip/pip-"
-             version ".tar.gz"))
+       (uri (pypi-uri "pip" version))
        (sha256
         (base32
-         "0xx4aypfgchxdknxq7gyqghd8wb221zrzyqlbabzm32jy237j16a"))))
+         "08cm8d4228fj0qnrysy3qv1a6022zr3dcs25amd14lgxil6vvx26"))))
     (build-system python-build-system)
     (inputs
       `(("python-setuptools" ,python-setuptools)
