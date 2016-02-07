@@ -27,9 +27,11 @@
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%python-build-system-modules
             package-with-python2
+            strip-python2-variant
             python-build
             python-build-system
             pypi-uri))
@@ -65,12 +67,19 @@ extension, such as '.tar.gz'."
   (let ((python (resolve-interface '(gnu packages python))))
     (module-ref python 'python-2)))
 
-(define (package-with-explicit-python python old-prefix new-prefix)
+(define* (package-with-explicit-python python old-prefix new-prefix
+                                       #:key variant-property)
   "Return a procedure of one argument, P.  The procedure creates a package with
 the same fields as P, which is assumed to use PYTHON-BUILD-SYSTEM, such that
 it is compiled with PYTHON instead.  The inputs are changed recursively
 accordingly.  If the name of P starts with OLD-PREFIX, this is replaced by
-NEW-PREFIX; otherwise, NEW-PREFIX is prepended to the name."
+NEW-PREFIX; otherwise, NEW-PREFIX is prepended to the name.
+
+When VARIANT-PROPERTY is present, it is used as a key to search for
+pre-defined variants of this transformation recorded in the 'properties' field
+of packages.  The property value must be the promise of a package.  This is a
+convenient way for package writers to force the transformation to use
+pre-defined variants."
   (define transform
     ;; Memoize the transformations.  Failing to do that, we would build a huge
     ;; object graph with lots of duplicates, which in turns prevents us from
@@ -90,26 +99,34 @@ NEW-PREFIX; otherwise, NEW-PREFIX is prepended to the name."
                  ((name content . rest)
                   (append (list name (rewrite-if-package content)) rest)))))
 
-         (if (eq? (package-build-system p) python-build-system)
-             (package
-               (inherit p)
-               (location (package-location p))
-               (name (let ((name (package-name p)))
-                       (string-append new-prefix
-                                      (if (string-prefix? old-prefix name)
-                                          (substring name
-                                                     (string-length old-prefix))
-                                          name))))
-               (arguments
-                (let ((python (if (promise? python)
-                                  (force python)
-                                  python)))
-                  (ensure-keyword-arguments (package-arguments p)
-                                            `(#:python ,python))))
-               (inputs (map rewrite (package-inputs p)))
-               (propagated-inputs (map rewrite (package-propagated-inputs p)))
-               (native-inputs (map rewrite (package-native-inputs p))))
-             p)))))
+         (cond
+          ;; If VARIANT-PROPERTY is present, use that.
+          ((and variant-property
+                (assoc-ref (package-properties p) variant-property))
+           => force)
+
+          ;; Otherwise build the new package object graph.
+          ((eq? (package-build-system p) python-build-system)
+           (package
+             (inherit p)
+             (location (package-location p))
+             (name (let ((name (package-name p)))
+                     (string-append new-prefix
+                                    (if (string-prefix? old-prefix name)
+                                        (substring name
+                                                   (string-length old-prefix))
+                                        name))))
+             (arguments
+              (let ((python (if (promise? python)
+                                (force python)
+                                python)))
+                (ensure-keyword-arguments (package-arguments p)
+                                          `(#:python ,python))))
+             (inputs (map rewrite (package-inputs p)))
+             (propagated-inputs (map rewrite (package-propagated-inputs p)))
+             (native-inputs (map rewrite (package-native-inputs p)))))
+          (else
+           p))))))
 
   transform)
 
@@ -118,7 +135,14 @@ NEW-PREFIX; otherwise, NEW-PREFIX is prepended to the name."
   ;; of packages is accessed to avoid a circular dependency when evaluating
   ;; the top-level of (gnu packages python).
   (package-with-explicit-python (delay (default-python2))
-                                "python-" "python2-"))
+                                "python-" "python2-"
+                                #:variant-property 'python2-variant))
+
+(define (strip-python2-variant p)
+  "Remove the 'python2-variant' property from P."
+  (package
+    (inherit p)
+    (properties (alist-delete 'python2-variant (package-properties p)))))
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target
