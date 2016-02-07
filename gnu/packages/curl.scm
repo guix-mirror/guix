@@ -43,7 +43,7 @@
    (version "7.47.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://curl.haxx.se/download/curl-"
+            (uri (string-append "https://curl.haxx.se/download/curl-"
                                 version ".tar.lzma"))
             (sha256
              (base32
