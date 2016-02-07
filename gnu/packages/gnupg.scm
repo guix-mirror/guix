@@ -377,15 +377,14 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
 (define-public python-gnupg
   (package
     (name "python-gnupg")
-    (version "0.3.7")
+    (version "0.3.8")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/p/"
-                           "python-gnupg/python-gnupg-" version ".tar.gz"))
+       (uri (pypi-uri "python-gnupg" version))
        (sha256
         (base32
-         "1hg9gshk4b7raskj8mjadsjcv10axlx2z4xl4ag2f2bpi4f8chvq"))))
+         "0nkbs9c8f30lra7ca39kg91x8cyxn0jb61vih4qky839gpbwwwiq"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
