@@ -55,6 +55,14 @@
 If it is not set by a user, it is set after starting Guile REPL.
 This directory is used to define location of the packages.")
 
+(defun guix-read-directory ()
+  "Return `guix-directory' or prompt for it.
+This function is intended for using in `interactive' forms."
+  (if current-prefix-arg
+      (read-directory-name "Directory with Guix modules: "
+                           guix-directory)
+    guix-directory))
+
 (defun guix-set-directory ()
   "Set `guix-directory' if needed."
   (or guix-directory
@@ -63,17 +71,17 @@ This directory is used to define location of the packages.")
 
 (add-hook 'guix-after-start-repl-hook 'guix-set-directory)
 
-(defun guix-find-location (location)
+(defun guix-find-location (location &optional directory)
   "Go to LOCATION of a package.
 LOCATION is a string of the form:
 
   \"PATH:LINE:COLUMN\"
 
 If PATH is relative, it is considered to be relative to
-`guix-directory'."
+DIRECTORY (`guix-directory' by default)."
   (cl-multiple-value-bind (path line col)
       (split-string location ":")
-    (let ((file (expand-file-name path guix-directory))
+    (let ((file (expand-file-name path (or directory guix-directory)))
           (line (string-to-number line))
           (col  (string-to-number col)))
       (find-file file)
@@ -113,12 +121,17 @@ See `guix-packages-profile'."
                     (guix-packages-profile profile generation system?)))
 
 ;;;###autoload
-(defun guix-edit (id-or-name)
-  "Edit (go to location of) package with ID-OR-NAME."
-  (interactive (list (guix-read-package-name)))
+(defun guix-edit (id-or-name &optional directory)
+  "Edit (go to location of) package with ID-OR-NAME.
+See `guix-find-location' for the meaning of package location and
+DIRECTORY.
+Interactively, with prefix argument, prompt for DIRECTORY."
+  (interactive
+   (list (guix-read-package-name)
+         (guix-read-directory)))
   (let ((loc (guix-package-location id-or-name)))
     (if loc
-        (guix-find-location loc)
+        (guix-find-location loc directory)
       (message "Couldn't find package location."))))
 
 

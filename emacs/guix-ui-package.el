@@ -746,10 +746,11 @@ The specification is suitable for `guix-process-package-actions'."
   (let ((specs (guix-list-get-marked-args action-type)))
     (and specs (cons action-type specs))))
 
-(defun guix-package-list-edit ()
-  "Go to the location of the current package."
-  (interactive)
-  (guix-edit (guix-list-current-id)))
+(defun guix-package-list-edit (&optional directory)
+  "Go to the location of the current package.
+See `guix-find-location' for the meaning of DIRECTORY."
+  (interactive (list (guix-read-directory)))
+  (guix-edit (guix-list-current-id) directory))
 
 (defun guix-package-list-latest-builds (number &rest args)
   "Display latest NUMBER of Hydra builds of the current package.
@@ -906,11 +907,13 @@ See `guix-package-info-type'."
                  'id (cl-remove-duplicates pids))
        'add))))
 
-(defun guix-output-list-edit ()
-  "Go to the location of the current package."
-  (interactive)
+(defun guix-output-list-edit (&optional directory)
+  "Go to the location of the current package.
+See `guix-find-location' for the meaning of DIRECTORY."
+  (interactive (list (guix-read-directory)))
   (guix-edit (guix-entry-value (guix-list-current-entry)
-                               'package-id)))
+                               'package-id)
+             directory))
 
 
 ;;; Interactive commands
