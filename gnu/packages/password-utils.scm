@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Aljosha Papsch <misc@rpapsch.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -57,7 +57,7 @@ human.")
 (define-public keepassx
   (package
     (name "keepassx")
-    (version "2.0.1")
+    (version "2.0.2")
     (source
      (origin
        (method url-fetch)
@@ -65,7 +65,7 @@ human.")
                            "/keepassx-" version ".tar.gz"))
        (sha256
         (base32
-         "10kyr6c3fhrg0sznnqijh0srcl5k3n81r6z8fa6jvwak0gcryxxk"))))
+         "1f1nlbd669rmpzr52d9dgfgclg4jcaq2jkrby3b8q1vjkksdqjr0"))))
     (build-system cmake-build-system)
     (inputs
      `(("libgcrypt" ,libgcrypt)
