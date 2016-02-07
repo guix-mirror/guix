@@ -627,7 +627,7 @@ etc. ")
 (define-public python2-backport-ssl-match-hostname
   (package
     (name "python2-backport-ssl-match-hostname")
-    (version "3.4.0.2")
+    (version "3.5.0.1")
     (source
      (origin
       (method url-fetch)
@@ -637,13 +637,15 @@ etc. ")
             version ".tar.gz"))
       (sha256
        (base32
-        "1bnn47ipvhy49n0m50v27lp4xj6sqdkdw676ypd7pawsn1zhwh87"))))
+        "1wndipik52cyqy0677zdgp90i435pmvwd89cz98lm7ri0y3xjajh"))))
     (build-system python-build-system)
-    (arguments `(#:python ,python-2))
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f)) ; no test target
     (inputs
      `(("python2-setuptools" ,python2-setuptools)))
-    (home-page "https://pypi.python.org/pypi/backports.ssl_match_hostname")
-    (synopsis "Backport of ssl.match_hostname() function from Python 3.4")
+    (home-page "https://bitbucket.org/brandon/backports.ssl_match_hostname")
+    (synopsis "Backport of ssl.match_hostname() function from Python 3.5")
     (description
      "This backport brings the ssl.match_hostname() function to users of
 earlier versions of Python.  The function checks the hostname in the
