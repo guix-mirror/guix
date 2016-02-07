@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -2432,7 +2432,12 @@ faster results and to avoid unnecessary server load.")
      `(("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
-       ("python" ,python)))
+       ("python" ,python)
+
+       ;; For man pages.
+       ("libxslt" ,libxslt)                       ;for 'xsltproc'
+       ("libxml2" ,libxml2)                       ;for 'XML_CATALOG_FILES'
+       ("docbook-xsl" ,docbook-xsl)))
     (inputs
      `(("dbus-glib" ,dbus-glib)
        ("libgudev" ,libgudev)
