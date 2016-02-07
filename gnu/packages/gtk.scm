@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -968,10 +968,11 @@ extensive documentation, including API reference and a tutorial.")
     (synopsis "Python bindings for cairo")
     (description
      "Pycairo is a set of Python bindings for the Cairo graphics library.")
-    (license license:lgpl3+)))
+    (license license:lgpl3+)
+    (properties `((python2-variant . ,(delay python2-pycairo))))))
 
 (define-public python2-pycairo
-  (package (inherit python-pycairo)
+  (package (inherit (strip-python2-variant python-pycairo))
     (name "python2-pycairo")
     (version "1.10.0")
     (source
