@@ -22,6 +22,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il"
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,6 +75,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages netpbm)
+  #:use-module (gnu packages ocaml)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages xorg)
@@ -2731,3 +2733,42 @@ in a style similar to the original Super Mario games covered under
 the GNU GPL.")
    (home-page "https://supertuxproject.org/")
    (license license:gpl3+)))
+
+(define-public laby
+  (package
+    (name "laby")
+    (version "0.6.4")
+    (source
+     (origin (method url-fetch)
+             (uri (string-append
+                   "https://github.com/sgimenez/laby/tarball/"
+                   name "-" version))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "113ip48308ps3lsw427xswgx3wdanils43nyal9n4jr6bcx1bj2j"))
+             (patches (search-patches "laby-make-install.patch"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("lablgtk" ,lablgtk)
+       ("ocaml" ,ocaml)
+       ("ocaml-findlib" ,ocaml-findlib)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'setenv
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((lablgtk (assoc-ref inputs "lablgtk")))
+               (setenv "LD_LIBRARY_PATH"
+                       (string-append lablgtk "/lib/ocaml/stublibs"))))))
+       #:tests? #f ; no 'check' target
+       #:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")) "all")))
+    (home-page "https://sgimenez.github.io/laby/")
+    (synopsis "Programming game")
+    (description "Learn programming, playing with ants and spider webs ;-)
+Your robot ant can be programmed in many languages: OCaml, Python, C, C++,
+Java, Ruby, Lua, JavaScript, Pascal, Perl, Scheme, Vala, Prolog.  Experienced
+programmers may also add their own favorite language.")
+    (license license:gpl3+)))

@@ -1,0 +1,25 @@
+From e9896b8951f9faf1f76a3b45be6e70d0aeb30a73 Mon Sep 17 00:00:00 2001
+From: Jan Nieuwenhuizen <janneke@gnu.org>
+Date: Sat, 15 Nov 2014 17:48:18 +0100
+Subject: [PATCH] Add make install.
+
+---
+ Makefile | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/Makefile b/Makefile
+index ca18c1e..65af31b 100644
+--- a/Makefile	2016-02-09 21:34:01.883660009 +0100
++++ b/Makefile	2016-02-09 21:34:30.672150679 +0100
+@@ -19,3 +19,11 @@
+ 	@git archive --prefix="$(PROJECT_ARCHIVE)/" HEAD \
+ 		 | gzip >_dist/"$(PROJECT_ARCHIVE)".tar.gz
+ 	@echo archive stored in "_dist/$(PROJECT_ARCHIVE).tar.gz"
++
++PREFIX=/usr/local
++install:
++	strip laby
++	mkdir -p $(PREFIX)/bin
++	cp laby $(PREFIX)/bin/laby
++	mkdir -p $(PREFIX)/share/laby
++	tar -C data -cf - . | tar -C $(PREFIX)/share/laby -xf-

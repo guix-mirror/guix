@@ -597,6 +597,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
   %D%/packages/patches/khmer-use-libraries.patch                \
   %D%/packages/patches/kmod-module-directory.patch		\
+  %D%/packages/patches/laby-make-install.patch			\
   %D%/packages/patches/ldc-disable-tests.patch			\
   %D%/packages/patches/lftp-dont-save-unknown-host-fingerprint.patch \
   %D%/packages/patches/liba52-enable-pic.patch			\
