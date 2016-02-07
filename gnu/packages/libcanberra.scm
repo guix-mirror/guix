@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build utils)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
@@ -95,6 +97,12 @@ Specifications, for generating event sounds on free desktops, such as
 GNOME.  It comes with several backends (ALSA, PulseAudio, OSS, GStreamer,
 null) and is designed to be portable.")
     (license lgpl2.1+)))
+
+(define-public libcanberra/gtk+-2
+  (package (inherit libcanberra)
+    (name "libcanberra-gtk2")
+    (inputs `(,@(alist-delete "gtk+" (package-inputs libcanberra))
+              ("gtk+" ,gtk+-2)))))
 
 (define-public sound-theme-freedesktop
   (package
