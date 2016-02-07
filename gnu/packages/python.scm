@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
@@ -2940,10 +2940,12 @@ is designed to have a low barrier to entry.")
     (description "Cython is an optimising static compiler for both the Python
 programming language and the extended Cython programming language.  It makes
 writing C extensions for Python as easy as Python itself.")
-    (license asl2.0)))
+    (license asl2.0)
+    (properties `((python2-variant . ,(delay python2-cython))))))
 
 (define-public python2-cython
-  (package (inherit (package-with-python2 python-cython))
+  (package (inherit (package-with-python2
+                     (strip-python2-variant python-cython)))
     (name "python2-cython")
     (inputs
      `(("python-2" ,python-2))))) ; this is not automatically changed
