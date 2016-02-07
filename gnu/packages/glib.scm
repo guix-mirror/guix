@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
@@ -26,6 +26,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
@@ -551,10 +552,11 @@ useful for C++.")
     (synopsis "Python bindings for GObject")
     (description
      "Python bindings for GLib, GObject, and GIO.")
-    (license license:lgpl2.1+)))
+    (license license:lgpl2.1+)
+    (properties `((python2-variant . ,(delay python2-pygobject))))))
 
 (define-public python2-pygobject
-  (package (inherit python-pygobject)
+  (package (inherit (strip-python2-variant python-pygobject))
     (name "python2-pygobject")
     (inputs
      `(("python" ,python-2)
