@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages m4)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages base)
@@ -425,3 +427,49 @@ interface.")
     ;; applies to Lisp code according to them.
     (license (list license:lgpl2.1
                    license:clarified-artistic)))) ;TRIVIAL-LDAP package
+
+(define-public lispf4
+  (let ((commit "174d8764d2f9764e8f4794c2e3feada9f9c1f1ba"))
+    (package
+      (name "lispf4")
+      (version (string-append "0.0.0-1" "-"
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/blakemcbride/LISPF4.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version))
+                (sha256
+                 (base32
+                  "18k8kfn30za637y4bfbm9x3vv4psa3q8f7bi9h4h0qlb8rz8m92c"))))
+      (build-system gnu-build-system)
+      ;; 80 MB appended Documentation -> output:doc
+      (outputs '("out" "doc"))
+      (arguments
+       `(#:make-flags
+         '("-f" "Makefile.unx" "CC=gcc")
+         ;; no check phase
+         #:tests? #f
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace
+            'install
+            (lambda* (#:key outputs inputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (bin (string-append out "/bin"))
+                     (doc (string-append (assoc-ref outputs "doc")
+                                         "/share/doc/lispf4")))
+                (install-file "lispf4" bin)
+                (install-file "SYSATOMS" bin)
+                (install-file "BASIC.IMG" bin)
+                (copy-recursively "Documentation" doc))
+                #t)))))
+      (synopsis "InterLisp interpreter")
+      (description
+       "LISPF4 is an InterLisp interpreter written in FORTRAN by Mats Nordstrom
+in the early 80's.  It was converted to C by Blake McBride and supports much of
+the InterLisp Standard.")
+      (home-page "https://github.com/blakemcbride/LISPF4.git")
+      (license license:expat))))
