@@ -1080,27 +1080,21 @@ also includes an interface for tabix.")
 (define-public python2-pysqlite
   (package
     (name "python2-pysqlite")
-    (version "2.6.3a")                            ; see below
+    (version "2.8.1")
     (source
      (origin
       (method url-fetch)
-      ;; During the switch from code.google.com to pypi.python.org, the 2.6.3
-      ;; tarball was modified, but the version number was kept:
-      ;; <https://lists.gnu.org/archive/html/guix-devel/2014-02/msg00077.html>.
-      ;; Here we want to refer to the pypi-hosted 2.6.3 tarball.
-      (uri (string-append
-            "https://pypi.python.org/packages/source/p/pysqlite/pysqlite-"
-            "2.6.3" ".tar.gz"))
+      (uri (pypi-uri "pysqlite" version))
       (sha256
        (base32
-        "13djzgnbi71znjjyaw4nybg6smilgszcid646j5qav7mdchkb77y"))))
+        "0rm0zqyb363y6wljhfmbxs16jjv7p8nk1d8zgq9sdwj6js7y3jkm"))))
     (build-system python-build-system)
     (inputs
      `(("sqlite" ,sqlite)))
     (arguments
      `(#:python ,python-2 ; incompatible with Python 3
        #:tests? #f)) ; no test target
-    (home-page "https://pypi.python.org/pypi/pysqlite")
+    (home-page "http://github.com/ghaering/pysqlite")
     (synopsis "SQLite bindings for Python")
     (description
      "Pysqlite provides SQLite bindings for Python that comply to the
