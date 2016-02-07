@@ -3115,13 +3115,7 @@ association studies (GWAS) on extremely large data sets.")
               ,phases)))))))
 
 (define-public python2-numpy
-  (let ((numpy (package-with-python2 python-numpy)))
-    (package (inherit numpy)
-      ;; Make sure we use exactly PYTHON2-MATPLOTLIB, which is customized for
-      ;; Python 2.
-      (inputs `(("python2-matplotlib" ,python2-matplotlib)
-                ,@(alist-delete "python-matplotlib"
-                                (package-inputs numpy)))))))
+  (package-with-python2 python-numpy))
 
 (define-public python-pyparsing
   (package
@@ -3321,7 +3315,7 @@ transcendental functions).")
               (lambda (port)
                 (format port "[directories]~%
 basedirlist = ~a,~a~%
-[rc_options]~%
+ [rc_options]~%
 backend = TkAgg~%"
                         (assoc-ref inputs "tcl")
                         (assoc-ref inputs "tk"))))))
@@ -3368,10 +3362,12 @@ quality figures in a variety of hardcopy formats and interactive environments
 across platforms.  Matplotlib can be used in Python scripts, the python and
 ipython shell, web application servers, and six graphical user interface
 toolkits.")
-    (license psfl)))
+    (license psfl)
+    (properties `((python2-variant . ,(delay python2-matplotlib))))))
 
 (define-public python2-matplotlib
-  (let ((matplotlib (package-with-python2 python-matplotlib)))
+  (let ((matplotlib (package-with-python2
+                     (strip-python2-variant python-matplotlib))))
     (package (inherit matplotlib)
       ;; Make sure to use special packages for Python 2 instead
       ;; of those automatically rewritten by package-with-python2.
@@ -3547,15 +3543,7 @@ routines such as routines for numerical integration and optimization.")
     (license bsd-3)))
 
 (define-public python2-scipy
-  (let ((scipy (package-with-python2 python-scipy)))
-    (package (inherit scipy)
-      ;; Use packages customized for python-2.
-      (propagated-inputs
-       `(("python2-matplotlib" ,python2-matplotlib)
-         ("python2-numpy" ,python2-numpy)
-         ,@(alist-delete "python-matplotlib"
-                         (alist-delete "python-numpy"
-                                       (package-propagated-inputs scipy))))))))
+  (package-with-python2 python-scipy))
 
 (define-public python-sqlalchemy
   (package
