@@ -5799,15 +5799,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "1.0.2")
+    (version "1.2.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/c/"
-                           "cryptography/cryptography-" version ".tar.gz"))
+       (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "1jmcidddbbgdavvnvjjc0pda4b9a5i9idsivchn69pqxx68x8k6n"))))
+         "0rvaha7ymgbqkzbxk7xmj67k5b3hbp8w8cn3m5z776vd22wrq89z"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -5820,8 +5819,11 @@ responses, rather than doing any computation.")
        ("python-iso8601" ,python-iso8601)))
     (native-inputs
      `(("python-cryptography-vectors" ,python-cryptography-vectors)
+       ("python-hypothesis" ,python-hypothesis)
        ("python-setuptools" ,python-setuptools)
        ("python-pretend" ,python-pretend)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-pyasn1-modules" ,python-pyasn1-modules)
        ("python-pytest" ,python-pytest)))
     (home-page "https://github.com/pyca/cryptography")
     (synopsis "Cryptographic recipes and primitives for Python")
@@ -5839,6 +5841,8 @@ message digests and key derivation functions.")
     (package (inherit crypto)
       (propagated-inputs
        `(("python2-ipaddress" ,python2-ipaddress)
+         ("python2-backport-ssl-match-hostname"
+          ,python2-backport-ssl-match-hostname)
          ,@(package-propagated-inputs crypto))))))
 
 (define-public python-pyopenssl
