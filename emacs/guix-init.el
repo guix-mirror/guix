@@ -1,4 +1,3 @@
 (require 'guix-autoloads)
-(require 'guix-emacs)
-
+(message "(require 'guix-init) is obsolete, use (require 'guix-autoloads) instead.")
 (provide 'guix-init)

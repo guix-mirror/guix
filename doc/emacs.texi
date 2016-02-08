@@ -48,13 +48,13 @@ command (@pxref{Emacs Popup Interface}).
 
 @end itemize
 
-When it is done ``guix.el'' may be configured by requiring a special
-@code{guix-init} file---i.e., by adding the following code into your
-init file (@pxref{Init File,,, emacs, The GNU Emacs Manual}):
+When it is done, ``guix.el'' may be configured by requiring
+@code{guix-autoloads} file---i.e., by adding the following code into
+your init file (@pxref{Init File,,, emacs, The GNU Emacs Manual}):
 
 @example
 (add-to-list 'load-path "/path/to/directory-with-guix.el")
-(require 'guix-init nil t)
+(require 'guix-autoloads nil t)
 @end example
 
 So the only thing you need to figure out is where the directory with
@@ -74,9 +74,10 @@ then Guix is installed somewhere in the store, so the elisp files are
 placed in @file{/gnu/store/@dots{}-guix-0.8.2/share/emacs/site-lisp/} or
 alike.  However it is not recommended to refer directly to a store
 directory.  Instead you can install Guix using Guix itself with
-@command{guix package -i guix} command (@pxref{Invoking guix package})
-and add @file{~/.guix-profile/share/emacs/site-lisp/} directory to
-@code{load-path} variable.
+@command{guix package -i guix} command (@pxref{Invoking guix package}).
+No further actions are needed in this case, as @code{guix-autoloads}
+file will automatically be loaded by Emacs (if it is installed with
+Guix, of course) (@pxref{Application Setup}).
 
 @item
 If you did not install Guix at all and prefer a hacking way
@@ -88,25 +89,9 @@ same directory, so your final configuration will look like this:
 (let ((dir "/path/to/your-guix-git-tree/emacs"))
   (add-to-list 'load-path dir)
   (setq guix-load-path dir))
-(require 'guix-init nil t)
+(require 'guix-autoloads nil t)
 @end example
 @end itemize
-
-By default, along with autoloading (@pxref{Autoload,,, elisp, The GNU
-Emacs Lisp Reference Manual}) the main interactive commands for
-``guix.el'' (@pxref{Emacs Commands}), requiring @code{guix-init} will
-also autoload commands for the Emacs packages installed in your user
-profile.
-
-To disable automatic loading of installed Emacs packages, set
-@code{guix-package-enable-at-startup} variable to @code{nil} before
-requiring @code{guix-init}.  This variable has the same meaning for
-Emacs packages installed with Guix, as @code{package-enable-at-startup}
-for the built-in Emacs package system (@pxref{Package Installation,,,
-emacs, The GNU Emacs Manual}).
-
-You can activate Emacs packages installed in your profile whenever you
-want using @kbd{M-x@tie{}guix-emacs-autoload-packages}.
 
 
 @node Emacs Package Management
