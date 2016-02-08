@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
@@ -12,6 +12,7 @@
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4607,3 +4608,43 @@ applications, for instance the Vinagre client, GNOME Boxes and virt-viewer.
 GTK-VNC implements client side RFB protocol and authentication extensions such
 as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
     (license license:lgpl2.1+)))
+
+(define-public nautilus
+  (package
+    (name "nautilus")
+    (version "3.18.2") ; XXX: later version require gtk+-3.0 >= 3.18.5
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0jj23n8vmmyc4gp5xhiz7slsxwksydp26blxi5m154yaw9lgdp38"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:configure-flags '("--disable-tracker") ; XXX: not packaged
+       ;; XXX: FAIL: check-nautilus
+       ;;   Settings schema 'org.gnome.nautilus.preferences' is not installed
+       #:tests? #f))
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-mkenums, etc.
+       ("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("gtk+" ,gtk+))) ; required by libnautilus-extension.pc
+    (inputs
+     ;; TODO: add gvfs support.
+     `(("dconf" ,dconf)
+       ("exempi" ,exempi)
+       ("gnome-desktop" ,gnome-desktop)
+       ("libexif" ,libexif)
+       ("libxml2" ,libxml2)))
+    (synopsis "File manager for GNOME")
+    (home-page "https://wiki.gnome.org/Apps/Nautilus")
+    (description
+     "Nautilus (Files) is a file manager designed to fit the GNOME desktop
+design and behaviour, giving the user a simple way to navigate and manage its
+files.")
+    (license license:gpl2+)))
