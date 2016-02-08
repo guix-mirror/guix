@@ -921,6 +921,27 @@ like.  It can be linked with various Emacs mail clients (Message and Mail
 mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
     (license license:gpl3+)))
 
+(define-public emacs-async
+  (package
+    (name "emacs-async")
+    (version "1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://elpa.gnu.org/packages/async-"
+                                  version ".tar"))
+              (sha256
+               (base32
+                "17psvz75n42x33my967wkgi7r0blx46n3jdv510j0z5jswv66039"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/async.html")
+    (synopsis "Asynchronous processing in Emacs")
+    (description
+     "This package provides the ability to call asynchronous functions and
+processes.  For example, it can be used to run dired commands (for copying,
+moving, etc.) asynchronously using @code{dired-async-mode}.  Also it is used
+as a library for other Emacs packages.")
+    (license license:gpl3+)))
+
 (define-public emacs-auctex
   (package
     (name "emacs-auctex")
