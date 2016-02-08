@@ -349,6 +349,31 @@ when typing parentheses directly or commenting out code line by line.")
 configuration files, such as .gitattributes, .gitignore, and .git/config.")
     (license license:gpl3+)))
 
+(define-public emacs-with-editor
+  (package
+    (name "emacs-with-editor")
+    (version "2.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/magit/with-editor/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "19gb381z61l2icg5v5pymgi1a11g3zdp5aysl2j5fh7fxxg4d4c0"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/magit/with-editor")
+    (synopsis "Emacs library for using Emacsclient as EDITOR")
+    (description
+     "This package provides an Emacs library to use the Emacsclient as
+@code{$EDITOR} of child processes, making sure they know how to call home.
+For remote processes a substitute is provided, which communicates with Emacs
+on stdout instead of using a socket as the Emacsclient does.")
+    (license license:gpl3+)))
+
 (define-public magit
   (package
     (name "magit")
