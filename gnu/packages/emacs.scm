@@ -377,7 +377,7 @@ on stdout instead of using a socket as the Emacsclient does.")
 (define-public magit
   (package
     (name "magit")
-    (version "2.4.0")
+    (version "2.5.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -385,12 +385,14 @@ on stdout instead of using a socket as the Emacsclient does.")
                    version "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1wbam4l36061mj79qlgzrv4xbzhk2dk6gnv45610zwfnf24ikdsp"))))
+               "0i6qpx5szzc4kyfcdhaic8gif0sqdqcya1niyj93lpvw66jcxsxa"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-no-x)))
     (inputs `(("git" ,git)))
-    (propagated-inputs `(("dash" ,emacs-dash)))
+    (propagated-inputs
+     `(("dash" ,emacs-dash)
+       ("with-editor" ,emacs-with-editor)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -408,7 +410,11 @@ on stdout instead of using a socket as the Emacsclient does.")
              (string-append "DASH_DIR="
                             (assoc-ref %build-inputs "dash")
                             "/share/emacs/site-lisp/guix.d/dash-"
-                            ,(package-version emacs-dash)))
+                            ,(package-version emacs-dash))
+             (string-append "WITH_EDITOR_DIR="
+                            (assoc-ref %build-inputs "with-editor")
+                            "/share/emacs/site-lisp/guix.d/with-editor-"
+                            ,(package-version emacs-with-editor)))
 
        #:phases
        (modify-phases %standard-phases
