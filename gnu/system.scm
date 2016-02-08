@@ -400,37 +400,11 @@ This is the GNU system.  Welcome.\n")
   "Return the default /etc/hosts file."
   (plain-file "hosts" (local-host-aliases host-name)))
 
-(define (emacs-site-file)
-  "Return the Emacs 'site-start.el' file.  That file contains the necessary
-settings for 'guix.el' to work out-of-the-box."
-  (scheme-file "site-start.el"
-               #~(progn
-                  ;; Add the "normal" elisp directory to the search path;
-                  ;; guix.el may be there.
-                  (add-to-list
-                   'load-path
-                   "/run/current-system/profile/share/emacs/site-lisp")
-
-                  ;; Attempt to load guix.el.
-                  (require 'guix-init nil t)
-
-                  ;; Attempt to load geiser.
-                  (require 'geiser-install nil t))))
-
-(define (emacs-site-directory)
-  "Return the Emacs site directory, aka. /etc/emacs."
-  (computed-file "emacs"
-                 #~(begin
-                     (mkdir #$output)
-                     (chdir #$output)
-                     (symlink #$(emacs-site-file) "site-start.el"))))
-
 (define* (operating-system-etc-service os)
   "Return a <service> that builds containing the static part of the /etc
 directory."
   (let ((login.defs (plain-file "login.defs" "# Empty for now.\n"))
 
-        (emacs      (emacs-site-directory))
         (issue      (plain-file "issue" (operating-system-issue os)))
         (nsswitch   (plain-file "nsswitch.conf"
                                 (name-service-switch->string
@@ -507,7 +481,6 @@ fi\n")))
      `(("services" ,#~(string-append #$net-base "/etc/services"))
        ("protocols" ,#~(string-append #$net-base "/etc/protocols"))
        ("rpc" ,#~(string-append #$net-base "/etc/rpc"))
-       ("emacs" ,#~#$emacs)
        ("login.defs" ,#~#$login.defs)
        ("issue" ,#~#$issue)
        ("nsswitch.conf" ,#~#$nsswitch)
@@ -587,10 +560,6 @@ use 'plain-file' instead~%")
     ("SSL_CERT_DIR" . "/etc/ssl/certs")
     ("SSL_CERT_FILE" . "/etc/ssl/certs/ca-certificates.crt")
     ("GIT_SSL_CAINFO" . "/etc/ssl/certs/ca-certificates.crt")
-    ;; Prepend the directory of 'site-start.el' to the search path, so
-    ;; that it has higher precedence than the 'site-start.el' file our
-    ;; Emacs package provides.
-    ("EMACSLOADPATH" . "/etc/emacs:")
     ;; By default, applications that use D-Bus, such as Emacs, abort at startup
     ;; when /etc/machine-id is missing.  Make sure these warnings are non-fatal.
     ("DBUS_FATAL_WARNINGS" . "0")))
