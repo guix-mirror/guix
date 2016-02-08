@@ -40,6 +40,7 @@
   #:use-module (gnu packages lsof)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages man)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages firmware)
   #:autoload   (gnu packages cryptsetup) (cryptsetup)
@@ -363,6 +364,7 @@ explicitly appear in OS."
 
          net-tools                        ; XXX: remove when Inetutils suffices
          man-db
+         texinfo                               ;for the standalone Info reader
 
          ;; The 'sudo' command is already in %SETUID-PROGRAMS, but we also
          ;; want the other commands and the man pages (notably because
