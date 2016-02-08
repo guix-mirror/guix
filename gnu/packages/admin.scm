@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1427,3 +1428,31 @@ for CPU usage.  It listens to network traffic on a named interface and
 displays a table of current bandwidth usage by pairs of hosts.")
     (home-page "http://www.ex-parrot.com/~pdw/iftop/")
     (license license:gpl3)))
+
+(define-public munge
+  (package
+    (name "munge")
+    (version "0.5.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/dun/munge/archive/munge-"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0njplyalwwqh7xr7xc7klc6x06mq0ak8w2pxh85w8n4hxkmqqnf5"))))
+    (inputs
+     `(("openssl" ,openssl)
+       ("libgcrypt" ,libgcrypt)))
+    (build-system gnu-build-system)
+    (home-page "http://dun.github.io/munge/")
+    (synopsis "Cluster computing authentication service")
+    (description
+     "Munge is an authentication service for creating and validating
+credentials.  It allows a process to authenticate the UID and GID of another
+local or remote process within a group of hosts having common users and
+groups.  These hosts form a security realm that is defined by a shared
+cryptographic key.  Clients within this security realm can create and validate
+credentials without the use of root privileges, reserved ports, or
+platform-specific methods.")
+    (license license:gpl3+)))
