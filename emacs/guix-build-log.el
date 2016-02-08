@@ -367,6 +367,9 @@ programmatically using hooks:
   (guix-build-log-mode))
 
 ;;;###autoload
+(add-hook 'shell-mode-hook 'guix-build-log-minor-mode-activate-maybe)
+
+;;;###autoload
 (add-to-list 'auto-mode-alist
              ;; Regexp for log files (usually placed in /var/log/guix/...)
              (cons (rx "/guix/drvs/" (= 2 alnum) "/" (= 30 alnum)
