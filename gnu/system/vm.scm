@@ -104,6 +104,7 @@
                                                 (guix records)
                                                 (guix build utils)
                                                 (guix build syscalls)
+                                                (guix build bournish)
                                                 (guix build store-copy)))
                                              (guile-for-build
                                               (%guile-for-build))

@@ -18,6 +18,7 @@
 
 (define-module (gnu build file-systems)
   #:use-module (guix build utils)
+  #:use-module (guix build bournish)
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
@@ -352,9 +353,10 @@ the following:
        (sleep 3)
        (reboot))
       (code
-       (format (current-error-port) "'~a' exited with code ~a on ~a; spawning REPL~%"
+       (format (current-error-port) "'~a' exited with code ~a on ~a; \
+spawning Bourne-like REPL~%"
                fsck code device)
-       (start-repl)))))
+       (start-repl %bournish-language)))))
 
 (define (mount-flags->bit-mask flags)
   "Return the number suitable for the 'flags' argument of 'mount' that

@@ -326,6 +326,7 @@ ACTIVATION-SCRIPT-TYPE."
       (gnu build file-systems)
       (guix build utils)
       (guix build syscalls)
+      (guix build bournish)
       (guix elf)))
 
   (define (service-activations)

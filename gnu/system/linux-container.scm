@@ -110,5 +110,6 @@ that will be shared with the host system."
                                 (guix utils)
                                 (guix build utils)
                                 (guix build syscalls)
+                                (guix build bournish)
                                 (gnu build file-systems)
                                 (gnu build linux-container))))))

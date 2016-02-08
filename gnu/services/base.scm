@@ -271,6 +271,7 @@ FILE-SYSTEM."
                       #:select (check-file-system canonicalize-device-spec))
                      ,@%default-modules))
           (imported-modules `((gnu build file-systems)
+                              (guix build bournish)
                               ,@%default-imported-modules))))
         '())))
 
