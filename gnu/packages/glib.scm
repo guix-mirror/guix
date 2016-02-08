@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -64,7 +64,7 @@
               ;; TODO: Apply patch from DBUS/ACTIVATION below.
               (method url-fetch)
               (uri (string-append
-                    "http://dbus.freedesktop.org/releases/dbus/dbus-"
+                    "https://dbus.freedesktop.org/releases/dbus/dbus-"
                     version ".tar.gz"))
               (sha256
                (base32
