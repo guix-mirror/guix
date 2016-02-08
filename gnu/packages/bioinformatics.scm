@@ -1774,6 +1774,8 @@ HMMs).")
     ;; Numpy needs to be propagated when htseq is used as a Python library.
     (propagated-inputs
      `(("python-numpy" ,python2-numpy)))
+    (inputs
+     `(("python-pysam" ,python2-pysam)))
     (native-inputs
      `(("python-setuptools" ,python2-setuptools)))
     (home-page "http://www-huber.embl.de/users/anders/HTSeq/")
