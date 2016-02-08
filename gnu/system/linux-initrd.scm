@@ -227,6 +227,7 @@ loaded at boot time in the order in which they appear."
      #~(begin
          (use-modules (gnu build linux-boot)
                       (guix build utils)
+                      (guix build bournish)   ;add the 'bournish' meta-command
                       (srfi srfi-26))
 
          (with-output-to-port (%make-void-port "w")
@@ -242,7 +243,8 @@ loaded at boot time in the order in which they appear."
                       #:qemu-guest-networking? #$qemu-networking?
                       #:volatile-root? '#$volatile-root?))
      #:name "base-initrd"
-     #:modules '((guix build utils)
+     #:modules '((guix build bournish)
+                 (guix build utils)
                  (guix build syscalls)
                  (gnu build linux-boot)
                  (gnu build linux-modules)
