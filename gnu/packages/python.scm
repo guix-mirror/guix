@@ -3645,14 +3645,14 @@ services for your Python modules and applications.")
 (define-public python-pillow
   (package
     (name "python-pillow")
-    (version "3.1.0")
+    (version "3.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Pillow" version))
        (sha256
         (base32
-         "00xhs4g8rfzpcqqfg4rlhfj4yk0a1k411ic6aqfsyiv3qkq7flp1"))))
+         "1zwzakr5v0skdh0azp5cd6fwzbll5305dsk33k5jk570vv6lqvs8"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)
