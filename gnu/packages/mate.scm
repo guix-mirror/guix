@@ -30,7 +30,8 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages python))
 
 (define-public mate-icon-theme
   (package
@@ -167,3 +168,44 @@ desktop and the mate-about program.")
      "This library provides acess to weather information from the internet for
 the MATE desktop environment.")
     (license license:lgpl2.1+)))
+
+(define-public mate-menus
+  (package
+    (name "mate-menus")
+    (version "1.12.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://pub.mate-desktop.org/releases/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1i4m3fj0vd85zyhqhm8x9yr0h5i08aa4l99zqvbk59ncj6z3bdxh"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after
+          'unpack 'fix-introspection-install-dir
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (substitute* '("configure")
+                (("`\\$PKG_CONFIG --variable=girdir gobject-introspection-1.0`")
+                 (string-append "\"" out "/share/gir-1.0/\""))
+                (("\\$\\(\\$PKG_CONFIG --variable=typelibdir gobject-introspection-1.0\\)")
+                 (string-append out "/lib/girepository-1.0/")))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("python" ,python-2)))
+    (propagated-inputs
+     `(("glib" ,glib)))
+    (home-page "http://mate-desktop.org/")
+    (synopsis "Freedesktop menu specification implementation for MATE")
+    (description
+     "The package contains an implementation of the freedesktop menu
+specification, the MATE menu layout configuration files, .directory files and
+assorted menu related utility programs.")
+    (license (list license:gpl2+ license:lgpl2.0+))))
