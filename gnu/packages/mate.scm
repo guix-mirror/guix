@@ -26,7 +26,9 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages gnome))
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg))
 
 (define-public mate-icon-theme
   (package
@@ -83,3 +85,36 @@
 example Menta, TraditionalOk, GreenLaguna or BlackMate.")
     (license (list license:lgpl2.1+ license:cc-by-sa3.0 license:gpl3+
                    license:gpl2+))))
+
+(define-public mate-desktop
+  (package
+    (name "mate-desktop")
+    (version "1.12.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://pub.mate-desktop.org/releases/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "00ssrzm07xyrjra075jhir1f8iy382lla7923fhic29lap26mffr"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("glib:bin" ,glib "bin")
+       ("gobject-introspection" ,gobject-introspection)
+       ("yelp-tools" ,yelp-tools)))
+       ;;("gtk-doc" ,gtk-doc))) ; add back in when gtk-doc builds
+    (inputs
+     `(("libxrandr" ,libxrandr)))
+    (propagated-inputs
+     `(("dconf" ,dconf)
+       ("gtk+" ,gtk+-2)
+       ("startup-notification" ,startup-notification)))
+    (home-page "http://mate-desktop.org/")
+    (synopsis "Library with common API for various MATE modules")
+    (description
+     "This package contains a public API shared by several applications on the
+desktop and the mate-about program.")
+    (license (list license:gpl2+ license:lgpl2.0+ license:fdl1.1+))))
