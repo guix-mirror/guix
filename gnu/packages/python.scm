@@ -2241,10 +2241,12 @@ version numbers.")
     (synopsis "Implementation of JSON Schema for Python")
     (description
      "Jsonschema is an implementation of JSON Schema for Python.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-jsonschema))))))
 
 (define-public python2-jsonschema
-  (let ((jsonschema (package-with-python2 python-jsonschema)))
+  (let ((jsonschema (package-with-python2
+                     (strip-python2-variant python-jsonschema))))
     (package (inherit jsonschema)
       (inputs
        `(("python2-functools32" ,python2-functools32)
