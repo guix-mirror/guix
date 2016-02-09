@@ -51,3 +51,35 @@
     (description
      "This package contains the default icon theme used by the MATE desktop.")
     (license license:lgpl3+)))
+
+(define-public mate-themes
+  (package
+    (name "mate-themes")
+    (version "1.12.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://pub.mate-desktop.org/releases/"
+                                  (version-major+minor version) "/"
+                                  name "-gtk"
+                                  (version-major+minor (package-version gtk+))
+                                  "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0kyrlgs5azzj60gnxx2n9qszcligxn959wr42wr0iqnrpiygk5nf"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gtk-engines" ,gtk-engines)
+       ("murrine" ,murrine)))
+    (home-page "http://mate-desktop.org/")
+    (synopsis
+     "Official themes for the MATE desktop")
+    (description
+     "This package includes the standard themes for the MATE desktop, for
+example Menta, TraditionalOk, GreenLaguna or BlackMate.")
+    (license (list license:lgpl2.1+ license:cc-by-sa3.0 license:gpl3+
+                   license:gpl2+))))
