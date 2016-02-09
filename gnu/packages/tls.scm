@@ -318,9 +318,9 @@ security, and applying best practice development processes.")
                      "file://COPYING"
                      "See COPYING in the distribution.")))))
 
-(define-public acme
+(define-public python-acme
   (package
-    (name "acme")
+    (name "python-acme")
     (version "0.3.0")
     (source (origin
       (method url-fetch)
@@ -330,8 +330,7 @@ security, and applying best practice development processes.")
          "1x6fd3cw9pq45k71rgmxi91hmdmnbf1xxvlfwv31fmzs5255dlbw"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          (add-before 'install 'disable-egg-compression
            (lambda _
@@ -344,22 +343,25 @@ security, and applying best practice development processes.")
                #t))))))
     ;; TODO: Add optional inputs for testing and building documentation.
     (native-inputs
-     `(("python2-mock" ,python2-mock)
-       ("python2-setuptools" ,python2-setuptools)))
+     `(("python-mock" ,python-mock)
+       ("python-setuptools" ,python-setuptools)))
     (propagated-inputs
-     `(("python2-ndg-httpsclient" ,python2-ndg-httpsclient)
-       ("python2-werkzeug" ,python2-werkzeug)
-       ("python2-six" ,python2-six)
-       ("python2-requests" ,python2-requests)
-       ("python2-pytz" ,python2-pytz)
-       ("python2-pyrfc3339" ,python2-pyrfc3339)
-       ("python2-pyasn1" ,python2-pyasn1)
-       ("python2-cryptography" ,python2-cryptography)
-       ("python2-pyopenssl" ,python2-pyopenssl)))
+     `(("python-ndg-httpsclient" ,python-ndg-httpsclient)
+       ("python-werkzeug" ,python-werkzeug)
+       ("python-six" ,python-six)
+       ("python-requests" ,python-requests)
+       ("python-pytz" ,python-pytz)
+       ("python-pyrfc3339" ,python-pyrfc3339)
+       ("python-pyasn1" ,python-pyasn1)
+       ("python-cryptography" ,python-cryptography)
+       ("python-pyopenssl" ,python-pyopenssl)))
     (home-page "https://github.com/letsencrypt/letsencrypt")
     (synopsis "ACME protocol implementation in Python")
     (description "ACME protocol implementation in Python")
     (license license:asl2.0)))
+
+(define-public python2-acme
+  (package-with-python2 python-acme))
 
 (define-public letsencrypt
   (package
@@ -379,7 +381,7 @@ security, and applying best practice development processes.")
      `(("python2-nose" ,python2-nose)
        ("python2-mock" ,python2-mock)))
     (propagated-inputs
-     `(("acme" ,acme)
+     `(("python2-acme" ,python2-acme)
        ("python2-zope-interface" ,python2-zope-interface)
        ("python2-pythondialog" ,python2-pythondialog)
        ("python2-pyrfc3339" ,python2-pyrfc3339)
