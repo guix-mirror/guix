@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -218,3 +219,28 @@ interfaces (GUIs) in the Tcl language.")
     ;; pTk/license.terms, pTk/license.html_lib, and pTk/Tix.license for
     ;; details of this license."
     (license (package-license perl))))
+
+(define-public tcllib
+  (package
+    (name "tcllib")
+    (version "1.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/" name "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "05dmrk9qsryah2n17z6z85dj9l9lfyvnsd7faw0p9bs1pp5pwrkj"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("tcl" ,tcl)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "TCLLIBPATH")
+            (separator " ")
+            (files (list (string-append "lib/tcllib" version))))))
+    (home-page "https://core.tcl.tk/tcllib/home")
+    (synopsis "Standard Tcl Library")
+    (description "Tcllib, the standard Tcl library, is a collection of common
+utility functions and modules all written in high-level Tcl.")
+    (license (package-license tcl))))
