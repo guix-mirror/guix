@@ -28,7 +28,9 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages xdisorg))
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages xml))
 
 (define-public mate-icon-theme
   (package
@@ -118,3 +120,50 @@ example Menta, TraditionalOk, GreenLaguna or BlackMate.")
      "This package contains a public API shared by several applications on the
 desktop and the mate-about program.")
     (license (list license:gpl2+ license:lgpl2.0+ license:fdl1.1+))))
+
+(define-public libmateweather
+  (package
+    (name "libmateweather")
+    (version "1.12.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://pub.mate-desktop.org/releases/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0qrq6z6knybixnxmsvkw58hm033m91inf523mbvzgv2r822fpakl"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       `(,(string-append "--with-zoneinfo-dir="
+                         (assoc-ref %build-inputs "tzdata")
+                         "/share/zoneinfo"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'check 'pre-check
+          (lambda* (#:key inputs #:allow-other-keys)
+            (substitute* "data/check-timezones.sh"
+              (("/usr/share/zoneinfo/zone.tab")
+               (string-append (assoc-ref inputs "tzdata")
+                              "/share/zoneinfo/zone.tab")))
+            #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("glib:bin" ,glib "bin")))
+    (inputs
+     `(("dconf" ,dconf)
+       ("tzdata" ,tzdata)))
+    (propagated-inputs
+     `(("gtk+" ,gtk+-2)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("libxml2" ,libxml2)
+       ("libsoup" ,libsoup)))
+    (home-page "http://mate-desktop.org/")
+    (synopsis "MATE library for weather information from the Internet")
+    (description
+     "This library provides acess to weather information from the internet for
+the MATE desktop environment.")
+    (license license:lgpl2.1+)))
