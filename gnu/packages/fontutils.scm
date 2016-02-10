@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -203,16 +204,16 @@ applications should be.")
 (define-public graphite2
   (package
    (name "graphite2")
-   (version "1.3.3")
+   (version "1.3.5")
    (source
      (origin
        (method url-fetch)
-       (uri (string-append
-              "mirror://sourceforge/silgraphite/graphite2/graphite2-"
-              version ".tgz"))
+       (uri (string-append "https://github.com/silnrsi/graphite/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
          (base32
-           "1n22vvi4jl83m4sqhvd7v31bhyhyd8j6c3yjgh4zjfyrvid16jrg"))))
+           "0jrjb56zim57xg2pckfdyrw46c624mqz9zywgwza0g1bxg26940w"))))
    (build-system cmake-build-system)
    (native-inputs
     `(("python" ,python-2) ; because of "import imap" in tests
@@ -226,7 +227,7 @@ engine.  Graphite is a smart font technology designed to facilitate the
 process known as shaping.  This process takes an input Unicode text string
 and returns a sequence of positioned glyphids from the font.")
    (license license:lgpl2.1+)
-   (home-page "http://projects.palaso.org/projects/graphitedev")))
+   (home-page "https://github.com/silnrsi/graphite")))
 
 (define-public potrace
   (package
