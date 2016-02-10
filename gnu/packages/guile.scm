@@ -700,6 +700,28 @@ Guile's foreign function interface.")
                (base32
                 "15q1qwjnay7k90ppqrzqsmikvwyj61mjvf1zahyd9gm4vi2fgb3x"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((ice-9 match) (ice-9 ftw)
+                  ,@%gnu-build-system-modules)
+
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap-haunt
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Wrap the 'haunt' command to refer to the right
+                      ;; modules.
+                      (let* ((out  (assoc-ref outputs "out"))
+                             (bin  (string-append out "/bin"))
+                             (site (string-append
+                                    out "/share/guile/site")))
+                        (match (scandir site)
+                          (("." ".." version)
+                           (let ((modules (string-append site "/" version)))
+                             (wrap-program (string-append bin "/haunt")
+                               `("GUILE_LOAD_PATH" ":" prefix
+                                 (,modules))
+                               `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                                 (,modules)))
+                             #t)))))))))
     (inputs
      `(("guile" ,guile-2.0)))
     (synopsis "Functional static site generator")
