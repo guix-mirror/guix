@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +33,7 @@
             locale-definition-source
             locale-definition-charset
 
+            locale-name->definition
             locale-directory
 
             %default-locale-libcs
@@ -51,6 +52,35 @@
   (source  locale-definition-source)              ;string--e.g., "fr_FR"
   (charset locale-definition-charset              ;string--e.g., "UTF-8"
            (default "UTF-8")))
+
+(define %not-dot
+  (char-set-complement (char-set #\.)))
+
+(define (denormalize-codeset codeset)
+  "Attempt to guess the \"real\" name of CODESET, a normalized codeset as
+defined in (info \"(libc) Using gettextized software\")."
+  (cond ((string=? codeset "utf8")
+         "UTF-8")
+        ((string-prefix? "iso8859" codeset)
+         (string-append "ISO-8859-" (string-drop codeset 7)))
+        ((string=? codeset "eucjp")
+         "EUC-JP")
+        (else                                ;cross fingers, hope for the best
+         codeset)))
+
+(define (locale-name->definition name)
+  "Return a <locale-definition> corresponding to NAME, guessing the charset,
+or #f on failure."
+  (match (string-tokenize name %not-dot)
+    ((source charset)
+     ;; XXX: NAME is supposed to use the "normalized codeset", such as "utf8",
+     ;; whereas the actual name used is different.  Add a special case to make
+     ;; the right guess for UTF-8.
+     (locale-definition (name name)
+                        (source source)
+                        (charset (denormalize-codeset charset))))
+    (_
+     #f)))
 
 (define* (localedef-command locale
                             #:key (libc (canonical-package glibc)))

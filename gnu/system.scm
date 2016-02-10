@@ -669,18 +669,31 @@ hardware-related operations as necessary when booting a Linux container."
                                            #:mapped-devices mapped-devices)))
     (return #~(string-append #$initrd "/initrd"))))
 
+(define (locale-name->definition* name)
+  "Variant of 'locale-name->definition' that raises an error upon failure."
+  (match (locale-name->definition name)
+    (#f
+     (raise (condition
+             (&message
+              (message (format #f (_ "~a: invalid locale name") name))))))
+    (def def)))
+
 (define (operating-system-locale-directory os)
   "Return the directory containing the locales compiled for the definitions
 listed in OS.  The C library expects to find it under
 /run/current-system/locale."
-  ;; While we're at it, check whether the locale of OS is defined.
-  (unless (member (operating-system-locale os)
-                  (map locale-definition-name
-                       (operating-system-locale-definitions os)))
-    (raise (condition
-            (&message (message "system locale lacks a definition")))))
+  (define name
+    (operating-system-locale os))
 
-  (locale-directory (operating-system-locale-definitions os)
+  (define definitions
+    ;; While we're at it, check whether NAME is defined and add it if needed.
+    (if (member name (map locale-definition-name
+                          (operating-system-locale-definitions os)))
+        (operating-system-locale-definitions os)
+        (cons (locale-name->definition* name)
+              (operating-system-locale-definitions os))))
+
+  (locale-directory definitions
                     #:libcs (operating-system-locale-libcs os)))
 
 (define (kernel->grub-label kernel)

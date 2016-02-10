@@ -6452,17 +6452,17 @@ Usually, you will want to specify the default locale for the machine
 using the @code{locale} field of the @code{operating-system} declaration
 (@pxref{operating-system Reference, @code{locale}}).
 
-That locale must be among the @dfn{locale definitions} that are known to
-the system---and these are specified in the @code{locale-definitions}
-slot of @code{operating-system}.  The default value includes locale
-definitions for some widely used locales, but not for all the available
-locales, in order to save space.
+The selected locale is automatically added to the @dfn{locale
+definitions} known to the system if needed, with its codeset inferred
+from its name---e.g., @code{bo_CN.utf8} will be assumed to use the
+@code{UTF-8} codeset.  Additional locale definitions can be specified in
+the @code{locale-definitions} slot of @code{operating-system}---this is
+useful, for instance, if the codeset could not be inferred from the
+locale name.  The default set of locale definitions includes some widely
+used locales, but not all the available locales, in order to save space.
 
-If the locale specified in the @code{locale} field is not among the
-definitions listed in @code{locale-definitions}, @command{guix system}
-raises an error.  In that case, you should add the locale definition to
-the @code{locale-definitions} field.  For instance, to add the North
-Frisian locale for Germany, the value of that field may be:
+For instance, to add the North Frisian locale for Germany, the value of
+that field may be:
 
 @example
 (cons (locale-definition
