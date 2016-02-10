@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -145,6 +146,19 @@
   "Evaluate EXPR and restart upon EINTR.  Return the value of EXPR."
   (call-with-restart-on-EINTR (lambda () expr)))
 
+(define (syscall->procedure return-type name argument-types)
+  "Return a procedure that wraps the C function NAME using the dynamic FFI.
+If an error occurs while creating the binding, defer the error report until
+the returned procedure is called."
+  (catch #t
+    (lambda ()
+      (let ((ptr (dynamic-func name (dynamic-link))))
+        (pointer->procedure return-type ptr argument-types)))
+    (lambda args
+      (lambda _
+        (error (format #f "~a: syscall->procedure failed: ~s"
+                       name args))))))
+
 (define (augment-mtab source target type options)
   "Augment /etc/mtab with information about the given mount point."
   (let ((port (open-file "/etc/mtab" "a")))
@@ -193,8 +207,7 @@
 (define UMOUNT_NOFOLLOW 8)
 
 (define mount
-  (let* ((ptr  (dynamic-func "mount" (dynamic-link)))
-         (proc (pointer->procedure int ptr `(* * * ,unsigned-long *))))
+  (let ((proc (syscall->procedure int "mount" `(* * * ,unsigned-long *))))
     (lambda* (source target type #:optional (flags 0) options
                      #:key (update-mtab? #f))
       "Mount device SOURCE on TARGET as a file system TYPE.  Optionally, FLAGS
@@ -222,8 +235,7 @@ error."
           (augment-mtab source target type options))))))
 
 (define umount
-  (let* ((ptr  (dynamic-func "umount2" (dynamic-link)))
-         (proc (pointer->procedure int ptr `(* ,int))))
+  (let ((proc (syscall->procedure int "umount2" `(* ,int))))
     (lambda* (target #:optional (flags 0)
                      #:key (update-mtab? #f))
       "Unmount TARGET.  Optionally FLAGS may be one of the MNT_* or UMOUNT_*
@@ -250,8 +262,7 @@ constants from <sys/mount.h>."
                  (loop (cons mount-point result))))))))))
 
 (define swapon
-  (let* ((ptr  (dynamic-func "swapon" (dynamic-link)))
-         (proc (pointer->procedure int ptr (list '* int))))
+  (let ((proc (syscall->procedure int "swapon" (list '* int))))
     (lambda* (device #:optional (flags 0))
       "Use the block special device at DEVICE for swapping."
       (let ((ret (proc (string->pointer device) flags))
@@ -262,8 +273,7 @@ constants from <sys/mount.h>."
                  (list err)))))))
 
 (define swapoff
-  (let* ((ptr  (dynamic-func "swapoff" (dynamic-link)))
-         (proc (pointer->procedure int ptr '(*))))
+  (let ((proc (syscall->procedure int "swapoff" '(*))))
     (lambda (device)
       "Stop using block special device DEVICE for swapping."
       (let ((ret (proc (string->pointer device)))
@@ -327,18 +337,18 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
 ;; declared in <unistd.h> as a variadic function; in practice, it expects 6
 ;; pointer-sized arguments, as shown in, e.g., x86_64/syscall.S.
 (define clone
-  (let* ((ptr        (dynamic-func "syscall" (dynamic-link)))
-         (proc       (pointer->procedure long ptr
-                                         (list long                   ;sysno
-                                               unsigned-long          ;flags
-                                               '* '* '*
-                                               '*)))
+  (let* ((proc (syscall->procedure int "syscall"
+                                   (list long                   ;sysno
+                                         unsigned-long          ;flags
+                                         '* '* '*
+                                         '*)))
          ;; TODO: Don't do this.
          (syscall-id (match (utsname:machine (uname))
                        ("i686"   120)
                        ("x86_64" 56)
                        ("mips64" 5055)
-                       ("armv7l" 120))))
+                       ("armv7l" 120)
+                       (_ #f))))
     (lambda (flags)
       "Create a new child process by duplicating the current parent process.
 Unlike the fork system call, clone accepts FLAGS that specify which resources
@@ -373,8 +383,7 @@ there is no such limitation."
                   (list err))))))))
 
 (define pivot-root
-  (let* ((ptr  (dynamic-func "pivot_root" (dynamic-link)))
-         (proc (pointer->procedure int ptr (list '* '*))))
+  (let ((proc (syscall->procedure int "pivot_root" (list '* '*))))
     (lambda (new-root put-old)
       "Change the root file system to NEW-ROOT and move the current root file
 system to PUT-OLD."
