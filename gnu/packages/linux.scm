@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <tobias.geerinckx.rice@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2466,4 +2467,39 @@ write access to exFAT devices.")
      "The GPM (general-purpose mouse) daemon is a mouse server for
 applications running on the Linux console.  It allows users to select items
 and copy/paste text in the console and in xterm.")
+    (license license:gpl2+)))
+
+(define-public btrfs-progs
+  (package
+    (name "btrfs-progs")
+    (version "4.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kernel.org/linux/kernel/"
+                                  "people/kdave/btrfs-progs/"
+                                  "btrfs-progs-v" version ".tar.xz"))
+              (sha256
+               (base32
+                "0jssv1ys4nw2jf7mkp58c19yspaa8ybf48fxsrhhp0683mzpr73p"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:test-target "test"
+       #:parallel-tests? #f)) ; tests fail when run in parallel
+    (inputs `(("e2fsprogs" ,e2fsprogs)
+              ("libblkid" ,util-linux)
+              ("libuuid" ,util-linux)
+              ("zlib" ,zlib)
+              ("lzo" ,lzo)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("asciidoc" ,asciidoc)
+                     ("xmlto" ,xmlto)
+                     ;; For building documentation
+                     ("libxml2" ,libxml2)
+                     ("docbook-xml" ,docbook-xml)
+                     ("docbook-xsl" ,docbook-xsl)))
+    (home-page "https://btrfs.wiki.kernel.org/")
+    (synopsis "Create and manage btrfs copy-on-write file systems")
+    (description "Btrfs is a copy-on-write (CoW) filesystem for Linux aimed at
+implementing advanced features while focusing on fault tolerance, repair and
+easy administration.")
     (license license:gpl2+)))
