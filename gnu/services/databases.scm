@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,7 +57,7 @@ host	all	all	::1/128 	trust"))
 (define %default-postgres-config
   (mixed-text-file "postgresql.conf"
                    "hba_file = '" %default-postgres-hba "'\n"
-                   "ident_file = '" %default-postgres-ident "\n"))
+                   "ident_file = '" %default-postgres-ident "'\n"))
 
 (define %postgresql-accounts
   (list (user-group (name "postgres") (system? #t))
