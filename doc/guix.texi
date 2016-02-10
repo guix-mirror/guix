@@ -5527,6 +5527,15 @@ link that follows: @pxref{Help,,, info, Info: An Introduction}.  Hit
 @kbd{l} afterwards to come back here.
 @end ifinfo
 
+@menu
+* Limitations::                         What you can expect.
+* USB Stick Installation::              Preparing the installation medium.
+* Preparing for Installation::          Networking, partitioning, etc.
+* Proceeding with the Installation::    The real thing.
+* Building the Installation Image::     How this comes to be.
+@end menu
+
+@node Limitations
 @subsection Limitations
 
 As of version @value{VERSION}, the Guix System Distribution (GuixSD) is
@@ -5561,7 +5570,7 @@ Few system services are currently supported out-of-the-box
 (@pxref{Services}).
 
 @item
-More than 2,000 packages are available, but you may
+More than 3,000 packages are available, but you may
 occasionally find that a useful package is missing.
 @end itemize
 
@@ -5569,6 +5578,7 @@ You've been warned.  But more than a disclaimer, this is an invitation
 to report issues (and success stories!), and join us in improving it.
 @xref{Contributing}, for more info.
 
+@node USB Stick Installation
 @subsection USB Stick Installation
 
 An installation image for USB sticks can be downloaded from
@@ -5613,6 +5623,7 @@ Once this is done, you should be able to reboot the system and boot from
 the USB stick.  The latter usually requires you to get in the BIOS' boot
 menu, where you can choose to boot from the USB stick.
 
+@node Preparing for Installation
 @subsection Preparing for Installation
 
 Once you have successfully booted the image on the USB stick, you should
@@ -5623,47 +5634,123 @@ Introduction}).  The installation system runs the GPM mouse daemon,
 which allows you to select text with the left mouse button and to paste
 it with the middle button.
 
-To install the system, you would:
+@subsubsection Keyboard Layout
 
-@enumerate
-
-@item
-Configure the network, by running:
+@cindex keyboard layout
+The installation image uses the US qwerty keyboard layout.  If you want
+to change it, you can use the @command{loadkeys} command.  For example,
+the following command selects the Dvorak keyboard layout:
 
 @example
-ifconfig eno1 up && dhclient eno1
+loadkeys dvorak
 @end example
 
-to get an automatically assigned IP address from the wired
-network interface controller@footnote{
-@c http://cgit.freedesktop.org/systemd/systemd/tree/src/udev/udev-builtin-net_id.c#n20
-The name @code{eno1} is for the first on-board Ethernet controller.  The
-interface name for an Ethernet controller that is in the first slot of
-the first PCI bus, for instance, would be @code{enp1s0}.  Use
-@command{ifconfig -a} to list all the available network interfaces.},
-or using the @command{ifconfig} command.
+See the files under @file{/run/current-system/profile/share/keymaps} for
+a list of available keyboard layouts.  Run @command{man loadkeys} for
+more information.
 
-The system automatically loads drivers for your network interface
-controllers.
+@subsubsection Networking
+
+Run the following command see what your network interfaces are called:
+
+@example
+ifconfig -a
+@end example
+
+@c http://cgit.freedesktop.org/systemd/systemd/tree/src/udev/udev-builtin-net_id.c#n20
+Wired interfaces have a name starting with @samp{e}; for example, the
+interface corresponding to the first on-board Ethernet controller is
+called @samp{eno1}.  Wireless interfaces have a name starting with
+@samp{w}, like @samp{w1p2s0}.
+
+@table @asis
+@item Wired connection
+To configure a wired network run the following command, substituting
+@var{interface} with the name of the wired interface you want to use.
+
+@example
+ifconfig @var{interface} up
+@end example
+
+@item Wireless connection
+To configure wireless networking, you can create a configuration file
+for the @command{wpa_supplicant} configuration tool (its location is not
+important) using one of the available text editors such as
+@command{zile}:
+
+@example
+zile wpa_supplicant.conf
+@end example
+
+As an example, the following stanza can go to this file and will work
+for many wireless networks, provided you give the actual SSID and
+passphrase for the network you are connecting to:
+
+@example
+network=@{
+  ssid=@var{my-ssid}
+  key_mgmt=WPA-PSK
+  psk="the network's secret passphrase"
+@}
+@end example
+
+Start the wireless service and run it in the background with the
+following command (substitute @var{interface} with the name of the
+network interface you want to use):
+
+@example
+wpa_supplicant -c wpa_supplicant.conf -i @var{interface} -B
+@end example
+
+Run @command{man wpa_supplication} for more information.
+@end table
+
+At this point, you need to acquire an IP address.  On a network where IP
+addresses are automatically assigned @i{via} DHCP, you can run:
+
+@example
+dhclient @var{interface}
+@end example
+
+Try to ping a server to see if networking is up and running:
+
+@example
+ping -c 3 gnu.org
+@end example
 
 Setting up network access is almost always a requirement because the
 image does not contain all the software and tools that may be needed.
 
-@item
-Unless this has already been done, you must partition, and then format
-the target partition.
+@subsubsection Disk Partitioning
+
+Unless this has already been done, the next step is to partition, and
+then format the target partition(s).
+
+The installation image includes several partitioning tools, including
+Parted (@pxref{Overview,,, parted, GNU Parted User Manual}),
+@command{fdisk}, and @command{cfdisk}.  Run it and set up your disk with
+the partition layout you want:
+
+@example
+cfdisk
+@end example
+
+Once you are done partitioning the target hard disk drive, you have to
+create a file system on the relevant partition(s)@footnote{Currently
+GuixSD pretty much assumes an ext4 file system.  In particular, code
+that reads partition UUIDs and labels only works with ext4.  This will
+be fixed in the future.}.
 
 Preferably, assign partitions a label so that you can easily and
 reliably refer to them in @code{file-system} declarations (@pxref{File
 Systems}).  This is typically done using the @code{-L} option of
-@command{mkfs.ext4} and related commands.
+@command{mkfs.ext4} and related commands.  So, assuming the target root
+partition lives at @file{/dev/sda1}, a file system with the label
+@code{my-root} can be created with:
 
-Be sure that your partition labels match the value of their respective
-@code{device} fields in your @code{file-system} configuration, if your
-@code{file-system} configuration sets the value of @code{title} to
-@code{'label}, as do the example configurations found on the USB
-installation image under @file{/etc/configuration} (@pxref{Using the
-Configuration System}).
+@example
+mkfs.ext4 -L my-root /dev/sda1
+@end example
 
 @c FIXME: Uncomment this once GRUB fully supports encrypted roots.
 @c A typical command sequence may be:
@@ -5676,37 +5763,66 @@ Configuration System}).
 @c # mkfs.ext4 -L my-root /dev/mapper/my-partition
 @c @end example
 
-The installation image includes Parted (@pxref{Overview,,, parted, GNU
-Parted User Manual}), @command{fdisk}, Cryptsetup/LUKS for disk
-encryption, and e2fsprogs, the suite of tools to manipulate
-ext2/ext3/ext4 file systems.
+In addition to e2fsprogs, the suite of tools to manipulate
+ext2/ext3/ext4 file systems, the installation image includes
+Cryptsetup/LUKS for disk encryption.
 
-@item
-Once that is done, mount the target root partition under @file{/mnt}.
+Once that is done, mount the target root partition under @file{/mnt}
+with a command like (again, assuming @file{/dev/sda1} is the root
+partition):
 
-@item
-Lastly, run @code{herd start cow-store /mnt}.
+@example
+mount /dev/sda1 /mnt
+@end example
 
-This will make @file{/gnu/store} copy-on-write, such that packages added
-to it during the installation phase will be written to the target disk
-rather than kept in memory.
-
-@end enumerate
-
-
+@node Proceeding with the Installation
 @subsection Proceeding with the Installation
 
-With the target partitions ready, you now have to edit a file and
+With the target partitions ready and the target root mounted on
+@file{/mnt}, we're ready to go.  First, run:
+
+@example
+herd start cow-store /mnt
+@end example
+
+This makes @file{/gnu/store} copy-on-write, such that packages added to
+it during the installation phase are written to the target disk rather
+than kept in memory.
+
+Next, you have to edit a file and
 provide the declaration of the operating system to be installed.  To
 that end, the installation system comes with two text editors: GNU nano
 (@pxref{Top,,, nano, GNU nano Manual}), and GNU Zile, an Emacs clone.
 It is better to store that file on the target root file system, say, as
 @file{/mnt/etc/config.scm}.
 
-@xref{Using the Configuration System}, for examples of operating system
-configurations.  These examples are available under
-@file{/etc/configuration} in the installation image, so you can copy
-them and use them as a starting point for your own configuration.
+@xref{Using the Configuration System}, for an overview of the
+configuration file.  The example configurations discussed in that
+section are available under @file{/etc/configuration} in the
+installation image.  Thus, to get started with a system configuration
+providing a graphical display server (a ``desktop'' system), you can run
+something along these lines:
+
+@example
+# mkdir /mnt/etc
+# cp /etc/configuration/desktop.scm /mnt/etc/config.scm
+# zile /mnt/etc/config.scm
+@end example
+
+You should pay attention to what your configuration file contains, and
+in particular:
+
+@itemize
+@item
+Make sure the @code{grub-configuration} form refers to the device you
+want to install GRUB on.
+
+@item
+Be sure that your partition labels match the value of their respective
+@code{device} fields in your @code{file-system} configuration, assuming
+your @code{file-system} configuration sets the value of @code{title} to
+@code{'label}.
+@end itemize
 
 Once you are done preparing the configuration file, the new system must
 be initialized (remember that the target root file system is mounted
@@ -5717,7 +5833,7 @@ guix system init /mnt/etc/config.scm /mnt
 @end example
 
 @noindent
-This will copy all the necessary files, and install GRUB on
+This copies all the necessary files and installs GRUB on
 @file{/dev/sdX}, unless you pass the @option{--no-grub} option.  For
 more information, @pxref{Invoking guix system}.  This command may trigger
 downloads or builds of missing packages, which can take some time.
@@ -5733,6 +5849,7 @@ Join us on @code{#guix} on the Freenode IRC network or on
 @file{guix-devel@@gnu.org} to share your experience---good or not so
 good.
 
+@node Building the Installation Image
 @subsection Building the Installation Image
 
 The installation image described above was built using the @command{guix
@@ -6844,6 +6961,7 @@ Run @var{udev}, which populates the @file{/dev} directory dynamically.
 @end deffn
 
 @deffn {Scheme Procedure} console-keymap-service @var{file}
+@cindex keyboard layout
 Return a service to load console keymap from @var{file} using
 @command{loadkeys} command.
 @end deffn
