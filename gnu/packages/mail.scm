@@ -10,6 +10,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -413,6 +414,47 @@ attachments, create new maildirs, and so on.")
      "Notmuch is a command-line based program for indexing, searching, read-
 ing, and tagging large collections of email messages.")
     (license gpl3+)))
+
+(define-public notmuch-addrlookup-c
+  (package
+    (name "notmuch-addrlookup-c")
+    (version "7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/aperezdc/" name "/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0rslg2ifgyhl6asv3yr1f62m9xjfcinv7i6qb07h2k217jqlmrri"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  ;; Remove vim code completion config, it's not needed to
+                  ;; build (or be patched).
+                  (add-before 'patch-source-shebangs 'delete-ycm-file
+                              (lambda _ (delete-file ".ycm_extra_conf.py")))
+                  (replace 'install
+                           (lambda* (#:key outputs #:allow-other-keys)
+                             (let ((bin (string-append
+                                         (assoc-ref outputs "out") "/bin")))
+                               (install-file "notmuch-addrlookup" bin)))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("notmuch" ,notmuch)))
+    (home-page "https://github.com/aperezdc/notmuch-addrlookup-c")
+    (synopsis "Address lookup tool for Notmuch")
+    (description "This is an address lookup tool using a Notmuch database,
+useful for email address completion.")
+    (license license:expat)))
 
 (define-public python2-notmuch
   (package
