@@ -80,8 +80,7 @@
     (home-page "http://www.tcl.tk/")
     (synopsis "The Tcl scripting language")
     (description "The Tcl (Tool Command Language) scripting language.")
-    (license (non-copyleft "http://www.tcl.tk/software/tcltk/license.html"
-                        "Tcl/Tk license"))))
+    (license tcl/tk)))
 
 
 (define-public expect
