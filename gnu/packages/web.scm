@@ -7,7 +7,6 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
-;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -101,14 +100,14 @@ and its related documentation.")
 (define-public nginx
   (package
     (name "nginx")
-    (version "1.9.11")
+    (version "1.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "07x5d2ryf547xrj4wp8w90kz2d93sxjhkfjb0vdscmxgmzs74p3a"))))
+                "1dwpyw4pvhj68vxramqxm8f79pqz9lrm8mvifbn49h3615ikqjwg"))))
     (build-system gnu-build-system)
     (inputs `(("pcre" ,pcre)
               ("openssl" ,openssl)
