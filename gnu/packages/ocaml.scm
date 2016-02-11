@@ -477,6 +477,8 @@ provers.")
     (arguments
      `(#:tests? #f ; no check target
 
+       ;; opt: also install cmxa files
+       #:make-flags (list "all" "opt")
        ;; Occasionally we would get "Error: Unbound module GtkThread" when
        ;; compiling 'gtkThInit.ml', with 'make -j'.  So build sequentially.
        #:parallel-build? #f
