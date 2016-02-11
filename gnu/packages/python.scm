@@ -3381,16 +3381,14 @@ toolkits.")
 (define-public python2-pysnptools
   (package
     (name "python2-pysnptools")
-    (version "0.2.13")
+    (version "0.3.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/pysnptools"
-             "/pysnptools-" version ".zip"))
+       (uri (pypi-uri "pysnptools" version ".zip"))
        (sha256
         (base32
-         "1rzf5qvwfvd2pp84b14pb2gdvxdk5avnj7rb41ac8gndpkr9g6ib"))))
+         "15f4j4w5q603i7mlphb5r6mb1mn33pqg81595fpjp158140yqx7b"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2)) ; only Python 2.7 is supported
