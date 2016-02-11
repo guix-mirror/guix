@@ -869,15 +869,15 @@ packet filter.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "3.12.0")
+    (version "4.4.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://kernel.org/linux/utils/net/iproute2/iproute2-"
-                   version ".tar.xz"))
-             (sha256
-              (base32
-               "04gi11gh087bg2nlxhj0lxrk8l9qxkpr88nsiil23917bm3h1xj4"))))
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/utils/net/iproute2/iproute2-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "05351m4m0whsivlblvs3m0nz5q9v6r06ik80z27gf6ca51kw74dw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
