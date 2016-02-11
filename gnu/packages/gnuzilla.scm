@@ -289,7 +289,8 @@ standards.")
         "0bd4k5cwr8ynscaxffvj2x3kgky3dmjq0qhpcb931l98bh0103lx"))
       (patches (map search-patch
                     '("icecat-avoid-bundled-includes.patch"
-                      "icecat-re-enable-DHE-cipher-suites.patch")))
+                      "icecat-re-enable-DHE-cipher-suites.patch"
+                      "icecat-update-graphite2.patch")))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -317,6 +318,8 @@ standards.")
                       ;;
                       ;; TODO: Use system harfbuzz.  Waiting for:
                       ;; <https://bugzilla.mozilla.org/show_bug.cgi?id=847568>
+                      ;;
+                      ;; TODO: Use system graphite2.
                       ;;
                       "modules/freetype2"
                       "modules/zlib"
