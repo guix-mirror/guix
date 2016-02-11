@@ -3024,16 +3024,14 @@ capabilities.")
 (define-public python2-fastlmm
   (package
     (name "python2-fastlmm")
-    (version "0.2.14")
+    (version "0.2.21")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/f/fastlmm"
-             "/fastlmm-" version ".zip"))
+       (uri (pypi-uri "fastlmm" version ".zip"))
        (sha256
         (base32
-         "023sydkrc3yxad2bycar02jfswwlh4199kafzhf2bssyx2c3xa0l"))))
+         "1q8c34rpmwkfy3r4d5172pzdkpfryj561897z9r3x22gq7813x1m"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2)) ; only Python 2.7 is supported
