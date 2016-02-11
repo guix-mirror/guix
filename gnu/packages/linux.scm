@@ -8,6 +8,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <tobias.geerinckx.rice@gmail.com>
+;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -888,13 +889,12 @@ packet filter.")
                             (string-append "DOCDIR=" out "/share/doc/"
                                            ,name "-" ,version)
                             (string-append "MANDIR=" out "/share/man")))
-       #:phases (alist-cons-before
-                 'install 'pre-install
-                 (lambda _
-                   ;; Don't attempt to create /var/lib/arpd.
-                   (substitute* "Makefile"
-                     (("^.*ARPDDIR.*$") "")))
-                 %standard-phases)))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'install 'pre-install
+                    (lambda _
+                      ;; Don't attempt to create /var/lib/arpd.
+                      (substitute* "Makefile"
+                        (("^.*ARPDDIR.*$") "")))))))
     (inputs
      `(("iptables" ,iptables)
        ("db4" ,bdb)))
