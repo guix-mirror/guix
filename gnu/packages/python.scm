@@ -5816,10 +5816,12 @@ library” for Python.  The package includes both high level recipes, and low
 level interfaces to common cryptographic algorithms such as symmetric ciphers,
 message digests and key derivation functions.")
     ;; Distributed under either BSD-3 or ASL2.0
-    (license (list bsd-3 asl2.0))))
+    (license (list bsd-3 asl2.0))
+    (properties `((python2-variant . ,(delay python2-cryptography))))))
 
 (define-public python2-cryptography
-  (let ((crypto (package-with-python2 python-cryptography)))
+  (let ((crypto (package-with-python2
+                 (strip-python2-variant python-cryptography))))
     (package (inherit crypto)
       (propagated-inputs
        `(("python2-ipaddress" ,python2-ipaddress)
@@ -5876,12 +5878,7 @@ library.")
     (license asl2.0)))
 
 (define-public python2-pyopenssl
-  (let ((pyopenssl (package-with-python2 python-pyopenssl)))
-    (package (inherit pyopenssl)
-      (propagated-inputs
-       `(("python2-cryptography" ,python2-cryptography)
-         ,@(alist-delete "python-cryptography"
-                         (package-propagated-inputs pyopenssl)))))))
+  (package-with-python2 python-pyopenssl))
 
 (define-public python-pip
   (package
