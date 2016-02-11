@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -362,6 +362,7 @@ explicitly appear in OS."
          ;; many people are familiar with, so keep it around.
          iw wireless-tools
 
+         iproute
          net-tools                        ; XXX: remove when Inetutils suffices
          man-db
          texinfo                               ;for the standalone Info reader
