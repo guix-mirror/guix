@@ -982,6 +982,19 @@ Interactively with prefix, prompt for PROFILE."
   (guix-package-get-display profile 'installed))
 
 ;;;###autoload
+(defun guix-installed-user-packages ()
+  "Display information about Guix packages installed in a user profile."
+  (interactive)
+  (guix-installed-packages guix-user-profile))
+
+;;;###autoload
+(defun guix-installed-system-packages ()
+  "Display information about Guix packages installed in a system profile."
+  (interactive)
+  (guix-installed-packages
+   (guix-packages-profile guix-system-profile nil t)))
+
+;;;###autoload
 (defun guix-obsolete-packages (&optional profile)
   "Display information about obsolete Guix packages.
 If PROFILE is nil, use `guix-current-profile'.

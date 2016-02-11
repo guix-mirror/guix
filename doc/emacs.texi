@@ -150,7 +150,13 @@ Commands for displaying packages:
 Display all/newest available packages.
 
 @item M-x guix-installed-packages
-Display all installed packages.
+@itemx M-x guix-installed-user-packages
+@itemx M-x guix-installed-system-packages
+Display installed packages.  As described above, @kbd{M-x
+guix-installed-packages} uses an arbitrary profile that you can specify,
+while the other commands display packages installed in 2 special
+profiles: @file{~/.guix-profile} and @file{/run/current-system/profile}
+(only on GuixSD).
 
 @item M-x guix-obsolete-packages
 Display obsolete packages (the packages that are installed in a profile
