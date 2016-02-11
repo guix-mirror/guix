@@ -1300,7 +1300,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "0.13.0")
+    (version "0.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jp9000/obs-studio"
@@ -1308,7 +1308,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1rk5yfcqwjj4a8bj35fsfzk5qlsf5ylsy0z7kdrpl3fhnmla2izz"))))
+                "1vsn4r3wzfdwjrn69kgx3c5wfx17i72nxdv298pq772fp4j2iy2r"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f)) ; no tests
     (native-inputs
