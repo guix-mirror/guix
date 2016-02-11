@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,7 @@
 (define-public feh
   (package
     (name "feh")
-    (version "2.14")
+    (version "2.14.1")
     (home-page "https://feh.finalrewind.org/")
     (source (origin
               (method url-fetch)
@@ -37,7 +38,7 @@
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0j5wxpqccnd0hl74z2vwv25n7qnik1n2mcm2jn0c0z7cjn4wsa9q"))))
+                "1hlzgr0masgbm1vdn085vz81s9kpnah8kjkb1w1xfsxr1b99x8f0"))))
     (build-system gnu-build-system)
     (arguments
       '(#:phases (alist-delete 'configure %standard-phases)
