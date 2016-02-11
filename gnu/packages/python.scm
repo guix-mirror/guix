@@ -2955,7 +2955,7 @@ writing C extensions for Python as easy as Python itself.")
 (define python-numpy-bootstrap
   (package
     (name "python-numpy-bootstrap")
-    (version "1.9.1")
+    (version "1.10.4")
     (source
      (origin
        (method url-fetch)
@@ -2963,7 +2963,7 @@ writing C extensions for Python as easy as Python itself.")
                            "/numpy-" version ".tar.gz"))
        (sha256
         (base32
-         "070ybfvpgfmiz2hs94x445hvkh9dh52nyi0m8jp5kdihgvhbnx80"))))
+         "1bjjhvncraka5s6i4lg644jrxij6bvycxy7an20gcz3a0m11iygp"))))
     (build-system python-build-system)
     (inputs
      `(("python-nose" ,python-nose)
