@@ -328,7 +328,7 @@ statistical profiler, a code coverage tool, and many other extensions.")
 (define-public ccl
   (package
     (name "ccl")
-    (version "1.10")
+    (version "1.11")
     (source #f)
     (build-system gnu-build-system)
     ;; CCL consists of a "lisp kernel" and "heap image", both of which are
@@ -341,7 +341,8 @@ statistical profiler, a code coverage tool, and many other extensions.")
         ,(origin
            (method url-fetch)
            (uri (string-append
-                 "ftp://ftp.clozure.com/pub/release/1.10/ccl-" version "-"
+                 "ftp://ftp.clozure.com/pub/release/" version
+                 "/ccl-" version "-"
                  (match (%current-system)
                    ((or "i686-linux" "x86_64-linux") "linuxx86")
                    ("armhf-linux" "linuxarm")
@@ -353,9 +354,9 @@ statistical profiler, a code coverage tool, and many other extensions.")
             (base32
              (match (%current-system)
                ((or "i686-linux" "x86_64-linux")
-                "0mr653q5px05lr11z2mk551m5g47b4wq96vbfibpp0qlc9jp58lc")
+                "0w3dmj7q9kqyra3yrf1lxclnjz151yvf5s5q8ayllvmvqbl8bs08")
                ("armhf-linux"
-                "1py02irpmi2qz5rq3h33wfv6impf15z8i2rign6hvhlqn7s99wwh")
+                "1x487aaz2rqcb6k301sy2p39a1m4qdhg6z9p9fb76ssipqgr38b4")
                (_ ""))))))))
     (native-inputs
      `(("m4" ,m4)
