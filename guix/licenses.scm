@@ -63,6 +63,7 @@
             sgifreeb2.0
             silofl1.1
             sleepycat
+            tcl/tk
             unlicense
             vim
             x11 x11-style
@@ -387,6 +388,11 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "Sleepycat"
            "http://directory.fsf.org/wiki/License:Sleepycat"
            "https://www.gnu.org/licenses/license-list#BerkeleyDB"))
+
+(define tcl/tk
+  (license "Tcl/Tk"
+           "http://www.tcl.tk/software/tcltk/license.html"
+           "A non-copyleft free software license from the Tcl/Tk project"))
 
 (define vim
   (license "Vim"
