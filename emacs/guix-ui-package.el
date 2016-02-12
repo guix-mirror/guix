@@ -454,17 +454,22 @@ current OUTPUT is installed (if there is such output in
                              (string= (guix-entry-value entry 'output)
                                       output))
                            installed))
-         (action-type (if installed-entry 'delete 'install)))
+         (action-type (if installed-entry 'delete 'install))
+         (profile (guix-ui-current-profile)))
     (guix-info-insert-indent)
     (guix-format-insert output
                         (if installed-entry
                             'guix-package-info-installed-outputs
                           'guix-package-info-uninstalled-outputs)
                         guix-package-info-output-format)
-    (guix-package-info-insert-action-button action-type entry output)
-    (when obsolete
-      (guix-info-insert-indent)
-      (guix-package-info-insert-action-button 'upgrade entry output))
+    ;; Do not allow a user to install/delete anything to/from a system
+    ;; profile, so add action buttons only for non-system profiles.
+    (when (and profile
+               (not (guix-system-profile? profile)))
+      (guix-package-info-insert-action-button action-type entry output)
+      (when obsolete
+        (guix-info-insert-indent)
+        (guix-package-info-insert-action-button 'upgrade entry output)))
     (insert "\n")
     (when installed-entry
       (guix-info-insert-entry installed-entry 'installed-output 2))))
@@ -723,10 +728,22 @@ take an entry as argument."
             'upgrade nil
             (guix-package-installed-outputs entry)))))
 
+(defun guix-package-assert-non-system-profile ()
+  "Verify that the current profile is not a system one.
+The current profile is the one used by the current buffer."
+  (let ((profile (guix-ui-current-profile)))
+    (and profile
+         (guix-system-profile? profile)
+         (user-error "Packages cannot be installed or removed to/from \
+profile '%s'.
+Use 'guix system reconfigure' shell command to modify a system profile."
+                     profile))))
+
 (defun guix-package-execute-actions (fun)
   "Perform actions on the marked packages.
 Use FUN to define actions suitable for `guix-process-package-actions'.
 FUN should take action-type as argument."
+  (guix-package-assert-non-system-profile)
   (let ((actions (delq nil
                        (mapcar fun '(install delete upgrade)))))
     (if actions
