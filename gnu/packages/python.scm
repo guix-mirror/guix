@@ -2140,16 +2140,16 @@ packages will be properly installed with only the @code{Unpack} step and the
 unpacked archive preserves enough information to @code{Spread} (copy data and
 scripts to their final locations) at any later time.  Wheel files can be
 installed with a newer @code{pip} or with wheel's own command line utility.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-wheel))))))
 
 (define-public python2-wheel
-  (let ((wheel (package-with-python2 python-wheel)))
+  (let ((wheel (package-with-python2
+                (strip-python2-variant python-wheel))))
     (package (inherit wheel)
-      (native-inputs
-       `(("python2-functools32" ,python2-functools32)
-         ("python2-jsonschema" ,python2-jsonschema)
-         ,@(alist-delete "python-jsonschema"
-                         (package-native-inputs wheel)))))))
+      (native-inputs `(("python2-functools32" ,python2-functools32)
+                        ,@(package-native-inputs wheel))))))
+
 
 (define-public python-requests
   (package
@@ -2189,12 +2189,7 @@ than Python’s urllib2 library.")
                "0gdr9dxm24amxpbyqpbh3lbwxc2i42hnqv50sigx568qssv3v2ir"))))))
 
 (define-public python2-requests
-  (let ((requests (package-with-python2 python-requests)))
-    (package (inherit requests)
-      (propagated-inputs
-       `(("python2-wheel" ,python2-wheel)
-         ,@(alist-delete "python-wheel"
-                         (package-propagated-inputs requests)))))))
+  (package-with-python2 python-requests))
 
 (define-public python-vcversioner
   (package

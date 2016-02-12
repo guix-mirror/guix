@@ -304,12 +304,7 @@ portions of your testing code.")
     (license asl2.0)))
 
 (define-public python2-requests-mock
-  (let ((requests-mock (package-with-python2 python-requests-mock)))
-    (package (inherit requests-mock)
-      (propagated-inputs
-       `(("python2-requests" ,python2-requests)
-         ,@(alist-delete "python-requests"
-                         (package-propagated-inputs requests-mock)))))))
+  (package-with-python2 python-requests-mock))
 
 (define-public python-stevedore
   (package
@@ -601,9 +596,7 @@ from the OpenStack project.")
     (license asl2.0)))
 
 (define-public python2-oslosphinx
-  (let ((oslosphinx (package-with-python2 python-oslosphinx)))
-    (package (inherit oslosphinx)
-      (propagated-inputs `(("python2-requests" ,python2-requests))))))
+  (package-with-python2 python-oslosphinx))
 
 (define-public python-oslotest
   (package
