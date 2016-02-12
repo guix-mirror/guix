@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,6 +118,8 @@
             store-lower
             run-with-store
             %guile-for-build
+            current-system
+            set-current-system
             text-file
             interned-file
 
@@ -1039,6 +1041,18 @@ permission bits are kept."
 
 (define set-build-options*
   (store-lift set-build-options))
+
+(define-inlinable (current-system)
+  ;; Consult the %CURRENT-SYSTEM fluid at bind time.  This is equivalent to
+  ;; (lift0 %current-system %store-monad), but inlinable, thus avoiding
+  ;; closure allocation in some cases.
+  (lambda (state)
+    (values (%current-system) state)))
+
+(define-inlinable (set-current-system system)
+  ;; Set the %CURRENT-SYSTEM fluid at bind time.
+  (lambda (state)
+    (values (%current-system system) state)))
 
 (define %guile-for-build
   ;; The derivation of the Guile to be used within the build environment,

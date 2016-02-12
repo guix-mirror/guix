@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -836,6 +836,15 @@
   (let* ((add  (store-lower text-file))
          (file (add %store "foo" "Lowered.")))
     (call-with-input-file file get-string-all)))
+
+(test-equal "current-system"
+  "bar"
+  (parameterize ((%current-system "frob"))
+    (run-with-store %store
+      (mbegin %store-monad
+        (set-current-system "bar")
+        (current-system))
+      #:system "foo")))
 
 (test-assert "query-path-info"
   (let* ((ref (add-text-to-store %store "ref" "foo"))
