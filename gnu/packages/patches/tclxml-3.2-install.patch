@@ -1,0 +1,17 @@
+Install everything in PREFIX, set EXTRA_PATH to find it there.
+
+--- ./Makefile.in~	2016-02-06 01:29:16.595090365 +0100
++++ ./Makefile.in	2016-02-06 09:29:04.286008931 +0100
+@@ -133,9 +133,9 @@
+ # require for testing here (like TCLX_LIBRARY).
+ #========================================================================
+
+-EXTRA_PATH	= $(top_builddir):$(TCL_BIN_DIR)
++EXTRA_PATH	= $(top_builddir):$(TCL_BIN_DIR):$(libdir)
+ #EXTRA_PATH     = $(top_builddir):$(TCL_BIN_DIR):$(TK_BIN_DIR)
+-TCLLIBPATH      = $(top_builddir)
++TCLLIBPATH      = $(pkglibdir)
+ TCLSH_ENV	= TCL_LIBRARY=`@CYGPATH@ $(TCL_SRC_DIR)/library` \
+ 		  @LD_LIBRARY_PATH_VAR@="$(EXTRA_PATH):$(@LD_LIBRARY_PATH_VAR@)" \
+ 		  PATH="$(EXTRA_PATH):$(PATH)" \
+ 
