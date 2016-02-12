@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
@@ -694,11 +694,15 @@ creates the GTK+ 'icon-theme.cache' file for each theme."
 
 (define* (profile-derivation manifest
                              #:key
-                             (hooks %default-profile-hooks))
+                             (hooks %default-profile-hooks)
+                             system)
   "Return a derivation that builds a profile (aka. 'user environment') with
 the given MANIFEST.  The profile includes additional derivations returned by
 the monadic procedures listed in HOOKS--such as an Info 'dir' file, etc."
-  (mlet %store-monad ((extras (if (null? (manifest-entries manifest))
+  (mlet %store-monad ((system (if system
+                                  (return system)
+                                  (current-system)))
+                      (extras (if (null? (manifest-entries manifest))
                                   (return '())
                                   (sequence %store-monad
                                             (map (lambda (hook)
