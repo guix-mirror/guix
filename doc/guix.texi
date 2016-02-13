@@ -2004,8 +2004,30 @@ useful to Guix developers.
 The @command{guix archive} command allows users to @dfn{export} files
 from the store into a single archive, and to later @dfn{import} them.
 In particular, it allows store files to be transferred from one machine
-to the store on another machine.  For example, to transfer the @code{emacs}
-package to a machine connected over SSH, one would run:
+to the store on another machine.
+
+To export store files as an archive to standard output, run:
+
+@example
+guix archive --export @var{options} @var{specifications}...
+@end example
+
+@var{specifications} may be either store file names or package
+specifications, as for @command{guix package} (@pxref{Invoking guix
+package}).  For instance, the following command creates an archive
+containing the @code{gui} output of the @code{git} package and the main
+output of @code{emacs}:
+
+@example
+guix archive --export git:gui /gnu/store/...-emacs-24.3 > great.nar
+@end example
+
+If the specified packages are not built yet, @command{guix archive}
+automatically builds them.  The build process may be controlled with the
+common build options (@pxref{Common Build Options}).
+
+To transfer the @code{emacs} package to a machine connected over SSH,
+one would run:
 
 @example
 guix archive --export -r emacs | ssh the-machine guix archive --import
@@ -2126,26 +2148,6 @@ The primary purpose of this operation is to facilitate inspection of
 archive contents coming from possibly untrusted substitute servers.
 
 @end table
-
-To export store files as an archive to standard output, run:
-
-@example
-guix archive --export @var{options} @var{specifications}...
-@end example
-
-@var{specifications} may be either store file names or package
-specifications, as for @command{guix package} (@pxref{Invoking guix
-package}).  For instance, the following command creates an archive
-containing the @code{gui} output of the @code{git} package and the main
-output of @code{emacs}:
-
-@example
-guix archive --export git:gui /gnu/store/...-emacs-24.3 > great.nar
-@end example
-
-If the specified packages are not built yet, @command{guix archive}
-automatically builds them.  The build process may be controlled with the
-common build options (@pxref{Common Build Options}).
 
 @c *********************************************************************
 @include emacs.texi
