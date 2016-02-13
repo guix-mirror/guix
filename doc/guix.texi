@@ -2651,7 +2651,7 @@ The list of phases used for a particular package can be changed with the
 @code{#:phases} parameter.  For instance, passing:
 
 @example
-#:phases (alist-delete 'configure %standard-phases)
+#:phases (modify-phases %standard-phases (delete 'configure))
 @end example
 
 means that all the phases described above will be used, except the
