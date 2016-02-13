@@ -62,6 +62,10 @@
                (base32
                 "1qwwvy8nzd87hk8rd9sm667nppakiapnx4ypdwcrlnav2dz6kil3"))))
     (build-system gnu-build-system)
+    (native-search-paths
+     (list (search-path-specification
+            (variable "OCAMLPATH")
+            (files (list (string-append "lib/ocaml"))))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)))
