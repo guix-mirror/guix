@@ -273,14 +273,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "9.3.8")
+    (version "9.3.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ymd98szvx12gyjdb9gr2hlkrb5bjx7mcshqq3xzdifzapkkqp5w"))))
+                "08ba951nfiy516flaw352shj1zslxg4ryx3w5k0adls1r682l8ix"))))
     (build-system gnu-build-system)
     (inputs
      `(("readline" ,readline)
