@@ -211,7 +211,15 @@ without requiring the source code to be rewritten.")
               ;; times (almost 3 hours on a 4-core Intel i5).
               (snippet '(for-each delete-file
                                   (find-files "prebuilt" "\\.go$")))))
-    (synopsis "Snapshot of what will become version 2.2 of GNU Guile")))
+    (synopsis "Snapshot of what will become version 2.2 of GNU Guile")
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GUILE_LOAD_PATH")
+            (files '("share/guile/site/2.2")))
+           (search-path-specification
+            (variable "GUILE_LOAD_COMPILED_PATH")
+            (files '("lib/guile/2.2/ccache"
+                     "share/guile/site/2.2")))))))
 
 (define-public guile-for-guile-emacs
   (package (inherit guile-next)
