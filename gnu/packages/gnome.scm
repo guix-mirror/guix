@@ -13,6 +13,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4647,4 +4648,36 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
      "Nautilus (Files) is a file manager designed to fit the GNOME desktop
 design and behaviour, giving the user a simple way to navigate and manage its
 files.")
+    (license license:gpl2+)))
+
+(define-public baobab
+  (package
+    (name "baobab")
+    (version "3.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1da4bdkw5bnxansl1xr4lb03d6f4h0a0qaba8i3p3rwhcd191b62"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("itstool" ,itstool)
+       ("xmllint" ,libxml2)
+       ("glib" ,glib "bin")
+       ("vala" ,vala)))
+    (inputs
+     `(("gtk+" ,gtk+)))
+    (synopsis "Disk usage analyzer for GNOME")
+    (description
+     "Baobab (Disk Usage Analyzer) is a graphical application to analyse disk
+usage in the GNOME desktop environment.  It can easily scan device volumes or
+a specific user-requested directory branch (local or remote).  Once the scan
+is complete it provides a graphical representation of each selected folder.")
+    (home-page "https://wiki.gnome.org/Apps/Baobab")
     (license license:gpl2+)))
