@@ -37,6 +37,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
@@ -4680,4 +4681,44 @@ usage in the GNOME desktop environment.  It can easily scan device volumes or
 a specific user-requested directory branch (local or remote).  Once the scan
 is complete it provides a graphical representation of each selected folder.")
     (home-page "https://wiki.gnome.org/Apps/Baobab")
+    (license license:gpl2+)))
+
+(define-public gnome
+  (package
+    (name "gnome")
+    (version (package-version gnome-shell))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments '(#:builder (mkdir %output)))
+    (propagated-inputs
+     ;; TODO: Add more packages according to:
+     ;;       <https://packages.debian.org/jessie/gnome-core>.
+     `(("adwaita-icon-theme"        ,adwaita-icon-theme)
+       ("at-spi2-core"              ,at-spi2-core)
+       ("dbus"                      ,dbus)
+       ("dconf"                     ,dconf)
+       ("eog"                       ,eog)
+       ("epiphany"                  ,epiphany)
+       ("evince"                    ,evince)
+       ("gedit"                     ,gedit)
+       ("glib-networking"           ,glib-networking)
+       ("gnome-control-center"      ,gnome-control-center)
+       ("gnome-keyring"             ,gnome-keyring)
+       ("gnome-session"             ,gnome-session)
+       ("gnome-settings-daemon"     ,gnome-settings-daemon)
+       ("gnome-shell"               ,gnome-shell)
+       ("gnome-terminal"            ,gnome-terminal)
+       ("gnome-themes-standard"     ,gnome-themes-standard)
+       ("hicolor-icon-theme"        ,hicolor-icon-theme)
+       ("nautilus"                  ,nautilus)
+       ("pulseaudio"                ,pulseaudio)
+       ("shared-mime-info"          ,shared-mime-info)
+       ("totem"                     ,totem)
+       ("yelp"                      ,yelp)
+       ("zenity"                    ,zenity)))
+    (synopsis "Desktop environment (meta-package)")
+    (home-page "https://www.gnome.org/")
+    (description
+     "GNOME is an intutive and attractive desktop environment.  It aims to be
+an easy and elegant way to use your computer.")
     (license license:gpl2+)))
