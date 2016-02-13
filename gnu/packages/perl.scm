@@ -6277,4 +6277,27 @@ really be high enough to warrant the use of a keyword, and the size so small
 such that being individual extensions would be wasteful.")
     (license (package-license perl))))
 
+(define-public perl-shell-command
+  (package
+    (name "perl-shell-command")
+    (version "0.06")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://cpan/authors/id/F/FL/FLORA/Shell-Command-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "1lgc2rb3b5a4lxvbq0cbg08qk0n2i88srxbsz93bwi3razpxxr7k"))))
+    (build-system perl-build-system)
+    (home-page
+      "http://search.cpan.org/dist/Shell-Command")
+    (synopsis
+      "Cross-platform functions emulating common shell commands")
+    (description
+      "Shell::Command is a thin wrapper around ExtUtils::Command.")
+    (license (package-license perl))))
+
 ;;; END: Core module overrides
