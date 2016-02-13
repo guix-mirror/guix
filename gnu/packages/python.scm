@@ -7503,3 +7503,32 @@ input.  (Note that this is mostly a legacy library; you may wish to look at
 python-xdo for newer bindings.)")
     (license bsd-3)))
 
+(define-public python-wtforms
+  (package
+    (name "python-wtforms")
+    (version "2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "WTForms" version ".zip"))
+       (sha256
+        (base32
+         "0vyl26y9cg409cfyj8rhqxazsdnd0jipgjw06civhrd53yyi1pzz"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://wtforms.simplecodes.com/")
+    (synopsis
+     "Form validation and rendering library for Python web development")
+    (description
+     "WTForms is a flexible forms validation and rendering library
+for Python web development.  It is very similar to the web form API
+available in Django, but is a standalone package.")
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-wtforms))))))
+
+(define-public python2-wtforms
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-wtforms)))
+    (inputs `(("python2-setuptools" ,python2-setuptools)))))
