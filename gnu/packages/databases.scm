@@ -339,7 +339,7 @@ types are supported, as is encryption.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.10.0")
+   (version "3.10.2")
    (source (origin
             (method url-fetch)
             ;; TODO: Download from sqlite.org once this bug :
@@ -370,7 +370,7 @@ types are supported, as is encryption.")
                    ))
             (sha256
              (base32
-              "0hhhv6si0pyf5i8bv7a71953m0b4gk6s3j2h09caf7vif0njkk23"))))
+              "0w99mq9y7jx69d270lsx1qpjydm46vzyvxsjh9n7vsli2ayv9cx2"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments
