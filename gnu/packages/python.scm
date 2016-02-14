@@ -8008,3 +8008,42 @@ Python 2.4 and 2.5, and will draw its fixes/improvements from python-trunk.")
                        ("python2-unittest2" ,python2-unittest2)
                        ("python2-mock" ,python2-mock)
                        ,@(package-native-inputs billiard))))))
+
+(define-public python-celery
+  (package
+    (name "python-celery")
+    (version "3.1.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "celery" version))
+       (sha256
+        (base32
+         "1md6ywg1s0946qyp8ndnsd677wm0yax933h2sb4m3a4j7lf1jbyh"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-pytz" ,python-pytz)
+       ("python-billiard" ,python-billiard)
+       ("python-kombu" ,python-kombu)))
+    (home-page "http://celeryproject.org")
+    (synopsis "Distributed Task Queue")
+    (description "Celery is an asynchronous task queue/job queue based on
+distributed message passing.  It is focused on real-time operation, but
+supports scheduling as well.  The execution units, called tasks, are executed
+concurrently on a single or more worker servers using multiprocessing,
+Eventlet, or gevent.  Tasks can execute asynchronously (in the background) or
+synchronously (wait until ready).")
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-celery))))))
+
+(define-public python2-celery
+  (let ((celery (package-with-python2
+                 (strip-python2-variant python-celery))))
+    (package
+      (inherit celery)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ("python2-unittest2" ,python2-unittest2)
+                       ("python2-mock" ,python2-mock)
+                       ,@(package-native-inputs celery))))))
