@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -730,6 +731,33 @@ Scheme.  Haunt features a functional build system and an extensible
 interface for reading articles in any format.")
     (home-page "http://haunt.dthompson.us")
     (license gpl3+)))
+
+(define-public guile-config
+  (package
+    (name "guile-config")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://alex.pompo.co/software/" name "-" version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "0fcj2d91z7nhm9k79zkc826l8i06khqvp3d641wik9s3hv6qjya2"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("guile" ,guile-2.0)))
+    (synopsis "Guile application configuration parsing library")
+    (description
+     "Guile Config is a library providing a declarative approach to
+application configuration specification.  The library provides clean
+configuration declaration forms, and processors that take care of:
+configuration file creation; configuration file parsing; command-line
+parameter parsing using getopt-long; basic GNU command-line parameter
+generation (--help, --usage, --version); automatic output generation for the
+above command-line parameters.")
+    (home-page "https://github.com/a-sassmannshausen/guile-config")
+    (license agpl3+)))
 
 (define-public guile-redis
   (package
