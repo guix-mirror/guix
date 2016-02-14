@@ -701,6 +701,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/python-disable-ssl-test.patch		\
   gnu/packages/patches/python-fix-tests.patch			\
   gnu/packages/patches/python-ipython-inputhook-ctype.patch	\
+  gnu/packages/patches/python-rarfile-fix-tests.patch		\
   gnu/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   gnu/packages/patches/python-configobj-setuptools.patch	\
   gnu/packages/patches/python-paste-remove-website-test.patch	\

@@ -8438,3 +8438,35 @@ encoding algorithms to do fuzzy string matching.")
     (description "Unicodecsv is a drop-in replacement for Python 2.7's CSV
 module, adding support for Unicode strings.")
     (license bsd-2)))
+
+(define-public python-rarfile
+  (package
+    (name "python-rarfile")
+    (version "2.7")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "rarfile" version))
+              (sha256
+               (base32
+                "0d8n1dlpiz7av8dmbp0vclrwl9cnxizr4f2c9xvj1h5nvn480527"))
+              ;; https://github.com/markokr/rarfile/pull/17/
+              (patches (list (search-patch "python-rarfile-fix-tests.patch")))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; Many tests fail, but the installation proceeds.
+           (lambda _ (zero? (system* "make" "-C" "test" "test")))))))
+    (native-inputs
+     `(("which" ,which))) ; required for tests
+    (propagated-inputs
+     `(("libarchive" ,libarchive)))
+    (home-page "https://github.com/markokr/rarfile")
+    (synopsis "RAR archive reader for Python")
+    (description "This is Python module for RAR archive reading.  The interface
+is made as zipfile like as possible.")
+    (license isc)))
+
+(define-public python2-rarfile
+  (package-with-python2 python-rarfile))
