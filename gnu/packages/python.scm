@@ -1664,6 +1664,42 @@ supports coverage of subprocesses.")
 (define-public python2-pytest-runner
   (package-with-python2 python-pytest-runner))
 
+(define-public python-pytest-xdist
+  (package
+    (name "python-pytest-xdist")
+    (version "1.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pytest-xdist" version ".zip"))
+       (sha256
+        (base32
+         "08rn2l39ds60xshs4js787l84pfckksqklfq2wq9x8ig2aci2pja"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("python-setuptools" ,python-setuptools)
+       ("python-setuptools-scm" ,python-setuptools-scm)))
+    (propagated-inputs
+     `(("python-execnet" ,python-execnet)
+       ("python-pytest" ,python-pytest)
+       ("python-py" ,python-py)))
+    (home-page
+     "https://github.com/pytest-dev/pytest-xdist")
+    (synopsis
+     "Plugin for py.test with distributed testing and loop-on-failing modes")
+    (description
+     "The pytest-xdist plugin extends py.test with some unique test execution
+modes: parallelization, running tests in boxed subprocesses, the ability
+to run tests repeatedly when failed, and the ability to run tests on multiple
+Python interpreters or platforms.  It uses rsync to copy the existing
+program code to a remote location, executes there, and then syncs the
+result back.")
+    (license license:expat)))
+
+(define-public python2-pytest-xdist
+  (package-with-python2 python-pytest-xdist))
+
 (define-public python-scripttest
   (package
     (name "python-scripttest")
