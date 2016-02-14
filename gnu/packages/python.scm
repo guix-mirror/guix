@@ -7707,3 +7707,40 @@ server with very acceptable performance.")
     (inherit (package-with-python2
               (strip-python2-variant python-waitress)))
     (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+
+(define-public python-wsgiproxy2
+  (package
+    (name "python-wsgiproxy2")
+    (version "0.4.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "WSGIProxy2" version ".zip"))
+       (sha256
+        (base32
+         "13kf9bdxrc95y9vriaz0viry3ah11nz4rlrykcfvb8nlqpx3dcm4"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("python-nose" ,python-nose)
+       ("python-coverage" ,python-coverage)))
+    (propagated-inputs
+     `(("python-six" ,python-six)
+       ("python-webob" ,python-webob)))
+    (home-page
+     "https://github.com/gawel/WSGIProxy2/")
+    (synopsis "WSGI Proxy with various http client backends")
+    (description "WSGI turns HTTP requests into WSGI function calls.
+WSGIProxy turns WSGI function calls into HTTP requests.
+It also includes code to sign requests and pass private data,
+and to spawn subprocesses to handle requests.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-wsgiproxy2))))))
+
+(define-public python2-wsgiproxy2
+  (let ((wsgiproxy2 (package-with-python2
+                     (strip-python2-variant python-wsgiproxy2))))
+    (package
+      (inherit wsgiproxy2)
+      (inputs `(("python2-setuptools" ,python2-setuptools)
+                ,@(package-inputs wsgiproxy2))))))
