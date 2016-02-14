@@ -8233,3 +8233,26 @@ way.")
     (inherit (package-with-python2
               (strip-python2-variant python-vobject)))
     (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+
+(define-public python-munkres
+  (package
+    (name "python-munkres")
+    (version "1.0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "munkres" version))
+              (sha256
+               (base32
+                "1i6nf45i0kkzdx6k70giybsqxz4dxsjbrkrfqgjd7znfkf25sjik"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; no test suite
+    (home-page "http://software.clapper.org/munkres/")
+    (synopsis "Implementation of the Munkres algorithm")
+    (description "The Munkres module provides an implementation of the Munkres
+algorithm (also called the Hungarian algorithm or the Kuhn-Munkres algorithm),
+useful for solving the Assignment Problem.")
+    (license bsd-3)))
+
+(define-public python2-munkres
+  (package-with-python2 python-munkres))
