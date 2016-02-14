@@ -7973,3 +7973,38 @@ RabbitMQ messaging server is the most popular implementation.")
       (inputs `(("python2-setuptools" ,python2-setuptools)
                 ("python2-unittest2" ,python2-unittest2)
                 ,@(package-inputs kombu))))))
+
+(define-public python-billiard
+  (package
+    (name "python-billiard")
+    (version "3.3.0.22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "billiard" version))
+       (sha256
+        (base32
+         "0zp7h6a58alrb3mwdw61jds07395j4j0mj6iqsb8czrihw9ih5nj"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (home-page "http://github.com/celery/billiard")
+    (synopsis
+     "Python multiprocessing fork with improvements and bugfixes")
+    (description
+     "Billiard is a fork of the Python 2.7 multiprocessing package.  The
+multiprocessing package itself is a renamed and updated version of R Oudkerk's
+pyprocessing package.  This standalone variant is intended to be compatible with
+Python 2.4 and 2.5, and will draw its fixes/improvements from python-trunk.")
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-billiard))))))
+
+(define-public python2-billiard
+  (let ((billiard (package-with-python2
+                   (strip-python2-variant python-billiard))))
+    (package
+      (inherit billiard)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ("python2-unittest2" ,python2-unittest2)
+                       ("python2-mock" ,python2-mock)
+                       ,@(package-native-inputs billiard))))))
