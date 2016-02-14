@@ -50,6 +50,7 @@
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gettext)
@@ -65,6 +66,7 @@
   #:use-module (gnu packages linux) ; for alsa-utils
   #:use-module (gnu packages man)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages mpd)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages netpbm)
   #:use-module (gnu packages pdf)
@@ -1253,3 +1255,49 @@ websites such as Libre.fm.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs pylast))))))
+
+(define-public beets
+  (package
+    (name "beets")
+    (version "1.3.17")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri name version))
+              (sha256
+               (base32
+                "0yg7sp18sdpszkinhb0bi6yinbn316jy1baxrwiw0m4byrj3rr6c"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; only Python 2 is supported
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-HOME
+           (lambda _ (setenv "HOME" (string-append (getcwd) "/tmp")))))))
+    (native-inputs
+     `(("python2-beautifulsoup4" ,python2-beautifulsoup4)
+       ("python2-flask" ,python2-flask)
+       ("python2-setuptools" ,python2-setuptools)
+       ("python2-mock" ,python2-mock)
+       ("python2-mpd2" ,python2-mpd2)
+       ("python2-pathlib" ,python2-pathlib)
+       ("python2-pyxdg" ,python2-pyxdg)
+       ("python2-pyechonest" ,python2-pyechonest)
+       ("python2-pylast" ,python2-pylast)
+       ("python2-rarfile" ,python2-rarfile)
+       ("python2-responses" ,python2-responses)))
+    ;; TODO: Install optional plugins and dependencies.
+    (propagated-inputs
+     `(("python2-enum34" ,python2-enum34)
+       ("python2-jellyfish" ,python2-jellyfish)
+       ("python2-munkres" ,python2-munkres)
+       ("python2-musicbrainzngs" ,python2-musicbrainzngs)
+       ("python2-mutagen" ,python2-mutagen)
+       ("python2-pyyaml" ,python2-pyyaml)
+       ("python2-unidecode" ,python2-unidecode)))
+    (home-page "http://beets.io")
+    (synopsis "Music organizer")
+    (description "The purpose of beets is to get your music collection right
+once and for all.  It catalogs your collection, automatically improving its
+metadata as it goes using the MusicBrainz database.  Then it provides a variety
+of tools for manipulating and accessing your music.")
+    (license license:expat)))
