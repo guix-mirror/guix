@@ -88,7 +88,7 @@
 (define-public python-2
   (package
     (name "python")
-    (version "2.7.10")
+    (version "2.7.11")
     (source
      (origin
       (method url-fetch)
@@ -96,7 +96,7 @@
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
-        "1h7zbrf9pkj29hlm18b10548ch9757f75m64l47sy75rh43p7lqw"))
+        "0iiz844riiznsyhhyy962710pz228gmhv8qi3yk4w4jhmx2lqawn"))
       (patches (map search-patch
                     '("python-2.7-search-paths.patch"
                       "python-2-deterministic-build-info.patch"
@@ -106,46 +106,22 @@
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
-       ;; 268 tests OK.
-       ;; 103 tests failed:
-       ;;     test_distutils test_shutil test_signal test_site test_slice
-       ;;     test_smtplib test_smtpnet test_socket test_socketserver
-       ;;     test_softspace test_sort test_spwd test_sqlite test_ssl
-       ;;     test_startfile test_stat test_str test_strftime test_string
-       ;;     test_stringprep test_strop test_strptime test_strtod test_struct
-       ;;     test_structmembers test_structseq test_subprocess test_sunau
-       ;;     test_sunaudiodev test_sundry test_symtable test_syntax test_sys
-       ;;     test_sys_setprofile test_sys_settrace test_sysconfig test_tarfile
-       ;;     test_tcl test_telnetlib test_tempfile test_textwrap test_thread
-       ;;     test_threaded_import test_threadedtempfile test_threading
-       ;;     test_threading_local test_threadsignals test_time test_timeit
-       ;;     test_timeout test_tk test_tokenize test_tools test_trace
-       ;;     test_traceback test_transformer test_ttk_guionly test_ttk_textonly
-       ;;     test_tuple test_typechecks test_ucn test_unary
-       ;;     test_undocumented_details test_unicode test_unicode_file
-       ;;     test_unicodedata test_univnewlines test_univnewlines2k test_unpack
-       ;;     test_urllib test_urllib2 test_urllib2_localnet test_urllib2net
-       ;;     test_urllibnet test_urlparse test_userdict test_userlist
-       ;;     test_userstring test_uu test_uuid test_wait3 test_wait4
-       ;;     test_warnings test_wave test_weakref test_weakset test_whichdb
-       ;;     test_winreg test_winsound test_with test_wsgiref test_xdrlib
-       ;;     test_xml_etree test_xml_etree_c test_xmllib test_xmlrpc
-       ;;     test_xpickle test_xrange test_zipfile test_zipfile64
-       ;;     test_zipimport test_zipimport_support test_zlib
-       ;; 30 tests skipped:
+       ;; 356 tests OK.
+       ;; 6 tests failed:
+       ;;     test_compileall test_distutils test_import test_shutil test_socket
+       ;;     test_subprocess
+       ;; 39 tests skipped:
        ;;     test_aepack test_al test_applesingle test_bsddb test_bsddb185
        ;;     test_bsddb3 test_cd test_cl test_codecmaps_cn test_codecmaps_hk
-       ;;     test_codecmaps_jp test_codecmaps_kr test_codecmaps_tw test_crypt
-       ;;     test_curses test_dl test_gdb test_gl test_idle test_imageop
-       ;;     test_imgfile test_ioctl test_kqueue test_linuxaudiodev test_macos
-       ;;     test_macostools test_msilib test_nis test_ossaudiodev
-       ;;     test_scriptpackages
-       ;; 6 skips unexpected on linux2:
-       ;;     test_bsddb test_bsddb3 test_crypt test_gdb test_idle test_ioctl
-       ;; One of the typical errors:
-       ;; test_unicode
-       ;; test test_unicode crashed -- <type 'exceptions.OSError'>: [Errno 2] No
-       ;; such file or directory
+       ;;     test_codecmaps_jp test_codecmaps_kr test_codecmaps_tw test_curses
+       ;;     test_dl test_gdb test_gl test_imageop test_imgfile test_ioctl
+       ;;     test_kqueue test_linuxaudiodev test_macos test_macostools
+       ;;     test_msilib test_ossaudiodev test_scriptpackages test_smtpnet
+       ;;     test_socketserver test_startfile test_sunaudiodev test_timeout
+       ;;     test_tk test_ttk_guionly test_urllib2net test_urllibnet
+       ;;     test_winreg test_winsound test_zipfile64
+       ;; 4 skips unexpected on linux2:
+       ;;     test_bsddb test_bsddb3 test_gdb test_ioctl
        #:test-target "test"
        #:configure-flags
        (list "--enable-shared"                    ;allow embedding
