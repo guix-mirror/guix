@@ -6886,7 +6886,17 @@ minimal and fast API targetting the following uses:
 @item write scripts to administer multiple environments
 @end enumerate")
     (home-page "http://codespeak.net/execnet/")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-execnet))))))
+
+(define-public python2-execnet
+  (let ((execnet (package-with-python2
+                  (strip-python2-variant python-execnet))))
+    (package
+      (inherit execnet)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs execnet))))))
 
 ;;; The software provided by this package was integrated into pytest 2.8.
 (define-public python-pytest-cache
