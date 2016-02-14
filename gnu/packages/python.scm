@@ -7897,3 +7897,41 @@ and provides a uniform API regardless of which JSON implementation is used.")
                    ,@(package-arguments anyjson)))
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
                        ("python2-nose" ,python2-nose))))))
+
+(define-public python-amqp
+  (package
+    (name "python-amqp")
+    (version "1.4.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "amqp" version))
+       (sha256
+        (base32
+         "06n6q0kxhjnbfz3vn8x9yz09lwmn1xi9d6wxp31h5jbks0b4vsid"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)))
+    (home-page "http://github.com/celery/py-amqp")
+    (synopsis
+     "Low-level AMQP client for Python (fork of amqplib)")
+    (description
+     "This is a fork of amqplib which was originally written by Barry Pederson.
+It is maintained by the Celery project, and used by kombu as a pure python
+alternative when librabbitmq is not available.")
+    (license lgpl2.1+)
+    (properties `((python2-variant . ,(delay python2-amqp))))))
+
+(define-public python2-amqp
+  (let ((amqp (package-with-python2
+               (strip-python2-variant python-amqp))))
+    (package
+      (inherit amqp)
+      (arguments `(;; Tries to run coverage tests with nose-cover3, which seems
+                   ;; unmaintained.  Weirdly, does not do this on the python 3
+                   ;; version?
+                   #:tests? #f
+                   ,@(package-arguments amqp)))
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs amqp))))))
