@@ -5317,7 +5317,7 @@ from an XML-based format.")
 (define-public python-ly
   (package
     (name "python-ly")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
@@ -5326,7 +5326,7 @@ from an XML-based format.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1bsjg4q9ihr8bfdclrcmb8yjcg8xm9dznh58f3zsyrkrjzwbhcd2"))))
+         "1y6ananq8fia4y4m5id6gvsrm68bzpzd1y46pfzvawic0wjg2l0l"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
