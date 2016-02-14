@@ -7935,3 +7935,41 @@ alternative when librabbitmq is not available.")
                    ,@(package-arguments amqp)))
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
                        ,@(package-native-inputs amqp))))))
+
+(define-public python-kombu
+  (package
+    (name "python-kombu")
+    (version "3.0.33")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "kombu" version))
+       (sha256
+        (base32
+         "16brjx2lgwbj2a37d0pjbfb84nvld6irghmqrs3qfncajp51hgc5"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(("python-anyjson" ,python-anyjson)
+       ("python-amqp" ,python-amqp)))
+    (home-page "http://kombu.readthedocs.org")
+    (synopsis "Message passing library for Python")
+    (description "The aim of Kombu is to make messaging in Python as easy as
+possible by providing an idiomatic high-level interface for the AMQ protocol,
+and also provide proven and tested solutions to common messaging problems.
+AMQP is the Advanced Message Queuing Protocol, an open standard protocol for
+message orientation, queuing, routing, reliability and security, for which the
+RabbitMQ messaging server is the most popular implementation.")
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-kombu))))))
+
+(define-public python2-kombu
+  (let ((kombu (package-with-python2
+                (strip-python2-variant python-kombu))))
+    (package
+      (inherit kombu)
+      (inputs `(("python2-setuptools" ,python2-setuptools)
+                ("python2-unittest2" ,python2-unittest2)
+                ,@(package-inputs kombu))))))
