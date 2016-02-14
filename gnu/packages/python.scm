@@ -8256,3 +8256,31 @@ useful for solving the Assignment Problem.")
 
 (define-public python2-munkres
   (package-with-python2 python-munkres))
+
+(define-public python-flask
+  (package
+    (name "python-flask")
+    (version "0.10.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Flask" version))
+              (sha256
+               (base32
+                "0wrkavjdjndknhp8ya8j850jq7a1cli4g5a93mg8nh1xz2gq50sc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-itsdangerous" ,python-itsdangerous)
+       ("python-jinja2" ,python-jinja2)
+       ("python-werkzeug" ,python-werkzeug)))
+    (home-page "https://github.com/mitsuhiko/flask/")
+    (synopsis "Microframework based on Werkzeug, Jinja2 and good intentions")
+    (description "Flask is a micro web framework based on the Werkzeug toolkit
+and Jinja2 template engine.  It is called a micro framework because it does not
+presume or force a developer to use a particular tool or library.")
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-flask))))))
+
+(define-public python2-flask
+  (package (inherit (package-with-python2
+                     (strip-python2-variant python-flask)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
