@@ -7775,3 +7775,33 @@ file.")
 
 (define-public python2-pastedeploy
   (package-with-python2 python-pastedeploy))
+
+(define-public python-pyquery
+  (package
+    (name "python-pyquery")
+    (version "1.2.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyquery" version))
+       (sha256
+        (base32
+         "1ikz1387nsp0pp7mzzr6ip9n5gr67acpap24yn33987v7fkjp0sa"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-lxml" ,python-lxml)
+       ("python-cssselect" ,python-cssselect)))
+    (home-page "https://github.com/gawel/pyquery")
+    (synopsis "Make jQuery-like queries on xml documents")
+    (description "pyquery allows you to make jQuery queries on xml documents.
+The API is as much as possible the similar to jQuery.  pyquery uses lxml for
+fast xml and html manipulation.")
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-pyquery))))))
+
+(define-public python2-pyquery
+  (let ((pyquery (package-with-python2
+                  (strip-python2-variant python-pyquery))))
+    (package
+      (inherit pyquery)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools))))))
