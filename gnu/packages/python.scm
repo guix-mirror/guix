@@ -7857,3 +7857,43 @@ minimum of WSGI.")
       (inherit webtest)
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
                        ,@(package-native-inputs webtest))))))
+
+(define-public python-anyjson
+  (package
+    (name "python-anyjson")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "anyjson" version))
+       (sha256
+        (base32
+         "1fjph4alvcscsl5d4b6qpv1yh31jy05jxi1l0xff7lws7j32v09p"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; We could possibly get tests working, but on Python 3 it's not so easy.
+       ;; Very strangely, 2to3 is run *during setup.py install* (or bdist, or
+       ;; whatever) so this transformation needs to be done before the tests
+       ;; can be run.  Maybe we could add a build step to transform beforehand
+       ;; but it could be annoying/difficult.
+       ;; We can enable tests for the Python 2 version, though, and do below.
+       #:tests? #f))
+    (home-page "http://bitbucket.org/runeh/anyjson/")
+    (synopsis
+     "Wraps best available JSON implementation in a common interface")
+    (description
+     "Anyjson loads whichever is the fastest JSON module installed
+and provides a uniform API regardless of which JSON implementation is used.")
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-anyjson))))))
+
+(define-public python2-anyjson
+  (let ((anyjson (package-with-python2
+                  (strip-python2-variant python-anyjson))))
+    (package
+      (inherit anyjson)
+      (arguments `(;; Unlike the python 3 variant, we do run tests.  See above!
+                   #:tests? #t
+                   ,@(package-arguments anyjson)))
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ("python2-nose" ,python2-nose))))))
