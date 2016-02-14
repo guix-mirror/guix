@@ -7744,3 +7744,34 @@ and to spawn subprocesses to handle requests.")
       (inherit wsgiproxy2)
       (inputs `(("python2-setuptools" ,python2-setuptools)
                 ,@(package-inputs wsgiproxy2))))))
+
+(define-public python-pastedeploy
+  (package
+    (name "python-pastedeploy")
+    (version "1.5.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PasteDeploy" version))
+       (sha256
+        (base32
+         "1jz3m4hq8v6hyhfjz9425nd3nvn52cvbfipdcd72krjmla4qz1fm"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     ;; This package uses pkg_resources, part of setuptools, during runtime,
+     ;; hence why not a native-input.
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://pythonpaste.org/deploy/")
+    (synopsis
+     "Load, configure, and compose WSGI applications and servers")
+    (description
+     "This tool provides code to load WSGI applications and servers from URIs;
+these URIs can refer to Python Eggs for INI-style configuration files.  Paste
+Script provides commands to serve applications based on this configuration
+file.")
+    (license license:expat)))
+
+(define-public python2-pastedeploy
+  (package-with-python2 python-pastedeploy))
