@@ -4568,6 +4568,39 @@ libxml2 and libxslt.")
 (define-public python2-lxml
   (package-with-python2 python-lxml))
 
+;; beautifulsoup4 has a totally different namespace than 3.x,
+;; and pypi seems to put it under its own name, so I guess we should too
+(define-public python-beautifulsoup4
+  (package
+    (name "python-beautifulsoup4")
+    (version "4.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "beautifulsoup4" version))
+       (sha256
+        (base32
+         "1d36lc4pfkvl74fmzdib2nqnvknm0jddgf2n9yd7im150qyh3m47"))))
+    (build-system python-build-system)
+    (home-page
+     "http://www.crummy.com/software/BeautifulSoup/bs4/")
+    (synopsis
+     "Python screen-scraping library")
+    (description
+     "Beautiful Soup is a Python library designed for rapidly setting up
+screen-scraping projects.  It offers Pythonic idioms for navigating,
+searching, and modifying a parse tree, providing a toolkit for
+dissecting a document and extracting what you need.  It automatically
+converts incoming documents to Unicode and outgoing documents to UTF-8.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-beautifulsoup4))))))
+
+(define-public python2-beautifulsoup4
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-beautifulsoup4)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+
 (define-public python2-pil
   (package
     (name "python2-pil")
