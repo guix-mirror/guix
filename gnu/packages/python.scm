@@ -6850,7 +6850,15 @@ applications.")
 package and greatly reduce the number of imports for your users.  It is a small
 pure Python module that works on virtually all Python versions.")
     (home-page "https://bitbucket.org/hpk42/apipkg")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-apipkg))))))
+
+(define-public python2-apipkg
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-apipkg)))
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)))))
 
 (define-public python-execnet
   (package
