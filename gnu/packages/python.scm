@@ -7682,3 +7682,28 @@ templates into Python modules.")
       (native-inputs
        (cons `("python2-setuptools" ,python2-setuptools)
              (package-native-inputs base))))))
+
+(define-public python-waitress
+  (package
+    (name "python-waitress")
+    (version "0.8.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "waitress" version))
+       (sha256
+        (base32
+         "017n9ra6vvmq9d5sfhdzyzr1mg15x2hj2dhm4pdlw98c1ypw2h3w"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/Pylons/waitress")
+    (synopsis "Waitress WSGI server")
+    (description "Waitress is meant to be a production-quality pure-Python WSGI
+server with very acceptable performance.")
+    (license zpl2.1)
+    (properties `((python2-variant . ,(delay python2-waitress))))))
+
+(define-public python2-waitress
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-waitress)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
