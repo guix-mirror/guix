@@ -3571,6 +3571,42 @@ simple and Pythonic domain language.")
 (define-public python2-sqlalchemy
   (package-with-python2 python-sqlalchemy))
 
+(define-public python-alembic
+  (package
+    (name "python-alembic")
+    (version "0.8.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "alembic" version))
+       (sha256
+        (base32
+         "0jk23a852l3ybv7gfz81xzslyrnqnpjds5x15zd234y9rh9gq1w5"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pytest-cov" ,python-pytest-cov)))
+    (propagated-inputs
+     `(("python-sqlalchemy" ,python-sqlalchemy)
+       ("python-mako" ,python-mako)
+       ("python-editor" ,python-editor)))
+    (home-page "http://bitbucket.org/zzzeek/alembic")
+    (synopsis
+     "Database migration tool for SQLAlchemy")
+    (description
+     "Alembic is a lightweight database migration tool for usage with the
+SQLAlchemy Database Toolkit for Python.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-alembic))))))
+
+(define-public python2-alembic
+  (let ((alembic (package-with-python2
+                  (strip-python2-variant python-alembic))))
+    (package
+      (inherit alembic)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs alembic))))))
+
 (define-public python-distutils-extra
   (package
     (name "python-distutils-extra")
