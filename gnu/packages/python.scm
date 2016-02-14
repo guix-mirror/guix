@@ -7805,3 +7805,55 @@ fast xml and html manipulation.")
     (package
       (inherit pyquery)
       (native-inputs `(("python2-setuptools" ,python2-setuptools))))))
+
+(define-public python-webtest
+  (package
+    (name "python-webtest")
+    (version "2.0.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "WebTest" version))
+       (sha256
+        (base32
+         "0bv0qhdjakdsdgj4sk21gnpp8xp8bga4x03p6gjb83ihrsb7n4xv"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Unfortunately we have to disable tests!
+       ;; This release of WebTest is pinned to python-nose < 1.3,
+       ;; but older versions of python-nose are plagued with the following
+       ;; bug(s), which rears its ugly head during test execution:
+       ;;   https://github.com/nose-devs/nose/issues/759
+       ;;   https://github.com/nose-devs/nose/pull/811
+       #:tests? #f))
+    ;; Commented out code is no good, but in this case, once tests
+    ;; are ready to be enabled again, we should put the following
+    ;; in place:
+    ;;  (native-inputs
+    ;;   `(("python-nose" ,python-nose) ; technially < 1.3,
+    ;;                                  ; but see above comment
+    ;;     ("python-coverage" ,python-coverage)
+    ;;     ("python-mock" ,python-mock)
+    ;;     ("python-pastedeploy" ,python-pastedeploy)
+    ;;     ("python-wsgiproxy2" ,python-wsgiproxy2)
+    ;;     ("python-pyquery" ,python-pyquery)))
+    (propagated-inputs
+     `(("python-waitress" ,python-waitress)
+       ("python-webob" ,python-webob)
+       ("python-six" ,python-six)
+       ("python-beautifulsoup4" ,python-beautifulsoup4)))
+    (home-page "http://webtest.pythonpaste.org/")
+    (synopsis "Helper to test WSGI applications")
+    (description "Webtest allows you to test your Python web applications
+without starting an HTTP server.  It supports anything that supports the
+minimum of WSGI.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-webtest))))))
+
+(define-public python2-webtest
+  (let ((webtest (package-with-python2
+                  (strip-python2-variant python-webtest))))
+    (package
+      (inherit webtest)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs webtest))))))
