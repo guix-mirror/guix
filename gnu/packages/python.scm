@@ -100,13 +100,26 @@
       (patches (map search-patch
                     '("python-2.7-search-paths.patch"
                       "python-2-deterministic-build-info.patch"
-                      "python-2.7-source-date-epoch.patch")))))
+                      "python-2.7-source-date-epoch.patch")))
+      (modules '((guix build utils)))
+      ;; suboptimal to delete failing tests here, but if we delete them in the
+      ;; arguments then we need to make sure to strip out that phase when it
+      ;; gets inherited by python and python-minimal.
+      (snippet
+       '(begin
+          (for-each delete-file
+                    '("Lib/test/test_compileall.py"
+                      "Lib/test/test_distutils.py"
+                      "Lib/test/test_import.py"
+                      "Lib/test/test_shutil.py"
+                      "Lib/test/test_socket.py"
+                      "Lib/test/test_subprocess.py"))
+          #t))))
     (outputs '("out"
                "tk"))                     ;tkinter; adds 50 MiB to the closure
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f
-       ;; 356 tests OK.
+     `(;; 356 tests OK.
        ;; 6 tests failed:
        ;;     test_compileall test_distutils test_import test_shutil test_socket
        ;;     test_subprocess
