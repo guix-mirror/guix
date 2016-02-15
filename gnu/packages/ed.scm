@@ -40,11 +40,12 @@
     (native-inputs `(("lzip" ,lzip)))
     (arguments
      '(#:configure-flags '("CC=gcc")
-       #:phases (alist-cons-before 'patch-source-shebangs 'patch-test-suite
-                                   (lambda _
-                                     (substitute* "testsuite/check.sh"
-                                       (("/bin/sh") (which "sh"))))
-                                   %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'patch-source-shebangs 'patch-test-suite
+                     (lambda _
+                       (substitute* "testsuite/check.sh"
+                         (("/bin/sh") (which "sh"))))))))
     (home-page "http://www.gnu.org/software/ed/")
     (synopsis "Line-oriented text editor")
     (description
