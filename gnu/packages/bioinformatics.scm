@@ -1,3 +1,4 @@
+
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
@@ -3353,7 +3354,7 @@ data in the form of VCF files.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "1.4.1")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
@@ -3363,7 +3364,7 @@ data in the form of VCF files.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0b1359wbzgb2cm04h7dq05v80vik88hnsv298xxd1q1f2q4ydni7"))
+         "1i3bad7gnn2y3a1yfixzshd99xdkjc8w5bxzgifpysc6jiljwvb5"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3373,14 +3374,24 @@ data in the form of VCF files.")
 -O3 -mtune=native -Wall -Wsign-compare")
               (string-append "AM_CXXFLAGS=-lcityhash"
                              " -O3 -Wall -Wsign-compare"))
-             (("^__top_builddir__bin_vsearch_SOURCES = cityhash/city.h \\\\")
+             (("^__top_builddir__bin_vsearch_SOURCES = city.h \\\\")
               "__top_builddir__bin_vsearch_SOURCES = \\")
-             (("^cityhash/config.h \\\\") "\\")
-             (("^cityhash/city.cc \\\\") "\\"))
+             (("^city.h \\\\") "\\")
+             (("^citycrc.h \\\\") "\\")
+             (("^libcityhash_a.*") "")
+             (("noinst_LIBRARIES = libcpu_sse2.a libcpu_ssse3.a \
+libcityhash.a")
+              "noinst_LIBRARIES = libcpu_sse2.a libcpu_ssse3.a")
+             (("__top_builddir__bin_vsearch_LDADD = libcpu_ssse3.a \
+libcpu_sse2.a libcityhash.a")
+              "__top_builddir__bin_vsearch_LDADD = libcpu_ssse3.a \
+libcpu_sse2.a -lcityhash"))
            (substitute* "src/vsearch.h"
-             (("^\\#include \"cityhash/city.h\"")
-              "#include <city.h>"))
-           (delete-file-recursively "src/cityhash")
+             (("^\\#include \"city.h\"") "#include <city.h>")
+             (("^\\#include \"citycrc.h\"") "#include <citycrc.h>"))
+           (delete-file "src/city.h")
+           (delete-file "src/citycrc.h")
+           (delete-file "src/city.cc")
            #t))))
     (build-system gnu-build-system)
     (arguments
