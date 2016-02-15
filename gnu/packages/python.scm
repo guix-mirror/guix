@@ -8349,3 +8349,37 @@ library.")
     (package (inherit responses)
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
                        ,@(package-native-inputs responses))))))
+
+(define-public python-pathlib
+  (package
+    (name "python-pathlib")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pathlib" version))
+              (sha256
+               (base32
+                "17zajiw4mjbkkv6ahp3xf025qglkj0805m9s41c45zryzj6p2h39"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (zero? (system* "python" "./test_pathlib.py")))))))
+    (home-page "https://pathlib.readthedocs.org/")
+    (synopsis "Object-oriented filesystem paths")
+    (description "Pathlib offers a set of classes to handle filesystem paths.
+It offers the following advantages over using string objects:
+
+@enumerate
+@item No more cumbersome use of os and os.path functions.  Everything can
+be done easily through operators, attribute accesses, and method calls.
+@item Embodies the semantics of different path types.  For example,
+comparing Windows paths ignores casing.
+@item Well-defined semantics, eliminating any inconsistencies or
+ambiguities (forward vs. backward slashes, etc.).
+@end enumerate\n")
+    (license license:expat)))
+
+(define-public python2-pathlib
+  (package-with-python2 python-pathlib))
