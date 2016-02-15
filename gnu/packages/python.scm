@@ -8411,3 +8411,30 @@ encoding algorithms to do fuzzy string matching.")
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
                        ("python2-unicodecsv" ,python2-unicodecsv)
                        ,@(package-native-inputs jellyfish))))))
+
+(define-public python2-unicodecsv
+  (package
+    (name "python2-unicodecsv")
+    (version "0.14.1")
+    (source (origin
+             (method url-fetch)
+             ;; The test suite is not included in the PyPi release.
+             ;; https://github.com/jdunck/python-unicodecsv/issues/19
+             (uri (string-append "https://github.com/jdunck/python-unicodecsv/"
+                                 "archive/" version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "087nqanfcyp6mlfbbr5lva5f3w6iz1bybls9xlrb8icmc474wh4w"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; It supports Python 3, but Python 3 can already do Unicode CSV.
+       #:python ,python-2))
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)
+       ("python2-unittest2" ,python2-unittest2)))
+    (home-page "https://github.com/jdunck/python-unicodecsv")
+    (synopsis "Unicode CSV module for Python 2")
+    (description "Unicodecsv is a drop-in replacement for Python 2.7's CSV
+module, adding support for Unicode strings.")
+    (license bsd-2)))
