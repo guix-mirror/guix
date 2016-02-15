@@ -2502,4 +2502,6 @@ and copy/paste text in the console and in xterm.")
     (description "Btrfs is a copy-on-write (CoW) filesystem for Linux aimed at
 implementing advanced features while focusing on fault tolerance, repair and
 easy administration.")
-    (license license:gpl2+)))
+    ;; GPL2+: crc32.c, radix-tree.c, raid6.c, rbtree.c.
+    ;; GPL2: Everything else.
+    (license (list license:gpl2 license:gpl2+))))
