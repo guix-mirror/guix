@@ -4474,17 +4474,14 @@ translate the complete SQLite API into Python.")
 (define-public python-lxml
   (package
     (name "python-lxml")
-    (version "3.4.2")
+    (version "3.5.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-              "https://pypi.python.org/packages/source/l/lxml/lxml-"
-              version
-              ".tar.gz"))
+        (uri (pypi-uri "lxml" version))
         (sha256
           (base32
-            "0pd23qz8vms1mgm41p96h4vac5y91igs4wr9640gnvxgk019kmf7"))))
+            "0y7m2s8ci6q642zl85y5axkj8z827l0vhjl532acb75hlkir77rl"))))
     (build-system python-build-system)
     (inputs
       `(("libxml2" ,libxml2)
