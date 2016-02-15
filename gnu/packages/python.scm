@@ -1311,15 +1311,14 @@ bug tracker.")
 (define-public python-enum34
   (package
     (name "python-enum34")
-    (version "1.0")
+    (version "1.1.0")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/e/"
-                          "enum34/enum34-" version ".tar.gz"))
+      (uri (pypi-uri "enum34" version))
       (sha256
        (base32
-        "0dg6mpg9n4g9diyrbnbb5vd9d1qw9f265zwhknqy0mxh0cvmjjrq"))))
+        "0yx1m4564wxgbm4glb3457hi16xihd9w63rv13y2przkdir9dfgp"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
