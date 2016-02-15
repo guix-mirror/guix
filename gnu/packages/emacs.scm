@@ -5,6 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1452,3 +1453,27 @@ supports editing Lisp source files, @{slime-mode} adds support for
 interacting with a running Common Lisp process for compilation,
 debugging, documentation lookup, and so on.")
     (license license:gpl2+)))
+
+(define-public emacs-popup
+  (package
+    (name "emacs-popup")
+    (version "0.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/auto-complete/popup-el/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1yrgfj8y69xmcb6kwgplhq68ndm9410qwh7sd2knnd1gchpphdc0"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("emacs" ,emacs-no-x)))
+    (home-page "https://github.com/auto-complete/popup-el")
+    (synopsis "Visual Popup User Interface for Emacs")
+    (description
+     "Popup.el is a visual popup user interface library for Emacs.
+This provides a basic API and common UI widgets such as popup tooltips
+and popup menus.")
+    (license license:gpl3+)))
