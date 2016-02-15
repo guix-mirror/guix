@@ -1320,8 +1320,6 @@ bug tracker.")
        (base32
         "0yx1m4564wxgbm4glb3457hi16xihd9w63rv13y2przkdir9dfgp"))))
     (build-system python-build-system)
-    (inputs
-     `(("python-setuptools" ,python-setuptools)))
     (arguments
      `(#:phases
        (alist-replace
