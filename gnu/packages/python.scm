@@ -8047,3 +8047,34 @@ synchronously (wait until ready).")
                        ("python2-unittest2" ,python2-unittest2)
                        ("python2-mock" ,python2-mock)
                        ,@(package-native-inputs celery))))))
+
+(define-public python-translitcodec
+  (package
+    (name "python-translitcodec")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "translitcodec" version))
+       (sha256
+        (base32
+         "10x6pvblkzky1zhjs8nmx64nb9jdzxad4bxhq4iwv0j4z2aqjnki"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))  ; no tests provided
+    (home-page
+     "https://github.com/claudep/translitcodec")
+    (synopsis
+     "Unicode to 8-bit charset transliteration codec")
+    (description
+     "This package contains codecs for transliterating ISO 10646 texts into
+best-effort representations using smaller coded character sets (ASCII,
+ISO 8859, etc.).")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-translitcodec))))))
+
+(define-public python2-translitcodec
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-translitcodec)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
