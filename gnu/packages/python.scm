@@ -8383,3 +8383,31 @@ ambiguities (forward vs. backward slashes, etc.).
 
 (define-public python2-pathlib
   (package-with-python2 python-pathlib))
+
+(define-public python-jellyfish
+  (package
+    (name "python-jellyfish")
+    (version "0.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "jellyfish" version))
+              (sha256
+               (base32
+                "12bxh8cy9xmvyrjz7aw159nd5pyvb645rkvw4r6bvm4xbvs8gd07"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/jamesturk/jellyfish")
+    (synopsis "Approximate and phonetic matching of strings")
+    (description "Jellyfish uses a variety of string comparison and phonetic
+encoding algorithms to do fuzzy string matching.")
+    (license bsd-2)
+    (properties `((python2-variant . ,(delay python2-jellyfish))))))
+
+(define-public python2-jellyfish
+  (let ((jellyfish (package-with-python2
+                     (strip-python2-variant python-jellyfish))))
+    (package (inherit jellyfish)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ("python2-unicodecsv" ,python2-unicodecsv)
+                       ,@(package-native-inputs jellyfish))))))
