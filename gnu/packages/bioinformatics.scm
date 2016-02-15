@@ -2358,7 +2358,7 @@ generated using the PacBio Iso-Seq protocol.")
 (define-public prodigal
   (package
     (name "prodigal")
-    (version "2.6.2")
+    (version "2.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2367,7 +2367,7 @@ generated using the PacBio Iso-Seq protocol.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0m8sb0fg6lmxrlpzna0am6svbnlmd3dckrhgzxxgb3gxr5fyj284"))))
+                "17srxkqd3jc77xk15pfbgg1a9xahqg7337w95mrsia7mpza4l2c9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no check target
