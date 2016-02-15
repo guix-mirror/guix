@@ -8078,3 +8078,31 @@ ISO 8859, etc.).")
     (inherit (package-with-python2
               (strip-python2-variant python-translitcodec)))
     (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+
+(define-public python-editor
+  (package
+  (name "python-editor")
+  (version "0.5")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (pypi-uri "python-editor" version))
+      (sha256
+        (base32
+          "1ypnpgvzpkbwsg4rdvy4sy51j28b5xq9v8pnkwxncn07vqz06p7n"))))
+  (build-system python-build-system)
+  (home-page
+    "https://github.com/fmoo/python-editor")
+  (synopsis
+    "Programmatically open an editor, capture the result")
+  (description
+    "python-editor is a library that provides the editor module for
+programmatically interfacing with your system's $EDITOR.")
+  (license asl2.0)
+  (properties `((python2-variant . ,(delay python2-editor))))))
+
+(define-public python2-editor
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-editor)))
+    (inputs `(("python2-setuptools" ,python2-setuptools)))))
