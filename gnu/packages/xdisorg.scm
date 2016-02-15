@@ -680,7 +680,7 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
 (define-public redshift
   (package
     (name "redshift")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
        (method url-fetch)
@@ -690,7 +690,7 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
                        "/redshift-" version ".tar.xz"))
        (sha256
         (base32
-         "19pfk9il5x2g2ivqix4a555psz8mj3m0cvjwnjpjvx0llh5fghjv"))))
+         "0ngkwj7rg8nfk806w0sg443w6wjr91xdc0zisqfm5h2i77wm1qqh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
