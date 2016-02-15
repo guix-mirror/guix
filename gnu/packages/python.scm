@@ -6780,13 +6780,13 @@ applications.")
 (define-public python-click-log
   (package
     (name "python-click-log")
-    (version "0.1.1")
+    (version "0.1.3")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "click-log" version))
              (sha256
               (base32
-               "1z3jdwjmwax159zrnyx830xa968rfqrpkm04ad5xqyh0269ydiqb"))))
+               "0kdd1vminxpcfczxl2kkf285n0dr1gxh2cdbx1p6vkj7b7bci3gx"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)))
