@@ -8314,3 +8314,38 @@ Python.")
     (package (inherit cookies)
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
                        ,@(package-native-inputs cookies))))))
+
+(define-public python-responses
+  (package
+    (name "python-responses")
+    (version "0.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "responses" version))
+              (sha256
+               (base32
+                "1spcfxixyk9k7pk82jm6zqkwk031s95lh8q0mz7539jrb7269bcc"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Test suite is not distributed:
+       ;; https://github.com/getsentry/responses/issues/38
+       #:tests? #f))
+    (native-inputs
+     `(("python-cookies" ,python-cookies)
+       ("python-mock" ,python-mock)))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/getsentry/responses")
+    (synopsis "Utility for mocking out the `requests` Python library")
+    (description "A utility library for mocking out the `requests` Python
+library.")
+    (license asl2.0)
+    (properties `((python2-variant . ,(delay python2-responses))))))
+
+(define-public python2-responses
+  (let ((responses (package-with-python2
+                    (strip-python2-variant python-responses))))
+    (package (inherit responses)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs responses))))))
