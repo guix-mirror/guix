@@ -74,14 +74,14 @@ command-line arguments, multiple languages, and so on.")
 (define-public grep
   (package
    (name "grep")
-   (version "2.22")
+   (version "2.23")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/grep/grep-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1srn321x7whlhs5ks36zlcrrmj4iahll8fxwsh1vbz3v04px54fa"))
+              "1kvflnraswy6mz3dbxs9m4aqgqf9603z63l2140ph5yfw674gz2l"))
             (patches
              (list (search-patch "grep-timing-sensitive-test.patch")))))
    (build-system gnu-build-system)
