@@ -4683,6 +4683,34 @@ is complete it provides a graphical representation of each selected folder.")
     (home-page "https://wiki.gnome.org/Apps/Baobab")
     (license license:gpl2+)))
 
+(define-public gnome-backgrounds
+  (package
+    (name "gnome-backgrounds")
+    (version "3.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1fd7y8dh3iy88ayb8irgsihvssli6bzjzb5a6vfhi8qjbw70ymma"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (home-page "https://git.gnome.org/browse/gnome-backgrounds")
+    (synopsis "Background images for the GNOME desktop")
+    (description
+     "GNOME backgrounds package contains a collection of graphics files which
+can be used as backgrounds in the GNOME Desktop environment.  Additionally,
+the package creates the proper framework and directory structure so that you
+can add your own files to the collection.")
+    (license (list license:gpl2+
+                   license:cc-by2.0
+                   license:cc-by-sa2.0
+                   license:cc-by-sa3.0))))
+
 (define-public gnome
   (package
     (name "gnome")
