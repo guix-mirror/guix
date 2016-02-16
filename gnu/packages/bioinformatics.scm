@@ -4283,6 +4283,32 @@ genomic intervals.  In addition, it can use BAM or BigWig files as input.")
 annotations for the human genome.")
     (license license:artistic2.0)))
 
+(define-public r-org-ce-eg-db
+  (package
+    (name "r-org-ce-eg-db")
+    (version "3.2.3")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "org.Ce.eg.db_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1d0lx00ybq34yqs6mziaa0lrh77xm0ggsmi76g6k95f77gi7m1sw"))))
+    (properties
+     `((upstream-name . "org.Ce.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "http://www.bioconductor.org/packages/org.Ce.eg.db/")
+    (synopsis "Genome wide annotation for Worm")
+    (description
+     "This package provides mappings from Entrez gene identifiers to various
+annotations for the genome of the model worm Caenorhabditis elegans.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
