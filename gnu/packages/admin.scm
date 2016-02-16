@@ -1430,7 +1430,7 @@ frequently used directories by typing only a small pattern.")
 for CPU usage.  It listens to network traffic on a named interface and
 displays a table of current bandwidth usage by pairs of hosts.")
     (home-page "http://www.ex-parrot.com/~pdw/iftop/")
-    (license license:gpl3)))
+    (license license:gpl2+)))
 
 (define-public munge
   (package
