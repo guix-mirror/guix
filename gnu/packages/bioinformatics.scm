@@ -4309,6 +4309,32 @@ annotations for the human genome.")
 annotations for the genome of the model worm Caenorhabditis elegans.")
     (license license:artistic2.0)))
 
+(define-public r-org-dm-eg-db
+  (package
+    (name "r-org-dm-eg-db")
+    (version "3.2.3")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "org.Dm.eg.db_" version ".tar.gz"))
+              (sha256
+               (base32
+                "0mib46c7nr00l7mh290n383za9hyl91a1dc6jhjbk884jmxaxyz6"))))
+    (properties
+     `((upstream-name . "org.Dm.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "http://www.bioconductor.org/packages/org.Dm.eg.db/")
+    (synopsis "Genome wide annotation for Fly")
+    (description
+     "This package provides mappings from Entrez gene identifiers to various
+annotations for the genome of the model fruit fly Drosophila melanogaster.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
