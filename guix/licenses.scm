@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
+;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +34,7 @@
             non-copyleft
             bsd-style                             ;deprecated!
             cc0
-            cc-by-sa4.0 cc-by-sa3.0 cc-by3.0
+            cc-by2.0 cc-by3.0 cc-by-sa2.0 cc-by-sa3.0 cc-by-sa4.0
             cddl1.0
             cecill-c
             artistic2.0 clarified-artistic
@@ -155,10 +156,20 @@ at URI, which may be a file:// URI pointing the package's tree."
            "http://creativecommons.org/licenses/by-sa/3.0/"
            "Creative Commons Attribution-ShareAlike 3.0 Unported"))
 
+(define cc-by-sa2.0
+  (license "CC-BY-SA 2.0"
+           "http://creativecommons.org/licenses/by-sa/2.0/"
+           "Creative Commons Attribution-ShareAlike 2.0 Generic"))
+
 (define cc-by3.0
   (license "CC-BY 3.0"
            "http://creativecommons.org/licenses/by/3.0/"
            "Creative Commons Attribution 3.0 Unported"))
+
+(define cc-by2.0
+  (license "CC-BY 2.0"
+           "http://creativecommons.org/licenses/by/2.0/"
+           "Creative Commons Attribution 2.0 Generic"))
 
 (define cddl1.0
   (license "CDDL 1.0"
