@@ -321,13 +321,13 @@ security, and applying best practice development processes.")
 (define-public python-acme
   (package
     (name "python-acme")
-    (version "0.3.0")
+    (version "0.4.0")
     (source (origin
       (method url-fetch)
       (uri (pypi-uri "acme" version))
       (sha256
         (base32
-         "1x6fd3cw9pq45k71rgmxi91hmdmnbf1xxvlfwv31fmzs5255dlbw"))))
+         "173j2zkslh43fzf3wkl1jdzfjry361m0mhlc3jpwp7hk7lrclzjg"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -366,13 +366,13 @@ security, and applying best practice development processes.")
 (define-public letsencrypt
   (package
     (name "letsencrypt")
-    (version "0.3.0")
+    (version "0.4.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "letsencrypt" version))
               (sha256
                (base32
-                "0jg9ymdh1mgzx4gs16lsidffswn9pib94n7jahm941bgfdl8kd8h"))))
+                "1wwq8yvfdybf4d0gv4yfddkrg865s7rhng5xg563kks4wza1a2wp"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
