@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,9 +34,10 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base) ;libbdf
-  #:use-module (gnu packages boost)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages code)
   #:use-module (gnu packages check)
@@ -148,64 +150,32 @@ many input formats and provides a customisable Vi-style user interface.")
 (define-public hydrogen
   (package
     (name "hydrogen")
-    (version "0.9.5.1")
+    (version "0.9.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://sourceforge/hydrogen/Hydrogen/"
-                    (version-prefix version 3) "%20Sources/"
-                    "hydrogen-" version ".tar.gz"))
+                    "https://github.com/hydrogen-music/hydrogen/archive/"
+                    version ".tar.gz"))
               (sha256
                (base32
-                "1fvyp6gfzcqcc90dmaqbm11p272zczz5pfz1z4lj33nfr7z0bqgb"))))
-    (build-system gnu-build-system)
+                "0vxnaqfmcv7hhk0cj67imdcqngspnck7f0wfmvhfgfqa7x1xznll"))))
+    (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ;no "check" target
-       #:phases
-       ;; TODO: Add scons-build-system and use it here.
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'scons-propagate-environment
-                    (lambda _
-                      ;; By design, SCons does not, by default, propagate
-                      ;; environment variables to subprocesses.  See:
-                      ;; <http://comments.gmane.org/gmane.linux.distributions.nixos/4969>
-                      ;; Here, we modify the Sconstruct file to arrange for
-                      ;; environment variables to be propagated.
-                      (substitute* "Sconstruct"
-                        (("^env = Environment\\(")
-                         "env = Environment(ENV=os.environ, "))))
-         (replace 'build
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (let ((out (assoc-ref outputs "out")))
-                      (zero? (system* "scons"
-                                      (string-append "prefix=" out)
-                                      "lrdf=0" ; cannot be found
-                                      "lash=1")))))
-         (add-before
-          'install
-          'fix-img-install
-          (lambda _
-            ;; The whole ./data/img directory is copied to the target first.
-            ;; Scons complains about existing files when we try to install all
-            ;; images a second time.
-            (substitute* "Sconstruct"
-              (("os.path.walk\\(\"./data/img/\",install_images,env\\)") ""))
-            #t))
-         (replace 'install (lambda _ (zero? (system* "scons" "install")))))))
+    `(#:test-target "tests"))
     (native-inputs
-     `(("scons" ,scons)
-       ("python" ,python-2)
+     `(("cppunit" ,cppunit)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("zlib" ,zlib)
-       ("libtar" ,libtar)
-       ("alsa-lib" ,alsa-lib)
+     `(("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
+       ;; ("ladspa" ,ladspa) ; cannot find during configure
        ("lash" ,lash)
-       ;;("lrdf" ,lrdf) ;FIXME: cannot be found by scons
+       ("libarchive" ,libarchive)
+       ("libsndfile" ,libsndfile)
+       ("libtar" ,libtar)
+       ("lrdf" ,lrdf)
        ("qt" ,qt-4)
-       ("libsndfile" ,libsndfile)))
+       ("zlib" ,zlib)))
     (home-page "http://www.hydrogen-music.org")
     (synopsis "Drum machine")
     (description
