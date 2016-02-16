@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,16 +56,16 @@
 (define-public librecad
   (package
     (name "librecad")
-    (version "2.0.6-rc")
+    (version "2.0.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/LibreCAD/LibreCAD/archive/"
                     version ".tar.gz"))
-              (file-name (string-append name "-" version))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1n1mh8asj6yrl5hi438dvizmrbqk1kni5xkizhi3pdmkg7z3hksm"))))
+                "0xyn4ps9ia94h0vg53rsww8xfd1bgp4200phl8ihyhv7w5v4d8d0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -95,7 +96,7 @@
      `(("boost" ,boost)
        ("muparser" ,muparser)
        ("freetype" ,freetype)
-       ("qt" ,qt-4)))
+       ("qt" ,qt)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("which" ,which)))
