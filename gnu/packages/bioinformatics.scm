@@ -4335,6 +4335,32 @@ annotations for the genome of the model worm Caenorhabditis elegans.")
 annotations for the genome of the model fruit fly Drosophila melanogaster.")
     (license license:artistic2.0)))
 
+(define-public r-org-mm-eg-db
+  (package
+    (name "r-org-mm-eg-db")
+    (version "3.2.3")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "org.Mm.eg.db_" version ".tar.gz"))
+              (sha256
+               (base32
+                "0wh1pm3npdg7070875kfgiid3bqkz3q7rq6snhk6bxfvph00298y"))))
+    (properties
+     `((upstream-name . "org.Mm.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "http://www.bioconductor.org/packages/org.Mm.eg.db/")
+    (synopsis "Genome wide annotation for Mouse")
+    (description
+     "This package provides mappings from Entrez gene identifiers to various
+annotations for the genome of the model mouse Mus musculus.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
