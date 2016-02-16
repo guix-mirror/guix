@@ -121,6 +121,14 @@ may be either a libc package or #f.)"
                                "--disable-libquadmath"
                                "--disable-decimal-float" ;would need libc
                                "--disable-libcilkrts"
+
+                               ;; When target is any OS other than 'none' these
+                               ;; libraries will fail if there is no libc
+                               ;; present. See
+                               ;; <https://lists.gnu.org/archive/html/guix-devel/2016-02/msg01311.html>
+                               "--disable-libitm"
+                               "--disable-libvtv"
+                               "--disable-libsanitizer"
                                )))
 
                  ,(if libc
