@@ -1916,4 +1916,4 @@ are only two levels to play with, but they are very addictive.")
 Catan.  It can be played on a local network, on the internet, and with AI
 players.")
     (home-page "http://pio.sourceforge.net/")
-    (license license:gpl3+)))
+    (license license:gpl2+)))
