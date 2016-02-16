@@ -49,12 +49,12 @@
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-zlib=system")
-       #:phases (alist-cons-before
-                 'configure 'pre-configure
-                 (lambda _
-                   (chdir "gpsbabel"))
-                 ;; TODO: "make doc" requires Docbook & co.
-                 %standard-phases)
+       #:phases
+       (modify-phases %standard-phases
+        (add-before 'configure 'pre-configure
+                    (lambda _
+                      (chdir "gpsbabel"))))
+                    ;; TODO: "make doc" requires Docbook & co.
 
        ;; On i686, 'raymarine.test' fails because of a rounding error:
        ;; <http://hydra.gnu.org/build/133040>.  As a workaround, disable tests
