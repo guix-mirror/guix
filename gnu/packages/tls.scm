@@ -340,11 +340,25 @@ security, and applying best practice development processes.")
                (display "\n[easy_install]\nzip_ok = 0\n"
                         port)
                (close-port port)
-               #t))))))
-    ;; TODO: Add optional inputs for testing and building documentation.
+               #t)))
+         (add-after 'install 'docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man/man1"))
+                    (info (string-append out "/info")))
+               (and (zero? (system* "make" "-C" "docs" "man" "info"))
+                    (install-file "docs/_build/texinfo/acme-python.info" info)
+                    (install-file "docs/_build/man/acme-python.1" man)
+                    #t)))))))
+    ;; TODO: Add optional inputs for testing.
     (native-inputs
      `(("python-mock" ,python-mock)
-       ("python-setuptools" ,python-setuptools)))
+       ;; For documentation
+       ("python-sphinx" ,python-sphinx)
+       ("python-sphinxcontrib-programoutput" ,python-sphinxcontrib-programoutput)
+       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)
+       ("python-setuptools" ,python-setuptools)
+       ("texinfo" ,texinfo)))
     (propagated-inputs
      `(("python-ndg-httpsclient" ,python-ndg-httpsclient)
        ("python-werkzeug" ,python-werkzeug)
