@@ -2032,4 +2032,5 @@ utility.  File formats are abstracted from its core, so it can process any file
 that contains WAVE data, compressed or not---provided there exists a format
 module to handle that particular file type.")
     (home-page "http://etree.org/shnutils/shntool/")
-    (license license:gpl3+)))
+    ;; 'install-sh' bears the x11 license
+    (license (list license:gpl2+ license:x11))))
