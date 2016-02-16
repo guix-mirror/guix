@@ -7257,9 +7257,9 @@ authenticated session objects providing things like keep-alive.")
 3.2.3 for use with older versions of Python and PyPy.")
     (license license:expat)))
 
-(define-public python-futures
+(define-public python2-futures
   (package
-    (name "python-futures")
+    (name "python2-futures")
     (version "3.0.3")
     (source
       (origin
@@ -7269,8 +7269,9 @@ authenticated session objects providing things like keep-alive.")
          (base32
           "1vcb34dqhzkhbq1957vdjszhhm5y3j9ba88dgwhqx2zynhmk9qig"))))
     (build-system python-build-system)
+    (arguments `(#:python ,python-2))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
+     `(("python2-setuptools" ,python2-setuptools)))
     (home-page "https://github.com/agronholm/pythonfutures")
     (synopsis
      "Backport of the concurrent.futures package from Python 3.2")
@@ -7279,9 +7280,6 @@ authenticated session objects providing things like keep-alive.")
 asynchronously executing callables.  This package backports the
 concurrent.futures package from Python 3.2")
     (license bsd-3)))
-
-(define-public python2-futures
-  (package-with-python2 python-futures))
 
 (define-public python-urllib3
   (package
