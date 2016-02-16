@@ -69,29 +69,25 @@
     (build-system gnu-build-system)
     (arguments
      '(#:phases
-       (alist-cons-after
-        'unpack
-        'patch-paths
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-            (substitute* "librecad/src/lib/engine/rs_system.cpp"
-              (("/usr/share") (string-append out "/share")))))
-        (alist-replace
-         'configure
+       (modify-phases %standard-phases
+        (add-after 'unpack 'patch-paths
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((out (assoc-ref outputs "out")))
+             (substitute* "librecad/src/lib/engine/rs_system.cpp"
+               (("/usr/share") (string-append out "/share"))))))
+        (replace 'configure
          (lambda* (#:key inputs #:allow-other-keys)
            (system* "qmake" (string-append "BOOST_DIR="
-                                           (assoc-ref inputs "boost"))))
-         (alist-replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (mkdir-p (string-append out "/bin"))
-              (mkdir-p (string-append out "/share/librecad"))
-              (copy-file "unix/librecad"
-                         (string-append out "/bin/librecad"))
-              (copy-recursively "unix/resources"
-                                (string-append out "/share/librecad"))))
-          %standard-phases)))))
+                                           (assoc-ref inputs "boost")))))
+        (replace 'install
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((out (assoc-ref outputs "out")))
+             (mkdir-p (string-append out "/bin"))
+             (mkdir-p (string-append out "/share/librecad"))
+             (copy-file "unix/librecad"
+                        (string-append out "/bin/librecad"))
+             (copy-recursively "unix/resources"
+                               (string-append out "/share/librecad"))))))))
     (inputs
      `(("boost" ,boost)
        ("muparser" ,muparser)
