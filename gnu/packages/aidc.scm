@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darringon <jmd@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,14 +50,15 @@ formats.")
 (define-public qrencode
   (package
     (name "qrencode")
-    (version "3.4.3")
+    (version "3.4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://fukuchi.org/works/qrencode/qrencode-" version
-                    ".tar.bz2"))
-              (sha256 (base32
-                       "163sb580p570p27imc6jhkfdw15kzp8vy1jq92nip1rwa63i9myz"))))
+                    "https://fukuchi.org/works/qrencode/qrencode-" version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "0wiagx7i8p9zal53smf5abrnh9lr31mv0p36wg017401jrmf5577"))))
     (build-system gnu-build-system)
     (inputs `(("libpng" ,libpng)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -66,4 +68,4 @@ symbol, a kind of 2D symbology that can be scanned by handy terminals such as
 a mobile phone with CCD.  The capacity of QR Code is up to 7000 digits or 4000
 characters, and is highly robust.")
     (license license:lgpl2.1+)
-    (home-page "http://fukuchi.org/works/qrencode")))
+    (home-page "https://fukuchi.org/works/qrencode")))
