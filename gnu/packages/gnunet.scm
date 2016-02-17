@@ -231,7 +231,9 @@ supports HTTPS, HTTPS and GnuTLS.")
     `(("pkg-config" ,pkg-config)
       ("python" ,python-2)))
    (arguments
-    '(#:parallel-tests? #f
+    '(#:configure-flags
+      (list (string-append "--with-nssdir=" %output "/lib"))
+      #:parallel-tests? #f
       ;; test_gnunet_service_arm fails; reported upstream
       #:tests? #f
       #:phases
