@@ -97,7 +97,7 @@
          version "-gnu.tar.xz")))
 
 (define-public linux-libre-headers
-  (let* ((version "3.14.37")
+  (let* ((version "4.1.18")
          (build-phase
           (lambda (arch)
             `(lambda _
@@ -135,7 +135,7 @@
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "1blxr2bsvfqi9khj4cpspv434bmx252zak2wsbi2mgl60zh77gza"))))
+               "1bddh2rg645lavhjkk9z75vflba5y0g73z2fjwgbfrj5jb44x9i7"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (arguments
