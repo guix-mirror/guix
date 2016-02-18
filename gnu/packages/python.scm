@@ -1354,8 +1354,7 @@ backported for previous versions of Python from 2.4 to 3.3.")
     (inputs
      `(("python-setuptools" ,python-setuptools)
        ("python-six" ,python-six)
-       ("python-parse" ,python-parse)
-       ("python-enum34" ,python-enum34))) ;required for python<3.4
+       ("python-parse" ,python-parse)))
     (arguments '(#:tests? #f))            ;TODO: tests require pytest
     (home-page "https://github.com/jenisys/parse_type")
     (synopsis "Extended parse module")
@@ -2005,7 +2004,6 @@ backported from Python 2.7 for Python 2.4+.")
     (inputs
      `(("python-setuptools" ,python-setuptools)
        ("python-six" ,python-six)
-       ("python-enum43" ,python-enum34)
        ("python-parse" ,python-parse)
        ("python-parse-type" ,python-parse-type)))
     (arguments `(#:tests? #f))          ;TODO: tests require nose>=1.3 and
@@ -5792,7 +5790,6 @@ responses, rather than doing any computation.")
      `(("python-cffi" ,python-cffi)
        ("python-six" ,python-six)
        ("python-pyasn1" ,python-pyasn1)
-       ("python-enum34" ,python-enum34)
        ("python-idna" ,python-idna)
        ("python-iso8601" ,python-iso8601)))
     (native-inputs
@@ -5823,6 +5820,7 @@ message digests and key derivation functions.")
        `(("python2-ipaddress" ,python2-ipaddress)
          ("python2-backport-ssl-match-hostname"
           ,python2-backport-ssl-match-hostname)
+         ("python2-enum34" ,python2-enum34)
          ,@(package-propagated-inputs crypto))))))
 
 (define-public python-pyopenssl
