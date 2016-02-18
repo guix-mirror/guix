@@ -847,7 +847,7 @@ either by Infocom or created using the Inform compiler.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.2.2")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
@@ -855,7 +855,7 @@ either by Infocom or created using the Inform compiler.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1bxr8yhk3ad4df544qljsfjfhxa8zy1grq7rn1s02yfvdmgzf4qi"))))
+        (base32 "1wydzvligyby05x8c4lpg6xcnw9qkmvkskyhzc28xq10vm3q57fv"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
