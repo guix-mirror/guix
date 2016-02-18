@@ -1074,7 +1074,7 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libfontenc
   (package
     (name "libfontenc")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
@@ -1084,7 +1084,7 @@ synchronization between the X server and direct-rendering clients.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0qign0ivqk166l9yfd51gw9lbhgs718bcrmvc40yicjr6gnyz959"))))
+            "08gxmrhgw97mv0pvkfmd46zzxrn6zdw4g27073zl55gwwqq8jn3h"))))
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)
