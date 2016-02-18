@@ -3341,7 +3341,7 @@ X server.")
 (define-public xf86-video-vmware
   (package
     (name "xf86-video-vmware")
-    (version "13.0.2")
+    (version "13.1.0")
     (source
       (origin
         (method url-fetch)
@@ -3351,8 +3351,7 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-           "0m1wfsv34s4pyr5ry87yyjb2p6vmy6vyypdz5jx0sqnkx8n3vfn8"))
-        (patches (list (search-patch "xf86-video-vmware-glibc-2.20.patch")))))
+           "1k50whwnkzxam2ihc1sw456dx0pvr76naycm4qhyjxqv9d72879w"))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
