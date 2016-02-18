@@ -4169,7 +4169,7 @@ libICE, the X font server, and related components.")
 (define-public xvinfo
   (package
     (name "xvinfo")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
@@ -4179,7 +4179,7 @@ libICE, the X font server, and related components.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1qsh7fszi727l3vwlaf9pb7bpikdv15smrx5qhlgg3kqzl7xklzf"))))
+            "1sz5wqhxd1fqsfi1w5advdlwzkizf2fgl12hdpk66f7mv9l8pflz"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxext" ,libxext)
