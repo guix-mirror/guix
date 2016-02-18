@@ -4739,7 +4739,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxrandr
   (package
     (name "libxrandr")
-    (version "1.4.2")
+    (version "1.5.0")
     (source
       (origin
         (method url-fetch)
@@ -4749,7 +4749,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1b95p3l84ppv6j7dbbmg0zrz6k8xdwvnag1l6ajm3gk9qwdb79ya"))))
+            "0n6ycs1arf4wb1cal9il6v7vbxbf21qhs9sbfl8xndgwnxclk1kg"))))
     (build-system gnu-build-system)
     (propagated-inputs
       ;; In accordance with xrandr.pc.
