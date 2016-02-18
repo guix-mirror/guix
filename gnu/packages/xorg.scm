@@ -3132,7 +3132,7 @@ This driver is intended for ATI Rage 128 based cards.")
 (define-public xf86-video-siliconmotion
   (package
     (name "xf86-video-siliconmotion")
-    (version "1.7.7")
+    (version "1.7.8")
     (source
       (origin
         (method url-fetch)
@@ -3142,10 +3142,7 @@ This driver is intended for ATI Rage 128 based cards.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1an321kqvsxq0z35acwl99lc8hpdkayw0q180744ypcl8ffvbf47"))
-        (patches
-         (list
-          (search-patch "xf86-video-siliconmotion-remove-mibstore.patch")))))
+           "1sqv0y31mi4zmh9yaxqpzg7p8y2z01j6qys433hb8n4yznllkm79"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
