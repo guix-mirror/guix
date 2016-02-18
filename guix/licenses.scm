@@ -60,6 +60,7 @@
             openldap2.8 openssl
             psfl public-domain
             qpl
+            repoze
             ruby
             sgifreeb2.0
             silofl1.1
@@ -379,6 +380,12 @@ at URI, which may be a file:// URI pointing the package's tree."
   (license "QPL"
            "http://directory.fsf.org/wiki/License:QPLv1.0"
            "http://www.gnu.org/licenses/license-list.html#QPL"))
+
+(define repoze
+  (license "Repoze"
+           "http://repoze.org/LICENSE.txt"
+           "A BSD-like license with a clause requiring all changes to be
+           attributed by author and date."))
 
 (define ruby
   (license "Ruby License"
