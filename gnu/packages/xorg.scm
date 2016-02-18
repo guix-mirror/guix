@@ -2505,7 +2505,7 @@ as USB mice.")
 (define-public xf86-input-synaptics
   (package
     (name "xf86-input-synaptics")
-    (version "1.8.1")
+    (version "1.8.3")
     (source
       (origin
         (method url-fetch)
@@ -2515,7 +2515,7 @@ as USB mice.")
                ".tar.bz2"))
         (sha256
           (base32
-            "16phzd7yhl4wns957c35qz2nahmjvnlx05jf975s524qkvrdlkyp"))))
+            "009zx199pilcvlaqm6fx4mg94q81d6vvl5rznmw3frzkfh6117yk"))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxi" ,libxi)
