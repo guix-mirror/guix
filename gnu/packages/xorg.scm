@@ -1757,7 +1757,7 @@ features and to query screensaver info on specific windows.")
 (define-public sessreg
   (package
     (name "sessreg")
-    (version "1.0.8")
+    (version "1.1.0")
     (source
       (origin
         (method url-fetch)
@@ -1767,7 +1767,7 @@ features and to query screensaver info on specific windows.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1hy4wvgawajf4qw2k51fkcjzxw0drx60ydzpmqhj7k1g4z3cqahf"))))
+            "0z013rskwmdadd8cdlxvh4asmgim61qijyzfbqmr1q1mg1jpf4am"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)))
