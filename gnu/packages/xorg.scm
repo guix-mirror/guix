@@ -2112,7 +2112,7 @@ to query the server for available resource IDs.")
 (define-public xcmsdb
   (package
     (name "xcmsdb")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
@@ -2122,7 +2122,7 @@ to query the server for available resource IDs.")
                ".tar.bz2"))
         (sha256
           (base32
-            "03ms731l3kvaldq7ycbd30j6134b61i3gbll4b2gl022wyzbjq74"))))
+            "1ik7gzlp2igz183x70883000ygp99r20x3aah6xhaslbpdhm6n75"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)))
