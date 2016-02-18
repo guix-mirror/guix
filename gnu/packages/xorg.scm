@@ -4799,7 +4799,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxxf86vm
   (package
     (name "libxxf86vm")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
@@ -4809,7 +4809,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1f1pxj018nk7ybxv58jmn5y8gm2288p4q3l2dng9n1p25v1qcpns"))))
+            "0mydhlyn72i7brjwypsqrpkls3nm6vxw0li8b2nw0caz7kwjgvmg"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxext" ,libxext)
