@@ -1820,7 +1820,7 @@ listed on the command line.")
 (define-public smproxy
   (package
     (name "smproxy")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
@@ -1830,7 +1830,7 @@ listed on the command line.")
                ".tar.bz2"))
         (sha256
           (base32
-            "02fn5wa1gs2jap6sr9j9yk6zsvz82j8l61pf74iyqwa99q4wnb67"))))
+            "0rkjyzmsdqmlrkx8gy2j4q6iksk58hcc92xzdprkf8kml9ar3wbc"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxt" ,libxt)
