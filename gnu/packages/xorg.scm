@@ -1272,7 +1272,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
 (define-public libxdmcp
   (package
     (name "libxdmcp")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
       (origin
         (method url-fetch)
@@ -1282,7 +1282,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
                ".tar.bz2"))
         (sha256
           (base32
-            "13highx4xpgkiwykpcl7z2laslrjc4pzi4h617ny9p7r6116vkls"))))
+            "1qp4yhxbfnpj34swa0fj635kkihdkwaiw7kf55cg5zqqg630kzl1"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)))
