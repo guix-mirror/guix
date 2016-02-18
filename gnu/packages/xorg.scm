@@ -3500,7 +3500,7 @@ configuring modelines and gamma.")
 (define-public xgamma
   (package
     (name "xgamma")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
@@ -3510,7 +3510,7 @@ configuring modelines and gamma.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0463sawps86jnxn121ramsz4sicy3az5wa5wsq4rqm8dm3za48p3"))))
+            "1lr2nb1fhg5fk2fchqxdxyl739602ggwhmgl2wiv5c8qbidw7w8f"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxxf86vm" ,libxxf86vm)
