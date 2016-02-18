@@ -2941,7 +2941,7 @@ kernel mode setting (KMS).")
 (define-public xf86-video-neomagic
   (package
     (name "xf86-video-neomagic")
-    (version "1.2.8")
+    (version "1.2.9")
     (source
       (origin
         (method url-fetch)
@@ -2951,7 +2951,7 @@ kernel mode setting (KMS).")
                ".tar.bz2"))
         (sha256
           (base32
-            "0x48sxs1p3kmwk3pq1j7vl93y59gdmgkq1x5xbnh0yal0angdash"))))
+            "1whb2kgyqaxdjim27ya404acz50izgmafwnb6y9m89q5n6b97y3j"))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
