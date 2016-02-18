@@ -626,19 +626,21 @@ Escape key when Left Control is pressed and released on its own.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)
+     `(("gtk+" ,gtk+)
        ("libgudev" ,libgudev)
        ("eudev" ,eudev)
        ("libxml2" ,libxml2)))
+    (propagated-inputs
+     ;; libwacom includes header files that include GLib, and libinput uses
+     ;; those header files.
+     `(("glib" ,glib)))
     (home-page "http://linuxwacom.sourceforge.net/")
     (synopsis "Helper library for Wacom tablet settings")
     (description
-     "Libwacom is a library to help implement Wacom tablet settings.  It
-is intended to be used by client-programs that need model identification.  It
-is already being used by the gnome-settings-daemon and the GNOME 3.4 Control
-Center Wacom tablet applet.  In the future, the xf86-input-wacom driver may
-use it as well.")
+     "Libwacom is a library to help implement Wacom tablet settings.  It is
+intended to be used by client-programs that need model identification.  It is
+already being used by the gnome-settings-daemon and the GNOME Control Center
+Wacom tablet applet.")
     (license license:x11)))
 
 (define-public xf86-input-wacom
