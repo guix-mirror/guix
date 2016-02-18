@@ -3079,7 +3079,7 @@ UniChrome Pro and Chrome9 integrated graphics processors.")
 (define-public xf86-video-r128
   (package
     (name "xf86-video-r128")
-    (version "6.9.2")
+    (version "6.10.1")
     (source
       (origin
         (method url-fetch)
@@ -3089,8 +3089,7 @@ UniChrome Pro and Chrome9 integrated graphics processors.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1q3fsc603k2yinphx5rrcl5356qkpywwz8axlw277l2231gjjbcb"))
-        (patches (list (search-patch "xf86-video-r128-glibc-2.20.patch")))))
+           "1sp4glyyj23rs77vgffmn0mar5h504a86701nzvi56qwhd4yzgsy"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)

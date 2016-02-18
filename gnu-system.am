@@ -773,7 +773,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/xf86-video-mach64-glibc-2.20.patch	\
   gnu/packages/patches/xf86-video-nv-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-openchrome-glibc-2.20.patch	\
-  gnu/packages/patches/xf86-video-r128-glibc-2.20.patch		\
   gnu/packages/patches/xf86-video-siliconmotion-remove-mibstore.patch \
   gnu/packages/patches/xf86-video-sis-fix-exa-crash.patch	\
   gnu/packages/patches/xf86-video-sis-update-api.patch		\
