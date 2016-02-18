@@ -817,7 +817,7 @@ For example: '6x10', '9x15bold', etc.")
 (define-public font-util
   (package
     (name "font-util")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
       (origin
         (method url-fetch)
@@ -827,7 +827,7 @@ For example: '6x10', '9x15bold', etc.")
                ".tar.bz2"))
         (sha256
           (base32
-            "15cijajwhjzpy3ydc817zz8x5z4gbkyv3fps687jbq544mbfbafz"))))
+            "08drjb6cf84pf5ysghjpb4i7xkd2p86k3wl2a0jxs1jif6qbszma"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
