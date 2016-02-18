@@ -3587,7 +3587,7 @@ alternative implementations like XRandR or TwinView.")
 (define-public xinput
   (package
     (name "xinput")
-    (version "1.6.1")
+    (version "1.6.2")
     (source
       (origin
         (method url-fetch)
@@ -3597,7 +3597,7 @@ alternative implementations like XRandR or TwinView.")
                ".tar.bz2"))
         (sha256
           (base32
-            "07w7zlpdhpwzzshg8q0y152cy3wl2fj7x1897glnp2la487jsqxp"))))
+            "1i75mviz9dyqyf7qigzmxq8vn31i86aybm662fzjz5c086dx551n"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
