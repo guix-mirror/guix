@@ -2541,7 +2541,7 @@ as USB mice.")
 (define-public xf86-input-void
   (package
     (name "xf86-input-void")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
       (origin
         (method url-fetch)
@@ -2551,7 +2551,7 @@ as USB mice.")
                ".tar.bz2"))
         (sha256
           (base32
-            "01bmk324fq48wydvy1qrnxbw6qz0fjd0i80g0n4cqr1c4mjmif9a"))))
+            "171k8b8s42s3w73l7ln9jqwk88w4l7r1km2blx1vy898c854yvpr"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
