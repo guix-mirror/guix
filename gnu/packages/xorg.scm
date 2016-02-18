@@ -992,7 +992,7 @@ devices management such as graphic tablets.")
 (define-public kbproto
   (package
     (name "kbproto")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
       (origin
         (method url-fetch)
@@ -1002,7 +1002,7 @@ devices management such as graphic tablets.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0yal11hhpiisy3w8wmacsdzzzcnc3xwnswxz8k7zri40xc5aqz03"))))
+            "0mxqj1pzhjpz9495vrjnpi10kv2n1s4vs7di0sh3yvipfq5j30pq"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
