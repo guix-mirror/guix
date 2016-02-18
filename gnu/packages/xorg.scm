@@ -2699,7 +2699,7 @@ framebuffer device.")
 (define-public xf86-video-geode
   (package
     (name "xf86-video-geode")
-    (version "2.11.16")
+    (version "2.11.18")
     (source
       (origin
         (method url-fetch)
@@ -2709,7 +2709,7 @@ framebuffer device.")
                ".tar.bz2"))
         (sha256
           (base32
-           "19y13xl7yfrgyis92rmxi0ld95ajgr5il0n9j1dridwzw9aizz1q"))
+           "1s59kdj573v38sb14xfhp1l926aypbhy11vaz36y72x6calfkv6n"))
         (patches (list (search-patch "xf86-video-geode-glibc-2.20.patch")))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
