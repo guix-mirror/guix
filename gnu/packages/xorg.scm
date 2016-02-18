@@ -1636,7 +1636,7 @@ network-transparent printing system.")
 (define-public randrproto
   (package
     (name "randrproto")
-    (version "1.4.0")
+    (version "1.5.0")
     (source
       (origin
         (method url-fetch)
@@ -1646,7 +1646,7 @@ network-transparent printing system.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1kq9h93qdnniiivry8jmhlgwn9fbx9xp5r9cmzfihlx5cs62xi45"))))
+            "0s4496z61y5q45q20gldwpf788b9nsa8hb13gnck1mwwwwrmarsc"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
