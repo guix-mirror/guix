@@ -3794,7 +3794,7 @@ programs that have displayed undesired windows on a user's screen.")
 (define-public xlsatoms
   (package
     (name "xlsatoms")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
       (origin
         (method url-fetch)
@@ -3804,7 +3804,7 @@ programs that have displayed undesired windows on a user's screen.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1y9nfl8s7njxbnci8c20j986xixharasgg40vdw92y593j6dk2rv"))))
+            "196yjik910xsr7dwy8daa0amr0r22ynfs360z0ndp9mx7mydrra7"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxcb" ,libxcb)))
