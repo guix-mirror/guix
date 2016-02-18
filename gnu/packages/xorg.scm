@@ -3021,28 +3021,20 @@ supported, and the RENDER extension is not accelerated by this driver.")
 (define-public xf86-video-nouveau
   (package
     (name "xf86-video-nouveau")
-    (version "1.0.11")
-    (source (origin
-              ;; There are no tarball releases of Nouveau.
-              (method git-fetch)
-              (uri (git-reference
-                    (url "git://anongit.freedesktop.org/nouveau/xf86-video-nouveau")
-                    (commit (string-append name "-" version))))
-              (sha256
-               (base32
-                "0zdb6b0n7pzf3l8j8hl7gfshg8jsmcmk11isvvl542yc36162ahp"))))
+    (version "1.0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/driver/xf86-video-nouveau-"
+             version
+             ".tar.bz2"))
+       (sha256
+        (base32
+         "07irv1zkk0rkyn1d7f2gn1icgcz2ix0pwv74sjian763gynmg80f"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (alist-cons-after
-                 'unpack 'bootstrap
-                 (lambda _
-                   (zero? (system* "autoreconf" "-vi")))
-                 %standard-phases)))
     (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("autoconf" ,(autoconf-wrapper))
-                     ("automake" ,automake)
-                     ("libtool" ,libtool)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://nouveau.freedesktop.org")
     (synopsis "NVIDIA video driver for X server")
     (description
