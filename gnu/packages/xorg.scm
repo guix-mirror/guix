@@ -3669,7 +3669,7 @@ make keyboards more accessible to people with physical impairments.")
 (define-public xkbevd
   (package
     (name "xkbevd")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
@@ -3679,7 +3679,7 @@ make keyboards more accessible to people with physical impairments.")
                ".tar.bz2"))
         (sha256
           (base32
-            "05h1xcnbalndbrryyqs8wzy9h3wz655vc0ymhlk2q4aik17licjm"))))
+            "0sprjx8i86ljk0l7ldzbz2xlk8916z5zh78cafjv8k1a63js4c14"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxkbfile" ,libxkbfile)
