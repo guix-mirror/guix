@@ -3157,7 +3157,7 @@ Xorg X server.")
 (define-public xf86-video-sis
   (package
     (name "xf86-video-sis")
-    (version "0.10.7")
+    (version "0.10.8")
     (source
       (origin
         (method url-fetch)
@@ -3167,9 +3167,7 @@ Xorg X server.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1l0w84x39gq4y9j81dny9r6rma1xkqvxpsavpkd8h7h8panbcbmy"))
-        (patches (list (search-patch "xf86-video-sis-update-api.patch")
-                       (search-patch "xf86-video-sis-fix-exa-crash.patch")))))
+           "1znkqwdyd6am23xbsfjzamq125j5rrylg5mzqky4scv9gxbz5wy8"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86dgaproto" ,xf86dgaproto)
