@@ -202,7 +202,7 @@ interface, for the Transmission BitTorrent daemon.")
 (define-public aria2
   (package
     (name "aria2")
-    (version "1.19.3")
+    (version "1.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/tatsuhiro-t/aria2/"
@@ -210,7 +210,7 @@ interface, for the Transmission BitTorrent daemon.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1qwr4al6wlh5f558r0mr1hvdnf7d8ss6qwqn2361k99phk1cdg3a"))))
+                "1l4gzz3yr0cl6a9xdy7843c5sb7afyq0i80wi2hasfpfdx5k95mz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-libaria2")
