@@ -3287,7 +3287,7 @@ X server.")
 (define-public xf86-video-trident
   (package
     (name "xf86-video-trident")
-    (version "1.3.6")
+    (version "1.3.7")
     (source
       (origin
         (method url-fetch)
@@ -3297,9 +3297,7 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-           "0141qbfsm32i0pxjyx5czpa8x8m4lvapsp4amw1qigaa0gry6n3a"))
-        (patches (list
-                  (search-patch "xf86-video-trident-remove-mibstore.patch")))))
+           "1bhkwic2acq9za4yz4bwj338cwv5mdrgr2qmgkhlj3bscbg1imgc"))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
