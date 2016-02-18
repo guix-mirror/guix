@@ -2268,7 +2268,7 @@ DRI (Direct Rendering Infrastructure) drivers.")
 (define-public xev
   (package
     (name "xev")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
       (origin
         (method url-fetch)
@@ -2278,7 +2278,7 @@ DRI (Direct Rendering Infrastructure) drivers.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0hv296mysglcgkx6lj1wxc23kshb2kix1a8yqppxj5vz16mpzw8i"))))
+            "0krivhrxpq6719103r541xpi3i3a0y15f7ypc4lnrx8sdhmfcjnr"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
