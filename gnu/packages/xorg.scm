@@ -5051,7 +5051,7 @@ draggable titlebars and borders.")
 (define-public libxt
   (package
     (name "libxt")
-    (version "1.1.4")
+    (version "1.1.5")
     (source
       (origin
         (method url-fetch)
@@ -5061,7 +5061,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0myxwbx9ylam5x3ia5b5f4x8azcqdm420h9ad1r4hrgmi2lrffl4"))))
+            "06lz6i7rbrp19kgikpaz4c97fw7n31k2h2aiikczs482g2zbdvj6"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;2 MiB of man pages + XML
