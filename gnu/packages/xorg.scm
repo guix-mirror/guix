@@ -2645,7 +2645,7 @@ X server.")
 (define-public xf86-video-cirrus
   (package
     (name "xf86-video-cirrus")
-    (version "1.5.2")
+    (version "1.5.3")
     (source
       (origin
         (method url-fetch)
@@ -2655,7 +2655,7 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1mycqgjp18b6adqj2h90vp324xh8ysyi5migfmjc914vbnkf2q9k"))))
+            "1asifc6ld2g9kap15vfhvsvyl69lj7pw3d9ra9mi4najllh7pj7d"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
