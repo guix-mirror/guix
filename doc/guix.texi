@@ -377,19 +377,29 @@ Create the group and user accounts for build users as explained below
 (@pxref{Build Environment Setup}).
 
 @item
-Run the daemon:
+Run and set the Guix daemon to automatically start on boot.
+
+If your host distro uses the systemd init system:
+
+@example
+# cp ~root/.guix-profile/lib/systemd/system/guix-daemon.service \
+        /etc/systemd/system/
+# systemctl start guix-daemon && systemctl enable guix-daemon
+@end example
+
+If your host distro uses the Upstart init system:
+
+@example
+# ~root/.guix-profile/bin/guix-daemon --build-users-group=guixbuild
+# cp ~root/.guix-profile/lib/upstart/system/guix-daemon.conf /etc/init/
+@end example
+
+Otherwise, you can still start the daemon manually with:
 
 @example
 # ~root/.guix-profile/bin/guix-daemon --build-users-group=guixbuild
 @end example
 
-On hosts using the systemd init system, drop
-@file{~root/.guix-profile/lib/systemd/system/guix-daemon.service} in
-@file{/etc/systemd/system}.
-
-Likewise, on hosts using the Upstart init system, drop
-@file{~root/.guix-profile/lib/upstart/system/guix-daemon.conf} in
-@file{/etc/init}.
 
 @item
 Make the @command{guix} command available to other users on the machine,
@@ -425,20 +435,27 @@ authorize them:
 @end example
 @end enumerate
 
-And that's it!  For additional tips and tricks, @pxref{Application
-Setup}.
+This completes root-level install of Guix. Each user will need to
+perform additional steps to make their Guix envionment ready for use,
+@pxref{Application Setup}.
 
-The @code{guix} package must remain available in @code{root}'s
-profile, or it would become subject to garbage collection---in which
-case you would find yourself badly handicapped by the lack of the
-@command{guix} command.
-
-The tarball in question can be (re)produced and verified simply by
-running the following command in the Guix source tree:
+You can confirm that Guix is working by installing a sample package into
+the root profile:
 
 @example
-make guix-binary.@var{system}.tar.xz
+# guix package -i hello
 @end example
+
+If your host distro uses @code{locales} that are incompatible with the
+@code{glibc} that Guix uses, you will see @code{warning: failed to
+install locale: Invalid argument}.  This may be ignored, or remedied by
+installing Locales as root, @pxref{Application Setup}.
+
+The @code{guix} package must remain available in @code{root}'s profile,
+or it would become subject to garbage collection---in which case you
+would find yourself badly handicapped by the lack of the @command{guix}
+command. In other words, don't remove @code{guix} by running @code{guix
+package -r guix}.
 
 
 @node Requirements
