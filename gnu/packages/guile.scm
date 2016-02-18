@@ -735,7 +735,7 @@ interface for reading articles in any format.")
 (define-public guile-config
   (package
     (name "guile-config")
-    (version "0.1")
+    (version "0.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -743,7 +743,7 @@ interface for reading articles in any format.")
                     ".tar.gz"))
               (sha256
                (base32
-                "0fcj2d91z7nhm9k79zkc826l8i06khqvp3d641wik9s3hv6qjya2"))))
+                "1b719bn192f9wg24rr0zx8jpmygsvyhfi35iy778pb5p392snrn8"))))
     (build-system gnu-build-system)
     (inputs
      `(("guile" ,guile-2.0)))
