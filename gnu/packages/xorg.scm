@@ -4875,7 +4875,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.16.4")
+    (version "1.18.1")
     (source
       (origin
         (method url-fetch)
@@ -4884,7 +4884,7 @@ over Xlib, including:
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "0wf8xykcjhvpk9ppjcixvf60p6kkyrpmfj0z29d93a8kjb6f3dmb"))))
+          "17bq40als48v12ld81jysc0gj5g572zkjkyzbhlm3ac9xgdmdv45"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("dri2proto" ,dri2proto)
