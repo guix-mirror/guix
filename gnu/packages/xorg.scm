@@ -3875,7 +3875,7 @@ protocol.")
 (define-public xmodmap
   (package
     (name "xmodmap")
-    (version "1.0.8")
+    (version "1.0.9")
     (source
       (origin
         (method url-fetch)
@@ -3885,7 +3885,7 @@ protocol.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1hwzm54m4ng09ls9i4bq0x84zbyhamgzasgrvhxxp8jqk34f7qpg"))
+            "0y649an3jqfq9klkp9y5gj20xb78fw6g193f5mnzpl0hbz6fbc5p"))
         (patches (list (search-patch "xmodmap-asprintf.patch")))))
     (build-system gnu-build-system)
     (inputs
