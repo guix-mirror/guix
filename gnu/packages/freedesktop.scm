@@ -79,14 +79,14 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "0.21.0")
+    (version "1.1.902")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://freedesktop.org/software/libinput/"
+              (uri (string-append "https://freedesktop.org/software/libinput/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0l7mhdr50g11hxg2pz8ihsgzbm0810syj05d3555rzhda6g7mkkw"))))
+                "19wa5yizc3nfq3gibyqb3ygdvcs7v7bz1m5ifv0f4va3igxc3nk3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -94,7 +94,8 @@ freedesktop.org project.")
      `(("libudev" ,eudev))) ; required by libinput.pc
     (inputs
      `(("libevdev" ,libevdev)
-       ("mtdev" ,mtdev)))
+       ("mtdev" ,mtdev)
+       ("libwacom" ,libwacom)))
     (home-page "http://www.freedesktop.org/wiki/Software/libinput/")
     (synopsis "Input devices handling library")
     (description
