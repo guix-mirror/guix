@@ -3528,7 +3528,7 @@ monitor via the X video mode extension.")
 (define-public xhost
   (package
     (name "xhost")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
       (origin
         (method url-fetch)
@@ -3538,7 +3538,7 @@ monitor via the X video mode extension.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1hlxm0is9nks1cx033s1733kkib9ivx2bxa3pb9yayqavwibkxd6"))))
+            "16n26xw6l01zq31d4qvsaz50misvizhn7iihzdn5f7s72pp1krlk"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
