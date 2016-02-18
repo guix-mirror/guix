@@ -1331,7 +1331,7 @@ configuration files.")
 (define-public libxkbfile
   (package
     (name "libxkbfile")
-    (version "1.0.8")
+    (version "1.0.9")
     (source
       (origin
         (method url-fetch)
@@ -1341,7 +1341,7 @@ configuration files.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0flg5arw6n3njagmsi4i4l0zl5bfx866a1h9ydc3bi1pqlclxaca"))))
+            "0smimr14zvail7ar68n7spvpblpdnih3jxrva7cpa6cn602px0ai"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)))
