@@ -4433,7 +4433,7 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxrender
   (package
     (name "libxrender")
-    (version "0.9.8")
+    (version "0.9.9")
     (source
       (origin
         (method url-fetch)
@@ -4443,7 +4443,7 @@ cannot be adequately worked around on the client side of the wire.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0qpwyjhbpp734vnhca992pjh4w7ijslidkzx1pcwbbk000pv050x"))))
+            "06myx7044qqdswxndsmd82fpp670klnizkgzdm194h51h1wyabzw"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("renderproto" ,renderproto)))
