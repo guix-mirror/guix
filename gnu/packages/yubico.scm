@@ -50,7 +50,7 @@ the low-level development kit for the Yubico YubiKey authentication device.")
 (define-public ykclient
   (package
     (name "ykclient")
-    (version "2.13")
+    (version "2.15")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -58,7 +58,7 @@ the low-level development kit for the Yubico YubiKey authentication device.")
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1lw1j61rfjngs8vvv9m348zl4166zg24bq0dy72r44wiz79yic4j"))))
+                "05jhx9waj3pl120ddnwap1v3bjrnbfhvf3lxs2xmhpcmwzpwsqgl"))))
     (build-system gnu-build-system)
 
     ;; There's just one test, and it requires network access to access
