@@ -2811,39 +2811,48 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (package
-    (name "xf86-video-intel")
-    (version "2.21.15")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/driver/xf86-video-intel-"
-               version
-               ".tar.bz2"))
-        (sha256
+  (let ((commit "e41040f"))
+    (package
+      (name "xf86-video-intel")
+      (version (string-append "2.99.917." commit))
+      (source
+       (origin
+         ;; there's no current tarball
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://anongit.freedesktop.org/git/xorg/driver/xf86-video-intel.git")
+               (commit commit)))
+         (sha256
           (base32
-           "1z6ncmpszmwqi9xr590c4kp4gjjf7mndcr56r35x2bx7h87i8nkx"))
-        (patches (list (search-patch "xf86-video-intel-compat-api.patch")
-                       (search-patch "xf86-video-intel-glibc-2.20.patch")))))
-    (build-system gnu-build-system)
-    (inputs `(("mesa" ,mesa)
-              ("udev" ,eudev)
-              ("libx11" ,libx11)
-              ("xorg-server" ,xorg-server)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (supported-systems
-     ;; This driver is only supported on Intel systems.
-     (filter (lambda (system) (or (string-prefix? "i686-" system)
-                                  (string-prefix? "x86_64-" system)))
-             %supported-systems))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "Intel video driver for X server")
-    (description
-     "xf86-video-intel is a 2D graphics driver for the Xorg X server.
+           "1gfh0ghkaqv4nfjdgbi6digqkz13hcnl56nl4vy0dj5lcrmrdxxs"))
+         (file-name (string-append name "-" version))))
+      (build-system gnu-build-system)
+      (inputs `(("mesa" ,mesa)
+                ("udev" ,eudev)
+                ("libx11" ,libx11)
+                ("libxfont" ,libxfont)
+                ("xorg-server" ,xorg-server)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)))
+      (supported-systems
+       ;; This driver is only supported on Intel systems.
+       (filter (lambda (system) (or (string-prefix? "i686-" system)
+                                    (string-prefix? "x86_64-" system)))
+               %supported-systems))
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'bootstrap
+                      (lambda _
+                        (zero? (system* "autoreconf" "-vfi")))))))
+      (home-page "http://www.x.org/wiki/")
+      (synopsis "Intel video driver for X server")
+      (description
+       "xf86-video-intel is a 2D graphics driver for the Xorg X server.
 It supports a variety of Intel graphics chipsets.")
-    (license license:x11)))
+      (license license:x11))))
 
 
 (define-public xf86-video-mach64
