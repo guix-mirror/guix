@@ -5086,7 +5086,7 @@ draggable titlebars and borders.")
 (define-public libxaw
   (package
     (name "libxaw")
-    (version "1.0.12")
+    (version "1.0.13")
     (source
       (origin
         (method url-fetch)
@@ -5096,7 +5096,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1xnv7jy86j9vhmw74frkzcraynqbw1p1s79jasargsgwfi433z4n"))))
+            "1kdhxplwrn43d9jp3v54llp05kwx210lrsdvqb6944jp29rhdy4f"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxext" ,libxext)
