@@ -1049,7 +1049,7 @@ of new capabilities and controls for text keyboards.")
 (define-public libxshmfence
   (package
     (name "libxshmfence")
-    (version "1.1")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1057,7 +1057,7 @@ of new capabilities and controls for text keyboards.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1gnfb1z8sbbdc3xpz1zmm94lv7yvfh4kvip9s5pj37ya4llxphnv"))))
+                "032b0nlkdrpbimdld4gqvhqx53rzn8fawvf1ybhzn7lcswgjs6yj"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("xproto" ,xproto)))
