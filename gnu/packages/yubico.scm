@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,7 @@
 (define-public libyubikey
   (package
     (name "libyubikey")
-    (version "1.12")
+    (version "1.13")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -37,7 +38,7 @@
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1f0plzmr1gwry4rfgq9q70v6qwqny009hac289ad5m6sj7vqflxr"))))
+                "009l3k2zyn06dbrlja2d4p2vfnzjhlcqxi88v02mlrnb17mx1v84"))))
     (build-system gnu-build-system)
     (synopsis "Development kit for the YubiKey authentication device")
     (description
