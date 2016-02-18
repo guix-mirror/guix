@@ -4405,7 +4405,7 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxp
   (package
     (name "libxp")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
       (origin
         (method url-fetch)
@@ -4415,7 +4415,7 @@ cannot be adequately worked around on the client side of the wire.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1dfh5w8sjz5b5fl6dl4y63ckq99snslz7bir8zq2rg8ax6syabwm"))))
+            "0mwc2jwmq03b1m9ihax5c6gw2ln8rc70zz4fsj3kb7440nchqdkz"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("printproto" ,printproto)))
