@@ -2201,7 +2201,7 @@ X server: 'handhelds', 'redglass' and 'whiteglass'.")
 (define-public xdpyinfo
   (package
     (name "xdpyinfo")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
       (origin
         (method url-fetch)
@@ -2211,7 +2211,7 @@ X server: 'handhelds', 'redglass' and 'whiteglass'.")
                ".tar.bz2"))
         (sha256
           (base32
-            "154b29zlrq33lmni883jgwyrb2kx7z8h52jx1s3ys5x5d582iydf"))))
+            "0ldgrj4w2fa8jng4b3f3biaj0wyn8zvya88pnk70d7k12pcqw8rh"))))
     (build-system gnu-build-system)
     (inputs
       `(("inputproto" ,inputproto)
