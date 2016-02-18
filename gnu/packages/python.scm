@@ -7529,3 +7529,35 @@ available in Django, but is a standalone package.")
     (inherit (package-with-python2
               (strip-python2-variant python-wtforms)))
     (inputs `(("python2-setuptools" ,python2-setuptools)))))
+
+(define-public python-mako
+  (package
+    (name "python-mako")
+    (version "1.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Mako" version))
+       (sha256
+        (base32
+         "136kcjbs0s98qkx8a418b05dfblqp0kiiqyx8vhx4rarwc7bqi3n"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-markupsafe" ,python-markupsafe)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
+    (home-page "http://www.makotemplates.org/")
+    (synopsis "Templating language for Python")
+    (description "Mako is a templating language for Python that compiles
+templates into Python modules.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-mako))))))
+
+(define-public python2-mako
+  (let ((base (package-with-python2
+               (strip-python2-variant python-mako))))
+    (package
+      (inherit base)
+      (native-inputs
+       (cons `("python2-setuptools" ,python2-setuptools)
+             (package-native-inputs base))))))
