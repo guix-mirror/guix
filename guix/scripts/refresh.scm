@@ -32,7 +32,7 @@
   #:use-module (guix scripts graph)
   #:use-module (guix monads)
   #:use-module ((guix gnu-maintenance)
-                #:select (%gnu-updater %gnome-updater))
+                #:select (%gnu-updater %gnome-updater %xorg-updater))
   #:use-module (guix import elpa)
   #:use-module (guix import cran)
   #:use-module (guix gnupg)
@@ -194,6 +194,7 @@ unavailable optional dependencies such as Guile-JSON."
   ;; List of "updaters" used by default.  They are consulted in this order.
   (list-updaters %gnu-updater
                  %gnome-updater
+                 %xorg-updater
                  %elpa-updater
                  %cran-updater
                  %bioconductor-updater

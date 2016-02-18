@@ -33,6 +33,7 @@
   #:use-module (guix records)
   #:use-module (guix upstream)
   #:use-module (guix packages)
+  #:use-module (gnu packages)
   #:export (gnu-package-name
             gnu-package-mundane-name
             gnu-package-copyright-holder
@@ -57,7 +58,8 @@
             gnu-package-name->name+version
 
             %gnu-updater
-            %gnome-updater))
+            %gnome-updater
+            %xorg-updater))
 
 ;;; Commentary:
 ;;;
@@ -508,6 +510,32 @@ elpa.gnu.org, and all the GNOME packages."
                        ;; checksums.
                        #:file->signature (const #f))))
 
+(define (xorg-package? package)
+  "Return true if PACKAGE is an X.org package, developed by X.org."
+  (define xorg-uri?
+    (match-lambda
+      ((? string? uri)
+       (string-prefix? "mirror://xorg/" uri))
+      (_
+       #f)))
+
+  (match (package-source package)
+    ((? origin? origin)
+     (match (origin-uri origin)
+       ((? xorg-uri?) #t)
+       (_              #f)))
+    (_ #f)))
+
+(define (latest-xorg-release package)
+  "Return the latest release of PACKAGE, the name of an X.org package."
+  (let ((uri (string->uri (origin-uri (package-source (specification->package package))))))
+    (false-if-ftp-error
+     (latest-ftp-release
+      package
+      #:server "ftp.freedesktop.org"
+      #:directory
+      (string-append "/pub/xorg/" (dirname (uri-path uri)))))))
+
 (define %gnu-updater
   (upstream-updater
    (name 'gnu)
@@ -521,5 +549,12 @@ elpa.gnu.org, and all the GNOME packages."
    (description "Updater for GNOME packages")
    (pred gnome-package?)
    (latest latest-gnome-release)))
+
+(define %xorg-updater
+  (upstream-updater
+   (name 'xorg)
+   (description "Updater for X.org packages")
+   (pred xorg-package?)
+   (latest latest-xorg-release)))
 
 ;;; gnu-maintenance.scm ends here
