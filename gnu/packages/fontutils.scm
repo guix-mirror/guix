@@ -259,6 +259,28 @@ resolution.")
     (license license:gpl2+)
     (home-page "http://potrace.sourceforge.net/")))
 
+(define-public libotf
+  (package
+    (name "libotf")
+    (version "0.9.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://download.savannah.gnu.org/releases/m17n/libotf-"
+                    version ".tar.gz"))
+              (sha256
+               (base32 "0239zvfan56w7vrppriwy77fzb10ag9llaz15nsraps2a2x6di3v"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("freetype" ,freetype)))
+    (home-page "http://www.nongnu.org/m17n/")
+    (synopsis "Library for handling OpenType Font")
+    (description "This library can read Open Type Layout Tables from an OTF
+file.  Currently these tables are supported; head, name, cmap, GDEF, GSUB, and
+GPOS.  It can convert a Unicode character sequence to a glyph code sequence by
+using the above tables.")
+    (license license:lgpl2.0+)))
+
 (define-public libspiro
   (package
     (name "libspiro")
