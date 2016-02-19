@@ -211,7 +211,7 @@ rasterisation.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "http://dri.freedesktop.org/libdrm/libdrm-"
+               "https://dri.freedesktop.org/libdrm/libdrm-"
                version
                ".tar.bz2"))
         (sha256
@@ -268,7 +268,7 @@ tracking.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.freedesktop.org/software/" name
+       (uri (string-append "https://www.freedesktop.org/software/" name
                            "/releases/" name "-" version ".tar.gz"))
        (sha256
         (base32

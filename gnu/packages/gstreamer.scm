@@ -52,7 +52,7 @@
     (version "0.4.24")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://gstreamer.freedesktop.org/data/src/"
+              (uri (string-append "https://gstreamer.freedesktop.org/data/src/"
                                   "orc/orc-" version ".tar.xz"))
               (sha256
                (base32
@@ -88,7 +88,7 @@ arrays of data.")
      (origin
       (method url-fetch)
       (uri (string-append
-            "http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-"
+            "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-"
             version ".tar.xz"))
       (sha256
        (base32
@@ -113,7 +113,7 @@ arrays of data.")
      (list (search-path-specification
             (variable "GST_PLUGIN_SYSTEM_PATH")
             (files '("lib/gstreamer-1.0")))))
-    (home-page "http://gstreamer.freedesktop.org/")
+    (home-page "https://gstreamer.freedesktop.org/")
     (synopsis "Multimedia library")
     (description
      "GStreamer is a library for constructing graphs of media-handling
@@ -190,7 +190,7 @@ for the GStreamer multimedia library.")
      (origin
       (method url-fetch)
       (uri (string-append
-            "http://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-"
+            "https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-"
             version ".tar.xz"))
       (sha256
        (base32
@@ -249,7 +249,7 @@ developers consider to have good quality code and correct functionality.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://gstreamer.freedesktop.org/src/"
+       (uri (string-append "https://gstreamer.freedesktop.org/src/"
                            name "/" name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -287,7 +287,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://gstreamer.freedesktop.org/src/" name "/"
+                    "https://gstreamer.freedesktop.org/src/" name "/"
                     name "-" version ".tar.xz"))
               (sha256
                (base32

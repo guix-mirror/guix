@@ -55,7 +55,7 @@
    (version "0.37.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://poppler.freedesktop.org/poppler-"
+            (uri (string-append "https://poppler.freedesktop.org/poppler-"
                                 version ".tar.xz"))
             (sha256 (base32
                      "1vjvd0md8y37hlq3lsj0l01a3v3mzm572rzpn1311frvmrg9r7xq"))))

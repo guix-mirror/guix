@@ -76,7 +76,7 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
    (source (origin
             (method url-fetch)
             (uri (string-append
-                   "http://www.freedesktop.org/software/fontconfig/release/fontconfig-"
+                   "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
             (sha256 (base32
                      "1psrl4b4gi4wmbvwwh43lk491wsl8lgvqj146prlcha3vwjc0qyp"))))

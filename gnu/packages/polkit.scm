@@ -43,7 +43,7 @@
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://www.freedesktop.org/software/polkit/releases/"
+                   "https://www.freedesktop.org/software/polkit/releases/"
                    name "-" version ".tar.gz"))
              (sha256
               (base32

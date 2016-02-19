@@ -327,7 +327,7 @@ SMPTE 314M.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://www.freedesktop.org/software/vaapi/releases/libva/libva-"
+             "https://www.freedesktop.org/software/vaapi/releases/libva/libva-"
              version".tar.bz2"))
        (sha256
         (base32 "0bjfb5s8dk3lql843l91ffxzlq47isqks5sj19cxh7j3nhzw58kz"))))

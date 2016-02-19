@@ -118,7 +118,7 @@ rates.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://freedesktop.org/software/pulseaudio/releases/pulseaudio-"
+                   "https://freedesktop.org/software/pulseaudio/releases/pulseaudio-"
                    version ".tar.xz"))
              (sha256
               (base32
@@ -195,7 +195,7 @@ sound server.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://freedesktop.org/software/pulseaudio/pavucontrol/pavucontrol-"
+                   "https://freedesktop.org/software/pulseaudio/pavucontrol/pavucontrol-"
                    version
                    ".tar.xz"))
              (sha256

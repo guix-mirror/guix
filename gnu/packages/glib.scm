@@ -384,7 +384,7 @@ translated.")
     (source (origin
              (method url-fetch)
              (uri
-              (string-append "http://dbus.freedesktop.org/releases/dbus-glib/dbus-glib-"
+              (string-append "https://dbus.freedesktop.org/releases/dbus-glib/dbus-glib-"
                              version ".tar.gz"))
              (sha256
               (base32
@@ -574,7 +574,7 @@ useful for C++.")
       (method url-fetch)
        (uri
         (string-append
-         "http://telepathy.freedesktop.org/releases/telepathy-glib/"
+         "https://telepathy.freedesktop.org/releases/telepathy-glib/"
          "telepathy-glib-" version ".tar.gz"))
        (sha256
         (base32

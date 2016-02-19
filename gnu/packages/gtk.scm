@@ -150,7 +150,7 @@ affine transformation (scale, rotation, shear, etc.).")
    (version "1.0.6")
    (source (origin
              (method url-fetch)
-             (uri (string-append "http://www.freedesktop.org/software/"
+             (uri (string-append "https://www.freedesktop.org/software/"
                                  "harfbuzz/release/harfbuzz-"
                                  version ".tar.bz2"))
              (sha256

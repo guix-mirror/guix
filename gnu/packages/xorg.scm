@@ -2333,7 +2333,7 @@ XC-APPGROUP, XTEST.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.freedesktop.org/software/" name "/"
+       (uri (string-append "https://www.freedesktop.org/software/" name "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -5158,7 +5158,7 @@ The XCB util module provides the following libraries:
     (version "0.1.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://xcb.freedesktop.org/dist/"
+              (uri (string-append "https://xcb.freedesktop.org/dist/"
                                   "xcb-util-cursor-" version ".tar.gz"))
               (sha256
                (base32

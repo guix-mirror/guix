@@ -502,7 +502,7 @@ for settings shared by various components of the GNOME desktop.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://tango.freedesktop.org/releases/icon-naming-utils-"
+      (uri (string-append "https://tango.freedesktop.org/releases/icon-naming-utils-"
                           version ".tar.bz2"))
       (sha256
        (base32
@@ -538,7 +538,7 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
     (version "0.22")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.freedesktop.org/software/" name
+              (uri (string-append "https://www.freedesktop.org/software/" name
                                   "/releases/" name "-" version ".tar.xz"))
               (sha256
                (base32
@@ -610,7 +610,7 @@ update-desktop-database: updates the database containing a cache of MIME types
     (version "1.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://freedesktop.org/~hadess/"
+             (uri (string-append "https://freedesktop.org/~hadess/"
                                  "shared-mime-info-" version ".tar.xz"))
              (sha256
               (base32
@@ -642,7 +642,7 @@ database is translated at Transifex.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://icon-theme.freedesktop.org/releases/"
+      (uri (string-append "https://icon-theme.freedesktop.org/releases/"
                           "hicolor-icon-theme-" version ".tar.gz"))
       (sha256
        (base32
@@ -2261,7 +2261,7 @@ keyboard shortcuts.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.freedesktop.org/software/colord/releases/"
+       (uri (string-append "https://www.freedesktop.org/software/colord/releases/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -2325,7 +2325,7 @@ output devices.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.freedesktop.org/software/" name
+       (uri (string-append "https://www.freedesktop.org/software/" name
                            "/releases/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
@@ -2405,7 +2405,7 @@ faster results and to avoid unnecessary server load.")
     (version "0.99.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://upower.freedesktop.org/releases/"
+              (uri (string-append "https://upower.freedesktop.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32

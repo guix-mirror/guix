@@ -73,7 +73,7 @@ specifications.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://p11-glue.freedesktop.org/releases/p11-kit-"
+      (uri (string-append "https://p11-glue.freedesktop.org/releases/p11-kit-"
                           version ".tar.gz"))
       (sha256
        (base32

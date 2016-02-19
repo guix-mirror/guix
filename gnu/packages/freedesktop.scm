@@ -61,7 +61,7 @@
       (origin
         (method url-fetch)
           (uri (string-append
-                 "http://portland.freedesktop.org/download/xdg-utils-"
+                 "https://portland.freedesktop.org/download/xdg-utils-"
                  version ".tgz"))
           (sha256
             (base32
@@ -246,7 +246,7 @@ Python.")
     (version "1.9.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://wayland.freedesktop.org/releases/"
+              (uri (string-append "https://wayland.freedesktop.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
@@ -281,7 +281,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://libopenraw.freedesktop.org/download/"
+                   "https://libopenraw.freedesktop.org/download/"
                    name "-" version ".tar.bz2"))
              (sha256
               (base32
@@ -330,7 +330,7 @@ Analysis and Reporting Technology) functionality.")
     (version "2.1.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://udisks.freedesktop.org/releases/"
+              (uri (string-append "https://udisks.freedesktop.org/releases/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
@@ -540,7 +540,7 @@ modems and setup connections with them.")
     (version "0.8.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://telepathy.freedesktop.org/releases/"
+              (uri (string-append "https://telepathy.freedesktop.org/releases/"
                                   name "/" name "-" version ".tar.bz2"))
               (sha256
                (base32
@@ -579,7 +579,7 @@ different sorts of messages in different formats.")
     (version "0.1.26")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.freedesktop.org/software/colord"
+              (uri (string-append "https://www.freedesktop.org/software/colord"
                                   "/releases/" name "-" version ".tar.xz"))
               (sha256
                (base32

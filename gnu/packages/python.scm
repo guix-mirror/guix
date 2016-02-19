@@ -4396,7 +4396,7 @@ features useful for text console applications.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://dbus.freedesktop.org/releases/dbus-python/dbus-python-"
+             "https://dbus.freedesktop.org/releases/dbus-python/dbus-python-"
              version ".tar.gz"))
        (sha256
         (base32 "1py62qir966lvdkngg0v8k1khsqxwk5m4s8nflpk1agk5f5nqb71"))))
