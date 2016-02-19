@@ -542,7 +542,7 @@ compact configuration syntax.")
     (version "9.21")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://dist.schmorp.de/rxvt-unicode/"
+              (uri (string-append "http://dist.schmorp.de/rxvt-unicode/Attic/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
