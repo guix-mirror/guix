@@ -85,8 +85,8 @@
                          ;; is used by a bunch of services.
                          (method url-fetch)
                          (uri (string-append
-                               "http://git.savannah.gnu.org/cgit/dmd.git/patch/"
-                               "?id=d1d0ff30b3ed2b86b0a3c9bc048d2a855f8e31e6"))
+                               "http://git.savannah.gnu.org/cgit/shepherd.git/"
+                               "patch?id=d1d0ff30b3ed2b86b0a3c9bc048d2a855f8e31e6"))
                          (sha256
                           (base32
                            "1lqymypixfiyb72d6bn24m06ry2q1ljnnv0qrc89pbb4z9azaa4d"))
