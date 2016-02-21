@@ -257,7 +257,7 @@ used to apply commands with arbitrarily long arguments.")
              (list (origin
                      (method url-fetch)
                      (uri "http://git.savannah.gnu.org/cgit/coreutils.git/\
-patch?id=3ba68f9e64fa2eb8af22d510437a0c6441feb5e0")
+patch/?id=3ba68f9e64fa2eb8af22d510437a0c6441feb5e0")
                      (sha256
                       (base32
                        "1dnlszhc8lihhg801i9sz896mlrgfsjfcz62636prb27k5hmixqz"))
