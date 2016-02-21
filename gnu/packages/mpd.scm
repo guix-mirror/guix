@@ -179,7 +179,7 @@ terminal using ncurses.")
 (define-public ncmpcpp
   (package
     (name "ncmpcpp")
-    (version "0.6.7")
+    (version "0.7.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -187,13 +187,14 @@ terminal using ncurses.")
                               version ".tar.bz2"))
               (sha256
                (base32
-                "0yr1ib14qkgbsv839anpzkfbwkm6gg8wv4bf98ar7q5l2p2pv008"))))
+                "04mj6r0whikliblxfbz92pibwcd7a3ywkryf01a89zd4bi1jk2rc"))))
     (build-system gnu-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)
               ("boost"  ,boost)
               ("readline" ,readline)
               ("ncurses" ,ncurses)
-              ("taglib" ,taglib)))
+              ("taglib" ,taglib)
+              ("icu4c" ,icu4c)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("automake" ,automake)
