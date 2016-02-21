@@ -378,7 +378,7 @@ site} for more information."
 (define polkit-etc-files
   (match-lambda
     (($ <polkit-configuration> polkit packages)
-     `(("polkit-1" ,(polkit-directory packages))))))
+     `(("polkit-1" ,(polkit-directory (cons polkit packages)))))))
 
 (define polkit-setuid-programs
   (match-lambda
