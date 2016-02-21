@@ -1170,13 +1170,13 @@ format changes.")
     (native-inputs `(("yasm" ,yasm)))
     (arguments
      '(#:phases
-       (alist-cons-before
-        'configure 'pre-configure
-        (lambda _
-          (chdir "build/generic")
-          (substitute* "configure"
-            (("#! /bin/sh") (string-append "#!" (which "sh")))))
-        %standard-phases)
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'pre-configure
+          (lambda _
+            (chdir "build/generic")
+            (substitute* "configure"
+              (("#! /bin/sh") (string-append "#!" (which "sh")))))))
        ;; No 'check' target.
        #:tests? #f))
     (home-page "https://www.xvid.com/")
