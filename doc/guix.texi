@@ -3022,6 +3022,59 @@ best course of action for that is to write the build code as a
 ``G-expression'', and to pass it to @code{gexp->derivation}.  For more
 information, @pxref{G-Expressions}.
 
+Once upon a time, @code{gexp->derivation} did not exist and constructing
+derivations with build code written in Scheme was achieved with
+@code{build-expression->derivation}, documented below.  This procedure
+is now deprecated in favor of the much nicer @code{gexp->derivation}.
+
+@deffn {Scheme Procedure} build-expression->derivation @var{store} @
+       @var{name} @var{exp} @
+       [#:system (%current-system)] [#:inputs '()] @
+       [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] @
+       [#:recursive? #f] [#:env-vars '()] [#:modules '()] @
+       [#:references-graphs #f] [#:allowed-references #f] @
+       [#:local-build? #f] [#:substitutable? #t] [#:guile-for-build #f]
+Return a derivation that executes Scheme expression @var{exp} as a
+builder for derivation @var{name}.  @var{inputs} must be a list of
+@code{(name drv-path sub-drv)} tuples; when @var{sub-drv} is omitted,
+@code{"out"} is assumed.  @var{modules} is a list of names of Guile
+modules from the current search path to be copied in the store,
+compiled, and made available in the load path during the execution of
+@var{exp}---e.g., @code{((guix build utils) (guix build
+gnu-build-system))}.
+
+@var{exp} is evaluated in an environment where @code{%outputs} is bound
+to a list of output/path pairs, and where @code{%build-inputs} is bound
+to a list of string/output-path pairs made from @var{inputs}.
+Optionally, @var{env-vars} is a list of string pairs specifying the name
+and value of environment variables visible to the builder.  The builder
+terminates by passing the result of @var{exp} to @code{exit}; thus, when
+@var{exp} returns @code{#f}, the build is considered to have failed.
+
+@var{exp} is built using @var{guile-for-build} (a derivation).  When
+@var{guile-for-build} is omitted or is @code{#f}, the value of the
+@code{%guile-for-build} fluid is used instead.
+
+See the @code{derivation} procedure for the meaning of
+@var{references-graphs}, @var{allowed-references}, @var{local-build?},
+and @var{substitutable?}.
+@end deffn
+
+@noindent
+Here's an example of a single-output derivation that creates a directory
+containing one file:
+
+@lisp
+(let ((builder '(let ((out (assoc-ref %outputs "out")))
+                  (mkdir out)    ; create /gnu/store/@dots{}-goo
+                  (call-with-output-file (string-append out "/test")
+                    (lambda (p)
+                      (display '(hello guix) p))))))
+  (build-expression->derivation store "goo" builder))
+
+@result{} #<derivation /gnu/store/@dots{}-goo.drv => @dots{}>
+@end lisp
+
 
 @node The Store Monad
 @section The Store Monad
