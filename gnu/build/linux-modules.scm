@@ -96,10 +96,20 @@ contains module names, not actual file names."
       name
       (dot-ko name)))
 
+(define (normalize-module-name module)
+  "Return the \"canonical\" name for MODULE, replacing hyphens with
+underscores."
+  ;; See 'modname_normalize' in libkmod.
+  (string-map (lambda (chr)
+                (case chr
+                  ((#\-) #\_)
+                  (else chr)))
+              module))
+
 (define (file-name->module-name file)
-  "Return the module name corresponding to FILE, stripping the trailing '.ko',
-etc."
-  (basename file ".ko"))
+  "Return the module name corresponding to FILE, stripping the trailing '.ko'
+and normalizing it."
+  (normalize-module-name (basename file ".ko")))
 
 (define* (recursive-module-dependencies files
                                         #:key (lookup-module dot-ko))
@@ -138,7 +148,9 @@ LOOKUP-MODULE to the module name."
 (define (module-black-list)
   "Return the black list of modules that must not be loaded.  This black list
 is specified using 'modprobe.blacklist=MODULE1,MODULE2,...' on the kernel
-command line; it is honored by libkmod."
+command line; it is honored by libkmod for users that pass
+'KMOD_PROBE_APPLY_BLACKLIST', which includes 'modprobe --use-blacklist' and
+udev."
   (define parameter
     "modprobe.blacklist=")
 
