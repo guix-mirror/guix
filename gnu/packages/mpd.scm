@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -202,12 +203,11 @@ terminal using ncurses.")
      '(#:configure-flags
        '("BOOST_LIB_SUFFIX=" "--with-taglib")
        #:phases
-       (alist-cons-after
-        'unpack 'autogen
-        (lambda _
-          (setenv "NOCONFIGURE" "true")
-          (zero? (system* "sh" "autogen.sh")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+        (add-after 'unpack 'autogen
+         (lambda _
+           (setenv "NOCONFIGURE" "true")
+           (zero? (system* "sh" "autogen.sh")))))))
     (synopsis "Featureful ncurses based MPD client inspired by ncmpc")
     (description "Ncmpcpp is an mpd client with a UI very similar to ncmpc,
 but it provides new useful features such as support for regular expressions
