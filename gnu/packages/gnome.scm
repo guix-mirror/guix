@@ -4711,6 +4711,37 @@ can add your own files to the collection.")
                    license:cc-by-sa2.0
                    license:cc-by-sa3.0))))
 
+(define-public gnome-screenshot
+  (package
+    (name "gnome-screenshot")
+    (version "3.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0hc8m435q7yzvrw7jpi53kaxpmrd9w59sm7c5wibh2ng9azlv9pb"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libcanberra" ,libcanberra)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)))
+    (home-page "https://git.gnome.org/browse/gnome-screenshot")
+    (synopsis "Take pictures of your screen")
+    (description
+     "GNOME Screenshot is a utility used for taking screenshots of the entire
+screen, a window or a user defined area of the screen, with optional
+beautifying border effects.")
+    (license license:gpl2+)))
+
 (define-public gnome
   (package
     (name "gnome")
