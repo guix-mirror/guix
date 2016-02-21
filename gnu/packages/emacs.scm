@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -1477,3 +1477,30 @@ debugging, documentation lookup, and so on.")
 This provides a basic API and common UI widgets such as popup tooltips
 and popup menus.")
     (license license:gpl3+)))
+
+(define-public emacs-god-mode
+  (let ((commit "6cf0807b6555eb6fcf8387a4e3b667071ef38964")
+        (revision "1"))
+    (package
+      (name "emacs-god-mode")
+      (version (string-append "20151005.925."
+                              revision "-" (string-take commit 9)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/chrisdone/god-mode.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1am415k4xxcva6y3vbvyvknzc6bma49pq3p85zmpjsdmsp18qdix"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/chrisdone/god-mode")
+      (synopsis "Minor mode for entering commands without modifier keys")
+      (description
+       "This package provides a global minor mode for entering Emacs commands
+without modifier keys.  It's similar to Vim's separation of commands and
+insertion mode.  When enabled all keys are implicitly prefixed with
+@samp{C-} (among other helpful shortcuts).")
+      (license license:gpl3+))))
