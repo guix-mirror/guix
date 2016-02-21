@@ -203,31 +203,12 @@ and design rule checking.  It also includes an autorouter and a trace
 optimizer; and it can produce photorealistic and design review images.")
     (license license:gpl2+)))
 
-(define* (broken-tarball-fetch url hash-algo hash
-                               #:optional name
-                               #:key (system (%current-system))
-                               (guile (default-guile)))
-  (mlet %store-monad ((drv (url-fetch url hash-algo hash
-                                      (string-append "tarbomb-" name)
-                                      #:system system
-                                      #:guile guile)))
-    ;; Take the tar bomb, and simply unpack it as a directory.
-    (gexp->derivation name
-                      #~(begin
-                          (mkdir #$output)
-                          (setenv "PATH"
-                                  (string-append #$gzip "/bin"))
-                          (chdir #$output)
-                          (zero? (system* (string-append #$tar "/bin/tar")
-                                          "xf" #$drv))))))
-
-
 (define-public fastcap
   (package
     (name "fastcap")
     (version "2.0-18Sep92")
     (source (origin
-              (method broken-tarball-fetch)
+              (method url-fetch/tarbomb)
               (file-name (string-append name "-" version ".tar.gz"))
               (uri (string-append "http://www.rle.mit.edu/cpg/codes/"
                                   name "-" version ".tgz"))
