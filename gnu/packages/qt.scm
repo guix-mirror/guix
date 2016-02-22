@@ -541,15 +541,6 @@ contain over 620 classes.")
          %standard-phases)))
     (license (list gpl2 gpl3)))) ; choice of either license
 
-(define-public python2-pyqt-4
-  (package (inherit python-pyqt-4)
-    (name "python2-pyqt")
-    (native-inputs
-     `(("python-sip" ,python2-sip)
-       ("qt" ,qt-4)))
-    (inputs
-     `(("python" ,python-2)))))
-
 (define-public qtkeychain
   (package
     (name "qtkeychain")
