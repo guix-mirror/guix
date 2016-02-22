@@ -59,7 +59,7 @@
                                               '(call-with-output-file %output
                                                  (lambda (port)
                                                    (display "fake mkdir" port)))))
-         (graft (graft-derivation %store "graft" orig
+         (graft (graft-derivation %store orig
                                   (list (graft
                                           (origin %bash)
                                           (replacement one))

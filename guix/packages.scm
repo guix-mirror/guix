@@ -985,7 +985,7 @@ This is an internal procedure."
                   (grafts
                    (let ((guile (package-derivation store (default-guile)
                                                     system #:graft? #f)))
-                     (graft-derivation store (bag-name bag) drv grafts
+                     (graft-derivation store drv grafts
                                        #:system system
                                        #:guile guile))))
                 drv))))
@@ -1003,7 +1003,7 @@ system identifying string)."
                   (()
                    drv)
                   (grafts
-                   (graft-derivation store (bag-name bag) drv grafts
+                   (graft-derivation store drv grafts
                                      #:system system
                                      #:guile
                                      (package-derivation store (default-guile)

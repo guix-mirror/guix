@@ -44,8 +44,10 @@
   (replacement-output graft-replacement-output    ;string | #f
                       (default "out")))
 
-(define* (graft-derivation store name drv grafts
-                           #:key (guile (%guile-for-build))
+(define* (graft-derivation store drv grafts
+                           #:key
+                           (name (derivation-name drv))
+                           (guile (%guile-for-build))
                            (system (%current-system)))
   "Return a derivation called NAME, based on DRV but with all the GRAFTS
 applied."

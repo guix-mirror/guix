@@ -616,7 +616,7 @@
          (guile (package-derivation %store (canonical-package guile-2.0)
                                     #:graft? #f)))
     (equal? (package-derivation %store dummy)
-            (graft-derivation %store "dummy-0"
+            (graft-derivation %store
                               (package-derivation %store dummy #:graft? #f)
                               (package-grafts %store dummy)
 
