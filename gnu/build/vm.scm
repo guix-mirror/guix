@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -97,7 +99,7 @@ the #:references-graphs parameter of 'derivation'."
     (_ #f))
 
   (unless (zero?
-           (apply system* qemu "-enable-kvm" "-nographic" "-no-reboot"
+           (apply system* qemu "-nographic" "-no-reboot"
                   "-m" (number->string memory-size)
                   "-net" "nic,model=virtio"
                   "-virtfs"
@@ -111,10 +113,17 @@ the #:references-graphs parameter of 'derivation'."
                   "-initrd" initrd
                   "-append" (string-append "console=ttyS0 --load="
                                            builder)
-                  (if make-disk-image?
-                      `("-drive" ,(string-append "file=" image-file
-                                                 ",if=virtio"))
-                      '())))
+                  (append
+                   (if make-disk-image?
+                       `("-drive" ,(string-append "file=" image-file
+                                                  ",if=virtio"))
+                       '())
+                   ;; Only enable kvm if we see /dev/kvm exists.
+                   ;; This allows users without hardware virtualization to still
+                   ;; use these commands.
+                   (if (file-exists? "/dev/kvm")
+                       '("-enable-kvm")
+                       '()))))
     (error "qemu failed" qemu))
 
   (if make-disk-image?
