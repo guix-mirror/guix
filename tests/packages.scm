@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +29,7 @@
   #:use-module (guix hash)
   #:use-module (guix derivations)
   #:use-module (guix packages)
+  #:use-module (guix grafts)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)
   #:use-module (guix build-system trivial)

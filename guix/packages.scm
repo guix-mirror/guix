@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
@@ -25,6 +25,7 @@
   #:use-module (guix monads)
   #:use-module (guix gexp)
   #:use-module (guix base32)
+  #:use-module (guix grafts)
   #:use-module (guix derivations)
   #:use-module (guix build-system)
   #:use-module (guix search-paths)

@@ -49,6 +49,7 @@ MODULES =					\
   guix/serialization.scm			\
   guix/nar.scm					\
   guix/derivations.scm				\
+  guix/grafts.scm				\
   guix/gnu-maintenance.scm			\
   guix/upstream.scm				\
   guix/licenses.scm				\
@@ -220,6 +221,7 @@ SCM_TESTS =					\
   tests/substitute.scm				\
   tests/builders.scm				\
   tests/derivations.scm				\
+  tests/grafts.scm				\
   tests/ui.scm					\
   tests/records.scm				\
   tests/utils.scm				\

@@ -23,6 +23,7 @@
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix packages)
+  #:use-module (guix grafts)
   #:use-module (guix utils)
   #:use-module (guix monads)
   #:use-module (guix gexp)
