@@ -979,20 +979,15 @@ building design matrices.")
     ;; The majority of the code is distributed under BSD-2.  The module
     ;; patsy.compat contains code derived from the Python standard library,
     ;; and is covered by the PSFL.
-    (license (list license:bsd-2 license:psfl))))
+    (license (list license:bsd-2 license:psfl))
+    (properties `((python2-variant . ,(delay python2-patsy))))))
 
 (define-public python2-patsy
-  (let ((patsy (package-with-python2 python-patsy)))
+  (let ((patsy (package-with-python2 (strip-python2-variant python-patsy))))
     (package (inherit patsy)
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
-         ,@(package-native-inputs patsy)))
-      (propagated-inputs
-       `(("python2-numpy" ,python2-numpy)
-         ("python2-scipy" ,python2-scipy)
-         ,@(alist-delete "python-numpy"
-                         (alist-delete "python-scipy"
-                                       (package-propagated-inputs patsy))))))))
+         ,@(package-native-inputs patsy))))))
 
 (define-public python-statsmodels
   (package
