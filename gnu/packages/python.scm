@@ -6910,8 +6910,6 @@ applications.")
               (base32
                "1iks5701qnp3dlr3q1d9qm68y2plp2m029irhpz92a44psfkjf1f"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("unzip" ,unzip)))
     (propagated-inputs
      `(("python-pytest" ,python-pytest)))
     (synopsis "Namespace control and lazy-import mechanism")
