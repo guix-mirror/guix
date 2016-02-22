@@ -11,6 +11,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -629,7 +630,19 @@ which can add many functionalities to the base client.")
     (arguments
      `(#:configure-flags (list "--with-libgsasl"
                                "--with-libidn"
-                               "--with-tls=gnutls")))
+                               "--with-tls=gnutls")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'install-msmtpq
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/msmtp"))
+                    (msmtpq (string-append "scripts/msmtpq")))
+               (install-file (string-append msmtpq "/msmtpq") bin)
+               (install-file (string-append msmtpq "/msmtp-queue") bin)
+               (install-file (string-append msmtpq "/README.msmtpq") doc)
+               #t))))))
     (synopsis
      "Simple and easy to use SMTP client with decent sendmail compatibility")
     (description
