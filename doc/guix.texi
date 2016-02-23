@@ -9338,7 +9338,7 @@ guix system @var{options}@dots{} @var{action} @var{file}
 
 @var{file} must be the name of a file containing an
 @code{operating-system} declaration.  @var{action} specifies how the
-operating system is instantiate.  Currently the following values are
+operating system is instantiated.  Currently the following values are
 supported:
 
 @table @code
@@ -9804,7 +9804,7 @@ the composition of the extensions.
 
 Udev extensions are composed into a list of rules, but the udev service
 value is itself a @code{<udev-configuration>} record.  So here, we
-extend that record by appending the list of rules is contains to the
+extend that record by appending the list of rules it contains to the
 list of contributed rules.
 @end table
 
@@ -9998,11 +9998,11 @@ extend it by passing it lists of packages to add to the system profile.
 
 @cindex PID 1
 @cindex init system
-The @code{(gnu services shepherd)} provides a way to define services
-managed by the GNU@tie{}Shepherd, which is GuixSD initialization
-system---the first process that is started when the system boots,
-aka. PID@tie{}1 (@pxref{Introduction,,, shepherd, The GNU Shepherd
-Manual}).
+The @code{(gnu services shepherd)} module provides a way to define
+services managed by the GNU@tie{}Shepherd, which is the GuixSD
+initialization system---the first process that is started when the
+system boots, aka. PID@tie{}1 (@pxref{Introduction,,, shepherd, The GNU
+Shepherd Manual}).
 
 Services in the Shepherd can depend on each other.  For instance, the
 SSH daemon may need to be started after the syslog daemon has been

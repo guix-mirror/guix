@@ -315,6 +315,6 @@ extensions---or to the operating system kernel---e.g., reliance on
 
 @end enumerate
 
-When posting a patch to the mailing list, use @samp{[PATCH] @dots{}} as a
-subject.  You may use your email client or the @command{git send-mail}
-command.
+When posting a patch to the mailing list, use @samp{[PATCH] @dots{}} as
+a subject.  You may use your email client or the @command{git
+send-email} command.
