@@ -500,7 +500,7 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.freedesktop.org/software/ModemManager/"
+                    "https://www.freedesktop.org/software/ModemManager/"
                     "ModemManager-" version ".tar.xz"))
               (sha256
                (base32
