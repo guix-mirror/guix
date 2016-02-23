@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -113,26 +113,25 @@ basis for almost any application.")
        #:tests? #f
 
        #:phases
-       (alist-cons-before
-        'configure 'pre-configure
-        (lambda* (#:key inputs #:allow-other-keys)
-          (let* ((nettle    (assoc-ref inputs "nettle"))
-                 (sexp-conv (string-append nettle "/bin/sexp-conv")))
-            ;; Make sure 'lsh' and 'lshd' pick 'sexp-conv' in the right place
-            ;; by default.
-            (substitute* "src/environ.h.in"
-              (("^#define PATH_SEXP_CONV.*")
-               (string-append "#define PATH_SEXP_CONV \""
-                              sexp-conv "\"\n")))
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((nettle    (assoc-ref inputs "nettle"))
+                    (sexp-conv (string-append nettle "/bin/sexp-conv")))
+               ;; Make sure 'lsh' and 'lshd' pick 'sexp-conv' in the right place
+               ;; by default.
+               (substitute* "src/environ.h.in"
+                 (("^#define PATH_SEXP_CONV.*")
+                  (string-append "#define PATH_SEXP_CONV \""
+                                 sexp-conv "\"\n")))
 
-            ;; Same for the 'lsh-authorize' script.
-            (substitute* "src/lsh-authorize"
-              (("=sexp-conv")
-               (string-append "=" sexp-conv))))
+               ;; Same for the 'lsh-authorize' script.
+               (substitute* "src/lsh-authorize"
+                 (("=sexp-conv")
+                  (string-append "=" sexp-conv))))
 
-          ;; Tests rely on $USER being set.
-          (setenv "USER" "guix"))
-        %standard-phases)))
+             ;; Tests rely on $USER being set.
+             (setenv "USER" "guix"))))))
     (home-page "http://www.lysator.liu.se/~nisse/lsh/")
     (synopsis "GNU implementation of the Secure Shell (ssh) protocols")
     (description
