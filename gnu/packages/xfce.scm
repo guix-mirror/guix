@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -387,6 +388,44 @@ to an auto mixer tool like pavucontrol.  It can optionally handle multimedia
 keys for controlling the audio volume.")
     (license gpl2+)))
 
+(define-public xfce4-xkb-plugin
+  (package
+    (name "xfce4-xkb-plugin")
+    (version "0.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/panel-plugins/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "10g65j5ia389ahhn3b9hr52ghpp0817fk0m60rfrv4wrzqrjxzk1"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("garcon" ,garcon)
+       ("librsvg" ,librsvg)
+       ("libwnck" ,libwnck-1)
+       ("libx11" ,libx11)
+       ("libxfce4ui" ,libxfce4ui)
+       ("libxklavier" ,libxklavier)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page "http://git.xfce.org/panel-plugins/xfce4-xkb-plugin/")
+    (synopsis "XKB layout switching panel plug-in for Xfce")
+    (description
+     "Xfce XKB plugin makes it possible to set up and use multiple
+keyboard layouts.
+
+One can choose the keyboard model, what key combination to
+use to switch between the layouts, the actual keyboard layouts,
+the way in which the current layout is being displayed (country
+flag image or text) and the layout policy, which is whether to
+store the layout globally (for all windows), per application or
+per window.")
+    (license bsd-2)))
+
 (define-public xfce4-appfinder
   (package
     (name "xfce4-appfinder")
@@ -695,7 +734,8 @@ on your desktop.")
        ;; Panel plugins.
        ("xfce4-battery-plugin"    ,xfce4-battery-plugin)
        ("xfce4-clipman-plugin"    ,xfce4-clipman-plugin)
-       ("xfce4-pulseaudio-plugin" ,xfce4-pulseaudio-plugin)))
+       ("xfce4-pulseaudio-plugin" ,xfce4-pulseaudio-plugin)
+       ("xfce4-xkb-plugin" ,xfce4-xkb-plugin)))
     (home-page "http://www.xfce.org/")
     (synopsis "Desktop environment (meta-package)")
     (description
