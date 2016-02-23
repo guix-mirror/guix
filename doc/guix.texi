@@ -10456,7 +10456,26 @@ field to, say, 7 digits.  It avoids an aesthetic annoyance (assuming
 aesthetics have a role to play here) as well as problems related to OS
 limits such as the maximum shebang length (127 bytes for the Linux
 kernel.)  It is best to use the full commit identifiers in
-@code{origin}s, though, to avoid ambiguities.
+@code{origin}s, though, to avoid ambiguities.  A typical package
+definition may look like this:
+
+@example
+(define my-package
+  (let ((commit "c3f29bc928d5900971f65965feaae59e1272a3f7"))
+    (package
+      (version (string-append "0.9-1."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://example.org/my-package.git")
+                      (commit commit)))
+                (sha256 (base32 "1mbikn@dots{}"))
+                (file-name (string-append "my-package-" version
+                                          "-checkout"))))
+      ;; @dots{}
+      )))
+@end example
 
 @node Synopses and Descriptions
 @subsection Synopses and Descriptions
