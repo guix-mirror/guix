@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -35,7 +35,6 @@
                 #:select (%gnu-updater %gnome-updater))
   #:use-module (guix import elpa)
   #:use-module (guix import cran)
-  #:use-module (guix import gem)
   #:use-module (guix gnupg)
   #:use-module (gnu packages)
   #:use-module ((gnu packages commencement) #:select (%final-inputs))
