@@ -67,6 +67,9 @@
             (base32
              "1b019d3r1379b60p33d6z44kx589xjgga62ijz9vha95dg8vgbi1"))))
     (build-system gnu-build-system)
+    (propagated-inputs
+     `(("xprop" ,xprop) ; for Xfce detecting
+       ("xset", xset))) ; for xdg-screensaver
     (arguments
      `(#:tests? #f)) ; no check target
     (home-page "http://portland.freedesktop.org/")
