@@ -547,7 +547,8 @@ modems and setup connections with them.")
                 "1bjx85k7jyfi5pvl765fzc7q2iz9va51anrc2djv7caksqsdbjlg"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(#:parallel-tests? #f
+       #:phases
        (modify-phases %standard-phases
          (add-before 'check 'pre-check
           (lambda _
