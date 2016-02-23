@@ -66,19 +66,19 @@ return the socket."
 command object."
   (match error
     (('error ('version 0 x ...) 'service-not-found service)
-     (report-error (_ "service '~a' could not be found")
+     (report-error (_ "service '~a' could not be found~%")
                    service))
     (('error ('version 0 x ...) 'action-not-found action service)
-     (report-error (_ "service '~a' does not have an action '~a'")
+     (report-error (_ "service '~a' does not have an action '~a'~%")
                    service action))
     (('error ('version 0 x ...) 'action-exception action service
              key (args ...))
      (report-error (_ "exception caught while executing '~a' \
-on service '~a':")
+on service '~a':~%")
                    action service)
      (print-exception (current-error-port) #f key args))
     (('error . _)
-     (report-error (_ "something went wrong: ~s")
+     (report-error (_ "something went wrong: ~s~%")
                    error))
     (#f                                           ;not an error
      #t)))
