@@ -7474,7 +7474,8 @@ makes the good ol' XlockMore usable.
 The @code{(gnu services desktop)} module provides services that are
 usually useful in the context of a ``desktop'' setup---that is, on a
 machine running a graphical display server, possibly with graphical user
-interfaces, etc.
+interfaces, etc.  It also defines services that provide specific desktop
+environments like GNOME and XFCE.
 
 To simplify things, the module defines a variable containing the set of
 services that users typically expect on a machine with a graphical
@@ -7499,8 +7500,57 @@ The @var{%desktop-services} variable can be used as the @code{services}
 field of an @code{operating-system} declaration (@pxref{operating-system
 Reference, @code{services}}).
 
-The actual service definitions provided by @code{(gnu services dbus)}
-and @code{(gnu services desktop)} are described below.
+Additionally, the @code{gnome-desktop-service} and
+@code{xfce-desktop-service} procedures can add GNOME and/or XFCE to a
+system.  To ``add GNOME'' means that system-level services like the
+backlight adjustment helpers and the power management utilities are
+added to the system, extending @code{polkit} and @code{dbus}
+appropriately, allowing GNOME to operate with elevated privileges on a
+limited number of special-purpose system interfaces.  Additionally,
+adding a service made by @code{gnome-desktop-service} adds the GNOME
+metapackage to the system profile.  Likewise, adding the XFCE service
+not only adds the @code{xfce} metapackage to the system profile, but it
+also gives the Thunar file manager the ability to open a ``root-mode''
+file management window, if the user authenticates using the
+administrator's password via the standard polkit graphical interface.
+
+@deffn {Scheme Procedure} gnome-desktop-service
+Return a service that adds the @code{gnome} package to the system
+profile, and extends polkit with the actions from
+@code{gnome-settings-daemon}.
+@end deffn
+
+@deffn {Scheme Procedure} xfce-desktop-service
+Return a service that adds the @code{xfce} package to the system profile,
+and extends polkit with the abilit for @code{thunar} to manipulate the
+file system as root from within a user session, after the user has
+authenticated with the administrator's password.
+@end deffn
+
+Because the GNOME and XFCE desktop services pull in so many packages,
+the default @code{%desktop-services} variable doesn't include either of
+them by default.  To add GNOME or XFCE, just @code{cons} them onto
+@code{%desktop-services} in the @code{services} field of your
+@code{operating-system}:
+
+@example
+(use-modules (gnu))
+(use-service-modules desktop)
+(operating-system
+  ...
+  ;; cons* adds items to the list given as its last argument.
+  (services (cons* (gnome-desktop-service)
+                   (xfce-desktop-service)
+                   %desktop-services))
+  ...)
+@end example
+
+These desktop environments will then be available as options in the
+graphical login window.
+
+The actual service definitions included in @code{%desktop-services} and
+provided by @code{(gnu services dbus)} and @code{(gnu services desktop)}
+are described below.
 
 @deffn {Scheme Procedure} dbus-service [#:dbus @var{dbus}] [#:services '()]
 Return a service that runs the ``system bus'', using @var{dbus}, with

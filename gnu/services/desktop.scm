@@ -32,6 +32,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages xfce)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages xdisorg)
@@ -51,6 +52,8 @@
             polkit-service
             elogind-configuration
             elogind-service
+            gnome-desktop-service
+            xfce-desktop-service
             %desktop-services))
 
 ;;; Commentary:
@@ -66,6 +69,11 @@
 
 (define (bool value)
   (if value "true\n" "false\n"))
+
+(define (package-direct-input-selector input)
+  (lambda (package)
+    (match (assoc-ref (package-direct-inputs package) input)
+      ((package . _) package))))
 
 
 (define (wrapped-dbus-service service program variable value)
@@ -694,6 +702,64 @@ system components to know the set of logged-in users as well as their session
 types (graphical, console, remote, etc.).  It can also clean up after users
 when they log out."
   (service elogind-service-type config))
+
+
+;;;
+;;; GNOME desktop service.
+;;;
+
+(define-record-type* <gnome-desktop-configuration> gnome-desktop-configuration
+  make-gnome-desktop-configuration
+  gnome-desktop-configuration
+  (gnome-package gnome-package (default gnome)))
+
+(define gnome-desktop-service-type
+  (service-type
+   (name 'gnome-desktop)
+   (extensions
+    (list (service-extension polkit-service-type
+                             (compose list
+                                      (package-direct-input-selector
+                                       "gnome-settings-daemon")
+                                      gnome-package))
+          (service-extension profile-service-type
+                             (compose list
+                                      gnome-package))))))
+
+(define* (gnome-desktop-service #:key (config (gnome-desktop-configuration)))
+  "Return a service that adds the @code{gnome} package to the system profile,
+and extends polkit with the actions from @code{gnome-settings-daemon}."
+  (service gnome-desktop-service-type config))
+
+
+;;;
+;;; XFCE desktop service.
+;;;
+
+(define-record-type* <xfce-desktop-configuration> xfce-desktop-configuration
+  make-xfce-desktop-configuration
+  xfce-desktop-configuration
+  (xfce xfce-package (default xfce)))
+
+(define xfce-desktop-service-type
+  (service-type
+   (name 'xfce-desktop)
+   (extensions
+    (list (service-extension polkit-service-type
+                             (compose list
+                                      (package-direct-input-selector
+                                       "thunar")
+                                      xfce-package))
+          (service-extension profile-service-type
+                             (compose list
+                                      xfce-package))))))
+
+(define* (xfce-desktop-service #:key (config (xfce-desktop-configuration)))
+  "Return a service that adds the @code{xfce} package to the system profile,
+and extends polkit with the abilit for @code{thunar} to manipulate the file
+system as root from within a user session, after the user has authenticated
+with the administrator's password."
+  (service xfce-desktop-service-type config))
 
 
 ;;;
