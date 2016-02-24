@@ -3379,7 +3379,16 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1s6p7yxmi12q4y05va53rljwyzd6ry492r1pgi7wwq6cznivhgly"))))
+           "1s6p7yxmi12q4y05va53rljwyzd6ry492r1pgi7wwq6cznivhgly"))
+        (patches
+         (list (origin
+                 (method url-fetch)
+                 (uri "https://cgit.freedesktop.org/xorg/driver/\
+xf86-video-voodoo/patch/?id=9172ae566a0e85313fc80ab62b4455393eefe593")
+                 (sha256
+                  (base32
+                   "0rndmxf5b8j3hjnhrwrnzsq5024fli134fj1mprhkcrvax2zq8db"))
+                 (file-name "xf86-video-voodoo-pcitag.patch"))))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
