@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -332,14 +332,15 @@ especially over Wi-Fi, cellular, and long-distance links.")
 (define-public dropbear
   (package
     (name "dropbear")
-    (version "2014.63")
+    (version "2015.71")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://matt.ucc.asn.au/" name "/releases/"
+                    "https://matt.ucc.asn.au/" name "/releases/"
                     name "-" version ".tar.bz2"))
               (sha256
-               (base32 "1bjpbg2vi5f332q4bqxkidkjfxsqmnqvp4g1wyh8d99b8gg94nar"))))
+               (base32
+                "1bw3lzmisn6gs6zy9vcqbfnicl437ydskqcayklpw60fkhb18qip"))))
     (build-system gnu-build-system)
     (arguments  `(#:tests? #f)) ; There is no "make check" or anything similar
     (inputs `(("zlib" ,zlib)))
