@@ -22,6 +22,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages kde-frameworks)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages qt))
@@ -51,3 +52,28 @@ straightforward and cross-platform API for a range of cryptographic features,
 including SSL/TLS, X.509 certificates, SASL, OpenPGP, S/MIME CMS, and smart
 cards.")
     (license license:lgpl2.1)))
+
+(define-public snorenotify
+  (package
+    (name "snorenotify")
+    (version "0.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://download.kde.org/stable/snorenotify/"
+                            version "/src/snorenotify-" version ".tar.xz"))
+        (sha256
+         (base32
+          "0jz6ivk90h7iwgyxar7xzzj8yvzn6s1my6cqs9bdnwqswfk1nhbd"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ; both tests fail, require display
+    (inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qt" ,qt)))
+    (home-page "https://techbase.kde.org/Projects/Snorenotify")
+    (synopsis "Qt notification framework")
+    (description "Snorenotify is a multi platform Qt notification framework.
+Using a plugin system it is possible to create notifications with many
+different notification systems.")
+    (license license:lgpl3)))
