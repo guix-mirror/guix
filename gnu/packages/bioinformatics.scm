@@ -40,6 +40,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpio)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
@@ -1079,6 +1080,52 @@ preparation protocols.")
     (description
      "Cutadapt finds and removes adapter sequences, primers, poly-A tails and
 other types of unwanted sequence from high-throughput sequencing reads.")
+    (license license:expat)))
+
+(define-public libbigwig
+  (package
+    (name "libbigwig")
+    (version "0.1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/dpryan79/libBigWig/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "098rjh35pi4a9q83n8wiwvyzykjqj6l8q189p1xgfw4ghywdlvw1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'check 'disable-curl-test
+           (lambda _
+             (substitute* "Makefile"
+               (("./test/testRemote.*") ""))
+             #t))
+         ;; This has been fixed with the upstream commit 4ff6959cd8a0, but
+         ;; there has not yet been a release containing this change.
+         (add-before 'install 'create-target-dirs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/lib"))
+               (mkdir-p (string-append out "/include"))
+               #t))))))
+    (inputs
+     `(("zlib" ,zlib)
+       ("curl" ,curl)))
+    (native-inputs
+     `(("doxygen" ,doxygen)))
+    (home-page "https://github.com/dpryan79/libBigWig")
+    (synopsis "C library for handling bigWig files")
+    (description
+     "This package provides a C library for parsing local and remote BigWig
+files.")
     (license license:expat)))
 
 (define-public deeptools
