@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -142,10 +142,11 @@ Publish ~a over HTTP.\n") %store-directory)
 (define base64-encode-string
   (compose base64-encode string->utf8))
 
-(define (narinfo-string store-path path-info key)
-  "Generate a narinfo key/value string for STORE-PATH using the details in
-PATH-INFO.  The narinfo is signed with KEY."
-  (let* ((url        (string-append "nar/" (basename store-path)))
+(define (narinfo-string store store-path key)
+  "Generate a narinfo key/value string for STORE-PATH; an exception is raised
+if STORE-PATH is invalid.  The narinfo is signed with KEY."
+  (let* ((path-info  (query-path-info store store-path))
+         (url        (string-append "nar/" (basename store-path)))
          (hash       (bytevector->nix-base32-string
                       (path-info-hash path-info)))
          (size       (path-info-nar-size path-info))
@@ -199,15 +200,13 @@ References: ~a~%"
 
 (define (render-narinfo store request hash)
   "Render metadata for the store path corresponding to HASH."
-  (let* ((store-path (hash-part->path store hash))
-         (path-info (and (not (string-null? store-path))
-                         (query-path-info store store-path))))
-    (if path-info
+  (let ((store-path (hash-part->path store hash)))
+    (if (string-null? store-path)
+        (not-found request)
         (values '((content-type . (application/x-nix-narinfo)))
                 (cut display
-                     (narinfo-string store-path path-info (force %private-key))
-                     <>))
-        (not-found request))))
+                     (narinfo-string store store-path (force %private-key))
+                     <>)))))
 
 (define (render-nar request store-item)
   "Render archive of the store path corresponding to STORE-ITEM."
