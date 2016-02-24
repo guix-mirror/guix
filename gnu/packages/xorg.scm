@@ -2811,10 +2811,10 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "e41040f"))
+  (let ((commit "d167280"))
     (package
       (name "xf86-video-intel")
-      (version (string-append "2.99.917." commit))
+      (version (string-append "2.99.917-1-" commit))
       (source
        (origin
          ;; there's no current tarball
@@ -2824,7 +2824,7 @@ X server.")
                (commit commit)))
          (sha256
           (base32
-           "1gfh0ghkaqv4nfjdgbi6digqkz13hcnl56nl4vy0dj5lcrmrdxxs"))
+           "16hfcj11lbn6lp0hgrixidbfb7mghm1yn4lynmymm985w1gg0n72"))
          (file-name (string-append name "-" version))))
       (build-system gnu-build-system)
       (inputs `(("mesa" ,mesa)
