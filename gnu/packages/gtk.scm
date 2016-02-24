@@ -1107,7 +1107,24 @@ information.")
                 "12xmmcnq4138dlbhmqa45wqza8dky4lf856sp80h6xjwl2g7a85l"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before
+             'configure 'fix-docbook
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "configure"
+               ;; The configure check is overzealous about making sure that
+               ;; things are in place -- it uses the xmlcatalog tool to make
+               ;; sure that docbook-xsl is available, but this tool can only
+               ;; look in one catalog file, unlike the $XML_CATALOG_FILES
+               ;; variable that Guix defines.  Fool the test by using the
+               ;; docbook-xsl catalog explicitly and get on with life.
+               (("\"\\$XML_CATALOG_FILE\" \
+\"http://docbook.sourceforge.net/release/xsl/")
+                (string-append (assoc-ref %build-inputs "docbook-xsl")
+                               "/xml/xsl/docbook-xsl-1.78.1/catalog.xml \
+\"http://docbook.sourceforge.net/release/xsl/"))))))
+       #:configure-flags
        (list (string-append "--with-xml-catalog="
                             (assoc-ref %build-inputs "docbook-xml")
                             "/xml/dtd/docbook/catalog.xml"))))
