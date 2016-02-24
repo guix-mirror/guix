@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -822,3 +823,30 @@ supports many data structures including strings, hashes, lists, sets, sorted
 sets, bitmaps and hyperloglogs.")
     (home-page "http://redis.io/")
     (license bsd-3)))
+
+(define-public kyotocabinet
+  (package
+    (name "kyotocabinet")
+    (version "1.2.76")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://fallabs.com/kyotocabinet/pkg/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0g6js20x7vnpq4p8ghbw3mh9wpqksya9vwhzdx6dnlf354zjsal1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "LDFLAGS=-Wl,-rpath="
+                       (assoc-ref %outputs "out") "/lib"))))
+    (inputs `(("zlib" ,zlib)))
+    (home-page "http://fallabs.com/kyotocabinet/")
+    (synopsis
+     "Kyoto Cabinet is a modern implementation of the DBM database")
+    (description
+     "Kyoto Cabinet is a standalone file-based database that supports Hash
+and B+ Tree data storage models.  It is a fast key-value lightweight
+database and supports many programming languages.  It is a NoSQL database.")
+    (license gpl3+)))
