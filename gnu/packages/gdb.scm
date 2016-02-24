@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,14 +37,14 @@
 (define-public gdb
   (package
     (name "gdb")
-    (version "7.10.1")
+    (version "7.11")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gdb/gdb-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1mfnjcwnwm5cg4rc9pncs9v356a0bz6ymjyac56mbj6784yjzir5"))))
+               "1hg5kwwdvi9b9nxzxfjnx8fx3gip75fqyvkp82xpf3b3rcb42hvs"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; FIXME "make check" fails on single-processor systems.
