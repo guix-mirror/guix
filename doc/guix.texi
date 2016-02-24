@@ -377,9 +377,10 @@ Create the group and user accounts for build users as explained below
 (@pxref{Build Environment Setup}).
 
 @item
-Run and set the Guix daemon to automatically start on boot.
+Run the daemon, and set it to automatically start on boot.
 
-If your host distro uses the systemd init system:
+If your host distro uses the systemd init system, this can be achieved
+with these commands:
 
 @example
 # cp ~root/.guix-profile/lib/systemd/system/guix-daemon.service \
@@ -390,8 +391,8 @@ If your host distro uses the systemd init system:
 If your host distro uses the Upstart init system:
 
 @example
-# ~root/.guix-profile/bin/guix-daemon --build-users-group=guixbuild
 # cp ~root/.guix-profile/lib/upstart/system/guix-daemon.conf /etc/init/
+# start guix-daemon
 @end example
 
 Otherwise, you can still start the daemon manually with:
@@ -399,7 +400,6 @@ Otherwise, you can still start the daemon manually with:
 @example
 # ~root/.guix-profile/bin/guix-daemon --build-users-group=guixbuild
 @end example
-
 
 @item
 Make the @command{guix} command available to other users on the machine,
@@ -435,7 +435,7 @@ authorize them:
 @end example
 @end enumerate
 
-This completes root-level install of Guix. Each user will need to
+This completes root-level install of Guix.  Each user will need to
 perform additional steps to make their Guix envionment ready for use,
 @pxref{Application Setup}.
 
@@ -446,16 +446,18 @@ the root profile:
 # guix package -i hello
 @end example
 
-If your host distro uses @code{locales} that are incompatible with the
-@code{glibc} that Guix uses, you will see @code{warning: failed to
-install locale: Invalid argument}.  This may be ignored, or remedied by
-installing Locales as root, @pxref{Application Setup}.
-
 The @code{guix} package must remain available in @code{root}'s profile,
 or it would become subject to garbage collection---in which case you
 would find yourself badly handicapped by the lack of the @command{guix}
-command. In other words, don't remove @code{guix} by running @code{guix
-package -r guix}.
+command.  In other words, do not remove @code{guix} by running
+@code{guix package -r guix}.
+
+The binary installation tarball can be (re)produced and verified simply
+by running the following command in the Guix source tree:
+
+@example
+make guix-binary.@var{system}.tar.xz
+@end example
 
 
 @node Requirements
