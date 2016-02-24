@@ -1992,9 +1992,15 @@ On completion, @command{guix package} will use packages and package
 versions from this just-retrieved copy of Guix.  Not only that, but all
 the Guix commands and Scheme modules will also be taken from that latest
 version.  New @command{guix} sub-commands added by the update also
-become available@footnote{Under the hood, @command{guix pull} updates
-the @file{~/.config/guix/latest} symbolic link to point to the latest
-Guix, and the @command{guix} command loads code from there.}.
+become available.
+
+Any user can update their Guix copy using @command{guix pull}, and the
+effect is limited to the user who run @command{guix pull}.  For
+instance, when user @code{root} runs @command{guix pull}, this has no
+effect on the version of Guix that user @code{alice} sees, and vice
+versa@footnote{Under the hood, @command{guix pull} updates the
+@file{~/.config/guix/latest} symbolic link to point to the latest Guix,
+and the @command{guix} command loads code from there.}.
 
 The @command{guix pull} command is usually invoked with no arguments,
 but it supports the following options:
