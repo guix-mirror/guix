@@ -172,6 +172,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/jemalloc.scm			\
   gnu/packages/jrnl.scm				\
   gnu/packages/julia.scm			\
+  gnu/packages/kde.scm              \
   gnu/packages/kde-frameworks.scm		\
   gnu/packages/key-mon.scm			\
   gnu/packages/kodi.scm				\
