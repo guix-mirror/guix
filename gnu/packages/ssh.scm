@@ -45,15 +45,15 @@
 (define-public libssh
   (package
     (name "libssh")
-    (version "0.6.5")
+    (version "0.7.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://red.libssh.org/attachments/download/121/libssh-"
+                    "https://red.libssh.org/attachments/download/195/libssh-"
                     version ".tar.xz"))
               (sha256
                (base32
-                "0b6wyx6bwbb8jpn8x4rhlrdiqwqrwrs0mxjmrnqykm9kw1ijgm8g"))))
+                "165g49i4kmm3bfsjm0n8hm21kadv79g9yjqyq09138jxanz4dvr6"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_GCRYPT=ON")
@@ -71,17 +71,19 @@ remote applications.")
     (home-page "http://www.libssh.org")
     (license license:lgpl2.1+)))
 
-(define libssh-0.5                                ; kept private
+(define libssh-0.6 ; kept private for use in guile-ssh
   (package (inherit libssh)
-    (version "0.5.5")
+    (version "0.6.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://red.libssh.org/attachments/download/51/libssh-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://red.libssh.org/attachments/"
+                                  "download/121/libssh-"
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "17cfdff4hc0ijzrr15biq29fiabafz0bw621zlkbwbc1zh2hzpy0"))
-              (patches (list (search-patch "libssh-CVE-2014-0017.patch")))))))
+                "0b6wyx6bwbb8jpn8x4rhlrdiqwqrwrs0mxjmrnqykm9kw1ijgm8g"))
+              (patches (list
+                        (search-patch "libssh-0.6.5-CVE-2016-0739.patch")))))))
 
 (define-public libssh2
   (package
@@ -255,7 +257,7 @@ Additionally, various channel-specific options can be negotiated.")
                      ("pkg-config" ,pkg-config)
                      ("which" ,which)))
     (inputs `(("guile" ,guile-2.0)
-              ("libssh" ,libssh)
+              ("libssh" ,libssh-0.6)
               ("libgcrypt" ,libgcrypt)))
     (synopsis "Guile bindings to libssh")
     (description
