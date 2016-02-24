@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -85,14 +86,15 @@ remote applications.")
 (define-public libssh2
   (package
    (name "libssh2")
-   (version "1.4.3")
+   (version "1.7.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
-                   "http://www.libssh2.org/download/libssh2-"
+                   "https://www.libssh2.org/download/libssh2-"
                    version ".tar.gz"))
-            (sha256 (base32
-                     "0vdr478dbhbdgnniqmirawjb7mrcxckn4slhhrijxnzrkmgziipa"))))
+            (sha256
+             (base32
+              "116mh112w48vv9k3f15ggp5kxw5sj4b88dzb5j69llsh7ba1ymp4"))))
    (build-system gnu-build-system)
    ;; The installed libssh2.pc file does not include paths to libgcrypt and
    ;; zlib libraries, so we need to propagate the inputs.
@@ -107,6 +109,24 @@ into an application to perform many different tasks when communicating with
 a server that supports the SSH-2 protocol.")
    (license license:bsd-3)
    (home-page "http://www.libssh2.org/")))
+
+;;; XXX This is a temporary package for use only by curl, to allow most users
+;;; of libssh2 to get the security update sooner while postponing the large
+;;; number of rebuilds entailed by updating curl.
+;;;
+;;; XXX This package is vulnerable to CVE-2016-7087.
+;;;
+;;; https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2016-0787
+(define-public libssh2-1.4
+  (package (inherit libssh2)
+    (version "1.4.3")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://www.libssh2.org/download/libssh2-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+                "0vdr478dbhbdgnniqmirawjb7mrcxckn4slhhrijxnzrkmgziipa"))))))
 
 (define-public openssh
   (package
