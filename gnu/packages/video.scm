@@ -608,7 +608,7 @@ treaming protocols.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://www.mplayerhq.hu/MPlayer/releases/MPlayer-"
+                   "https://www.mplayerhq.hu/MPlayer/releases/MPlayer-"
                    version ".tar.xz"))
              (sha256
               (base32
@@ -652,8 +652,8 @@ treaming protocols.")
     (arguments
      `(#:tests? #f ; no test target
        #:phases
-         (alist-replace
-          'configure
+       (modify-phases %standard-phases
+        (replace 'configure
           ;; configure does not work followed by "SHELL=..." and
           ;; "CONFIG_SHELL=..."; set environment variables instead
           (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -667,7 +667,7 @@ treaming protocols.")
                       "./configure"
                       (string-append "--extra-cflags=-I"
                                      libx11 "/include") ; to detect libx11
-		       "--disable-ffmpeg_a" ; disables bundled ffmpeg
+                      "--disable-ffmpeg_a" ; disables bundled ffmpeg
                       (string-append "--prefix=" out)
                       ;; Enable runtime cpu detection where supported,
                       ;; and choose a suitable target.
@@ -686,9 +686,8 @@ treaming protocols.")
                                     (or (%current-target-system)
                                         (nix-system->gnu-triplet
                                          (%current-system)))))))
-                      "--disable-iwmmxt"))))
-          %standard-phases)))
-    (home-page "http://www.mplayerhq.hu/design7/news.html")
+                      "--disable-iwmmxt"))))))))
+    (home-page "https://www.mplayerhq.hu/design7/news.html")
     (synopsis "Audio and video player")
     (description "MPlayer is a movie player.  It plays most MPEG/VOB, AVI,
 Ogg/OGM, VIVO, ASF/WMA/WMV, QT/MOV/MP4, RealMedia, Matroska, NUT,
