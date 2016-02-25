@@ -7822,6 +7822,44 @@ follows ideas flowing from WSGI (Web Standard Gateway Interface).")
        `(#:tests? #t
          ,@(package-arguments paste))))))
 
+(define-public python-pastescript
+  (package
+    (name "python-pastescript")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "PasteScript" version))
+       (sha256
+        (base32
+         "1h3nnhn45kf4pbcv669ik4faw04j58k8vbj1hwrc532k0nc28gy0"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(;; Uses pkg_resources provided by setuptools internally.
+       ("python-setuptools" ,python-setuptools)
+       ("python-paste" ,python-paste)
+       ("python-pastedeploy" ,python-pastedeploy)))
+    (home-page "http://pythonpaste.org/script/")
+    (arguments
+     '(;; Unfortunately, this requires the latest unittest2,
+       ;; but that requires traceback2 which requires linecache2 which requires
+       ;; unittest2.  So we're skipping tests for now.
+       ;; (Note: Apparently linetest2 only needs unittest2 for its tests,
+       ;; so in theory we could get around this situation somehow.)
+       #:tests? #f))
+    (synopsis
+     "Pluggable command line tool for serving web applications and more")
+    (description
+     "PasteScript is a plugin-friendly command line tool which provides a
+variety of features, from launching web applications to bootstrapping project
+layouts.")
+    (license license:expat)))
+
+(define-public python2-pastescript
+  (package-with-python2 python-pastescript))
+
 (define-public python-pyquery
   (package
     (name "python-pyquery")
