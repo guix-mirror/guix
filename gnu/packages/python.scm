@@ -4214,15 +4214,14 @@ standard library.")
 (define-public python-traitlets
   (package
     (name "python-traitlets")
-    (version "4.0.0")
+    (version "4.1.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/t/"
-                           "traitlets/traitlets-" version ".tar.gz"))
+       (uri (pypi-uri "traitlets" version))
        (sha256
         (base32
-         "0fr3w2xwb46c591dp7zw02bgf4d21mjy9g6rhwc9bwd4ji50n50b"))))
+         "0nxgj8jxlm1kqf8cx2x7vjid05zdgbxpqhjbdl46r8njlpgkh3j4"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -4232,7 +4231,8 @@ standard library.")
      `(("python-ipython-genutils" ,python-ipython-genutils)
        ("python-decorator" ,python-decorator)))
     (native-inputs
-     `(("python-nose" ,python-nose)))
+     `(("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
     (home-page "http://ipython.org")
     (synopsis "Configuration system for Python applications")
     (description
