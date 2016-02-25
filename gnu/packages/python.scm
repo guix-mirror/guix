@@ -6845,13 +6845,13 @@ for atomic filesystem operations.")
 (define-public python-requests-toolbelt
   (package
     (name "python-requests-toolbelt")
-    (version "0.5.0")
+    (version "0.6.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "requests-toolbelt" version))
              (sha256
               (base32
-               "1kbms1s52dhb98vbpaprr15b0ijdbqp500lpfsyjccpd8cjkyngk"))))
+               "07slish560haspn0hpwgy2izhk2snqq06s6acp8xzmhhz079qknc"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-requests" ,python-requests)))
