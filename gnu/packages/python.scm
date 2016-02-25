@@ -17,6 +17,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8235,3 +8236,34 @@ introspection of @code{zope.interface} instances in code.")
 
 (define-public python2-sphinx-repoze-autointerface
   (package-with-python2 python-sphinx-repoze-autointerface))
+
+(define-public python-psycopg2
+  (package
+    (name "python-psycopg2")
+    (version "2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "psycopg2" version))
+       (sha256
+        (base32
+         "0k4hshvrwsh8yagydyxgmd0pjm29lwdxkngcq9fzfzkmpsxrmkva"))))
+    (build-system python-build-system)
+    (arguments
+     ;; Tests would require a postgresql database "psycopg2_test"
+     ;; and a running postgresql database management service.
+     `(#:tests? #f)) ; TODO re-enable after providing a test-db.
+    (inputs
+     `(("postgresql" ,postgresql))) ; libpq
+    (home-page "http://initd.org/psycopg/")
+    (synopsis "Python PostgreSQL adapter")
+    (description
+     "psycopg2 is a thread-safe PostgreSQL adapter that implements DB-API 2.0. ")
+    (license lgpl3+)
+    (properties `((python2-variant . ,(delay python2-psycopg2))))))
+
+(define-public python2-psycopg2
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-psycopg2)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
