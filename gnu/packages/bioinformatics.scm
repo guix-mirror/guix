@@ -41,6 +41,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages doxygen)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
