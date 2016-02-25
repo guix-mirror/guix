@@ -208,13 +208,13 @@ References: ~a~%"
                      (narinfo-string store store-path (force %private-key))
                      <>)))))
 
-(define (render-nar request store-item)
+(define (render-nar store request store-item)
   "Render archive of the store path corresponding to STORE-ITEM."
   (let ((store-path (string-append %store-directory "/" store-item)))
     ;; The ISO-8859-1 charset *must* be used otherwise HTTP clients will
     ;; interpret the byte stream as UTF-8 and arbitrarily change invalid byte
     ;; sequences.
-    (if (file-exists? store-path)
+    (if (valid-path? store store-path)
         (values '((content-type . (application/x-nix-archive
                                    (charset . "ISO-8859-1"))))
                 ;; XXX: We're not returning the actual contents, deferring
@@ -314,7 +314,7 @@ blocking."
            (render-narinfo store request hash))
           ;; /nar/<store-item>
           (("nar" store-item)
-           (render-nar request store-item))
+           (render-nar store request store-item))
           (_ (not-found request)))
         (not-found request))))
 

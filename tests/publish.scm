@@ -112,6 +112,14 @@ References: ~a~%"
        (call-with-input-string nar (cut restore-file <> temp)))
      (call-with-input-file temp read-string))))
 
+(test-equal "/nar/invalid"
+  404
+  (begin
+    (call-with-output-file (string-append (%store-prefix) "/invalid")
+      (lambda (port)
+        (display "This file is not a valid store item." port)))
+    (response-code (http-get (publish-uri (string-append "/nar/invalid"))))))
+
 (test-end "publish")
 
 
