@@ -5060,17 +5060,14 @@ applications.")
 (define-public python-pep8
   (package
     (name "python-pep8")
-    (version "1.6.2")
+    (version "1.7.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/p/pep8/pep8-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "pep8" version))
         (sha256
           (base32
-            "1zybkcdw1sx84dvkfss96nhykqg9bc0cdpwpl4k9wlxm61bf7dxq"))))
+            "002rkl4lsn6x2mxmf8ar00l0m8i3mzrc6pnzz77blyksmpsxa4x1"))))
     (build-system python-build-system)
     (inputs
       `(("python-setuptools" ,python-setuptools)))
