@@ -4742,6 +4742,36 @@ screen, a window or a user defined area of the screen, with optional
 beautifying border effects.")
     (license license:gpl2+)))
 
+(define-public dconf-editor
+  (package
+    (name "dconf-editor")
+    (version "3.18.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0xdwi7g1xdmgrc9m8ii62fp2zj114gsfpmgazlnhrcmmfi97z5d7"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, gio-2.0.
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dconf" ,dconf)
+       ("gtk+" ,gtk+)
+       ("libxml2" ,libxml2)))
+    (home-page "https://git.gnome.org/browse/dconf-editor")
+    (synopsis "Graphical editor for GNOME's dconf configuration system")
+    (description
+     "Dconf-editor is a graphical tool for browsing and editing the dconf
+configuration system for GNOME.  It allows users to configure desktop
+software that do not provide their own configuration interface.")
+    (license license:lgpl2.1+)))
+
 (define-public gnome
   (package
     (name "gnome")
