@@ -4367,17 +4367,14 @@ computing.")
 (define-public python-isodate
   (package
     (name "python-isodate")
-    (version "0.5.1")
+    (version "0.5.4")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-              "https://pypi.python.org/packages/source/i/isodate/isodate-"
-              version
-              ".tar.gz"))
+        (uri (pypi-uri "isodate" version))
         (sha256
           (base32
-            "1yqjn0is0p64cmk9xhq4hc6q06jk86d60kg2jws58d78q0qysami"))))
+            "0cafaiwixgpxwh9dsd28qb0dbzsj6xpxjdkyk30ns91ps10mq422"))))
     (build-system python-build-system)
     (inputs
       `(("python-setuptools" ,python-setuptools)))
