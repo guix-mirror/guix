@@ -225,6 +225,54 @@ enable professional yet simple and intuitive pattern-based drum programming.")
 you to define complex tempo maps for entire songs or performances.")
     (license license:gpl2+)))
 
+(define-public gtklick
+  (package
+    (name "gtklick")
+    (version "0.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://das.nasophon.de/download/gtklick-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0dq1km6njnzsqdqyf6wzir9g733z0mc9vmxfg2383k3c2a2di6bp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'add-sitedirs
+           ;; .pth files are not automatically interpreted unless the
+           ;; directories containing them are added as "sites".  The directories
+           ;; are then added to those in the PYTHONPATH.  This is required for
+           ;; the operation of pygtk.
+           (lambda _
+             (substitute* "gtklick/gtklick.py"
+               (("import pygtk")
+                "import pygtk, site, sys
+for path in [path for path in sys.path if 'site-packages' in path]: site.addsitedir(path)"))))
+         (add-after 'unpack 'inject-store-path-to-klick
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "gtklick/klick_backend.py"
+               (("KLICK_PATH = 'klick'")
+                (string-append "KLICK_PATH = '"
+                               (assoc-ref inputs "klick")
+                               "/bin/klick'")))
+             #t)))))
+    (inputs
+     `(("klick" ,klick)
+       ("python2-pyliblo" ,python2-pyliblo)
+       ("python2-pygtk" ,python2-pygtk)))
+    (native-inputs
+     `(("gettext" ,gnu-gettext)))
+    (home-page "http://das.nasophon.de/gtklick/")
+    (synopsis "Simple metronome with an easy-to-use graphical interface")
+    (description
+     "Gtklick is a simple metronome with an easy-to-use graphical user
+interface.  It is implemented as a frontend to @code{klick}.")
+    (license license:gpl2+)))
+
 (define-public lilypond
   (package
     (name "lilypond")
