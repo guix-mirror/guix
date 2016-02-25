@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -158,24 +158,24 @@ streams from live audio.")
 (define-public ardour
   (package
     (name "ardour")
-    (version "4.4")
+    (version "4.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "git://git.ardour.org/ardour/ardour.git")
                     (commit version)))
               (snippet
-               ;; Ardour expects this file to exist at build time.  It can be
-               ;; created from a git checkout with:
-               ;;   ./waf create_stored_revision
+               ;; Ardour expects this file to exist at build time.  The revision
+               ;; is the output of
+               ;;    git describe HEAD | sed 's/^[A-Za-z]*+//'
                '(call-with-output-file
                     "libs/ardour/revision.cc"
                   (lambda (port)
                     (format port "#include \"ardour/revision.h\"
-namespace ARDOUR { const char* revision = \"4.4-210-ga4daf93\" ; }"))))
+namespace ARDOUR { const char* revision = \"4.7-219-g0e36f8e\" ; }"))))
               (sha256
                (base32
-                "1gnrcnq2ksnh7fsa301v1c4p5dqrbqpjylf02rg3za3ab58wxi7l"))
+                "149gswphz77m3pkzsn2nqbm6yvcfa3fva560bcvjzlgb73f64q5l"))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
