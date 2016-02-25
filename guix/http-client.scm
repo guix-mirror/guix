@@ -33,6 +33,7 @@
   #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (guix base64)
+  #:autoload   (guix hash) (sha256)
   #:use-module ((guix build utils)
                 #:select (mkdir-p dump-port))
   #:use-module ((guix build download)
@@ -280,17 +281,22 @@ Raise an '&http-get-error' condition if downloading fails."
                       string->number*)
                36))))
 
+(define (cache-file-for-uri uri)
+  "Return the name of the file in the cache corresponding to URI."
+  (let ((digest (sha256 (string->utf8 (uri->string uri)))))
+    ;; Use the "URL" alphabet because it does not contain "/".
+    (string-append (cache-directory) "/http/"
+                   (base64-encode digest 0 (bytevector-length digest)
+                                  #f #f base64url-alphabet))))
+
 (define* (http-fetch/cached uri #:key (ttl (%http-cache-ttl)) text?)
   "Like 'http-fetch', return an input port, but cache its contents in
 ~/.cache/guix.  The cache remains valid for TTL seconds."
-  (let* ((directory (string-append (cache-directory) "/http/"
-                                   (uri-host uri)))
-         (file      (string-append directory "/"
-                                   (basename (uri-path uri)))))
+  (let ((file (cache-file-for-uri uri)))
     (define (update-cache)
       ;; Update the cache and return an input port.
       (let ((port (http-fetch uri #:text? text?)))
-        (mkdir-p directory)
+        (mkdir-p (dirname file))
         (with-atomic-file-output file
           (cut dump-port port <>))
         (close-port port)
