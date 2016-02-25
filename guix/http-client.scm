@@ -291,7 +291,7 @@ Raise an '&http-get-error' condition if downloading fails."
       ;; Update the cache and return an input port.
       (let ((port (http-fetch uri #:text? text?)))
         (mkdir-p directory)
-        (call-with-output-file file
+        (with-atomic-file-output file
           (cut dump-port port <>))
         (close-port port)
         (open-input-file file)))
