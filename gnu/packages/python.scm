@@ -5108,20 +5108,19 @@ PEP 8.")
 (define-public python-mccabe
   (package
     (name "python-mccabe")
-    (version "0.3.1")
+    (version "0.4.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/m/mccabe/mccabe-"
-               version
-               ".tar.gz"))
+        (uri (pypi-uri "mccabe" version))
         (sha256
           (base32
-            "05ix3vdv5hjk4irl97n2n3c4g1vqvz7dbmkzs13f3bx97bxsczjz"))))
+            "0yr08a36h8lqlif10l4xcikbbig7q8f41gqywir7rrvnv3mi4aws"))))
     (build-system python-build-system)
     (inputs
-      `(("python-setuptools" ,python-setuptools)))
+      `(("python-pytest" ,python-pytest)
+        ("python-pytest-runner" ,python-pytest-runner)
+        ("python-setuptools" ,python-setuptools)))
     (home-page "https://github.com/flintwork/mccabe")
     (synopsis "McCabe checker, plugin for flake8")
     (description
@@ -5141,7 +5140,8 @@ complexity of Python source code.")
         (uri (pypi-uri "mccabe" version))
         (sha256
           (base32
-            "0fi4a81kr5bcv5p4xgibqr595hyj5dafkqgsmfk96mfy8w71fajs"))))))
+            "0fi4a81kr5bcv5p4xgibqr595hyj5dafkqgsmfk96mfy8w71fajs"))))
+    (inputs `(("python-setuptools", python-setuptools)))))
 
 (define-public python2-mccabe-0.2.1
   (package-with-python2 python-mccabe-0.2.1))
