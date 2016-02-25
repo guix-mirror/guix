@@ -5187,19 +5187,19 @@ complexity of Python source code.")
 (define-public python-flake8
   (package
     (name "python-flake8")
-    (version "2.5.1")
+    (version "2.5.4")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "flake8" version))
         (sha256
           (base32
-            "00sn2g5ydriv5anbipcrprpv797kh4q8rfa75w3fc7v7n14fv2j4"))))
+            "0bs9cz4fr99r2rwig1b8jwaadl1nan7kgpdzqwj0bwbckwbmh7nc"))))
     (build-system python-build-system)
     (inputs
       `(("python-setuptools" ,python-setuptools)
-        ("python-pep8" ,python-pep8-1.5.7)
-        ("python-pyflakes" ,python-pyflakes-0.8.1)
+        ("python-pep8" ,python-pep8)
+        ("python-pyflakes" ,python-pyflakes)
         ("python-mccabe" ,python-mccabe)
         ("python-mock" ,python-mock)
         ("python-nose" ,python-nose)))
