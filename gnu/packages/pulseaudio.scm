@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -114,15 +115,15 @@ rates.")
 (define pulseaudio
   (package
     (name "pulseaudio")
-    (version "6.0")
+    (version "8.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "https://freedesktop.org/software/pulseaudio/releases/pulseaudio-"
-                   version ".tar.xz"))
+                   "https://freedesktop.org/software/pulseaudio/releases/"
+                   name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1xpnfxa0d8pgf6b4qdgnkcvrvdxbbbjd5ync19h0f5hbp3h401mm"))
+               "128rrlvrgb4ia3pbzipf5mi6nvrpm6zmxn5r3bynqiikhvify3k9"))
              (modules '((guix build utils)))
              (snippet
               ;; Disable console-kit support by default since it's deprecated
