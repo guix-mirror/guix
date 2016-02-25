@@ -7535,17 +7535,14 @@ Amazon Web Services (AWS) API.")
 (define-public python-hypothesis
   (package
     (name "python-hypothesis")
-    (version "2.0.0")
+    (version "3.0.4")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hypothesis" version))
               (sha256
                (base32
-                "1la6mfpvcn640gs2v35iv8b4sh6xdhp9j5ghay0jd86c9n4fkgxr"))))
+                "0bh6pqyc56cqlbpg0ffzjs6466blyylix4nsw11qrqwf01cg9gdq"))))
     (build-system python-build-system)
-    (native-inputs
-     `(;; setuptools required for python-2 variant
-       ("python-setuptools" ,python-setuptools)))
     (propagated-inputs
      `(("python-flake8" ,python-flake8)
        ("python-pytest" ,python-pytest)))
@@ -7555,10 +7552,16 @@ much larger range of examples than you would ever want to write by hand.  It’s
 based on the Haskell library, Quickcheck, and is designed to integrate
 seamlessly into your existing Python unit testing work flow.")
     (home-page "https://github.com/DRMacIver/hypothesis")
-    (license mpl2.0)))
+    (license mpl2.0)
+    (properties `((python2-variant . ,(delay python2-hypothesis))))))
 
 (define-public python2-hypothesis
-  (package-with-python2 python-hypothesis))
+  (let ((hypothesis (package-with-python2
+                     (strip-python2-variant python-hypothesis))))
+    (package (inherit hypothesis)
+      (native-inputs
+       `(("python2-enum34" ,python2-enum34)
+         ("python2-setuptools" ,python2-setuptools))))))
 
 (define-public python-pytest-subtesthack
   (package
