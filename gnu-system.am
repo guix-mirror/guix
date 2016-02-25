@@ -679,6 +679,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/python-ipython-inputhook-ctype.patch	\
   gnu/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   gnu/packages/patches/python-configobj-setuptools.patch	\
+  gnu/packages/patches/python-paste-remove-website-test.patch	\
+  gnu/packages/patches/python-paste-remove-timing-test.patch	\
   gnu/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   gnu/packages/patches/qemu-CVE-2015-8558.patch			\
   gnu/packages/patches/qemu-CVE-2015-8567.patch			\

@@ -7774,6 +7774,54 @@ file.")
 (define-public python2-pastedeploy
   (package-with-python2 python-pastedeploy))
 
+(define-public python-paste
+  (package
+    (name "python-paste")
+    (version "2.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "Paste" version))
+       (sha256
+        (base32
+         "16dsv9qi0r4qsrsb6dilpq2rx0fnglvh36flzywcdnm2jg43mb5d"))
+       (patches (list (search-patch
+                       "python-paste-remove-website-test.patch")
+                      (search-patch
+                       "python-paste-remove-timing-test.patch")))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (propagated-inputs
+     `(;; Uses pkg_resources provided by setuptools internally.
+       ("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)))
+    (arguments
+     '(;; Tests don't pass on Python 3, but work fine on Python 2.
+       ;; (As of 2.0.2, Python 3 support in Paste is presently a bit broken,
+       ;; but is usable enough for the minimal amount it's used in MediaGoblin
+       ;; still... things should be better by the next Paste release.)
+       #:tests? #f))
+    (home-page "http://pythonpaste.org")
+    (synopsis
+     "Python web development tools, focusing on WSGI")
+    (description
+     "Paste provides a variety of web development tools and middleware which
+can be nested together to build web applications.  Paste's design closely
+follows ideas flowing from WSGI (Web Standard Gateway Interface).")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-paste))))))
+
+(define-public python2-paste
+  (let ((paste (package-with-python2
+                (strip-python2-variant python-paste))))
+    (package
+      (inherit paste)
+      (arguments
+       ;; Tests are back for Python 2!
+       `(#:tests? #t
+         ,@(package-arguments paste))))))
+
 (define-public python-pyquery
   (package
     (name "python-pyquery")

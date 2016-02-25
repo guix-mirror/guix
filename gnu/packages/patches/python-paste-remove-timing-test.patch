@@ -1,0 +1,16 @@
+Remove this test to verify that things were modified since a certain time.
+
+That assumption doesn't hold up when your environment doesn't have access to a
+real clock and thinks it's living in 1970 :)
+
+--- a/tests/test_fileapp.py    2015-04-23 13:48:37.000000000 -0700
++++ b/tests/test_fileapp.py	2016-02-22 19:20:08.332802417 -0800
+@@ -223,8 +223,6 @@
+                   status=304)
+     res = app.get('/', headers={'If-None-Match': 'asdf'},
+                   status=200)
+-    res = app.get('/', headers={'If-Modified-Since': 'Sat, 1 Jan 2005 12:00:00 GMT'},
+-                  status=200)
+     res = app.get('/', headers={'If-Modified-Since': last_mod + '; length=100'},
+                   status=304)
+     res = app.get('/', headers={'If-Modified-Since': 'invalid date'},
