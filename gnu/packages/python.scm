@@ -3961,18 +3961,18 @@ PNG, PostScript, PDF, and SVG file output.")
 (define-public python-decorator
   (package
     (name "python-decorator")
-    (version "4.0.6")
+    (version "4.0.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "decorator" version))
        (sha256
-        (base32 "1710cwsbwr8fkiq59w2min7rwgdz7ly51yz8l8yh1zbpfxcm8qhw"))))
+        (base32 "1a5vwhflfd9sh3rfb40xlyipldgdzfff6brman57hqv3661jw0lh"))))
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; no test target
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
-    (home-page "http://pypi.python.org/pypi/decorator/")
+    (home-page "https://pypi.python.org/pypi/decorator/")
     (synopsis "Python module to simplify usage of decorators")
     (description
       "The aim of the decorator module is to simplify the usage of decorators
