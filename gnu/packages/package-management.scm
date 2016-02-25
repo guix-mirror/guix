@@ -389,21 +389,23 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "34")
+    (version "49")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url
-                     "https://anonscm.debian.org/cgit/reproducible/diffoscope.git")
-                    (commit version)))
+              (method url-fetch)
+              (uri (pypi-uri name version))
               (sha256
                (base32
-                "1g8b7bpkmns0355gkr3a244affwx4xzqwahwsl6ivw4z0qv7dih8"))
-              (file-name (string-append name "-" version "-checkout"))))
+                "1mf6b7j82ckn90ggz6bp6c2jydz87xj8r8jmfl4hg7jcmf7dxmim"))))
     (build-system python-build-system)
     (arguments
-     `(#:python ,python-2
-       #:phases (modify-phases %standard-phases
+     `(#:phases (modify-phases %standard-phases
+                  ;; setup.py mistakenly requires python-magic from PyPi, even
+                  ;; though the Python bindings of `file` are sufficient.
+                  ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=815844
+                  (add-after 'unpack 'dependency-on-python-magic
+                    (lambda _
+                      (substitute* "setup.py"
+                        (("'python-magic',") ""))))
                   (add-before 'build 'disable-egg-zipping
                     (lambda _
                       ;; Leave the .egg file uncompressed.
@@ -411,27 +413,16 @@ transactions from C or Python.")
                         (display "\n[easy_install]\nzip_ok = 0\n"
                                  port)
                         (close-port port)
-                        #t)))
-                  (add-before 'build 'dependency-on-rpm
-                    (lambda _
-                      (substitute* "setup.py"
-                        ;; Somehow this requirement is reported as not met,
-                        ;; even though rpm.py is in the search path.  So
-                        ;; delete it.
-                        (("'rpm-python',") ""))
-                      #t)))
-       ;; FIXME: Some obscure test failures.
-       #:tests? #f))
+                        #t))))))
     (inputs `(("rpm" ,rpm)                        ;for rpm-python
-              ("python-file" ,python2-file)
-              ("python-debian" ,python2-debian)
-              ("python-libarchive-c" ,python2-libarchive-c)
-              ("python-tlsh" ,python2-tlsh)
+              ("python-file" ,python-file)
+              ("python-debian" ,python-debian)
+              ("python-libarchive-c" ,python-libarchive-c)
+              ("python-tlsh" ,python-tlsh)
 
               ;; Below are modules used for tests.
-              ("python-pytest" ,python2-pytest)
-              ("python-chardet" ,python2-chardet)))
-    (native-inputs `(("python-setuptools" ,python2-setuptools)))
+              ("python-pytest" ,python-pytest)
+              ("python-chardet" ,python-chardet)))
     (home-page "http://diffoscope.org/")
     (synopsis "Compare files, archives, and directories in depth")
     (description
