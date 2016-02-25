@@ -7018,16 +7018,17 @@ framework which enables you to test server connections locally.")
 (define-public python-wsgi-intercept
   (package
     (name "python-wsgi-intercept")
-    (version "0.10.3")
+    (version "1.1.2")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "wsgi_intercept" version))
              (sha256
               (base32
-               "0xyfchacywb1mql84270mcidsqc5ssyspd18yacjk82x2xc68h0r"))))
+               "14ajy415ch5d0dnspg4b592p66wlgzah7ay218flp13517fp49zl"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pytest" ,python-pytest)))
+     `(("python-pytest" ,python-pytest)
+       ("python-six" ,python-six)))
     (propagated-inputs
      `(("python-httplib2" ,python-httplib2)
        ("python-requests" ,python-requests)))
