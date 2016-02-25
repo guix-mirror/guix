@@ -4755,15 +4755,13 @@ interfaces in an easy and portable manner.")
 (define-public python-networkx
   (package
     (name "python-networkx")
-    (version "1.9.1")
+    (version "1.11")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/n/networkx/networkx-"
-             version ".tar.gz"))
+       (uri (pypi-uri "networkx" version))
        (sha256
-        (base32 "0n8wy0yq1kmdq4wh68mlhwhkndvwzx48lg41a1z0sxxms0wfp033"))))
+        (base32 "1f74s56xb4ggixiq0vxyfxsfk8p20c7a099lpcf60izv1php03hd"))))
     (build-system python-build-system)
     ;; python-decorator is needed at runtime
     (propagated-inputs
