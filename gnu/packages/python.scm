@@ -6988,13 +6988,13 @@ the last py.test invocation.")
 (define-public python-pytest-localserver
   (package
     (name "python-pytest-localserver")
-    (version "0.3.4")
+    (version "0.3.5")
     (source (origin
              (method url-fetch)
-             (uri (pypi-uri "pytest-localserver" version ".zip"))
+             (uri (pypi-uri "pytest-localserver" version))
              (sha256
               (base32
-               "050q505a7gnsz7vqidw0w5dvxjb2flzi7z734agpjzmsl85c2bcx"))))
+               "0dvqspjr6va55zwmnnc2mmpqc7mm65kxig9ya44x1z8aadzxpa4p"))))
     (build-system python-build-system)
     (arguments
       `(#:phases (modify-phases %standard-phases
