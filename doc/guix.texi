@@ -2913,7 +2913,14 @@ Procedures that make RPCs all take a server object as their first
 argument.
 
 @deffn {Scheme Procedure} valid-path? @var{server} @var{path}
-Return @code{#t} when @var{path} is a valid store path.
+@cindex invalid store items
+Return @code{#t} when @var{path} designates a valid store item and
+@code{#f} otherwise (an invalid item may exist on disk but still be
+invalid, for instance because it is the result of an aborted or failed
+build.)
+
+A @code{&nix-protocol-error} condition is raised if @var{path} is not
+prefixed by the store directory (@file{/gnu/store}).
 @end deffn
 
 @deffn {Scheme Procedure} add-text-to-store @var{server} @var{name} @var{text} [@var{references}]

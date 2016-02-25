@@ -582,7 +582,12 @@ encoding conversion errors."
     (operation (name args ...) docstring return ...)))
 
 (define-operation (valid-path? (string path))
-  "Return #t when PATH is a valid store path."
+  "Return #t when PATH designates a valid store item and #f otherwise (an
+invalid item may exist on disk but still be invalid, for instance because it
+is the result of an aborted or failed build.)
+
+A '&nix-protocol-error' condition is raised if PATH is not prefixed by the
+store directory (/gnu/store)."
   boolean)
 
 (define-operation (query-path-hash (store-path path))
