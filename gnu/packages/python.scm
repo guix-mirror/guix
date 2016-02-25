@@ -2151,14 +2151,14 @@ with sensible defaults out of the box.")
 (define-public python-wheel
   (package
     (name "python-wheel")
-    (version "0.26.0")
+    (version "0.29.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "wheel" version))
         (sha256
          (base32
-          "032k1ajijbqnv0z0k88bhf75mdimi18fcmm28mss90610lw3bbga"))))
+          "0j0n38hg1jvrmyy68f9ikvzq1gs9g0sx4ws7maf8wi3bwbbqmfqy"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)
