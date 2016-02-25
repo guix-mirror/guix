@@ -211,6 +211,19 @@ the ownership of '~a' may be incorrect!~%")
       (lambda ()
         (environ env)))))
 
+(define-syntax-rule (save-load-path-excursion body ...)
+  "Save the current values of '%load-path' and '%load-compiled-path', run
+BODY..., and restore them."
+  (let ((path %load-path)
+        (cpath %load-compiled-path))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        body ...)
+      (lambda ()
+        (set! %load-path path)
+        (set! %load-compiled-path cpath)))))
+
 (define-syntax-rule (warn-on-system-error body ...)
   (catch 'system-error
     (lambda ()
@@ -273,6 +286,9 @@ bring the system down."
            (info (_ "loading new services:~{ ~a~}...~%") to-load-names)
            (mlet %store-monad ((files (mapm %store-monad shepherd-service-file
                                             to-load)))
+             ;; Here we assume that FILES are exactly those that were computed
+             ;; as part of the derivation that built OS, which is normally the
+             ;; case.
              (load-services (map derivation->output-path files))
 
              (for-each start-service
@@ -299,7 +315,12 @@ it atomically, and then run OS's activation script."
        ;; Tell 'activate-current-system' what the new system is.
        (setenv "GUIX_NEW_SYSTEM" system)
 
-       (primitive-load (derivation->output-path script)))
+       ;; The activation script may modify '%load-path' & co., so protect
+       ;; against that.  This is necessary to ensure that
+       ;; 'upgrade-shepherd-services' gets to see the right modules when it
+       ;; computes derivations with (gexp->derivation #:modules …).
+       (save-load-path-excursion
+        (primitive-load (derivation->output-path script))))
 
       ;; Finally, try to update system services.
       (upgrade-shepherd-services os))))
