@@ -1040,44 +1040,6 @@ get the local timezone information, unless you know the zoneinfo name, and
 under several distributions that's hard or impossible to figure out.")
     (license cc0)))
 
-(define-public python-pysam
-  (package
-    (name "python-pysam")
-    (version "0.8.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/p/pysam/pysam-"
-                           version ".tar.gz"))
-       (sha256
-        (base32
-         "1fb6i6hbpzxaxb62kyyp5alaidwhj40f7c6gwbhr6njzlqd5l459"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:tests? #f ; tests are excluded in the manifest
-       #:phases
-       (alist-cons-before
-        'build 'set-flags
-        (lambda _
-          (setenv "LDFLAGS" "-lncurses")
-          (setenv "CFLAGS" "-D_CURSES_LIB=1"))
-        %standard-phases)))
-    (inputs
-     `(("python-cython"     ,python-cython)
-       ("python-setuptools" ,python-setuptools)
-       ("ncurses"           ,ncurses)
-       ("zlib"              ,zlib)))
-    (home-page "https://github.com/pysam-developers/pysam")
-    (synopsis "Python bindings to the SAMtools C API")
-    (description
-     "Pysam is a Python module for reading and manipulating files in the
-SAM/BAM format.  Pysam is a lightweight wrapper of the SAMtools C API.  It
-also includes an interface for tabix.")
-    (license license:expat)))
-
-(define-public python2-pysam
-  (package-with-python2 python-pysam))
-
 (define-public python2-pysqlite
   (package
     (name "python2-pysqlite")
