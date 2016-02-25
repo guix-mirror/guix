@@ -30,6 +30,7 @@
   #:use-module (guix build-system waf)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
@@ -945,6 +946,34 @@ essential distortions.")
      "liblo is a lightweight library that provides an easy to use
 implementation of the Open Sound Control (OSC) protocol.")
     (license license:lgpl2.1+)))
+
+(define-public python-pyliblo
+  (package
+    (name "python-pyliblo")
+    (version "0.10.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://das.nasophon.de/download/pyliblo-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "13vry6xhxm7adnbyj28w1kpwrh0kf7nw83cz1yq74wl21faz2rzw"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f)) ;no tests
+    (inputs
+     `(("python-cython" ,python-cython)
+       ("liblo" ,liblo)))
+    (home-page "http://das.nasophon.de/pyliblo/")
+    (synopsis "Python bindings for liblo")
+    (description
+     "Pyliblo is a Python wrapper for the liblo Open Sound Control (OSC)
+library.  It supports almost the complete functionality of liblo, allowing you
+to send and receive OSC messages using a nice and simple Python API.  Also
+included are the command line utilities @code{send_osc} and @code{dump_osc}.")
+    (license license:lgpl2.1+)))
+
+(define-public python2-pyliblo
+  (package-with-python2 python-pyliblo))
 
 (define-public lilv
   (package
