@@ -242,14 +242,16 @@
 (define-record-type <path-info>
   (path-info deriver hash references registration-time nar-size)
   path-info?
-  (deriver path-info-deriver)
+  (deriver path-info-deriver)                     ;string | #f
   (hash path-info-hash)
   (references path-info-references)
   (registration-time path-info-registration-time)
   (nar-size path-info-nar-size))
 
 (define (read-path-info p)
-  (let ((deriver  (read-store-path p))
+  (let ((deriver  (match (read-store-path p)
+                    ("" #f)
+                    (x  x)))
         (hash     (base16-string->bytevector (read-string p)))
         (refs     (read-store-path-list p))
         (registration-time (read-int p))

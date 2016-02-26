@@ -164,7 +164,7 @@ References: ~a~%"
                              store-path url hash size references))
          ;; Do not render a "Deriver" or "System" line if we are rendering
          ;; info for a derivation.
-         (info       (if (string-null? deriver)
+         (info       (if (not deriver)
                          base-info
                          (catch 'system-error
                            (lambda ()

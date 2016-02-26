@@ -856,6 +856,21 @@
                   (string->utf8
                    (call-with-output-string (cut write-file item <>))))))))
 
+(test-assert "path-info-deriver"
+  (let* ((b (add-text-to-store %store "build" "echo $foo > $out" '()))
+         (s (add-to-store %store "bash" #t "sha256"
+                          (search-bootstrap-binary "bash"
+                                                   (%current-system))))
+         (d (derivation %store "the-thing"
+                        s `("-e" ,b)
+                        #:env-vars `(("foo" . ,(random-text)))
+                        #:inputs `((,b) (,s))))
+         (o (derivation->output-path d)))
+    (and (build-derivations %store (list d))
+         (not (path-info-deriver (query-path-info %store b)))
+         (string=? (derivation-file-name d)
+                   (path-info-deriver (query-path-info %store o))))))
+
 (test-end "store")
 
 
