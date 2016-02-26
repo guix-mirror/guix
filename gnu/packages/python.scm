@@ -4958,20 +4958,19 @@ It is written entirely in Python.")
 (define-public python-tornado
   (package
     (name "python-tornado")
-    (version "4.1")
+    (version "4.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/t/tornado/"
-             "tornado-" version ".tar.gz"))
+       (uri (pypi-uri "tornado" version))
        (sha256
-        (base32 "0a12f00h277zbifibnj46wf14801f573irvf6hwkgja5vspd7awr"))))
+        (base32 "1gzgwayl6hmc9jfcl88bni4jcsk2jcca9dn1rvrfsvnijcjx7hn9"))))
     (build-system python-build-system)
     (inputs
      `(("python-certifi" ,python-certifi)))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
+     `(("python-backports-abc" ,python-backports-abc)
+       ("python-setuptools" ,python-setuptools)))
     (home-page "http://www.tornadoweb.org/")
     (synopsis "Python web framework and asynchronous networking library")
     (description
@@ -4988,6 +4987,7 @@ connection to each user.")
       (inputs
        `(("python2-backport-ssl-match-hostname"
           ,python2-backport-ssl-match-hostname)
+         ("python2-singledispatch", python2-singledispatch)
          ,@(package-inputs tornado))))))
 
 ;; the python- version can be removed with python-3.5
