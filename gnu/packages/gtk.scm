@@ -1121,9 +1121,10 @@ information.")
                ;; docbook-xsl catalog explicitly and get on with life.
                (("\"\\$XML_CATALOG_FILE\" \
 \"http://docbook.sourceforge.net/release/xsl/")
-                (string-append (assoc-ref %build-inputs "docbook-xsl")
-                               "/xml/xsl/docbook-xsl-1.78.1/catalog.xml \
-\"http://docbook.sourceforge.net/release/xsl/"))))))
+                (string-append (car (find-files (assoc-ref inputs "docbook-xsl")
+                                                "^catalog.xml$"))
+                               " \"http://docbook.sourceforge.net/release/xsl/")))
+             #t)))
        #:configure-flags
        (list (string-append "--with-xml-catalog="
                             (assoc-ref %build-inputs "docbook-xml")
