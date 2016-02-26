@@ -21,6 +21,7 @@
   #:use-module (guix derivations)
   #:use-module ((guix utils) #:select (%current-system))
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (graft?
@@ -43,6 +44,22 @@
   (replacement        graft-replacement)          ;derivation | store item
   (replacement-output graft-replacement-output    ;string | #f
                       (default "out")))
+
+(define (write-graft graft port)
+  "Write a concise representation of GRAFT to PORT."
+  (define (->string thing output)
+    (if (derivation? thing)
+        (derivation->output-path thing output)
+        thing))
+
+  (match graft
+    (($ <graft> origin origin-output replacement replacement-output)
+     (format port "#<graft ~a ==> ~a ~a>"
+             (->string origin origin-output)
+             (->string replacement replacement-output)
+             (number->string (object-address graft) 16)))))
+
+(set-record-type-printer! <graft> write-graft)
 
 (define* (graft-derivation store drv grafts
                            #:key
