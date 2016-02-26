@@ -1013,6 +1013,7 @@ extensive documentation, including API reference and a tutorial.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("python" ,python-2)
+       ("libglade" ,libglade)
        ("glib"   ,glib)))
     (propagated-inputs
      `(("python-pycairo"   ,python2-pycairo)     ;loaded at runtime
