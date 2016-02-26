@@ -4990,6 +4990,31 @@ connection to each user.")
           ,python2-backport-ssl-match-hostname)
          ,@(package-inputs tornado))))))
 
+;; the python- version can be removed with python-3.5
+(define-public python-backports-abc
+  (package
+    (name "python-backports-abc")
+      (version "0.4")
+      (source
+        (origin
+          (method url-fetch)
+          (uri (pypi-uri "backports_abc" version))
+          (sha256
+           (base32
+            "19fh75lni9pb673n2fn505m1rckm0af0szcv5xx1qm1xpa940glb"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/cython/backports_abc")
+    (synopsis "Backport of additions to the 'collections.abc' module.")
+    (description
+     "Python-backports-abc provides a backport of additions to the
+'collections.abc' module in Python-3.5.")
+    (license psfl)))
+
+(define-public python2-backports-abc
+  (package-with-python2 python-backports-abc))
+
 (define-public python-waf
   (package
     (name "python-waf")
