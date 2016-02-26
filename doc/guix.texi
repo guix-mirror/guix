@@ -9612,7 +9612,7 @@ example graph.
 @end table
 
 @node Running GuixSD in a VM
-@subsection Running GuixSD in a virtual machine
+@subsection Running GuixSD in a Virtual Machine
 
 One way to run GuixSD in a virtual machine (VM) is to build a GuixSD
 virtual machine image using @command{guix system vm-image}
