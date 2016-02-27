@@ -34,6 +34,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
@@ -4811,3 +4812,56 @@ software that do not provide their own configuration interface.")
      "GNOME is an intutive and attractive desktop environment.  It aims to be
 an easy and elegant way to use your computer.")
     (license license:gpl2+)))
+
+(define-public byzanz
+  ;; The last stable release of Byzanz was in 2011, but there have been many
+  ;; useful commits made to the Byzanz repository since then that it would be
+  ;; silly to use such an old release.
+  (let ((commit "f7af3a5bd252db84af8365bd059c117a7aa5c4af"))
+    (package
+      (name "byzanz")
+      (version (string-append "0.2-1." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://git.gnome.org/byzanz")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1l60myzxf9cav27v5v3nsijlslz9r7ip6d5kiirfpkf9k0w26hz3"))))
+      (build-system glib-or-gtk-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'bootstrap
+             (lambda _
+               ;; The build system cleverly detects that we're not building from
+               ;; a release tarball and turns on -Werror for GCC.
+               ;; Unsurprisingly, there is a warning during compilation that
+               ;; causes the build to fail unnecessarily, so we remove the flag.
+               (substitute* '("configure.ac")
+                 (("-Werror") ""))
+               ;; The autogen.sh script in gnome-common will run ./configure
+               ;; by default, which is problematic because source shebangs
+               ;; have not yet been patched.
+               (setenv "NOCONFIGURE" "t")
+               (zero? (system* "sh" "autogen.sh")))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("gnome-common" ,gnome-common)
+         ("intltool" ,intltool)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)
+         ("which" ,which)))
+      (inputs
+       `(("glib" ,glib)
+         ("gstreamer" ,gstreamer)
+         ("gst-plugins-base" ,gst-plugins-base)
+         ("gtk+" ,gtk+)))
+      (synopsis "Desktop recording program")
+      (description "Byzanz is a simple desktop recording program with a
+command-line interface.  It can record part or all of an X display for a
+specified duration and save it as a GIF encoded animated image file.")
+      (home-page "https://git.gnome.org/browse/byzanz")
+      (license license:gpl2+))))
