@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
@@ -30,6 +30,7 @@
   #:use-module (guix build-system waf)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages autotools)
@@ -158,24 +159,24 @@ streams from live audio.")
 (define-public ardour
   (package
     (name "ardour")
-    (version "4.4")
+    (version "4.7")
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "git://git.ardour.org/ardour/ardour.git")
                     (commit version)))
               (snippet
-               ;; Ardour expects this file to exist at build time.  It can be
-               ;; created from a git checkout with:
-               ;;   ./waf create_stored_revision
+               ;; Ardour expects this file to exist at build time.  The revision
+               ;; is the output of
+               ;;    git describe HEAD | sed 's/^[A-Za-z]*+//'
                '(call-with-output-file
                     "libs/ardour/revision.cc"
                   (lambda (port)
                     (format port "#include \"ardour/revision.h\"
-namespace ARDOUR { const char* revision = \"4.4-210-ga4daf93\" ; }"))))
+namespace ARDOUR { const char* revision = \"4.7-219-g0e36f8e\" ; }"))))
               (sha256
                (base32
-                "1gnrcnq2ksnh7fsa301v1c4p5dqrbqpjylf02rg3za3ab58wxi7l"))
+                "149gswphz77m3pkzsn2nqbm6yvcfa3fva560bcvjzlgb73f64q5l"))
               (file-name (string-append name "-" version))))
     (build-system waf-build-system)
     (arguments
@@ -945,6 +946,34 @@ essential distortions.")
      "liblo is a lightweight library that provides an easy to use
 implementation of the Open Sound Control (OSC) protocol.")
     (license license:lgpl2.1+)))
+
+(define-public python-pyliblo
+  (package
+    (name "python-pyliblo")
+    (version "0.10.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://das.nasophon.de/download/pyliblo-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "13vry6xhxm7adnbyj28w1kpwrh0kf7nw83cz1yq74wl21faz2rzw"))))
+    (build-system python-build-system)
+    (arguments `(#:tests? #f)) ;no tests
+    (inputs
+     `(("python-cython" ,python-cython)
+       ("liblo" ,liblo)))
+    (home-page "http://das.nasophon.de/pyliblo/")
+    (synopsis "Python bindings for liblo")
+    (description
+     "Pyliblo is a Python wrapper for the liblo Open Sound Control (OSC)
+library.  It supports almost the complete functionality of liblo, allowing you
+to send and receive OSC messages using a nice and simple Python API.  Also
+included are the command line utilities @code{send_osc} and @code{dump_osc}.")
+    (license license:lgpl2.1+)))
+
+(define-public python2-pyliblo
+  (package-with-python2 python-pyliblo))
 
 (define-public lilv
   (package
@@ -2032,4 +2061,5 @@ utility.  File formats are abstracted from its core, so it can process any file
 that contains WAVE data, compressed or not---provided there exists a format
 module to handle that particular file type.")
     (home-page "http://etree.org/shnutils/shntool/")
-    (license license:gpl3+)))
+    ;; 'install-sh' bears the x11 license
+    (license (list license:gpl2+ license:x11))))

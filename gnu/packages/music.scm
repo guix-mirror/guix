@@ -2,6 +2,8 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2016 Al McElrath <hello@yrns.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,13 +34,15 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages backup)
   #:use-module (gnu packages base) ;libbdf
-  #:use-module (gnu packages boost)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages code)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages doxygen)
   #:use-module (gnu packages flex)
@@ -46,6 +50,7 @@
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
@@ -145,64 +150,32 @@ many input formats and provides a customisable Vi-style user interface.")
 (define-public hydrogen
   (package
     (name "hydrogen")
-    (version "0.9.5.1")
+    (version "0.9.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://sourceforge/hydrogen/Hydrogen/"
-                    (version-prefix version 3) "%20Sources/"
-                    "hydrogen-" version ".tar.gz"))
+                    "https://github.com/hydrogen-music/hydrogen/archive/"
+                    version ".tar.gz"))
               (sha256
                (base32
-                "1fvyp6gfzcqcc90dmaqbm11p272zczz5pfz1z4lj33nfr7z0bqgb"))))
-    (build-system gnu-build-system)
+                "0vxnaqfmcv7hhk0cj67imdcqngspnck7f0wfmvhfgfqa7x1xznll"))))
+    (build-system cmake-build-system)
     (arguments
-     `(#:tests? #f ;no "check" target
-       #:phases
-       ;; TODO: Add scons-build-system and use it here.
-       (modify-phases %standard-phases
-         (delete 'configure)
-         (add-after 'unpack 'scons-propagate-environment
-                    (lambda _
-                      ;; By design, SCons does not, by default, propagate
-                      ;; environment variables to subprocesses.  See:
-                      ;; <http://comments.gmane.org/gmane.linux.distributions.nixos/4969>
-                      ;; Here, we modify the Sconstruct file to arrange for
-                      ;; environment variables to be propagated.
-                      (substitute* "Sconstruct"
-                        (("^env = Environment\\(")
-                         "env = Environment(ENV=os.environ, "))))
-         (replace 'build
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (let ((out (assoc-ref outputs "out")))
-                      (zero? (system* "scons"
-                                      (string-append "prefix=" out)
-                                      "lrdf=0" ; cannot be found
-                                      "lash=1")))))
-         (add-before
-          'install
-          'fix-img-install
-          (lambda _
-            ;; The whole ./data/img directory is copied to the target first.
-            ;; Scons complains about existing files when we try to install all
-            ;; images a second time.
-            (substitute* "Sconstruct"
-              (("os.path.walk\\(\"./data/img/\",install_images,env\\)") ""))
-            #t))
-         (replace 'install (lambda _ (zero? (system* "scons" "install")))))))
+    `(#:test-target "tests"))
     (native-inputs
-     `(("scons" ,scons)
-       ("python" ,python-2)
+     `(("cppunit" ,cppunit)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("zlib" ,zlib)
-       ("libtar" ,libtar)
-       ("alsa-lib" ,alsa-lib)
+     `(("alsa-lib" ,alsa-lib)
        ("jack" ,jack-1)
+       ;; ("ladspa" ,ladspa) ; cannot find during configure
        ("lash" ,lash)
-       ;;("lrdf" ,lrdf) ;FIXME: cannot be found by scons
+       ("libarchive" ,libarchive)
+       ("libsndfile" ,libsndfile)
+       ("libtar" ,libtar)
+       ("lrdf" ,lrdf)
        ("qt" ,qt-4)
-       ("libsndfile" ,libsndfile)))
+       ("zlib" ,zlib)))
     (home-page "http://www.hydrogen-music.org")
     (synopsis "Drum machine")
     (description
@@ -250,6 +223,54 @@ enable professional yet simple and intuitive pattern-based drum programming.")
     (description
      "klick is an advanced command-line based metronome for JACK.  It allows
 you to define complex tempo maps for entire songs or performances.")
+    (license license:gpl2+)))
+
+(define-public gtklick
+  (package
+    (name "gtklick")
+    (version "0.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://das.nasophon.de/download/gtklick-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0dq1km6njnzsqdqyf6wzir9g733z0mc9vmxfg2383k3c2a2di6bp"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:python ,python-2
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'add-sitedirs
+           ;; .pth files are not automatically interpreted unless the
+           ;; directories containing them are added as "sites".  The directories
+           ;; are then added to those in the PYTHONPATH.  This is required for
+           ;; the operation of pygtk.
+           (lambda _
+             (substitute* "gtklick/gtklick.py"
+               (("import pygtk")
+                "import pygtk, site, sys
+for path in [path for path in sys.path if 'site-packages' in path]: site.addsitedir(path)"))))
+         (add-after 'unpack 'inject-store-path-to-klick
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "gtklick/klick_backend.py"
+               (("KLICK_PATH = 'klick'")
+                (string-append "KLICK_PATH = '"
+                               (assoc-ref inputs "klick")
+                               "/bin/klick'")))
+             #t)))))
+    (inputs
+     `(("klick" ,klick)
+       ("python2-pyliblo" ,python2-pyliblo)
+       ("python2-pygtk" ,python2-pygtk)))
+    (native-inputs
+     `(("gettext" ,gnu-gettext)))
+    (home-page "http://das.nasophon.de/gtklick/")
+    (synopsis "Simple metronome with an easy-to-use graphical interface")
+    (description
+     "Gtklick is a simple metronome with an easy-to-use graphical user
+interface.  It is implemented as a frontend to @code{klick}.")
     (license license:gpl2+)))
 
 (define-public lilypond
@@ -916,15 +937,15 @@ instrument or MIDI file player.")
 (define-public zynaddsubfx
   (package
     (name "zynaddsubfx")
-    (version "2.5.2")
+    (version "2.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://sourceforge/zynaddsubfx/zynaddsubfx/"
-                    version "/zynaddsubfx-" version ".tar.gz"))
+                    version "/zynaddsubfx-" version ".tar.bz2"))
               (sha256
                (base32
-                "11yrady7xwfrzszkk2fvq81ymv99mq474h60qnirk27khdygk24m"))))
+                "04da54p19p7f5wm6vm7abbjbsil1qf7n5f4adj01jm6b0wqigvgb"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1078,3 +1099,38 @@ computer's keyboard.")
 JACK for audio and ALSA sequencer for MIDI as multimedia infrastructures and
 follows a traditional multi-track tape recorder control paradigm.")
     (license license:gpl2+)))
+
+(define-public pianobar
+  (package
+    (name "pianobar")
+    (version "2015.11.22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/PromyLOPh/"
+                                  name "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "022df19bhxqvkhy0qy21xahba5s1fm17b13y0p9p9dnf2yl44wfv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags (list "CC=gcc" "CFLAGS=-std=c99"
+                          (string-append "PREFIX=" %output))
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
+    (inputs
+     `(("ao" ,ao)
+       ("curl" ,curl)
+       ("libgcrypt" ,libgcrypt)
+       ("json-c" ,json-c)
+       ("ffmpeg" ,ffmpeg)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://6xq.net/projects/pianobar/")
+    (synopsis "Console-based pandora.com player")
+    (description "pianobar is a console-based music player for the
+personalized online radio pandora.com.  It has configurable keys for playing
+and managing stations, can be controlled remotely via fifo, and can run
+event-based scripts for scrobbling, notifications, etc.")
+    (license license:expat)))

@@ -30,6 +30,7 @@
                 #:select (asl2.0 bsd-2
                           gpl1+ gpl2 gpl2+ gpl3+ lgpl2.1
                           x11-style))
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -75,15 +76,16 @@
 (define-public bazaar
   (package
     (name "bazaar")
-    (version "2.6.0")
+    (version "2.7.0")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://launchpad.net/bzr/2.6/" version
+      (uri (string-append "https://launchpad.net/bzr/"
+                          (version-major+minor version) "/" version
                           "/+download/bzr-" version ".tar.gz"))
       (sha256
        (base32
-        "1c6sj77h5f97qimjc14kr532kgc0jk3wq778xrkqi0pbh9qpk509"))))
+        "1cysix5k3wa6y7jjck3ckq3abls4gvz570s0v0hxv805nwki4i8d"))))
     (build-system python-build-system)
     (inputs
      ;; Note: 'tools/packaging/lp-upload-release' and 'tools/weavemerge.sh'

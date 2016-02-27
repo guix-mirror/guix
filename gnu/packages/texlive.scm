@@ -24,6 +24,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
@@ -45,7 +46,9 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages zip)
-  #:autoload   (gnu packages texinfo) (texinfo))
+  #:autoload   (gnu packages texinfo) (texinfo)
+  #:use-module (ice-9 ftw)
+  #:use-module (srfi srfi-1))
 
 (define texlive-extra-src
   (origin
@@ -283,6 +286,77 @@ world.
 This package contains the complete TeX Live distribution.")
    (license (license:fsf-free "http://tug.org/texlive/copying.html"))
    (home-page "http://www.tug.org/texlive/")))
+
+
+;; texlive-texmf-minimal is a pruned, small version of the texlive tree,
+;; in particular dropping documentation and fonts.
+(define texlive-texmf-minimal
+  (package (inherit texlive-texmf)
+   (name "texlive-texmf-minimal")
+   (arguments
+    (substitute-keyword-arguments
+     (package-arguments texlive-texmf)
+     ((#:modules modules)
+      `((ice-9 ftw)
+        (srfi srfi-1)
+        ,@modules))
+     ((#:phases phases)
+      `(modify-phases ,phases
+         (add-after 'unpack 'prune
+           (lambda _
+             (define (delete subdir exclude)
+               "Delete all files and directories in SUBDIR except for those
+given in the list EXCLUDE."
+               (with-directory-excursion subdir
+                 (for-each delete-file-recursively
+                           (lset-difference equal?
+                                            (scandir ".")
+                                            (append '("." "..")
+                                                    exclude)))))
+             (with-directory-excursion "texmf-dist"
+               (for-each delete-file-recursively
+                         '("doc" "source" "tex4ht"))
+               ;; Delete all subdirectories of "fonts", except for "tfm" and
+               ;; any directories named "cm".
+               (delete "fonts" '("afm" "map" "pk" "source" "tfm" "type1"))
+               (delete "fonts/afm" '("public"))
+               (delete "fonts/afm/public" '("amsfonts"))
+               (delete "fonts/afm/public/amsfonts" '("cm"))
+               (delete "fonts/map" '("dvips"))
+               (delete "fonts/map/dvips" '("cm"))
+               (delete "fonts/source" '("public"))
+               (delete "fonts/source/public" '("cm"))
+               (delete "fonts/tfm" '("public"))
+               (delete "fonts/type1" '("public"))
+               (delete "fonts/type1/public" '("amsfonts"))
+               (delete "fonts/type1/public/amsfonts" '("cm")))
+             #t))))))
+   (description
+    "TeX Live provides a comprehensive TeX document production system.
+It includes all the major TeX-related programs, macro packages, and fonts
+that are free software, including support for many languages around the
+world.
+
+This package contains a small subset of the texmf-dist data.")))
+
+
+;; texlive-minimal is the same as texlive, but using texlive-texmf-minimal
+;; instead of the full texlive-texmf. It can be used, for instance, as a
+;; native input to packages that need texlive to build their documentation.
+(define-public texlive-minimal
+  (package (inherit texlive)
+   (name "texlive-minimal")
+   (inputs
+    `(("texlive-texmf" ,texlive-texmf-minimal)
+      ,@(alist-delete "texlive-texmf" (package-inputs texlive))))
+   (description
+    "TeX Live provides a comprehensive TeX document production system.
+It includes all the major TeX-related programs, macro packages, and fonts
+that are free software, including support for many languages around the
+world.
+
+This package contains a small working part of the TeX Live distribution.")))
+
 
 (define-public rubber
   (package

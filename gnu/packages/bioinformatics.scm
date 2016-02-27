@@ -1,3 +1,4 @@
+
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
@@ -39,6 +40,8 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpio)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages doxygen)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
@@ -1080,6 +1083,52 @@ preparation protocols.")
 other types of unwanted sequence from high-throughput sequencing reads.")
     (license license:expat)))
 
+(define-public libbigwig
+  (package
+    (name "libbigwig")
+    (version "0.1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/dpryan79/libBigWig/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "098rjh35pi4a9q83n8wiwvyzykjqj6l8q189p1xgfw4ghywdlvw1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'check 'disable-curl-test
+           (lambda _
+             (substitute* "Makefile"
+               (("./test/testRemote.*") ""))
+             #t))
+         ;; This has been fixed with the upstream commit 4ff6959cd8a0, but
+         ;; there has not yet been a release containing this change.
+         (add-before 'install 'create-target-dirs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (mkdir-p (string-append out "/lib"))
+               (mkdir-p (string-append out "/include"))
+               #t))))))
+    (inputs
+     `(("zlib" ,zlib)
+       ("curl" ,curl)))
+    (native-inputs
+     `(("doxygen" ,doxygen)))
+    (home-page "https://github.com/dpryan79/libBigWig")
+    (synopsis "C library for handling bigWig files")
+    (description
+     "This package provides a C library for parsing local and remote BigWig
+files.")
+    (license license:expat)))
+
 (define-public deeptools
   (package
     (name "deeptools")
@@ -1741,7 +1790,7 @@ particular, reads spanning multiple exons.")
                (base32
                 "0djmgc0pfli0jilfx8hql1axhwhqxqb8rxg2r5rg07aw73sfs5nx"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl", perl)))
+    (native-inputs `(("perl" ,perl)))
     (home-page "http://hmmer.janelia.org")
     (synopsis "Biosequence analysis using profile hidden Markov models")
     (description
@@ -1773,6 +1822,8 @@ HMMs).")
     ;; Numpy needs to be propagated when htseq is used as a Python library.
     (propagated-inputs
      `(("python-numpy" ,python2-numpy)))
+    (inputs
+     `(("python-pysam" ,python2-pysam)))
     (native-inputs
      `(("python-setuptools" ,python2-setuptools)))
     (home-page "http://www-huber.embl.de/users/anders/HTSeq/")
@@ -1964,15 +2015,13 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
 (define-public macs
   (package
     (name "macs")
-    (version "2.1.0.20140616")
+    (version "2.1.0.20151222")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/M/MACS2/MACS2-"
-                    version ".tar.gz"))
+              (uri (pypi-uri "MACS2" version))
               (sha256
                (base32
-                "11lmiw6avqhwn75sn59g4lfkrr2kk20r3rgfbx9xfqb8rg9mi2n6"))))
+                "1r2hcz6irhcq7lwbafjks98jbn34hv05avgbdjnp6w6mlfjkf8x5"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2 ; only compatible with Python 2.7
@@ -2359,7 +2408,7 @@ generated using the PacBio Iso-Seq protocol.")
 (define-public prodigal
   (package
     (name "prodigal")
-    (version "2.6.2")
+    (version "2.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2368,7 +2417,7 @@ generated using the PacBio Iso-Seq protocol.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0m8sb0fg6lmxrlpzna0am6svbnlmd3dckrhgzxxgb3gxr5fyj284"))))
+                "17srxkqd3jc77xk15pfbgg1a9xahqg7337w95mrsia7mpza4l2c9"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ;no check target
@@ -3311,6 +3360,61 @@ features; exactSNP: a SNP caller that discovers SNPs by testing signals
 against local background noises.")
     (license license:gpl3+)))
 
+(define-public stringtie
+  (package
+    (name "stringtie")
+    (version "1.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ccb.jhu.edu/software/stringtie/dl/"
+                                  "stringtie-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1cqllsc1maq4kh92isi8yadgzbmnf042hlnalpk3y59aph1z3bfz"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (delete-file-recursively "samtools-0.1.18")
+                  #t))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no test suite
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure)
+         (add-before 'build 'use-system-samtools
+           (lambda _
+             (substitute* "Makefile"
+               (("stringtie: \\$\\{BAM\\}/libbam\\.a")
+                "stringtie: "))
+             (substitute* '("gclib/GBam.h"
+                            "gclib/GBam.cpp")
+               (("#include \"(bam|sam|kstring).h\"" _ header)
+                (string-append "#include <samtools/" header ".h>")))
+             #t))
+         (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((bin (string-append (assoc-ref outputs "out") "/bin/")))
+              (install-file "stringtie" bin)
+              #t))))))
+    (inputs
+     `(("samtools" ,samtools-0.1)
+       ("zlib" ,zlib)))
+    (home-page "http://ccb.jhu.edu/software/stringtie/")
+    (synopsis "Transcript assembly and quantification for RNA-Seq data")
+    (description
+     "StringTie is a fast and efficient assembler of RNA-Seq sequence
+alignments into potential transcripts.  It uses a novel network flow algorithm
+as well as an optional de novo assembly step to assemble and quantitate
+full-length transcripts representing multiple splice variants for each gene
+locus.  Its input can include not only the alignments of raw reads used by
+other transcript assemblers, but also alignments of longer sequences that have
+been assembled from those reads.  To identify differentially expressed genes
+between experiments, StringTie's output can be processed either by the
+Cuffdiff or Ballgown programs.")
+    (license license:artistic2.0)))
+
 (define-public vcftools
   (package
     (name "vcftools")
@@ -3355,7 +3459,7 @@ data in the form of VCF files.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "1.4.1")
+    (version "1.10.0")
     (source
      (origin
        (method url-fetch)
@@ -3365,7 +3469,7 @@ data in the form of VCF files.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0b1359wbzgb2cm04h7dq05v80vik88hnsv298xxd1q1f2q4ydni7"))
+         "1i3bad7gnn2y3a1yfixzshd99xdkjc8w5bxzgifpysc6jiljwvb5"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3375,14 +3479,24 @@ data in the form of VCF files.")
 -O3 -mtune=native -Wall -Wsign-compare")
               (string-append "AM_CXXFLAGS=-lcityhash"
                              " -O3 -Wall -Wsign-compare"))
-             (("^__top_builddir__bin_vsearch_SOURCES = cityhash/city.h \\\\")
+             (("^__top_builddir__bin_vsearch_SOURCES = city.h \\\\")
               "__top_builddir__bin_vsearch_SOURCES = \\")
-             (("^cityhash/config.h \\\\") "\\")
-             (("^cityhash/city.cc \\\\") "\\"))
+             (("^city.h \\\\") "\\")
+             (("^citycrc.h \\\\") "\\")
+             (("^libcityhash_a.*") "")
+             (("noinst_LIBRARIES = libcpu_sse2.a libcpu_ssse3.a \
+libcityhash.a")
+              "noinst_LIBRARIES = libcpu_sse2.a libcpu_ssse3.a")
+             (("__top_builddir__bin_vsearch_LDADD = libcpu_ssse3.a \
+libcpu_sse2.a libcityhash.a")
+              "__top_builddir__bin_vsearch_LDADD = libcpu_ssse3.a \
+libcpu_sse2.a -lcityhash"))
            (substitute* "src/vsearch.h"
-             (("^\\#include \"cityhash/city.h\"")
-              "#include <city.h>"))
-           (delete-file-recursively "src/cityhash")
+             (("^\\#include \"city.h\"") "#include <city.h>")
+             (("^\\#include \"citycrc.h\"") "#include <citycrc.h>"))
+           (delete-file "src/city.h")
+           (delete-file "src/citycrc.h")
+           (delete-file "src/city.cc")
            #t))))
     (build-system gnu-build-system)
     (arguments
@@ -3725,13 +3839,13 @@ on Bioconductor or which replace R functions.")
 (define-public r-annotationdbi
   (package
     (name "r-annotationdbi")
-    (version "1.32.2")
+    (version "1.32.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "AnnotationDbi" version))
               (sha256
                (base32
-                "08ncdjvq0l44kqyiv32kn9wnbw1xgfb6qjfzfbjpqrcfp1jygz9j"))))
+                "1v6x62hgys5827yg2xayjrd9xawbayzm6wy0q4vxh1s6yxc9bklj"))))
     (properties
      `((upstream-name . "AnnotationDbi")))
     (build-system r-build-system)
@@ -4043,6 +4157,25 @@ extracting the desired features in a convenient format.")
 information about the latest version of the Gene Ontologies.")
     (license license:artistic2.0)))
 
+(define-public r-graph
+  (package
+    (name "r-graph")
+    (version "1.48.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "graph" version))
+              (sha256
+               (base32
+                "16w75rji3kv24gfv44w66y1a2y75ax26rl470y3ypna0ndc3rrcd"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biocgenerics" ,r-biocgenerics)))
+    (home-page "http://bioconductor.org/packages/graph")
+    (synopsis "Handle graph data structures in R")
+    (description
+     "This package implements some simple graph handling capabilities for R.")
+    (license license:artistic2.0)))
+
 (define-public r-topgo
   (package
     (name "r-topgo")
@@ -4061,6 +4194,7 @@ information about the latest version of the Gene Ontologies.")
        ("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-go-db" ,r-go-db)
+       ("r-graph" ,r-graph)
        ("r-sparsem" ,r-sparsem)))
     (home-page "http://bioconductor.org/packages/topGO")
     (synopsis "Enrichment analysis for gene ontology")
@@ -4189,6 +4323,110 @@ may be associated with a score, such as aligned reads from HT-seq experiments,
 TF binding sites, methylation scores, etc.  The package can use any tabular
 genomic feature data as long as it has minimal information on the locations of
 genomic intervals.  In addition, it can use BAM or BigWig files as input.")
+    (license license:artistic2.0)))
+
+(define-public r-org-hs-eg-db
+  (package
+    (name "r-org-hs-eg-db")
+    (version "3.2.3")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "org.Hs.eg.db_" version ".tar.gz"))
+              (sha256
+               (base32
+                "0xicgkbh6xkvs74s1piafqac63dyz2ycdyil4pj4ghhxx2sabm6p"))))
+    (properties
+     `((upstream-name . "org.Hs.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "http://www.bioconductor.org/packages/org.Hs.eg.db/")
+    (synopsis "Genome wide annotation for Human")
+    (description
+     "This package provides mappings from Entrez gene identifiers to various
+annotations for the human genome.")
+    (license license:artistic2.0)))
+
+(define-public r-org-ce-eg-db
+  (package
+    (name "r-org-ce-eg-db")
+    (version "3.2.3")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "org.Ce.eg.db_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1d0lx00ybq34yqs6mziaa0lrh77xm0ggsmi76g6k95f77gi7m1sw"))))
+    (properties
+     `((upstream-name . "org.Ce.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "http://www.bioconductor.org/packages/org.Ce.eg.db/")
+    (synopsis "Genome wide annotation for Worm")
+    (description
+     "This package provides mappings from Entrez gene identifiers to various
+annotations for the genome of the model worm Caenorhabditis elegans.")
+    (license license:artistic2.0)))
+
+(define-public r-org-dm-eg-db
+  (package
+    (name "r-org-dm-eg-db")
+    (version "3.2.3")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "org.Dm.eg.db_" version ".tar.gz"))
+              (sha256
+               (base32
+                "0mib46c7nr00l7mh290n383za9hyl91a1dc6jhjbk884jmxaxyz6"))))
+    (properties
+     `((upstream-name . "org.Dm.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "http://www.bioconductor.org/packages/org.Dm.eg.db/")
+    (synopsis "Genome wide annotation for Fly")
+    (description
+     "This package provides mappings from Entrez gene identifiers to various
+annotations for the genome of the model fruit fly Drosophila melanogaster.")
+    (license license:artistic2.0)))
+
+(define-public r-org-mm-eg-db
+  (package
+    (name "r-org-mm-eg-db")
+    (version "3.2.3")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/"
+                                  "org.Mm.eg.db_" version ".tar.gz"))
+              (sha256
+               (base32
+                "0wh1pm3npdg7070875kfgiid3bqkz3q7rq6snhk6bxfvph00298y"))))
+    (properties
+     `((upstream-name . "org.Mm.eg.db")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)))
+    (home-page "http://www.bioconductor.org/packages/org.Mm.eg.db/")
+    (synopsis "Genome wide annotation for Mouse")
+    (description
+     "This package provides mappings from Entrez gene identifiers to various
+annotations for the genome of the model mouse Mus musculus.")
     (license license:artistic2.0)))
 
 (define-public r-qtl

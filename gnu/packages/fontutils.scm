@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,7 +76,7 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
    (source (origin
             (method url-fetch)
             (uri (string-append
-                   "http://www.freedesktop.org/software/fontconfig/release/fontconfig-"
+                   "https://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
             (sha256 (base32
                      "1psrl4b4gi4wmbvwwh43lk491wsl8lgvqj146prlcha3vwjc0qyp"))))
@@ -203,16 +204,16 @@ applications should be.")
 (define-public graphite2
   (package
    (name "graphite2")
-   (version "1.3.3")
+   (version "1.3.5")
    (source
      (origin
        (method url-fetch)
-       (uri (string-append
-              "mirror://sourceforge/silgraphite/graphite2/graphite2-"
-              version ".tgz"))
+       (uri (string-append "https://github.com/silnrsi/graphite/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
          (base32
-           "1n22vvi4jl83m4sqhvd7v31bhyhyd8j6c3yjgh4zjfyrvid16jrg"))))
+           "0jrjb56zim57xg2pckfdyrw46c624mqz9zywgwza0g1bxg26940w"))))
    (build-system cmake-build-system)
    (native-inputs
     `(("python" ,python-2) ; because of "import imap" in tests
@@ -226,7 +227,7 @@ engine.  Graphite is a smart font technology designed to facilitate the
 process known as shaping.  This process takes an input Unicode text string
 and returns a sequence of positioned glyphids from the font.")
    (license license:lgpl2.1+)
-   (home-page "http://projects.palaso.org/projects/graphitedev")))
+   (home-page "https://github.com/silnrsi/graphite")))
 
 (define-public potrace
   (package
@@ -257,6 +258,28 @@ not \"jaggy\" like a bitmap, but smooth.  It can then be rendered at any
 resolution.")
     (license license:gpl2+)
     (home-page "http://potrace.sourceforge.net/")))
+
+(define-public libotf
+  (package
+    (name "libotf")
+    (version "0.9.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://savannah/releases/m17n/libotf-"
+                    version ".tar.gz"))
+              (sha256
+               (base32 "0239zvfan56w7vrppriwy77fzb10ag9llaz15nsraps2a2x6di3v"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("freetype" ,freetype)))
+    (home-page "http://www.nongnu.org/m17n/")
+    (synopsis "Library for handling OpenType Font")
+    (description "This library can read Open Type Layout Tables from an OTF
+file.  Currently these tables are supported; head, name, cmap, GDEF, GSUB, and
+GPOS.  It can convert a Unicode character sequence to a glyph code sequence by
+using the above tables.")
+    (license license:lgpl2.0+)))
 
 (define-public libspiro
   (package

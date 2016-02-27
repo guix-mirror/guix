@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +37,7 @@
      (origin
        (method url-fetch)
        (uri
-         (string-append "http://downloads.lxqt.org/libqtxdg/" version "/"
+         (string-append "https://downloads.lxqt.org/libqtxdg/" version "/"
                         name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -63,7 +64,7 @@ in Qt.")
      (origin
        (method url-fetch)
        (uri
-         (string-append "http://downloads.lxqt.org/lxqt/" version "/"
+         (string-append "https://downloads.lxqt.org/lxqt/" version "/"
                         name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -91,7 +92,7 @@ components of the LXQt desktop environment.")
      (origin
        (method url-fetch)
        (uri
-         (string-append "http://downloads.lxqt.org/lxqt/" version "/"
+         (string-append "https://downloads.lxqt.org/lxqt/" version "/"
                         name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -142,7 +143,7 @@ desktop environment.")
      (origin
        (method url-fetch)
        (uri
-         (string-append "http://downloads.lxqt.org/lxqt/" version "/"
+         (string-append "https://downloads.lxqt.org/lxqt/" version "/"
                         name "-" version ".tar.xz"))
        (sha256
         (base32

@@ -19,7 +19,7 @@
 
 (define-module (gnu packages rdf)
   #:use-module ((guix licenses)
-                #:select (non-copyleft isc gpl2 lgpl2.0+ lgpl2.1 lgpl2.1+))
+                #:select (non-copyleft isc gpl2 lgpl2.1 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
@@ -297,35 +297,6 @@ ideal (e.g. in LV2 implementations or embedded applications).")
     (description
      "Sord is a lightweight C library for storing RDF data in memory.")
     (license isc)))
-
-(define-public soprano
-  (package
-    (name "soprano")
-    (version "2.9.4")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://sourceforge/soprano/Soprano/"
-                                version "/"
-                                "soprano-" version ".tar.bz2"))
-             (sha256
-              (base32
-               "1rg0x7yg0a1cbnxz7kqk52580wla8jbnj4d4r3j7l7g7ajyny1k4"))
-             (patches (list (search-patch "soprano-find-clucene.patch")))))
-    (build-system cmake-build-system)
-    (native-inputs
-     `(("doxygen" ,doxygen)
-       ("pkg-config" ,pkg-config)))
-    (inputs
-     `(("clucene" ,clucene)
-       ("qt" ,qt-4)
-       ("redland" ,redland)))
-    (home-page "http://soprano.sourceforge.net/")
-    (synopsis "RDF data library for Qt")
-    (description "Soprano (formerly known as QRDF) is a library which
-provides a highly usable object-oriented C++/Qt4 framework for RDF data.  It
-uses different RDF storage solutions as backends through a simple plugin
-system.")
-    (license lgpl2.0+)))
 
 (define-public python-rdflib
   (package

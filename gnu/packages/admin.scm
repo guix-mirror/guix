@@ -7,6 +7,8 @@
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +37,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages linux)
@@ -48,6 +51,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages texinfo)
@@ -81,8 +85,8 @@
                          ;; is used by a bunch of services.
                          (method url-fetch)
                          (uri (string-append
-                               "http://git.savannah.gnu.org/cgit/dmd.git/patch/"
-                               "?id=d1d0ff30b3ed2b86b0a3c9bc048d2a855f8e31e6"))
+                               "http://git.savannah.gnu.org/cgit/shepherd.git/"
+                               "patch?id=d1d0ff30b3ed2b86b0a3c9bc048d2a855f8e31e6"))
                          (sha256
                           (base32
                            "1lqymypixfiyb72d6bn24m06ry2q1ljnnv0qrc89pbb4z9azaa4d"))
@@ -152,14 +156,14 @@ graphs and can export its output to different formats.")
 (define-public htop
   (package
    (name "htop")
-   (version "1.0.3")
+   (version "2.0.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://hisham.hm/htop/releases/"
                   version "/htop-" version ".tar.gz"))
             (sha256
              (base32
-              "0a8qbpsifzjwc4f45xfwm48jhm59g6q5hlib4bf7z13mgy95fp05"))))
+              "1d944hn0ldxvxfrz9acr26lpmzlwj91m0s7x2xnivnfnmfha4p6i"))))
    (build-system gnu-build-system)
    (inputs
     `(("ncurses" ,ncurses)))
@@ -1426,4 +1430,69 @@ frequently used directories by typing only a small pattern.")
 for CPU usage.  It listens to network traffic on a named interface and
 displays a table of current bandwidth usage by pairs of hosts.")
     (home-page "http://www.ex-parrot.com/~pdw/iftop/")
-    (license license:gpl3)))
+    (license license:gpl2+)))
+
+(define-public munge
+  (package
+    (name "munge")
+    (version "0.5.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/dun/munge/archive/munge-"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0njplyalwwqh7xr7xc7klc6x06mq0ak8w2pxh85w8n4hxkmqqnf5"))))
+    (inputs
+     `(("openssl" ,openssl)
+       ("libgcrypt" ,libgcrypt)))
+    (build-system gnu-build-system)
+    (home-page "http://dun.github.io/munge/")
+    (synopsis "Cluster computing authentication service")
+    (description
+     "Munge is an authentication service for creating and validating
+credentials.  It allows a process to authenticate the UID and GID of another
+local or remote process within a group of hosts having common users and
+groups.  These hosts form a security realm that is defined by a shared
+cryptographic key.  Clients within this security realm can create and validate
+credentials without the use of root privileges, reserved ports, or
+platform-specific methods.")
+    (license license:gpl3+)))
+
+(define-public audit
+  (package
+    (name "audit")
+    (version "2.4.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://people.redhat.com/sgrubb/audit/"
+                                  "audit-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1q1q51dvxscbi4kbakmd4bn0xrvwwaiwvaya79925cbrqwzxsg77"))))
+    (build-system gnu-build-system)
+    (home-page "http://people.redhat.com/sgrubb/audit/")
+    (arguments
+     `(#:configure-flags (list "--with-python=no")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             ;; In the build environmnte /etc/passwd does not contain an entry
+             ;; for root/0, so we have to patch the expected value.
+             (substitute* "auparse/test/auparse_test.ref"
+               (("=0 \\(root\\)") "=0 (unknown(0))"))
+             #t)))))
+    (inputs
+     `(("openldap" ,openldap)
+       ("openssl" ,openssl)
+       ("sasl" ,cyrus-sasl)))
+    (synopsis "User-space component to the Linux auditing system")
+    (description
+     "auditd is the user-space component to the Linux auditing system, which
+allows logging of system calls made by user-land processes.  It's responsible
+for writing audit records to the disk.  Viewing the logs is done with the
+@code{ausearch} or @code{aureport} utilities.  Configuring the audit rules is
+done with the @code{auditctl} utility.")
+    (license license:gpl2+)))

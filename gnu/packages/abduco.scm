@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,14 +25,15 @@
 (define-public abduco
   (package
    (name "abduco")
-   (version "0.4")
+   (version "0.5")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "http://www.brain-dump.org/projects/abduco/abduco-"
                   version ".tar.gz"))
             (sha256
-             (base32 "1fxwg2s5w183p0rwzsxizy9jdnilv5qqs647l3wl3khny6fp58xx"))))
+             (base32
+              "11phry5wnvwm9ckij5gxbrjfgdz3x38vpnm505q5ldc88im248mz"))))
    (build-system gnu-build-system)
    (arguments
     `(#:make-flags (list "CC=gcc"

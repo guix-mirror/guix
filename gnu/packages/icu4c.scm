@@ -31,11 +31,12 @@
    (version "55.1")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://download.icu-project.org/files/icu4c/"
-                   version
-                   "/icu4c-"
-                   (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
-                   "-src.tgz"))
+            (uri (string-append
+                  "mirror://sourceforge/icu/ICU4C/"
+                  version
+                  "/icu4c-"
+                  (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
+                  "-src.tgz"))
             (sha256
              (base32 "0ys5f5spizg45qlaa31j2lhgry0jka2gfha527n4ndfxxz5j4sz1"))
             (patches (map search-patch '("icu4c-CVE-2014-6585.patch"

@@ -241,8 +241,10 @@ HISTORY should be one of the following:
   `replace' - replace the current history item."
   (guix-buffer-with-item buffer-item
     (when %entries
-      (guix-buffer-show-entries %entries %buffer-type %entry-type)
+      ;; Set buffer item before showing entries, so that its value can
+      ;; be used by the code for displaying entries.
       (setq guix-buffer-item buffer-item)
+      (guix-buffer-show-entries %entries %buffer-type %entry-type)
       (when history
         (funcall (cl-ecase history
                    (add     #'guix-history-add)

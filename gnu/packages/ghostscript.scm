@@ -282,7 +282,7 @@ Ghostscript.  It currently includes the 35 standard PostScript fonts.")
    (version "0.2.7")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://libspectre.freedesktop.org/releases/libspectre-"
+            (uri (string-append "https://libspectre.freedesktop.org/releases/libspectre-"
                                 version ".tar.gz"))
             (sha256 (base32
                      "1v63lqc6bhhxwkpa43qmz8phqs8ci4dhzizyy16d3vkb20m846z8"))))

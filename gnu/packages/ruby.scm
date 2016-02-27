@@ -1905,7 +1905,7 @@ to reproduce user environments.")
                                         "/include/libxml2" ))))
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)
-       ("ruby-rake-compiler", ruby-rake-compiler)))
+       ("ruby-rake-compiler" ,ruby-rake-compiler)))
     (inputs
      `(("zlib" ,zlib)
        ("libxml2" ,libxml2)

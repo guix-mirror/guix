@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -177,7 +177,7 @@ numbers.")
 (define-public glpk
   (package
     (name "glpk")
-    (version "4.57")
+    (version "4.58")
     (source
      (origin
       (method url-fetch)
@@ -185,7 +185,7 @@ numbers.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0p17jj1ixd2m9lnsvx8nywmfmnplfk5gvw25r1gy84qzrjkv48vk"))))
+        "1jmrya04hgwnrxrqqs40i6m9cqka3q601cx3nh9ijyvlg90zlq24"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)))
@@ -339,7 +339,7 @@ singular value problems.")
 (define-public gnuplot
   (package
     (name "gnuplot")
-    (version "5.0.1")
+    (version "5.0.2")
     (source
      (origin
       (method url-fetch)
@@ -347,7 +347,7 @@ singular value problems.")
                           version "/gnuplot-" version ".tar.gz"))
       (sha256
        (base32
-        "0irwig94w3f8bn4a444hrjnp7w55vqwv8gqj42jiwn6zf5z5bg3w"))))
+        "146qn414z96c7cc42a1kb9a4kpjc2q2hfdwk44kjjvgmfp9k2ass"))))
     (build-system gnu-build-system)
     (inputs `(("readline" ,readline)
               ("cairo" ,cairo)

@@ -13,6 +13,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
@@ -500,7 +502,7 @@ for settings shared by various components of the GNOME desktop.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://tango.freedesktop.org/releases/icon-naming-utils-"
+      (uri (string-append "https://tango.freedesktop.org/releases/icon-naming-utils-"
                           version ".tar.bz2"))
       (sha256
        (base32
@@ -536,7 +538,7 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
     (version "0.22")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.freedesktop.org/software/" name
+              (uri (string-append "https://www.freedesktop.org/software/" name
                                   "/releases/" name "-" version ".tar.xz"))
               (sha256
                (base32
@@ -608,7 +610,7 @@ update-desktop-database: updates the database containing a cache of MIME types
     (version "1.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://freedesktop.org/~hadess/"
+             (uri (string-append "https://freedesktop.org/~hadess/"
                                  "shared-mime-info-" version ".tar.xz"))
              (sha256
               (base32
@@ -640,7 +642,7 @@ database is translated at Transifex.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://icon-theme.freedesktop.org/releases/"
+      (uri (string-append "https://icon-theme.freedesktop.org/releases/"
                           "hicolor-icon-theme-" version ".tar.gz"))
       (sha256
        (base32
@@ -939,7 +941,7 @@ library.")
     (inputs `(("glib" ,glib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("flex", flex)
+       ("flex" ,flex)
        ("bison" ,bison)))
     (home-page "http://freecode.com/projects/libidl")
     (synopsis "Create trees of CORBA Interface Definition Language files")
@@ -1583,7 +1585,7 @@ Hints specification (EWMH).")
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("python" ,python-2)
-       ("python2-pygobject", python2-pygobject-2)
+       ("python2-pygobject" ,python2-pygobject-2)
        ("zlib" ,zlib)))
     (native-inputs
      `(("intltool" ,intltool)
@@ -2259,7 +2261,7 @@ keyboard shortcuts.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.freedesktop.org/software/colord/releases/"
+       (uri (string-append "https://www.freedesktop.org/software/colord/releases/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -2323,7 +2325,7 @@ output devices.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.freedesktop.org/software/" name
+       (uri (string-append "https://www.freedesktop.org/software/" name
                            "/releases/" (version-major+minor version) "/"
                            name "-" version ".tar.xz"))
        (sha256
@@ -2403,7 +2405,7 @@ faster results and to avoid unnecessary server load.")
     (version "0.99.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://upower.freedesktop.org/releases/"
+              (uri (string-append "https://upower.freedesktop.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
@@ -3228,7 +3230,7 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
     `(("dconf" ,dconf)))
    (native-inputs
     `(("intltool" ,intltool)
-      ("itstool", itstool)
+      ("itstool" ,itstool)
       ("glib" ,glib "bin")
       ("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
@@ -3879,7 +3881,7 @@ javascript engine and the GObject introspection framework.")
      `(("dconf" ,dconf)))
     (native-inputs
      `(("intltool" ,intltool)
-       ("itstool", itstool)
+       ("itstool" ,itstool)
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)))
     (inputs
@@ -4647,4 +4649,165 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
      "Nautilus (Files) is a file manager designed to fit the GNOME desktop
 design and behaviour, giving the user a simple way to navigate and manage its
 files.")
+    (license license:gpl2+)))
+
+(define-public baobab
+  (package
+    (name "baobab")
+    (version "3.18.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1da4bdkw5bnxansl1xr4lb03d6f4h0a0qaba8i3p3rwhcd191b62"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("itstool" ,itstool)
+       ("xmllint" ,libxml2)
+       ("glib" ,glib "bin")
+       ("vala" ,vala)))
+    (inputs
+     `(("gtk+" ,gtk+)))
+    (synopsis "Disk usage analyzer for GNOME")
+    (description
+     "Baobab (Disk Usage Analyzer) is a graphical application to analyse disk
+usage in the GNOME desktop environment.  It can easily scan device volumes or
+a specific user-requested directory branch (local or remote).  Once the scan
+is complete it provides a graphical representation of each selected folder.")
+    (home-page "https://wiki.gnome.org/Apps/Baobab")
+    (license license:gpl2+)))
+
+(define-public gnome-backgrounds
+  (package
+    (name "gnome-backgrounds")
+    (version "3.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1fd7y8dh3iy88ayb8irgsihvssli6bzjzb5a6vfhi8qjbw70ymma"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (home-page "https://git.gnome.org/browse/gnome-backgrounds")
+    (synopsis "Background images for the GNOME desktop")
+    (description
+     "GNOME backgrounds package contains a collection of graphics files which
+can be used as backgrounds in the GNOME Desktop environment.  Additionally,
+the package creates the proper framework and directory structure so that you
+can add your own files to the collection.")
+    (license (list license:gpl2+
+                   license:cc-by2.0
+                   license:cc-by-sa2.0
+                   license:cc-by-sa3.0))))
+
+(define-public gnome-screenshot
+  (package
+    (name "gnome-screenshot")
+    (version "3.18.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0hc8m435q7yzvrw7jpi53kaxpmrd9w59sm7c5wibh2ng9azlv9pb"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libcanberra" ,libcanberra)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)))
+    (home-page "https://git.gnome.org/browse/gnome-screenshot")
+    (synopsis "Take pictures of your screen")
+    (description
+     "GNOME Screenshot is a utility used for taking screenshots of the entire
+screen, a window or a user defined area of the screen, with optional
+beautifying border effects.")
+    (license license:gpl2+)))
+
+(define-public dconf-editor
+  (package
+    (name "dconf-editor")
+    (version "3.18.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0xdwi7g1xdmgrc9m8ii62fp2zj114gsfpmgazlnhrcmmfi97z5d7"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, gio-2.0.
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("dconf" ,dconf)
+       ("gtk+" ,gtk+)
+       ("libxml2" ,libxml2)))
+    (home-page "https://git.gnome.org/browse/dconf-editor")
+    (synopsis "Graphical editor for GNOME's dconf configuration system")
+    (description
+     "Dconf-editor is a graphical tool for browsing and editing the dconf
+configuration system for GNOME.  It allows users to configure desktop
+software that do not provide their own configuration interface.")
+    (license license:lgpl2.1+)))
+
+(define-public gnome
+  (package
+    (name "gnome")
+    (version (package-version gnome-shell))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments '(#:builder (mkdir %output)))
+    (propagated-inputs
+     ;; TODO: Add more packages according to:
+     ;;       <https://packages.debian.org/jessie/gnome-core>.
+     `(("adwaita-icon-theme"        ,adwaita-icon-theme)
+       ("at-spi2-core"              ,at-spi2-core)
+       ("dbus"                      ,dbus)
+       ("dconf"                     ,dconf)
+       ("eog"                       ,eog)
+       ("epiphany"                  ,epiphany)
+       ("evince"                    ,evince)
+       ("gedit"                     ,gedit)
+       ("glib-networking"           ,glib-networking)
+       ("gnome-control-center"      ,gnome-control-center)
+       ("gnome-keyring"             ,gnome-keyring)
+       ("gnome-session"             ,gnome-session)
+       ("gnome-settings-daemon"     ,gnome-settings-daemon)
+       ("gnome-shell"               ,gnome-shell)
+       ("gnome-terminal"            ,gnome-terminal)
+       ("gnome-themes-standard"     ,gnome-themes-standard)
+       ("hicolor-icon-theme"        ,hicolor-icon-theme)
+       ("nautilus"                  ,nautilus)
+       ("pulseaudio"                ,pulseaudio)
+       ("shared-mime-info"          ,shared-mime-info)
+       ("totem"                     ,totem)
+       ("yelp"                      ,yelp)
+       ("zenity"                    ,zenity)))
+    (synopsis "Desktop environment (meta-package)")
+    (home-page "https://www.gnome.org/")
+    (description
+     "GNOME is an intutive and attractive desktop environment.  It aims to be
+an easy and elegant way to use your computer.")
     (license license:gpl2+)))

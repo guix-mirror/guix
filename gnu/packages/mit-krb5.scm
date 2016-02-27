@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +21,6 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages gcc)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -31,70 +30,31 @@
 (define-public mit-krb5
   (package
     (name "mit-krb5")
-    (version "1.13.2")
+    (version "1.13.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://web.mit.edu/kerberos/www/dist/krb5/"
+              (uri (string-append "http://web.mit.edu/kerberos/dist/krb5/"
                                   (version-major+minor version)
-                                  "/krb5-" version "-signed.tar"))
-              (sha256 (base32
-                       "1qbdzyrws7d0q4filsibh28z54pd5l987jr0ygv43iq9085w6a75"))))
+                                  "/krb5-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1gpscn78lv48dxccxq9ncyj53w9l2a15xmngjfa1wylvmn7g0jjx"))
+              (patches
+               (map search-patch '("mit-krb5-init-context-null-spnego.patch"
+                                   "mit-krb5-CVE-2015-8629.patch"
+                                   "mit-krb5-CVE-2015-8630.patch"
+                                   "mit-krb5-CVE-2015-8631.patch")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)
-       ("perl" ,perl)
-
-       ;; Include the patches as native-inputs.
-       ,@(map (lambda (label)
-                (let ((input-name (string-append "patch/" label))
-                      (file-name  (string-append name "-" label ".patch")))
-                  `(,input-name ,(search-patch file-name))))
-              '("CVE-2015-2695-pt1"
-                "CVE-2015-2695-pt2"
-                "CVE-2015-2696"
-                "CVE-2015-2697"
-                "CVE-2015-2698-pt1"
-                "CVE-2015-2698-pt2"))))
+       ("perl" ,perl)))
     (arguments
-     `(#:modules ((ice-9 ftw)
-                  (ice-9 match)
-                  (srfi srfi-1)
-                  ,@%gnu-build-system-modules)
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (replace 'unpack
-           (lambda* (#:key source #:allow-other-keys)
-             (define (sub-directory? name)
-               (and (not (member name '("." "..")))
-                    (equal? (stat:type (stat name))
-                            'directory)))
-             (and (zero? (system* "tar" "xvf" source))
-                  (match (find-files "." "\\.tar\\.gz$")
-                    ((inner-tar-file)
-                     (zero? (system* "tar" "xvf" inner-tar-file))))
-                  (match (scandir "." sub-directory?)
-                    ((directory)
-                     (chdir directory)
-                     #t)))))
-
-         (add-after 'unpack 'apply-patches
-           (lambda* (#:key inputs native-inputs #:allow-other-keys)
-             (let ((patches (filter (match-lambda
-                                      ((name . file)
-                                       (string-prefix? "patch/" name)))
-                                    (or native-inputs inputs))))
-               (every (match-lambda
-                        ((name . file)
-                         (format (current-error-port)
-                                 "applying '~a'...~%" name)
-                         (zero? (system* "patch" "-p1" "--force" "-i" file))))
-                      patches))))
-
-         (add-after 'apply-patches 'enter-source-directory
+         (add-after 'unpack 'enter-source-directory
            (lambda _
              (chdir "src")
              #t))
-
          (add-before 'check 'pre-check
            (lambda* (#:key inputs #:allow-other-keys)
              (let ((perl (assoc-ref inputs "perl")))

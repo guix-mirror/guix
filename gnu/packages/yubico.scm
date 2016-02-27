@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,7 @@
 (define-public libyubikey
   (package
     (name "libyubikey")
-    (version "1.12")
+    (version "1.13")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -37,7 +38,7 @@
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1f0plzmr1gwry4rfgq9q70v6qwqny009hac289ad5m6sj7vqflxr"))))
+                "009l3k2zyn06dbrlja2d4p2vfnzjhlcqxi88v02mlrnb17mx1v84"))))
     (build-system gnu-build-system)
     (synopsis "Development kit for the YubiKey authentication device")
     (description
@@ -49,7 +50,7 @@ the low-level development kit for the Yubico YubiKey authentication device.")
 (define-public ykclient
   (package
     (name "ykclient")
-    (version "2.13")
+    (version "2.15")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -57,7 +58,7 @@ the low-level development kit for the Yubico YubiKey authentication device.")
                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1lw1j61rfjngs8vvv9m348zl4166zg24bq0dy72r44wiz79yic4j"))))
+                "05jhx9waj3pl120ddnwap1v3bjrnbfhvf3lxs2xmhpcmwzpwsqgl"))))
     (build-system gnu-build-system)
 
     ;; There's just one test, and it requires network access to access

@@ -40,6 +40,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (xorg-configuration-file
+            %default-xorg-modules
             xorg-start-command
             %default-slim-theme
             %default-slim-theme-name
@@ -137,9 +138,52 @@ EndSection
   "\n"
   extra-config))
 
+(define %default-xorg-modules
+  (list xf86-video-vesa
+        xf86-video-fbdev
+        xf86-video-modesetting
+        xf86-video-cirrus
+        xf86-video-intel
+        xf86-video-mach64
+        xf86-video-nouveau
+        xf86-video-nv
+        xf86-video-sis
+        xf86-input-libinput
+        xf86-input-evdev
+        xf86-input-keyboard
+        xf86-input-mouse
+        xf86-input-synaptics))
+
+(define (xorg-configuration-directory modules)
+  "Return a directory that contains the @code{.conf} files for X.org that
+includes the @code{share/X11/xorg.conf.d} directories of each package listed
+in @var{modules}."
+  (computed-file "xorg.conf.d"
+                 #~(begin
+                     (use-modules (guix build utils)
+                                  (srfi srfi-1))
+
+                     (define files
+                       (append-map (lambda (module)
+                                     (find-files (string-append
+                                                  module
+                                                  "/share/X11/xorg.conf.d")
+                                                 "\\.conf$"))
+                                   (list #$@modules)))
+
+                     (mkdir #$output)
+                     (for-each (lambda (file)
+                                 (symlink file
+                                          (string-append #$output "/"
+                                                         (basename file))))
+                               files)
+                     #t)
+                 #:modules '((guix build utils))))
+
 (define* (xorg-start-command #:key
                              (guile (canonical-package guile-2.0))
                              (configuration-file (xorg-configuration-file))
+                             (modules %default-xorg-modules)
                              (xorg-server xorg-server))
   "Return a derivation that builds a @var{guile} script to start the X server
 from @var{xorg-server}.  @var{configuration-file} is the server configuration
@@ -158,6 +202,7 @@ Usually the X server is started by a login manager."
                "-logverbose" "-verbose"
                "-xkbdir" (string-append #$xkeyboard-config "/share/X11/xkb")
                "-config" #$configuration-file
+               "-configdir" #$(xorg-configuration-directory modules)
                "-nolisten" "tcp" "-terminate"
 
                ;; Note: SLiM and other display managers add the

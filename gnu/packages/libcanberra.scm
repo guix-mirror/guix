@@ -110,7 +110,7 @@ null) and is designed to be portable.")
     (version "0.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://people.freedesktop.org/~mccann/dist/"
+              (uri (string-append "https://people.freedesktop.org/~mccann/dist/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32

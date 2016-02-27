@@ -24,7 +24,6 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages aspell)
-  #:use-module (gnu packages kde)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages web))
 

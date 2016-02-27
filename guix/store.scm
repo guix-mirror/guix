@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -118,6 +118,8 @@
             store-lower
             run-with-store
             %guile-for-build
+            current-system
+            set-current-system
             text-file
             interned-file
 
@@ -240,14 +242,16 @@
 (define-record-type <path-info>
   (path-info deriver hash references registration-time nar-size)
   path-info?
-  (deriver path-info-deriver)
+  (deriver path-info-deriver)                     ;string | #f
   (hash path-info-hash)
   (references path-info-references)
   (registration-time path-info-registration-time)
   (nar-size path-info-nar-size))
 
 (define (read-path-info p)
-  (let ((deriver  (read-store-path p))
+  (let ((deriver  (match (read-store-path p)
+                    ("" #f)
+                    (x  x)))
         (hash     (base16-string->bytevector (read-string p)))
         (refs     (read-store-path-list p))
         (registration-time (read-int p))
@@ -580,7 +584,12 @@ encoding conversion errors."
     (operation (name args ...) docstring return ...)))
 
 (define-operation (valid-path? (string path))
-  "Return #t when PATH is a valid store path."
+  "Return #t when PATH designates a valid store item and #f otherwise (an
+invalid item may exist on disk but still be invalid, for instance because it
+is the result of an aborted or failed build.)
+
+A '&nix-protocol-error' condition is raised if PATH is not prefixed by the
+store directory (/gnu/store)."
   boolean)
 
 (define-operation (query-path-hash (store-path path))
@@ -1039,6 +1048,18 @@ permission bits are kept."
 
 (define set-build-options*
   (store-lift set-build-options))
+
+(define-inlinable (current-system)
+  ;; Consult the %CURRENT-SYSTEM fluid at bind time.  This is equivalent to
+  ;; (lift0 %current-system %store-monad), but inlinable, thus avoiding
+  ;; closure allocation in some cases.
+  (lambda (state)
+    (values (%current-system) state)))
+
+(define-inlinable (set-current-system system)
+  ;; Set the %CURRENT-SYSTEM fluid at bind time.
+  (lambda (state)
+    (values (%current-system system) state)))
 
 (define %guile-for-build
   ;; The derivation of the Guile to be used within the build environment,

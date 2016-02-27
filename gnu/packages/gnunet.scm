@@ -3,6 +3,8 @@
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Ni* Gillmann <ng@niasterisk.space>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,14 +24,17 @@
 (define-module (gnu packages gnunet)
   #:use-module (gnu packages)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages aidc)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages geeqie)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages libidn)
@@ -208,6 +213,8 @@ supports HTTPS, HTTPS and GnuTLS.")
    (inputs
     `(("glpk" ,glpk)
       ("gnurl" ,gnurl)
+      ("gstreamer" ,gstreamer)
+      ("gst-plugins-base" ,gst-plugins-base)
       ("gnutls" ,gnutls)
       ("libextractor" ,libextractor)
       ("libgcrypt" ,libgcrypt)
@@ -217,14 +224,16 @@ supports HTTPS, HTTPS and GnuTLS.")
       ("libunistring" ,libunistring)
       ("openssl" ,openssl)
       ("opus" ,opus)
-      ("pulseaudio", pulseaudio)
+      ("pulseaudio" ,pulseaudio)
       ("sqlite" ,sqlite)
       ("zlib" ,zlib)))
    (native-inputs
     `(("pkg-config" ,pkg-config)
       ("python" ,python-2)))
    (arguments
-    '(#:parallel-tests? #f
+    '(#:configure-flags
+      (list (string-append "--with-nssdir=" %output "/lib"))
+      #:parallel-tests? #f
       ;; test_gnunet_service_arm fails; reported upstream
       #:tests? #f
       #:phases
@@ -286,3 +295,33 @@ GNUnet services, including the @dfn{identity} and @dfn{file sharing}
 services.")
       (home-page "http://gnu.org/software/guix")
       (license license:gpl3+))))
+
+;; FIXME: "gnunet-setup" segfaults under certain conditions and "gnunet-gtk"
+;; does not seem to be fully functional.  This has been reported upstream:
+;; http://lists.gnu.org/archive/html/gnunet-developers/2016-02/msg00004.html
+(define-public gnunet-gtk
+  (package (inherit gnunet)
+    (name "gnunet-gtk")
+    (version (package-version gnunet))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gnunet/gnunet-gtk-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1p38k1s6a2fmcfc9a7cf1zrdycm9h06kqdyand4s3k500nj6mb4g"))))
+    (arguments
+     `(#:configure-flags
+       (list "--without-libunique"
+             "--with-qrencode")))
+    (inputs
+     `(("gnunet" ,gnunet)
+       ("libgcrypt" ,libgcrypt)
+       ("gtk+" ,gtk+)
+       ("libextractor" ,libextractor)
+       ("glade3" ,glade3)
+       ("qrencode" ,qrencode)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("libglade" ,libglade)))
+    (synopsis "Graphical front-end tools for GNUnet")))

@@ -53,10 +53,10 @@
              (("/bin/sh") (which "sh"))))
           %standard-phases)))
     (inputs
-     `(("gawk", gawk)
-       ("inetutils", inetutils)
-       ("ncurses", ncurses)
-       ("perl", perl)
+     `(("gawk" ,gawk)
+       ("inetutils" ,inetutils)
+       ("ncurses" ,ncurses)
+       ("perl" ,perl)
        ("tcsh" ,tcsh))) ; For runtime/tools/vim32
     (home-page "http://www.vim.org/")
     (synopsis "Text editor based on vi")

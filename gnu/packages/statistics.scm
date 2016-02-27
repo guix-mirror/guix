@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Vicente Vera Parra <vicentemvp@gmail.com>
-;;; Copyright ©2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -945,14 +946,13 @@ and fast file reading.")
 (define-public python-patsy
   (package
     (name "python-patsy")
-    (version "0.4.0")
+    (version "0.4.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://pypi.python.org/packages/source/"
-                                  "p/patsy/patsy-" version ".zip"))
+              (uri (pypi-uri "patsy" version ".zip"))
               (sha256
                (base32
-                "1kbs996xc2haxalmhd19rr1wh5fa4gbbxf81czkf5w4kam7h7wz4"))))
+                "1m6knyq8hbqlx242y4da02j0x86j4qggs1j7q186w3jv0j0c476w"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -979,20 +979,15 @@ building design matrices.")
     ;; The majority of the code is distributed under BSD-2.  The module
     ;; patsy.compat contains code derived from the Python standard library,
     ;; and is covered by the PSFL.
-    (license (list license:bsd-2 license:psfl))))
+    (license (list license:bsd-2 license:psfl))
+    (properties `((python2-variant . ,(delay python2-patsy))))))
 
 (define-public python2-patsy
-  (let ((patsy (package-with-python2 python-patsy)))
+  (let ((patsy (package-with-python2 (strip-python2-variant python-patsy))))
     (package (inherit patsy)
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
-         ,@(package-native-inputs patsy)))
-      (propagated-inputs
-       `(("python2-numpy" ,python2-numpy)
-         ("python2-scipy" ,python2-scipy)
-         ,@(alist-delete "python-numpy"
-                         (alist-delete "python-scipy"
-                                       (package-propagated-inputs patsy))))))))
+         ,@(package-native-inputs patsy))))))
 
 (define-public python-statsmodels
   (package

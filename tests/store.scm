@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -837,6 +837,15 @@
          (file (add %store "foo" "Lowered.")))
     (call-with-input-file file get-string-all)))
 
+(test-equal "current-system"
+  "bar"
+  (parameterize ((%current-system "frob"))
+    (run-with-store %store
+      (mbegin %store-monad
+        (set-current-system "bar")
+        (current-system))
+      #:system "foo")))
+
 (test-assert "query-path-info"
   (let* ((ref (add-text-to-store %store "ref" "foo"))
          (item (add-text-to-store %store "item" "bar" (list ref)))
@@ -846,6 +855,21 @@
                  (sha256
                   (string->utf8
                    (call-with-output-string (cut write-file item <>))))))))
+
+(test-assert "path-info-deriver"
+  (let* ((b (add-text-to-store %store "build" "echo $foo > $out" '()))
+         (s (add-to-store %store "bash" #t "sha256"
+                          (search-bootstrap-binary "bash"
+                                                   (%current-system))))
+         (d (derivation %store "the-thing"
+                        s `("-e" ,b)
+                        #:env-vars `(("foo" . ,(random-text)))
+                        #:inputs `((,b) (,s))))
+         (o (derivation->output-path d)))
+    (and (build-derivations %store (list d))
+         (not (path-info-deriver (query-path-info %store b)))
+         (string=? (derivation-file-name d)
+                   (path-info-deriver (query-path-info %store o))))))
 
 (test-end "store")
 

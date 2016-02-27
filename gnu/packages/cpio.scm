@@ -35,7 +35,8 @@
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0vi9q475h1rki53100zml75vxsykzyhrn70hidy41s5c2rc8r6bh"))))
+               "0vi9q475h1rki53100zml75vxsykzyhrn70hidy41s5c2rc8r6bh"))
+             (patches (list (search-patch "cpio-CVE-2016-2037.patch")))))
     (build-system gnu-build-system)
     (home-page "https://www.gnu.org/software/cpio/")
     (synopsis "Manage cpio and tar file archives")

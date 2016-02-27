@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,14 +29,14 @@
 (define-public vera
   (package
     (name "vera")
-    (version "1.22")
+    (version "1.23")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/vera/vera-" version
                                   ".tar.gz"))
               (sha256
                (base32
-                "1anx6ikwlkg7bn3c5a8xxrp33bvhfgxmncvnqbn2fp1hnbhqh5i7"))))
+                "1az0v563jja8xb4896jyr8yv7jd9zacqyfkjd7psb73v7clg1mzz"))))
     (build-system trivial-build-system)
     (arguments
      `(#:builder (begin

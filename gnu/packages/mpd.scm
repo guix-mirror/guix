@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -69,7 +70,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
 (define-public mpd
   (package
     (name "mpd")
-    (version "0.19.10")
+    (version "0.19.12")
     (source (origin
               (method url-fetch)
               (uri
@@ -78,7 +79,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
                               "/mpd-" version ".tar.xz"))
               (sha256
                (base32
-                "0laqn68iggqf0h06hg282cvpd9wsjqpjfg5fnn9wk3gr48yyp1n3"))))
+                "0xg8w5vn6xd0yfw55qj6wnav7v14nmr00s3d4w5gixbjrv3ycvvv"))))
     (build-system gnu-build-system)
     (inputs `(("ao" ,ao)
               ("alsa-lib" ,alsa-lib)
@@ -178,7 +179,7 @@ terminal using ncurses.")
 (define-public ncmpcpp
   (package
     (name "ncmpcpp")
-    (version "0.6.7")
+    (version "0.7.3")
     (source (origin
               (method url-fetch)
               (uri
@@ -186,13 +187,14 @@ terminal using ncurses.")
                               version ".tar.bz2"))
               (sha256
                (base32
-                "0yr1ib14qkgbsv839anpzkfbwkm6gg8wv4bf98ar7q5l2p2pv008"))))
+                "04mj6r0whikliblxfbz92pibwcd7a3ywkryf01a89zd4bi1jk2rc"))))
     (build-system gnu-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)
               ("boost"  ,boost)
               ("readline" ,readline)
               ("ncurses" ,ncurses)
-              ("taglib" ,taglib)))
+              ("taglib" ,taglib)
+              ("icu4c" ,icu4c)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("automake" ,automake)
@@ -202,12 +204,11 @@ terminal using ncurses.")
      '(#:configure-flags
        '("BOOST_LIB_SUFFIX=" "--with-taglib")
        #:phases
-       (alist-cons-after
-        'unpack 'autogen
-        (lambda _
-          (setenv "NOCONFIGURE" "true")
-          (zero? (system* "sh" "autogen.sh")))
-        %standard-phases)))
+       (modify-phases %standard-phases
+        (add-after 'unpack 'autogen
+         (lambda _
+           (setenv "NOCONFIGURE" "true")
+           (zero? (system* "sh" "autogen.sh")))))))
     (synopsis "Featureful ncurses based MPD client inspired by ncmpc")
     (description "Ncmpcpp is an mpd client with a UI very similar to ncmpc,
 but it provides new useful features such as support for regular expressions

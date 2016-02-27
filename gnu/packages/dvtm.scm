@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,13 +26,14 @@
 (define-public dvtm
   (package
    (name "dvtm")
-   (version "0.14")
+   (version "0.15")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.brain-dump.org/projects/dvtm/dvtm-"
                                  version ".tar.gz"))
             (sha256
-             (base32 "0ykl8dz7ivjgdzhmhlgidnp2ffh5gxq9lbg276w7iid4z10v76wa"))))
+             (base32
+              "0475w514b7i3gxk6khy8pfj2gx9l7lv2pwacmq92zn1abv01a84g"))))
    (build-system gnu-build-system)
    (arguments
     `(#:make-flags (list "CC=gcc"

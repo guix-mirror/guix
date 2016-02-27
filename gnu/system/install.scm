@@ -237,7 +237,12 @@ the user's target storage device rather than on the RAM disk."
   ;; Minimal in-memory caching policy for nscd.
   (list (nscd-cache (database 'hosts)
                     (positive-time-to-live (* 3600 12))
-                    (negative-time-to-live 20)
+
+                    ;; Do not cache lookup failures at all since they are
+                    ;; quite likely (for instance when someone tries to ping a
+                    ;; host before networking is functional.)
+                    (negative-time-to-live 0)
+
                     (persistent? #f)
                     (max-database-size (* 5 (expt 2 20)))))) ;5 MiB
 
@@ -365,6 +370,7 @@ Use Alt-F2 for documentation.
                      parted ddrescue
                      grub                  ;mostly so xrefs to its manual work
                      cryptsetup
+                     btrfs-progs
                      wireless-tools iw wpa-supplicant-minimal iproute
                      ;; XXX: We used to have GNU fdisk here, but as of version
                      ;; 2.0.0a, that pulls Guile 1.8, which takes unreasonable

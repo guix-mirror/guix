@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -210,7 +211,15 @@ without requiring the source code to be rewritten.")
               ;; times (almost 3 hours on a 4-core Intel i5).
               (snippet '(for-each delete-file
                                   (find-files "prebuilt" "\\.go$")))))
-    (synopsis "Snapshot of what will become version 2.2 of GNU Guile")))
+    (synopsis "Snapshot of what will become version 2.2 of GNU Guile")
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GUILE_LOAD_PATH")
+            (files '("share/guile/site/2.2")))
+           (search-path-specification
+            (variable "GUILE_LOAD_COMPILED_PATH")
+            (files '("lib/guile/2.2/ccache"
+                     "share/guile/site/2.2")))))))
 
 (define-public guile-for-guile-emacs
   (package (inherit guile-next)
@@ -440,14 +449,14 @@ for Guile\".")
 (define-public guile-json
   (package
     (name "guile-json")
-    (version "0.4.0")
+    (version "0.5.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/guile-json/guile-json-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0v06272rw4ycwzssjf3fzpk2vhpslvl55hz94q80vc6f74j0d5h6"))
+               "0l8a34l92nrdszy7ykycfvr8y0n0yi5qb3ccliycvpvf9mzk5n8d"))
              (modules '((guix build utils)))
              (snippet
               ;; Make sure everything goes under .../site/2.0, like Guile's
@@ -700,6 +709,28 @@ Guile's foreign function interface.")
                (base32
                 "15q1qwjnay7k90ppqrzqsmikvwyj61mjvf1zahyd9gm4vi2fgb3x"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((ice-9 match) (ice-9 ftw)
+                  ,@%gnu-build-system-modules)
+
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap-haunt
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Wrap the 'haunt' command to refer to the right
+                      ;; modules.
+                      (let* ((out  (assoc-ref outputs "out"))
+                             (bin  (string-append out "/bin"))
+                             (site (string-append
+                                    out "/share/guile/site")))
+                        (match (scandir site)
+                          (("." ".." version)
+                           (let ((modules (string-append site "/" version)))
+                             (wrap-program (string-append bin "/haunt")
+                               `("GUILE_LOAD_PATH" ":" prefix
+                                 (,modules))
+                               `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                                 (,modules)))
+                             #t)))))))))
     (inputs
      `(("guile" ,guile-2.0)))
     (synopsis "Functional static site generator")
@@ -708,6 +739,33 @@ Scheme.  Haunt features a functional build system and an extensible
 interface for reading articles in any format.")
     (home-page "http://haunt.dthompson.us")
     (license gpl3+)))
+
+(define-public guile-config
+  (package
+    (name "guile-config")
+    (version "0.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://alex.pompo.co/software/" name "-" version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "1b719bn192f9wg24rr0zx8jpmygsvyhfi35iy778pb5p392snrn8"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("guile" ,guile-2.0)))
+    (synopsis "Guile application configuration parsing library")
+    (description
+     "Guile Config is a library providing a declarative approach to
+application configuration specification.  The library provides clean
+configuration declaration forms, and processors that take care of:
+configuration file creation; configuration file parsing; command-line
+parameter parsing using getopt-long; basic GNU command-line parameter
+generation (--help, --usage, --version); automatic output generation for the
+above command-line parameters.")
+    (home-page "https://github.com/a-sassmannshausen/guile-config")
+    (license agpl3+)))
 
 (define-public guile-redis
   (package

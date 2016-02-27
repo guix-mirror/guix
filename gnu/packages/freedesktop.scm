@@ -61,12 +61,15 @@
       (origin
         (method url-fetch)
           (uri (string-append
-                 "http://portland.freedesktop.org/download/xdg-utils-"
+                 "https://portland.freedesktop.org/download/xdg-utils-"
                  version ".tgz"))
           (sha256
             (base32
              "1b019d3r1379b60p33d6z44kx589xjgga62ijz9vha95dg8vgbi1"))))
     (build-system gnu-build-system)
+    (propagated-inputs
+     `(("xprop" ,xprop) ; for Xfce detecting
+       ("xset" ,xset))) ; for xdg-screensaver
     (arguments
      `(#:tests? #f)) ; no check target
     (home-page "http://portland.freedesktop.org/")
@@ -79,14 +82,14 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "0.21.0")
+    (version "1.1.902")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://freedesktop.org/software/libinput/"
+              (uri (string-append "https://freedesktop.org/software/libinput/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0l7mhdr50g11hxg2pz8ihsgzbm0810syj05d3555rzhda6g7mkkw"))))
+                "19wa5yizc3nfq3gibyqb3ygdvcs7v7bz1m5ifv0f4va3igxc3nk3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -94,7 +97,8 @@ freedesktop.org project.")
      `(("libudev" ,eudev))) ; required by libinput.pc
     (inputs
      `(("libevdev" ,libevdev)
-       ("mtdev" ,mtdev)))
+       ("mtdev" ,mtdev)
+       ("libwacom" ,libwacom)))
     (home-page "http://www.freedesktop.org/wiki/Software/libinput/")
     (synopsis "Input devices handling library")
     (description
@@ -174,7 +178,7 @@ the freedesktop.org XDG Base Directory specification.")
        ("xsltproc" ,libxslt)
        ("m4" ,m4)
        ("libxml2" ,libxml2)                     ;for XML_CATALOG_FILES
-       ("pkg-config", pkg-config)
+       ("pkg-config" ,pkg-config)
        ("gperf" ,gperf)))
     (inputs
      `(("linux-pam" ,linux-pam)
@@ -246,7 +250,7 @@ Python.")
     (version "1.9.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://wayland.freedesktop.org/releases/"
+              (uri (string-append "https://wayland.freedesktop.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
@@ -281,7 +285,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://libopenraw.freedesktop.org/download/"
+                   "https://libopenraw.freedesktop.org/download/"
                    name "-" version ".tar.bz2"))
              (sha256
               (base32
@@ -330,7 +334,7 @@ Analysis and Reporting Technology) functionality.")
     (version "2.1.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://udisks.freedesktop.org/releases/"
+              (uri (string-append "https://udisks.freedesktop.org/releases/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
@@ -500,7 +504,7 @@ which speak the Qualcomm MSM Interface (QMI) protocol.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.freedesktop.org/software/ModemManager/"
+                    "https://www.freedesktop.org/software/ModemManager/"
                     "ModemManager-" version ".tar.xz"))
               (sha256
                (base32
@@ -540,14 +544,15 @@ modems and setup connections with them.")
     (version "0.8.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://telepathy.freedesktop.org/releases/"
+              (uri (string-append "https://telepathy.freedesktop.org/releases/"
                                   name "/" name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "1bjx85k7jyfi5pvl765fzc7q2iz9va51anrc2djv7caksqsdbjlg"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases
+     '(#:parallel-tests? #f
+       #:phases
        (modify-phases %standard-phases
          (add-before 'check 'pre-check
           (lambda _
@@ -579,7 +584,7 @@ different sorts of messages in different formats.")
     (version "0.1.26")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.freedesktop.org/software/colord"
+              (uri (string-append "https://www.freedesktop.org/software/colord"
                                   "/releases/" name "-" version ".tar.xz"))
               (sha256
                (base32

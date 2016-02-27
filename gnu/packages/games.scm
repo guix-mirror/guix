@@ -14,6 +14,7 @@
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2016 Rodger Fox <thylakoid@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,6 +45,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages audio)
+  #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages game-development)
@@ -845,7 +847,7 @@ either by Infocom or created using the Inform compiler.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.2.2")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
@@ -853,7 +855,7 @@ either by Infocom or created using the Inform compiler.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1bxr8yhk3ad4df544qljsfjfhxa8zy1grq7rn1s02yfvdmgzf4qi"))))
+        (base32 "1wydzvligyby05x8c4lpg6xcnw9qkmvkskyhzc28xq10vm3q57fv"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -995,7 +997,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
           (lambda _ (setenv "LIBS" "-lm"))))))
     (inputs
      `(("glu" ,glu)
-       ("mesa", mesa)
+       ("mesa" ,mesa)
        ("sdl" ,sdl)
        ("sdl-image" ,sdl-image)
        ("sdl-mixer" ,sdl-mixer)))
@@ -1891,3 +1893,27 @@ and a game metadata scraper.")
     (description "The Emilia Pinball Project is a pinball simulator.  There
 are only two levels to play with, but they are very addictive.")
     (license license:gpl2)))
+
+(define-public pioneers
+  (package
+    (name "pioneers")
+    (version "15.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://downloads.sourceforge.net/pio/"
+                                  "pioneers-" version ".tar.gz"))
+              (sha256
+               (base32
+                "128s718nnraiznbg2rajjqb7cfkdg24hy6spdd9narb4f4dsbbv9"))))
+    (build-system gnu-build-system)
+    (inputs `(("gtk+" ,gtk+)
+              ("librsvg" ,librsvg)
+              ("avahi" ,avahi)))
+    (native-inputs `(("intltool" ,intltool)
+                     ("pkg-config" ,pkg-config)))
+    (synopsis "Board game inspired by The Settlers of Catan")
+    (description "Pioneers is an emulation of the board game The Settlers of
+Catan.  It can be played on a local network, on the internet, and with AI
+players.")
+    (home-page "http://pio.sourceforge.net/")
+    (license license:gpl2+)))

@@ -244,7 +244,7 @@ decompression.")
                "1vk6065dv3a47p86vmp8hv3n1ygd9hraz0gq89gvzlx7lmcb6fsp"))))
     (build-system gnu-build-system)
     (inputs
-     `(("bzip2", bzip2)))
+     `(("bzip2" ,bzip2)))
     (arguments
      `(#:tests? #f ; no tests
        #:phases (modify-phases %standard-phases

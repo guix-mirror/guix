@@ -33,9 +33,17 @@
    (version "0.29")
    (source (origin
             (method url-fetch)
-            (uri (string-append
-                  "http://pkgconfig.freedesktop.org/releases/pkg-config-"
-                  version ".tar.gz"))
+            (uri (list
+                  (string-append
+                   "http://fossies.org/linux/misc/pkg-config-" version
+                   ".tar.gz")
+
+                  ;; FIXME: The following URL redirects to HTTPS, which
+                  ;; creates bootstrapping problems:
+                  ;; <http://bugs.gnu.org/22774>.
+                  (string-append
+                   "http://pkgconfig.freedesktop.org/releases/pkg-config-"
+                   version ".tar.gz")))
             (sha256
              (base32
               "0sq09a39wj4cxf8l2jvkq067g08ywfma4v6nhprnf351s82pfl68"))))

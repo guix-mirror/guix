@@ -7,6 +7,8 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <tobias.geerinckx.rice@gmail.com>
+;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -218,7 +220,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
     (search-path %load-path file)))
 
 (define-public linux-libre
-  (let* ((version "4.4.1")
+  (let* ((version "4.4.3")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -292,7 +294,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "1d6wzhbpz0g79iwlkv10qmig518risz9bi3qw8wdn7j2xs7ij1j2"))))
+               "06wl6gvhds6j6aaryzpz4jngdf3v70spvp1xb7k2c03kvm9v5f4v"))))
     (build-system gnu-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
@@ -327,13 +329,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.1
   (package
     (inherit linux-libre)
-    (version "4.1.17")
+    (version "4.1.18")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "0mkvj5sab8l2k0mgfca3y4n5g9cxs3px0ysvdwa2zwl52n7dsfk4"))))
+                "1bddh2rg645lavhjkk9z75vflba5y0g73z2fjwgbfrj5jb44x9i7"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))
@@ -794,14 +796,14 @@ MIDI functionality to the Linux-based operating system.")
 (define-public alsa-utils
   (package
     (name "alsa-utils")
-    (version "1.0.27.2")
+    (version "1.1.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/alsa-utils-"
-                                 version ".tar.bz2"))
+             (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/"
+                                 name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "1sjjngnq50jv5ilwsb4zys6smifni3bd6fn28gbnhfrg14wsrgq2"))))
+               "1wa88wvqcfhak9x3y65wzzwxmmyxb5bv2gyj7lnm653fnwsk271v"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
@@ -867,15 +869,15 @@ packet filter.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "3.12.0")
+    (version "4.4.0")
     (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "mirror://kernel.org/linux/utils/net/iproute2/iproute2-"
-                   version ".tar.xz"))
-             (sha256
-              (base32
-               "04gi11gh087bg2nlxhj0lxrk8l9qxkpr88nsiil23917bm3h1xj4"))))
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://kernel.org/linux/utils/net/iproute2/iproute2-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "05351m4m0whsivlblvs3m0nz5q9v6r06ik80z27gf6ca51kw74dw"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
@@ -887,13 +889,12 @@ packet filter.")
                             (string-append "DOCDIR=" out "/share/doc/"
                                            ,name "-" ,version)
                             (string-append "MANDIR=" out "/share/man")))
-       #:phases (alist-cons-before
-                 'install 'pre-install
-                 (lambda _
-                   ;; Don't attempt to create /var/lib/arpd.
-                   (substitute* "Makefile"
-                     (("^.*ARPDDIR.*$") "")))
-                 %standard-phases)))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'install 'pre-install
+                    (lambda _
+                      ;; Don't attempt to create /var/lib/arpd.
+                      (substitute* "Makefile"
+                        (("^.*ARPDDIR.*$") "")))))))
     (inputs
      `(("iptables" ,iptables)
        ("db4" ,bdb)))
@@ -2467,3 +2468,40 @@ write access to exFAT devices.")
 applications running on the Linux console.  It allows users to select items
 and copy/paste text in the console and in xterm.")
     (license license:gpl2+)))
+
+(define-public btrfs-progs
+  (package
+    (name "btrfs-progs")
+    (version "4.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kernel.org/linux/kernel/"
+                                  "people/kdave/btrfs-progs/"
+                                  "btrfs-progs-v" version ".tar.xz"))
+              (sha256
+               (base32
+                "0jssv1ys4nw2jf7mkp58c19yspaa8ybf48fxsrhhp0683mzpr73p"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:test-target "test"
+       #:parallel-tests? #f)) ; tests fail when run in parallel
+    (inputs `(("e2fsprogs" ,e2fsprogs)
+              ("libblkid" ,util-linux)
+              ("libuuid" ,util-linux)
+              ("zlib" ,zlib)
+              ("lzo" ,lzo)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("asciidoc" ,asciidoc)
+                     ("xmlto" ,xmlto)
+                     ;; For building documentation
+                     ("libxml2" ,libxml2)
+                     ("docbook-xml" ,docbook-xml)
+                     ("docbook-xsl" ,docbook-xsl)))
+    (home-page "https://btrfs.wiki.kernel.org/")
+    (synopsis "Create and manage btrfs copy-on-write file systems")
+    (description "Btrfs is a copy-on-write (CoW) filesystem for Linux aimed at
+implementing advanced features while focusing on fault tolerance, repair and
+easy administration.")
+    ;; GPL2+: crc32.c, radix-tree.c, raid6.c, rbtree.c.
+    ;; GPL2: Everything else.
+    (license (list license:gpl2 license:gpl2+))))

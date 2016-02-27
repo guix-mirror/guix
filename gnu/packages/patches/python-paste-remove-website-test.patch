@@ -1,0 +1,21 @@
+Remove the test to see if the Python Paste website is up.
+
+Obviously without network access there is no way for us to check this, and
+it's pretty strange to test a project's website when you really mean to test
+the project anyhow...
+
+--- a/tests/test_proxy.py	2016-02-22 19:13:04.040117767 -0800
++++ b/tests/test_proxy.py	2016-02-22 19:13:04.040117767 -0800
+@@ -1,12 +1,3 @@
+ from paste import proxy
+ from paste.fixture import TestApp
+
+-def test_paste_website():
+-    # Not the most robust test...
+-    # need to test things like POSTing to pages, and getting from pages
+-    # that don't set content-length.
+-    app = proxy.Proxy('http://pythonpaste.org')
+-    app = TestApp(app)
+-    res = app.get('/')
+-    assert 'documentation' in res
+-

@@ -364,6 +364,9 @@ bindings:
   (when guix-devel-activate-mode
     (guix-devel-mode)))
 
+;;;###autoload
+(add-hook 'scheme-mode-hook 'guix-devel-activate-mode-maybe)
+
 
 (defvar guix-devel-emacs-font-lock-keywords
   (eval-when-compile

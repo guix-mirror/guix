@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@
   #:use-module (gnu packages lynx)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages curl))
@@ -60,6 +62,10 @@
                (base32
                 "1qwwvy8nzd87hk8rd9sm667nppakiapnx4ypdwcrlnav2dz6kil3"))))
     (build-system gnu-build-system)
+    (native-search-paths
+     (list (search-path-specification
+            (variable "OCAMLPATH")
+            (files (list (string-append "lib/ocaml"))))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)))
@@ -471,6 +477,8 @@ provers.")
     (arguments
      `(#:tests? #f ; no check target
 
+       ;; opt: also install cmxa files
+       #:make-flags (list "all" "opt")
        ;; Occasionally we would get "Error: Unbound module GtkThread" when
        ;; compiling 'gtkThInit.ml', with 'make -j'.  So build sequentially.
        #:parallel-build? #f
@@ -613,3 +621,52 @@ a collection of files and directories to be stored on different hosts
 brought up to date by propagating the changes in each replica
 to the other.")
     (license gpl3+)))
+
+(define-public ocaml-findlib
+  (package
+    (name "ocaml-findlib")
+    (version "1.6.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.camlcity.org/download/"
+                                  "findlib" "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02abg1lsnwvjg3igdyb8qjgr5kv1nbwl4gaf8mdinzfii5p82721"))
+              (patches
+               (list (search-patch "ocaml-findlib-make-install.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("camlp4" ,camlp4)
+       ("m4" ,m4)
+       ("ocaml" ,ocaml)))
+    (arguments
+     `(#:tests? #f  ; no test suite
+       #:parallel-build? #f
+       #:make-flags (list "all" "opt")
+       #:phases (modify-phases %standard-phases
+                  (replace
+                   'configure
+                   (lambda* (#:key inputs outputs #:allow-other-keys)
+                     (let ((out (assoc-ref outputs "out")))
+                       (system*
+                        "./configure"
+                        "-bindir" (string-append out "/bin")
+                        "-config" (string-append out "/etc/ocamfind.conf")
+                        "-mandir" (string-append out "/share/man")
+                        "-sitelib" (string-append out "/lib/ocaml/site-lib")
+                        "-with-toolbox")))))))
+    (home-page "http://projects.camlcity.org/projects/findlib.html")
+    (synopsis "Management tool for OCaml libraries")
+    (description
+     "The \"findlib\" library provides a scheme to manage reusable software
+components (packages), and includes tools that support this scheme.  Packages
+are collections of OCaml modules for which metainformation can be stored.  The
+packages are kept in the filesystem hierarchy, but with strict directory
+structure.  The library contains functions to look the directory up that
+stores a package, to query metainformation about a package, and to retrieve
+dependency information about multiple packages.  There is also a tool that
+allows the user to enter queries on the command-line.  In order to simplify
+compilation and linkage, there are new frontends of the various OCaml
+compilers that can directly deal with packages.")
+    (license x11)))

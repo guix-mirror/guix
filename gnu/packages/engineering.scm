@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,47 +56,43 @@
 (define-public librecad
   (package
     (name "librecad")
-    (version "2.0.6-rc")
+    (version "2.0.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/LibreCAD/LibreCAD/archive/"
                     version ".tar.gz"))
-              (file-name (string-append name "-" version))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1n1mh8asj6yrl5hi438dvizmrbqk1kni5xkizhi3pdmkg7z3hksm"))))
+                "0xyn4ps9ia94h0vg53rsww8xfd1bgp4200phl8ihyhv7w5v4d8d0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
-       (alist-cons-after
-        'unpack
-        'patch-paths
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-            (substitute* "librecad/src/lib/engine/rs_system.cpp"
-              (("/usr/share") (string-append out "/share")))))
-        (alist-replace
-         'configure
+       (modify-phases %standard-phases
+        (add-after 'unpack 'patch-paths
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((out (assoc-ref outputs "out")))
+             (substitute* "librecad/src/lib/engine/rs_system.cpp"
+               (("/usr/share") (string-append out "/share"))))))
+        (replace 'configure
          (lambda* (#:key inputs #:allow-other-keys)
            (system* "qmake" (string-append "BOOST_DIR="
-                                           (assoc-ref inputs "boost"))))
-         (alist-replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (mkdir-p (string-append out "/bin"))
-              (mkdir-p (string-append out "/share/librecad"))
-              (copy-file "unix/librecad"
-                         (string-append out "/bin/librecad"))
-              (copy-recursively "unix/resources"
-                                (string-append out "/share/librecad"))))
-          %standard-phases)))))
+                                           (assoc-ref inputs "boost")))))
+        (replace 'install
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let ((out (assoc-ref outputs "out")))
+             (mkdir-p (string-append out "/bin"))
+             (mkdir-p (string-append out "/share/librecad"))
+             (copy-file "unix/librecad"
+                        (string-append out "/bin/librecad"))
+             (copy-recursively "unix/resources"
+                               (string-append out "/share/librecad"))))))))
     (inputs
      `(("boost" ,boost)
        ("muparser" ,muparser)
        ("freetype" ,freetype)
-       ("qt" ,qt-4)))
+       ("qt" ,qt)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("which" ,which)))
@@ -206,31 +203,12 @@ and design rule checking.  It also includes an autorouter and a trace
 optimizer; and it can produce photorealistic and design review images.")
     (license license:gpl2+)))
 
-(define* (broken-tarball-fetch url hash-algo hash
-                               #:optional name
-                               #:key (system (%current-system))
-                               (guile (default-guile)))
-  (mlet %store-monad ((drv (url-fetch url hash-algo hash
-                                      (string-append "tarbomb-" name)
-                                      #:system system
-                                      #:guile guile)))
-    ;; Take the tar bomb, and simply unpack it as a directory.
-    (gexp->derivation name
-                      #~(begin
-                          (mkdir #$output)
-                          (setenv "PATH"
-                                  (string-append #$gzip "/bin"))
-                          (chdir #$output)
-                          (zero? (system* (string-append #$tar "/bin/tar")
-                                          "xf" #$drv))))))
-
-
 (define-public fastcap
   (package
     (name "fastcap")
     (version "2.0-18Sep92")
     (source (origin
-              (method broken-tarball-fetch)
+              (method url-fetch/tarbomb)
               (file-name (string-append name "-" version ".tar.gz"))
               (uri (string-append "http://www.rle.mit.edu/cpg/codes/"
                                   name "-" version ".tgz"))

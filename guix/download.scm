@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (srfi srfi-26)
   #:export (%mirrors
             url-fetch
+            url-fetch/tarbomb
             download-to-store))
 
 ;;; Commentary:
@@ -293,6 +295,31 @@ in the store."
                             ;; interpret this as "do not substitute" (see
                             ;; <https://bugs.gnu.org/18747>.)
                             #:local-build? #t)))))
+
+(define* (url-fetch/tarbomb url hash-algo hash
+                            #:optional name
+                            #:key (system (%current-system))
+                            (guile (default-guile)))
+  "Similar to 'url-fetch' but unpack the file from URL in a directory of its
+own.  This helper makes it easier to deal with \"tar bombs\"."
+  (define gzip
+    (module-ref (resolve-interface '(gnu packages compression)) 'gzip))
+  (define tar
+    (module-ref (resolve-interface '(gnu packages base)) 'tar))
+
+  (mlet %store-monad ((drv (url-fetch url hash-algo hash
+                                      (string-append "tarbomb-" name)
+                                      #:system system
+                                      #:guile guile)))
+    ;; Take the tar bomb, and simply unpack it as a directory.
+    (gexp->derivation name
+                      #~(begin
+                          (mkdir #$output)
+                          (setenv "PATH" (string-append #$gzip "/bin"))
+                          (chdir #$output)
+                          (zero? (system* (string-append #$tar "/bin/tar")
+                                          "xf" #$drv)))
+                      #:local-build? #t)))
 
 (define* (download-to-store store url #:optional (name (basename url))
                             #:key (log (current-error-port)) recursive?)

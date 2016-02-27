@@ -526,12 +526,6 @@ an isolated heap allowing multiple VMs to run simultaneously in different OS
 threads.")
     (license bsd-3)))
 
-;; FIXME: This function is temporarily in the engineering module and not
-;; exported.  It will be moved to an utility module for general use.  Once
-;; this is done, we should remove this definition.
-(define broken-tarball-fetch
-  (@@ (gnu packages engineering) broken-tarball-fetch))
-
 (define-public scmutils
   (let ()
     (define (system-suffix)
@@ -546,7 +540,7 @@ threads.")
       (version "20140302")
       (source
        (origin
-         (method broken-tarball-fetch)
+         (method url-fetch/tarbomb)
          (modules '((guix build utils)))
          (snippet
           ;; Remove binary code

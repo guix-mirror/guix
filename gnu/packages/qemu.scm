@@ -71,7 +71,11 @@
                      "qemu-CVE-2015-8613.patch"
                      "qemu-CVE-2015-8701.patch"
                      "qemu-CVE-2015-8743.patch"
-                     "qemu-CVE-2016-1568.patch")))))
+                     "qemu-CVE-2016-1568.patch"
+                     "qemu-CVE-2015-8619.patch"
+                     "qemu-CVE-2016-1981.patch"
+                     "qemu-usb-ehci-oob-read.patch"
+                     "qemu-CVE-2016-2197.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace

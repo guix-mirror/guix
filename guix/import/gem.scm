@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
+;;; Copryight © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,21 +20,33 @@
 (define-module (guix import gem)
   #:use-module (ice-9 match)
   #:use-module (ice-9 pretty-print)
+  #:use-module (srfi srfi-1)
   #:use-module (rnrs bytevectors)
   #:use-module (json)
   #:use-module (web uri)
+  #:use-module ((guix download) #:prefix download:)
   #:use-module (guix import utils)
   #:use-module (guix import json)
   #:use-module (guix packages)
+  #:use-module (guix upstream)
   #:use-module (guix licenses)
   #:use-module (guix base32)
-  #:export (gem->guix-package))
+  #:use-module (guix build-system ruby)
+  #:use-module (gnu packages)
+  #:export (gem->guix-package
+            %gem-updater))
 
 (define (rubygems-fetch name)
   "Return an alist representation of the RubyGems metadata for the package NAME,
 or #f on failure."
-  (json-fetch
-   (string-append "https://rubygems.org/api/v1/gems/" name ".json")))
+  ;; XXX: We want to silence the download progress report, which is especially
+  ;; annoying for 'guix refresh', but we have to use a file port.
+  (call-with-output-file "/dev/null"
+    (lambda (null)
+      (with-error-to-port null
+        (lambda ()
+          (json-fetch
+           (string-append "https://rubygems.org/api/v1/gems/" name ".json")))))))
 
 (define (ruby-package-name name)
   "Given the NAME of a package on RubyGems, return a Guix-compliant name for
@@ -132,3 +145,47 @@ VERSION, HASH, HOME-PAGE, DESCRIPTION, DEPENDENCIES, and LICENSES."
                                   (assoc-ref package "licenses"))))
            (make-gem-sexp name version hash home-page synopsis
                           description dependencies licenses)))))
+
+(define (guix-package->gem-name package)
+  "Given a PACKAGE built from rubygems.org, return the name of the
+package on RubyGems."
+  (let ((source-url (and=> (package-source package) origin-uri)))
+    ;; The URL has the form:
+    ;; 'https://rubygems.org/downloads/' +
+    ;; package name + '-' + version + '.gem'
+    ;; e.g. "https://rubygems.org/downloads/hashery-2.1.1.gem"
+    (substring source-url 31 (string-rindex source-url #\-))))
+
+(define (gem-package? package)
+  "Return true if PACKAGE is a gem package from RubyGems."
+
+  (define (rubygems-url? url)
+    (string-prefix? "https://rubygems.org/downloads/" url))
+
+  (let ((source-url (and=> (package-source package) origin-uri))
+        (fetch-method (and=> (package-source package) origin-method)))
+    (and (eq? fetch-method download:url-fetch)
+         (match source-url
+           ((? string?)
+            (rubygems-url? source-url))
+           ((source-url ...)
+            (any rubygems-url? source-url))))))
+
+(define (latest-release guix-package)
+  "Return an <upstream-source> for the latest release of GUIX-PACKAGE."
+  (let* ((gem-name (guix-package->gem-name
+                    (specification->package guix-package)))
+         (metadata (rubygems-fetch gem-name))
+         (version (assoc-ref metadata "version"))
+         (url (rubygems-uri gem-name version)))
+    (upstream-source
+     (package guix-package)
+     (version version)
+     (urls (list url)))))
+
+(define %gem-updater
+  (upstream-updater
+   (name 'gem)
+   (description "Updater for RubyGem packages")
+   (pred gem-package?)
+   (latest latest-release)))

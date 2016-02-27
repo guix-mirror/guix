@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,7 @@
 (define-public bitcoin-core
   (package
     (name "bitcoin-core")
-    (version "0.11.0")
+    (version "0.11.2")
     (source (origin
              (method url-fetch)
              (uri
@@ -44,11 +45,11 @@
                              version ".tar.gz"))
              (sha256
               (base32
-               "17yh6lq13xzzi5v2i48qaxiqm40x3hrj4gwyamkib9yzmmb1gfji"))))
+               "1lwh0vhw1gf3h6zrhynvad9y9qbpmhc8cw1zvj11yzsz5rjbvlm4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("python" ,python-wrapper) ; for the tests
+       ("python" ,python-2) ; for the tests
        ("util-linux" ,util-linux))) ; provides the hexdump command for tests
     (inputs
      `(("bdb" ,bdb)

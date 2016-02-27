@@ -64,10 +64,10 @@
                                      "Util/preconfig")
                                  (("/bin/sh") (which "sh")))))
                            %standard-phases)))
-    (native-inputs `(("autoconf", autoconf)))
-    (inputs `(("ncurses", ncurses)
-              ("pcre", pcre)
-              ("perl", perl)))
+    (native-inputs `(("autoconf" ,autoconf)))
+    (inputs `(("ncurses" ,ncurses)
+              ("pcre" ,pcre)
+              ("perl" ,perl)))
     (synopsis "Powerful shell for interactive use and scripting")
     (description "The Z shell (zsh) is a Unix shell that can be used
 as an interactive login shell and as a powerful command interpreter

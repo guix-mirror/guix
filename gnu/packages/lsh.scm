@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +29,8 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages gperf)
-  #:use-module (gnu packages guile))
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages xorg))
 
 (define-public liboop
   (package
@@ -100,7 +101,11 @@ basis for almost any application.")
 
        ("liboop" ,liboop)
        ("zlib" ,guix:zlib)
-       ("gmp" ,gmp)))
+       ("gmp" ,gmp)
+
+       ;; The server (lshd) invokes xauth when X11 forwarding is requested.
+       ;; This adds 24 MiB (or 27%) to the closure of lsh.
+       ("xauth" ,xauth)))
     (arguments
      '(;; Skip the `configure' test that checks whether /dev/ptmx &
        ;; co. work as expected, because it relies on impurities (for
@@ -113,26 +118,36 @@ basis for almost any application.")
        #:tests? #f
 
        #:phases
-       (alist-cons-before
-        'configure 'pre-configure
-        (lambda* (#:key inputs #:allow-other-keys)
-          (let* ((nettle    (assoc-ref inputs "nettle"))
-                 (sexp-conv (string-append nettle "/bin/sexp-conv")))
-            ;; Make sure 'lsh' and 'lshd' pick 'sexp-conv' in the right place
-            ;; by default.
-            (substitute* "src/environ.h.in"
-              (("^#define PATH_SEXP_CONV.*")
-               (string-append "#define PATH_SEXP_CONV \""
-                              sexp-conv "\"\n")))
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((nettle    (assoc-ref inputs "nettle"))
+                    (sexp-conv (string-append nettle "/bin/sexp-conv")))
+               ;; Make sure 'lsh' and 'lshd' pick 'sexp-conv' in the right place
+               ;; by default.
+               (substitute* "src/environ.h.in"
+                 (("^#define PATH_SEXP_CONV.*")
+                  (string-append "#define PATH_SEXP_CONV \""
+                                 sexp-conv "\"\n")))
 
-            ;; Same for the 'lsh-authorize' script.
-            (substitute* "src/lsh-authorize"
-              (("=sexp-conv")
-               (string-append "=" sexp-conv))))
+               ;; Same for the 'lsh-authorize' script.
+               (substitute* "src/lsh-authorize"
+                 (("=sexp-conv")
+                  (string-append "=" sexp-conv)))
 
-          ;; Tests rely on $USER being set.
-          (setenv "USER" "guix"))
-        %standard-phases)))
+               ;; Tell lshd where 'xauth' lives.  Another option would be to
+               ;; hardcode "/run/current-system/profile/bin/xauth", thereby
+               ;; reducing the closure size, but that wouldn't work on foreign
+               ;; distros.
+               (with-fluids ((%default-port-encoding "ISO-8859-1"))
+                 (substitute* "src/server_x11.c"
+                   (("define XAUTH_PROGRAM.*")
+                    (string-append "define XAUTH_PROGRAM \""
+                                   (assoc-ref inputs "xauth")
+                                   "/bin/xauth\"\n")))))
+
+             ;; Tests rely on $USER being set.
+             (setenv "USER" "guix"))))))
     (home-page "http://www.lysator.liu.se/~nisse/lsh/")
     (synopsis "GNU implementation of the Secure Shell (ssh) protocols")
     (description

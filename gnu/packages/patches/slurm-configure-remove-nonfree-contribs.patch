@@ -1,0 +1,43 @@
+From 53eda9102b969a4be2882cea4befee03591a7436 Mon Sep 17 00:00:00 2001
+From: Pjotr Prins <pjotr.public01@thebird.nl>
+Date: Fri, 12 Feb 2016 12:43:33 +0100
+Subject: [PATCH] Remove contribs
+
+---
+ configure.ac | 20 --------------------
+ 1 file changed, 20 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index fedf354..e010732 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -438,26 +438,6 @@ dnl All slurm Makefiles:
+ AC_CONFIG_FILES([Makefile
+ 		 config.xml
+ 		 auxdir/Makefile
+-		 contribs/Makefile
+-		 contribs/cray/Makefile
+-		 contribs/cray/csm/Makefile
+-		 contribs/lua/Makefile
+-		 contribs/mic/Makefile
+-		 contribs/pam/Makefile
+-		 contribs/pam_slurm_adopt/Makefile
+-		 contribs/perlapi/Makefile
+-		 contribs/perlapi/libslurm/Makefile
+-		 contribs/perlapi/libslurm/perl/Makefile.PL
+-		 contribs/perlapi/libslurmdb/Makefile
+-		 contribs/perlapi/libslurmdb/perl/Makefile.PL
+-		 contribs/torque/Makefile
+-		 contribs/phpext/Makefile
+-		 contribs/phpext/slurm_php/config.m4
+-		 contribs/sgather/Makefile
+-		 contribs/sgi/Makefile
+-		 contribs/sjobexit/Makefile
+-		 contribs/slurmdb-direct/Makefile
+-		 contribs/pmi2/Makefile
+ 		 doc/Makefile
+ 		 doc/man/Makefile
+ 		 doc/man/man1/Makefile
+-- 
+2.1.4
+

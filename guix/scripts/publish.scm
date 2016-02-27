@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -142,10 +142,11 @@ Publish ~a over HTTP.\n") %store-directory)
 (define base64-encode-string
   (compose base64-encode string->utf8))
 
-(define (narinfo-string store-path path-info key)
-  "Generate a narinfo key/value string for STORE-PATH using the details in
-PATH-INFO.  The narinfo is signed with KEY."
-  (let* ((url        (string-append "nar/" (basename store-path)))
+(define (narinfo-string store store-path key)
+  "Generate a narinfo key/value string for STORE-PATH; an exception is raised
+if STORE-PATH is invalid.  The narinfo is signed with KEY."
+  (let* ((path-info  (query-path-info store store-path))
+         (url        (string-append "nar/" (basename store-path)))
          (hash       (bytevector->nix-base32-string
                       (path-info-hash path-info)))
          (size       (path-info-nar-size path-info))
@@ -163,7 +164,7 @@ References: ~a~%"
                              store-path url hash size references))
          ;; Do not render a "Deriver" or "System" line if we are rendering
          ;; info for a derivation.
-         (info       (if (string-null? deriver)
+         (info       (if (not deriver)
                          base-info
                          (catch 'system-error
                            (lambda ()
@@ -199,23 +200,21 @@ References: ~a~%"
 
 (define (render-narinfo store request hash)
   "Render metadata for the store path corresponding to HASH."
-  (let* ((store-path (hash-part->path store hash))
-         (path-info (and (not (string-null? store-path))
-                         (query-path-info store store-path))))
-    (if path-info
+  (let ((store-path (hash-part->path store hash)))
+    (if (string-null? store-path)
+        (not-found request)
         (values '((content-type . (application/x-nix-narinfo)))
                 (cut display
-                     (narinfo-string store-path path-info (force %private-key))
-                     <>))
-        (not-found request))))
+                     (narinfo-string store store-path (force %private-key))
+                     <>)))))
 
-(define (render-nar request store-item)
+(define (render-nar store request store-item)
   "Render archive of the store path corresponding to STORE-ITEM."
   (let ((store-path (string-append %store-directory "/" store-item)))
     ;; The ISO-8859-1 charset *must* be used otherwise HTTP clients will
     ;; interpret the byte stream as UTF-8 and arbitrarily change invalid byte
     ;; sequences.
-    (if (file-exists? store-path)
+    (if (valid-path? store store-path)
         (values '((content-type . (application/x-nix-archive
                                    (charset . "ISO-8859-1"))))
                 ;; XXX: We're not returning the actual contents, deferring
@@ -315,7 +314,7 @@ blocking."
            (render-narinfo store request hash))
           ;; /nar/<store-item>
           (("nar" store-item)
-           (render-nar request store-item))
+           (render-nar store request store-item))
           (_ (not-found request)))
         (not-found request))))
 

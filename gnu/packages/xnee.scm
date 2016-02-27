@@ -39,7 +39,7 @@
                "04n2lac0vgpv8zsn7nmb50hf3qb56pmj90dmwnivg09gyrf1x92j"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gtk+", gtk+-2)
+     `(("gtk+" ,gtk+-2)
        ("inputproto" ,inputproto)
        ("libx11" ,libx11)
        ("libxext" ,libxext)

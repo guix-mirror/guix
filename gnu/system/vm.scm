@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -457,7 +459,13 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
                      "\" "))
 
   #~(string-append
-     " -enable-kvm -no-reboot -net nic,model=virtio \
+     ;; Only enable kvm if we see /dev/kvm exists.
+     ;; This allows users without hardware virtualization to still use these
+     ;; commands.
+     #$(if (file-exists? "/dev/kvm")
+           " -enable-kvm "
+           "")
+     " -no-reboot -net nic,model=virtio \
   " #$@(map virtfs-option shared-fs) " \
   -net user \
   -serial stdio -vga std \

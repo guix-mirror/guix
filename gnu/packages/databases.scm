@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -273,14 +274,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "9.3.8")
+    (version "9.3.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "1ymd98szvx12gyjdb9gr2hlkrb5bjx7mcshqq3xzdifzapkkqp5w"))))
+                "08ba951nfiy516flaw352shj1zslxg4ryx3w5k0adls1r682l8ix"))))
     (build-system gnu-build-system)
     (inputs
      `(("readline" ,readline)
@@ -320,7 +321,7 @@ pictures, sounds, or video.")
     (native-inputs `(("emacs" ,emacs-no-x)
                      ("bc" ,bc)
                      ("bash:include" ,bash "include")
-                     ("libuuid", util-linux)))
+                     ("libuuid" ,util-linux)))
 
     ;; TODO: Add more optional inputs.
     (inputs `(("curl" ,curl)
@@ -822,3 +823,30 @@ supports many data structures including strings, hashes, lists, sets, sorted
 sets, bitmaps and hyperloglogs.")
     (home-page "http://redis.io/")
     (license bsd-3)))
+
+(define-public kyotocabinet
+  (package
+    (name "kyotocabinet")
+    (version "1.2.76")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://fallabs.com/kyotocabinet/pkg/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0g6js20x7vnpq4p8ghbw3mh9wpqksya9vwhzdx6dnlf354zjsal1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list
+        (string-append "LDFLAGS=-Wl,-rpath="
+                       (assoc-ref %outputs "out") "/lib"))))
+    (inputs `(("zlib" ,zlib)))
+    (home-page "http://fallabs.com/kyotocabinet/")
+    (synopsis
+     "Kyoto Cabinet is a modern implementation of the DBM database")
+    (description
+     "Kyoto Cabinet is a standalone file-based database that supports Hash
+and B+ Tree data storage models.  It is a fast key-value lightweight
+database and supports many programming languages.  It is a NoSQL database.")
+    (license gpl3+)))

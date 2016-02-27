@@ -132,7 +132,7 @@ autotools system.")
 (define-public bdftopcf
   (package
     (name "bdftopcf")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
@@ -142,7 +142,7 @@ autotools system.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1617zmgnx50n7vxlqyj84fl7vnk813jjqmi6jpigyz1xp9br1xga"))))
+            "09i03sk878cmx2i40lkpsysn7zqcvlczb30j7x3lryb11jz4gx1q"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxfont" ,libxfont)))
@@ -348,7 +348,7 @@ provided.")
     (build-system gnu-build-system)
     (inputs
       `(("bdftopcf" ,bdftopcf)
-        ("font-util", font-util)
+        ("font-util" ,font-util)
         ("mkfontdir" ,mkfontdir)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
@@ -380,7 +380,7 @@ provided.")
     (build-system gnu-build-system)
     (inputs
       `(("bdftopcf" ,bdftopcf)
-        ("font-util", font-util)
+        ("font-util" ,font-util)
         ("mkfontdir" ,mkfontdir)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
@@ -817,7 +817,7 @@ For example: '6x10', '9x15bold', etc.")
 (define-public font-util
   (package
     (name "font-util")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
       (origin
         (method url-fetch)
@@ -827,7 +827,7 @@ For example: '6x10', '9x15bold', etc.")
                ".tar.bz2"))
         (sha256
           (base32
-            "15cijajwhjzpy3ydc817zz8x5z4gbkyv3fps687jbq544mbfbafz"))))
+            "08drjb6cf84pf5ysghjpb4i7xkd2p86k3wl2a0jxs1jif6qbszma"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
@@ -939,7 +939,7 @@ rendering commands to the X server.")
 (define-public iceauth
   (package
     (name "iceauth")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
       (origin
         (method url-fetch)
@@ -949,7 +949,7 @@ rendering commands to the X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1x72y99dxf2fxnlyf0yrf9yzd8xzimxshy6l8mprwhrv6lvhi6dx"))))
+            "02izdyzhwpgiyjd8brzilwvwnfr72ncjb6mzz3y1icwrxqnsy5hj"))))
     (build-system gnu-build-system)
     (inputs
       `(("libice" ,libice)))
@@ -992,7 +992,7 @@ devices management such as graphic tablets.")
 (define-public kbproto
   (package
     (name "kbproto")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
       (origin
         (method url-fetch)
@@ -1002,7 +1002,7 @@ devices management such as graphic tablets.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0yal11hhpiisy3w8wmacsdzzzcnc3xwnswxz8k7zri40xc5aqz03"))))
+            "0mxqj1pzhjpz9495vrjnpi10kv2n1s4vs7di0sh3yvipfq5j30pq"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
@@ -1049,7 +1049,7 @@ of new capabilities and controls for text keyboards.")
 (define-public libxshmfence
   (package
     (name "libxshmfence")
-    (version "1.1")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1057,7 +1057,7 @@ of new capabilities and controls for text keyboards.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1gnfb1z8sbbdc3xpz1zmm94lv7yvfh4kvip9s5pj37ya4llxphnv"))))
+                "032b0nlkdrpbimdld4gqvhqx53rzn8fawvf1ybhzn7lcswgjs6yj"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("xproto" ,xproto)))
@@ -1074,7 +1074,7 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libfontenc
   (package
     (name "libfontenc")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
@@ -1084,7 +1084,7 @@ synchronization between the X server and direct-rendering clients.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0qign0ivqk166l9yfd51gw9lbhgs718bcrmvc40yicjr6gnyz959"))))
+            "08gxmrhgw97mv0pvkfmd46zzxrn6zdw4g27073zl55gwwqq8jn3h"))))
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)
@@ -1100,7 +1100,7 @@ synchronization between the X server and direct-rendering clients.")
 (define-public libfs
   (package
     (name "libfs")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
       (origin
         (method url-fetch)
@@ -1110,7 +1110,7 @@ synchronization between the X server and direct-rendering clients.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1mxfsvj9m3pn8cdkcn4kg190zp665mf4pv0083g6xykvsgxzq1wh"))))
+            "1wy4km3qwwajbyl8y9pka0zwizn7d9pfiyjgzba02x3a083lr79f"))))
     (build-system gnu-build-system)
     (inputs
       `(("xtrans" ,xtrans)
@@ -1272,7 +1272,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
 (define-public libxdmcp
   (package
     (name "libxdmcp")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
       (origin
         (method url-fetch)
@@ -1282,7 +1282,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
                ".tar.bz2"))
         (sha256
           (base32
-            "13highx4xpgkiwykpcl7z2laslrjc4pzi4h617ny9p7r6116vkls"))))
+            "1qp4yhxbfnpj34swa0fj635kkihdkwaiw7kf55cg5zqqg630kzl1"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)))
@@ -1331,7 +1331,7 @@ configuration files.")
 (define-public libxkbfile
   (package
     (name "libxkbfile")
-    (version "1.0.8")
+    (version "1.0.9")
     (source
       (origin
         (method url-fetch)
@@ -1341,7 +1341,7 @@ configuration files.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0flg5arw6n3njagmsi4i4l0zl5bfx866a1h9ydc3bi1pqlclxaca"))))
+            "0smimr14zvail7ar68n7spvpblpdnih3jxrva7cpa6cn602px0ai"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)))
@@ -1557,7 +1557,7 @@ input from UTF-8 into the locale's encoding.")
 (define-public mkfontscale
   (package
     (name "mkfontscale")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
       (origin
         (method url-fetch)
@@ -1567,7 +1567,7 @@ input from UTF-8 into the locale's encoding.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0cdpn1ii2iw1vg2ga4w62acrh78gzgf0vza4g8wx5kkp4jcifh14"))))
+            "081z8lwh9c1gyrx3ad12whnpv3jpfbqsc366mswpfm48mwl54vcc"))))
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib)
@@ -1636,7 +1636,7 @@ network-transparent printing system.")
 (define-public randrproto
   (package
     (name "randrproto")
-    (version "1.4.0")
+    (version "1.5.0")
     (source
       (origin
         (method url-fetch)
@@ -1646,7 +1646,7 @@ network-transparent printing system.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1kq9h93qdnniiivry8jmhlgwn9fbx9xp5r9cmzfihlx5cs62xi45"))))
+            "0s4496z61y5q45q20gldwpf788b9nsa8hb13gnck1mwwwwrmarsc"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
@@ -1757,7 +1757,7 @@ features and to query screensaver info on specific windows.")
 (define-public sessreg
   (package
     (name "sessreg")
-    (version "1.0.8")
+    (version "1.1.0")
     (source
       (origin
         (method url-fetch)
@@ -1767,7 +1767,7 @@ features and to query screensaver info on specific windows.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1hy4wvgawajf4qw2k51fkcjzxw0drx60ydzpmqhj7k1g4z3cqahf"))))
+            "0z013rskwmdadd8cdlxvh4asmgim61qijyzfbqmr1q1mg1jpf4am"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)))
@@ -1785,7 +1785,7 @@ used with other display managers such as gdm or kdm.")
 (define-public setxkbmap
   (package
     (name "setxkbmap")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
       (origin
         (method url-fetch)
@@ -1795,7 +1795,7 @@ used with other display managers such as gdm or kdm.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1inygpvlgc6vr5h9laxw9lnvafnccl3fy0g5n9ll28iq3yfmqc1x"))))
+            "1qfk097vjysqb72pq89h0la3462kbb2dh1d11qzs2fr67ybb7pd9"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxkbfile" ,libxkbfile)
@@ -1820,7 +1820,7 @@ listed on the command line.")
 (define-public smproxy
   (package
     (name "smproxy")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
@@ -1830,7 +1830,7 @@ listed on the command line.")
                ".tar.bz2"))
         (sha256
           (base32
-            "02fn5wa1gs2jap6sr9j9yk6zsvz82j8l61pf74iyqwa99q4wnb67"))))
+            "0rkjyzmsdqmlrkx8gy2j4q6iksk58hcc92xzdprkf8kml9ar3wbc"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxt" ,libxt)
@@ -1939,7 +1939,7 @@ server.")
 (define-public x11perf
   (package
     (name "x11perf")
-    (version "1.5.4")
+    (version "1.6.0")
     (source
       (origin
         (method url-fetch)
@@ -1949,7 +1949,7 @@ server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "111iwpxhnxjiq44w96zf0kszg5zpgv1g3ayx18v4nhdzl9bqivi4"))))
+            "0lb716yfdb8f11h4cz93d1bapqdxf1xplsb21kbp4xclq7g9hw78"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)
@@ -2112,7 +2112,7 @@ to query the server for available resource IDs.")
 (define-public xcmsdb
   (package
     (name "xcmsdb")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
@@ -2122,7 +2122,7 @@ to query the server for available resource IDs.")
                ".tar.bz2"))
         (sha256
           (base32
-            "03ms731l3kvaldq7ycbd30j6134b61i3gbll4b2gl022wyzbjq74"))))
+            "1ik7gzlp2igz183x70883000ygp99r20x3aah6xhaslbpdhm6n75"))))
     (build-system gnu-build-system)
     (inputs
       `(("libx11" ,libx11)))
@@ -2201,7 +2201,7 @@ X server: 'handhelds', 'redglass' and 'whiteglass'.")
 (define-public xdpyinfo
   (package
     (name "xdpyinfo")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
       (origin
         (method url-fetch)
@@ -2211,7 +2211,7 @@ X server: 'handhelds', 'redglass' and 'whiteglass'.")
                ".tar.bz2"))
         (sha256
           (base32
-            "154b29zlrq33lmni883jgwyrb2kx7z8h52jx1s3ys5x5d582iydf"))))
+            "0ldgrj4w2fa8jng4b3f3biaj0wyn8zvya88pnk70d7k12pcqw8rh"))))
     (build-system gnu-build-system)
     (inputs
       `(("inputproto" ,inputproto)
@@ -2240,7 +2240,7 @@ available.")
 (define-public xdriinfo
   (package
     (name "xdriinfo")
-    (version "1.0.4")
+    (version "1.0.5")
     (source
       (origin
         (method url-fetch)
@@ -2250,7 +2250,7 @@ available.")
                ".tar.bz2"))
         (sha256
           (base32
-            "076bjix941znyjmh3j5jjsnhp2gv2iq53d0ks29mvvv87cyy9iim"))))
+            "0681d0y8liqakkpz7mmsf689jcxrvs5291r20qi78mc9xxk3gfjc"))))
     (build-system gnu-build-system)
     (inputs
       `(("mesa" ,mesa)
@@ -2268,7 +2268,7 @@ DRI (Direct Rendering Infrastructure) drivers.")
 (define-public xev
   (package
     (name "xev")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
       (origin
         (method url-fetch)
@@ -2278,7 +2278,7 @@ DRI (Direct Rendering Infrastructure) drivers.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0hv296mysglcgkx6lj1wxc23kshb2kix1a8yqppxj5vz16mpzw8i"))))
+            "0krivhrxpq6719103r541xpi3i3a0y15f7ypc4lnrx8sdhmfcjnr"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
@@ -2333,7 +2333,7 @@ XC-APPGROUP, XTEST.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.freedesktop.org/software/" name "/"
+       (uri (string-append "https://www.freedesktop.org/software/" name "/"
                            name "-" version ".tar.xz"))
        (sha256
         (base32
@@ -2355,7 +2355,7 @@ devices, thus making direct access unnecessary.")
 (define-public xf86-input-evdev
   (package
     (name "xf86-input-evdev")
-    (version "2.8.4")
+    (version "2.10.1")
     (source
       (origin
         (method url-fetch)
@@ -2365,11 +2365,12 @@ devices, thus making direct access unnecessary.")
                ".tar.bz2"))
         (sha256
           (base32
-            "030haki1h0m85h91c91812gdnk6znfamw5kpr010zxwwbsgxxyl5"))))
+            "05z05n39v8s2b0hwhcjb1bca7j8gc62bv9jxnibawwmjym3jp75g"))))
     (build-system gnu-build-system)
     (inputs
       `(("udev" ,eudev)
         ("libevdev" ,libevdev)
+        ("mtdev" ,mtdev)
         ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
@@ -2388,7 +2389,7 @@ including most mice, keyboards, tablets and touchscreens.")
 (define-public xf86-input-libinput
   (package
     (name "xf86-input-libinput")
-    (version "0.8.0")
+    (version "0.16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2396,7 +2397,7 @@ including most mice, keyboards, tablets and touchscreens.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0fm4vrkw7azipbnwvc2l18g65z77pllsznaajd8q3zpg9ycb0li1"))))
+                "0jbgnxsbr3g4g9vkspcc6pqy7av59zx5bb78vkvaqy8yx4qybbgx"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2448,7 +2449,7 @@ It is used to cotrol the pointer with a joystick device.")
 (define-public xf86-input-keyboard
   (package
     (name "xf86-input-keyboard")
-    (version "1.8.0")
+    (version "1.8.1")
     (source
       (origin
         (method url-fetch)
@@ -2458,7 +2459,7 @@ It is used to cotrol the pointer with a joystick device.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0nyb61w30z32djrllgr2s1i13di3vsl6hg4pqjhxdal71971ria1"))))
+            "04d27kwqq03fc26an6051hs3i0bff8albhnngzyd59wxpwwzzj0s"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2504,7 +2505,7 @@ as USB mice.")
 (define-public xf86-input-synaptics
   (package
     (name "xf86-input-synaptics")
-    (version "1.8.1")
+    (version "1.8.3")
     (source
       (origin
         (method url-fetch)
@@ -2514,7 +2515,7 @@ as USB mice.")
                ".tar.bz2"))
         (sha256
           (base32
-            "16phzd7yhl4wns957c35qz2nahmjvnlx05jf975s524qkvrdlkyp"))))
+            "009zx199pilcvlaqm6fx4mg94q81d6vvl5rznmw3frzkfh6117yk"))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxi" ,libxi)
@@ -2540,7 +2541,7 @@ as USB mice.")
 (define-public xf86-input-void
   (package
     (name "xf86-input-void")
-    (version "1.4.0")
+    (version "1.4.1")
     (source
       (origin
         (method url-fetch)
@@ -2550,7 +2551,7 @@ as USB mice.")
                ".tar.bz2"))
         (sha256
           (base32
-            "01bmk324fq48wydvy1qrnxbw6qz0fjd0i80g0n4cqr1c4mjmif9a"))))
+            "171k8b8s42s3w73l7ln9jqwk88w4l7r1km2blx1vy898c854yvpr"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2616,7 +2617,7 @@ as USB mice.")
 (define-public xf86-video-ati
   (package
     (name "xf86-video-ati")
-    (version "7.5.0")
+    (version "7.6.1")
     (source
       (origin
         (method url-fetch)
@@ -2626,7 +2627,7 @@ as USB mice.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0dkrw036ikym8aacl43lnf04q0wbms5498xg5b3l16ngnq36ygpc"))))
+            "0k6kw69mcarlmxlb4jlhz887jxqr94qx2pin04xcv2ysp3pdj5i5"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xxf86driproto" ,xf86driproto)
@@ -2644,7 +2645,7 @@ X server.")
 (define-public xf86-video-cirrus
   (package
     (name "xf86-video-cirrus")
-    (version "1.5.2")
+    (version "1.5.3")
     (source
       (origin
         (method url-fetch)
@@ -2654,7 +2655,7 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1mycqgjp18b6adqj2h90vp324xh8ysyi5migfmjc914vbnkf2q9k"))))
+            "1asifc6ld2g9kap15vfhvsvyl69lj7pw3d9ra9mi4najllh7pj7d"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2698,7 +2699,7 @@ framebuffer device.")
 (define-public xf86-video-geode
   (package
     (name "xf86-video-geode")
-    (version "2.11.16")
+    (version "2.11.18")
     (source
       (origin
         (method url-fetch)
@@ -2708,7 +2709,7 @@ framebuffer device.")
                ".tar.bz2"))
         (sha256
           (base32
-           "19y13xl7yfrgyis92rmxi0ld95ajgr5il0n9j1dridwzw9aizz1q"))
+           "1s59kdj573v38sb14xfhp1l926aypbhy11vaz36y72x6calfkv6n"))
         (patches (list (search-patch "xf86-video-geode-glibc-2.20.patch")))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
@@ -2810,45 +2811,54 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (package
-    (name "xf86-video-intel")
-    (version "2.21.15")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/driver/xf86-video-intel-"
-               version
-               ".tar.bz2"))
-        (sha256
+  (let ((commit "d167280"))
+    (package
+      (name "xf86-video-intel")
+      (version (string-append "2.99.917-1-" commit))
+      (source
+       (origin
+         ;; there's no current tarball
+         (method git-fetch)
+         (uri (git-reference
+               (url "http://anongit.freedesktop.org/git/xorg/driver/xf86-video-intel.git")
+               (commit commit)))
+         (sha256
           (base32
-           "1z6ncmpszmwqi9xr590c4kp4gjjf7mndcr56r35x2bx7h87i8nkx"))
-        (patches (list (search-patch "xf86-video-intel-compat-api.patch")
-                       (search-patch "xf86-video-intel-glibc-2.20.patch")))))
-    (build-system gnu-build-system)
-    (inputs `(("mesa" ,mesa)
-              ("udev" ,eudev)
-              ("libx11" ,libx11)
-              ("xorg-server" ,xorg-server)))
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
-    (supported-systems
-     ;; This driver is only supported on Intel systems.
-     (filter (lambda (system) (or (string-prefix? "i686-" system)
-                                  (string-prefix? "x86_64-" system)))
-             %supported-systems))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "Intel video driver for X server")
-    (description
-     "xf86-video-intel is a 2D graphics driver for the Xorg X server.
+           "16hfcj11lbn6lp0hgrixidbfb7mghm1yn4lynmymm985w1gg0n72"))
+         (file-name (string-append name "-" version))))
+      (build-system gnu-build-system)
+      (inputs `(("mesa" ,mesa)
+                ("udev" ,eudev)
+                ("libx11" ,libx11)
+                ("libxfont" ,libxfont)
+                ("xorg-server" ,xorg-server)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)))
+      (supported-systems
+       ;; This driver is only supported on Intel systems.
+       (filter (lambda (system) (or (string-prefix? "i686-" system)
+                                    (string-prefix? "x86_64-" system)))
+               %supported-systems))
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'bootstrap
+                      (lambda _
+                        (zero? (system* "autoreconf" "-vfi")))))))
+      (home-page "http://www.x.org/wiki/")
+      (synopsis "Intel video driver for X server")
+      (description
+       "xf86-video-intel is a 2D graphics driver for the Xorg X server.
 It supports a variety of Intel graphics chipsets.")
-    (license license:x11)))
+      (license license:x11))))
 
 
 (define-public xf86-video-mach64
   (package
     (name "xf86-video-mach64")
-    (version "6.9.4")
+    (version "6.9.5")
     (source
       (origin
         (method url-fetch)
@@ -2858,7 +2868,7 @@ It supports a variety of Intel graphics chipsets.")
                ".tar.bz2"))
         (sha256
           (base32
-           "0pl582vnc6hdxqhf5c0qdyanjqxb4crnhqlmxxml5a60syw0iwcp"))
+           "07xlf5nsjm0x18ij5gyy4lf8hwpl10i8chi3skpqjh84drdri61y"))
         (patches (list (search-patch "xf86-video-mach64-glibc-2.20.patch")))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
@@ -2880,7 +2890,7 @@ the same level of support for generic VGA or 8514/A adapters.")
 (define-public xf86-video-mga
   (package
     (name "xf86-video-mga")
-    (version "1.6.3")
+    (version "1.6.4")
     (source
       (origin
         (method url-fetch)
@@ -2890,8 +2900,7 @@ the same level of support for generic VGA or 8514/A adapters.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1my7y67sadjjmab1dyxckylrggi7p01yk4wwg9w6k1q96pmb213p"))
-        (patches (list (search-patch "xf86-video-mga-glibc-2.20.patch")))))
+           "0kyl8w99arviv27pc349zsy2vinnm7mdpy34vr9nzisicw5nkij8"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
@@ -2932,7 +2941,7 @@ kernel mode setting (KMS).")
 (define-public xf86-video-neomagic
   (package
     (name "xf86-video-neomagic")
-    (version "1.2.8")
+    (version "1.2.9")
     (source
       (origin
         (method url-fetch)
@@ -2942,7 +2951,7 @@ kernel mode setting (KMS).")
                ".tar.bz2"))
         (sha256
           (base32
-            "0x48sxs1p3kmwk3pq1j7vl93y59gdmgkq1x5xbnh0yal0angdash"))))
+            "1whb2kgyqaxdjim27ya404acz50izgmafwnb6y9m89q5n6b97y3j"))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
@@ -3012,28 +3021,20 @@ supported, and the RENDER extension is not accelerated by this driver.")
 (define-public xf86-video-nouveau
   (package
     (name "xf86-video-nouveau")
-    (version "1.0.11")
-    (source (origin
-              ;; There are no tarball releases of Nouveau.
-              (method git-fetch)
-              (uri (git-reference
-                    (url "git://anongit.freedesktop.org/nouveau/xf86-video-nouveau")
-                    (commit (string-append name "-" version))))
-              (sha256
-               (base32
-                "0zdb6b0n7pzf3l8j8hl7gfshg8jsmcmk11isvvl542yc36162ahp"))))
+    (version "1.0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://xorg/individual/driver/xf86-video-nouveau-"
+             version
+             ".tar.bz2"))
+       (sha256
+        (base32
+         "07irv1zkk0rkyn1d7f2gn1icgcz2ix0pwv74sjian763gynmg80f"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (alist-cons-after
-                 'unpack 'bootstrap
-                 (lambda _
-                   (zero? (system* "autoreconf" "-vi")))
-                 %standard-phases)))
     (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)
-                     ("autoconf" ,(autoconf-wrapper))
-                     ("automake" ,automake)
-                     ("libtool" ,libtool)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://nouveau.freedesktop.org")
     (synopsis "NVIDIA video driver for X server")
     (description
@@ -3078,7 +3079,7 @@ UniChrome Pro and Chrome9 integrated graphics processors.")
 (define-public xf86-video-r128
   (package
     (name "xf86-video-r128")
-    (version "6.9.2")
+    (version "6.10.1")
     (source
       (origin
         (method url-fetch)
@@ -3088,8 +3089,7 @@ UniChrome Pro and Chrome9 integrated graphics processors.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1q3fsc603k2yinphx5rrcl5356qkpywwz8axlw277l2231gjjbcb"))
-        (patches (list (search-patch "xf86-video-r128-glibc-2.20.patch")))))
+           "1sp4glyyj23rs77vgffmn0mar5h504a86701nzvi56qwhd4yzgsy"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
@@ -3106,7 +3106,7 @@ This driver is intended for ATI Rage 128 based cards.")
 (define-public xf86-video-savage
   (package
     (name "xf86-video-savage")
-    (version "2.3.7")
+    (version "2.3.8")
     (source
       (origin
         (method url-fetch)
@@ -3116,7 +3116,7 @@ This driver is intended for ATI Rage 128 based cards.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0i2aqp68rfkrz9c1p6d7ny9x7bjrlnby7q56zf01fb12r42l4784"))))
+            "0qzshncynjdmyhavhqw4x5ha3gwbygi0zbsy158fpg1jcnla9kpx"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
@@ -3132,7 +3132,7 @@ This driver is intended for ATI Rage 128 based cards.")
 (define-public xf86-video-siliconmotion
   (package
     (name "xf86-video-siliconmotion")
-    (version "1.7.7")
+    (version "1.7.8")
     (source
       (origin
         (method url-fetch)
@@ -3142,10 +3142,7 @@ This driver is intended for ATI Rage 128 based cards.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1an321kqvsxq0z35acwl99lc8hpdkayw0q180744ypcl8ffvbf47"))
-        (patches
-         (list
-          (search-patch "xf86-video-siliconmotion-remove-mibstore.patch")))))
+           "1sqv0y31mi4zmh9yaxqpzg7p8y2z01j6qys433hb8n4yznllkm79"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -3160,7 +3157,7 @@ Xorg X server.")
 (define-public xf86-video-sis
   (package
     (name "xf86-video-sis")
-    (version "0.10.7")
+    (version "0.10.8")
     (source
       (origin
         (method url-fetch)
@@ -3170,9 +3167,7 @@ Xorg X server.")
                ".tar.bz2"))
         (sha256
           (base32
-           "1l0w84x39gq4y9j81dny9r6rma1xkqvxpsavpkd8h7h8panbcbmy"))
-        (patches (list (search-patch "xf86-video-sis-update-api.patch")
-                       (search-patch "xf86-video-sis-fix-exa-crash.patch")))))
+           "1znkqwdyd6am23xbsfjzamq125j5rrylg5mzqky4scv9gxbz5wy8"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86dgaproto" ,xf86dgaproto)
@@ -3239,7 +3234,7 @@ This driver supports SiS chipsets of 300/315/330/340 series.")
 (define-public xf86-video-tdfx
   (package
     (name "xf86-video-tdfx")
-    (version "1.4.5")
+    (version "1.4.6")
     (source
       (origin
         (method url-fetch)
@@ -3249,9 +3244,7 @@ This driver supports SiS chipsets of 300/315/330/340 series.")
                ".tar.bz2"))
         (sha256
           (base32
-           "0nfqf1c8939s21ci1g7gacwzlr4g4nnilahgz7j2bz30zfnzpmbh"))
-        (patches (list
-                  (search-patch "xf86-video-tdfx-remove-mibstore.patch")))))
+           "0dvdrhyn1iv6rr85v1c52s1gl0j1qrxgv7x0r7qn3ba0gj38i2is"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
@@ -3294,7 +3287,7 @@ X server.")
 (define-public xf86-video-trident
   (package
     (name "xf86-video-trident")
-    (version "1.3.6")
+    (version "1.3.7")
     (source
       (origin
         (method url-fetch)
@@ -3304,9 +3297,7 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-           "0141qbfsm32i0pxjyx5czpa8x8m4lvapsp4amw1qigaa0gry6n3a"))
-        (patches (list
-                  (search-patch "xf86-video-trident-remove-mibstore.patch")))))
+           "1bhkwic2acq9za4yz4bwj338cwv5mdrgr2qmgkhlj3bscbg1imgc"))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
@@ -3325,7 +3316,7 @@ X server.")
 (define-public xf86-video-vesa
   (package
     (name "xf86-video-vesa")
-    (version "2.3.3")
+    (version "2.3.4")
     (source
       (origin
         (method url-fetch)
@@ -3335,7 +3326,7 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1y5fsg0c4bgmh1cfsbnaaf388fppyy02i7mcy9vax78flkjpb2yf"))))
+            "1haiw8r1z8ihk68d0jqph2wsld13w4qkl86biq46fvyxg7cg9pbv"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -3350,7 +3341,7 @@ X server.")
 (define-public xf86-video-vmware
   (package
     (name "xf86-video-vmware")
-    (version "13.0.2")
+    (version "13.1.0")
     (source
       (origin
         (method url-fetch)
@@ -3360,8 +3351,7 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-           "0m1wfsv34s4pyr5ry87yyjb2p6vmy6vyypdz5jx0sqnkx8n3vfn8"))
-        (patches (list (search-patch "xf86-video-vmware-glibc-2.20.patch")))))
+           "1k50whwnkzxam2ihc1sw456dx0pvr76naycm4qhyjxqv9d72879w"))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
@@ -3389,7 +3379,16 @@ X server.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1s6p7yxmi12q4y05va53rljwyzd6ry492r1pgi7wwq6cznivhgly"))))
+           "1s6p7yxmi12q4y05va53rljwyzd6ry492r1pgi7wwq6cznivhgly"))
+        (patches
+         (list (origin
+                 (method url-fetch)
+                 (uri "https://cgit.freedesktop.org/xorg/driver/\
+xf86-video-voodoo/patch/?id=9172ae566a0e85313fc80ab62b4455393eefe593")
+                 (sha256
+                  (base32
+                   "0rndmxf5b8j3hjnhrwrnzsq5024fli134fj1mprhkcrvax2zq8db"))
+                 (file-name "xf86-video-voodoo-pcitag.patch"))))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
@@ -3501,7 +3500,7 @@ configuring modelines and gamma.")
 (define-public xgamma
   (package
     (name "xgamma")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
       (origin
         (method url-fetch)
@@ -3511,7 +3510,7 @@ configuring modelines and gamma.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0463sawps86jnxn121ramsz4sicy3az5wa5wsq4rqm8dm3za48p3"))))
+            "1lr2nb1fhg5fk2fchqxdxyl739602ggwhmgl2wiv5c8qbidw7w8f"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxxf86vm" ,libxxf86vm)
@@ -3529,7 +3528,7 @@ monitor via the X video mode extension.")
 (define-public xhost
   (package
     (name "xhost")
-    (version "1.0.6")
+    (version "1.0.7")
     (source
       (origin
         (method url-fetch)
@@ -3539,7 +3538,7 @@ monitor via the X video mode extension.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1hlxm0is9nks1cx033s1733kkib9ivx2bxa3pb9yayqavwibkxd6"))))
+            "16n26xw6l01zq31d4qvsaz50misvizhn7iihzdn5f7s72pp1krlk"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxmu" ,libxmu)
@@ -3588,7 +3587,7 @@ alternative implementations like XRandR or TwinView.")
 (define-public xinput
   (package
     (name "xinput")
-    (version "1.6.1")
+    (version "1.6.2")
     (source
       (origin
         (method url-fetch)
@@ -3598,7 +3597,7 @@ alternative implementations like XRandR or TwinView.")
                ".tar.bz2"))
         (sha256
           (base32
-            "07w7zlpdhpwzzshg8q0y152cy3wl2fj7x1897glnp2la487jsqxp"))))
+            "1i75mviz9dyqyf7qigzmxq8vn31i86aybm662fzjz5c086dx551n"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
@@ -3670,7 +3669,7 @@ make keyboards more accessible to people with physical impairments.")
 (define-public xkbevd
   (package
     (name "xkbevd")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
@@ -3680,7 +3679,7 @@ make keyboards more accessible to people with physical impairments.")
                ".tar.bz2"))
         (sha256
           (base32
-            "05h1xcnbalndbrryyqs8wzy9h3wz655vc0ymhlk2q4aik17licjm"))))
+            "0sprjx8i86ljk0l7ldzbz2xlk8916z5zh78cafjv8k1a63js4c14"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxkbfile" ,libxkbfile)
@@ -3734,7 +3733,7 @@ extension to the X11 protocol.  It includes:
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
-    (version "2.13")
+    (version "2.17")
     (source
       (origin
         (method url-fetch)
@@ -3744,7 +3743,7 @@ extension to the X11 protocol.  It includes:
               ".tar.bz2"))
         (sha256
           (base32
-            "1klzbwabzd7bhbg23b14vy4l5xgpapn8lc0m5d8h40d3p7rfjnvv"))))
+            "00878f1v3034ki78pjpf2db0bh7jsmszsnxr3bf5qxripm2bxiny"))))
     (build-system gnu-build-system)
     (inputs
       `(("gettext" ,gnu-gettext)
@@ -3795,7 +3794,7 @@ programs that have displayed undesired windows on a user's screen.")
 (define-public xlsatoms
   (package
     (name "xlsatoms")
-    (version "1.1.1")
+    (version "1.1.2")
     (source
       (origin
         (method url-fetch)
@@ -3805,7 +3804,7 @@ programs that have displayed undesired windows on a user's screen.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1y9nfl8s7njxbnci8c20j986xixharasgg40vdw92y593j6dk2rv"))))
+            "196yjik910xsr7dwy8daa0amr0r22ynfs360z0ndp9mx7mydrra7"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxcb" ,libxcb)))
@@ -3876,7 +3875,7 @@ protocol.")
 (define-public xmodmap
   (package
     (name "xmodmap")
-    (version "1.0.8")
+    (version "1.0.9")
     (source
       (origin
         (method url-fetch)
@@ -3886,7 +3885,7 @@ protocol.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1hwzm54m4ng09ls9i4bq0x84zbyhamgzasgrvhxxp8jqk34f7qpg"))
+            "0y649an3jqfq9klkp9y5gj20xb78fw6g193f5mnzpl0hbz6fbc5p"))
         (patches (list (search-patch "xmodmap-asprintf.patch")))))
     (build-system gnu-build-system)
     (inputs
@@ -4170,7 +4169,7 @@ libICE, the X font server, and related components.")
 (define-public xvinfo
   (package
     (name "xvinfo")
-    (version "1.1.2")
+    (version "1.1.3")
     (source
       (origin
         (method url-fetch)
@@ -4180,7 +4179,7 @@ libICE, the X font server, and related components.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1qsh7fszi727l3vwlaf9pb7bpikdv15smrx5qhlgg3kqzl7xklzf"))))
+            "1sz5wqhxd1fqsfi1w5advdlwzkizf2fgl12hdpk66f7mv9l8pflz"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxext" ,libxext)
@@ -4406,7 +4405,7 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxp
   (package
     (name "libxp")
-    (version "1.0.2")
+    (version "1.0.3")
     (source
       (origin
         (method url-fetch)
@@ -4416,7 +4415,7 @@ cannot be adequately worked around on the client side of the wire.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1dfh5w8sjz5b5fl6dl4y63ckq99snslz7bir8zq2rg8ax6syabwm"))))
+            "0mwc2jwmq03b1m9ihax5c6gw2ln8rc70zz4fsj3kb7440nchqdkz"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("printproto" ,printproto)))
@@ -4434,7 +4433,7 @@ cannot be adequately worked around on the client side of the wire.")
 (define-public libxrender
   (package
     (name "libxrender")
-    (version "0.9.8")
+    (version "0.9.9")
     (source
       (origin
         (method url-fetch)
@@ -4444,7 +4443,7 @@ cannot be adequately worked around on the client side of the wire.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0qpwyjhbpp734vnhca992pjh4w7ijslidkzx1pcwbbk000pv050x"))))
+            "06myx7044qqdswxndsmd82fpp670klnizkgzdm194h51h1wyabzw"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("renderproto" ,renderproto)))
@@ -4558,7 +4557,7 @@ script around the mkfontscale program.")
 (define-public xproto
   (package
     (name "xproto")
-    (version "7.0.26")
+    (version "7.0.28")
     (source
       (origin
         (method url-fetch)
@@ -4568,7 +4567,7 @@ script around the mkfontscale program.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0ksi8vhfd916bx2f3xlyhn6azf6cvvzrsdja26haa1cqfp0n4qb3"))))
+            "1jpnvm33vi2dar5y5zgz7jjh0m8fpkcxm0f0lbwfx37ns5l5bs19"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("util-macros" ,util-macros))) ; to get util-macros in (almost?) all package inputs
@@ -4710,7 +4709,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxi
   (package
     (name "libxi")
-    (version "1.7.4")
+    (version "1.7.6")
     (source
       (origin
         (method url-fetch)
@@ -4720,7 +4719,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0i12lj973grlp9fa79v0vh9cahk3nf9csdjnf81iip0qcrlc5zrc"))))
+            "1b5p0l19ynmd6blnqr205wyngh6fagl35nqb4v05dw60rr9aachz"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("inputproto" ,inputproto)
@@ -4740,7 +4739,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxrandr
   (package
     (name "libxrandr")
-    (version "1.4.2")
+    (version "1.5.0")
     (source
       (origin
         (method url-fetch)
@@ -4750,7 +4749,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1b95p3l84ppv6j7dbbmg0zrz6k8xdwvnag1l6ajm3gk9qwdb79ya"))))
+            "0n6ycs1arf4wb1cal9il6v7vbxbf21qhs9sbfl8xndgwnxclk1kg"))))
     (build-system gnu-build-system)
     (propagated-inputs
       ;; In accordance with xrandr.pc.
@@ -4771,7 +4770,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxvmc
   (package
     (name "libxvmc")
-    (version "1.0.8")
+    (version "1.0.9")
     (source
       (origin
         (method url-fetch)
@@ -4781,7 +4780,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "015jk3bxfmj6zaw99x282f9npi8qqaw34yg186frags3z8g406jy"))))
+            "0mjp1b21dvkaz7r0iq085r92nh5vkpmx99awfgqq9hgzyvgxf0q7"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxv" ,libxv)))
@@ -4800,7 +4799,7 @@ new API's in libXft, or the legacy API's in libX11.")
 (define-public libxxf86vm
   (package
     (name "libxxf86vm")
-    (version "1.1.3")
+    (version "1.1.4")
     (source
       (origin
         (method url-fetch)
@@ -4810,7 +4809,7 @@ new API's in libXft, or the legacy API's in libX11.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1f1pxj018nk7ybxv58jmn5y8gm2288p4q3l2dng9n1p25v1qcpns"))))
+            "0mydhlyn72i7brjwypsqrpkls3nm6vxw0li8b2nw0caz7kwjgvmg"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxext" ,libxext)
@@ -4876,7 +4875,7 @@ over Xlib, including:
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.16.4")
+    (version "1.18.1")
     (source
       (origin
         (method url-fetch)
@@ -4885,7 +4884,7 @@ over Xlib, including:
               name "-" version ".tar.bz2"))
         (sha256
          (base32
-          "0wf8xykcjhvpk9ppjcixvf60p6kkyrpmfj0z29d93a8kjb6f3dmb"))))
+          "17bq40als48v12ld81jysc0gj5g572zkjkyzbhlm3ac9xgdmdv45"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("dri2proto" ,dri2proto)
@@ -4986,7 +4985,7 @@ draggable titlebars and borders.")
 (define-public libx11
   (package
     (name "libx11")
-    (version "1.6.2")
+    (version "1.6.3")
     (source
       (origin
         (method url-fetch)
@@ -4996,7 +4995,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "05mx0s0vqzds3qjc1gmjr2s6x2ll37z4lfhgm7p2w7936zl2g81a"))))
+            "04c1vj53xq2xgyxx5vhln3wm2d76hh1n95fvs3myhligkz1sfcfg"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;8 MiB of man pages + XML
@@ -5052,7 +5051,7 @@ draggable titlebars and borders.")
 (define-public libxt
   (package
     (name "libxt")
-    (version "1.1.4")
+    (version "1.1.5")
     (source
       (origin
         (method url-fetch)
@@ -5062,7 +5061,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0myxwbx9ylam5x3ia5b5f4x8azcqdm420h9ad1r4hrgmi2lrffl4"))))
+            "06lz6i7rbrp19kgikpaz4c97fw7n31k2h2aiikczs482g2zbdvj6"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;2 MiB of man pages + XML
@@ -5087,7 +5086,7 @@ draggable titlebars and borders.")
 (define-public libxaw
   (package
     (name "libxaw")
-    (version "1.0.12")
+    (version "1.0.13")
     (source
       (origin
         (method url-fetch)
@@ -5097,7 +5096,7 @@ draggable titlebars and borders.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1xnv7jy86j9vhmw74frkzcraynqbw1p1s79jasargsgwfi433z4n"))))
+            "1kdhxplwrn43d9jp3v54llp05kwx210lrsdvqb6944jp29rhdy4f"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("libxext" ,libxext)
@@ -5158,7 +5157,7 @@ The XCB util module provides the following libraries:
     (version "0.1.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://xcb.freedesktop.org/dist/"
+              (uri (string-append "https://xcb.freedesktop.org/dist/"
                                   "xcb-util-cursor-" version ".tar.gz"))
               (sha256
                (base32

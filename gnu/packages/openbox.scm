@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,15 +32,15 @@
 (define-public openbox
   (package
     (name "openbox")
-    (version "3.5.2")
+    (version "3.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://www.icculus.org/openbox/releases/" name "-"
-                    version ".tar.gz"))
+                    version ".tar.xz"))
               (sha256
                (base32
-                "0cxgb334zj6aszwiki9g10i56sm18i7w1kw52vdnwgzq27pv93qj"))))
+                "0vg2y1qddsdxkjv806mzpvmkgzliab8ll4s7zm7ma5jnriamirxb"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("imlib2" ,imlib2)

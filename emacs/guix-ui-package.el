@@ -454,17 +454,22 @@ current OUTPUT is installed (if there is such output in
                              (string= (guix-entry-value entry 'output)
                                       output))
                            installed))
-         (action-type (if installed-entry 'delete 'install)))
+         (action-type (if installed-entry 'delete 'install))
+         (profile (guix-ui-current-profile)))
     (guix-info-insert-indent)
     (guix-format-insert output
                         (if installed-entry
                             'guix-package-info-installed-outputs
                           'guix-package-info-uninstalled-outputs)
                         guix-package-info-output-format)
-    (guix-package-info-insert-action-button action-type entry output)
-    (when obsolete
-      (guix-info-insert-indent)
-      (guix-package-info-insert-action-button 'upgrade entry output))
+    ;; Do not allow a user to install/delete anything to/from a system
+    ;; profile, so add action buttons only for non-system profiles.
+    (when (and profile
+               (not (guix-system-profile? profile)))
+      (guix-package-info-insert-action-button action-type entry output)
+      (when obsolete
+        (guix-info-insert-indent)
+        (guix-package-info-insert-action-button 'upgrade entry output)))
     (insert "\n")
     (when installed-entry
       (guix-info-insert-entry installed-entry 'installed-output 2))))
@@ -723,10 +728,22 @@ take an entry as argument."
             'upgrade nil
             (guix-package-installed-outputs entry)))))
 
+(defun guix-package-assert-non-system-profile ()
+  "Verify that the current profile is not a system one.
+The current profile is the one used by the current buffer."
+  (let ((profile (guix-ui-current-profile)))
+    (and profile
+         (guix-system-profile? profile)
+         (user-error "Packages cannot be installed or removed to/from \
+profile '%s'.
+Use 'guix system reconfigure' shell command to modify a system profile."
+                     profile))))
+
 (defun guix-package-execute-actions (fun)
   "Perform actions on the marked packages.
 Use FUN to define actions suitable for `guix-process-package-actions'.
 FUN should take action-type as argument."
+  (guix-package-assert-non-system-profile)
   (let ((actions (delq nil
                        (mapcar fun '(install delete upgrade)))))
     (if actions
@@ -746,10 +763,11 @@ The specification is suitable for `guix-process-package-actions'."
   (let ((specs (guix-list-get-marked-args action-type)))
     (and specs (cons action-type specs))))
 
-(defun guix-package-list-edit ()
-  "Go to the location of the current package."
-  (interactive)
-  (guix-edit (guix-list-current-id)))
+(defun guix-package-list-edit (&optional directory)
+  "Go to the location of the current package.
+See `guix-find-location' for the meaning of DIRECTORY."
+  (interactive (list (guix-read-directory)))
+  (guix-edit (guix-list-current-id) directory))
 
 (defun guix-package-list-latest-builds (number &rest args)
   "Display latest NUMBER of Hydra builds of the current package.
@@ -906,11 +924,13 @@ See `guix-package-info-type'."
                  'id (cl-remove-duplicates pids))
        'add))))
 
-(defun guix-output-list-edit ()
-  "Go to the location of the current package."
-  (interactive)
+(defun guix-output-list-edit (&optional directory)
+  "Go to the location of the current package.
+See `guix-find-location' for the meaning of DIRECTORY."
+  (interactive (list (guix-read-directory)))
   (guix-edit (guix-entry-value (guix-list-current-entry)
-                               'package-id)))
+                               'package-id)
+             directory))
 
 
 ;;; Interactive commands
@@ -977,6 +997,19 @@ If PROFILE is nil, use `guix-current-profile'.
 Interactively with prefix, prompt for PROFILE."
   (interactive (list (guix-ui-read-profile)))
   (guix-package-get-display profile 'installed))
+
+;;;###autoload
+(defun guix-installed-user-packages ()
+  "Display information about Guix packages installed in a user profile."
+  (interactive)
+  (guix-installed-packages guix-user-profile))
+
+;;;###autoload
+(defun guix-installed-system-packages ()
+  "Display information about Guix packages installed in a system profile."
+  (interactive)
+  (guix-installed-packages
+   (guix-packages-profile guix-system-profile nil t)))
 
 ;;;###autoload
 (defun guix-obsolete-packages (&optional profile)

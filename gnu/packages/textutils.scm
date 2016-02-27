@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -152,11 +152,10 @@ the Hannon Lab.")
     (license license:agpl3+)))
 
 (define-public cityhash
-  (let ((commit "8af9b8c")
-        (revision "1"))
+  (let ((commit "8af9b8c"))
     (package
       (name "cityhash")
-      (version (string-append "1.1." revision "." commit))
+      (version (string-append "1.1-2." commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -166,13 +165,25 @@ the Hannon Lab.")
                 (sha256
                  (base32
                   "0n6skf5dv8yfl1ckax8dqhvsbslkwc9158zf2ims0xqdvzsahbi6"))))
-    (build-system gnu-build-system)
-    (home-page "https://github.com/google/cityhash")
-    (synopsis "C++ hash functions for strings")
-    (description
-     "CityHash provides hash functions for strings.  The functions mix the
+      (build-system gnu-build-system)
+      (arguments
+       '(#:make-flags (list "CXXFLAGS=-g -O3")
+         #:phases
+         (modify-phases %standard-phases
+           ;; citycrc is not installed by default but is used by some
+           ;; programs.
+           (add-after 'install 'install-citycrc
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (include (string-append out "/include")))
+                 (install-file "src/citycrc.h" include))
+               #t)))))
+      (home-page "https://github.com/google/cityhash")
+      (synopsis "C++ hash functions for strings")
+      (description
+       "CityHash provides hash functions for strings.  The functions mix the
 input bits thoroughly but are not suitable for cryptography.")
-    (license license:expat))))
+      (license license:expat))))
 
 (define-public libconfig
   (package

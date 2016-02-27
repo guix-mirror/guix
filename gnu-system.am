@@ -42,6 +42,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/attr.scm				\
   gnu/packages/audacity.scm			\
   gnu/packages/audio.scm			\
+  gnu/packages/augeas.scm			\
   gnu/packages/autogen.scm			\
   gnu/packages/autotools.scm			\
   gnu/packages/avahi.scm			\
@@ -171,7 +172,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/jemalloc.scm			\
   gnu/packages/jrnl.scm				\
   gnu/packages/julia.scm			\
-  gnu/packages/kde.scm				\
   gnu/packages/kde-frameworks.scm		\
   gnu/packages/key-mon.scm			\
   gnu/packages/kodi.scm				\
@@ -215,6 +215,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/mail.scm				\
   gnu/packages/make-bootstrap.scm		\
   gnu/packages/markdown.scm			\
+  gnu/packages/mate.scm             \
   gnu/packages/maths.scm			\
   gnu/packages/mc.scm				\
   gnu/packages/mcrypt.scm			\
@@ -435,6 +436,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/clucene-pkgconfig.patch			\
   gnu/packages/patches/cmake-fix-tests.patch			\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
+  gnu/packages/patches/cpio-CVE-2016-2037.patch			\
   gnu/packages/patches/cpufrequtils-fix-aclocal.patch		\
   gnu/packages/patches/crda-optional-gcrypt.patch		\
   gnu/packages/patches/crossmap-allow-system-pysam.patch	\
@@ -489,6 +491,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/glib-tests-prlimit.patch			\
   gnu/packages/patches/glib-tests-timer.patch			\
   gnu/packages/patches/glib-tests-gapplication.patch		\
+  gnu/packages/patches/glibc-CVE-2015-7547.patch		\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-hurd-extern-inline.patch		\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
@@ -499,6 +502,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/gmp-arm-asm-nothumb.patch		\
   gnu/packages/patches/gmp-faulty-test.patch			\
   gnu/packages/patches/gnucash-price-quotes-perl.patch		\
+  gnu/packages/patches/gnupg-simple-query-ignore-status-messages.patch \
   gnu/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   gnu/packages/patches/gobject-introspection-cc.patch		\
   gnu/packages/patches/gobject-introspection-girepository.patch	\
@@ -521,6 +525,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/hydra-automake-1.15.patch		\
   gnu/packages/patches/hydra-disable-darcs-test.patch		\
   gnu/packages/patches/icecat-avoid-bundled-includes.patch	\
+  gnu/packages/patches/icecat-update-graphite2.patch		\
   gnu/packages/patches/icecat-re-enable-DHE-cipher-suites.patch	\
   gnu/packages/patches/icu4c-CVE-2014-6585.patch		\
   gnu/packages/patches/icu4c-CVE-2015-1270.patch		\
@@ -561,14 +566,12 @@ dist_patch_DATA =						\
   gnu/packages/patches/libmad-armv7-thumb-pt2.patch		\
   gnu/packages/patches/libmad-frame-length.patch		\
   gnu/packages/patches/libmad-mips-newgcc.patch			\
+  gnu/packages/patches/libssh-0.6.5-CVE-2016-0739.patch		\
   gnu/packages/patches/libtheora-config-guess.patch		\
   gnu/packages/patches/libtiff-CVE-2015-8665+CVE-2015-8683.patch \
   gnu/packages/patches/libtiff-oob-accesses-in-decode.patch	\
   gnu/packages/patches/libtiff-oob-write-in-nextdecode.patch	\
   gnu/packages/patches/libtool-skip-tests2.patch		\
-  gnu/packages/patches/libsndfile-CVE-2014-9496.patch		\
-  gnu/packages/patches/libsndfile-CVE-2015-7805.patch		\
-  gnu/packages/patches/libssh-CVE-2014-0017.patch		\
   gnu/packages/patches/libunwind-CVE-2015-3239.patch		\
   gnu/packages/patches/libwmf-CAN-2004-0941.patch		\
   gnu/packages/patches/libwmf-CVE-2006-3376.patch		\
@@ -602,12 +605,10 @@ dist_patch_DATA =						\
   gnu/packages/patches/mcron-install.patch			\
   gnu/packages/patches/mdadm-gcc-4.9-fix.patch			\
   gnu/packages/patches/mhash-keygen-test-segfault.patch		\
-  gnu/packages/patches/mit-krb5-CVE-2015-2695-pt1.patch		\
-  gnu/packages/patches/mit-krb5-CVE-2015-2695-pt2.patch		\
-  gnu/packages/patches/mit-krb5-CVE-2015-2696.patch		\
-  gnu/packages/patches/mit-krb5-CVE-2015-2697.patch		\
-  gnu/packages/patches/mit-krb5-CVE-2015-2698-pt1.patch		\
-  gnu/packages/patches/mit-krb5-CVE-2015-2698-pt2.patch		\
+  gnu/packages/patches/mit-krb5-CVE-2015-8629.patch		\
+  gnu/packages/patches/mit-krb5-CVE-2015-8630.patch		\
+  gnu/packages/patches/mit-krb5-CVE-2015-8631.patch		\
+  gnu/packages/patches/mit-krb5-init-context-null-spnego.patch	\
   gnu/packages/patches/mpc123-initialize-ao.patch		\
   gnu/packages/patches/mplayer2-theora-fix.patch		\
   gnu/packages/patches/module-init-tools-moduledir.patch	\
@@ -624,6 +625,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/nvi-assume-preserve-path.patch		\
   gnu/packages/patches/nvi-dbpagesize-binpower.patch		\
   gnu/packages/patches/nvi-db4.patch				\
+  gnu/packages/patches/ocaml-findlib-make-install.patch	\
   gnu/packages/patches/openexr-missing-samples.patch		\
   gnu/packages/patches/openimageio-boost-1.60.patch		\
   gnu/packages/patches/openjpeg-CVE-2015-6581.patch		\
@@ -677,14 +679,20 @@ dist_patch_DATA =						\
   gnu/packages/patches/python-ipython-inputhook-ctype.patch	\
   gnu/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   gnu/packages/patches/python-configobj-setuptools.patch	\
+  gnu/packages/patches/python-paste-remove-website-test.patch	\
+  gnu/packages/patches/python-paste-remove-timing-test.patch	\
   gnu/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   gnu/packages/patches/qemu-CVE-2015-8558.patch			\
   gnu/packages/patches/qemu-CVE-2015-8567.patch			\
   gnu/packages/patches/qemu-CVE-2015-8613.patch			\
+  gnu/packages/patches/qemu-CVE-2015-8619.patch			\
   gnu/packages/patches/qemu-CVE-2015-8701.patch			\
   gnu/packages/patches/qemu-CVE-2015-8743.patch			\
   gnu/packages/patches/qemu-CVE-2016-1568.patch			\
   gnu/packages/patches/qemu-CVE-2016-1922.patch			\
+  gnu/packages/patches/qemu-CVE-2016-1981.patch			\
+  gnu/packages/patches/qemu-CVE-2016-2197.patch			\
+  gnu/packages/patches/qemu-usb-ehci-oob-read.patch		\
   gnu/packages/patches/qemu-virtio-9p-use-accessor-to-get-thread-pool.patch \
   gnu/packages/patches/qt4-ldflags.patch			\
   gnu/packages/patches/ratpoison-shell.patch			\
@@ -701,6 +709,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/slim-session.patch			\
   gnu/packages/patches/slim-config.patch			\
   gnu/packages/patches/slim-sigusr1.patch			\
+  gnu/packages/patches/slurm-configure-remove-nonfree-contribs.patch \
   gnu/packages/patches/soprano-find-clucene.patch		\
   gnu/packages/patches/sudo-CVE-2015-5602.patch			\
   gnu/packages/patches/superlu-dist-scotchmetis.patch		\
@@ -708,6 +717,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/tar-d_ino_in_dirent-fix.patch		\
   gnu/packages/patches/tar-skip-unreliable-tests.patch		\
   gnu/packages/patches/tcl-mkindex-deterministic.patch		\
+  gnu/packages/patches/tclxml-3.2-install.patch			\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/texi2html-document-encoding.patch	\
   gnu/packages/patches/texi2html-i18n.patch			\
@@ -763,17 +773,9 @@ dist_patch_DATA =						\
   gnu/packages/patches/xf86-video-intel-compat-api.patch	\
   gnu/packages/patches/xf86-video-intel-glibc-2.20.patch	\
   gnu/packages/patches/xf86-video-mach64-glibc-2.20.patch	\
-  gnu/packages/patches/xf86-video-mga-glibc-2.20.patch		\
   gnu/packages/patches/xf86-video-nv-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-openchrome-glibc-2.20.patch	\
-  gnu/packages/patches/xf86-video-r128-glibc-2.20.patch		\
-  gnu/packages/patches/xf86-video-siliconmotion-remove-mibstore.patch \
-  gnu/packages/patches/xf86-video-sis-fix-exa-crash.patch	\
-  gnu/packages/patches/xf86-video-sis-update-api.patch		\
-  gnu/packages/patches/xf86-video-tdfx-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-tga-remove-mibstore.patch	\
-  gnu/packages/patches/xf86-video-trident-remove-mibstore.patch	\
-  gnu/packages/patches/xf86-video-vmware-glibc-2.20.patch	\
   gnu/packages/patches/xfce4-panel-plugins.patch		\
   gnu/packages/patches/xfce4-session-fix-xflock4.patch		\
   gnu/packages/patches/xfce4-settings-defaults.patch		\

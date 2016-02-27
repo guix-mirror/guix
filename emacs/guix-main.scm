@@ -856,9 +856,7 @@ parameter/value pairs."
 
 (define* (package->manifest-entry* package #:optional output)
   (and package
-       (begin
-         (check-package-freshness package)
-         (package->manifest-entry package output))))
+       (package->manifest-entry package output)))
 
 (define* (make-install-manifest-entries id #:optional output)
   (package->manifest-entry* (package-by-id id) output))

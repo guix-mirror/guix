@@ -304,12 +304,7 @@ portions of your testing code.")
     (license asl2.0)))
 
 (define-public python2-requests-mock
-  (let ((requests-mock (package-with-python2 python-requests-mock)))
-    (package (inherit requests-mock)
-      (propagated-inputs
-       `(("python2-requests" ,python2-requests)
-         ,@(alist-delete "python-requests"
-                         (package-propagated-inputs requests-mock)))))))
+  (package-with-python2 python-requests-mock))
 
 (define-public python-stevedore
   (package
@@ -392,12 +387,7 @@ common features used in Tempest.")
     (license asl2.0)))
 
 (define-public python2-tempest-lib
-  (let ((tempest-lib (package-with-python2 python-tempest-lib)))
-    (package (inherit tempest-lib)
-      (propagated-inputs
-       `(("python2-jsonschema", python2-jsonschema)
-         ,@(alist-delete "python-jsonschema"
-                         (package-propagated-inputs tempest-lib)))))))
+  (package-with-python2 python-tempest-lib))
 
 ;; Packages from the Oslo library
 (define-public python-oslo.config
@@ -606,9 +596,7 @@ from the OpenStack project.")
     (license asl2.0)))
 
 (define-public python2-oslosphinx
-  (let ((oslosphinx (package-with-python2 python-oslosphinx)))
-    (package (inherit oslosphinx)
-      (propagated-inputs `(("python2-requests" ,python2-requests))))))
+  (package-with-python2 python-oslosphinx))
 
 (define-public python-oslotest
   (package
@@ -782,7 +770,7 @@ LDAP.")
           "1j33l4z9vqh0scfncl4fxg01zr1hgqxhhai6gvcih1gccqm4nd7p"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pbr", python-pbr)
+     `(("python-pbr" ,python-pbr)
        ("python-setuptools" ,python-setuptools)
        ("python-sphinx" ,python-sphinx)
        ;; The folloing packages are needed for the tests.

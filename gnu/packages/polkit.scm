@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,7 +43,7 @@
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://www.freedesktop.org/software/polkit/releases/"
+                   "https://www.freedesktop.org/software/polkit/releases/"
                    name "-" version ".tar.gz"))
              (sha256
               (base32
@@ -139,11 +140,11 @@ for unprivileged applications.")
                "1ip78x20hjqvm08kxhp6gb8hf6k5n6sxyx6kk2yvvq53djzh7yv7"))))
     (build-system cmake-build-system)
     (inputs
-      `(("polkit" ,polkit)))
+     `(("polkit" ,polkit)))
     (propagated-inputs
-      `(("qt" ,qt-4))) ; according to the pkg-config files
+     `(("qt" ,qt))) ; qt-4 according to the pkg-config files
     (native-inputs
-      `(("pkg-config", pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags (list (string-append "-DCMAKE_INSTALL_RPATH="
                                               (assoc-ref %outputs "out")

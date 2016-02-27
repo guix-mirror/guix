@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +35,7 @@
 (define-public gpsbabel
   (package
     (name "gpsbabel")
-    (version "1.5.0")
+    (version "1.5.2")
     (source (origin
               (method url-fetch)
               ;; XXX: Downloads from gpsbabel.org are hidden behind a POST, so
@@ -44,16 +45,16 @@
                     version ".orig.tar.gz"))
               (sha256
                (base32
-                "1pd01kra9l5ihy1by87qia0mpbpcif7g5yg7r9z2bnw7711jm3yb"))))
+                "0xf7wmy2m29g2lm8lqc74yf8rf7sxfl3cfwbk7dpf0yf42pb0b6w"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-zlib=system")
-       #:phases (alist-cons-before
-                 'configure 'pre-configure
-                 (lambda _
-                   (chdir "gpsbabel"))
-                 ;; TODO: "make doc" requires Docbook & co.
-                 %standard-phases)
+       #:phases
+       (modify-phases %standard-phases
+        (add-before 'configure 'pre-configure
+                    (lambda _
+                      (chdir "gpsbabel"))))
+                    ;; TODO: "make doc" requires Docbook & co.
 
        ;; On i686, 'raymarine.test' fails because of a rounding error:
        ;; <http://hydra.gnu.org/build/133040>.  As a workaround, disable tests
@@ -62,7 +63,7 @@
     (inputs
      `(("expat" ,expat)
        ("zlib" ,zlib)
-       ("qt4" ,qt-4)))
+       ("qt" ,qt)))
     (native-inputs
      `(("which" ,which)
        ("libxml2" ,libxml2)))              ;'xmllint' needed for the KML tests

@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -354,7 +355,7 @@ The Liberation Fonts are sponsored by Red Hat.")
 (define-public font-terminus
   (package
     (name "font-terminus")
-    (version "4.39")
+    (version "4.40")
     (source
       (origin
         (method url-fetch)
@@ -365,14 +366,14 @@ The Liberation Fonts are sponsored by Red Hat.")
                version
                ".tar.gz"))
         (sha256
-          (base32
-            "1gzmn7zakvy6yrvmswyjfklnsvqrjm0imhq8rjws8rdkhqwkh21i"))))
+         (base32
+          "0487cyx5h1f0crbny5sg73a22gmym5vk1i7646gy7hgiscj2rxb4"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)
        ("bdftopcf" ,bdftopcf)
-       ("font-util", font-util)
+       ("font-util" ,font-util)
        ("mkfontdir" ,mkfontdir)))
     (arguments
      `(#:configure-flags (list

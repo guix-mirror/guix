@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,14 +34,14 @@
 (define-public owncloud-client
   (package
     (name "owncloud-client")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.owncloud.com/desktop/stable/"
                            "owncloudclient-" version ".tar.xz"))
        (sha256
-        (base32 "0gyhll4yfxcpyc5m73zar5f33qgnmpwiggw2adxdiqy55hc3ymbk"))))
+        (base32 "1jxi439qff4acvyvszjprj42kvzhlz255wv8g4p3jrf55svzwz2f"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases

@@ -40,6 +40,14 @@
 (defvar guix-current-profile guix-default-profile
   "Current profile.")
 
+(defvar guix-system-profile-regexp
+  (concat "\\`" (regexp-quote guix-system-profile))
+  "Regexp matching system profiles.")
+
+(defun guix-system-profile? (profile)
+  "Return non-nil, if PROFILE is a system one."
+  (string-match-p guix-system-profile-regexp profile))
+
 (defun guix-profile-prompt (&optional default)
   "Prompt for profile and return it.
 Use DEFAULT as a start directory.  If it is nil, use

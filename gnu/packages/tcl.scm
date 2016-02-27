@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (guix licenses))
 
@@ -80,8 +82,7 @@
     (home-page "http://www.tcl.tk/")
     (synopsis "The Tcl scripting language")
     (description "The Tcl (Tool Command Language) scripting language.")
-    (license (non-copyleft "http://www.tcl.tk/software/tcltk/license.html"
-                        "Tcl/Tk license"))))
+    (license tcl/tk)))
 
 
 (define-public expect
@@ -219,3 +220,73 @@ interfaces (GUIs) in the Tcl language.")
     ;; pTk/license.terms, pTk/license.html_lib, and pTk/Tix.license for
     ;; details of this license."
     (license (package-license perl))))
+
+(define-public tcllib
+  (package
+    (name "tcllib")
+    (version "1.18")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/" name "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "05dmrk9qsryah2n17z6z85dj9l9lfyvnsd7faw0p9bs1pp5pwrkj"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("tcl" ,tcl)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "TCLLIBPATH")
+            (separator " ")
+            (files (list (string-append "lib/tcllib" version))))))
+    (home-page "https://core.tcl.tk/tcllib/home")
+    (synopsis "Standard Tcl Library")
+    (description "Tcllib, the standard Tcl library, is a collection of common
+utility functions and modules all written in high-level Tcl.")
+    (license (package-license tcl))))
+
+(define-public tclxml
+  (package
+    (name "tclxml")
+    (version "3.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/" name "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0ffb4aw63inig3aql33g4pk0kjk14dv238anp1scwjdjh1k6n4gl"))
+              (patches (list (search-patch "tclxml-3.2-install.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("tcl" ,tcl)
+       ("tcllib" ,tcllib)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "TCLLIBPATH")
+            (separator " ")
+            (files (list (string-append "lib/Tclxml" version))))))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--exec-prefix=" (assoc-ref %outputs "out"))
+             (string-append "--with-tclconfig="
+                            (assoc-ref %build-inputs "tcl") "/lib")
+             (string-append "--with-xml2-config="
+                            (assoc-ref %build-inputs "libxml2")
+                            "/bin/xml2-config")
+             (string-append "--with-xslt-config="
+                            (assoc-ref %build-inputs "libxslt")
+                            "/bin/xslt-config"))
+       #:test-target "test"))
+    (home-page "http://tclxml.sourceforge.net/")
+    (synopsis "Tcl library for XML parsing")
+    (description "TclXML provides event-based parsing of XML documents.  The
+application may register callback scripts for certain document features, and
+when the parser encounters those features while parsing the document the
+callback is evaluated.")
+    (license (non-copyleft
+              "file://LICENCE"
+              "See LICENCE in the distribution."))))

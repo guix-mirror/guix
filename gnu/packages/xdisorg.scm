@@ -211,7 +211,7 @@ rasterisation.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "http://dri.freedesktop.org/libdrm/libdrm-"
+               "https://dri.freedesktop.org/libdrm/libdrm-"
                version
                ".tar.bz2"))
         (sha256
@@ -268,7 +268,7 @@ tracking.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://www.freedesktop.org/software/" name
+       (uri (string-append "https://www.freedesktop.org/software/" name
                            "/releases/" name "-" version ".tar.gz"))
        (sha256
         (base32
@@ -542,7 +542,7 @@ compact configuration syntax.")
     (version "9.21")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://dist.schmorp.de/rxvt-unicode/"
+              (uri (string-append "http://dist.schmorp.de/rxvt-unicode/Attic/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
@@ -626,19 +626,21 @@ Escape key when Left Control is pressed and released on its own.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
-     `(("glib" ,glib)
-       ("gtk+" ,gtk+)
+     `(("gtk+" ,gtk+)
        ("libgudev" ,libgudev)
        ("eudev" ,eudev)
        ("libxml2" ,libxml2)))
+    (propagated-inputs
+     ;; libwacom includes header files that include GLib, and libinput uses
+     ;; those header files.
+     `(("glib" ,glib)))
     (home-page "http://linuxwacom.sourceforge.net/")
     (synopsis "Helper library for Wacom tablet settings")
     (description
-     "Libwacom is a library to help implement Wacom tablet settings.  It
-is intended to be used by client-programs that need model identification.  It
-is already being used by the gnome-settings-daemon and the GNOME 3.4 Control
-Center Wacom tablet applet.  In the future, the xf86-input-wacom driver may
-use it as well.")
+     "Libwacom is a library to help implement Wacom tablet settings.  It is
+intended to be used by client-programs that need model identification.  It is
+already being used by the gnome-settings-daemon and the GNOME Control Center
+Wacom tablet applet.")
     (license license:x11)))
 
 (define-public xf86-input-wacom
@@ -680,7 +682,7 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
 (define-public redshift
   (package
     (name "redshift")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
        (method url-fetch)
@@ -690,7 +692,7 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
                        "/redshift-" version ".tar.xz"))
        (sha256
         (base32
-         "19pfk9il5x2g2ivqix4a555psz8mj3m0cvjwnjpjvx0llh5fghjv"))))
+         "0ngkwj7rg8nfk806w0sg443w6wjr91xdc0zisqfm5h2i77wm1qqh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -699,7 +701,7 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
      `(("libdrm" ,libdrm)
        ("libx11" ,libx11)
        ("libxcb" ,libxcb)
-       ("libxxf86vm", libxxf86vm)
+       ("libxxf86vm" ,libxxf86vm)
        ("glib" ,glib)))                           ;for Geoclue2 support
     (home-page "https://github.com/jonls/redshift")
     (synopsis "Adjust the color temperature of your screen")

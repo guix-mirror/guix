@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
@@ -50,18 +52,15 @@
 (define-public wine
   (package
     (name "wine")
-    (version "1.7.52")
+    (version "1.9.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/wine/"
-                                  name "-" version ".tar.bz2"))
+              (uri (string-append "https://dl.winehq.org/wine/source/"
+                                  (version-major+minor version)
+                                  "/wine-" version ".tar.bz2"))
               (sha256
                (base32
-                "0jsm1p7zwhfb5fpp0xd39vnx9m98kqgfng1q9kdj70rm1hmb6wq7"))
-              (modules '((guix build utils)))
-              (snippet
-               '(substitute* "Make.vars.in"
-                  (("/bin/sh") "@SHELL@")))))
+                "1f5v1gns0xs512a6ym785cn29j8dxdbnxnvkg8v0p1w0p6vfmhbm"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gnu-gettext)
@@ -113,6 +112,9 @@
 
        #:configure-flags
        (list (string-append "LDFLAGS=-Wl,-rpath=" %output "/lib"))
+
+       #:make-flags
+       (list "SHELL=bash")
 
        #:phases
        (alist-cons-after

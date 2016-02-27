@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,7 +59,7 @@ scripts.")
 (define-public c-ares
   (package
     (name "c-ares")
-    (version "1.10.0")
+    (version "1.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -67,7 +67,7 @@ scripts.")
                     ".tar.gz"))
               (sha256
                (base32
-                "1nyka87yf2jfd0y6sspll0yxwb8zi7kyvajrdbjmh4axc5s1cw1x"))))
+                "1z9y1f835dpi1ka2a2vzjygm3djdvr01036ml4l2js6r2xk2wqdk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

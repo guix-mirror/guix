@@ -85,21 +85,11 @@
             derivation-path->output-paths
             derivation
 
-            graft
-            graft?
-            graft-origin
-            graft-replacement
-            graft-origin-output
-            graft-replacement-output
-            graft-derivation
-
             map-derivation
 
             build-derivations
             built-derivations
 
-            %graft?
-            set-grafting
 
             build-expression->derivation)
 
@@ -1111,81 +1101,6 @@ they can refer to each other."
                                   #:guile-for-build guile
                                   #:local-build? #t)))
 
-(define-record-type* <graft> graft make-graft
-  graft?
-  (origin             graft-origin)               ;derivation | store item
-  (origin-output      graft-origin-output         ;string | #f
-                      (default "out"))
-  (replacement        graft-replacement)          ;derivation | store item
-  (replacement-output graft-replacement-output    ;string | #f
-                      (default "out")))
-
-(define* (graft-derivation store name drv grafts
-                           #:key (guile (%guile-for-build))
-                           (system (%current-system)))
-  "Return a derivation called NAME, based on DRV but with all the GRAFTS
-applied."
-  ;; XXX: Someday rewrite using gexps.
-  (define mapping
-    ;; List of store item pairs.
-    (map (match-lambda
-          (($ <graft> source source-output target target-output)
-           (cons (if (derivation? source)
-                     (derivation->output-path source source-output)
-                     source)
-                 (if (derivation? target)
-                     (derivation->output-path target target-output)
-                     target))))
-         grafts))
-
-  (define outputs
-    (match (derivation-outputs drv)
-      (((names . outputs) ...)
-       (map derivation-output-path outputs))))
-
-  (define output-names
-    (match (derivation-outputs drv)
-      (((names . outputs) ...)
-       names)))
-
-  (define build
-    `(begin
-       (use-modules (guix build graft)
-                    (guix build utils)
-                    (ice-9 match))
-
-       (let ((mapping ',mapping))
-         (for-each (lambda (input output)
-                     (format #t "grafting '~a' -> '~a'...~%" input output)
-                     (force-output)
-                     (rewrite-directory input output
-                                        `((,input . ,output)
-                                          ,@mapping)))
-                   ',outputs
-                   (match %outputs
-                     (((names . files) ...)
-                      files))))))
-
-  (define add-label
-    (cut cons "x" <>))
-
-  (match grafts
-    ((($ <graft> sources source-outputs targets target-outputs) ...)
-     (let ((sources (zip sources source-outputs))
-           (targets (zip targets target-outputs)))
-       (build-expression->derivation store name build
-                                     #:system system
-                                     #:guile-for-build guile
-                                     #:modules '((guix build graft)
-                                                 (guix build utils))
-                                     #:inputs `(,@(map (lambda (out)
-                                                         `("x" ,drv ,out))
-                                                       output-names)
-                                                ,@(append (map add-label sources)
-                                                          (map add-label targets)))
-                                     #:outputs output-names
-                                     #:local-build? #t)))))
-
 (define* (build-expression->derivation store name exp ;deprecated
                                        #:key
                                        (system (%current-system))
@@ -1353,16 +1268,3 @@ ALLOWED-REFERENCES, LOCAL-BUILD?, and SUBSTITUTABLE?."
 
 (define built-derivations
   (store-lift build-derivations))
-
-;; The following might feel more at home in (guix packages) but since (guix
-;; gexp), which is a lower level, needs them, we put them here.
-
-(define %graft?
-  ;; Whether to honor package grafts by default.
-  (make-parameter #t))
-
-(define (set-grafting enable?)
-  "This monadic procedure enables grafting when ENABLE? is true, and disables
-it otherwise.  It returns the previous setting."
-  (lambda (store)
-    (values (%graft? enable?) store)))

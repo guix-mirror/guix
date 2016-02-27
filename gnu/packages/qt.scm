@@ -20,7 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages qt)
-  #:use-module ((guix licenses) #:select (bsd-3 gpl2 gpl3 lgpl2.1 x11-style))
+  #:use-module ((guix licenses) #:select (bsd-3 gpl2 gpl3 lgpl2.1 lgpl2.1+ x11-style))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build utils)
@@ -337,6 +337,30 @@ developers using C++ or QML, a CSS & JavaScript like language.")
               (delete-file-recursively olddoc)
               #t))))))))
 
+(define-public qjson
+  (package
+    (name "qjson")
+    (version "0.8.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/flavio/qjson/archive/"
+                                 version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "163fspi0xc705irv79qw861fmh68pjyla9vx3kqiq6xrdhb9834j"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("qt" ,qt-4)))
+    (arguments
+     `(#:tests? #f)) ; no test target
+    (home-page "http://qjson.sourceforge.net/")
+    (synopsis "Qt-based library for handling JSON")
+    (description "QJson is a Qt-based library that maps JSON data to QVariant
+objects and vice versa.  JSON arrays are mapped to QVariantList instances,
+while JSON objects are mapped to QVariantMap.")
+    (license lgpl2.1+)))
+
 (define-public python-sip
   (package
     (name "python-sip")
@@ -517,15 +541,6 @@ contain over 620 classes.")
          %standard-phases)))
     (license (list gpl2 gpl3)))) ; choice of either license
 
-(define-public python2-pyqt-4
-  (package (inherit python-pyqt-4)
-    (name "python2-pyqt")
-    (native-inputs
-     `(("python-sip" ,python2-sip)
-       ("qt" ,qt-4)))
-    (inputs
-     `(("python" ,python-2)))))
-
 (define-public qtkeychain
   (package
     (name "qtkeychain")
@@ -540,7 +555,7 @@ contain over 620 classes.")
          (base32 "055mkd4pz6cyff4cw0784wjc1w92m8x223sxi96ph15fr3lplbg6"))))
     (build-system cmake-build-system)
     (inputs
-     `(("qt", qt)))
+     `(("qt" ,qt)))
     (arguments
      `(#:tests? #f ; No tests included
        #:phases

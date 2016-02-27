@@ -187,14 +187,14 @@ television and DVD.  It is also known as AC-3.")
 (define-public libx264
   (package
     (name "libx264")
-    (version "20150706-2245")
+    (version "20160220-2245")
     (source (origin
               (method url-fetch)
-              (uri (string-append "ftp://ftp.videolan.org/pub/x264/snapshots/"
+              (uri (string-append "http://download.videolan.org/pub/x264/snapshots/"
                                   "x264-snapshot-" version ".tar.bz2"))
               (sha256
                (base32
-                "0v04xq25q66gsk78i4kryy7503ki87jxbhln2c0qpvyy0d47p466"))))
+                "12zyzbiihfhamf7yi4qqaj6k0nisnrydvfr36kxadvmsm7dg4sj3"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -327,7 +327,7 @@ SMPTE 314M.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "http://www.freedesktop.org/software/vaapi/releases/libva/libva-"
+             "https://www.freedesktop.org/software/vaapi/releases/libva/libva-"
              version".tar.bz2"))
        (sha256
         (base32 "0bjfb5s8dk3lql843l91ffxzlq47isqks5sj19cxh7j3nhzw58kz"))))
@@ -406,7 +406,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("speex" ,speex)
        ("twolame" ,twolame)
        ("xvid" ,xvid)
-       ("zlib", zlib)))
+       ("zlib" ,zlib)))
     (native-inputs
      `(("bc" ,bc)
        ("perl" ,perl)
@@ -608,7 +608,7 @@ treaming protocols.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://www.mplayerhq.hu/MPlayer/releases/MPlayer-"
+                   "https://www.mplayerhq.hu/MPlayer/releases/MPlayer-"
                    version ".tar.xz"))
              (sha256
               (base32
@@ -620,23 +620,28 @@ treaming protocols.")
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("cdparanoia" ,cdparanoia)
+       ("ffmpeg" ,ffmpeg)
        ("fontconfig" ,fontconfig)
-       ("ffmpeg", ffmpeg)
        ("freetype" ,freetype)
-       ("lame" ,lame)
-       ("libdvdcss", libdvdcss)
-       ("libdvdnav", libdvdnav)
-       ("libmpg123" ,mpg123)                      ; audio codec for MP3
 ;;        ("giflib" ,giflib) ; uses QuantizeBuffer, requires version >= 5
+       ("lame" ,lame)
+       ("libass" ,libass)
+       ("libdvdcss" ,libdvdcss)
+       ("libdvdnav" ,libdvdnav)
        ("libjpeg" ,libjpeg)
+       ("libmpeg2" ,libmpeg2)
+       ("libmpg123" ,mpg123)                      ; audio codec for MP3
        ("libpng" ,libpng)
        ("libtheora" ,libtheora)
+       ("libvdpau" ,libvdpau)
        ("libvorbis" ,libvorbis)
        ("libx11" ,libx11)
-       ("libxxf86dga" ,libxxf86dga)
+       ("libx264" ,libx264)
        ("libxinerama" ,libxinerama)
        ("libxv" ,libxv)
+       ("libxxf86dga" ,libxxf86dga)
        ("mesa" ,mesa)
+       ("opus" ,opus)
        ("perl" ,perl)
        ("pulseaudio" ,pulseaudio)
        ("python" ,python-wrapper)
@@ -647,8 +652,8 @@ treaming protocols.")
     (arguments
      `(#:tests? #f ; no test target
        #:phases
-         (alist-replace
-          'configure
+       (modify-phases %standard-phases
+        (replace 'configure
           ;; configure does not work followed by "SHELL=..." and
           ;; "CONFIG_SHELL=..."; set environment variables instead
           (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -662,7 +667,7 @@ treaming protocols.")
                       "./configure"
                       (string-append "--extra-cflags=-I"
                                      libx11 "/include") ; to detect libx11
-		       "--disable-ffmpeg_a" ; disables bundled ffmpeg
+                      "--disable-ffmpeg_a" ; disables bundled ffmpeg
                       (string-append "--prefix=" out)
                       ;; Enable runtime cpu detection where supported,
                       ;; and choose a suitable target.
@@ -681,9 +686,8 @@ treaming protocols.")
                                     (or (%current-target-system)
                                         (nix-system->gnu-triplet
                                          (%current-system)))))))
-                      "--disable-iwmmxt"))))
-          %standard-phases)))
-    (home-page "http://www.mplayerhq.hu/design7/news.html")
+                      "--disable-iwmmxt"))))))))
+    (home-page "https://www.mplayerhq.hu/design7/news.html")
     (synopsis "Audio and video player")
     (description "MPlayer is a movie player.  It plays most MPEG/VOB, AVI,
 Ogg/OGM, VIVO, ASF/WMA/WMV, QT/MOV/MP4, RealMedia, Matroska, NUT,
@@ -770,7 +774,7 @@ projects while introducing many more.")
 (define-public libvpx
   (package
     (name "libvpx")
-    (version "1.4.0")
+    (version "1.5.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://storage.googleapis.com/"
@@ -778,23 +782,23 @@ projects while introducing many more.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1r0ql5kgy0c8mh5w7iiqvsd7w5njl9f9cclc7m52ln8assrdk0pm"))))
+                "15v7qw0ydyxn08ksb6lxn1l51pxgpwgshdwd3275yrr5hs86fv9h"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (setenv "CONFIG_SHELL" (which "bash"))
-                   (let ((out (assoc-ref outputs "out")))
-                     (setenv "LDFLAGS"
-                             (string-append "-Wl,-rpath=" out "/lib"))
-                     (zero? (system* "./configure"
-                                     "--enable-shared"
-                                     "--as=yasm"
-                                     ;; Limit size to avoid CVE-2015-1258
-                                     "--size-limit=16384x16384"
-                                     (string-append "--prefix=" out)))))
-                 %standard-phases)
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "CONFIG_SHELL" (which "bash"))
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "LDFLAGS"
+                       (string-append "-Wl,-rpath=" out "/lib"))
+               (zero? (system* "./configure"
+                               "--enable-shared"
+                               "--as=yasm"
+                               ;; Limit size to avoid CVE-2015-1258
+                               "--size-limit=16384x16384"
+                               (string-append "--prefix=" out)))))))
        #:tests? #f)) ; no check target
     (native-inputs
      `(("perl" ,perl)
@@ -807,7 +811,7 @@ projects while introducing many more.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2016.02.01")
+    (version "2016.02.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://youtube-dl.org/downloads/"
@@ -815,7 +819,7 @@ projects while introducing many more.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "04r68acrhx7wapmxph6lcf8hh0pnp76h9p85gcxpidc9m7ypzjfa"))))
+                "02k3kmcrhd04j5y4iivbdms9kvkjw27cqbwd3hf4agd2jjpigkql"))))
     (build-system python-build-system)
     (native-inputs `(("python-setuptools" ,python-setuptools)))
     (home-page "http://youtube-dl.org")
@@ -1157,7 +1161,7 @@ format changes.")
 (define-public xvid
   (package
     (name "xvid")
-    (version "1.3.3")
+    (version "1.3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1165,18 +1169,18 @@ format changes.")
                     version ".tar.bz2"))
               (sha256
                (base32
-                "0m5g75qvapr7xpywg6a83v5x19kw1nm9l2q48lg7jvvpba0bmqdh"))))
+                "1xwbmp9wqshc0ckm970zdpi0yvgqxlqg0s8bkz98mnr8p2067bsz"))))
     (build-system gnu-build-system)
     (native-inputs `(("yasm" ,yasm)))
     (arguments
      '(#:phases
-       (alist-cons-before
-        'configure 'pre-configure
-        (lambda _
-          (chdir "build/generic")
-          (substitute* "configure"
-            (("#! /bin/sh") (string-append "#!" (which "sh")))))
-        %standard-phases)
+       (modify-phases %standard-phases
+         (add-before
+          'configure 'pre-configure
+          (lambda _
+            (chdir "build/generic")
+            (substitute* "configure"
+              (("#! /bin/sh") (string-append "#!" (which "sh")))))))
        ;; No 'check' target.
        #:tests? #f))
     (home-page "https://www.xvid.com/")
@@ -1300,7 +1304,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "0.13.0")
+    (version "0.13.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jp9000/obs-studio"
@@ -1308,7 +1312,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1rk5yfcqwjj4a8bj35fsfzk5qlsf5ylsy0z7kdrpl3fhnmla2izz"))))
+                "1vsn4r3wzfdwjrn69kgx3c5wfx17i72nxdv298pq772fp4j2iy2r"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f)) ; no tests
     (native-inputs

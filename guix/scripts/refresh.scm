@@ -1,8 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +32,7 @@
   #:use-module (guix scripts graph)
   #:use-module (guix monads)
   #:use-module ((guix gnu-maintenance)
-                #:select (%gnu-updater %gnome-updater))
+                #:select (%gnu-updater %gnome-updater %xorg-updater))
   #:use-module (guix import elpa)
   #:use-module (guix import cran)
   #:use-module (guix gnupg)
@@ -193,10 +194,13 @@ unavailable optional dependencies such as Guile-JSON."
   ;; List of "updaters" used by default.  They are consulted in this order.
   (list-updaters %gnu-updater
                  %gnome-updater
+                 %xorg-updater
                  %elpa-updater
                  %cran-updater
                  %bioconductor-updater
-                 ((guix import pypi) => %pypi-updater)))
+                 ((guix import pypi) => %pypi-updater)
+                 ((guix import gem) => %gem-updater)
+                 ((guix import github) => %github-updater)))
 
 (define (lookup-updater name)
   "Return the updater called NAME."
