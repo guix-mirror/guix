@@ -82,9 +82,10 @@ applied."
          grafts))
 
   (define outputs
-    (match (derivation-outputs drv)
-      (((names . outputs) ...)
-       (map derivation-output-path outputs))))
+    (map (match-lambda
+           ((name . output)
+            (cons name (derivation-output-path output))))
+         (derivation-outputs drv)))
 
   (define output-names
     (derivation-output-names drv))
@@ -95,14 +96,20 @@ applied."
                     (guix build utils)
                     (ice-9 match))
 
-       (let ((mapping ',mapping))
+       (let* ((old-outputs ',outputs)
+              (mapping (append ',mapping
+                               (map (match-lambda
+                                      ((name . file)
+                                       (cons (assoc-ref old-outputs name)
+                                             file)))
+                                    %outputs))))
          (for-each (lambda (input output)
                      (format #t "grafting '~a' -> '~a'...~%" input output)
                      (force-output)
-                     (rewrite-directory input output
-                                        `((,input . ,output)
-                                          ,@mapping)))
-                   ',outputs
+                     (rewrite-directory input output mapping))
+                   (match old-outputs
+                     (((names . files) ...)
+                      files))
                    (match %outputs
                      (((names . files) ...)
                       files))))))

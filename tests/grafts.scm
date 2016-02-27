@@ -75,6 +75,26 @@
                 (string=? (readlink (string-append graft "/sh")) one)
                 (string=? (readlink (string-append graft "/self")) graft))))))
 
+(test-assert "graft-derivation, multiple outputs"
+  (let* ((build `(begin
+                   (symlink (assoc-ref %build-inputs "a")
+                            (assoc-ref %outputs "one"))
+                   (symlink (assoc-ref %outputs "one")
+                            (assoc-ref %outputs "two"))))
+         (orig  (build-expression->derivation %store "grafted" build
+                                              #:inputs `(("a" ,%bash))
+                                              #:outputs '("one" "two")))
+         (repl  (add-text-to-store %store "bash" "fake bash"))
+         (grafted (graft-derivation %store orig
+                                    (list (graft
+                                            (origin %bash)
+                                            (replacement repl))))))
+    (and (build-derivations %store (list grafted))
+         (let ((one (derivation->output-path grafted "one"))
+               (two (derivation->output-path grafted "two")))
+           (and (string=? (readlink one) repl)
+                (string=? (readlink two) one))))))
+
 (test-end)
 
 
