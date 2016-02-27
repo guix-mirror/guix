@@ -87,9 +87,7 @@ applied."
        (map derivation-output-path outputs))))
 
   (define output-names
-    (match (derivation-outputs drv)
-      (((names . outputs) ...)
-       names)))
+    (derivation-output-names drv))
 
   (define build
     `(begin
