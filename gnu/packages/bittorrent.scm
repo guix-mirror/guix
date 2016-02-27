@@ -225,7 +225,7 @@ interface, for the Transmission BitTorrent daemon.")
                (("CPPUNIT_TEST_SUITE_REGISTRATION\\(LpdMessageReceiverTest\\);" text)
                 (string-append "// " text))))))))
     (native-inputs
-     `(("pkg-config", pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("c-ares" ,c-ares)
        ("cppunit" ,cppunit) ; for the tests

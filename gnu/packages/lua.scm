@@ -40,7 +40,7 @@
              (patches (list (search-patch "lua-pkgconfig.patch")
                             (search-patch "lua52-liblua-so.patch")))))
     (build-system gnu-build-system)
-    (inputs `(("readline", readline)))
+    (inputs `(("readline" ,readline)))
     (arguments
      '(#:modules ((guix build gnu-build-system)
                     (guix build utils)

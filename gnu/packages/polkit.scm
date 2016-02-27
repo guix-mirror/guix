@@ -144,7 +144,7 @@ for unprivileged applications.")
     (propagated-inputs
      `(("qt" ,qt))) ; qt-4 according to the pkg-config files
     (native-inputs
-     `(("pkg-config", pkg-config)))
+     `(("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags (list (string-append "-DCMAKE_INSTALL_RPATH="
                                               (assoc-ref %outputs "out")

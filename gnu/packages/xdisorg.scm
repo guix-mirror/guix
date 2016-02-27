@@ -701,7 +701,7 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
      `(("libdrm" ,libdrm)
        ("libx11" ,libx11)
        ("libxcb" ,libxcb)
-       ("libxxf86vm", libxxf86vm)
+       ("libxxf86vm" ,libxxf86vm)
        ("glib" ,glib)))                           ;for Geoclue2 support
     (home-page "https://github.com/jonls/redshift")
     (synopsis "Adjust the color temperature of your screen")

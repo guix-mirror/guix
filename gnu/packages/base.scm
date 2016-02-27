@@ -173,7 +173,7 @@ standard utility.")
                 "16d2r9kpivaak948mxzc0bai45mqfw73m113wrkmbffnalv1b5gx"))
               (patches (list (search-patch "patch-hurd-path-max.patch")))))
    (build-system gnu-build-system)
-   (native-inputs `(("ed", ed)))
+   (native-inputs `(("ed" ,ed)))
    (synopsis "Apply differences to originals, with optional backups")
    (description
     "Patch is a program that applies changes to files based on differences
@@ -327,7 +327,7 @@ functionality beyond that which is outlined in the POSIX standard.")
               "19gwwhik3wdwn0r42b7xcihkbxvjl9r2bdal8nifc3k5i4rn3iqb"))
             (patches (list (search-patch "make-impure-dirs.patch")))))
    (build-system gnu-build-system)
-   (native-inputs `(("pkg-config", pkg-config)))  ; to detect Guile
+   (native-inputs `(("pkg-config" ,pkg-config)))  ; to detect Guile
    (inputs `(("guile" ,guile-2.0)))
    (outputs '("out" "debug"))
    (arguments

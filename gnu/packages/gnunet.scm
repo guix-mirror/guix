@@ -224,7 +224,7 @@ supports HTTPS, HTTPS and GnuTLS.")
       ("libunistring" ,libunistring)
       ("openssl" ,openssl)
       ("opus" ,opus)
-      ("pulseaudio", pulseaudio)
+      ("pulseaudio" ,pulseaudio)
       ("sqlite" ,sqlite)
       ("zlib" ,zlib)))
    (native-inputs

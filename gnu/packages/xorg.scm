@@ -348,7 +348,7 @@ provided.")
     (build-system gnu-build-system)
     (inputs
       `(("bdftopcf" ,bdftopcf)
-        ("font-util", font-util)
+        ("font-util" ,font-util)
         ("mkfontdir" ,mkfontdir)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
@@ -380,7 +380,7 @@ provided.")
     (build-system gnu-build-system)
     (inputs
       `(("bdftopcf" ,bdftopcf)
-        ("font-util", font-util)
+        ("font-util" ,font-util)
         ("mkfontdir" ,mkfontdir)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))

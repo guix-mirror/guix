@@ -332,8 +332,8 @@ data types.")
                   (lambda (old new)
                     (symlink (string-append python old)
                              (string-append bin "/" new)))
-                  `("python3", "pydoc3", "idle3")
-                  `("python",  "pydoc",  "idle"))))))
+                  `("python3" ,"pydoc3" ,"idle3")
+                  `("python"  ,"pydoc"  ,"idle"))))))
     (synopsis "Wrapper for the Python 3 commands")
     (description
      "This package provides wrappers for the commands of Python@tie{}3.x such
@@ -2347,7 +2347,7 @@ somewhat intelligeble.")
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)
-       ("python-coverage", python-coverage)
+       ("python-coverage" ,python-coverage)
        ("python-nose" ,python-nose)
        ("python-mock" ,python-mock)))
     (inputs
@@ -5142,7 +5142,7 @@ complexity of Python source code.")
         (sha256
           (base32
             "0fi4a81kr5bcv5p4xgibqr595hyj5dafkqgsmfk96mfy8w71fajs"))))
-    (inputs `(("python-setuptools", python-setuptools)))))
+    (inputs `(("python-setuptools" ,python-setuptools)))))
 
 (define-public python2-mccabe-0.2.1
   (package-with-python2 python-mccabe-0.2.1))
@@ -6753,7 +6753,7 @@ of the SSL peer.")
          (replace 'check
            (lambda _ (zero?
                       (system*
-                       "python" "test_contextlib2.py", "-v")))))))
+                       "python" "test_contextlib2.py" "-v")))))))
     (home-page "http://contextlib2.readthedocs.org/")
     (synopsis "Tools for decorators and context managers")
     (description "This module is primarily a backport of the Python
@@ -7247,7 +7247,7 @@ authenticated session objects providing things like keep-alive.")
     (package (inherit rauth)
       (propagated-inputs `(("python2-requests" ,python2-requests)))
       (native-inputs
-       `(("python2-unittest2", python2-unittest2)
+       `(("python2-unittest2" ,python2-unittest2)
          ,@(package-native-inputs rauth))))))
 
 (define-public python2-functools32

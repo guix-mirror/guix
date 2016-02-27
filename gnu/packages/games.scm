@@ -997,7 +997,7 @@ This game is based on the GPL version of the famous game TuxRacer.")
           (lambda _ (setenv "LIBS" "-lm"))))))
     (inputs
      `(("glu" ,glu)
-       ("mesa", mesa)
+       ("mesa" ,mesa)
        ("sdl" ,sdl)
        ("sdl-image" ,sdl-image)
        ("sdl-mixer" ,sdl-mixer)))

@@ -2758,9 +2758,9 @@ versa using either JSON::XS or JSON::PP.")
     (build-system perl-build-system)
     (native-inputs
      `(("perl-test-fatal" ,perl-test-fatal)
-       ("perl-test-requires", perl-test-requires)
-       ("perl-test-warnings", perl-test-warnings)
-       ("perl-test-without-module", perl-test-without-module)))
+       ("perl-test-requires" ,perl-test-requires)
+       ("perl-test-warnings" ,perl-test-warnings)
+       ("perl-test-without-module" ,perl-test-without-module)))
     (propagated-inputs
      `(("perl-namespace-clean" ,perl-namespace-clean)))
     (home-page "http://search.cpan.org/dist/JSON-Any")

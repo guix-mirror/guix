@@ -282,7 +282,7 @@ management D-Bus specification.")
      `(("libxfce4util" ,libxfce4util))) ; required by libxfce4panel-1.0.pc
     (inputs
      `(("exo" ,exo)
-       ("garcon", garcon)
+       ("garcon" ,garcon)
        ("libwnck" ,libwnck-1)
        ("libxfce4ui" ,libxfce4ui)))
     (native-search-paths
@@ -519,7 +519,7 @@ allows you to shutdown the computer from Xfce.")
      `(("exo" ,exo)
        ("garcon" ,garcon)
        ("libnotify" ,libnotify)
-       ("libxcursor", libxcursor)
+       ("libxcursor" ,libxcursor)
        ("libxi" ,libxi)
        ("libxklavier" ,libxklavier)
        ("libxrandr" ,libxrandr)

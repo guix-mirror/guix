@@ -61,7 +61,7 @@
        ;; TODO: Add 'CMockery' and '-DWITH_TESTING=ON' for the test suite.
        #:tests? #f))
     (inputs `(("zlib" ,zlib)
-              ("libgcrypt", libgcrypt)))
+              ("libgcrypt" ,libgcrypt)))
     (synopsis "SSH client library")
     (description
      "libssh is a C library implementing the SSHv2 and SSHv1 protocol for

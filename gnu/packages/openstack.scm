@@ -770,7 +770,7 @@ LDAP.")
           "1j33l4z9vqh0scfncl4fxg01zr1hgqxhhai6gvcih1gccqm4nd7p"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-pbr", python-pbr)
+     `(("python-pbr" ,python-pbr)
        ("python-setuptools" ,python-setuptools)
        ("python-sphinx" ,python-sphinx)
        ;; The folloing packages are needed for the tests.

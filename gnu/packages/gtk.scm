@@ -365,7 +365,7 @@ printing and other features typical of a source code editor.")
    (native-inputs
     `(("glib:bin" ,glib "bin") ; for glib-genmarshal, etc.
       ("intltool" ,intltool)
-      ("itstool", itstool)
+      ("itstool" ,itstool)
       ("gobject-introspection" ,gobject-introspection)
       ("pkg-config" ,pkg-config)
       ("vala" ,vala)
@@ -425,7 +425,7 @@ highlighting and other features typical of a source code editor.")
    (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
-       ("gobject-introspection", gobject-introspection))) ; g-ir-compiler, etc.
+       ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
    (synopsis "GNOME image loading and manipulation library")
    (description
     "GdkPixbuf is a library for image loading and manipulation developed

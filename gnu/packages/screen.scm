@@ -44,7 +44,7 @@
     (native-inputs
      `(("makeinfo" ,texinfo)))
     (inputs
-     `(("ncurses", ncurses)
+     `(("ncurses" ,ncurses)
        ("perl" ,perl)))
     (arguments
      `(#:configure-flags

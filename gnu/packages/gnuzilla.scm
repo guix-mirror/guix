@@ -72,7 +72,7 @@
                  (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE")))))
     (build-system gnu-build-system)
     (native-inputs
-      `(("perl", perl)
+      `(("perl" ,perl)
         ("python" ,python-2)))
     (arguments
       `(#:phases
@@ -154,7 +154,7 @@ in C/C++.")
                "01ria9wk6329hxqsy75p9dkxiqkq4nkz0jjzll7hslih3jbi8dil"))))
     (build-system gnu-build-system)
     (native-inputs
-      `(("perl", perl)))
+      `(("perl" ,perl)))
     (arguments
      `(#:tests? #f ; no check target
        #:configure-flags (list "--enable-64bit"

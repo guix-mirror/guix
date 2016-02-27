@@ -1790,7 +1790,7 @@ particular, reads spanning multiple exons.")
                (base32
                 "0djmgc0pfli0jilfx8hql1axhwhqxqb8rxg2r5rg07aw73sfs5nx"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl", perl)))
+    (native-inputs `(("perl" ,perl)))
     (home-page "http://hmmer.janelia.org")
     (synopsis "Biosequence analysis using profile hidden Markov models")
     (description

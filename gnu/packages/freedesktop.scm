@@ -69,7 +69,7 @@
     (build-system gnu-build-system)
     (propagated-inputs
      `(("xprop" ,xprop) ; for Xfce detecting
-       ("xset", xset))) ; for xdg-screensaver
+       ("xset" ,xset))) ; for xdg-screensaver
     (arguments
      `(#:tests? #f)) ; no check target
     (home-page "http://portland.freedesktop.org/")
@@ -178,7 +178,7 @@ the freedesktop.org XDG Base Directory specification.")
        ("xsltproc" ,libxslt)
        ("m4" ,m4)
        ("libxml2" ,libxml2)                     ;for XML_CATALOG_FILES
-       ("pkg-config", pkg-config)
+       ("pkg-config" ,pkg-config)
        ("gperf" ,gperf)))
     (inputs
      `(("linux-pam" ,linux-pam)

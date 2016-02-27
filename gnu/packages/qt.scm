@@ -555,7 +555,7 @@ contain over 620 classes.")
          (base32 "055mkd4pz6cyff4cw0784wjc1w92m8x223sxi96ph15fr3lplbg6"))))
     (build-system cmake-build-system)
     (inputs
-     `(("qt", qt)))
+     `(("qt" ,qt)))
     (arguments
      `(#:tests? #f ; No tests included
        #:phases

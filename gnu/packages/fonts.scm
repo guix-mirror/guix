@@ -373,7 +373,7 @@ The Liberation Fonts are sponsored by Red Hat.")
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)
        ("bdftopcf" ,bdftopcf)
-       ("font-util", font-util)
+       ("font-util" ,font-util)
        ("mkfontdir" ,mkfontdir)))
     (arguments
      `(#:configure-flags (list

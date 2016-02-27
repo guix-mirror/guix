@@ -321,7 +321,7 @@ pictures, sounds, or video.")
     (native-inputs `(("emacs" ,emacs-no-x)
                      ("bc" ,bc)
                      ("bash:include" ,bash "include")
-                     ("libuuid", util-linux)))
+                     ("libuuid" ,util-linux)))
 
     ;; TODO: Add more optional inputs.
     (inputs `(("curl" ,curl)
