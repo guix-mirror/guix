@@ -112,24 +112,6 @@ a server that supports the SSH-2 protocol.")
    (license license:bsd-3)
    (home-page "http://www.libssh2.org/")))
 
-;;; XXX This is a temporary package for use only by curl, to allow most users
-;;; of libssh2 to get the security update sooner while postponing the large
-;;; number of rebuilds entailed by updating curl.
-;;;
-;;; XXX This package is vulnerable to CVE-2016-7087.
-;;;
-;;; https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2016-0787
-(define-public libssh2-1.4
-  (package (inherit libssh2)
-    (version "1.4.3")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://www.libssh2.org/download/libssh2-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-                "0vdr478dbhbdgnniqmirawjb7mrcxckn4slhhrijxnzrkmgziipa"))))))
-
 (define-public openssh
   (package
    (name "openssh")

@@ -54,16 +54,7 @@
    (inputs `(("gnutls" ,gnutls)
              ("gss" ,gss)
              ("libidn" ,libidn)
-
-             ;; XXX libssh2-1.4 is a temporary package for use only by curl,
-             ;; to allow most users of libssh2 to get the security update for
-             ;; CVE-2016-7087 while postponing the large number of rebuilds
-             ;; entailed by updating curl.  Soon, curl should be updated to
-             ;; use the latest libssh2 and libssh2-1.4 should be removed.
-
-             ;; XXX libssh2-1.4 is vulnerable to CVE-2016-0787.
-             ("libssh2" ,libssh2-1.4)
-
+             ("libssh2" ,libssh2)
              ("openldap" ,openldap)
              ("zlib" ,zlib)))
    (native-inputs
