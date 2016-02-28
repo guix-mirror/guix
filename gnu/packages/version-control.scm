@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
@@ -149,7 +149,12 @@ as well as the classic centralized workflow.")
               "svn"                               ; git-svn
               "gui"))                             ; gitk, git gui
    (arguments
-    `(#:make-flags `("V=1") ; more verbose compilation
+    `(#:make-flags `("V=1"                        ;more verbose compilation
+
+                     ;; By default 'make install' creates hard links for
+                     ;; things in 'libexec/git-core', which leads to huge
+                     ;; nars; see <http://bugs.gnu.org/21949>.
+                     "NO_INSTALL_HARDLINKS=indeed")
       #:test-target "test"
       #:tests? #f ; FIXME: Many tests are failing
 
