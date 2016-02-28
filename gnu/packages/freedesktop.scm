@@ -247,15 +247,16 @@ Python.")
 (define-public wayland
   (package
     (name "wayland")
-    (version "1.9.0")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wayland.freedesktop.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1yhy62vkbq8j8c9zaa6yzvn75cd99kfa8n2zfdwl80x019r711ww"))))
+                "1p307ly1yyqjnzn9dbv78yffql2qszn84qk74lwanl3gma8fgxjb"))))
     (build-system gnu-build-system)
+    (arguments `(#:parallel-tests? #f))
     (native-inputs
      `(("doxygen" ,doxygen)
        ("graphviz" ,graphviz)
@@ -268,7 +269,7 @@ Python.")
        ("expat" ,expat)
        ("libffi" ,libffi)
        ("libxml2" ,libxml2))) ; for XML_CATALOG_FILES
-    (home-page "http://wayland.freedesktop.org/")
+    (home-page "https://wayland.freedesktop.org/")
     (synopsis "Display server protocol")
     (description
      "Wayland is a protocol for a compositor to talk to its clients as well as
