@@ -1463,7 +1463,7 @@ Hints specification (EWMH).")
     (license license:lgpl2.0+)))
 
 ;; stable version for gtk2, required by xfwm4.
-(define-public libwnck-1
+(define-public libwnck-2
   (package (inherit libwnck)
     (name "libwnck")
     (version "2.30.7")
