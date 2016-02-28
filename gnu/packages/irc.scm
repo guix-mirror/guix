@@ -88,17 +88,16 @@ irssi, but graphical.")
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out"))
-                (ncurses (assoc-ref inputs "ncurses")))
-            (setenv "CONFIG_SHELL" (which "bash"))
-            (zero?
-             (system* "./configure"
-                      (string-append "--prefix=" out)
-                      (string-append "--with-ncurses=" ncurses)))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (ncurses (assoc-ref inputs "ncurses")))
+               (setenv "CONFIG_SHELL" (which "bash"))
+               (zero?
+                (system* "./configure"
+                         (string-append "--prefix=" out)
+                         (string-append "--with-ncurses=" ncurses)))))))))
     (inputs
      `(("glib" ,glib)
        ("ncurses" ,ncurses)
