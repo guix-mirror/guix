@@ -472,15 +472,15 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
 (define-public libqmi
   (package
     (name "libqmi")
-    (version "1.12.6")
+    (version "1.12.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.freedesktop.org/software/" name "/"
+                    "https://www.freedesktop.org/software/" name "/"
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "101ppan2q1h4pyp2zbn9b8sdwy2c7fk9rp91yykxz3afrvzbymq8"))))
+                "19w2zkm5xl6i3vm1xhjjclks4awas17gfbb2k5y66gwnkiykjfnj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
@@ -489,7 +489,7 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
     (propagated-inputs
      `(("glib" ,glib))) ; required by qmi-glib.pc
     (synopsis "Library to communicate with QMI-powered modems")
-    (home-page "http://www.freedesktop.org/wiki/Software/libqmi/")
+    (home-page "https://www.freedesktop.org/wiki/Software/libqmi/")
     (description
      "Libqmi is a GLib-based library for talking to WWAN modems and devices
 which speak the Qualcomm MSM Interface (QMI) protocol.")
