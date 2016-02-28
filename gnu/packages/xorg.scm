@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3996,17 +3997,16 @@ an X server.")
 (define-public xrandr
   (package
     (name "xrandr")
-    (version "1.4.3")
+    (version "1.5.0")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
                "mirror://xorg/individual/app/xrandr-"
-               version
-               ".tar.bz2"))
+               version ".tar.bz2"))
         (sha256
           (base32
-            "06xy0kr6ih7ilrwl6b5g6ay75vm2j4lxnv1d5xlj6sdqhqsaqm3i"))))
+            "1kaih7rmzxr1vp5a5zzjhm5x7dn9mckya088sqqw026pskhx9ky1"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
