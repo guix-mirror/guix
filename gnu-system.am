@@ -166,6 +166,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/indent.scm			\
   gnu/packages/inklingreader.scm		\
   gnu/packages/inkscape.scm			\
+  gnu/packages/irc.scm  			\
   gnu/packages/irssi.scm			\
   gnu/packages/iso-codes.scm			\
   gnu/packages/java.scm				\
