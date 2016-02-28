@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -61,7 +61,7 @@
   (define (boot fetch)
     (lambda* (url hash-algo hash
               #:optional name #:key system)
-      (fetch url hash-algo hash
+      (fetch url hash-algo hash name
              #:guile %bootstrap-guile
              #:system system)))
 
