@@ -101,14 +101,13 @@ keys, no previous conversation is compromised.")
 (define-public bitlbee
   (package
     (name "bitlbee")
-    (version "3.4")
+    (version "3.4.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://get.bitlbee.org/src/bitlbee-"
+              (uri (string-append "https://get.bitlbee.org/src/bitlbee-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "0plx4dryf8i6hz7vghg84z5f6w6rkw1l8ckl4c4wh5zxpd3ddfnf"))
-              (patches (list (search-patch "bitlbee-configure-doc-fix.patch")))))
+               (base32 "1qf0ypa9ba5jvsnpg9slmaran16hcc5fnfzbb1sdch1hjhchn2jh"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("check" ,check)))
