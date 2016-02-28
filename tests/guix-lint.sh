@@ -75,4 +75,4 @@ if guix lint -c synopsis,invalid-checker dummy 2>&1 | \
 then true; else false; fi
 
 # Make sure specifying multiple packages works.
-guix lint -c inputs-should-be-native dummy dummy-42 dummy
+guix lint -c inputs-should-be-native dummy dummy@42 dummy

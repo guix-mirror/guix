@@ -3,6 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
+;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -31,8 +32,7 @@
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module ((rnrs bytevectors) #:select (bytevector-u8-set!))
-  #:use-module ((guix build utils)
-                #:select (dump-port package-name->name+version))
+  #:use-module ((guix build utils) #:select (dump-port))
   #:use-module ((guix build syscalls) #:select (errno mkdtemp!))
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
@@ -42,7 +42,6 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (system foreign)
-  #:re-export (package-name->name+version)
   #:export (bytevector->base16-string
             base16-string->bytevector
 
@@ -66,6 +65,7 @@
             gnu-triplet->nix-system
             %current-system
             %current-target-system
+            package-name->name+version
             version-compare
             version>?
             version>=?
@@ -543,6 +543,15 @@ returned by `config.guess'."
   ;; Either #f or a GNU triplet representing the target system we are
   ;; cross-building to.
   (make-parameter #f))
+
+(define (package-name->name+version spec)
+  "Given SPEC, a package name like \"foo@0.9.1b\", return two values: \"foo\"
+and \"0.9.1b\".  When the version part is unavailable, SPEC and #f are
+returned.  Both parts must not contain any '@'."
+  (match (string-rindex spec #\@)
+    (#f  (values spec #f))
+    (idx (values (substring spec 0 idx)
+                 (substring spec (1+ idx))))))
 
 (define version-compare
   (let ((strverscmp

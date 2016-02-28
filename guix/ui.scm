@@ -1081,9 +1081,9 @@ package name, version number (or #f), and output name (or OUTPUT).  SPEC may
 optionally contain a version number and an output name, as in these examples:
 
   guile
-  guile-2.0.9
+  guile@2.0.9
   guile:debug
-  guile-2.0.9:debug
+  guile@2.0.9:debug
 "
   (let*-values (((name sub-drv)
                  (match (string-rindex spec #\:)

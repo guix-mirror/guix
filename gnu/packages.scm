@@ -282,7 +282,7 @@ return its return value."
 ;;; Package specification.
 ;;;
 
-(define (%find-package spec name version)
+(define* (%find-package spec name version #:key fallback?)
   (match (find-best-packages-by-name name version)
     ((pkg . pkg*)
      (unless (null? pkg*)
@@ -290,15 +290,23 @@ return its return value."
        (warning (_ "choosing ~a from ~a~%")
                 (package-full-name pkg)
                 (location->string (package-location pkg))))
+     (when fallback?
+       (warning (_ "deprecated NAME-VERSION syntax.~%")))
      pkg)
     (_
      (if version
          (leave (_ "~A: package not found for version ~a~%") name version)
-         (leave (_ "~A: unknown package~%") name)))))
+         (or fallback?
+             ;; XXX: Fallback to the older specification style with an hyphen
+             ;; between NAME and VERSION, for backward compatibility.
+             (let ((proc (@ (guix build utils) package-name->name+version)))
+               (call-with-values (proc name)
+                 (cut %find-package spec <> <> #:fallback? #t)))
+             (leave (_ "~A: unknown package~%") name))))))
 
 (define (specification->package spec)
   "Return a package matching SPEC.  SPEC may be a package name, or a package
-name followed by a hyphen and a version number.  If the version number is not
+name followed by an at-sign and a version number.  If the version number is not
 present, return the preferred newest version."
   (let-values (((name version) (package-name->name+version spec)))
     (%find-package spec name version)))
@@ -308,9 +316,9 @@ present, return the preferred newest version."
 optionally contain a version number and an output name, as in these examples:
 
   guile
-  guile-2.0.9
+  guile@2.0.9
   guile:debug
-  guile-2.0.9:debug
+  guile@2.0.9:debug
 
 If SPEC does not specify a version number, return the preferred newest
 version; if SPEC does not specify an output, return OUTPUT."

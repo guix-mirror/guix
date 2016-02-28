@@ -108,10 +108,10 @@ Second line" 24))
                (package-specification->name+version+output spec))
            list))
        '("guile"
-         "guile-2.0.9"
+         "guile@2.0.9"
          "guile:debug"
-         "guile-2.0.9:debug"
-         "guile-cairo-1.4.1")))
+         "guile@2.0.9:debug"
+         "guile-cairo@1.4.1")))
 
 (test-equal "integer"
   '(1)
