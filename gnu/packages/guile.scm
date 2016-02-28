@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -255,7 +256,16 @@ without requiring the source code to be rewritten.")
        ("flex" ,flex)
        ("texinfo" ,texinfo)
        ("gettext" ,gnu-gettext)
-       ,@(package-native-inputs guile-next)))))
+       ,@(package-native-inputs guile-next)))
+    ;; Same as in guile-2.0
+    (native-search-paths
+     (list (search-path-specification
+            (variable "GUILE_LOAD_PATH")
+            (files '("share/guile/site/2.0")))
+           (search-path-specification
+            (variable "GUILE_LOAD_COMPILED_PATH")
+            (files '("lib/guile/2.0/ccache"
+                     "share/guile/site/2.0")))))))
 
 
 ;;;
