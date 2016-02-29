@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Vicente Vera Parra <vicentemvp@gmail.com>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -465,13 +466,13 @@ legends.")
 (define-public r-ggplot2
   (package
     (name "r-ggplot2")
-    (version "1.0.1")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "ggplot2" version))
        (sha256
-        (base32 "0794kjqi3lrxb33lr1mykd58959hlgkhdn259vj8fxrh65mqw920"))))
+        (base32 "07r5zw0ccv4sf1mdxcz9wa86p2c6j61cnnq18qdjrh3zhhcbmdp2"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
