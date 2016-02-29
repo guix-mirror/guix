@@ -4170,7 +4170,9 @@ extracting the desired features in a convenient format.")
     (version "3.2.2")
     (source (origin
               (method url-fetch)
-              (uri (bioconductor-uri "GO.db" version))
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/GO.db_"
+                                  version ".tar.gz"))
               (sha256
                (base32
                 "00gariag9ampz82dh0xllrc26r85d7vdcwc0vca5zdy147rwxr7f"))))
