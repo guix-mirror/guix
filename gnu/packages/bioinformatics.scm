@@ -1251,7 +1251,7 @@ accessing bigWig files.")
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
-    (propagated-inputs
+    (inputs
      `(("python-scipy" ,python2-scipy)
        ("python-numpy" ,python2-numpy)
        ("python-matplotlib" ,python2-matplotlib)
