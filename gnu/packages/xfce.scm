@@ -24,7 +24,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
@@ -690,29 +690,8 @@ on your desktop.")
     (name "xfce")
     (version (package-version xfce4-session))
     (source #f)
-    (build-system glib-or-gtk-build-system)
-    (arguments
-     '(#:modules ((guix build gnu-build-system)
-                  (guix build glib-or-gtk-build-system)
-                  (guix build utils)
-                  (srfi srfi-26))
-       #:phases
-       (alist-replace
-        'install
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let* ((out  (assoc-ref outputs "out"))
-                 (bin  (string-append out "/bin"))
-                 (prog (string-append bin "/startxfce4")))
-            (mkdir-p bin)
-            (symlink (string-append
-                      (assoc-ref %build-inputs "xfce4-session")
-                      "/bin/startxfce4")
-                     prog)
-            (wrap-program prog
-              ;; For xfce4-panel plugins.
-              `("X_XFCE4_LIB_DIRS" = ,(list (getenv "X_XFCE4_LIB_DIRS"))))))
-        (map (cut assq <> %standard-phases)
-             '(set-paths install glib-or-gtk-wrap)))))
+    (build-system trivial-build-system)
+    (arguments '(#:builder (mkdir %output)))
     (propagated-inputs
      `(("exo"                  ,exo)
        ("garcon"               ,garcon)
