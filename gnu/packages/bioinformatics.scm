@@ -1,8 +1,7 @@
-
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2015 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -3697,13 +3696,13 @@ packages.")
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
-    (version "0.8.5")
+    (version "0.8.11")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "S4Vectors" version))
               (sha256
                (base32
-                "10f4jxwlwsiy7zhb3kgp6anid0d7wkvrrljl80r3nhx38yr24l5k"))))
+                "12iibcs63m9iy7f45wgjcqsna2dnqwckphk682389grshz0g4x66"))))
     (properties
      `((upstream-name . "S4Vectors")
        (r-repository . bioconductor)))
