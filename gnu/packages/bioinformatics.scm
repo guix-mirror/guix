@@ -42,6 +42,7 @@
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages datastructures)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
@@ -772,6 +773,35 @@ features such as long-read support and split alignment, but BWA-MEM, which is
 the latest, is generally recommended for high-quality queries as it is faster
 and more accurate.  BWA-MEM also has better performance than BWA-backtrack for
 70-100bp Illumina reads.")
+    (license license:gpl3+)))
+
+(define-public bwa-pssm
+  (package (inherit bwa)
+    (name "bwa-pssm")
+    (version "0.5.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/pkerpedjiev/bwa-pssm/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02p7mpbs4mlxmn84g2x4ghak638vbj4lqix2ipx5g84pz9bhdavg"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gdsl" ,gdsl)
+       ("zlib" ,zlib)
+       ("perl" ,perl)))
+    (home-page "http://bwa-pssm.binf.ku.dk/")
+    (synopsis "Burrows-Wheeler transform-based probabilistic short read mapper")
+    (description
+     "BWA-PSSM is a probabilistic short genomic sequence read aligner based on
+the use of @dfn{position specific scoring matrices} (PSSM).  Like many of the
+existing aligners it is fast and sensitive.  Unlike most other aligners,
+however, it is also adaptible in the sense that one can direct the alignment
+based on known biases within the data set.  It is coded as a modification of
+the original BWA alignment program and shares the genome index structure as
+well as many of the command line options.")
     (license license:gpl3+)))
 
 (define-public python2-bx-python
