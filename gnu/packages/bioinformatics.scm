@@ -1238,25 +1238,26 @@ accessing bigWig files.")
 (define-public deeptools
   (package
     (name "deeptools")
-    (version "1.5.11")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/fidelram/deepTools/archive/"
-                    version ".tar.gz"))
+              (uri (string-append "https://github.com/fidelram/deepTools/"
+                                  "archive/" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1kaagygcbvjs9sxd9cqmskd02wcfp9imvb735r087w7hwqpvz6fs"))))
+                "1nmfin0zjdby3vay3r4flvz94dr6qjhj41ax4yz3vx13j6wz8izd"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
     (inputs
      `(("python-scipy" ,python2-scipy)
        ("python-numpy" ,python2-numpy)
+       ("python-numpydoc" ,python2-numpydoc)
        ("python-matplotlib" ,python2-matplotlib)
        ("python-bx-python" ,python2-bx-python)
-       ("python-pysam" ,python2-pysam)))
+       ("python-pysam" ,python2-pysam)
+       ("python-pybigwig" ,python2-pybigwig)))
     (native-inputs
      `(("python-mock" ,python2-mock) ;for tests
        ("python-pytz" ,python2-pytz) ;for tests
