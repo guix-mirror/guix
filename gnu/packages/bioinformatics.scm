@@ -1194,6 +1194,47 @@ other types of unwanted sequence from high-throughput sequencing reads.")
 files.")
     (license license:expat)))
 
+(define-public python-pybigwig
+  (package
+    (name "python-pybigwig")
+    (version "0.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pyBigWig" version))
+              (sha256
+               (base32
+                "0yrpdxg3y0sny25x4w22lv1k47jzccqjmg7j4bp0hywklvp0hg7d"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled libBigWig sources
+                  (delete-file-recursively "libBigWig")))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-with-libBigWig
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "setup.py"
+               (("libs=\\[") "libs=[\"BigWig\", "))
+             #t)))))
+    (inputs
+     `(("libbigwig" ,libbigwig)
+       ("zlib" ,zlib)
+       ("curl" ,curl)))
+    (home-page "https://github.com/dpryan79/pyBigWig")
+    (synopsis "Access bigWig files in Python using libBigWig")
+    (description
+     "This package provides Python bindings to the libBigWig library for
+accessing bigWig files.")
+    (license license:expat)))
+
+(define-public python2-pybigwig
+  (let ((pybigwig (package-with-python2 python-pybigwig)))
+    (package (inherit pybigwig)
+      (native-inputs
+       `(("python-setuptools" ,python2-setuptools))))))
+
 (define-public deeptools
   (package
     (name "deeptools")
