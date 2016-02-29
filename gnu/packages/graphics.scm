@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@gnu.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,7 +90,8 @@ many more.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1izddjwbh1grs8080vmaix72z469qy29wrvkphgmqmcm0sv1by7c"))))
+                "1izddjwbh1grs8080vmaix72z469qy29wrvkphgmqmcm0sv1by7c"))
+              (patches (map search-patch '("ilmbase-fix-tests.patch")))))
     (build-system gnu-build-system)
     (home-page "http://www.openexr.com/")
     (synopsis "Utility C++ libraries for threads, maths, and exceptions")
