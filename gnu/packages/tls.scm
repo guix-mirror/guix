@@ -201,6 +201,10 @@ required structures.")
     `(#:parallel-build? #f
       #:parallel-tests? #f
       #:test-target "test"
+
+      ;; Changes to OpenSSL sometimes cause Perl to "sneak in" to the closure,
+      ;; so we explicitly disallow it here.
+      #:disallowed-references ,(list (canonical-package perl))
       #:phases
       (modify-phases %standard-phases
         (add-before
