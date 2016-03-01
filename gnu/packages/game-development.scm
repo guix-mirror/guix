@@ -142,13 +142,12 @@ provide connectivity for client applications written in any language.")
               ("zlib" ,zlib)))
     (arguments
      '(#:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-            (system* "qmake"
-                     (string-append "PREFIX=" out))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (system* "qmake"
+                        (string-append "PREFIX=" out))))))))
     (home-page "http://www.mapeditor.org/")
     (synopsis "Tile map editor")
     (description
