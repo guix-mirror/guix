@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
@@ -179,6 +179,7 @@ required structures.")
 
 (define-public openssl
   (package
+   (replacement openssl-1.0.2g)
    (name "openssl")
    (version "1.0.2f")
    (source (origin
@@ -281,6 +282,26 @@ required structures.")
     "OpenSSL is an implementation of SSL/TLS.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
+
+(define openssl-1.0.2g
+  (package
+    (inherit openssl)
+    (replacement #f)
+    (source
+     (let ((name "openssl") (version "1.0.2g"))
+       (origin
+         (method url-fetch)
+         (uri (list (string-append "ftp://ftp.openssl.org/source/"
+                                   name "-" version ".tar.gz")
+                    (string-append "ftp://ftp.openssl.org/source/old/"
+                                   (string-trim-right version char-set:letter)
+                                   "/" name "-" version ".tar.gz")))
+         (sha256
+          (base32
+           "0cxajjayi859czi545ddafi24m9nwsnjsw4q82zrmqvwj2rv315p"))
+         (patches (map search-patch
+                       '("openssl-runpath.patch"
+                         "openssl-c-rehash-in.patch"))))))))
 
 (define-public libressl
   (package
