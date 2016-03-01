@@ -121,15 +121,15 @@ generator library for C++.")
 (define-public kodi
   (package
     (name "kodi")
-    (version "15.2")
+    (version "16.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://mirrors.kodi.tv/releases/source/"
-                                  version "-Isengard.tar.gz"))
+                                  version "-Jarvis.tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "043i0f1crx9glwxil4xm45z5kxpkrx316gi4ir4d3rbd5safp2nx"))
+                "0iirspvv7czf785l2lqf232dvdaj87srbn9ni97ngvnd6w9yl884"))
               (snippet
                ;; Delete bundled ffmpeg.
                ;; TODO: Delete every other bundled library.
@@ -211,7 +211,9 @@ generator library for C++.")
        ("bluez" ,bluez)
        ("boost" ,boost)
        ("bzip2" ,bzip2)
+       ("crossguid" ,crossguid)
        ("curl" ,curl)
+       ("dcadec" ,dcadec)
        ("dbus" ,dbus)
        ("enca" ,enca)
        ("eudev" ,eudev)
@@ -263,6 +265,7 @@ generator library for C++.")
        ("taglib" ,taglib)
        ("tinyxml" ,tinyxml)
        ("unzip" ,unzip)
+       ("util-linux" ,util-linux)
        ("zip" ,zip)
        ("zlib" ,zlib)))
     (synopsis "Media center for home theater computers")
