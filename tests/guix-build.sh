@@ -207,7 +207,7 @@ guix build --file="$module_dir/gexp.scm" -d
 guix build --file="$module_dir/gexp.scm" -d | grep 'gexp\.drv'
 
 # Using 'GUIX_BUILD_OPTIONS'.
-GUIX_BUILD_OPTIONS="--dry-run"
+GUIX_BUILD_OPTIONS="--dry-run --no-grafts"
 export GUIX_BUILD_OPTIONS
 
 guix build emacs

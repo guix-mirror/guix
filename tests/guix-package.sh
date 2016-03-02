@@ -261,7 +261,7 @@ unset GUIX_PACKAGE_PATH
 
 # Using 'GUIX_BUILD_OPTIONS'.
 available="`guix package -A | sort`"
-GUIX_BUILD_OPTIONS="--dry-run"
+GUIX_BUILD_OPTIONS="--dry-run --no-grafts"
 export GUIX_BUILD_OPTIONS
 
 # Make sure $GUIX_BUILD_OPTIONS is not simply appended to the command-line,
@@ -270,7 +270,9 @@ available2="`guix package -A | sort`"
 test "$available2" = "$available"
 guix package -I
 
-unset GUIX_BUILD_OPTIONS
+# Restore '--no-grafts', which makes sure we don't end up building stuff when
+# '--dry-run' is passed.
+GUIX_BUILD_OPTIONS="--no-grafts"
 
 # Applying a manifest file.
 cat > "$module_dir/manifest.scm"<<EOF

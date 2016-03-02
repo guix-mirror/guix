@@ -108,8 +108,13 @@ unset LANGUAGE
 LC_MESSAGES=C
 export LC_MESSAGES
 
+# Disable grafts by default because they can cause things to be built
+# regardless of '--dry-run'.
+GUIX_BUILD_OPTIONS="--no-grafts"
+export GUIX_BUILD_OPTIONS
+
 # Ignore user settings.
-unset GUIX_PACKAGE_PATH GUIX_BUILD_OPTIONS
+unset GUIX_PACKAGE_PATH
 
 storedir="@storedir@"
 prefix="@prefix@"
