@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -172,3 +173,24 @@ different compilers.  Cmocka supports several different message output formats
 like Test Anything Protocol, Subunit, xUnit XML or the original cmockery output
 format.")
     (license asl2.0)))
+
+(define-public cppcheck
+  (package
+    (name "cppcheck")
+    (version "1.72")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/danmar/cppcheck/archive/"
+                          version ".tar.gz"))
+      (sha256
+       (base32 "0zxaixhqi4vmj7xj56gzadggcbjhbjjm6abyr86qlan23sg98667"))
+      (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system cmake-build-system)
+    (home-page "http://cppcheck.sourceforge.net")
+    (synopsis "Static C/C++ code analyzer")
+    (description "Cppcheck is a static code analyzer for C and C++.  Unlike
+C/C++ compilers and many other analysis tools it does not detect syntax errors
+in the code.  Cppcheck primarily detects the types of bugs that the compilers
+normally do not detect.  The goal is to detect only real errors in the code
+(i.e. have zero false positives).")
+    (license gpl3+)))
