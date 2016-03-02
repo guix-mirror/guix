@@ -341,8 +341,12 @@ Emit a Graphviz (dot) representation of the dependencies of PACKAGE...\n"))
 
 (define (guix-graph . args)
   (with-error-handling
-    (let* ((opts     (parse-command-line args %options
-                                         (list %default-options)))
+    (let* ((opts     (args-fold* args %options
+                                 (lambda (opt name arg . rest)
+                                   (leave (_ "~A: unrecognized option~%") name))
+                                 (lambda (arg result)
+                                   (alist-cons 'argument arg result))
+                                 %default-options))
            (type     (assoc-ref opts 'node-type))
            (packages (filter-map (match-lambda
                                    (('argument . spec)
