@@ -43,6 +43,7 @@ trap "rm -rf $module_dir" EXIT
 
 cat > "$module_dir/foo.scm"<<EOF
 (define-module (foo)
+  #:use-module (guix tests)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system trivial))
@@ -88,6 +89,10 @@ cat > "$module_dir/foo.scm"<<EOF
     (synopsis "Dummy package")
     (description "bar is a dummy package for testing.")
     (license #f)))
+
+(define-public baz
+  (dummy-package "baz" (replacement foo)))
+
 EOF
 
 GUIX_PACKAGE_PATH="$module_dir"
@@ -96,6 +101,10 @@ export GUIX_PACKAGE_PATH
 # foo.tar.gz
 guix build -d -S foo
 guix build -d -S foo | grep -e 'foo\.tar\.gz'
+
+# 'baz' has a replacement so we should be getting the replacement's source.
+(unset GUIX_BUILD_OPTIONS;
+ test "`guix build -d -S baz`" = "`guix build -d -S foo`")
 
 guix build -d --sources=package foo
 guix build -d --sources=package foo | grep -e 'foo\.tar\.gz'

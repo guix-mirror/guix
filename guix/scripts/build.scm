@@ -592,15 +592,16 @@ build."
   (parameterize ((%graft? graft?))
     (append-map (match-lambda
                   ((? package? p)
-                   (match src
-                     (#f
-                      (list (package->derivation store p system)))
-                     (#t
-                      (let ((s (package-source p)))
-                        (list (package-source-derivation store s))))
-                     (proc
-                      (map (cut package-source-derivation store <>)
-                           (proc p)))))
+                   (let ((p (or (and graft? (package-replacement p)) p)))
+                     (match src
+                       (#f
+                        (list (package->derivation store p system)))
+                       (#t
+                        (let ((s (package-source p)))
+                          (list (package-source-derivation store s))))
+                       (proc
+                        (map (cut package-source-derivation store <>)
+                             (proc p))))))
                   ((? derivation? drv)
                    (list drv))
                   ((? procedure? proc)
