@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -324,7 +324,7 @@ the input port."
               ((assoc-ref opts 'authorize)
                (authorize-key))
               (else
-               (let ((store (open-connection)))
+               (with-store store
                  (cond ((assoc-ref opts 'export)
                         (export-from-store store opts))
                        ((assoc-ref opts 'import)
