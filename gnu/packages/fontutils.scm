@@ -203,6 +203,7 @@ applications should be.")
 
 (define-public graphite2
   (package
+   (replacement graphite2-1.3.6)
    (name "graphite2")
    (version "1.3.5")
    (source
@@ -228,6 +229,21 @@ process known as shaping.  This process takes an input Unicode text string
 and returns a sequence of positioned glyphids from the font.")
    (license license:lgpl2.1+)
    (home-page "https://github.com/silnrsi/graphite")))
+
+(define graphite2-1.3.6
+  (package
+    (inherit graphite2)
+    (replacement #f)
+    (source
+     (let ((name "graphite2") (version "1.3.6"))
+       (origin
+         (method url-fetch)
+         (uri (string-append "https://github.com/silnrsi/graphite/archive/"
+                             version ".tar.gz"))
+         (file-name (string-append name "-" version ".tar.gz"))
+         (sha256
+          (base32
+           "1frd9mjaqzvh9gs74ngc43igi53vzjzlwr5chbrs6ii1hc4aa23s")))))))
 
 (define-public potrace
   (package
