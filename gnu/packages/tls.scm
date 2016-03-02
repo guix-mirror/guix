@@ -301,7 +301,41 @@ required structures.")
            "0cxajjayi859czi545ddafi24m9nwsnjsw4q82zrmqvwj2rv315p"))
          (patches (map search-patch
                        '("openssl-runpath.patch"
-                         "openssl-c-rehash-in.patch"))))))))
+                         "openssl-c-rehash-in.patch"))))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments openssl)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (zero?
+                  (system*
+                   "./config"
+
+                   ;; XXX TEMPORARY, FOR GRAFTING ONLY
+                   ;;     Enable ssl2 code to preserve
+                   ;;     ABI compatibility with 1.0.2f
+                   "enable-ssl2"
+
+                   "shared"             ;build shared libraries
+                   "--libdir=lib"
+
+                   ;; The default for this catch-all directory is
+                   ;; PREFIX/ssl.  Change that to something more
+                   ;; conventional.
+                   (string-append "--openssldir=" out
+                                  "/share/openssl-" ,(package-version openssl))
+
+                   (string-append "--prefix=" out)
+
+                   ;; XXX FIXME: Work around a code generation bug in GCC
+                   ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
+                   ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
+                   ,@(if (and (not (%current-target-system))
+                              (string-prefix? "armhf" (%current-system)))
+                         '("-mfpu=vfpv3")
+                         '()))))))))))))
 
 (define-public libressl
   (package
