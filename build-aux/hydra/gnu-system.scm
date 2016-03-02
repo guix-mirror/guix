@@ -253,15 +253,14 @@ valid."
                 (case subset
                   ((all)
                    ;; Build everything.
-                   (fold-packages (lambda (package result)
-                                    (let ((job (package->job store package
-                                                             system)))
-                                      (if job
-                                          (cons job result)
-                                          result)))
-                                  (append (qemu-jobs store system)
-                                          (tarball-jobs store system)
-                                          (cross-jobs system))))
+                   (let ((all (fold-packages cons '()))
+                         (job (lambda (package)
+                                (package->job store package
+                                              system))))
+                     (append (filter-map job all)
+                             (qemu-jobs store system)
+                             (tarball-jobs store system)
+                             (cross-jobs system))))
                   ((core)
                    ;; Build core packages only.
                    (append (map (lambda (package)
