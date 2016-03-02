@@ -290,7 +290,8 @@ standards.")
       (patches (map search-patch
                     '("icecat-avoid-bundled-includes.patch"
                       "icecat-re-enable-DHE-cipher-suites.patch"
-                      "icecat-update-graphite2.patch")))
+                      "icecat-update-graphite2.patch"
+                      "icecat-update-graphite2-pt2.patch")))
       (modules '((guix build utils)))
       (snippet
        '(begin
