@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +20,7 @@
 (define-module (guix scripts environment)
   #:use-module (guix ui)
   #:use-module (guix store)
+  #:use-module (guix grafts)
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix profiles)
@@ -176,9 +177,9 @@ COMMAND or an interactive shell in that environment.\n"))
   (show-bug-report-information))
 
 (define %default-options
-  ;; Default to opening a new shell.
   `((system . ,(%current-system))
     (substitutes? . #t)
+    (graft? . #t)
     (max-silent-time . 3600)
     (verbosity . 0)))
 
@@ -525,7 +526,8 @@ message if any test fails."
 
       (with-store store
         ;; Use the bootstrap Guile when requested.
-        (parameterize ((%guile-for-build
+        (parameterize ((%graft? (assoc-ref opts 'graft?))
+                       (%guile-for-build
                         (package-derivation
                          store
                          (if bootstrap?

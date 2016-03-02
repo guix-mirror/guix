@@ -296,6 +296,8 @@ options handled by 'set-build-options-from-command-line', and listed in
       --substitute-urls=URLS
                          fetch substitute from URLS if they are authorized"))
   (display (_ "
+      --no-grafts        do not graft packages"))
+  (display (_ "
       --no-build-hook    do not attempt to offload builds via the build hook"))
   (display (_ "
       --max-silent-time=SECONDS
@@ -379,6 +381,12 @@ options handled by 'set-build-options-from-command-line', and listed in
                                      (string-tokenize arg)
                                      (alist-delete 'substitute-urls result))
                          rest)))
+        (option '("no-grafts") #f #f
+                (lambda (opt name arg result . rest)
+                  (apply values
+                         (alist-cons 'graft? #f
+                                     (alist-delete 'graft? result eq?))
+                         rest)))
         (option '("no-build-hook") #f #f
                 (lambda (opt name arg result . rest)
                   (apply values
@@ -451,8 +459,6 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
   (display (_ "
       --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""))
-  (display (_ "
-      --no-grafts        do not graft packages"))
   (display (_ "
   -d, --derivations      return the derivation paths of the given packages"))
   (display (_ "
@@ -531,10 +537,6 @@ must be one of 'package', 'all', or 'transitive'~%")
          (option '("log-file") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'log-file? #t result)))
-         (option '("no-grafts") #f #f
-                 (lambda (opt name arg result)
-                   (alist-cons 'graft? #f
-                               (alist-delete 'graft? result eq?))))
 
          (append %transformation-options
                  %standard-build-options)))

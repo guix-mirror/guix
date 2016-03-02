@@ -3912,6 +3912,11 @@ Do not use substitutes for build products.  That is, always build things
 locally instead of allowing downloads of pre-built binaries
 (@pxref{Substitutes}).
 
+@item --no-grafts
+Do not ``graft'' packages.  In practice, this means that package updates
+available as grafts are not applied.  @xref{Security Updates}, for more
+information on grafts.
+
 @item --rounds=@var{n}
 Build each derivation @var{n} times in a row, and raise an error if
 consecutive build results are not bit-for-bit identical.
@@ -4174,11 +4179,6 @@ This mechanism allows you to check whether previously installed
 substitutes are genuine (@pxref{Substitutes}), or whether the build result
 of a package is deterministic.  @xref{Invoking guix challenge}, for more
 background information and tools.
-
-@item --no-grafts
-Do not ``graft'' packages.  In practice, this means that package updates
-available as grafts are not applied.  @xref{Security Updates}, for more
-information on grafts.
 
 @item --derivations
 @itemx -d

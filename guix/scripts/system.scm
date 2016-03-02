@@ -21,6 +21,7 @@
   #:use-module (guix config)
   #:use-module (guix ui)
   #:use-module (guix store)
+  #:use-module (guix grafts)
   #:use-module (guix gexp)
   #:use-module (guix derivations)
   #:use-module (guix packages)
@@ -685,6 +686,7 @@ Build the operating system declared in FILE according to ACTION.\n"))
   ;; Alist of default option values.
   `((system . ,(%current-system))
     (substitutes? . #t)
+    (graft? . #t)
     (build-hook? . #t)
     (max-silent-time . 3600)
     (verbosity . 0)
@@ -812,6 +814,7 @@ argument list and OPTS is the option alist."
                                          parse-sub-command))
            (args     (option-arguments opts))
            (command  (assoc-ref opts 'action)))
-      (process-command command args opts))))
+      (parameterize ((%graft? (assoc-ref opts 'graft?)))
+        (process-command command args opts)))))
 
 ;;; system.scm ends here
