@@ -859,10 +859,11 @@ multiple sequence alignments.")
           (setenv "CFLAGS" "-D_CURSES_LIB=1"))
         %standard-phases)))
     (inputs
-     `(("python-cython"     ,python-cython)
-       ("python-setuptools" ,python-setuptools)
-       ("ncurses"           ,ncurses)
+     `(("ncurses"           ,ncurses)
        ("zlib"              ,zlib)))
+    (native-inputs
+     `(("python-cython"     ,python-cython)
+       ("python-setuptools" ,python-setuptools)))
     (home-page "https://github.com/pysam-developers/pysam")
     (synopsis "Python bindings to the SAMtools C API")
     (description
