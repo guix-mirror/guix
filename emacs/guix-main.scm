@@ -86,13 +86,13 @@
 (define (full-name->name+version spec)
   "Given package specification SPEC with or without output,
 return two values: name and version.  For example, for SPEC
-\"foo-0.9.1b:lib\", return \"foo\" and \"0.9.1b\"."
+\"foo@0.9.1b:lib\", return \"foo\" and \"0.9.1b\"."
   (let-values (((name version output)
                 (package-specification->name+version+output spec)))
     (values name version)))
 
 (define (name+version->full-name name version)
-  (string-append name "-" version))
+  (string-append name "@" version))
 
 (define* (make-package-specification name #:optional version output)
   (let ((full-name (if version
@@ -263,7 +263,8 @@ Example:
   "Return a list of full names of the packages from package INPUTS."
   (filter-map (match-lambda
                ((_ (? package? package))
-                (package-full-name package))
+                (make-package-specification (package-name package)
+                                            (package-version package)))
                ((_ (? package? package) output)
                 (make-package-specification (package-name package)
                                             (package-version package)

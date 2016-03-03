@@ -44,7 +44,7 @@
 
 (defun guix-package-name-specification (name version &optional output)
   "Return Guix package specification by its NAME, VERSION and OUTPUT."
-  (concat name "-" version
+  (concat name "@" version
           (when output (concat ":" output))))
 
 

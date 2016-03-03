@@ -946,7 +946,7 @@ See `guix-find-location' for the meaning of DIRECTORY."
 (defun guix-packages-by-name (name &optional profile)
   "Display Guix packages with NAME.
 NAME is a string with name specification.  It may optionally contain
-a version number.  Examples: \"guile\", \"guile-2.0.11\".
+a version number.  Examples: \"guile\", \"guile@2.0.11\".
 
 If PROFILE is nil, use `guix-current-profile'.
 Interactively with prefix, prompt for PROFILE."
