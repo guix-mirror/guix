@@ -55,7 +55,6 @@ gnu/packages/textutils.scm
 gnu/packages/version-control.scm
 gnu/packages/webkit.scm
 gnu/packages/web.scm
-gnu/packages/weechat.scm
 gnu/packages/wordnet.scm
 gnu/packages/xiph.scm
 gnu/packages/zip.scm
