@@ -811,7 +811,7 @@ projects while introducing many more.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2016.02.22")
+    (version "2016.03.01")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://youtube-dl.org/downloads/"
@@ -819,7 +819,7 @@ projects while introducing many more.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "02k3kmcrhd04j5y4iivbdms9kvkjw27cqbwd3hf4agd2jjpigkql"))))
+                "0w2dy54rnsi8fbzpnf07lpn3zzv5lhdfscanld4ai0rrrzmrl3zw"))))
     (build-system python-build-system)
     (native-inputs `(("python-setuptools" ,python-setuptools)))
     (home-page "http://youtube-dl.org")
