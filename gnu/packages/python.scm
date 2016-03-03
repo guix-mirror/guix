@@ -1136,7 +1136,7 @@ Python 3.3+.")
 (define-public python2-pyicu
   (package
     (name "python2-pyicu")
-    (version "1.8")
+    (version "1.9.2")
     (source
      (origin
       (method url-fetch)
@@ -1144,7 +1144,7 @@ Python 3.3+.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1y361x82lnh9k9srmdx3q92z5iag112z7r5fxm0n1sfwb349yjdw"))))
+        "1diba0g8md614fvm9yf50paiwdkhj6rd7xwf1rg9mc0pxc0hhn4v"))))
     (build-system python-build-system)
     (inputs
      `(("icu4c" ,icu4c)))
