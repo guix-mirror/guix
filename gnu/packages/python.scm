@@ -1133,9 +1133,9 @@ Python 3.3+.")
   (package-with-python2 python-simplejson))
 
 
-(define-public python2-pyicu
+(define-public python-pyicu
   (package
-    (name "python2-pyicu")
+    (name "python-pyicu")
     (version "1.9.2")
     (source
      (origin
@@ -1148,15 +1148,18 @@ Python 3.3+.")
     (build-system python-build-system)
     (inputs
      `(("icu4c" ,icu4c)))
-    (arguments
-     `(#:python ,python-2 ; Python 3 works also, but needs special care for
-                          ; linking with libpython3.3m
-       #:tests? #f)) ; no check target
     (home-page "http://pyicu.osafoundation.org/")
     (synopsis "Python extension wrapping the ICU C++ API")
     (description
      "PyICU is a python extension wrapping the ICU C++ API.")
-    (license x11)))
+    (license x11)
+    (properties `((python2-variant . ,(delay python2-pyicu))))))
+
+(define-public python2-pyicu
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-pyicu)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
 
 (define-public python2-dogtail
   ;; Python 2 only, as it leads to "TabError: inconsistent use of tabs and
