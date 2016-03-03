@@ -702,7 +702,7 @@ listed in OS.  The C library expects to find it under
   (string-append "GNU with "
                  (string-titlecase (package-name kernel)) " "
                  (package-version kernel)
-                 " (alpha)"))
+                 " (beta)"))
 
 (define (store-file-system file-systems)
   "Return the file system object among FILE-SYSTEMS that contains the store."
