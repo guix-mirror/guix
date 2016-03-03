@@ -268,6 +268,7 @@
   (let ((perl (package
                 (inherit perl)
                 (name "perl-boot0")
+                (replacement #f)
                 (arguments
                  (substitute-keyword-arguments (package-arguments perl)
                    ((#:phases phases)
