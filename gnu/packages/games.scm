@@ -16,6 +16,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2001,3 +2002,27 @@ is attributed to Albert Einstein.")
     ;; license information.
     (license license:gpl3+)))
 
+(define-public powwow
+  (package
+    (name "powwow")
+    (version "1.2.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.hoopajoo.net/static/projects/powwow-"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xmsg2y7qcvj67i9ilnih0mvfxcpni7fzrz343x9rdfnkkzf3pp8"))))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (build-system gnu-build-system)
+    (home-page "http://www.hoopajoo.net/projects/powwow.html")
+    (synopsis "MUD and telnet client")
+    (description
+     "POWWOW is a client software which can be used for telnet as well as for
+@dfn{Multi-User Dungeon} (MUD).  Additionally it can serve as a nice client for
+the chat server psyced with the specific config located at
+http://lavachat.symlynx.com/unix/")
+    (license license:gpl2+)))
