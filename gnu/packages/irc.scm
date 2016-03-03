@@ -113,7 +113,10 @@ irssi, but graphical.")
                (zero?
                 (system* "./configure"
                          (string-append "--prefix=" out)
-                         (string-append "--with-ncurses=" ncurses)))))))))
+                         (string-append "--with-ncurses=" ncurses)
+                         (string-append "--with-proxy")
+                         (string-append "--with-socks")
+                         (string-append "--with-bot")))))))))
     (inputs
      `(("glib" ,glib)
        ("ncurses" ,ncurses)
