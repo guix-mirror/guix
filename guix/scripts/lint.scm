@@ -551,7 +551,15 @@ descriptions maintained upstream."
                                (format #f (_ "failed to create derivation: ~a")
                                        (condition-message c)))))
         (with-store store
-          (package-derivation store package))))
+          ;; Disable grafts since it can entail rebuilds.
+          (package-derivation store package #:graft? #f)
+
+          ;; If there's a replacement, make sure we can compute its
+          ;; derivation.
+          (match (package-replacement package)
+            (#f #t)
+            (replacement
+             (package-derivation store replacement #:graft? #f))))))
     (lambda args
       (emit-warning package
                     (format #f (_ "failed to create derivation: ~s~%")
