@@ -27,22 +27,26 @@ copy of the license is included in the section entitled ``GNU Free
 Documentation License''.
 @end copying
 
-@dircategory Package management
+@dircategory System administration
 @direntry
-* guix: (guix).       Guix, the functional package manager.
-* guix package: (guix)Invoking guix package
-                      Managing packages with Guix.
-* guix build: (guix)Invoking guix build
-                      Building packages with Guix.
-* guix system: (guix)Invoking guix system
-                      Managing the operating system configuration.
+* Guix: (guix).       Manage installed software and system configuration.
+* guix package: (guix)Invoking guix package.  Installing, removing, and upgrading packages.
+* guix build: (guix)Invoking guix build.      Building packages.
+* guix gc: (guix)Invoking guix gc.            Reclaiming unused disk space.
+* guix pull: (guix)Invoking guix pull.        Update the list of available packages.
+* guix system: (guix)Invoking guix system.    Manage the operating system configuration.
 @end direntry
 
 @dircategory Software development
 @direntry
-* guix environment: (guix)Invoking guix environment
-                      Building development environments with Guix.
+* guix environment: (guix)Invoking guix environment. Building development environments with Guix.
 @end direntry
+
+@dircategory Emacs
+@direntry
+* Guix user interface: (guix)Emacs Interface. Package management from the comfort of Emacs.
+@end direntry
+
 
 @titlepage
 @title GNU Guix Reference Manual
