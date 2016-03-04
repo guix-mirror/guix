@@ -24,6 +24,7 @@
   #:use-module (guix base32)
   #:use-module (guix download)
   #:use-module (guix ftp-client)
+  #:use-module (guix http-client)
   #:use-module (guix packages)
   #:use-module (guix licenses)
   #:use-module (guix records)
@@ -593,18 +594,30 @@ Common Platform Enumeration (CPE) name."
     ;; TODO: Add more.
     (_          name)))
 
+(define (current-vulnerabilities*)
+  "Like 'current-vulnerabilities', but return the empty list upon networking
+or HTTP errors.  This allows network-less operation and makes problems with
+the NIST server non-fatal.."
+  (guard (c ((http-get-error? c)
+             (warning (_ "failed to retrieve CVE vulnerabilities \
+from ~s: ~a (~s)~%")
+                      (uri->string (http-get-error-uri c))
+                      (http-get-error-code c)
+                      (http-get-error-reason c))
+             (warning (_ "assuming no CVE vulnerabilities~%"))
+             '()))
+    (catch 'getaddrinfo-error
+      (lambda ()
+        (current-vulnerabilities))
+      (lambda (key errcode)
+        (warning (_ "failed to lookup NIST host: ~a~%")
+                 (gai-strerror errcode))
+        (warning (_ "assuming no CVE vulnerabilities~%"))
+        '()))))
+
 (define package-vulnerabilities
   (let ((lookup (delay (vulnerabilities->lookup-proc
-                        ;; Catch networking errors to allow network-less
-                        ;; operation.
-                        (catch 'getaddrinfo-error
-                          (lambda ()
-                            (current-vulnerabilities))
-                          (lambda (key errcode)
-                            (warn (_ "failed to lookup NIST host: ~a~%")
-                                  (gai-strerror errcode))
-                            (warn (_ "assuming no CVE vulnerabilities~%"))
-                            '()))))))
+                        (current-vulnerabilities*)))))
     (lambda (package)
       "Return a list of vulnerabilities affecting PACKAGE."
       ((force lookup)
