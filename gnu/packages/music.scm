@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1134,3 +1135,28 @@ personalized online radio pandora.com.  It has configurable keys for playing
 and managing stations, can be controlled remotely via fifo, and can run
 event-based scripts for scrobbling, notifications, etc.")
     (license license:expat)))
+
+(define-public python-mutagen
+  (package
+    (name "python-mutagen")
+    (version "1.31")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "mutagen" version))
+              (sha256
+               (base32
+                "16fnnhspniac2i7qswxafawsh2x2a803hmc6bn9k1zl5fxq1380a"))))
+    (build-system python-build-system)
+    (home-page "https://bitbucket.org/lazka/mutagen")
+    (synopsis "Read and write audio tags")
+    (description "Mutagen is a Python module to handle audio metadata.  It
+supports ASF, FLAC, M4A, Monkey’s Audio, MP3, Musepack, Ogg FLAC, Ogg Speex, Ogg
+Theora, Ogg Vorbis, True Audio, WavPack and OptimFROG audio files.  All versions
+of ID3v2 are supported, and all standard ID3v2.4 frames are parsed.  It can read
+Xing headers to accurately calculate the bitrate and length of MP3s.  ID3 and
+APEv2 tags can be edited regardless of audio format.  It can also manipulate Ogg
+streams on an individual packet/page level.")
+    (license license:gpl2))) ; "later version" never mentioned
+
+(define-public python2-mutagen
+  (package-with-python2 python-mutagen))
