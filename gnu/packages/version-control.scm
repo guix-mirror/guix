@@ -324,7 +324,7 @@ command.")))
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.23.3")
+    (version "0.23.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libgit2/libgit2/"
@@ -332,7 +332,7 @@ command.")))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1bhyzw9b7xr1vj24hgbwbfjw2wiaigiklccsdvd8r4kmcr180p1d"))))
+                "0aa0i5bvmzrrirqk5w13pm0qmblkk57x24w0hxz4vg0x73by5xf7"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
