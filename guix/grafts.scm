@@ -26,7 +26,9 @@
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 vlist)
   #:export (graft?
             graft
             graft-origin
@@ -162,36 +164,71 @@ name of the output of that derivation ITEM corresponds to (for example
                        (and (string=? item path) name)))
                     (derivation->output-paths drv)))))))
 
-(define (non-self-references store drv outputs)
+(define (non-self-references references drv outputs)
   "Return the list of references of the OUTPUTS of DRV, excluding self
-references."
-  (let ((refs (append-map (lambda (output)
-                            (references store
-                                        (derivation->output-path drv output)))
+references.  Call REFERENCES to get the list of references."
+  (let ((refs (append-map (compose references
+                                   (cut derivation->output-path drv <>))
                           outputs))
         (self (match (derivation->output-paths drv)
                 (((names . items) ...)
                  items))))
     (remove (cut member <> self) refs)))
 
+(define (references-oracle store drv)
+  "Return a one-argument procedure that, when passed the file name of DRV's
+outputs or their dependencies, returns the list of references of that item.
+Use either local info or substitute info; build DRV if no information is
+available."
+  (define (output-paths drv)
+    (match (derivation->output-paths drv)
+      (((names . items) ...)
+       items)))
+
+  (define (references* items)
+    (guard (c ((nix-protocol-error? c)
+               ;; As a last resort, build DRV and query the references of the
+               ;; build result.
+               (and (build-derivations store (list drv))
+                    (map (cut references store <>) items))))
+      (references/substitutes store items)))
+
+  (let loop ((items (output-paths drv))
+             (result vlist-null))
+    (match items
+      (()
+       (lambda (item)
+         (match (vhash-assoc item result)
+           ((_ . refs) refs)
+           (#f         #f))))
+      (_
+       (let* ((refs   (references* items))
+              (result (fold vhash-cons result items refs)))
+         (loop (remove (cut vhash-assoc <> result)
+                       (delete-duplicates (concatenate refs) string=?))
+               result))))))
+
 (define* (cumulative-grafts store drv grafts
+                            references
                             #:key
                             (outputs (derivation-output-names drv))
                             (guile (%guile-for-build))
                             (system (%current-system)))
   "Augment GRAFTS with additional grafts resulting from the application of
-GRAFTS to the dependencies of DRV.  Return the resulting list of grafts."
+GRAFTS to the dependencies of DRV; REFERENCES must be a one-argument procedure
+that returns the list of references of the store item it is given.  Return the
+resulting list of grafts."
   (define (dependency-grafts item)
     (let-values (((drv output) (item->deriver store item)))
       (if drv
-          (cumulative-grafts store drv grafts
+          (cumulative-grafts store drv grafts references
                              #:outputs (list output)
                              #:guile guile
                              #:system system)
           grafts)))
 
   ;; TODO: Memoize.
-  (match (non-self-references store drv outputs)
+  (match (non-self-references references drv outputs)
     (()                                           ;no dependencies
      grafts)
     (deps                                         ;one or more dependencies
@@ -213,11 +250,13 @@ GRAFTS to the dependencies of DRV.  Return the resulting list of grafts."
 GRAFTS apply only indirectly to DRV, graft the dependencies of DRV, and graft
 DRV itself to refer to those grafted dependencies."
 
-  ;; First, we need to build the ungrafted DRV so we can query its run-time
-  ;; dependencies in 'cumulative-grafts'.
-  (build-derivations store (list drv))
+  ;; First, pre-compute the dependency tree of the outputs of DRV.  Do this
+  ;; upfront to have as much parallelism as possible when querying substitute
+  ;; info or when building DRV.
+  (define references
+    (references-oracle store drv))
 
-  (match (cumulative-grafts store drv grafts
+  (match (cumulative-grafts store drv grafts references
                             #:guile guile #:system system)
     ((first . rest)
      ;; If FIRST is not a graft for DRV, it means that GRAFTS are not
