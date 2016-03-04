@@ -1218,3 +1218,38 @@ detailed track info including timbre, pitch, rhythm and loudness information.
   (package (inherit (package-with-python2
                      (strip-python2-variant python-pyechonest)))
     (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+
+(define-public python-pylast
+  (package
+    (name "python-pylast")
+    (version "1.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pylast" version))
+              (sha256
+               (base32
+                "10znd9xr1vs2ix519jkz3ccm90zciaddcdr2w2wrrh2jyy3bc59a"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-mock" ,python-mock)
+       ("python-pep8" ,python-pep8)
+       ("python-pytest" ,python-pytest)
+       ("python-pyflakes" ,python-pyflakes)
+       ("python-pyyaml" ,python-pyyaml)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/pylast/pylast")
+    (synopsis "Python interface to Last.fm and Libre.fm")
+    (description "A Python interface to Last.fm and other API-compatible
+websites such as Libre.fm.")
+    (license license:asl2.0)
+    (properties `((python2-variant . ,(delay python2-pylast))))))
+
+(define-public python2-pylast
+  (let ((pylast (package-with-python2
+                 (strip-python2-variant python-pylast))))
+    (package (inherit pylast)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs pylast))))))
