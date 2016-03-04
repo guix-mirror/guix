@@ -20,6 +20,7 @@
   #:use-module (guix tests)
   #:use-module (guix store)
   #:use-module (guix monads)
+  #:use-module (guix grafts)
   #:use-module ((guix utils)
                 ;; Rename the 'location' binding to allow proper syntax
                 ;; matching when setting the 'location' field of a package.
@@ -603,6 +604,30 @@
     (equal? (package-grafts %store dummy)
             (list (graft
                     (origin (package-derivation %store dep))
+                    (replacement (package-derivation %store new)))))))
+
+(test-assert "package-grafts, same replacement twice"
+  (let* ((new  (dummy-package "dep"
+                 (version "1")
+                 (arguments '(#:implicit-inputs? #f))))
+         (dep  (package (inherit new) (version "0") (replacement new)))
+         (p1   (dummy-package "intermediate1"
+                 (arguments '(#:implicit-inputs? #f))
+                 (inputs `(("dep" ,dep)))))
+         (p2   (dummy-package "intermediate2"
+                 (arguments '(#:implicit-inputs? #f))
+                 ;; Here we copy DEP to have an equivalent package that is not
+                 ;; 'eq?' to DEP.  This is similar to what happens with
+                 ;; 'package-with-explicit-inputs' & co.
+                 (inputs `(("dep" ,(package (inherit dep)))))))
+         (p3   (dummy-package "final"
+                 (arguments '(#:implicit-inputs? #f))
+                 (inputs `(("p1" ,p1) ("p2" ,p2))))))
+    (equal? (package-grafts %store p3)
+            (list (graft
+                    (origin (package-derivation %store
+                                                (package (inherit dep)
+                                                         (replacement #f))))
                     (replacement (package-derivation %store new)))))))
 
 ;;; XXX: Nowadays 'graft-derivation' needs to build derivations beforehand to

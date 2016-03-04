@@ -927,7 +927,12 @@ to (see 'graft-derivation'.)"
                                  #:native? #f))
         '()))
 
-  (append native-grafts target-grafts))
+  ;; We can end up with several identical grafts if we stumble upon packages
+  ;; that are not 'eq?' but map to the same derivation (this can happen when
+  ;; using things like 'package-with-explicit-inputs'.)  Hence the
+  ;; 'delete-duplicates' call.
+  (delete-duplicates
+   (append native-grafts target-grafts)))
 
 (define* (package-grafts store package
                          #:optional (system (%current-system))
