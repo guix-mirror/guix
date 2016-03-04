@@ -217,7 +217,10 @@ available."
   "Augment GRAFTS with additional grafts resulting from the application of
 GRAFTS to the dependencies of DRV; REFERENCES must be a one-argument procedure
 that returns the list of references of the store item it is given.  Return the
-resulting list of grafts."
+resulting list of grafts.
+
+This is a monadic procedure in %STATE-MONAD where the state is a vhash mapping
+derivations to the corresponding set of grafts."
   (define (dependency-grafts item)
     (let-values (((drv output) (item->deriver store item)))
       (if drv
@@ -225,23 +228,34 @@ resulting list of grafts."
                              #:outputs (list output)
                              #:guile guile
                              #:system system)
-          grafts)))
+          (state-return grafts))))
 
-  ;; TODO: Memoize.
-  (match (non-self-references references drv outputs)
-    (()                                           ;no dependencies
-     grafts)
-    (deps                                         ;one or more dependencies
-     (let* ((grafts  (delete-duplicates (append-map dependency-grafts deps)
-                                        eq?))
-            (origins (map graft-origin-file-name grafts)))
-       (if (find (cut member <> deps) origins)
-           (let ((new (graft-derivation/shallow store drv grafts
-                                                #:guile guile
-                                                #:system system)))
-             (cons (graft (origin drv) (replacement new))
-                   grafts))
-           grafts)))))
+  (define (return/cache cache value)
+    (mbegin %store-monad
+      (set-current-state (vhash-consq drv value cache))
+      (return value)))
+
+  (mlet %state-monad ((cache (current-state)))
+    (match (vhash-assq drv cache)
+      ((_ . grafts)                               ;hit
+       (return grafts))
+      (#f                                         ;miss
+       (match (non-self-references references drv outputs)
+         (()                                      ;no dependencies
+          (return/cache cache grafts))
+         (deps                                    ;one or more dependencies
+          (mlet %state-monad ((grafts (mapm %state-monad dependency-grafts deps))
+                              (cache  (current-state)))
+            (let* ((grafts  (delete-duplicates (concatenate grafts) equal?))
+                   (origins (map graft-origin-file-name grafts)))
+              (if (find (cut member <> deps) origins)
+                  (let* ((new    (graft-derivation/shallow store drv grafts
+                                                           #:guile guile
+                                                           #:system system))
+                         (grafts (cons (graft (origin drv) (replacement new))
+                                       grafts)))
+                    (return/cache cache grafts))
+                  (return/cache cache grafts))))))))))
 
 (define* (graft-derivation store drv grafts
                            #:key (guile (%guile-for-build))
@@ -256,8 +270,10 @@ DRV itself to refer to those grafted dependencies."
   (define references
     (references-oracle store drv))
 
-  (match (cumulative-grafts store drv grafts references
-                            #:guile guile #:system system)
+  (match (run-with-state
+             (cumulative-grafts store drv grafts references
+                                #:guile guile #:system system)
+           vlist-null)                            ;the initial cache
     ((first . rest)
      ;; If FIRST is not a graft for DRV, it means that GRAFTS are not
      ;; applicable to DRV and nothing needs to be done.
