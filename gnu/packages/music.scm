@@ -1160,3 +1160,25 @@ streams on an individual packet/page level.")
 
 (define-public python2-mutagen
   (package-with-python2 python-mutagen))
+
+(define-public python-musicbrainzngs
+  (package
+    (name "python-musicbrainzngs")
+    (version "0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "musicbrainzngs" version))
+              (sha256
+               (base32
+                "12f48llmdf5rkiqxcb70k2k1dmhm8byq0ifazvlrca8dfnmqh4r8"))))
+    (build-system python-build-system)
+    (home-page "https://python-musicbrainzngs.readthedocs.org/")
+    (synopsis "Python bindings for MusicBrainz NGS webservice")
+    (description "Musicbrainzngs implements Python bindings of the MusicBrainz
+web service.  This library can be used to retrieve music metadata from the
+MusicBrainz database.")
+    ;; 'musicbrainzngs/compat.py' is ISC licensed.
+    (license (list license:bsd-2 license:isc))))
+
+(define-public python2-musicbrainzngs
+  (package-with-python2 python-musicbrainzngs))
