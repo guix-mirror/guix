@@ -27,6 +27,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -93,6 +94,7 @@
             path-info-nar-size
 
             references
+            references/substitutes
             requisites
             referrers
             optimize-store
@@ -723,6 +725,45 @@ error if there is no such root."
   (operation (query-references (store-path path))
              "Return the list of references of PATH."
              store-path-list))
+
+(define (references/substitutes store items)
+  "Return the list of list of references of ITEMS; the result has the same
+length as ITEMS.  Query substitute information for any item missing from the
+store at once.  Raise a '&nix-protocol-error' exception if reference
+information for one of ITEMS is missing."
+  (let* ((local-refs (map (lambda (item)
+                            (guard (c ((nix-protocol-error? c) #f))
+                              (references store item)))
+                          items))
+         (missing    (fold-right (lambda (item local-ref result)
+                                   (if local-ref
+                                       result
+                                       (cons item result)))
+                                 '()
+                                 items local-refs))
+
+         ;; Query all the substitutes at once to minimize the cost of
+         ;; launching 'guix substitute' and making HTTP requests.
+         (substs     (substitutable-path-info store missing)))
+    (when (< (length substs) (length missing))
+      (raise (condition (&nix-protocol-error
+                         (message "cannot determine \
+the list of references")
+                         (status 1)))))
+
+    ;; Intersperse SUBSTS and LOCAL-REFS.
+    (let loop ((local-refs  local-refs)
+               (remote-refs (map substitutable-references substs))
+               (result      '()))
+      (match local-refs
+        (()
+         (reverse result))
+        ((#f tail ...)
+         (match remote-refs
+           ((remote rest ...)
+            (loop tail rest (cons remote result)))))
+        ((head tail ...)
+         (loop tail remote-refs (cons head result)))))))
 
 (define* (fold-path store proc seed path
                     #:optional (relatives (cut references store <>)))
