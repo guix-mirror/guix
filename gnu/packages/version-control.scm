@@ -984,7 +984,7 @@ output of the 'git' command.")
 (define-public findnewest
   (package
     (name "findnewest")
-    (version "0.2")
+    (version "0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -992,7 +992,7 @@ output of the 'git' command.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0zlflad568y203yc5ynf1nxi2szn2pmbf1lvz6yk77kjyrpw7zxg"))))
+                "1ydis4y0amkgfr4y60sn076f1l41ya2kn89kfd9fqf44f9ccgb5r"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
