@@ -634,55 +634,59 @@ needed."
 ;;;
 
 (define (guix-build . args)
+  (define opts
+    (parse-command-line args %options
+                        (list %default-options)))
+
   (with-error-handling
     ;; Ask for absolute file names so that .drv file names passed from the
     ;; user to 'read-derivation' are absolute when it returns.
     (with-fluids ((%file-port-name-canonicalization 'absolute))
-      (let* ((opts  (parse-command-line args %options
-                                        (list %default-options)))
-             (store (open-connection))
-             (mode  (assoc-ref opts 'build-mode))
-             (drv   (options->derivations store opts))
-             (urls  (map (cut string-append <> "/log")
-                         (if (assoc-ref opts 'substitutes?)
-                             (or (assoc-ref opts 'substitute-urls)
-                                 ;; XXX: This does not necessarily match the
-                                 ;; daemon's substitute URLs.
-                                 %default-substitute-urls)
-                             '())))
-             (items (filter-map (match-lambda
-                                  (('argument . (? store-path? file))
-                                   file)
-                                  (_ #f))
-                                opts))
-             (roots (filter-map (match-lambda
-                                  (('gc-root . root) root)
-                                  (_ #f))
-                                opts)))
-
+      (with-store store
+        ;; Set the build options before we do anything else.
         (set-build-options-from-command-line store opts)
-        (unless (assoc-ref opts 'log-file?)
-          (show-what-to-build store drv
-                              #:use-substitutes? (assoc-ref opts 'substitutes?)
-                              #:dry-run? (assoc-ref opts 'dry-run?)
-                              #:mode mode))
 
-        (cond ((assoc-ref opts 'log-file?)
-               (for-each (cut show-build-log store <> urls)
-                         (delete-duplicates
-                          (append (map derivation-file-name drv)
-                                  items))))
-              ((assoc-ref opts 'derivations-only?)
-               (format #t "~{~a~%~}" (map derivation-file-name drv))
-               (for-each (cut register-root store <> <>)
-                         (map (compose list derivation-file-name) drv)
-                         roots))
-              ((not (assoc-ref opts 'dry-run?))
-               (and (build-derivations store drv mode)
-                    (for-each show-derivation-outputs drv)
-                    (for-each (cut register-root store <> <>)
-                              (map (lambda (drv)
-                                     (map cdr
-                                          (derivation->output-paths drv)))
-                                   drv)
-                              roots))))))))
+        (let* ((mode  (assoc-ref opts 'build-mode))
+               (drv   (options->derivations store opts))
+               (urls  (map (cut string-append <> "/log")
+                           (if (assoc-ref opts 'substitutes?)
+                               (or (assoc-ref opts 'substitute-urls)
+                                   ;; XXX: This does not necessarily match the
+                                   ;; daemon's substitute URLs.
+                                   %default-substitute-urls)
+                               '())))
+               (items (filter-map (match-lambda
+                                    (('argument . (? store-path? file))
+                                     file)
+                                    (_ #f))
+                                  opts))
+               (roots (filter-map (match-lambda
+                                    (('gc-root . root) root)
+                                    (_ #f))
+                                  opts)))
+
+          (unless (assoc-ref opts 'log-file?)
+            (show-what-to-build store drv
+                                #:use-substitutes? (assoc-ref opts 'substitutes?)
+                                #:dry-run? (assoc-ref opts 'dry-run?)
+                                #:mode mode))
+
+          (cond ((assoc-ref opts 'log-file?)
+                 (for-each (cut show-build-log store <> urls)
+                           (delete-duplicates
+                            (append (map derivation-file-name drv)
+                                    items))))
+                ((assoc-ref opts 'derivations-only?)
+                 (format #t "~{~a~%~}" (map derivation-file-name drv))
+                 (for-each (cut register-root store <> <>)
+                           (map (compose list derivation-file-name) drv)
+                           roots))
+                ((not (assoc-ref opts 'dry-run?))
+                 (and (build-derivations store drv mode)
+                      (for-each show-derivation-outputs drv)
+                      (for-each (cut register-root store <> <>)
+                                (map (lambda (drv)
+                                       (map cdr
+                                            (derivation->output-paths drv)))
+                                     drv)
+                                roots)))))))))
