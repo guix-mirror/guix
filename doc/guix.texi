@@ -6984,10 +6984,14 @@ external name servers do not even need to be queried.
 @end defvr
 
 
-@deffn {Scheme Procedure} syslog-service [#:config-file #f]
-Return a service that runs @code{syslogd}.  If configuration file name
-@var{config-file} is not specified, use some reasonable default
+@deffn {Scheme Procedure} syslog-service @
+             [#:config-file @var{%default-syslog.conf}]
+Return a service that runs @command{syslogd}.  If configuration file
+name @var{config-file} is not specified, use some reasonable default
 settings.
+
+@xref{syslogd invocation,,, inetutils, GNU Inetutils}, for more
+information on the configuration file syntax.
 @end deffn
 
 @anchor{guix-configuration-type}
