@@ -1182,3 +1182,39 @@ MusicBrainz database.")
 
 (define-public python2-musicbrainzngs
   (package-with-python2 python-musicbrainzngs))
+
+(define-public python-pyechonest
+  (package
+    (name "python-pyechonest")
+    (version "9.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pyechonest" version))
+              (sha256
+               (base32
+                "1584nira3rkiman9dm81kdshihmkj21s8navndz2l8spnjwb790x"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/echonest/pyechonest")
+    (synopsis "Python interface to The Echo Nest APIs")
+    (description "Pyechonest is an open source Python library for the Echo Nest
+API.  With Pyechonest you have Python access to the entire set of API methods
+including:
+
+@enumerate
+@item artist - search for artists by name, description, or attribute, and get
+back detailed information about any artist including audio, similar artists,
+blogs, familiarity, hotttnesss, news, reviews, urls and video.
+@item song - search songs by artist, title, description, or attribute (tempo,
+duration, etc) and get detailed information back about each song, such as
+hotttnesss, audio_summary, or tracks.
+@item track - upload a track to the Echo Nest and receive summary information
+about the track including key, duration, mode, tempo, time signature along with
+detailed track info including timbre, pitch, rhythm and loudness information.
+@end enumerate\n")
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-pyechonest))))))
+
+(define-public python2-pyechonest
+  (package (inherit (package-with-python2
+                     (strip-python2-variant python-pyechonest)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
