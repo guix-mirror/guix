@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +37,7 @@
 (define-public cmake
   (package
     (name "cmake")
-    (version "3.3.2")
+    (version "3.4.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.cmake.org/files/v"
@@ -44,7 +45,7 @@
                                  "/cmake-" version ".tar.gz"))
              (sha256
               (base32
-               "08pwy9ip9cgwgynhn5vrjw8drw29gijy1rmziq22n65zds6ifnp7"))
+               "1yl0z422gr7zfc638chifv343vx0ig5gasvrh7nzf7b15488qgxp"))
              (patches (list (search-patch "cmake-fix-tests.patch")))))
     (build-system gnu-build-system)
     (arguments
