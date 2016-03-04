@@ -4806,11 +4806,12 @@ software that do not provide their own configuration interface.")
        ("totem"                     ,totem)
        ("yelp"                      ,yelp)
        ("zenity"                    ,zenity)))
-    (synopsis "Desktop environment (meta-package)")
+    (synopsis "The GNU desktop environment")
     (home-page "https://www.gnome.org/")
     (description
-     "GNOME is an intutive and attractive desktop environment.  It aims to be
-an easy and elegant way to use your computer.")
+     "GNOME is the graphical desktop for GNU.  It includes a wide variety of
+applications for browsing the web, editing text and images, creating
+documents and diagrams, playing media, scanning, and much more.")
     (license license:gpl2+)))
 
 (define-public byzanz
