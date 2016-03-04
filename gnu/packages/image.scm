@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014 Ricardo Wurmus <rekado@elephly.net>
@@ -44,6 +44,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (srfi srfi-1))
@@ -545,58 +546,62 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
    (home-page "http://freeimage.sourceforge.net")))
 
 (define-public vigra
-  (package
-   (name "vigra")
-   (version "1.10.0")
-   (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://hci.iwr.uni-heidelberg.de/vigra/vigra-"
-                           version "-src.tar.gz"))
-       (sha256 (base32
-                 "16d0jvz3k49niljg9qvvlyxxl15yk0300xkymvyznlmvn1hs7m22"))))
-   (build-system cmake-build-system)
-   (inputs
-    `(("boost" ,boost)
-      ("fftw" ,fftw)
-      ("fftwf" ,fftwf)
-      ("hdf5" ,hdf5)
-      ("ilmbase" ,ilmbase) ; propagated by openexr, but needed explicitly
-                           ; to create a configure-flag
-      ("libjpeg" ,libjpeg)
-      ("libpng" ,libpng)
-      ("libtiff" ,libtiff)
-      ("openexr" ,openexr)
-      ("python" ,python-2) ; print syntax
-      ("python2-numpy" ,python2-numpy)
-      ("zlib" ,zlib)))
-   (native-inputs
-    `(("doxygen" ,doxygen)
-      ("python2-nose" ,python2-nose)
-      ("python2-sphinx" ,python2-sphinx)))
-   (arguments
-    `(#:test-target "check"
-      #:configure-flags
-        (list "-Wno-dev" ; suppress developer mode with lots of warnings
-              (string-append "-DVIGRANUMPY_INSTALL_DIR="
-                             (assoc-ref %outputs "out")
-                             "/lib/python2.7/site-packages")
-              ;; OpenEXR is not enabled by default.
-              "-DWITH_OPENEXR=1"
-              ;; The header files of ilmbase are not found when included
-              ;; by the header files of openexr, and an explicit flag
-              ;; needs to be set.
-              (string-append "-DCMAKE_CXX_FLAGS=-I"
-                             (assoc-ref %build-inputs "ilmbase")
-                             "/include/OpenEXR"))))
-   (synopsis "Computer vision library")
-   (description
-    "VIGRA stands for Vision with Generic Algorithms.  It is an image
+  (let ((commit "a378732"))
+    (package
+     (name "vigra")
+     (version (string-append "1.10.0-1-" commit))
+     (source
+      (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "https://github.com/ukoethe/vigra.git")
+             (commit commit)))
+       (file-name (string-append name "-" version))
+       (sha256
+        (base32
+          "0gvbfrnss1vnkmajsv716yy317j4mx5kn1rxrblxqqyghws47jm5"))))
+     (build-system cmake-build-system)
+     (inputs
+      `(("boost" ,boost)
+        ("fftw" ,fftw)
+        ("fftwf" ,fftwf)
+        ("hdf5" ,hdf5)
+        ("ilmbase" ,ilmbase) ; propagated by openexr, but needed explicitly
+                             ; to create a configure-flag
+        ("libjpeg" ,libjpeg)
+        ("libpng" ,libpng)
+        ("libtiff" ,libtiff)
+        ("openexr" ,openexr)
+        ("python" ,python-2) ; print syntax
+        ("python2-numpy" ,python2-numpy)
+        ("zlib" ,zlib)))
+     (native-inputs
+      `(("doxygen" ,doxygen)
+        ("python2-nose" ,python2-nose)
+        ("python2-sphinx" ,python2-sphinx)))
+     (arguments
+      `(#:test-target "check"
+        #:configure-flags
+          (list "-Wno-dev" ; suppress developer mode with lots of warnings
+                (string-append "-DVIGRANUMPY_INSTALL_DIR="
+                               (assoc-ref %outputs "out")
+                               "/lib/python2.7/site-packages")
+                ;; OpenEXR is not enabled by default.
+                "-DWITH_OPENEXR=1"
+                ;; The header files of ilmbase are not found when included
+                ;; by the header files of openexr, and an explicit flag
+                ;; needs to be set.
+                (string-append "-DCMAKE_CXX_FLAGS=-I"
+                               (assoc-ref %build-inputs "ilmbase")
+                               "/include/OpenEXR"))))
+     (synopsis "Computer vision library")
+     (description
+      "VIGRA stands for Vision with Generic Algorithms.  It is an image
 processing and analysis library that puts its main emphasis on customizable
 algorithms and data structures.  It is particularly strong for
 multi-dimensional image processing.")
-   (license license:expat)
-   (home-page "https://hci.iwr.uni-heidelberg.de/vigra")))
+     (license license:expat)
+     (home-page "https://hci.iwr.uni-heidelberg.de/vigra"))))
 
 (define-public libwebp
   (package
