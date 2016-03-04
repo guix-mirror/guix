@@ -56,6 +56,10 @@
 (define %store
   (open-connection-for-tests))
 
+;; Globally disable grafting to avoid rebuilding the world ('graft-derivation'
+;; can trigger builds early.)
+(%graft? #f)
+
 
 (test-begin "packages")
 
@@ -550,17 +554,23 @@
       (package-cross-derivation %store p "mips64el-linux-gnu")
       #f)))
 
-(test-equal "package-derivation, direct graft"
-  (package-derivation %store gnu-make)
-  (let ((p (package (inherit coreutils)
-             (replacement gnu-make))))
-    (package-derivation %store p)))
+;; XXX: The next two tests can trigger builds when the distro defines
+;; replacements on core packages, so they're disable for lack of a better
+;; solution.
 
-(test-equal "package-cross-derivation, direct graft"
-  (package-cross-derivation %store gnu-make "mips64el-linux-gnu")
-  (let ((p (package (inherit coreutils)
-             (replacement gnu-make))))
-    (package-cross-derivation %store p "mips64el-linux-gnu")))
+;; (test-equal "package-derivation, direct graft"
+;;   (package-derivation %store gnu-make #:graft? #f)
+;;   (let ((p (package (inherit coreutils)
+;;              (replacement gnu-make))))
+;;     (package-derivation %store p #:graft? #t)))
+
+;; (test-equal "package-cross-derivation, direct graft"
+;;   (package-cross-derivation %store gnu-make "mips64el-linux-gnu"
+;;                             #:graft? #f)
+;;   (let ((p (package (inherit coreutils)
+;;              (replacement gnu-make))))
+;;     (package-cross-derivation %store p "mips64el-linux-gnu"
+;;                               #:graft? #t)))
 
 (test-assert "package-grafts, indirect grafts"
   (let* ((new   (dummy-package "dep"
@@ -584,11 +594,13 @@
                    (arguments '(#:implicit-inputs? #f))
                    (inputs `(("dep" ,dep*)))))
          (target "mips64el-linux-gnu"))
-    (equal? (package-grafts %store dummy #:target target)
-            (list (graft
-                    (origin (package-cross-derivation %store dep target))
-                    (replacement
-                     (package-cross-derivation %store new target)))))))
+    ;; XXX: There might be additional grafts, for instance if the distro
+    ;; defines replacements for core packages like Perl.
+    (member (graft
+              (origin (package-cross-derivation %store dep target))
+              (replacement
+               (package-cross-derivation %store new target)))
+            (package-grafts %store dummy #:target target))))
 
 (test-assert "package-grafts, indirect grafts, propagated inputs"
   (let* ((new   (dummy-package "dep"
