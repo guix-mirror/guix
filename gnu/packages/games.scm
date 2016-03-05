@@ -7,7 +7,7 @@
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
@@ -70,6 +70,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages bash)
@@ -1951,3 +1952,52 @@ players.")
     (description
      "DeSmuME is an emulator for the Nintendo DS handheld gaming console.")
     (license license:gpl2)))
+
+(define-public einstein
+  (package
+    (name "einstein")
+    (version "2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://http.debian.net/debian/pool/main/e/"
+                                  "einstein/einstein_2.0.dfsg.2.orig.tar.gz"))
+              (sha256
+               (base32
+                "1hxrlv6n8py48j487i6wbb4n4vd55w0na69r7ccmmr9vmrsw5mlk"))
+              (patches (list (search-patch "einstein-build.patch")))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("freetype" ,freetype)
+       ("sdl" ,(sdl-union (list sdl sdl-mixer sdl-ttf)))
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("font-dejavu" ,font-dejavu)))
+    (arguments
+     `(#:tests? #f ; no check target
+       #:phases
+        (modify-phases %standard-phases
+          (replace 'configure
+          (lambda* (#:key outputs inputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out"))
+                  (dejavu (string-append (assoc-ref inputs "font-dejavu")
+                                         "/share/fonts/truetype/DejaVuSans.ttf")))
+              (substitute* "Makefile"
+                (("PREFIX=/usr/local") (string-append "PREFIX=" out)))
+              ;; The patch above registers a free font for use by the binary,
+              ;; but the font is copied during the compile phase into a
+              ;; resources file, so we need to make the ttf file available.
+              (symlink dejavu "res/DejaVuSans.ttf")
+              #t))))))
+    (synopsis "Logic puzzle game")
+    (description "The goal of this logic game is to open all cards in a 6x6
+grid, using a number of hints as to their relative position.  The game idea
+is attributed to Albert Einstein.")
+    ;; The original home page has disappeared.
+    (home-page (string-append "http://web.archive.org/web/20120521062745/"
+                              "http://games.flowix.com/en/index.html"))
+    ;; License according to
+    ;; http://web.archive.org/web/20150222180355/http://www.babichev.info/en/projects/index.html
+    ;; The source code is a DFSG-sanitized tarball and does not contain any
+    ;; license information.
+    (license license:gpl3+)))
+
