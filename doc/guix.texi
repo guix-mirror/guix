@@ -10269,6 +10269,47 @@ Other restrictions may apply: for instance, when adding a graft to a
 package providing a shared library, the original shared library and its
 replacement must have the same @code{SONAME} and be binary-compatible.
 
+The @option{--no-grafts} command-line option allows you to forcefully
+avoid grafting (@pxref{Common Build Options, @option{--no-grafts}}).
+Thus, the command:
+
+@example
+guix build bash --no-grafts
+@end example
+
+@noindent
+returns the store file name of the original Bash, whereas:
+
+@example
+guix build bash
+@end example
+
+@noindent
+returns the store file name of the ``fixed'', replacement Bash.  This
+allows you to distinguish between the two variants of Bash.
+
+To verify which Bash your whole profile refers to, you can run
+(@pxref{Invoking guix gc}):
+
+@example
+guix gc -R `readlink -f ~/.guix-profile` | grep bash
+@end example
+
+@noindent
+@dots{} and compare the store file names that you get with those above.
+Likewise for a complete GuixSD system generation:
+
+@example
+guix gc -R `guix system build my-config.scm` | grep bash
+@end example
+
+Lastly, to check which Bash running processes are using, you can use the
+@command{lsof} command:
+
+@example
+lsof | grep /gnu/store/.*bash
+@end example
+
 
 @node Package Modules
 @section Package Modules
