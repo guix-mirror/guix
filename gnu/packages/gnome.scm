@@ -2951,7 +2951,11 @@ GL based interactive canvas library.")
                (base32
                 "1arzd1hsgq14rbiwa1ih2g250x6ljna2s2kiqfrw155c612s9cxk"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments '(#:configure-flags '("--enable-vala")))
+    (native-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
     (propagated-inputs
      `(("libsoup" ,libsoup)
        ("sqlite" ,sqlite)
