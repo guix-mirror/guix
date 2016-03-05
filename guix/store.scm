@@ -752,18 +752,24 @@ the list of references")
                          (status 1)))))
 
     ;; Intersperse SUBSTS and LOCAL-REFS.
-    (let loop ((local-refs  local-refs)
-               (remote-refs (map substitutable-references substs))
+    (let loop ((items       items)
+               (local-refs  local-refs)
                (result      '()))
-      (match local-refs
+      (match items
         (()
          (reverse result))
-        ((#f tail ...)
-         (match remote-refs
-           ((remote rest ...)
-            (loop tail rest (cons remote result)))))
-        ((head tail ...)
-         (loop tail remote-refs (cons head result)))))))
+        ((item items ...)
+         (match local-refs
+           ((#f tail ...)
+            (loop items tail
+                  (cons (any (lambda (subst)
+                               (and (string=? (substitutable-path subst) item)
+                                    (substitutable-references subst)))
+                             substs)
+                        result)))
+           ((head tail ...)
+            (loop items tail
+                  (cons head result)))))))))
 
 (define* (fold-path store proc seed path
                     #:optional (relatives (cut references store <>)))
@@ -852,7 +858,9 @@ topological order."
   (operation (query-substitutable-path-infos (store-path-list paths))
              "Return information about the subset of PATHS that is
 substitutable.  For each substitutable path, a `substitutable?' object is
-returned."
+returned; thus, the resulting list can be shorter than PATHS.  Furthermore,
+that there is no guarantee that the order of the resulting list matches the
+order of PATHS."
              substitutable-path-list))
 
 (define-operation (optimize-store)
