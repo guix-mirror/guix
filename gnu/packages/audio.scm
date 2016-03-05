@@ -803,7 +803,6 @@ synchronous execution of all clients, and low latency operation.")
        ("suil" ,suil)
        ("gtk" ,gtk+-2)
        ("gtkmm" ,gtkmm-2)
-       ("qt" ,qt-4)
        ("jack" ,jack-1)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
