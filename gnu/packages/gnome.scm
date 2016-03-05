@@ -4249,6 +4249,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
          (list "--disable-uoa"    ; disable Ubuntu Online Accounts support
                "--disable-google" ; disable Google Contacts support
                "--disable-google-auth" ; disable Google authentication
+               "--enable-vala-bindings"
                (string-append "--with-nspr-includes=" nspr "/include/nspr")
                (string-append "--with-nss-includes=" nss "/include/nss")
                (string-append "--with-nss-libs=" nss "/lib/nss")))
@@ -4265,6 +4266,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
        ("gperf" ,gperf)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
        ("python" ,python)))
     (propagated-inputs
      ;; These are all in the Requires field of .pc files.
