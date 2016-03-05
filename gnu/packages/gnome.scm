@@ -1729,7 +1729,9 @@ passwords in the GNOME keyring.")
                        (setenv "CC" "gcc")
                        ;; For missing '/etc/machine-id'.
                        (setenv "DBUS_FATAL_WARNINGS" "0")
-                       #t)))))
+                       #t)))
+       ;; Build the Vala API generator
+       #:configure-flags '("--enable-vapigen")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("flex" ,flex)
