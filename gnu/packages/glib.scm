@@ -534,9 +534,11 @@ useful for C++.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("python" ,python)
-       ("glib"   ,glib)
        ("python-pycairo" ,python-pycairo)
-       ("gobject-introspection" ,gobject-introspection)
+       ("gobject-introspection" ,gobject-introspection)))
+    (propagated-inputs
+     ;; pygobject-3.0.pc refers to all these.
+     `(("glib" ,glib)
        ("libffi" ,libffi)))
     (arguments
      ;; TODO: failing tests: test_native_calls_async
@@ -562,10 +564,8 @@ useful for C++.")
     (name "python2-pygobject")
     (inputs
      `(("python" ,python-2)
-       ("glib" ,glib)
        ("python-pycairo" ,python2-pycairo)
-       ("gobject-introspection" ,gobject-introspection)
-       ("libffi" ,libffi)))))
+       ("gobject-introspection" ,gobject-introspection)))))
 
 (define telepathy-glib
   (package
