@@ -647,22 +647,11 @@ include the @command{udisksctl} command, part of UDisks, and GNOME Disks."
    ("HybridSleepState" (sleep-list elogind-hybrid-sleep-state))
    ("HybridSleepMode" (sleep-list elogind-hybrid-sleep-mode))))
 
-(define (elogind-shepherd-service config)
-  "Return a shepherd service for elogind, using @var{config}."
-  ;; TODO: We could probably rely on service activation but the '.service'
-  ;; file currently contains an erroneous 'Exec' line.
-  (let ((config-file (elogind-configuration-file config))
-        (elogind     (elogind-package config)))
-    (list (shepherd-service
-           (documentation "Run the elogind login and seat management service.")
-           (provision '(elogind))
-           (requirement '(dbus-system))
-
-           (start #~(make-forkexec-constructor
-                     (list (string-append #$elogind "/libexec/elogind/elogind"))
-                     #:environment-variables
-                     (list (string-append "ELOGIND_CONF_FILE=" #$config-file))))
-           (stop #~(make-kill-destructor))))))
+(define (elogind-dbus-service config)
+  (list (wrapped-dbus-service (elogind-package config)
+                              "libexec/elogind/elogind"
+                              "ELOGIND_CONF_FILE"
+                              (elogind-configuration-file config))))
 
 (define (pam-extension-procedure config)
   "Return an extension for PAM-ROOT-SERVICE-TYPE that ensures that all the PAM
@@ -683,10 +672,8 @@ seats.)"
 (define elogind-service-type
   (service-type (name 'elogind)
                 (extensions
-                 (list (service-extension shepherd-root-service-type
-                                          elogind-shepherd-service)
-                       (service-extension dbus-root-service-type
-                                          (compose list elogind-package))
+                 (list (service-extension dbus-root-service-type
+                                          elogind-dbus-service)
                        (service-extension udev-service-type
                                           (compose list elogind-package))
                        (service-extension polkit-service-type

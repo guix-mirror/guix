@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@pobox.com>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -169,7 +169,17 @@ the freedesktop.org XDG Base Directory specification.")
              ;; XXX: fail with:
              ;;  src/shared/clean-ipc.c:315: undefined reference to `mq_unlink'
              "LDFLAGS=-lrt")
-       #:make-flags '("PKTTYAGENT=/run/current-system/profile/bin/pkttyagent")))
+       #:make-flags '("PKTTYAGENT=/run/current-system/profile/bin/pkttyagent")
+
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'fix-service-file
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Fix the file name of the 'elogind' binary in the D-Bus
+                      ;; '.service' file.
+                      (substitute* "src/login/org.freedesktop.login1.service"
+                        (("^Exec=.*")
+                         (string-append "Exec=" (assoc-ref %outputs "out")
+                                        "/libexec/elogind/elogind\n"))))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("gettext" ,gnu-gettext)
