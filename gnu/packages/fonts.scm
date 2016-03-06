@@ -673,3 +673,70 @@ utilities to ease adding new glyphs to the font.")
 languages with a consistent look and aesthetic.  It's goal is to have no Unicode
 symbols unable to be displayed properly.")
     (license license:silofl1.1)))
+
+(define-public font-un
+  (package
+    (name "font-un")
+    (version "1.0.2-080608")
+    ;; The upstream server at kldp.net is serving us broken MIME.
+    ;; See <http://bugs.gnu.org/22908>.
+    (source (origin
+              (method url-fetch)
+              (uri (list
+                    (string-append
+                     "http://krosos.sdf.org/static/unix/"
+                     "un-fonts-core-" version ".tar.gz")
+                    ;; XXX: The upstream server at kldp.net
+                    (string-append
+                     "https://kldp.net/projects/unfonts/download/4695?filename="
+                     "un-fonts-core-" version ".tar.gz")))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "13liaz2pmww3aqabm55la5npd08m1skh334ky7qfidxaz5s742iv"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+
+         (let ((tar      (string-append (assoc-ref %build-inputs "tar")
+                                        "/bin/tar"))
+               (PATH     (string-append (assoc-ref %build-inputs "gzip")
+                                        "/bin"))
+               (font-dir (string-append %output "/share/fonts/truetype"))
+               (doc-dir  (string-append %output "/share/doc/" ,name)))
+           (setenv "PATH" PATH)
+           (system* tar "xvf" (assoc-ref %build-inputs "source"))
+           (mkdir-p font-dir)
+           (mkdir-p doc-dir)
+           (chdir (string-append "un-fonts"))
+           (for-each (lambda (ttf)
+                       (copy-file ttf
+                                  (string-append font-dir "/"
+                                                 (basename ttf))))
+                     (find-files "." "\\.ttf$"))
+           (for-each (lambda (doc)
+                       (copy-file doc
+                                  (string-append doc-dir "/"
+                                                 (basename doc))))
+                     '("COPYING" "README"))))))
+    (native-inputs
+     `(("tar" ,tar)
+       ("gzip" ,gzip)))
+    (home-page "https://kldp.net/projects/unfonts/")
+    (synopsis "Collection of Korean fonts")
+    (description
+     "Un-fonts is a family of mainly Korean fonts.
+It contains the following fonts and styles:
+
+@enumerate
+@item UnBatang, UnBatangBold: serif;
+@item UnDotum, UnDotumBold: sans-serif;
+@item UnGraphic, UnGraphicBold: sans-serif style;
+@item UnDinaru, UnDinaruBold, UnDinaruLight;
+@item UnPilgi, UnPilgiBold: script;
+@item UnGungseo: cursive, brush-stroke.
+@end enumerate\n")
+    (license license:gpl2+)))
