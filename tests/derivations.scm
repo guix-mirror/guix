@@ -18,6 +18,7 @@
 
 (define-module (test-derivations)
   #:use-module (guix derivations)
+  #:use-module (guix grafts)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix hash)
@@ -43,6 +44,9 @@
 
 (define %store
   (open-connection-for-tests))
+
+;; Globally disable grafts because they can trigger early builds.
+(%graft? #f)
 
 (define (bootstrap-binary name)
   (let ((bin (search-bootstrap-binary name (%current-system))))
@@ -71,6 +75,7 @@
         (lambda (e1 e2)
           (string<? (car e1) (car e2)))))
 
+
 (test-begin "derivations")
 
 (test-assert "parse & export"

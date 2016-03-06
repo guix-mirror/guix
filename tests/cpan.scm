@@ -21,8 +21,12 @@
   #:use-module (guix base32)
   #:use-module (guix hash)
   #:use-module (guix tests)
+  #:use-module (guix grafts)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
+
+;; Globally disable grafts because they can trigger early builds.
+(%graft? #f)
 
 (define test-json
   "{
@@ -44,7 +48,7 @@
   ],
   \"abstract\" : \"Fizzle Fuzz\",
   \"download_url\" : \"http://example.com/Foo-Bar-0.1.tar.gz\",
-  \"author\" : \"GUIX\",
+  \"author\" : \"Guix\",
   \"version\" : \"0.1\"
 }")
 

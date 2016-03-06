@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +20,7 @@
   #:use-module (guix tests)
   #:use-module (guix store)
   #:use-module (guix monads)
+  #:use-module (guix grafts)
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (gnu packages)
@@ -35,6 +36,9 @@
 
 (define %store
   (open-connection-for-tests))
+
+;; Globally disable grafts because they can trigger early builds.
+(%graft? #f)
 
 (define %monads
   (list %identity-monad %store-monad %state-monad))

@@ -24,6 +24,7 @@
   #:use-module (guix derivations)
   #:use-module (guix store)
   #:use-module (guix monads)
+  #:use-module (guix grafts)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix gexp)
@@ -40,6 +41,9 @@
 
 (define %store
   (open-connection-for-tests))
+
+;; Globally disable grafts because they can trigger early builds.
+(%graft? #f)
 
 (define (make-recording-backend)
   "Return a <graph-backend> and a thunk that returns the recorded nodes and
