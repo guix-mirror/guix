@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +31,13 @@
   #:use-module (srfi srfi-37)
   #:use-module (system foreign)
   #:use-module (rnrs bytevectors)
-  #:use-module (guix utils)
+
+  ;; Use the 'package-name->name+version' procedure that works with
+  ;; hyphen-separate name/version, not the one that works with '@'-separated
+  ;; name/version.  Subtle!
+  #:use-module ((guix utils) #:hide (package-name->name+version))
+  #:use-module ((guix build utils) #:select (package-name->name+version))
+
   #:use-module (guix import utils)
   #:use-module (guix base32)
   #:use-module (guix config)
