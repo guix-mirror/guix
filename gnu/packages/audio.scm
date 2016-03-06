@@ -80,6 +80,8 @@
                (base32
                 "1azbrhpfk4nnybr7kgmc7w6al6xnzppg853vas8gmkh185kk11l0"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-qt5")))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ;; We cannot use zita-alsa-pcmi (the successor of clalsadrv) due to
@@ -89,7 +91,7 @@
        ("jack" ,jack-1)
        ("ladspa" ,ladspa)
        ("liblo" ,liblo)
-       ("qt" ,qt-4)))
+       ("qt" ,qt)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://alsamodular.sourceforge.net/")
