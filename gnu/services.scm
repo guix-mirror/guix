@@ -458,8 +458,8 @@ FILES must be a list of name/file-like object pairs."
 (define (packages->profile-entry packages)
   "Return a system entry for the profile containing PACKAGES."
   (mlet %store-monad ((profile (profile-derivation
-                                (manifest (map package->manifest-entry
-                                               (delete-duplicates packages eq?))))))
+                                (packages->manifest
+                                 (delete-duplicates packages eq?)))))
     (return `(("profile" ,profile)))))
 
 (define profile-service-type
