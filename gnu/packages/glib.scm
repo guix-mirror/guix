@@ -548,6 +548,8 @@ useful for C++.")
      ;; test_callback_user_data_middle_single
      ;; test_callback_user_data_middle_tuple
      '(#:tests? #f))
+    ;; For finding typelib files, since gobject-introscpetion isn't propagated.
+    (native-search-paths (package-native-search-paths gobject-introspection))
     (home-page "https://live.gnome.org/PyGObject")
     (synopsis "Python bindings for GObject")
     (description
