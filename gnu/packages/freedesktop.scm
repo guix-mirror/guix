@@ -142,14 +142,14 @@ the freedesktop.org XDG Base Directory specification.")
 (define-public elogind
   (package
     (name "elogind")
-    (version "219.12")
+    (version "219.13")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wingolog.org/pub/" name "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "13qc4f0dl7ynnfp1y565z2k0jjizly5w3dqhiqkdk7v6jr4pksb7"))
+                "0swwsgm28radjxf0s05a907wf0n524lckdya0rm3kqw6gy1hiax2"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -165,12 +165,8 @@ the freedesktop.org XDG Base Directory specification.")
                             (assoc-ref %build-inputs "libcap"))
              (string-append "--with-udevrulesdir="
                             (assoc-ref %outputs "out")
-                            "/lib/udev/rules.d")
-             ;; XXX: fail with:
-             ;;  src/shared/clean-ipc.c:315: undefined reference to `mq_unlink'
-             "LDFLAGS=-lrt")
+                            "/lib/udev/rules.d"))
        #:make-flags '("PKTTYAGENT=/run/current-system/profile/bin/pkttyagent")
-
        #:phases (modify-phases %standard-phases
                   (add-before 'build 'fix-service-file
                     (lambda* (#:key outputs #:allow-other-keys)
@@ -198,7 +194,7 @@ the freedesktop.org XDG Base Directory specification.")
                                              ;when pressing the power button
        ("dbus" ,dbus)
        ("eudev" ,eudev)))
-    (home-page "https://github.com/andywingo/elogind")
+    (home-page "https://github.com/wingo/elogind")
     (synopsis "User, seat, and session management service")
     (description "Elogind is the systemd project's \"logind\" service,
 extracted out as a separate project.  Elogind integrates with PAM to provide
