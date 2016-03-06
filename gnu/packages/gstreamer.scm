@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
-;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -61,14 +61,14 @@
 (define-public orc
   (package
     (name "orc")
-    (version "0.4.24")
+    (version "0.4.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/data/src/"
                                   "orc/orc-" version ".tar.xz"))
               (sha256
                (base32
-                "16ykgdrgxr6pfpy931p979cs68klvwmk3ii1k0a00wr4nn9x931k"))))
+                "1lak3hyvvb0w9avzmf0a8vayb7vqhj4m709q1czlhvgjb15dbcf1"))))
     (build-system gnu-build-system)
     (arguments `(#:phases
                  (alist-cons-before
