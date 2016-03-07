@@ -4148,22 +4148,10 @@ Evolution (hence the name), but is now used by other packages as well.")
 users.")
     (license license:lgpl2.1)))
 
-(define %network-manager-glib-duplicate-test-patch
-  (origin
-    (method url-fetch)
-    (uri (string-append
-          "http://cgit.freedesktop.org/NetworkManager/NetworkManager/"
-          "patch/libnm-core/tests/test-general.c"
-          "?id=874f455d6d47c5a34ed9861a6710f4b78202e0d6"))
-    (file-name "network-manager-glib-duplicate-test.patch")
-    (sha256
-     (base32
-      "1v0vpxzf0p0b1y5lmq8w7rjndp216gr60nbf2dpdz5rgxx3p3ml6"))))
-
 (define-public network-manager
   (package
     (name "network-manager")
-    (version "1.0.6")
+    (version "1.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -4171,8 +4159,7 @@ users.")
                                   "NetworkManager-" version ".tar.xz"))
               (sha256
                (base32
-                "1galh9j95yw33iv1jj8zz0h88ahx8gm5mqmam7zq9f730cj01siq"))
-              (patches (list %network-manager-glib-duplicate-test-patch))))
+                "1g4z2wg036n0njqp8fycrisj46l3yda6pl00l4rg9nfz862cxkqv"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc")) ; 8 MiB of gtk-doc HTML
@@ -4256,7 +4243,7 @@ services.")
 (define-public network-manager-applet
   (package
     (name "network-manager-applet")
-    (version "1.0.6")
+    (version "1.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4264,7 +4251,7 @@ services.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1yj0m6fb9v12d0di0rfmk3hx1vmygjkiff2c476rf792sbh56kax"))))
+                "1szh5jyijxm6z55irkp5s44pwah0nikss40mx7pvpk38m8zaqidh"))))
     (build-system glib-or-gtk-build-system)
     (arguments '(#:configure-flags '("--disable-migration")))
     (native-inputs
