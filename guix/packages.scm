@@ -843,6 +843,11 @@ and return it."
                                (&package-error
                                 (package package)))))))))))
 
+(define %graft-cache
+  ;; 'eq?' cache mapping package objects to a graft corresponding to their
+  ;; replacement package.
+  (make-weak-key-hash-table 200))
+
 (define (input-graft store system)
   "Return a procedure that, given a package with a graft, returns a graft, and
 #f otherwise."
@@ -850,12 +855,13 @@ and return it."
     ((? package? package)
      (let ((replacement (package-replacement package)))
        (and replacement
-            (let ((orig (package-derivation store package system
-                                            #:graft? #f))
-                  (new  (package-derivation store replacement system)))
-              (graft
-                (origin orig)
-                (replacement new))))))
+            (cached (=> %graft-cache) package system
+                    (let ((orig (package-derivation store package system
+                                                    #:graft? #f))
+                          (new  (package-derivation store replacement system)))
+                      (graft
+                        (origin orig)
+                        (replacement new)))))))
     (x
      #f)))
 
