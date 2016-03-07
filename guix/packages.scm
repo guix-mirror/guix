@@ -798,41 +798,50 @@ information in exceptions."
                         (package package)
                         (input   x)))))))
 
+(define %bag-cache
+  ;; 'eq?' cache mapping packages to system+target+graft?-dependent bags.
+  ;; It significantly speeds things up when doing repeated calls to
+  ;; 'package->bag' as is the case when building a profile.
+  (make-weak-key-hash-table 200))
+
 (define* (package->bag package #:optional
                        (system (%current-system))
                        (target (%current-target-system))
                        #:key (graft? (%graft?)))
   "Compile PACKAGE into a bag for SYSTEM, possibly cross-compiled to TARGET,
 and return it."
-  ;; Bind %CURRENT-SYSTEM and %CURRENT-TARGET-SYSTEM so that thunked field
-  ;; values can refer to it.
-  (parameterize ((%current-system system)
-                 (%current-target-system target))
-    (match (if graft?
-               (or (package-replacement package) package)
-               package)
-      (($ <package> name version source build-system
-                    args inputs propagated-inputs native-inputs self-native-input?
-                    outputs)
-       (or (make-bag build-system (string-append name "-" version)
-                     #:system system
-                     #:target target
-                     #:source source
-                     #:inputs (append (inputs)
-                                      (propagated-inputs))
-                     #:outputs outputs
-                     #:native-inputs `(,@(if (and target self-native-input?)
-                                             `(("self" ,package))
-                                             '())
-                                       ,@(native-inputs))
-                     #:arguments (args))
-           (raise (if target
-                      (condition
-                       (&package-cross-build-system-error
-                        (package package)))
-                      (condition
-                       (&package-error
-                        (package package))))))))))
+  (cached (=> %bag-cache)
+          package (list system target graft?)
+          ;; Bind %CURRENT-SYSTEM and %CURRENT-TARGET-SYSTEM so that thunked
+          ;; field values can refer to it.
+          (parameterize ((%current-system system)
+                         (%current-target-system target))
+            (match (if graft?
+                       (or (package-replacement package) package)
+                       package)
+              (($ <package> name version source build-system
+                            args inputs propagated-inputs native-inputs
+                            self-native-input? outputs)
+               (or (make-bag build-system (string-append name "-" version)
+                             #:system system
+                             #:target target
+                             #:source source
+                             #:inputs (append (inputs)
+                                              (propagated-inputs))
+                             #:outputs outputs
+                             #:native-inputs `(,@(if (and target
+                                                          self-native-input?)
+                                                     `(("self" ,package))
+                                                     '())
+                                               ,@(native-inputs))
+                             #:arguments (args))
+                   (raise (if target
+                              (condition
+                               (&package-cross-build-system-error
+                                (package package)))
+                              (condition
+                               (&package-error
+                                (package package)))))))))))
 
 (define (input-graft store system)
   "Return a procedure that, given a package with a graft, returns a graft, and
