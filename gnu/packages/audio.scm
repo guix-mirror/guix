@@ -446,6 +446,51 @@ high-pass filter by Robert Moog.  The filters attempt to accurately emulate
 the non-linear circuit elements of their original analog counterparts.")
     (license license:gpl2+)))
 
+(define-public vco-plugins
+  (package
+    (name "vco-plugins")
+    (version "0.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kokkinizita.linuxaudio.org"
+                    "/linuxaudio/downloads/VCO-plugins-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1xzqdg3b07r7zww05y9bb737l9dxvfkv28m3fyak1aazaci3rsgl"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure)
+         (add-before 'install 'prepare-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib/ladspa"))
+             #t))
+         (add-after 'unpack 'override-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr") (assoc-ref outputs "out"))
+               (("/bin/cp") (which "cp")))
+             #t)))))
+    (home-page "http://kokkinizita.linuxaudio.org")
+    (synopsis "LADSPA plugin for synthesizer oscillators")
+    (description
+     "The @code{blvco} LADSPA plugin provides three anti-aliased oscillators:
+
+@enumerate
+@item Pulse-VCO, a dirac pulse oscillator with flat amplitude spectrum
+@item Saw-VCO, a sawtooth oscillator with 1/F amplitude spectrum
+@item Rec-VCO, a square / rectange oscillator
+@end enumerate\n
+
+All oscillators are low-pass filtered to provide waveforms similar to the
+output of analog synthesizers such as the Moog Voyager.")
+    (license license:gpl2+)))
+
 (define-public fluidsynth
   (package
     (name "fluidsynth")
