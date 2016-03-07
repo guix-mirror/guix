@@ -406,6 +406,46 @@ language and software synthesizer.")
 ALSA PCM devices.")
     (license license:gpl2+)))
 
+(define-public mcp-plugins
+  (package
+    (name "mcp-plugins")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kokkinizita.linuxaudio.org"
+                    "/linuxaudio/downloads/MCP-plugins-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "06a9r1l85jmg7l1cvc3788mk8ra0xagjfy1rmhw3b80y4n0vlnvc"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure)
+         (add-before 'install 'prepare-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib/ladspa"))
+             #t))
+         (add-after 'unpack 'override-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr") (assoc-ref outputs "out")))
+             #t)))))
+    (home-page "http://kokkinizita.linuxaudio.org")
+    (synopsis "Chorus, phaser, and vintage high-pass and low-pass filters")
+    (description
+     "This package provides various LADSPA plugins.  @code{cs_chorus} and
+@code{cs_phaser} provide chorus and phaser effects, respectively;
+@code{mvclpf24} provides four implementations of the low-pass filter used in
+vintage Moog synthesizers; @code{mvchpf24} is based on the voltage-controlled
+high-pass filter by Robert Moog.  The filters attempt to accurately emulate
+the non-linear circuit elements of their original analog counterparts.")
+    (license license:gpl2+)))
+
 (define-public fluidsynth
   (package
     (name "fluidsynth")
