@@ -16,8 +16,9 @@ Copyright @copyright{} 2013 Nikita Karetnikov@*
 Copyright @copyright{} 2015, 2016 Mathieu Lirzin@*
 Copyright @copyright{} 2014 Pierre-Antoine Rault@*
 Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
-Copyright @copyright{} 2015, 2016 Leo Famulari
-Copyright @copyright{} 2016 Ben Woodcroft
+Copyright @copyright{} 2015, 2016 Leo Famulari@*
+Copyright @copyright{} 2016 Ben Woodcroft@*
+Copyright @copyright{} 2016 Chris Marusich
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -6158,28 +6159,42 @@ generated as needed (@pxref{Defining Services}).
 @cindex customization, of services
 @findex modify-services
 Occasionally, instead of using the base services as is, you will want to
-customize them.  For instance, to change the configuration of
-@code{guix-daemon} and Mingetty (the console log-in), you may write the
-following instead of @var{%base-services}:
+customize them.  To do this, use @code{modify-services} (@pxref{Service
+Reference, @code{modify-services}}) to modify the list.
+
+For example, suppose you want to modify @code{guix-daemon} and Mingetty
+(the console log-in) in the @var{%base-services} list (@pxref{Base
+Services, @code{%base-services}}).  To do that, you can write the
+following in your operating system declaration:
 
 @lisp
-(modify-services %base-services
-  (guix-service-type config =>
-                     (guix-configuration
-                      (inherit config)
-                      (use-substitutes? #f)
-                      (extra-options '("--gc-keep-outputs"))))
-  (mingetty-service-type config =>
-                         (mingetty-configuration
-                          (inherit config)
-                          (motd (plain-file "motd" "Hi there!")))))
+(define %my-services
+  ;; My very own list of services.
+  (modify-services %base-services
+    (guix-service-type config =>
+                       (guix-configuration
+                        (inherit config)
+                        (use-substitutes? #f)
+                        (extra-options '("--gc-keep-derivations"))))
+    (mingetty-service-type config =>
+                           (mingetty-configuration
+                            (inherit config)
+                            (motd (plain-file "motd" "Howdy!"))))))
+
+(operating-system
+  ;; @dots{}
+  (services %my-services))
 @end lisp
 
-@noindent
-The effect here is to change the options passed to @command{guix-daemon}
-when it is started, as well as the ``message of the day'' that appears
-when logging in at the console.  @xref{Service Reference,
-@code{modify-services}}, for more on that.
+This changes the configuration---i.e., the service parameters---of the
+@code{guix-service-type} instance, and that of all the
+@code{mingetty-service-type} instances in the @var{%base-services} list.
+Observe how this is accomplished: first, we arrange for the original
+configuration to be bound to the identifier @code{config} in the
+@var{body}, and then we write the @var{body} so that it evaluates to the
+desired configuration.  In particular, notice how we use @code{inherit}
+to create a new configuration which has the same values as the old
+configuration, but with a few modifications.
 
 The configuration for a typical ``desktop'' usage, with the X11 display
 server, a desktop environment, network management, power management, and
@@ -10035,11 +10050,12 @@ Here is an example of how a service is created and manipulated:
 
 The @code{modify-services} form provides a handy way to change the
 parameters of some of the services of a list such as
-@var{%base-services} (@pxref{Base Services, @code{%base-services}}).  Of
-course, you could always use standard list combinators such as
-@code{map} and @code{fold} to do that (@pxref{SRFI-1, List Library,,
-guile, GNU Guile Reference Manual}); @code{modify-services} simply
-provides a more concise form for this common pattern.
+@var{%base-services} (@pxref{Base Services, @code{%base-services}}).  It
+evalutes to a list of services.  Of course, you could always use
+standard list combinators such as @code{map} and @code{fold} to do that
+(@pxref{SRFI-1, List Library,, guile, GNU Guile Reference Manual});
+@code{modify-services} simply provides a more concise form for this
+common pattern.
 
 @deffn {Scheme Syntax} modify-services @var{services} @
   (@var{type} @var{variable} => @var{body}) @dots{}
@@ -10051,16 +10067,21 @@ clauses.  Each clause has the form:
 (@var{type} @var{variable} => @var{body})
 @end example
 
-where @var{type} is a service type, such as @var{guix-service-type}, and
-@var{variable} is an identifier that is bound within @var{body} to the
-value of the service of that @var{type}.  @xref{Using the Configuration
-System}, for an example.
+where @var{type} is a service type---e.g.,
+@code{guix-service-type}---and @var{variable} is an identifier that is
+bound within the @var{body} to the service parameters---e.g., a
+@code{guix-configuration} instance---of the original service of that
+@var{type}.
 
-This is a shorthand for:
+The @var{body} should evaluate to the new service parameters, which will
+be used to configure the new service.  This new service will replace the
+original in the resulting list.  Because a service's service parameters
+are created using @code{define-record-type*}, you can write a succint
+@var{body} that evaluates to the new service parameters by using the
+@code{inherit} feature that @code{define-record-type*} provides.
 
-@example
-(map (lambda (service) @dots{}) @var{services})
-@end example
+@xref{Using the Configuration System} for example usage.
+
 @end deffn
 
 Next comes the programming interface for service types.  This is
