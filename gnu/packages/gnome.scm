@@ -5353,3 +5353,36 @@ etc.) to create metacontacts.  It's written in Vala, which generates C code when
 compiled.")
     (home-page "https://wiki.gnome.org/Projects/Folks")
     (license license:lgpl2.1+)))
+
+(define-public gfbgraph
+  (package
+    (name "gfbgraph")
+    (version "0.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1dp0v8ia35fxs9yhnqpxj3ir5lh018jlbiwifjfn8ayy7h47j4fs"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:tests? #f ; Tests appear to require the network.
+       ;; FIXME --enable-gtk-doc fails even with gtk-doc as a native-input.
+       #:configure-flags '("--disable-gtk-doc"
+                           "--disable-static"
+                           "--enable-introspection")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("json-glib" ,json-glib)
+       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("rest" ,rest)))
+    (synopsis "GLib/GObject wrapper for the Facebook API")
+    (description "This library allows you to use the Facebook API from
+GLib/GObject code.")
+    (home-page "https://wiki.gnome.org/Projects/GFBGraph")
+    (license license:lgpl2.1+)))
