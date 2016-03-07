@@ -4195,6 +4195,19 @@ users.")
                (string-append "--with-dhclient=" dhclient)))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda _
+             ;; These tests try to test aspects of network-manager's
+             ;; functionality within restricted containers, but they don't
+             ;; cope with being already in the Guix build jail as that jail
+             ;; lacks some features that they would like to proxy over (like
+             ;; a /sys mount).
+             (substitute* '("src/platform/Makefile.in")
+               (("SUBDIRS = tests") ""))
+             (substitute* '("src/tests/Makefile.in")
+               (("\ttest-route-manager-linux") "\t")
+               (("\ttest-route-manager-fake") "\t"))
+             #t))
          (add-before 'check 'pre-check
            (lambda _
              ;; For the missing /etc/machine-id.
