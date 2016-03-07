@@ -491,6 +491,41 @@ All oscillators are low-pass filtered to provide waveforms similar to the
 output of analog synthesizers such as the Moog Voyager.")
     (license license:gpl2+)))
 
+(define-public g2reverb
+  (package
+    (name "g2reverb")
+    (version "0.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kokkinizita.linuxaudio.org"
+                    "/linuxaudio/downloads/g2reverb-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "18wb8vj1kky5glr76s34awbi8qzplsmf3wjbd7a12hfv4j0bkwrj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure)
+         (add-before 'install 'prepare-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib/ladspa"))
+             #t))
+         (add-after 'unpack 'override-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr") (assoc-ref outputs "out")))
+             #t)))))
+    (home-page "http://kokkinizita.linuxaudio.org")
+    (synopsis "LADSPA stereo reverb plugin")
+    (description
+     "This package provides a LADSPA plugin for a stereo reverb effect.")
+    (license license:gpl2+)))
+
 (define-public fluidsynth
   (package
     (name "fluidsynth")
