@@ -478,6 +478,9 @@ then
   export `cat /etc/environment | cut -d= -f1`
 fi
 
+# Set the umask, notably for users logging in via 'lsh'.
+# See <http://bugs.gnu.org/22650>.
+umask 022
 
 # Allow GStreamer-based applications to find plugins.
 export GST_PLUGIN_PATH=\"$HOME/.guix-profile/lib/gstreamer-1.0\"
