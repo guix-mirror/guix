@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
@@ -291,7 +291,8 @@ return its return value."
                 (package-full-name pkg)
                 (location->string (package-location pkg))))
      (when fallback?
-       (warning (_ "deprecated NAME-VERSION syntax.~%")))
+       (warning (_ "deprecated NAME-VERSION syntax; \
+use NAME@VERSION instead~%")))
      pkg)
     (_
      (if version
