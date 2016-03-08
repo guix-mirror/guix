@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -736,7 +737,10 @@ convert, manipulate, filter and display a wide variety of image formats.")
                   (search-patch "jasper-CVE-2014-8157.patch")
                   (search-patch "jasper-CVE-2014-8158.patch")
                   (search-patch "jasper-CVE-2014-9029.patch")
-                  (search-patch "jasper-CVE-2016-1867.patch")))))
+                  (search-patch "jasper-CVE-2016-1577.patch")
+                  (search-patch "jasper-CVE-2016-1867.patch")
+                  (search-patch "jasper-CVE-2016-2089.patch")
+                  (search-patch "jasper-CVE-2016-2116.patch")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("unzip" ,unzip)))

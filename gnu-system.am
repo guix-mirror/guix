@@ -543,7 +543,10 @@ dist_patch_DATA =						\
   gnu/packages/patches/jasper-CVE-2014-8157.patch		\
   gnu/packages/patches/jasper-CVE-2014-8158.patch		\
   gnu/packages/patches/jasper-CVE-2014-9029.patch		\
+  gnu/packages/patches/jasper-CVE-2016-1577.patch		\
   gnu/packages/patches/jasper-CVE-2016-1867.patch		\
+  gnu/packages/patches/jasper-CVE-2016-2089.patch		\
+  gnu/packages/patches/jasper-CVE-2016-2116.patch		\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\
   gnu/packages/patches/ldc-disable-tests.patch			\
