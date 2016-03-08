@@ -3836,7 +3836,7 @@ guix build emacs guile
 Similarly, the following command builds all the available packages:
 
 @example
-guix build --keep-going \
+guix build --quiet --keep-going \
   `guix package -A | cut -f1,2 --output-delimiter=@@`
 @end example
 
@@ -4069,6 +4069,12 @@ The command-line options presented below are specific to @command{guix
 build}.
 
 @table @code
+
+@item --quiet
+@itemx -q
+Build quietly, without displaying the build log.  Upon completion, the
+build log is kept in @file{/var} (or similar) and can always be
+retrieved using the @option{--log-file} option.
 
 @item --file=@var{file}
 @itemx -f @var{file}

@@ -467,6 +467,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   -r, --root=FILE        make FILE a symlink to the result, and register it
                          as a garbage collector root"))
   (display (_ "
+  -q, --quiet            do not show the build log"))
+  (display (_ "
       --log-file         return the log file names for the given derivations"))
   (newline)
   (show-build-options-help)
@@ -534,6 +536,9 @@ must be one of 'package', 'all', or 'transitive'~%")
          (option '(#\r "root") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'gc-root arg result)))
+         (option '(#\q "quiet") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'quiet? #t result)))
          (option '("log-file") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'log-file? #t result)))
@@ -638,6 +643,9 @@ needed."
     (parse-command-line args %options
                         (list %default-options)))
 
+  (define quiet?
+    (assoc-ref opts 'quiet?))
+
   (with-error-handling
     ;; Ask for absolute file names so that .drv file names passed from the
     ;; user to 'read-derivation' are absolute when it returns.
@@ -646,47 +654,51 @@ needed."
         ;; Set the build options before we do anything else.
         (set-build-options-from-command-line store opts)
 
-        (let* ((mode  (assoc-ref opts 'build-mode))
-               (drv   (options->derivations store opts))
-               (urls  (map (cut string-append <> "/log")
-                           (if (assoc-ref opts 'substitutes?)
-                               (or (assoc-ref opts 'substitute-urls)
-                                   ;; XXX: This does not necessarily match the
-                                   ;; daemon's substitute URLs.
-                                   %default-substitute-urls)
-                               '())))
-               (items (filter-map (match-lambda
-                                    (('argument . (? store-path? file))
-                                     file)
-                                    (_ #f))
-                                  opts))
-               (roots (filter-map (match-lambda
-                                    (('gc-root . root) root)
-                                    (_ #f))
-                                  opts)))
+        (parameterize ((current-build-output-port (if quiet?
+                                                      (%make-void-port "w")
+                                                      (current-error-port))))
+          (let* ((mode  (assoc-ref opts 'build-mode))
+                 (drv   (options->derivations store opts))
+                 (urls  (map (cut string-append <> "/log")
+                             (if (assoc-ref opts 'substitutes?)
+                                 (or (assoc-ref opts 'substitute-urls)
+                                     ;; XXX: This does not necessarily match the
+                                     ;; daemon's substitute URLs.
+                                     %default-substitute-urls)
+                                 '())))
+                 (items (filter-map (match-lambda
+                                      (('argument . (? store-path? file))
+                                       file)
+                                      (_ #f))
+                                    opts))
+                 (roots (filter-map (match-lambda
+                                      (('gc-root . root) root)
+                                      (_ #f))
+                                    opts)))
 
-          (unless (assoc-ref opts 'log-file?)
-            (show-what-to-build store drv
-                                #:use-substitutes? (assoc-ref opts 'substitutes?)
-                                #:dry-run? (assoc-ref opts 'dry-run?)
-                                #:mode mode))
+            (unless (assoc-ref opts 'log-file?)
+              (show-what-to-build store drv
+                                  #:use-substitutes?
+                                  (assoc-ref opts 'substitutes?)
+                                  #:dry-run? (assoc-ref opts 'dry-run?)
+                                  #:mode mode))
 
-          (cond ((assoc-ref opts 'log-file?)
-                 (for-each (cut show-build-log store <> urls)
-                           (delete-duplicates
-                            (append (map derivation-file-name drv)
-                                    items))))
-                ((assoc-ref opts 'derivations-only?)
-                 (format #t "~{~a~%~}" (map derivation-file-name drv))
-                 (for-each (cut register-root store <> <>)
-                           (map (compose list derivation-file-name) drv)
-                           roots))
-                ((not (assoc-ref opts 'dry-run?))
-                 (and (build-derivations store drv mode)
-                      (for-each show-derivation-outputs drv)
-                      (for-each (cut register-root store <> <>)
-                                (map (lambda (drv)
-                                       (map cdr
-                                            (derivation->output-paths drv)))
-                                     drv)
-                                roots)))))))))
+            (cond ((assoc-ref opts 'log-file?)
+                   (for-each (cut show-build-log store <> urls)
+                             (delete-duplicates
+                              (append (map derivation-file-name drv)
+                                      items))))
+                  ((assoc-ref opts 'derivations-only?)
+                   (format #t "~{~a~%~}" (map derivation-file-name drv))
+                   (for-each (cut register-root store <> <>)
+                             (map (compose list derivation-file-name) drv)
+                             roots))
+                  ((not (assoc-ref opts 'dry-run?))
+                   (and (build-derivations store drv mode)
+                        (for-each show-derivation-outputs drv)
+                        (for-each (cut register-root store <> <>)
+                                  (map (lambda (drv)
+                                         (map cdr
+                                              (derivation->output-paths drv)))
+                                       drv)
+                                  roots))))))))))
