@@ -24,6 +24,9 @@
   #:use-module (guix packages)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module ((guix build utils)
+                #:select ((package-name->name+version
+                           . hyphen-separated-name->name+version)))
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
@@ -300,9 +303,10 @@ use NAME@VERSION instead~%")))
          (or fallback?
              ;; XXX: Fallback to the older specification style with an hyphen
              ;; between NAME and VERSION, for backward compatibility.
-             (let ((proc (@ (guix build utils) package-name->name+version)))
-               (call-with-values (proc name)
-                 (cut %find-package spec <> <> #:fallback? #t)))
+             (call-with-values
+                 (lambda ()
+                   (hyphen-separated-name->name+version name))
+               (cut %find-package spec <> <> #:fallback? #t))
              (leave (_ "~A: unknown package~%") name))))))
 
 (define (specification->package spec)
