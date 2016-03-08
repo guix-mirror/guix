@@ -128,7 +128,8 @@ TARGET, and register them."
 (define (install-grub* grub.cfg device target)
   "This is a variant of 'install-grub' with error handling, lifted in
 %STORE-MONAD"
-  (let* ((gc-root      (string-append %gc-roots-directory "/grub.cfg"))
+  (let* ((gc-root      (string-append target %gc-roots-directory
+                                      "/grub.cfg"))
          (temp-gc-root (string-append gc-root ".new"))
          (delete-file  (lift1 delete-file %store-monad))
          (make-symlink (lift2 switch-symlinks %store-monad))
