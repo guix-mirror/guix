@@ -300,13 +300,15 @@ use NAME@VERSION instead~%")))
     (_
      (if version
          (leave (_ "~A: package not found for version ~a~%") name version)
-         (or fallback?
+         (if (not fallback?)
              ;; XXX: Fallback to the older specification style with an hyphen
              ;; between NAME and VERSION, for backward compatibility.
              (call-with-values
                  (lambda ()
                    (hyphen-separated-name->name+version name))
                (cut %find-package spec <> <> #:fallback? #t))
+
+             ;; The fallback case didn't find anything either, so bail out.
              (leave (_ "~A: unknown package~%") name))))))
 
 (define (specification->package spec)

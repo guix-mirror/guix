@@ -788,6 +788,15 @@
                       (guix-package "-p" (derivation->output-path prof)
                                     "--search-paths"))))))
 
+(test-equal "specification->package when not found"
+  'quit
+  (catch 'quit
+    (lambda ()
+      ;; This should call 'leave', producing an error message.
+      (specification->package "this-package-does-not-exist"))
+    (lambda (key . args)
+      key)))
+
 (test-end "packages")
 
 
