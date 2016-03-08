@@ -954,10 +954,11 @@ GENERATIONS is a list of generation numbers."
 
 (define (package-location-string id-or-name)
   "Return a location string of a package with ID-OR-NAME."
-  (and-let* ((package  (or (package-by-id id-or-name)
-                           (first (packages-by-name id-or-name))))
-             (location (package-location package)))
-    (location->string location)))
+  (and=> (or (package-by-id id-or-name)
+             (match (packages-by-name id-or-name)
+               (()              #f)
+               ((package _ ...) package)))
+         (compose location->string package-location)))
 
 (define (package-source-derivation->store-path derivation)
   "Return a store path of the package source DERIVATION."
