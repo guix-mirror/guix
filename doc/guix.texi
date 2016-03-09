@@ -2878,19 +2878,33 @@ with @code{build-expression->derivation} (@pxref{Derivations,
 @section The Store
 
 @cindex store
+@cindex store items
 @cindex store paths
 
 Conceptually, the @dfn{store} is the place where derivations that have
 been built successfully are stored---by default, @file{/gnu/store}.
-Sub-directories in the store are referred to as @dfn{store paths}.  The
-store has an associated database that contains information such as the
-store paths referred to by each store path, and the list of @emph{valid}
-store paths---paths that result from a successful build.
+Sub-directories in the store are referred to as @dfn{store items} or
+sometimes @dfn{store paths}.  The store has an associated database that
+contains information such as the store paths referred to by each store
+path, and the list of @emph{valid} store items---results of successful
+builds.  This database resides in @file{/var/guix/db} (or under whatever
+state directory was specified @i{via} @option{--localstatedir} at
+configure time).
 
-The store is always accessed by the daemon on behalf of its clients
+The store is @emph{always} accessed by the daemon on behalf of its clients
 (@pxref{Invoking guix-daemon}).  To manipulate the store, clients
 connect to the daemon over a Unix-domain socket, send requests to it,
 and read the result---these are remote procedure calls, or RPCs.
+
+@quotation Note
+Users must @emph{never} modify files under @file{/gnu/store} directly.
+This would lead to inconsistencies and break the immutability
+assumptions of Guix's functional model (@pxref{Introduction}).
+
+@xref{Invoking guix gc, @command{guix gc --verify}}, for information on
+how to check the integrity of the store and attempt recovery from
+accidental modifications.
+@end quotation
 
 The @code{(guix store)} module provides procedures to connect to the
 daemon, and to perform RPCs.  These are described below.
