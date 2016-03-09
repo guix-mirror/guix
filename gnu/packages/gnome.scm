@@ -4650,13 +4650,17 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (propagated-inputs
-     `(("gtk+" ,gtk+))) ; required by libnautilus-extension.pc
     (inputs
      ;; TODO: add gvfs support.
      `(("dconf" ,dconf)
        ("exempi" ,exempi)
        ("gnome-desktop" ,gnome-desktop)
+       ;; XXX: gtk+ is required by libnautilus-extension.pc
+       ;;
+       ;; Don't propagate it to reduces "profile pollution" of the 'gnome' meta
+       ;; package.  See:
+       ;; <http://lists.gnu.org/archive/html/guix-devel/2016-03/msg00283.html>.
+       ("gtk+" ,gtk+)
        ("libexif" ,libexif)
        ("libxml2" ,libxml2)))
     (synopsis "File manager for GNOME")
