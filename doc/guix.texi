@@ -1352,7 +1352,7 @@ As an example, @var{file} might contain a definition like this
 @verbatiminclude package-hello.scm
 @end example
 
-Developers may find it useful to include such a @file{package.scm} file
+Developers may find it useful to include such a @file{guix.scm} file
 in the root of their project source tree that can be used to test
 development snapshots and create reproducible development environments
 (@pxref{Invoking guix environment}).
