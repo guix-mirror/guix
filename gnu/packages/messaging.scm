@@ -90,16 +90,6 @@ keys, no previous conversation is compromised.")
     (home-page "https://otr.cypherpunks.ca/")
     (license (list lgpl2.1 gpl2))))
 
-(define-public libotr-3
-  (package (inherit libotr)
-    (version "3.2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://otr.cypherpunks.ca/libotr-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32 "1x6dd4rh499hdraiqfhz81igrj0a5rs0gjhc8l4sljwqhjjyla6l"))))))
-
 (define-public bitlbee
   (package
     (name "bitlbee")
