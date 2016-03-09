@@ -44,14 +44,13 @@
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
-        (alist-cons-after
-         'configure 'patch-config-files
-         (lambda _
-           (substitute* "runtime/tools/mve.awk"
-             (("/usr/bin/nawk") (which "gawk")))
-           (substitute* "src/testdir/Makefile"
-             (("/bin/sh") (which "sh"))))
-          %standard-phases)))
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-config-files
+           (lambda _
+             (substitute* "runtime/tools/mve.awk"
+               (("/usr/bin/nawk") (which "gawk")))
+             (substitute* "src/testdir/Makefile"
+               (("/bin/sh") (which "sh"))))))))
     (inputs
      `(("gawk" ,gawk)
        ("inetutils" ,inetutils)
