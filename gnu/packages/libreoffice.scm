@@ -762,8 +762,7 @@ and to return information on pronunciations, meanings and synonyms.")
        ("xmlsec-src" ,xmlsec-src-libreoffice)
        ("zip" ,zip)))
     (arguments
-     `(#:parallel-build? #f ; Otherwise the build fails.
-       #:tests? #f ; Building the tests already fails.
+     `(#:tests? #f ; Building the tests already fails.
        #:make-flags '("build-nocheck") ; Do not build unit tests, which fails.
        #:phases
          (modify-phases %standard-phases
