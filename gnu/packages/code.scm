@@ -68,14 +68,14 @@ a major mode for Emacs for examining the flowcharts that it produces.")
 (define-public complexity
   (package
     (name "complexity")
-    (version "1.3")
+    (version "1.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/complexity/complexity-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "19bc64sxpqd5rqylqaa7dijz2x7qp2b0dg3ah3fb3qbcvd8b4wgy"))))
+                "1jn61389bjxgc49ldzcp89kylagcd2b19i38jv99nl3blylkkwf6"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)
