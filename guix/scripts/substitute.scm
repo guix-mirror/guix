@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -204,7 +204,10 @@ to the caller without emitting an error message."
                (set! port (open-socket-for-uri uri))
                (unless buffered?
                  (setvbuf port _IONBF)))
-             (http-fetch uri #:text? #f #:port port))))))))
+             (http-fetch uri #:text? #f #:port port))))))
+    (else
+     (leave (_ "unsupported substitute URI scheme: ~a~%")
+            (uri->string uri)))))
 
 (define-record-type <cache-info>
   (%make-cache-info url store-directory wants-mass-query?)
