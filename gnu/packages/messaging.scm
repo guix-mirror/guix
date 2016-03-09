@@ -318,14 +318,14 @@ chat protocols.")
 (define-public pidgin-otr
   (package
     (name "pidgin-otr")
-    (version "4.0.1")
+    (version "4.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://otr.cypherpunks.ca/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "02pkkf86fh5jvzsdn9y78impsgzj1n0p81kc2girvk3vq941yy0v"))))
+                "1i5s9rrgbyss9rszq6c6y53hwqyw1k86s40cpsfx5ccl9bprxdgl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
