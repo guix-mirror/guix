@@ -63,17 +63,19 @@
 (define-public libotr
   (package
     (name "libotr")
-    (version "4.1.0")
+    (version "4.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://otr.cypherpunks.ca/libotr-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "0c6rkh58s6wqzcrpccwdik5qs91qj6dgd60a340d72gc80cqknsg"))))
+               (base32
+                "1x8rliydhbibmzwdbyr7pd7n87m2jmxnqkpvaalnf4154hj1hfwb"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgcrypt" ,libgcrypt)))  ; libotr headers include gcrypt.h
     (inputs `(("libgpg-error" ,libgpg-error)))
+    (native-inputs `(("perl" ,perl))) ; for the test suite
     (synopsis "Off-the-Record (OTR) Messaging Library and Toolkit")
     (description
      "OTR allows you to have private conversations over instant messaging by
