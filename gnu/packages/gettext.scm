@@ -144,7 +144,7 @@ catalogs.  Nearly all GNU packages use Gettext.")
        ("perl-module-build" ,perl-module-build)
        ("docbook-xsl" ,docbook-xsl)
        ("docbook-xml" ,docbook-xml) ;for tests
-       ("texlive-bin" ,texlive-bin) ;for tests
+       ("texlive" ,texlive-minimal) ;for tests
        ("libxml2" ,libxml2)
        ("xsltproc" ,libxslt)))
     (home-page "http://po4a.alioth.debian.org/")
