@@ -225,6 +225,7 @@ SCM_TESTS =					\
   tests/grafts.scm				\
   tests/ui.scm					\
   tests/records.scm				\
+  tests/upstream.scm				\
   tests/utils.scm				\
   tests/build-utils.scm				\
   tests/packages.scm				\
