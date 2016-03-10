@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -424,7 +425,7 @@ connection alive.")
          (bind-minor-version "9")
          (bind-patch-version "8")
          (bind-release-type "-P")
-         (bind-release-version "3")
+         (bind-release-version "4")
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -540,7 +541,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "01qa17479jghy90lb2j8b1bpg3ay6k6aaajpigyirwzsvyc9yj3a"))))
+                      "1wl9kl0630dc1qjrf7fnp8cscagfm5qgmisi0zhr1p6iwi9bil2y"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
