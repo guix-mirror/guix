@@ -284,14 +284,14 @@ stack traces.")
 (define-public lcov
   (package
     (name "lcov")
-    (version "1.10")
+    (version "1.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/ltp/lcov-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "13xq2ln4jjasslqzzhr5g11q1c19gwpng1jphzbzmylmrjz62ila"))))
+                "19wfifdpxxivhq9adbphanjfga9bg9spms9v7c3589wndjff8x5l"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (let ((out (assoc-ref %outputs "out")))
