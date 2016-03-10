@@ -522,6 +522,51 @@ the non-linear circuit elements of their original analog counterparts.")
 well-known greverb.")
     (license license:gpl2+)))
 
+(define-public fil-plugins
+  (package
+    (name "fil-plugins")
+    (version "0.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kokkinizita.linuxaudio.org"
+                    "/linuxaudio/downloads/FIL-plugins-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1scfv9j7jrp50r565haa4rvxn1vk2ss86xssl5qgcr8r45qz42qw"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure)
+         (add-before 'install 'prepare-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib/ladspa"))
+             #t))
+         (add-after 'unpack 'override-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr") (assoc-ref outputs "out")))
+             #t)))))
+    (home-page "http://kokkinizita.linuxaudio.org")
+    (synopsis "LADSPA four-band parametric equalizer plugin")
+    (description
+     "This package provides a LADSPA plugin for a four-band parametric
+equalizer.  Each section has an active/bypass switch, frequency, bandwidth and
+gain controls.  There is also a global bypass switch and gain control.
+
+The 2nd order resonant filters are implemented using a Mitra-Regalia style
+lattice filter, which is stable even while parameters are being changed.
+
+All switches and controls are internally smoothed, so they can be used 'live'
+without any clicks or zipper noises.  This makes this plugin suitable for use
+in systems that allow automation of plugin control ports, such as Ardour, or
+for stage use.")
+    (license license:gpl2+)))
+
 (define-public vco-plugins
   (package
     (name "vco-plugins")
