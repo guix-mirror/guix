@@ -648,6 +648,42 @@ All oscillators are low-pass filtered to provide waveforms similar to the
 output of analog synthesizers such as the Moog Voyager.")
     (license license:gpl2+)))
 
+(define-public wah-plugins
+  (package
+    (name "wah-plugins")
+    (version "0.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kokkinizita.linuxaudio.org"
+                    "/linuxaudio/downloads/WAH-plugins-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1wkbjarxdhjixkh7d5abralj11dj2xxg644fz3ycd7qyfgfvjfgd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure)
+         (add-before 'install 'prepare-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib/ladspa"))
+             #t))
+         (add-after 'unpack 'override-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr") (assoc-ref outputs "out")))
+             #t)))))
+    (home-page "http://kokkinizita.linuxaudio.org")
+    (synopsis "LADSPA Autowah effect plugin")
+    (description
+     "This package provides a LADSPA plugin for a Wah effect with envelope
+follower.")
+    (license license:gpl2+)))
+
 (define-public g2reverb
   (package
     (name "g2reverb")
