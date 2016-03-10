@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,14 +66,14 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public bind-utils
   (package
     (name "bind-utils")
-    (version "9.10.3-P3")
+    (version "9.10.3-P4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.isc.org/isc/bind9/" version
                                   "/bind-" version ".tar.gz"))
               (sha256
                (base32
-                "10yblk8qbb85qxakzdjy5qmqvqj4rlcqsqvlkriglampzg8i0239"))))
+                "0giys46ifypysf799w9v58kbaz1v3fbdzw3s212znifzzfsl9h1a"))))
     (build-system gnu-build-system)
     (inputs
      ;; it would be nice to add GeoIP and gssapi once there is package
