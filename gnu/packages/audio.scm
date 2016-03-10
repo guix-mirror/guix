@@ -567,6 +567,42 @@ in systems that allow automation of plugin control ports, such as Ardour, or
 for stage use.")
     (license license:gpl2+)))
 
+(define-public ste-plugins
+  (package
+    (name "ste-plugins")
+    (version "0.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kokkinizita.linuxaudio.org"
+                    "/linuxaudio/downloads/STE-plugins-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0s3c9w5xihs87cnd1lh9xgj3maabjdyh6bl766qp5lhkg3ax8zy6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure)
+         (add-before 'install 'prepare-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib/ladspa"))
+             #t))
+         (add-after 'unpack 'override-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr") (assoc-ref outputs "out")))
+             #t)))))
+    (home-page "http://kokkinizita.linuxaudio.org")
+    (synopsis "LADSPA stereo width plugin")
+    (description
+     "This package provides a LADSPA plugin to manipulate the stereo width of
+audio signals.")
+    (license license:gpl2+)))
+
 (define-public vco-plugins
   (package
     (name "vco-plugins")
