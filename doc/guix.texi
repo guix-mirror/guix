@@ -485,18 +485,20 @@ The following dependencies are optional:
 
 @itemize
 @item
+Installing @uref{http://gnutls.org/, GnuTLS-Guile} will allow you to
+access @code{https} URLs for substitutes, which is highly recommended
+(@pxref{Substitutes}).  It also allows you to access HTTPS URLs with the
+@command{guix download} command (@pxref{Invoking guix download}), the
+@command{guix import pypi} command, and the @command{guix import cpan}
+command.  @xref{Guile Preparations, how to install the GnuTLS bindings
+for Guile,, gnutls-guile, GnuTLS-Guile}.
+
+@item
 Installing
 @url{http://savannah.nongnu.org/projects/guile-json/, Guile-JSON} will
 allow you to use the @command{guix import pypi} command (@pxref{Invoking
 guix import}).  It is of
 interest primarily for developers and not for casual users.
-@item
-Installing @uref{http://gnutls.org/, GnuTLS-Guile} will
-allow you to access @code{https} URLs with the @command{guix download}
-command (@pxref{Invoking guix download}), the @command{guix import pypi}
-command, and the @command{guix import cpan} command.  This is primarily
-of interest to developers.  @xref{Guile Preparations, how to install the
-GnuTLS bindings for Guile,, gnutls-guile, GnuTLS-Guile}.
 @end itemize
 
 Unless @code{--disable-daemon} was passed to @command{configure}, the
@@ -1703,6 +1705,13 @@ or to client tools such as @command{guix package}
 (@pxref{client-substitute-urls,, client @option{--substitute-urls}
 option}).
 
+Substitute URLs can be either HTTP or HTTPS@footnote{For HTTPS access,
+the Guile bindings of GnuTLS must be installed.  @xref{Requirements}.}
+HTTPS is recommended because communications are encrypted; conversely,
+using HTTP makes all communications visible to an eavesdropper, who
+could use the information gathered to determine, for instance, whether
+your system has unpatched security vulnerabilities.
+
 @cindex security
 @cindex digital signatures
 To allow Guix to download substitutes from @code{hydra.gnu.org}, you
@@ -1757,12 +1766,20 @@ one of the keys listed in the ACL.  It also detects and raises an error
 when attempting to use a substitute that has been tampered with.
 
 @vindex http_proxy
-Substitutes are downloaded over HTTP.  The @code{http_proxy} environment
+Substitutes are downloaded over HTTP or HTTPS.
+The @code{http_proxy} environment
 variable can be set in the environment of @command{guix-daemon} and is
 honored for downloads of substitutes.  Note that the value of
 @code{http_proxy} in the environment where @command{guix build},
 @command{guix package}, and other client commands are run has
 @emph{absolutely no effect}.
+
+When using HTTPS, the server's X.509 certificate is @emph{not} validated
+(in other words, the server is not authenticated), contrary to what
+HTTPS clients such as Web browsers usually do.  This is because Guix
+authenticates substitute information itself, as explained above, which
+is what we care about (whereas X.509 certificates are about
+authenticating bindings between domain names and public keys.)
 
 The substitute mechanism can be disabled globally by running
 @code{guix-daemon} with @code{--no-substitutes} (@pxref{Invoking
@@ -1770,6 +1787,8 @@ guix-daemon}).  It can also be disabled temporarily by passing the
 @code{--no-substitutes} option to @command{guix package}, @command{guix
 build}, and other command-line tools.
 
+
+@unnumberedsubsec On Trusting Binaries
 
 Today, each individual's control over their own computing is at the
 mercy of institutions, corporations, and groups with enough power and

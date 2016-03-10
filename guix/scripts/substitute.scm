@@ -32,6 +32,7 @@
   #:use-module ((guix build utils) #:select (mkdir-p dump-port))
   #:use-module ((guix build download)
                 #:select (progress-proc uri-abbreviation
+                          open-connection-for-uri
                           store-path-abbreviation byte-count->string))
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
@@ -49,6 +50,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:use-module (web uri)
+  #:use-module (web http)
   #:use-module (web request)
   #:use-module (web response)
   #:use-module (guix http-client)
@@ -171,7 +173,7 @@ to the caller without emitting an error message."
      (let ((port (open-file (uri-path uri)
                             (if buffered? "rb" "r0b"))))
        (values port (stat:size (stat port)))))
-    ((http)
+    ((http https)
      (guard (c ((http-get-error? c)
                 (let ((code (http-get-error-code c)))
                   (if (and (= code 404) quiet-404?)
@@ -201,8 +203,8 @@ to the caller without emitting an error message."
                  (close-port port))))
            (begin
              (when (or (not port) (port-closed? port))
-               (set! port (open-socket-for-uri uri))
-               (unless buffered?
+               (set! port (open-connection-for-uri uri))
+               (unless (or buffered? (not (file-port? port)))
                  (setvbuf port _IONBF)))
              (http-fetch uri #:text? #f #:port port))))))
     (else
@@ -478,8 +480,8 @@ may be #f, in which case it indicates that PATH is unavailable at CACHE-URL."
                             ".narinfo")))
     (build-request (string->uri url) #:method 'GET)))
 
-(define (http-multiple-get base-url proc seed requests)
-  "Send all of REQUESTS to the server at BASE-URL.  Call PROC for each
+(define (http-multiple-get base-uri proc seed requests)
+  "Send all of REQUESTS to the server at BASE-URI.  Call PROC for each
 response, passing it the request object, the response, a port from which to
 read the response body, and the previous result, starting with SEED, à la
 'fold'.  Return the final result."
@@ -487,9 +489,12 @@ read the response body, and the previous result, starting with SEED, à la
                 (result   seed))
     ;; (format (current-error-port) "connecting (~a requests left)..."
     ;;         (length requests))
-    (let ((p (open-socket-for-uri base-url)))
+    (let ((p (open-connection-for-uri base-uri)))
+      ;; For HTTPS, P is not a file port and does not support 'setvbuf'.
+      (when (file-port? p)
+        (setvbuf p _IOFBF (expt 2 16)))
+
       ;; Send all of REQUESTS in a row.
-      (setvbuf p _IOFBF (expt 2 16))
       (for-each (cut write-request <> p) requests)
       (force-output p)
 
@@ -570,10 +575,10 @@ if file doesn't exist, and the narinfo otherwise."
 
   (define (do-fetch uri)
     (case (and=> uri uri-scheme)
-      ((http)
+      ((http https)
        (let ((requests (map (cut narinfo-request url <>) paths)))
          (update-progress!)
-         (let ((result (http-multiple-get url
+         (let ((result (http-multiple-get uri
                                           handle-narinfo-response '()
                                           requests)))
            (newline (current-error-port))
