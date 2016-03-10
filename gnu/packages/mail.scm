@@ -189,6 +189,7 @@ aliasing facilities to work just as they would on normal mail.")
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
+       ("gdbm" ,gdbm)
        ("gpgme" ,gpgme)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
@@ -198,6 +199,7 @@ aliasing facilities to work just as they would on normal mail.")
                            "--enable-imap"
                            "--enable-pop"
                            "--enable-gpgme"
+                           "--enable-hcache" ; for header caching
                            "--with-ssl"
                            "--with-sasl"
                            ;; so that mutt does not check whether the path
