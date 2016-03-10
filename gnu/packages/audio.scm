@@ -486,6 +486,42 @@ high-pass filter by Robert Moog.  The filters attempt to accurately emulate
 the non-linear circuit elements of their original analog counterparts.")
     (license license:gpl2+)))
 
+(define-public rev-plugins
+  (package
+    (name "rev-plugins")
+    (version "0.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kokkinizita.linuxaudio.org"
+                    "/linuxaudio/downloads/REV-plugins-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1ikpinxm00pkfi259bnkzhsy3miagrjgdihaaf5x4v7zac29j3g7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure)
+         (add-before 'install 'prepare-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib/ladspa"))
+             #t))
+         (add-after 'unpack 'override-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr") (assoc-ref outputs "out")))
+             #t)))))
+    (home-page "http://kokkinizita.linuxaudio.org")
+    (synopsis "LADSPA reverb plugin")
+    (description
+     "This package provides a stereo reverb LADSPA plugin based on the
+well-known greverb.")
+    (license license:gpl2+)))
+
 (define-public vco-plugins
   (package
     (name "vco-plugins")
