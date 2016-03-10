@@ -220,7 +220,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
     (search-path %load-path file)))
 
 (define-public linux-libre
-  (let* ((version "4.4.4")
+  (let* ((version "4.4.5")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -294,7 +294,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "0i398ylpkwbrvda970j0ci4k7fl6ljnvra70k8ksqp9xgflm15gx"))))
+               "19yyw6yssyxr9k5y3whgz2p731mb1pnq3xajpv8g01m13cxs32dd"))))
     (build-system gnu-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
