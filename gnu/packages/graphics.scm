@@ -206,6 +206,20 @@ exception-handling library.")
                    "\"/tmp/\"")))
               (patches (list (search-patch "openexr-missing-samples.patch")))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-broken-test
+           ;; This test fails on i686. Upstream developers suggest that
+           ;; this test is broken on i686 and can be safely disabled:
+           ;; https://github.com/openexr/openexr/issues/67#issuecomment-21169748
+           (lambda _
+             (substitute* "IlmImfTest/main.cpp"
+               (("#include \"testOptimizedInterleavePatterns.h\"")
+                 "//#include \"testOptimizedInterleavePatterns.h\"")
+               (("TEST \\(testOptimizedInterleavePatterns")
+                 "//TEST (testOptimizedInterleavePatterns"))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
