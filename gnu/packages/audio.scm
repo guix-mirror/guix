@@ -406,6 +406,46 @@ language and software synthesizer.")
 ALSA PCM devices.")
     (license license:gpl2+)))
 
+(define-public amb-plugins
+  (package
+    (name "amb-plugins")
+    (version "0.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kokkinizita.linuxaudio.org"
+                    "/linuxaudio/downloads/AMB-plugins-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0x4blm4visjqj0ndqr0cg776v3b7lvplpc8cgi9n51llhavn0jpl"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure)
+         (add-before 'install 'prepare-target-directory
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/lib/ladspa"))
+             #t))
+         (add-after 'unpack 'override-target-directory-and-tool-paths
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("/usr/lib/ladspa")
+                (string-append (assoc-ref outputs "out") "/lib/ladspa"))
+               (("/usr/bin/install") (which "install"))
+               (("/bin/rm") "#"))
+             #t)))))
+    (home-page "http://kokkinizita.linuxaudio.org")
+    (synopsis "LADSPA ambisonics plugins")
+    (description
+     "The AMB plugins are a set of LADSPA ambisonics plugins, mainly to be
+used within Ardour.  Features include: mono and stereo to B-format panning,
+horizontal rotator, square, hexagon and cube decoders.")
+    (license license:gpl2+)))
+
 (define-public mcp-plugins
   (package
     (name "mcp-plugins")
