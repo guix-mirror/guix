@@ -495,8 +495,17 @@ read the response body, and the previous result, starting with SEED, à la
         (setvbuf p _IOFBF (expt 2 16)))
 
       ;; Send all of REQUESTS in a row.
-      (for-each (cut write-request <> p) requests)
-      (force-output p)
+      ;; XXX: Do our own caching to work around inefficiencies when
+      ;; communicating over TLS: <http://bugs.gnu.org/22966>.
+      (let-values (((buffer get) (open-bytevector-output-port)))
+        ;; On Guile > 2.0.9, inherit the HTTP proxying property from P.
+        (when (module-variable (resolve-interface '(web http))
+                               'http-proxy-port?)
+          (set-http-proxy-port?! buffer (http-proxy-port? p)))
+
+        (for-each (cut write-request <> buffer) requests)
+        (put-bytevector p (get))
+        (force-output p))
 
       ;; Now start processing responses.
       (let loop ((requests requests)
