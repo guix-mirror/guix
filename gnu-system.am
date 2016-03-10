@@ -528,6 +528,23 @@ dist_patch_DATA =						\
   gnu/packages/patches/icecat-update-graphite2.patch		\
   gnu/packages/patches/icecat-update-graphite2-pt2.patch	\
   gnu/packages/patches/icecat-re-enable-DHE-cipher-suites.patch	\
+  gnu/packages/patches/icecat-CVE-2015-4477.patch		\
+  gnu/packages/patches/icecat-CVE-2015-7207.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1952-pt01.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1952-pt02.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1952-pt03.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1952-pt04.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1952-pt05.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1952-pt06.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1954.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1960.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1961.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1962.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1964.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1965.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1966.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1974.patch		\
+  gnu/packages/patches/icecat-bug-1248851.patch			\
   gnu/packages/patches/icu4c-CVE-2014-6585.patch		\
   gnu/packages/patches/icu4c-CVE-2015-1270.patch		\
   gnu/packages/patches/icu4c-CVE-2015-4760.patch		\
