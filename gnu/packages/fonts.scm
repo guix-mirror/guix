@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
+;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -629,3 +630,46 @@ Unicode's Basic Multilingual Plane.  The package also includes
 utilities to ease adding new glyphs to the font.")
     (home-page "http://unifoundry.com/unifont.html")
     (license license:gpl2+)))
+
+(define-public font-google-noto
+  (package
+    (name "font-google-noto")
+    (version "20150929")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://noto-website-2.storage.googleapis.com/"
+                                  "pkgs/Noto-hinted.zip"))
+              (sha256
+               (base32
+                "13jhpqzhsqhyby8n0ksqg155a3jyaif3nzj9anzbq8s2gn1xjyd9"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (srfi srfi-26))
+
+                   (let ((PATH     (string-append (assoc-ref %build-inputs
+                                                             "unzip")
+                                                  "/bin"))
+                         (font-dir (string-append %output
+                                                  "/share/fonts/truetype")))
+                     (setenv "PATH" PATH)
+                     (system* "unzip" (assoc-ref %build-inputs "source"))
+
+                     (mkdir-p font-dir)
+                     (for-each (lambda (ttf)
+                                 (copy-file ttf
+                                            (string-append font-dir "/" ttf)))
+                               (find-files "." "\\.ttf$"))
+                     (for-each (lambda (otf)
+                                 (copy-file otf
+                                            (string-append font-dir "/" otf)))
+                               (find-files "." "\\.otf$"))))))
+    (native-inputs `(("unzip" ,unzip)))
+    (home-page "https://www.google.com/get/noto/")
+    (synopsis "Fonts aimed to cover all languages")
+    (description "Googe Noto Fonts is a family of fonts aimed to support all
+languages with a consistent look and aesthetic.  It's goal is to have no Unicode
+symbols unable to be displayed properly.")
+    (license license:silofl1.1)))
