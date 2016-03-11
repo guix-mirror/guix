@@ -2556,6 +2556,44 @@ the phenotype as it models the data.")
 generated using the PacBio Iso-Seq protocol.")
       (license license:bsd-3))))
 
+(define-public pyicoteo
+  (package
+    (name "pyicoteo")
+    (version "2.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://bitbucket.org/regulatorygenomicsupf/"
+                           "pyicoteo/get/v" version ".tar.bz2"))
+       (file-name (string-append name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0d6087f29xp8wxwlj111c3sylli98n0l8ry58c51ixzq0zfm50wa"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; does not work with Python 3
+       #:tests? #f))      ; there are no tests
+    (inputs
+     `(("python2-matplotlib" ,python2-matplotlib)))
+    (home-page "https://bitbucket.org/regulatorygenomicsupf/pyicoteo")
+    (synopsis "Analyze high-throughput genetic sequencing data")
+    (description
+     "Pyicoteo is a suite of tools for the analysis of high-throughput genetic
+sequencing data.  It works with genomic coordinates.  There are currently six
+different command-line tools:
+
+@enumerate
+@item pyicoregion: for generating exploratory regions automatically;
+@item pyicoenrich: for differential enrichment between two conditions;
+@item pyicoclip: for calling CLIP-Seq peaks without a control;
+@item pyicos: for genomic coordinates manipulation;
+@item pyicoller: for peak calling on punctuated ChIP-Seq;
+@item pyicount: to count how many reads from N experiment files overlap in a
+  region file;
+@item pyicotrocol: to combine operations from pyicoteo.
+@end enumerate\n")
+    (license license:gpl3+)))
+
 (define-public prodigal
   (package
     (name "prodigal")
