@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -70,8 +70,9 @@
         (close-port port)))))
 
 (define %cpe-package-rx
-  ;; For applications: "cpe:/a:VENDOR:PACKAGE:VERSION".
-  (make-regexp "^cpe:/a:([^:]+):([^:]+):([^:]+)"))
+  ;; For applications: "cpe:/a:VENDOR:PACKAGE:VERSION", or sometimes
+  ;; "cpe/a:VENDOR:PACKAGE:VERSION:PATCH-LEVEL".
+  (make-regexp "^cpe:/a:([^:]+):([^:]+):([^:]+)((:.+)?)"))
 
 (define (cpe->package-name cpe)
   "Converts the Common Platform Enumeration (CPE) string CPE to a package
@@ -80,7 +81,13 @@ CPE string."
   (and=> (regexp-exec %cpe-package-rx (string-trim-both cpe))
          (lambda (matches)
            (cons (match:substring matches 2)
-                 (match:substring matches 3)))))
+                 (string-append (match:substring matches 3)
+                                (match (match:substring matches 4)
+                                  ("" "")
+                                  (patch-level
+                                   ;; Drop the colon from things like
+                                   ;; "cpe:/a:openbsd:openssh:6.8:p1".
+                                   (string-drop patch-level 1))))))))
 
 (define %parse-vulnerability-feed
   ;; Parse the XML vulnerability feed from
