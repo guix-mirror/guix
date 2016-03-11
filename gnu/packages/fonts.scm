@@ -67,14 +67,15 @@ in print.  With attention to detail for high resolution rendering.")
 (define-public font-ubuntu
   (package
     (name "font-ubuntu")
-    (version "0.80")
+    (version "0.83")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://font.ubuntu.com/download/ubuntu-font-family-"
-                                  version ".zip"))
+              (uri (string-append
+                    "http://font.ubuntu.com/download/ubuntu-font-family-"
+                    version ".zip"))
               (sha256
                (base32
-                "0k4f548riq23gmw4zhn30qqkcpaj4g2ab5rbc3lflfxwkc4p0w8h"))))
+                "0hjvq2x758dx0sfwqhzflns0ns035qm7h6ygskbx1svzg517sva5"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
