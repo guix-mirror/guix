@@ -49,23 +49,38 @@
   (id         vulnerability-id)
   (packages   vulnerability-packages))
 
-(define %cve-feed-uri
-  (string->uri
-   "https://nvd.nist.gov/feeds/xml/cve/nvdcve-2.0-Modified.xml.gz"))
+(define %now
+  (current-date))
+(define %current-year
+  (date-year %now))
+(define %past-year
+  (- %current-year 1))
 
-(define %ttl
+(define (yearly-feed-uri year)
+  "Return the URI for the CVE feed for YEAR."
+  (string->uri
+   (string-append "https://static.nvd.nist.gov/feeds/xml/cve/nvdcve-2.0-"
+                  (number->string year) ".xml.gz")))
+
+(define %current-year-ttl
   ;; According to <https://nvd.nist.gov/download.cfm#CVE_FEED>, feeds are
   ;; updated "approximately every two hours."
   (* 3600 3))
 
-(define (call-with-cve-port proc)
+(define %past-year-ttl
+  ;; Update the previous year's database more and more infrequently.
+  (* 3600 24 2 (date-month %now)))
+
+(define (call-with-cve-port uri ttl proc)
   "Pass PROC an input port from which to read the CVE stream."
-  (let ((port (http-fetch/cached %cve-feed-uri #:ttl %ttl)))
+  (let ((port (http-fetch/cached uri #:ttl ttl)))
     (dynamic-wind
       (const #t)
       (lambda ()
         (call-with-decompressed-port 'gzip port
-          proc))
+          (lambda (port)
+            (setvbuf port _IOFBF 65536)
+            (proc port))))
       (lambda ()
         (close-port port)))))
 
@@ -142,12 +157,19 @@ vulnerability objects."
 (define (current-vulnerabilities)
   "Return the current list of Common Vulnerabilities and Exposures (CVE) as
 published by the US NIST."
-  (call-with-cve-port
-   (lambda (port)
-     ;; XXX: The SSAX "error port" is used to send pointless warnings such as
-     ;; "warning: Skipping PI".  Turn that off.
-     (parameterize ((current-ssax-error-port (%make-void-port "w")))
-       (xml->vulnerabilities port)))))
+  (define (read-vulnerabilities uri ttl)
+    (call-with-cve-port uri ttl
+      (lambda (port)
+        ;; XXX: The SSAX "error port" is used to send pointless warnings such as
+        ;; "warning: Skipping PI".  Turn that off.
+        (parameterize ((current-ssax-error-port (%make-void-port "w")))
+          (xml->vulnerabilities port)))))
+
+  (append-map read-vulnerabilities
+              (list (yearly-feed-uri %past-year)
+                    (yearly-feed-uri %current-year))
+              (list %past-year-ttl
+                    %current-year-ttl)))
 
 (define (vulnerabilities->lookup-proc vulnerabilities)
   "Return a lookup procedure built from VULNERABILITIES that takes a package
@@ -180,5 +202,10 @@ a list of vulnerabilities affection the given package version."
                      cons)
                  '()
                  package table)))
+
+
+;;; Local Variables:
+;;; eval: (put 'call-with-cve-port 'scheme-indent-function 2)
+;;; End:
 
 ;;; cve.scm ends here
