@@ -958,6 +958,46 @@ also includes an interface for tabix.")
      "CLIPper is a tool to define peaks in CLIP-seq datasets.")
     (license license:gpl2)))
 
+(define-public codingquarry
+  (package
+    (name "codingquarry")
+    (version "2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/codingquarry/CodingQuarry_v"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0115hkjflsnfzn36xppwf9h9avfxlavr43djqmshkkzbgjzsz60i"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/codingquarry")))
+               (install-file "INSTRUCTIONS.pdf" doc)
+               (copy-recursively "QuarryFiles"
+                                 (string-append out "/QuarryFiles"))
+               (install-file "CodingQuarry" bin)
+               (install-file "CufflinksGTF_to_CodingQuarryGFF3.py" bin)))))))
+    (inputs `(("openmpi" ,openmpi)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "QUARRY_PATH")
+            (files '("QuarryFiles")))))
+    (native-inputs `(("python" ,python-2))) ; Only Python 2 is supported
+    (synopsis "Fungal gene predictor")
+    (description "CodingQuarry is a highly accurate, self-training GHMM fungal
+gene predictor designed to work with assembled, aligned RNA-seq transcripts.")
+    (home-page "https://sourceforge.net/projects/codingquarry/")
+    (license license:gpl3+)))
+
 (define-public couger
   (package
     (name "couger")
