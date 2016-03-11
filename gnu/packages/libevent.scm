@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;;
@@ -32,16 +32,15 @@
 (define-public libevent
   (package
     (name "libevent")
-    (version "2.0.21")
+    (version "2.0.22")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "https://github.com/downloads/libevent/libevent/libevent-"
-                   version
-                   "-stable.tar.gz"))
+                   "https://github.com/libevent/libevent/releases/download/release-"
+                   version "-stable/libevent-" version "-stable.tar.gz"))
              (sha256
               (base32
-               "1xblymln9vihdmf1aqkp8chwvnhpdch3786bh30bj75slnl31992"))
+               "18qz9qfwrkakmazdlwxvjmw8p76g70n3faikwvdwznns1agw9hki"))
              (patches (list (search-patch "libevent-dns-tests.patch")))))
     (build-system gnu-build-system)
     (inputs
