@@ -919,6 +919,54 @@ also includes an interface for tabix.")
 (define-public python2-pysam
   (package-with-python2 python-pysam))
 
+(define-public cd-hit
+  (package
+    (name "cd-hit")
+    (version "4.6.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/weizhongli/cdhit"
+                                  "/releases/download/V" version
+                                  "/cd-hit-v" version "-2016-0304.tar.gz"))
+              (sha256
+               (base32
+                "15db0hq38yyifwqx9b6l34z14jcq576dmjavhj8a426c18lvnhp3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:make-flags
+       ;; Executables are copied directly to the PREFIX.
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out") "/bin"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; No "configure" script
+         (delete 'configure)
+         ;; Remove sources of non-determinism
+         (add-after 'unpack 'be-timeless
+           (lambda _
+             (substitute* "cdhit-utility.c++"
+               ((" \\(built on \" __DATE__ \"\\)") ""))
+             (substitute* "cdhit-common.c++"
+               (("__DATE__") "\"0\"")
+               (("\", %s, \" __TIME__ \"\\\\n\", date") ""))
+             #t))
+         ;; The "install" target does not create the target directory
+         (add-before 'install 'create-target-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
+             #t)))))
+    (inputs
+     `(("perl" ,perl)))
+    (home-page "http://weizhongli-lab.org/cd-hit/")
+    (synopsis "Cluster and compare protein or nucleotide sequences")
+    (description
+     "CD-HIT is a program for clustering and comparing protein or nucleotide
+sequences.  CD-HIT is designed to be fast and handle extremely large
+databases.")
+    ;; The manual says: "It can be copied under the GNU General Public License
+    ;; version 2 (GPLv2)."
+    (license license:gpl2)))
+
 (define-public clipper
   (package
     (name "clipper")
