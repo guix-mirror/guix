@@ -308,7 +308,7 @@ when typing parentheses directly or commenting out code line by line.")
 (define-public git-modes
   (package
     (name "git-modes")
-    (version "1.2.0")
+    (version "1.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -317,7 +317,7 @@ when typing parentheses directly or commenting out code line by line.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "09dv7ikbj2bi4y3lmvjfzqpdmx2f9bd4w7jkp10bkap62d05iqhk"))))
+                "088wyddh8y0yw77i0hx449n9zg4wzyc90h63wlmxba1ijg4dzm0p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
