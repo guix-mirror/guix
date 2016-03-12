@@ -411,7 +411,7 @@ message bus.")
     (version "0.6.40")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.freedesktop.org/software/"
+              (uri (string-append "https://www.freedesktop.org/software/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
