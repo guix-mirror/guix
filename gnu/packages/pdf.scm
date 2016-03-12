@@ -410,14 +410,14 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.6")
+    (version "1.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "http://mupdf.com/downloads/archive/"
                             name "-" version "-source.tar.gz"))
         (sha256
-          (base32 "0qx51rj6alzcagcixm59rvdpm54w6syrwr4184v439jh14ryw4wq"))
+          (base32 "01n26cy41lc2fjri63s4js23ixxb4nd37aafry3hz4i4id6wd8x2"))
         (modules '((guix build utils)))
         (snippet
             ;; Don't build the bundled-in third party libraries.
