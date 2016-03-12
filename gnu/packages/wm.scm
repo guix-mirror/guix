@@ -1,9 +1,10 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
-;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 xd1le <elisp.vim@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages wm)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages linux)
@@ -38,11 +39,14 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libevent)
+  #:use-module (gnu packages fribidi)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages fontutils)
   #:use-module (guix download)
   #:use-module (guix git-download))
 
@@ -65,7 +69,7 @@ supports sections and (lists of) values (strings, integers, floats, booleans
 or other sections), as well as some other features (such as
 single/double-quoted strings, environment variable expansion, functions and
 nested include statements).")
-    (license isc)))
+    (license license:isc)))
 
 (define-public bspwm
   (package
@@ -98,7 +102,7 @@ nested include statements).")
     (synopsis "Tiling window manager based on binary space partitioning")
     (description "bspwm is a tiling window manager that represents windows as
 the leaves of a full binary tree.")
-    (license bsd-2)))
+    (license license:bsd-2)))
 
 (define-public i3status
   (package
@@ -135,7 +139,7 @@ update such a status line every second.  This ensures that even under high
 load, your status bar is updated correctly.  Also, it saves a bit of energy by
 not hogging your CPU as much as spawning the corresponding amount of shell
 commands would.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public i3-wm
   (package
@@ -182,7 +186,7 @@ commands would.")
     (description "A tiling window manager, completely written
 from scratch.  i3 is primarily targeted at advanced users and
 developers.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public xmonad
   (package
@@ -238,7 +242,7 @@ Custom layout algorithms, and other extensions, may be written by the user in
 config files.  Layouts are applied dynamically, and different layouts may be
 used on each workspace.  Xinerama is fully supported, allowing windows to be
 tiled on several screens.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public ghc-xmonad-contrib
   (package
@@ -267,7 +271,7 @@ tiled on several screens.")
     (description
      "Third party tiling algorithms, configurations, and scripts to Xmonad, a
 tiling window manager for X.")
-    (license bsd-3)))
+    (license license:bsd-3)))
 
 (define-public evilwm
   (package
@@ -310,4 +314,54 @@ tiling window manager for X.")
      "evilwm is a minimalist window manager based on aewm, extended to feature
 many keyboard controls with repositioning and maximize toggles, solid window
 drags, snap-to-border support, and virtual desktops.")
-    (license (x11-style "file:///README"))))
+    (license (license:x11-style "file:///README"))))
+
+(define-public fluxbox
+  (package
+    (name "fluxbox")
+    (version "1.3.7")
+    (synopsis "Small and fast window manager")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/fluxbox/"
+                                  version "/fluxbox-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1h1f70y40qd225dqx937vzb4k2cz219agm1zvnjxakn5jkz7b37w"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("CPPFLAGS=-U__TIME__") ;ugly, but for reproducibility
+       #:phases
+       (modify-phases %standard-phases
+         (add-after
+          'install 'install-xsession
+          (lambda _
+            (let ((xsessions (string-append %output "/share/xsessions")))
+              (mkdir-p xsessions)
+              (call-with-output-file
+                  (string-append xsessions "/fluxbox.desktop")
+                (lambda (port)
+                  (format port "~
+                    [Desktop Entry]~@
+                    Name=~a~@
+                    Comment=~a~@
+                    Exec=~a/bin/startfluxbox~@
+                    Type=Application~%" ,name ,synopsis %output)))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("fribidi" ,fribidi)
+       ("imlib2" ,imlib2)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxft" ,libxft)
+       ("libxinerama" ,libxinerama)
+       ("libxpm"  ,libxpm)
+       ("libxrandr" ,libxrandr)
+       ("libxrender" ,libxrender)))
+    (description "Fluxbox is a window manager.  It is light on resources
+and easy to handle yet full of features to make an easy and fast desktop
+experience.")
+    (home-page "http://fluxbox.org/")
+    (license license:expat)))

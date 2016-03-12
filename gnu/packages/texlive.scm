@@ -64,7 +64,7 @@
     (sha256 (base32
               "1a3hpcg6x69ysqx432v6sk4alg0x34813cwk41frmvzprdajpyqy"))))
 
-(define-public texlive-bin
+(define texlive-bin
   (package
    (name "texlive-bin")
    (version "2015")
@@ -166,7 +166,7 @@ This package contains the binaries.")
    (license (license:fsf-free "http://tug.org/texlive/copying.html"))
    (home-page "http://www.tug.org/texlive/")))
 
-(define-public texlive-texmf
+(define texlive-texmf
   (package
    (name "texlive-texmf")
    (version "2015")

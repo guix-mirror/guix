@@ -291,7 +291,24 @@ standards.")
                     '("icecat-avoid-bundled-includes.patch"
                       "icecat-re-enable-DHE-cipher-suites.patch"
                       "icecat-update-graphite2.patch"
-                      "icecat-update-graphite2-pt2.patch")))
+                      "icecat-update-graphite2-pt2.patch"
+                      "icecat-CVE-2015-4477.patch"
+                      "icecat-CVE-2015-7207.patch"
+                      "icecat-CVE-2016-1952-pt01.patch"
+                      "icecat-CVE-2016-1952-pt02.patch"
+                      "icecat-CVE-2016-1952-pt03.patch"
+                      "icecat-CVE-2016-1952-pt04.patch"
+                      "icecat-CVE-2016-1952-pt05.patch"
+                      "icecat-CVE-2016-1952-pt06.patch"
+                      "icecat-CVE-2016-1954.patch"
+                      "icecat-CVE-2016-1960.patch"
+                      "icecat-CVE-2016-1961.patch"
+                      "icecat-CVE-2016-1962.patch"
+                      "icecat-CVE-2016-1964.patch"
+                      "icecat-CVE-2016-1965.patch"
+                      "icecat-CVE-2016-1966.patch"
+                      "icecat-CVE-2016-1974.patch"
+                      "icecat-bug-1248851.patch")))
       (modules '((guix build utils)))
       (snippet
        '(begin

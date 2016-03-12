@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +37,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpio)
@@ -246,6 +248,47 @@ allows one to intersect, merge, count, complement, and shuffle genomic
 intervals from multiple files in widely-used genomic file formats such as BAM,
 BED, GFF/GTF, VCF.")
     (license license:gpl2)))
+
+(define-public bioawk
+  (package
+    (name "bioawk")
+    (version "1.0")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/lh3/bioawk/archive/v"
+                          version ".tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32 "1daizxsk17ahi9n58fj8vpgwyhzrzh54bzqhanjanp88kgrz7gjw"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("bison" ,bison)))
+    (arguments
+     `(#:tests? #f ; There are no tests to run.
+       ;; Bison must generate files, before other targets can build.
+       #:parallel-build? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; There is no configure phase.
+         (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (bin  (string-append out "/bin"))
+                   (man (string-append out "/share/man/man1")))
+              (mkdir-p man)
+              (copy-file "awk.1" (string-append man "/bioawk.1"))
+              (install-file "bioawk" bin)))))))
+    (home-page "https://github.com/lh3/bioawk")
+    (synopsis "AWK with bioinformatics extensions")
+    (description "Bioawk is an extension to Brian Kernighan's awk, adding the
+support of several common biological data formats, including optionally gzip'ed
+BED, GFF, SAM, VCF, FASTA/Q and TAB-delimited formats with column names.  It
+also adds a few built-in functions and a command line option to use TAB as the
+input/output delimiter.  When the new functionality is not used, bioawk is
+intended to behave exactly the same as the original BWK awk.")
+    (license license:x11)))
 
 (define-public python2-pybedtools
   (package

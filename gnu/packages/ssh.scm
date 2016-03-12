@@ -115,7 +115,7 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "7.2p1")
+   (version "7.2p2")
    (source (origin
             (method url-fetch)
             (uri (let ((tail (string-append name "-" version ".tar.gz")))
@@ -126,7 +126,7 @@ a server that supports the SSH-2 protocol.")
                          (string-append "http://ftp2.fr.openbsd.org/pub/OpenBSD/OpenSSH/portable/"
                                         tail))))
             (sha256 (base32
-                     "1hsa1f3641pdj57a55gmnvcya3wwww2fc2cvb77y95rm5xxw6g4p"))))
+                     "132lh9aanb0wkisji1d6cmsxi520m8nh7c7i9wi6m1s3l38q29x7"))))
    (build-system gnu-build-system)
    (inputs `(("groff" ,groff)
              ("openssl" ,openssl)
@@ -336,7 +336,7 @@ especially over Wi-Fi, cellular, and long-distance links.")
 (define-public dropbear
   (package
     (name "dropbear")
-    (version "2015.71")
+    (version "2016.72")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -344,7 +344,7 @@ especially over Wi-Fi, cellular, and long-distance links.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1bw3lzmisn6gs6zy9vcqbfnicl437ydskqcayklpw60fkhb18qip"))))
+                "10fnlaf6rm537v3rml1gnd58d42plv2q5cp7svbrysap69npc8wk"))))
     (build-system gnu-build-system)
     (arguments  `(#:tests? #f)) ; There is no "make check" or anything similar
     (inputs `(("zlib" ,zlib)))

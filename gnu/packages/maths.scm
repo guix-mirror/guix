@@ -354,9 +354,7 @@ singular value problems.")
               ("pango" ,pango)
               ("gd" ,gd)))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ;; Need 'tex', 'latex', 'pdflatex', 'kpsexand', and
-                     ;; 'texhash' binaries.
-                     ("texlive" ,texlive-bin)))
+                     ("texlive" ,texlive-minimal)))
     (home-page "http://www.gnuplot.info")
     (synopsis "Command-line driven graphing utility")
     (description "Gnuplot is a portable command-line driven graphing

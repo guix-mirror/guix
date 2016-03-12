@@ -3382,7 +3382,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.17.4")
+    (version "3.19.91")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://launchpad.net/simple-scan/"
@@ -3391,7 +3391,7 @@ USB transfers with your high-level application or system daemon.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1pslbv45g01g039zj2b01k08f763kkhzqw8wwz7yh27m7bjllnx6"))))
+                "1c5glf5vxgld41w4jxfqcv17q76qnh43fawpv33hncgh8d283xkf"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("gtk" ,gtk+)
@@ -3409,6 +3409,21 @@ USB transfers with your high-level application or system daemon.")
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)
        ("xmllint" ,libxml2)))
+    (arguments
+     '(#:configure-flags '("--disable-packagekit")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'clean
+                    (lambda _
+                      ;; Remove a left-over reference to PackageKit.
+
+                      ;; https://bugs.launchpad.net/simple-scan/+bug/1462769
+
+                      ;; There are some generated C files erroneously
+                      ;; included in the source distribution, and this
+                      ;; one breaks the build by referring to a
+                      ;; non-existent header (packagekit.h)
+                      (delete-file "src/ui.c"))))))
     (home-page "https://launchpad.net/simple-scan")
     (synopsis "Document and image scanner")
     (description "Simple Scan is an easy-to-use application, designed to let
@@ -4635,13 +4650,17 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (propagated-inputs
-     `(("gtk+" ,gtk+))) ; required by libnautilus-extension.pc
     (inputs
      ;; TODO: add gvfs support.
      `(("dconf" ,dconf)
        ("exempi" ,exempi)
        ("gnome-desktop" ,gnome-desktop)
+       ;; XXX: gtk+ is required by libnautilus-extension.pc
+       ;;
+       ;; Don't propagate it to reduces "profile pollution" of the 'gnome' meta
+       ;; package.  See:
+       ;; <http://lists.gnu.org/archive/html/guix-devel/2016-03/msg00283.html>.
+       ("gtk+" ,gtk+)
        ("libexif" ,libexif)
        ("libxml2" ,libxml2)))
     (synopsis "File manager for GNOME")
