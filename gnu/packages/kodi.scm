@@ -21,6 +21,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
@@ -67,6 +68,55 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages yasm)
   #:use-module (gnu packages zip))
+
+(define-public crossguid
+  (let ((commit "8f399e8bd4252be9952f3dfa8199924cc8487ca4"))
+    (package
+      (name "crossguid")
+      (version (string-append "0.0-1." (string-take commit 7)))
+      ;; There's no official release.  Just a Git repository.
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/graeme-hill/crossguid.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1i29y207qqddvaxbn39pk2fbh3gx8zvdprfp35wasj9rw2wjk3s9"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; no configure script
+           ;; There's no build system here, so we have to do it ourselves.
+           (replace 'build
+             (lambda _
+               (and (zero? (system* "g++" "-c" "guid.cpp" "-o" "guid.o"
+                                    "-std=c++11" "-DGUID_LIBUUID"))
+                    (zero? (system* "ar" "rvs" "libcrossguid.a" "guid.o")))))
+           (replace 'check
+             (lambda _
+               (and (zero? (system* "g++" "-c" "test.cpp" "-o" "test.o"
+                                    "-std=c++11"))
+                    (zero? (system* "g++" "-c" "testmain.cpp" "-o" "testmain.o"
+                                    "-std=c++11"))
+                    (zero? (system* "g++" "test.o" "guid.o" "testmain.o"
+                                    "-o" "test" "-luuid"))
+                    (zero? (system* (string-append (getcwd) "/test"))))))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (install-file "guid.h" (string-append out "/include"))
+                 (install-file "libcrossguid.a"
+                               (string-append out "/lib"))
+                 #t))))))
+      (inputs
+       `(("util-linux" ,util-linux)))
+      (synopsis "Lightweight universal identifier library")
+      (description "CrossGuid is a minimal @acronym{GUID}/@acronym{UUID}
+generator library for C++.")
+      (home-page "https://github.com/graeme-hill/crossguid")
+      (license license:expat))))
 
 (define-public kodi
   (package
