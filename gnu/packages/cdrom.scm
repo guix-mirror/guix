@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -240,9 +240,8 @@ capacity is user-selectable.")
     (version "1.4.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://github.com/lipnitsk/libcue/releases"
-                                 "/download/v" version
-                                 "/libcue-" version ".tar.bz2"))
+             (uri (string-append "https://github.com/lipnitsk/libcue/archive/v"
+                                 version ".tar.bz2"))
              (sha256
               (base32
                "17kjd7rjz1bvfn44n3n2bjb7a1ywd0yc0g4sqp5ihf9b5bn7cwlb"))))
@@ -287,15 +286,15 @@ from an audio CD.")
 (define-public abcde
   (package
     (name "abcde")
-    (version "2.7")
-    (home-page "http://abcde.einval.com/")
+    (version "2.7.1")
+    (home-page "https://abcde.einval.com/")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "/download/abcde-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ikpffzvacadh6vj9qlary8126j1zrd2knp9gvivmp7y1656jj01"))
+                "0l7j0nk8p30s97285i418rv9ym9bgns7bn6l8gldw3mjhnby609l"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
