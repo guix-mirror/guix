@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -321,7 +322,7 @@ smooth contours with constant curvature at the spline joins.")
 (define-public libuninameslist
   (package
     (name "libuninameslist")
-    (version "0.4.20140731")
+    (version "0.5.20150701")
     (source
      (origin
        (method url-fetch)
@@ -330,7 +331,7 @@ smooth contours with constant curvature at the spline joins.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "016zxffpc8iwpxxmnjkdirn6dsbcvdb2wjdrp123sf79f4nsynyj"))))
+         "1j6147l100rppw7axlrkdx0p35fax6bz2zh1xgpg7a3b4pmqaj3v"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
