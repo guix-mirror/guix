@@ -451,7 +451,7 @@ interfaces, based on the useradd, usermod and userdel commands.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.freedesktop.org/software/" name "/"
+                    "https://www.freedesktop.org/software/" name "/"
                     name "-" version ".tar.xz"))
               (sha256
                (base32
