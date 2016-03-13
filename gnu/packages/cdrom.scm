@@ -304,37 +304,36 @@ from an audio CD.")
                    (string-append "etcdir = $(prefix)/etc\n"))))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs inputs #:allow-other-keys)
-                   (substitute* "Makefile"
-                     (("^prefix = .*$")
-                      (string-append "prefix = "
-                                     (assoc-ref outputs "out")
-                                     "\n"))))
-                 (alist-cons-after
-                  'install 'wrap
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (let ((wget   (assoc-ref inputs "wget"))
-                          (vorbis (assoc-ref inputs "vorbis-tools"))
-                          (parano (assoc-ref inputs "cdparanoia"))
-                          (which  (assoc-ref inputs "which"))
-                          (discid (assoc-ref inputs "cd-discid"))
-                          (out    (assoc-ref outputs "out")))
-                      (define (wrap file)
-                        (wrap-program file
-                                      `("PATH" ":" prefix
-                                        (,(string-append out "/bin:"
-                                                         wget "/bin:"
-                                                         which "/bin:"
-                                                         vorbis "/bin:"
-                                                         discid "/bin:"
-                                                         parano "/bin")))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("^prefix = .*$")
+                (string-append "prefix = "
+                               (assoc-ref outputs "out")
+                               "\n")))))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((wget   (assoc-ref inputs "wget"))
+                   (vorbis (assoc-ref inputs "vorbis-tools"))
+                   (parano (assoc-ref inputs "cdparanoia"))
+                   (which  (assoc-ref inputs "which"))
+                   (discid (assoc-ref inputs "cd-discid"))
+                   (out    (assoc-ref outputs "out")))
+               (define (wrap file)
+                 (wrap-program file
+                               `("PATH" ":" prefix
+                                 (,(string-append out "/bin:"
+                                                  wget "/bin:"
+                                                  which "/bin:"
+                                                  vorbis "/bin:"
+                                                  discid "/bin:"
+                                                  parano "/bin")))))
 
-                      (for-each wrap
-                                (find-files (string-append out "/bin")
-                                            ".*"))))
-                  %standard-phases))
+               (for-each wrap
+                         (find-files (string-append out "/bin")
+                                     ".*"))))))
        #:tests? #f))
 
     (inputs `(("wget" ,wget)
