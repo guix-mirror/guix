@@ -189,14 +189,14 @@ reconstruction capability.")
 (define-public dvdisaster
   (package
     (name "dvdisaster")
-    (version "0.72.6")
+    (version "0.79.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://dvdisaster.net/downloads/dvdisaster-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0sqrprc5rh3shnfli25m2wy0i5f83db54iv04s5s7bxf77m7sy79"))))
+               "0f8gjnia2fxcbmhl8b3qkr5b7idl8m855dw7xw2fnmbqwvcm6k4w"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+-2)))
@@ -208,14 +208,7 @@ reconstruction capability.")
      `(;; Parallel builds appear to be unsafe, see
        ;; <http://hydra.gnu.org/build/49331/nixlog/1/raw>.
        #:parallel-build? #f
-       #:tests? #f ; no check target
-       #:phases
-         (alist-cons-before
-          'patch-source-shebangs 'sanitise
-          (lambda _
-            ;; delete dangling symlink
-            (delete-file ".#GNUmakefile"))
-          %standard-phases)))
+       #:tests? #f)) ; no check target
     (home-page "http://dvdisaster.net/en/index.html")
     (synopsis "Error correcting codes for optical media images")
     (description "Optical media (CD,DVD,BD) keep their data only for a
