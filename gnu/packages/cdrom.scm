@@ -44,14 +44,14 @@
 (define-public libcddb
   (package
     (name "libcddb")
-    (version "1.3.0")
+    (version "1.3.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/libcddb/libcddb-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1y8bfy12dwm41m1jahayn3v47dm34fmz7m9cjxyh7xcw6fp3lzaf"))))
+               "0fr21a7vprdyy1bq6s99m0x420c9jm5fipsd63pqv8qyfkhhxkim"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f))      ; tests rely on access to external servers
     (home-page "http://libcddb.sourceforge.net/")
