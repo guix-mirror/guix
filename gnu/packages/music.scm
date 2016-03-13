@@ -817,7 +817,7 @@ projects.")
 (define-public frescobaldi
   (package
     (name "frescobaldi")
-    (version "2.18.1")
+    (version "2.18.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -825,7 +825,7 @@ projects.")
                     version "/frescobaldi-" version ".tar.gz"))
               (sha256
                (base32
-                "1hflc6gck6dn17czc2ldai5j0ynfg3df8lqcggdry06qxsdbnns7"))))
+                "1yns7nq2a2hz5rv4xjp21bgcdi1xj6fq48lqjrld7ypqqi5nfjp5"))))
     (build-system python-build-system)
     (inputs
      `(("lilypond" ,lilypond)
