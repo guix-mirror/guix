@@ -7457,13 +7457,13 @@ Amazon Web Services (AWS) API.")
 (define-public python-hypothesis
   (package
     (name "python-hypothesis")
-    (version "3.0.4")
+    (version "3.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hypothesis" version))
               (sha256
                (base32
-                "0bh6pqyc56cqlbpg0ffzjs6466blyylix4nsw11qrqwf01cg9gdq"))))
+                "0qyqq9akm4vshhn8cngjc1qykcvsn7cz6dlm6njfsgpbraqrmbbw"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-flake8" ,python-flake8)
