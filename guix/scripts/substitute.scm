@@ -164,10 +164,9 @@ again."
         (sigaction SIGALRM SIG_DFL)
         (apply values result)))))
 
-(define* (fetch uri #:key (buffered? #t) (timeout? #t) (quiet-404? #f))
+(define* (fetch uri #:key (buffered? #t) (timeout? #t))
   "Return a binary input port to URI and the number of bytes it's expected to
-provide.  If QUIET-404? is true, HTTP 404 error conditions are passed through
-to the caller without emitting an error message."
+provide."
   (case (uri-scheme uri)
     ((file)
      (let ((port (open-file (uri-path uri)
@@ -175,12 +174,10 @@ to the caller without emitting an error message."
        (values port (stat:size (stat port)))))
     ((http https)
      (guard (c ((http-get-error? c)
-                (let ((code (http-get-error-code c)))
-                  (if (and (= code 404) quiet-404?)
-                      (raise c)
-                      (leave (_ "download from '~a' failed: ~a, ~s~%")
-                             (uri->string (http-get-error-uri c))
-                             code (http-get-error-reason c))))))
+                (leave (_ "download from '~a' failed: ~a, ~s~%")
+                       (uri->string (http-get-error-uri c))
+                       (http-get-error-code c)
+                       (http-get-error-reason c))))
        ;; Test this with:
        ;;   sudo tc qdisc add dev eth0 root netem delay 1500ms
        ;; and then cancel with:
