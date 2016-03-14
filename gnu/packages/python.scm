@@ -5387,7 +5387,7 @@ should be stored on various operating systems.")
 (define-public python-llfuse
   (package
     (name "python-llfuse")
-    (version "0.41")
+    (version "1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5395,7 +5395,7 @@ should be stored on various operating systems.")
                     "llfuse-" version ".tar.bz2"))
               (sha256
                (base32
-                "0yzy8ixpmxk00kdq6lx5vvwbs0n6s59qnja5q0js2ahbqyxiz2hb"))))
+                "1li7q04ljrvwharw4fblcbfhvk6s0l3lnv8yqb4c22lcgbkiqlps"))))
     (build-system python-build-system)
     (inputs
      `(("fuse" ,fuse)
@@ -5407,12 +5407,29 @@ should be stored on various operating systems.")
     (description
      "Python-LLFUSE is a set of Python bindings for the low level FUSE API.")
     (home-page "https://bitbucket.org/nikratio/python-llfuse/")
-    ;; Python-LLFUSE includes underscore.js, which is MIT (expat) licensed.
-    ;; The rest of the package is licensed under LGPL2.0 or later.
-    (license (list license:expat lgpl2.0+))))
+    (license lgpl2.0+)
+    (properties `((python2-variant . ,(delay python2-llfuse))))))
 
 (define-public python2-llfuse
-  (package-with-python2 python-llfuse))
+  (package (inherit (package-with-python2
+                 (strip-python2-variant python-llfuse)))
+    (propagated-inputs `(("python2-contextlib2" ,python2-contextlib2)))))
+
+;; For attic-0.16
+(define-public python-llfuse-0.41
+  (package (inherit python-llfuse)
+    (version "0.41")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://bitbucket.org/nikratio/python-llfuse/downloads/"
+                    "llfuse-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0yzy8ixpmxk00kdq6lx5vvwbs0n6s59qnja5q0js2ahbqyxiz2hb"))))
+    ;; Python-LLFUSE < 0.42 includes underscore.js, which is MIT (expat)
+    ;; licensed.  The rest of the package is licensed under LGPL2.0 or later.
+    (license (list license:expat lgpl2.0+))))
 
 (define-public python-msgpack
   (package
