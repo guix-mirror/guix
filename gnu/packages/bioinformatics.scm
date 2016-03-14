@@ -579,10 +579,11 @@ confidence to have in an alignment.")
               (snippet
                `(begin
                   ;; Remove bundled boost, pigz, zlib, and .git directory
-                  ;; FIXME: also remove bundled sources for google-sparsehash,
-                  ;; murmurhash3, kmc once packaged.
+                  ;; FIXME: also remove bundled sources for murmurhash3 and
+                  ;; kmc once packaged.
                   (delete-file-recursively "boost")
                   (delete-file-recursively "pigz")
+                  (delete-file-recursively "google-sparsehash")
                   (delete-file-recursively "zlib")
                   (delete-file-recursively ".git")
                   #t))))
@@ -632,6 +633,7 @@ confidence to have in an alignment.")
     (inputs
      `(("openmpi" ,openmpi)
        ("boost" ,boost)
+       ("sparsehash" ,sparsehash)
        ("pigz" ,pigz)
        ("zlib" ,zlib)))
     (supported-systems '("x86_64-linux"))
