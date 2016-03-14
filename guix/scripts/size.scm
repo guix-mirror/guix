@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +22,7 @@
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix utils)
+  #:use-module (guix grafts)
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (gnu packages)
@@ -274,19 +275,23 @@ Report the size of PACKAGE and its dependencies.\n"))
          (leave (_ "missing store item argument\n")))
         ((file)
          (leave-on-EPIPE
-          (with-store store
-            (set-build-options store
-                               #:use-substitutes? #t
-                               #:substitute-urls urls)
+          ;; Turn off grafts because (1) hydra.gnu.org does not serve grafted
+          ;; packages, and (2) they do not make any difference on the
+          ;; resulting size.
+          (parameterize ((%graft? #f))
+            (with-store store
+              (set-build-options store
+                                 #:use-substitutes? #t
+                                 #:substitute-urls urls)
 
-            (run-with-store store
-              (mlet* %store-monad ((item    (ensure-store-item file))
-                                   (profile (store-profile item)))
-                (if map-file
-                    (begin
-                      (profile->page-map profile map-file)
-                      (return #t))
-                    (display-profile* profile)))
-              #:system system))))
+              (run-with-store store
+                (mlet* %store-monad ((item    (ensure-store-item file))
+                                     (profile (store-profile item)))
+                  (if map-file
+                      (begin
+                        (profile->page-map profile map-file)
+                        (return #t))
+                      (display-profile* profile)))
+                #:system system)))))
         ((files ...)
          (leave (_ "too many arguments\n")))))))
