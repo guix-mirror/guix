@@ -726,14 +726,23 @@ error if there is no such root."
              "Return the list of references of PATH."
              store-path-list))
 
+(define %reference-cache
+  ;; Brute-force cache mapping store items to their list of references.
+  ;; Caching matters because when building a profile in the presence of
+  ;; grafts, we keep calling 'graft-derivation', which in turn calls
+  ;; 'references/substitutes' many times with the same arguments.  Ideally we
+  ;; would use a cache associated with the daemon connection instead (XXX).
+  (make-hash-table 100))
+
 (define (references/substitutes store items)
   "Return the list of list of references of ITEMS; the result has the same
 length as ITEMS.  Query substitute information for any item missing from the
 store at once.  Raise a '&nix-protocol-error' exception if reference
 information for one of ITEMS is missing."
   (let* ((local-refs (map (lambda (item)
-                            (guard (c ((nix-protocol-error? c) #f))
-                              (references store item)))
+                            (or (hash-ref %reference-cache item)
+                                (guard (c ((nix-protocol-error? c) #f))
+                                  (references store item))))
                           items))
          (missing    (fold-right (lambda (item local-ref result)
                                    (if local-ref
@@ -757,7 +766,10 @@ the list of references")
                (result      '()))
       (match items
         (()
-         (reverse result))
+         (let ((result (reverse result)))
+           (for-each (cut hash-set! %reference-cache <> <>)
+                     items result)
+           result))
         ((item items ...)
          (match local-refs
            ((#f tail ...)
