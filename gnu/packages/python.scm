@@ -5425,14 +5425,19 @@ should be stored on various operating systems.")
                (base32
                 "0syd7bs83qs9qmxw540jbgsildbqk4yb57fmrlns1021llli402y"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
     (synopsis "MessagePack (de)serializer")
     (description "MessagePack is a fast, compact binary serialization format,
 suitable for similar data to JSON.  This package provides CPython bindings for
 reading and writing MessagePack data.")
     (home-page "https://pypi.python.org/pypi/msgpack-python/")
-    (license asl2.0)))
+    (license asl2.0)
+    (properties `((python2-variant . ,(delay python2-msgpack))))))
+
+(define-public python2-msgpack
+  (package (inherit (package-with-python2
+                     (strip-python2-variant python-msgpack)))
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)))))
 
 (define-public python2-msgpack
   (package-with-python2 python-msgpack))
