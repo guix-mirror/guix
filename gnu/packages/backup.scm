@@ -348,8 +348,16 @@ rdiff-backup is easy to use and settings have sensible defaults.")
     (inputs
      `(("acl" ,acl)
        ("openssl" ,openssl)
-       ("python-llfuse" ,python-llfuse)
-       ("python-msgpack" ,python-msgpack)))
+       ("python-msgpack" ,python-msgpack)
+
+       ;; Attic is probably incompatible with llfuse > 0.41.
+       ;; These links are to discussions of llfuse compatibility from
+       ;; the borg project. Borg is a recent fork of attic, and attic
+       ;; has not been updated since the fork, so it's likely that
+       ;; llfuse compatibility requirements are still the same.
+       ;; https://github.com/borgbackup/borg/issues/642
+       ;; https://github.com/borgbackup/borg/issues/643
+       ("python-llfuse" ,python-llfuse-0.41)))
     (synopsis "Deduplicating backup program")
     (description "Attic is a deduplicating backup program.  The main goal of
 Attic is to provide an efficient and secure way to backup data.  The data
