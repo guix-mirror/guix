@@ -189,6 +189,12 @@ available."
     (guard (c ((nix-protocol-error? c)
                ;; As a last resort, build DRV and query the references of the
                ;; build result.
+
+               ;; Warm up the narinfo cache, otherwise each derivation build
+               ;; will result in one HTTP request to get one narinfo, which is
+               ;; much less efficient than fetching them all upfront.
+               (substitution-oracle store (list drv))
+
                (and (build-derivations store (list drv))
                     (map (cut references store <>) items))))
       (references/substitutes store items)))
