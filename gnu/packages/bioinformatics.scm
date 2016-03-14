@@ -26,6 +26,7 @@
   #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system perl)
@@ -2002,24 +2003,17 @@ from high-throughput sequencing assays.")
               (snippet '(substitute* "build.xml"
                           (("failifexecutionfails=\"true\"")
                            "failifexecutionfails=\"false\"")))))
-    (build-system gnu-build-system)
+    (build-system ant-build-system)
     (arguments
-     `(#:modules ((srfi srfi-1)
-                  (guix build gnu-build-system)
-                  (guix build utils))
-       #:phases (alist-replace
-                 'build
-                 (lambda _
-                   (setenv "JAVA_HOME" (assoc-ref %build-inputs "jdk"))
-                   (zero? (system* "ant" "all"
-                                   (string-append "-Ddist="
-                                                  (assoc-ref %outputs "out")
-                                                  "/share/java/htsjdk/"))))
-                 (fold alist-delete %standard-phases
-                       '(configure install check)))))
-    (native-inputs
-     `(("ant" ,ant)
-       ("jdk" ,icedtea "jdk")))
+     `(#:tests? #f ; test require Internet access
+       #:make-flags
+       (list (string-append "-Ddist=" (assoc-ref %outputs "out")
+                            "/share/java/htsjdk/"))
+       #:build-target "all"
+       #:phases
+       (modify-phases %standard-phases
+         ;; The build phase also installs the jars
+         (delete 'install))))
     (home-page "http://samtools.github.io/htsjdk/")
     (synopsis "Java API for high-throughput sequencing data (HTS) formats")
     (description
