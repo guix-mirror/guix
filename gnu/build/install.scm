@@ -159,7 +159,7 @@ as created and modified at the Epoch."
                 ;; read-only store.
                 (unless (eq? (stat:type s) 'symlink)
                   (utime file 0 0 0 0))))
-            (find-files directory "")))
+            (find-files directory #:directories? #t)))
 
 (define* (register-closure store closure
                            #:key (deduplicate? #t))
