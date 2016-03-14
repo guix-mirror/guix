@@ -5418,7 +5418,7 @@ should be stored on various operating systems.")
 ;; For attic-0.16
 (define-public python-llfuse-0.41
   (package (inherit python-llfuse)
-    (version "0.41")
+    (version "0.41.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5426,7 +5426,7 @@ should be stored on various operating systems.")
                     "llfuse-" version ".tar.bz2"))
               (sha256
                (base32
-                "0yzy8ixpmxk00kdq6lx5vvwbs0n6s59qnja5q0js2ahbqyxiz2hb"))))
+                "1imlqw9b73086y97izr036f58pgc5akv4ihc2rrf8j5h75jbrlaa"))))
     ;; Python-LLFUSE < 0.42 includes underscore.js, which is MIT (expat)
     ;; licensed.  The rest of the package is licensed under LGPL2.0 or later.
     (license (list license:expat lgpl2.0+))))
