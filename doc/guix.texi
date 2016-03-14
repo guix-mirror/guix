@@ -5988,8 +5988,8 @@ system} command, specifically:
 guix system disk-image --image-size=850MiB gnu/system/install.scm
 @end example
 
-@xref{Invoking guix system} and
-@file{gnu/system/install.scm} in the source tree for more information
+Have a look at @file{gnu/system/install.scm} in the source tree,
+and see also @ref{Invoking guix system} for more information
 about the installation image.
 
 @node System Configuration
