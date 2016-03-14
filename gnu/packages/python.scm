@@ -5417,15 +5417,13 @@ should be stored on various operating systems.")
 (define-public python-msgpack
   (package
     (name "python-msgpack")
-    (version "0.4.6")
+    (version "0.4.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/m/"
-                    "msgpack-python/msgpack-python-" version ".tar.gz"))
+              (uri (pypi-uri "msgpack-python" version))
               (sha256
                (base32
-                "1527c76b6fn4zzkgfq5xvhh7x9a9686g7fjiz717rw5vklf5ik5z"))))
+                "0syd7bs83qs9qmxw540jbgsildbqk4yb57fmrlns1021llli402y"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
