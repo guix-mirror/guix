@@ -367,14 +367,14 @@ write native speed custom Git applications in any language with bindings.")
 (define-public shflags
   (package
     (name "shflags")
-    (version "1.0.3")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://shflags.googlecode.com/files/"
-                                  "shflags-" version ".tgz"))
+              (uri (string-append "https://github.com/kward/shflags/archive/v"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "08laxhf1hifh3w4j0hri5ppcklaqz0mnkmbaz8j0wxih29vi8slm"))))
+                "0zxw12haylaq60a335xlqcs4afw2zrgwqymmpw0m21r51w6irdmr"))))
     (build-system trivial-build-system)
     (native-inputs `(("tar" ,tar)
                      ("gzip" ,gzip)))
@@ -396,7 +396,7 @@ write native speed custom Git applications in any language with bindings.")
                        (copy-file "src/shflags"
                                   (string-append srcdir "/shflags"))
                        #t)))))
-    (home-page "https://code.google.com/p/shflags/")
+    (home-page "https://github.com/kward/shflags")
     (synopsis "Command-line flags library for shell scripts")
     (description
      "Shell Flags (shFlags) is a library written to greatly simplify the
