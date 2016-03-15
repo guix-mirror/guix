@@ -1185,7 +1185,7 @@ is programmed in Haskell.")
 (define-public manaplus
   (package
     (name "manaplus")
-    (version "1.6.1.16")
+    (version "1.6.3.12")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1193,7 +1193,7 @@ is programmed in Haskell.")
                     version "/manaplus-" version ".tar.xz"))
               (sha256
                (base32
-                "1vrsjvdbdzbnqmr8sp110b2d93kp5yfnifsn6zjm60kdvvbphdir"))))
+                "02bnd4nk1qzrfqckqkwb6sbjzsmacv968ih74cdgcykslpsr684d"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

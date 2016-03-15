@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -153,8 +154,8 @@
 
 (define-syntax modify-services
   (syntax-rules ()
-    "Modify the services listed in SERVICES according to CLAUSES.  Each clause
-must have the form:
+    "Modify the services listed in SERVICES according to CLAUSES and return
+the resulting list of services.  Each clause must have the form:
 
   (TYPE VARIABLE => BODY)
 

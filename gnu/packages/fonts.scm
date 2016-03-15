@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
+;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,14 +68,15 @@ in print.  With attention to detail for high resolution rendering.")
 (define-public font-ubuntu
   (package
     (name "font-ubuntu")
-    (version "0.80")
+    (version "0.83")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://font.ubuntu.com/download/ubuntu-font-family-"
-                                  version ".zip"))
+              (uri (string-append
+                    "http://font.ubuntu.com/download/ubuntu-font-family-"
+                    version ".zip"))
               (sha256
                (base32
-                "0k4f548riq23gmw4zhn30qqkcpaj4g2ab5rbc3lflfxwkc4p0w8h"))))
+                "0hjvq2x758dx0sfwqhzflns0ns035qm7h6ygskbx1svzg517sva5"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -627,4 +629,114 @@ languages, plus Greek and Cyrillic.")
 Unicode's Basic Multilingual Plane.  The package also includes
 utilities to ease adding new glyphs to the font.")
     (home-page "http://unifoundry.com/unifont.html")
+    (license license:gpl2+)))
+
+(define-public font-google-noto
+  (package
+    (name "font-google-noto")
+    (version "20150929")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://noto-website-2.storage.googleapis.com/"
+                                  "pkgs/Noto-hinted.zip"))
+              (sha256
+               (base32
+                "13jhpqzhsqhyby8n0ksqg155a3jyaif3nzj9anzbq8s2gn1xjyd9"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (srfi srfi-26))
+
+                   (let ((PATH     (string-append (assoc-ref %build-inputs
+                                                             "unzip")
+                                                  "/bin"))
+                         (font-dir (string-append %output
+                                                  "/share/fonts/truetype")))
+                     (setenv "PATH" PATH)
+                     (system* "unzip" (assoc-ref %build-inputs "source"))
+
+                     (mkdir-p font-dir)
+                     (for-each (lambda (ttf)
+                                 (copy-file ttf
+                                            (string-append font-dir "/" ttf)))
+                               (find-files "." "\\.ttf$"))
+                     (for-each (lambda (otf)
+                                 (copy-file otf
+                                            (string-append font-dir "/" otf)))
+                               (find-files "." "\\.otf$"))))))
+    (native-inputs `(("unzip" ,unzip)))
+    (home-page "https://www.google.com/get/noto/")
+    (synopsis "Fonts aimed to cover all languages")
+    (description "Googe Noto Fonts is a family of fonts aimed to support all
+languages with a consistent look and aesthetic.  It's goal is to have no Unicode
+symbols unable to be displayed properly.")
+    (license license:silofl1.1)))
+
+(define-public font-un
+  (package
+    (name "font-un")
+    (version "1.0.2-080608")
+    ;; The upstream server at kldp.net is serving us broken MIME.
+    ;; See <http://bugs.gnu.org/22908>.
+    (source (origin
+              (method url-fetch)
+              (uri (list
+                    (string-append
+                     "http://krosos.sdf.org/static/unix/"
+                     "un-fonts-core-" version ".tar.gz")
+                    ;; XXX: The upstream server at kldp.net
+                    (string-append
+                     "https://kldp.net/projects/unfonts/download/4695?filename="
+                     "un-fonts-core-" version ".tar.gz")))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "13liaz2pmww3aqabm55la5npd08m1skh334ky7qfidxaz5s742iv"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+
+         (let ((tar      (string-append (assoc-ref %build-inputs "tar")
+                                        "/bin/tar"))
+               (PATH     (string-append (assoc-ref %build-inputs "gzip")
+                                        "/bin"))
+               (font-dir (string-append %output "/share/fonts/truetype"))
+               (doc-dir  (string-append %output "/share/doc/" ,name)))
+           (setenv "PATH" PATH)
+           (system* tar "xvf" (assoc-ref %build-inputs "source"))
+           (mkdir-p font-dir)
+           (mkdir-p doc-dir)
+           (chdir (string-append "un-fonts"))
+           (for-each (lambda (ttf)
+                       (copy-file ttf
+                                  (string-append font-dir "/"
+                                                 (basename ttf))))
+                     (find-files "." "\\.ttf$"))
+           (for-each (lambda (doc)
+                       (copy-file doc
+                                  (string-append doc-dir "/"
+                                                 (basename doc))))
+                     '("COPYING" "README"))))))
+    (native-inputs
+     `(("tar" ,tar)
+       ("gzip" ,gzip)))
+    (home-page "https://kldp.net/projects/unfonts/")
+    (synopsis "Collection of Korean fonts")
+    (description
+     "Un-fonts is a family of mainly Korean fonts.
+It contains the following fonts and styles:
+
+@enumerate
+@item UnBatang, UnBatangBold: serif;
+@item UnDotum, UnDotumBold: sans-serif;
+@item UnGraphic, UnGraphicBold: sans-serif style;
+@item UnDinaru, UnDinaruBold, UnDinaruLight;
+@item UnPilgi, UnPilgiBold: script;
+@item UnGungseo: cursive, brush-stroke.
+@end enumerate\n")
     (license license:gpl2+)))

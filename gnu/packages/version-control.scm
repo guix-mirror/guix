@@ -324,7 +324,7 @@ command.")))
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.23.4")
+    (version "0.24.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libgit2/libgit2/"
@@ -332,7 +332,7 @@ command.")))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0aa0i5bvmzrrirqk5w13pm0qmblkk57x24w0hxz4vg0x73by5xf7"))))
+                "1c5jx0pcpz83x7s36jimfz5bj0vy7vwpchq9p4sgdqxy8gwr6rhw"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -351,7 +351,7 @@ command.")))
     (inputs
      `(("libssh2" ,libssh2)
        ("libcurl" ,curl)
-       ("python" ,python)
+       ("python" ,python-wrapper)
        ("openssl" ,openssl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -367,14 +367,14 @@ write native speed custom Git applications in any language with bindings.")
 (define-public shflags
   (package
     (name "shflags")
-    (version "1.0.3")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://shflags.googlecode.com/files/"
-                                  "shflags-" version ".tgz"))
+              (uri (string-append "https://github.com/kward/shflags/archive/v"
+                                  version ".tar.gz"))
               (sha256
                (base32
-                "08laxhf1hifh3w4j0hri5ppcklaqz0mnkmbaz8j0wxih29vi8slm"))))
+                "0zxw12haylaq60a335xlqcs4afw2zrgwqymmpw0m21r51w6irdmr"))))
     (build-system trivial-build-system)
     (native-inputs `(("tar" ,tar)
                      ("gzip" ,gzip)))
@@ -396,7 +396,7 @@ write native speed custom Git applications in any language with bindings.")
                        (copy-file "src/shflags"
                                   (string-append srcdir "/shflags"))
                        #t)))))
-    (home-page "https://code.google.com/p/shflags/")
+    (home-page "https://github.com/kward/shflags")
     (synopsis "Command-line flags library for shell scripts")
     (description
      "Shell Flags (shFlags) is a library written to greatly simplify the
@@ -489,19 +489,16 @@ also walk each side of a merge and test those changes individually.")
 (define-public gitolite
   (package
     (name "gitolite")
-    (version "3.6.2")
+    (version "3.6.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/sitaramc/gitolite/archive/v"
                     version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
-              ;; Commit ed807a4 upstream
-              (patches
-               (list (search-patch "gitolite-openssh-6.8-compat.patch")))
               (sha256
                (base32
-                "1gsgzi9ayb4rablki3mqr11b0h8db4xg43df660marfpacmkfb01"))))
+                "0xpqg04gyr4dhdhxx5lbk61lwwd5ml32530bigg2qy663icngwqm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests

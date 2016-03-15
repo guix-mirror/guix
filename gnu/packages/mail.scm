@@ -71,8 +71,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl2+ gpl3+ lgpl2.1 lgpl2.1+ lgpl3+ non-copyleft
-                          (expat . license:expat)))
+                #:select (gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
+                           non-copyleft (expat . license:expat)))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -1150,5 +1150,46 @@ maintained.")
                       ;; nonfree Artistic License 1.0
                       ;; as alternative to the GPL2+.
                       ;; This option is not listed here.
-;;; mail.scm ends here
 
+(define-public khard
+  (package
+    (name "khard")
+    (version "0.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri name version))
+              (sha256
+               (base32
+                "098gs94qmnspdfn6ar8lycx7dbsz9bcff90aps0cmn47mw7llch0"))))
+    (build-system python-build-system)
+    (arguments
+      `(#:python ,python-2 ; only python-2 is supported.
+        #:phases
+        (modify-phases %standard-phases
+          (add-before 'build 'disable-egg-compression
+            ;; Do not compress the egg.
+            (lambda _
+              (let ((port (open-file "setup.cfg" "a")))
+                (display "\n[easy_install]\nzip_ok = 0\n"
+                         port)
+                (close-port port)
+                #t)))
+          (add-after 'install 'install-doc
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let* ((out (assoc-ref outputs "out"))
+                     (doc (string-append out "/share/doc/khard")))
+                (copy-recursively "misc/khard" doc)))))))
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)))
+    (propagated-inputs
+     `(("python2-vobject" ,python2-vobject)
+       ("python2-pyyaml" ,python2-pyyaml)
+       ("python2-atomicwrites" ,python2-atomicwrites)
+       ("python2-configobj" ,python2-configobj)))
+    (synopsis "Console address book using CardDAV")
+    (description "Khard is an address book for the console.  It creates, reads,
+modifies and removes CardDAV address book entries at your local machine.  For
+synchronizing with a remote address book, @command{vdirsyncer} is recommended.
+Khard can also be used from within the email client @command{mutt}.")
+    (home-page "https://github.com/scheibler/khard")
+    (license gpl3+)))

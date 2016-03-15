@@ -52,21 +52,16 @@ clients.")
 (define-public vdirsyncer
   (package
     (name "vdirsyncer")
-    (version "0.9.0")
+    (version "0.9.2")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "vdirsyncer" version))
              (sha256
               (base32
-               "0s9awjr9v60rr80xcpwmdhkf4v1yqnydahjmxwvxmh64565is465"))))
+               "1g1107cz4sk41d2z6k6pn9n2fzd26m72j8aj33zn483vfvmyrc4q"))))
     (build-system python-build-system)
     (arguments
       `(#:phases (modify-phases %standard-phases
-         (replace 'check
-           (lambda _
-             (setenv "DAV_SERVER" "radicale")
-             (setenv "REMOTESTORAGE_SERVER" "skip")
-             (zero? (system* "py.test"))))
          ;; vdirsyncer requires itself to be installed in order to build
          ;; the manpage.
          (add-after 'install 'manpage
@@ -80,17 +75,24 @@ clients.")
                "docs/_build/man/vdirsyncer.1"
                (string-append
                  (assoc-ref outputs "out")
-                 "/share/man/man1")))))))
+                 "/share/man/man1"))))
+         ;; vdirsyncer requires itself to be installed in order to run the test
+         ;; suite.
+         (delete 'check)
+         (add-after 'install 'check-later
+           (lambda _
+             (setenv "DETERMINISTIC_TESTS" "true")
+             (setenv "DAV_SERVER" "radicale")
+             (setenv "REMOTESTORAGE_SERVER" "skip")
+             (zero? (system* "make" "test")))))))
     (native-inputs
-     `(("python-oauthlib" ,python-oauthlib)
-       ("python-setuptools-scm" ,python-setuptools-scm)
+     `(("python-setuptools-scm" ,python-setuptools-scm)
        ("python-sphinx" ,python-sphinx)
        ;; Required for testing
        ("python-hypothesis" ,python-hypothesis)
        ("python-pytest" ,python-pytest)
        ("python-pytest-localserver" ,python-pytest-localserver)
        ("python-pytest-subtesthack" ,python-pytest-subtesthack)
-       ("python-pytest-xprocess" ,python-pytest-xprocess)
        ("python-wsgi-intercept" ,python-wsgi-intercept)
        ("radicale" ,radicale)))
     (propagated-inputs
@@ -98,7 +100,7 @@ clients.")
        ("python-click" ,python-click)
        ("python-click-log" ,python-click-log)
        ("python-click-threading" ,python-click-threading)
-       ("python-lxml" ,python-lxml) ; which one?
+       ("python-lxml" ,python-lxml)
        ("python-requests-toolbelt" ,python-requests-toolbelt)))
     (synopsis "Synchronize calendars and contacts")
     (description "Vdirsyncer synchronizes your calendars and addressbooks

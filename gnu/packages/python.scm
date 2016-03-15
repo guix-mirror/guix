@@ -1133,10 +1133,10 @@ Python 3.3+.")
   (package-with-python2 python-simplejson))
 
 
-(define-public python2-pyicu
+(define-public python-pyicu
   (package
-    (name "python2-pyicu")
-    (version "1.8")
+    (name "python-pyicu")
+    (version "1.9.2")
     (source
      (origin
       (method url-fetch)
@@ -1144,19 +1144,22 @@ Python 3.3+.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1y361x82lnh9k9srmdx3q92z5iag112z7r5fxm0n1sfwb349yjdw"))))
+        "1diba0g8md614fvm9yf50paiwdkhj6rd7xwf1rg9mc0pxc0hhn4v"))))
     (build-system python-build-system)
     (inputs
      `(("icu4c" ,icu4c)))
-    (arguments
-     `(#:python ,python-2 ; Python 3 works also, but needs special care for
-                          ; linking with libpython3.3m
-       #:tests? #f)) ; no check target
     (home-page "http://pyicu.osafoundation.org/")
     (synopsis "Python extension wrapping the ICU C++ API")
     (description
      "PyICU is a python extension wrapping the ICU C++ API.")
-    (license x11)))
+    (license x11)
+    (properties `((python2-variant . ,(delay python2-pyicu))))))
+
+(define-public python2-pyicu
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-pyicu)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
 
 (define-public python2-dogtail
   ;; Python 2 only, as it leads to "TabError: inconsistent use of tabs and
@@ -6756,7 +6759,14 @@ WebSocket usage in Python programs.")
     (description "Library for atomic file writes using platform dependent tools
 for atomic filesystem operations.")
     (home-page "https://github.com/untitaker/python-atomicwrites")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-atomicwrites))))))
+
+(define-public python2-atomicwrites
+  (package (inherit (package-with-python2
+                     (strip-python2-variant python-atomicwrites)))
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)))))
 
 (define-public python-requests-toolbelt
   (package
@@ -7457,13 +7467,13 @@ Amazon Web Services (AWS) API.")
 (define-public python-hypothesis
   (package
     (name "python-hypothesis")
-    (version "3.0.4")
+    (version "3.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hypothesis" version))
               (sha256
                (base32
-                "0bh6pqyc56cqlbpg0ffzjs6466blyylix4nsw11qrqwf01cg9gdq"))))
+                "0qyqq9akm4vshhn8cngjc1qykcvsn7cz6dlm6njfsgpbraqrmbbw"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-flake8" ,python-flake8)
@@ -8192,4 +8202,34 @@ introspection of @code{zope.interface} instances in code.")
   (package
     (inherit (package-with-python2
               (strip-python2-variant python-psycopg2)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+
+(define-public python-vobject
+  (package
+    (name "python-vobject")
+    (version "0.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "vobject" version))
+              (sha256
+               (base32
+                "1cwzjnrdr9yg2x21wbf3kf59ibnchvj33mygd69yzi178a9gs9gz"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-dateutil-2" ,python-dateutil-2)
+       ("python-pyicu" ,python-pyicu)))
+    (synopsis "Parse and generate vCard and vCalendar files")
+    (description "Vobject is intended to be a full featured Python package for
+parsing and generating vCard and vCalendar files.  Currently, iCalendar files
+are supported and well tested. vCard 3.0 files are supported, and all data
+should be imported, but only a few components are understood in a sophisticated
+way.")
+    (home-page "http://eventable.github.io/vobject/")
+    (license asl2.0)
+    (properties `((python2-variant . ,(delay python2-vobject))))))
+
+(define-public python2-vobject
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-vobject)))
     (native-inputs `(("python2-setuptools" ,python2-setuptools)))))

@@ -2073,3 +2073,38 @@ module to handle that particular file type.")
     (home-page "http://etree.org/shnutils/shntool/")
     ;; 'install-sh' bears the x11 license
     (license (list license:gpl2+ license:x11))))
+
+(define-public dcadec
+  (package
+    (name "dcadec")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/foo86/dcadec/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0i0dpypgqkhhi4v1fmsp2way6w9kbcix3c7q79pmg39yvrzj17gd"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; Test files are missing: https://github.com/foo86/dcadec/issues/53
+     '(#:tests? #f
+       #:make-flags
+       (list "CC=gcc"
+             ;; Build shared library.
+             "CONFIG_SHARED=1"
+             (string-append "PREFIX=" (assoc-ref %outputs "out"))
+             ;; Set proper runpath.
+             (string-append "LDFLAGS=-Wl,-rpath="
+                            (assoc-ref %outputs "out")
+                            "/lib"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; No configure script, just a hand-written Makefile.
+         (delete 'configure))))
+    (synopsis "DTS Coherent Acoustics decoder")
+    (description "Dcadec is a DTS Coherent Acoustics surround sound decoder
+with support for HD extensions.")
+    (home-page "https://github.com/foo86/dcadec")
+    (license license:lgpl2.1+)))

@@ -26,6 +26,7 @@
   #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system perl)
@@ -2002,24 +2003,17 @@ from high-throughput sequencing assays.")
               (snippet '(substitute* "build.xml"
                           (("failifexecutionfails=\"true\"")
                            "failifexecutionfails=\"false\"")))))
-    (build-system gnu-build-system)
+    (build-system ant-build-system)
     (arguments
-     `(#:modules ((srfi srfi-1)
-                  (guix build gnu-build-system)
-                  (guix build utils))
-       #:phases (alist-replace
-                 'build
-                 (lambda _
-                   (setenv "JAVA_HOME" (assoc-ref %build-inputs "jdk"))
-                   (zero? (system* "ant" "all"
-                                   (string-append "-Ddist="
-                                                  (assoc-ref %outputs "out")
-                                                  "/share/java/htsjdk/"))))
-                 (fold alist-delete %standard-phases
-                       '(configure install check)))))
-    (native-inputs
-     `(("ant" ,ant)
-       ("jdk" ,icedtea "jdk")))
+     `(#:tests? #f ; test require Internet access
+       #:make-flags
+       (list (string-append "-Ddist=" (assoc-ref %outputs "out")
+                            "/share/java/htsjdk/"))
+       #:build-target "all"
+       #:phases
+       (modify-phases %standard-phases
+         ;; The build phase also installs the jars
+         (delete 'install))))
     (home-page "http://samtools.github.io/htsjdk/")
     (synopsis "Java API for high-throughput sequencing data (HTS) formats")
     (description
@@ -2555,6 +2549,44 @@ the phenotype as it models the data.")
        "pbtranscript-tofu contains scripts to analyze transcriptome data
 generated using the PacBio Iso-Seq protocol.")
       (license license:bsd-3))))
+
+(define-public pyicoteo
+  (package
+    (name "pyicoteo")
+    (version "2.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://bitbucket.org/regulatorygenomicsupf/"
+                           "pyicoteo/get/v" version ".tar.bz2"))
+       (file-name (string-append name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0d6087f29xp8wxwlj111c3sylli98n0l8ry58c51ixzq0zfm50wa"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; does not work with Python 3
+       #:tests? #f))      ; there are no tests
+    (inputs
+     `(("python2-matplotlib" ,python2-matplotlib)))
+    (home-page "https://bitbucket.org/regulatorygenomicsupf/pyicoteo")
+    (synopsis "Analyze high-throughput genetic sequencing data")
+    (description
+     "Pyicoteo is a suite of tools for the analysis of high-throughput genetic
+sequencing data.  It works with genomic coordinates.  There are currently six
+different command-line tools:
+
+@enumerate
+@item pyicoregion: for generating exploratory regions automatically;
+@item pyicoenrich: for differential enrichment between two conditions;
+@item pyicoclip: for calling CLIP-Seq peaks without a control;
+@item pyicos: for genomic coordinates manipulation;
+@item pyicoller: for peak calling on punctuated ChIP-Seq;
+@item pyicount: to count how many reads from N experiment files overlap in a
+  region file;
+@item pyicotrocol: to combine operations from pyicoteo.
+@end enumerate\n")
+    (license license:gpl3+)))
 
 (define-public prodigal
   (package

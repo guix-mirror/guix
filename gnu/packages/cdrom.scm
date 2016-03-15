@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,14 +44,14 @@
 (define-public libcddb
   (package
     (name "libcddb")
-    (version "1.3.0")
+    (version "1.3.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/libcddb/libcddb-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1y8bfy12dwm41m1jahayn3v47dm34fmz7m9cjxyh7xcw6fp3lzaf"))))
+               "0fr21a7vprdyy1bq6s99m0x420c9jm5fipsd63pqv8qyfkhhxkim"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f))      ; tests rely on access to external servers
     (home-page "http://libcddb.sourceforge.net/")
@@ -189,14 +189,14 @@ reconstruction capability.")
 (define-public dvdisaster
   (package
     (name "dvdisaster")
-    (version "0.72.6")
+    (version "0.79.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://dvdisaster.net/downloads/dvdisaster-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0sqrprc5rh3shnfli25m2wy0i5f83db54iv04s5s7bxf77m7sy79"))))
+               "0f8gjnia2fxcbmhl8b3qkr5b7idl8m855dw7xw2fnmbqwvcm6k4w"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+-2)))
@@ -208,14 +208,7 @@ reconstruction capability.")
      `(;; Parallel builds appear to be unsafe, see
        ;; <http://hydra.gnu.org/build/49331/nixlog/1/raw>.
        #:parallel-build? #f
-       #:tests? #f ; no check target
-       #:phases
-         (alist-cons-before
-          'patch-source-shebangs 'sanitise
-          (lambda _
-            ;; delete dangling symlink
-            (delete-file ".#GNUmakefile"))
-          %standard-phases)))
+       #:tests? #f)) ; no check target
     (home-page "http://dvdisaster.net/en/index.html")
     (synopsis "Error correcting codes for optical media images")
     (description "Optical media (CD,DVD,BD) keep their data only for a
@@ -240,9 +233,8 @@ capacity is user-selectable.")
     (version "1.4.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://github.com/lipnitsk/libcue/releases"
-                                 "/download/v" version
-                                 "/libcue-" version ".tar.bz2"))
+             (uri (string-append "https://github.com/lipnitsk/libcue/archive/v"
+                                 version ".tar.bz2"))
              (sha256
               (base32
                "17kjd7rjz1bvfn44n3n2bjb7a1ywd0yc0g4sqp5ihf9b5bn7cwlb"))))
@@ -287,15 +279,15 @@ from an audio CD.")
 (define-public abcde
   (package
     (name "abcde")
-    (version "2.7")
-    (home-page "http://abcde.einval.com/")
+    (version "2.7.1")
+    (home-page "https://abcde.einval.com/")
     (source (origin
               (method url-fetch)
               (uri (string-append home-page "/download/abcde-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0ikpffzvacadh6vj9qlary8126j1zrd2knp9gvivmp7y1656jj01"))
+                "0l7j0nk8p30s97285i418rv9ym9bgns7bn6l8gldw3mjhnby609l"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
@@ -305,37 +297,36 @@ from an audio CD.")
                    (string-append "etcdir = $(prefix)/etc\n"))))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs inputs #:allow-other-keys)
-                   (substitute* "Makefile"
-                     (("^prefix = .*$")
-                      (string-append "prefix = "
-                                     (assoc-ref outputs "out")
-                                     "\n"))))
-                 (alist-cons-after
-                  'install 'wrap
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (let ((wget   (assoc-ref inputs "wget"))
-                          (vorbis (assoc-ref inputs "vorbis-tools"))
-                          (parano (assoc-ref inputs "cdparanoia"))
-                          (which  (assoc-ref inputs "which"))
-                          (discid (assoc-ref inputs "cd-discid"))
-                          (out    (assoc-ref outputs "out")))
-                      (define (wrap file)
-                        (wrap-program file
-                                      `("PATH" ":" prefix
-                                        (,(string-append out "/bin:"
-                                                         wget "/bin:"
-                                                         which "/bin:"
-                                                         vorbis "/bin:"
-                                                         discid "/bin:"
-                                                         parano "/bin")))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs inputs #:allow-other-keys)
+             (substitute* "Makefile"
+               (("^prefix = .*$")
+                (string-append "prefix = "
+                               (assoc-ref outputs "out")
+                               "\n")))))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((wget   (assoc-ref inputs "wget"))
+                   (vorbis (assoc-ref inputs "vorbis-tools"))
+                   (parano (assoc-ref inputs "cdparanoia"))
+                   (which  (assoc-ref inputs "which"))
+                   (discid (assoc-ref inputs "cd-discid"))
+                   (out    (assoc-ref outputs "out")))
+               (define (wrap file)
+                 (wrap-program file
+                               `("PATH" ":" prefix
+                                 (,(string-append out "/bin:"
+                                                  wget "/bin:"
+                                                  which "/bin:"
+                                                  vorbis "/bin:"
+                                                  discid "/bin:"
+                                                  parano "/bin")))))
 
-                      (for-each wrap
-                                (find-files (string-append out "/bin")
-                                            ".*"))))
-                  %standard-phases))
+               (for-each wrap
+                         (find-files (string-append out "/bin")
+                                     ".*"))))))
        #:tests? #f))
 
     (inputs `(("wget" ,wget)

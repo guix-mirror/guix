@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -704,6 +705,7 @@ on your desktop.")
        ("tumlber"              ,tumbler)
        ("xfce4-appfinder"      ,xfce4-appfinder)
        ("xfce4-panel"          ,xfce4-panel)
+       ("xfce4-power-manager"  ,xfce4-power-manager)
        ("xfce4-session"        ,xfce4-session)
        ("xfce4-settings"       ,xfce4-settings)
        ("xfce4-terminal"       ,xfce4-terminal)
@@ -720,4 +722,38 @@ on your desktop.")
     (description
      "Xfce is a lightweight desktop environment.  It aims to be fast and low on
 system resources, while still being visually appealing and user friendly.")
+    (license gpl2+)))
+
+(define-public xfce4-power-manager
+  (package
+    (name "xfce4-power-manager")
+    (version "1.4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/xfce/4.12"
+                                  "/src/" name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "04909sfc2nrj2wg9cw6y9y2r9yrp3l3vc201sy1gaiap67fi33h1"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--enable-gtk3")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("lbxrandr" ,libxrandr)
+       ("upower" ,upower)
+       ("libnotify" ,libnotify)
+       ("libxfce4ui" ,libxfce4ui)))
+    (home-page "http://www.xfce.org/")
+    (synopsis "Xfce Power Manager")
+    (description
+     "This is a power manager for the Xfce desktop.  It manages the power
+sources on the computer and the devices that can be controlled to reduce their
+power consumption (such as LCD brightness level, monitor sleep, CPU frequency
+scaling, etc).  In addition, xfce4-power-manager provides a set of
+freedesktop-compliant DBus interfaces to inform other applications about current
+power level so that they can adjust their power consumption, and it provides the
+inhibit interface which allows applications to prevent automatic sleep.")
     (license gpl2+)))

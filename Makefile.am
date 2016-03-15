@@ -56,6 +56,7 @@ MODULES =					\
   guix/graph.scm				\
   guix/cve.scm					\
   guix/build-system.scm				\
+  guix/build-system/ant.scm			\
   guix/build-system/cmake.scm			\
   guix/build-system/emacs.scm			\
   guix/build-system/glib-or-gtk.scm		\
@@ -75,6 +76,7 @@ MODULES =					\
   guix/cvs-download.scm				\
   guix/svn-download.scm				\
   guix/ui.scm					\
+  guix/build/ant-build-system.scm		\
   guix/build/download.scm			\
   guix/build/cmake-build-system.scm		\
   guix/build/emacs-build-system.scm		\
@@ -171,8 +173,10 @@ dist_noinst_DATA = guix/tests.scm
 
 # Linux-Libre configurations.
 KCONFIGS =					\
-  gnu/packages/linux-libre-i686.conf		\
-  gnu/packages/linux-libre-x86_64.conf		\
+  gnu/packages/linux-libre-4.5-i686.conf	\
+  gnu/packages/linux-libre-4.5-x86_64.conf	\
+  gnu/packages/linux-libre-4.4-i686.conf	\
+  gnu/packages/linux-libre-4.4-x86_64.conf	\
   gnu/packages/linux-libre-4.1-i686.conf	\
   gnu/packages/linux-libre-4.1-x86_64.conf
 
