@@ -489,19 +489,16 @@ also walk each side of a merge and test those changes individually.")
 (define-public gitolite
   (package
     (name "gitolite")
-    (version "3.6.2")
+    (version "3.6.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "https://github.com/sitaramc/gitolite/archive/v"
                     version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
-              ;; Commit ed807a4 upstream
-              (patches
-               (list (search-patch "gitolite-openssh-6.8-compat.patch")))
               (sha256
                (base32
-                "1gsgzi9ayb4rablki3mqr11b0h8db4xg43df660marfpacmkfb01"))))
+                "0xpqg04gyr4dhdhxx5lbk61lwwd5ml32530bigg2qy663icngwqm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
