@@ -1057,6 +1057,8 @@ single buffer.")
                      ("automake" ,automake)
                      ("pkg-config" ,pkg-config)
                      ("emacs" ,emacs-no-x)))
+    (propagated-inputs
+     `(("let-alist" ,let-alist)))
     (inputs `(("poppler" ,poppler)
               ("cairo" ,cairo)
               ("glib" ,glib)
