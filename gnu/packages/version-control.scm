@@ -545,14 +545,14 @@ control to Git repositories.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "3.2.4")
+    (version "3.7.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://mercurial.selenic.com/release/mercurial-"
-                                 version ".tar.gz"))
+             (uri (string-append "https://www.mercurial-scm.org/"
+                                 "release/mercurial-" version ".tar.gz"))
              (sha256
               (base32
-               "1g7nfvapxj5k44dyp0p08v37s0zmrj2vl0rjgfd8297x0afidm08"))))
+               "0ykdvj7k4yxiwbfk0gnrq2flmdlf2cracsvqn3vr7nxhda6l7aav"))))
     (build-system python-build-system)
     (arguments
      `(;; Restrict to Python 2, as Python 3 would require
@@ -561,7 +561,7 @@ control to Git repositories.")
        ;; FIXME: Disabled tests because they require the nose unit
        ;; testing framework: https://nose.readthedocs.org/en/latest/ .
        #:tests? #f))
-    (home-page "http://mercurial.selenic.com")
+    (home-page "https://www.mercurial-scm.org/")
     (synopsis "Decentralized version control system")
     (description
      "Mercurial is a free, distributed source control management tool.
