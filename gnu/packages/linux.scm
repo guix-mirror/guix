@@ -220,7 +220,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
     (search-path %load-path file)))
 
 (define-public linux-libre
-  (let* ((version "4.4.5")
+  (let* ((version "4.5")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -294,7 +294,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "19yyw6yssyxr9k5y3whgz2p731mb1pnq3xajpv8g01m13cxs32dd"))))
+               "0km863vwy557flpygkr869yshpjs1v11ni78p8k9p9nm31ai6yn3"))))
     (build-system gnu-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
@@ -303,8 +303,10 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
                      ("module-init-tools" ,module-init-tools)
                      ("patch/freedo+gnu" ,%boot-logo-patch)
 
-                     ,@(let ((conf (kernel-config (or (%current-target-system)
-                                                      (%current-system)))))
+                     ,@(let ((conf (kernel-config
+                                    (or (%current-target-system)
+                                        (%current-system))
+                                    #:variant (version-major+minor version))))
                          (if conf
                              `(("kconfig" ,conf))
                              '()))))
@@ -325,6 +327,23 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
 It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)
     (home-page "http://www.gnu.org/software/linux-libre/"))))
+
+(define-public linux-libre-4.4
+  (package
+    (inherit linux-libre)
+    (version "4.4.5")
+    (source (origin
+              (method url-fetch)
+              (uri (linux-libre-urls version))
+              (sha256
+               (base32
+                "19yyw6yssyxr9k5y3whgz2p731mb1pnq3xajpv8g01m13cxs32dd"))))
+    (native-inputs
+     (let ((conf (kernel-config (or (%current-target-system)
+                                    (%current-system))
+                                #:variant "4.4")))
+       `(,@(alist-delete "kconfig" (package-native-inputs linux-libre))
+         ("kconfig" ,conf))))))
 
 (define-public linux-libre-4.1
   (package
