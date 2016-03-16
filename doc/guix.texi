@@ -448,8 +448,8 @@ Directories,,, texinfo, GNU Texinfo}, for more details on changing the
 Info search path.)
 
 @item
-To use substitutes from @code{hydra.gnu.org} (@pxref{Substitutes}),
-authorize them:
+To use substitutes from @code{hydra.gnu.org} or one of its mirrors
+(@pxref{Substitutes}), authorize them:
 
 @example
 # guix archive --authorize < ~root/.guix-profile/share/guix/hydra.gnu.org.pub
@@ -912,8 +912,9 @@ remote procedure call (@pxref{The Store}).
 @item --substitute-urls=@var{urls}
 @anchor{daemon-substitute-urls}
 Consider @var{urls} the default whitespace-separated list of substitute
-source URLs.  When this option is omitted, @indicateurl{http://hydra.gnu.org}
-is used.
+source URLs.  When this option is omitted,
+@indicateurl{https://mirror.hydra.gnu.org https://hydra.gnu.org} is used
+(@code{mirror.hydra.gnu.org} is a mirror of @code{hydra.gnu.org}).
 
 This means that substitutes may be downloaded from @var{urls}, as long
 as they are signed by a trusted signature (@pxref{Substitutes}).
@@ -1730,7 +1731,8 @@ your system has unpatched security vulnerabilities.
 
 @cindex security
 @cindex digital signatures
-To allow Guix to download substitutes from @code{hydra.gnu.org}, you
+To allow Guix to download substitutes from @code{hydra.gnu.org} or a
+mirror thereof, you
 must add its public key to the access control list (ACL) of archive
 imports, using the @command{guix archive} command (@pxref{Invoking guix
 archive}).  Doing so implies that you trust @code{hydra.gnu.org} to not
@@ -2199,7 +2201,7 @@ served by @code{hydra.gnu.org} to @file{/tmp/emacs}:
 
 @example
 $ wget -O - \
-  http://hydra.gnu.org/nar/@dots{}-emacs-24.5 \
+  https://hydra.gnu.org/nar/@dots{}-emacs-24.5 \
   | bunzip2 | guix archive -x /tmp/emacs
 @end example
 
@@ -4294,7 +4296,7 @@ but you are actually on an @code{x86_64} machine:
 
 @example
 $ guix build --log-file gdb -s mips64el-linux 
-http://hydra.gnu.org/log/@dots{}-gdb-7.10
+https://hydra.gnu.org/log/@dots{}-gdb-7.10
 @end example
 
 You can freely access a huge library of build logs!

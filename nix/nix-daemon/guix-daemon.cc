@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 
    This file is part of GNU Guix.
 
@@ -327,7 +327,7 @@ main (int argc, char *argv[])
       settings.set ("build-use-substitutes", "true");
 
       /* Use our substitute server by default.  */
-      settings.set ("substitute-urls", "http://hydra.gnu.org");
+      settings.set ("substitute-urls", GUIX_SUBSTITUTE_URLS);
 
 #ifdef HAVE_DAEMON_OFFLOAD_HOOK
       /* Use our build hook for distributed builds by default.  */
