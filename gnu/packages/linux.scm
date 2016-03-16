@@ -2524,3 +2524,35 @@ easy administration.")
     ;; GPL2+: crc32.c, radix-tree.c, raid6.c, rbtree.c.
     ;; GPL2: Everything else.
     (license (list license:gpl2 license:gpl2+))))
+
+(define-public freefall
+  (package
+    (name "freefall")
+    (version (package-version linux-libre))
+    (source (package-source linux-libre))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'enter-subdirectory
+                    (lambda _
+                      (chdir "tools/laptop/freefall")))
+                  (delete 'configure)
+                  (add-before 'build 'increase-timeout
+                    (lambda _
+                      ;; The default of 2 seconds is too low: it assumes an
+                      ;; open lid and AC power without actually checking.
+                      (substitute* "freefall.c"
+                        (("alarm\\(2\\)") "alarm(5)")))))
+       #:make-flags (list (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:tests? #f)) ;no tests
+    (home-page (package-home-page linux-libre))
+    (synopsis "Free-fall protection for spinning laptop hard drives")
+    (description
+     "Prevents shock damage to the internal spinning hard drive(s) of some
+HP and Dell laptops.  When sudden movement is detected, all input/output
+operations on the drive are suspended and its heads are parked on the ramp,
+where they are less likely to cause damage to the spinning disc.  Requires a
+drive that supports the ATA/ATAPI-7 IDLE IMMEDIATE command with unload
+feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
+    (license license:gpl2)))
