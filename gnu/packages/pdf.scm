@@ -60,11 +60,7 @@
             (sha256 (base32
                      "1vjvd0md8y37hlq3lsj0l01a3v3mzm572rzpn1311frvmrg9r7xq"))))
    (build-system gnu-build-system)
-   ;; FIXME: more dependencies could  be added
-   ;;  cairo output:       no (requires cairo >= 1.10.0)
-   ;;  qt4 wrapper:        no
-   ;;    introspection:    no
-   ;;  use gtk-doc:        no
+   ;; FIXME:
    ;;  use libcurl:        no
    (inputs `(("fontconfig" ,fontconfig)
              ("freetype" ,freetype)
@@ -83,7 +79,8 @@
              ("glib" ,glib)))
    (native-inputs
       `(("pkg-config" ,pkg-config)
-        ("glib" ,glib "bin")))                    ; glib-mkenums, etc.
+        ("glib" ,glib "bin")                      ; glib-mkenums, etc.
+        ("gobject-introspection" ,gobject-introspection)))
    (arguments
     `(#:tests? #f ; no test data provided with the tarball
       #:configure-flags
