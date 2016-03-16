@@ -5709,11 +5709,6 @@ requires familiarity with GNU/Linux (see the following subsections to
 get a feel of what that means.)
 
 @item
-The system does not yet provide full GNOME and KDE desktops.  Xfce and
-Enlightenment are available, though, if graphical desktop environments
-are your thing, as well as a number of X11 window managers.
-
-@item
 Support for the Logical Volume Manager (LVM) is missing.
 
 @item
@@ -5723,6 +5718,11 @@ Few system services are currently supported out-of-the-box
 @item
 More than 3,000 packages are available, but you may
 occasionally find that a useful package is missing.
+
+@item
+GNOME, Xfce, and Enlightenment are available (@pxref{Desktop Services}),
+as well as a number of X11 window managers.  However, some graphical
+applications may be missing, as well as KDE.
 @end itemize
 
 You have been warned!  But more than a disclaimer, this is an invitation
