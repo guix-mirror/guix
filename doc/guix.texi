@@ -3983,6 +3983,9 @@ This means that substitutes may be downloaded from @var{urls}, provided
 they are signed by a key authorized by the system administrator
 (@pxref{Substitutes}).
 
+When @var{urls} is the empty string, substitutes are effectively
+disabled.
+
 @item --no-substitutes
 Do not use substitutes for build products.  That is, always build things
 locally instead of allowing downloads of pre-built binaries

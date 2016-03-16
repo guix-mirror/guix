@@ -953,15 +953,9 @@ substitutes may be unavailable\n")))))
 found."
   (assoc-ref (daemon-options) option))
 
-(define-syntax-rule (or* a b)
-  (let ((first a))
-    (if (or (not first) (string-null? first))
-        b
-        first)))
-
 (define %cache-urls
-  (match (and=> (or* (find-daemon-option "untrusted-substitute-urls") ;client
-                     (find-daemon-option "substitute-urls"))          ;admin
+  (match (and=> (or (find-daemon-option "untrusted-substitute-urls") ;client
+                    (find-daemon-option "substitute-urls"))          ;admin
                 string-tokenize)
     ((urls ...)
      urls)

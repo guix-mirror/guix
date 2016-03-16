@@ -450,7 +450,11 @@
            (with-store s                        ;the right one again
              (set-build-options s #:use-substitutes? #t
                                 #:substitute-urls (%test-substitute-urls))
-             (has-substitutes? s o))))))
+             (has-substitutes? s o))
+           (with-store s                        ;empty list of URLs
+             (set-build-options s #:use-substitutes? #t
+                                #:substitute-urls '())
+             (not (has-substitutes? s o)))))))
 
 (test-assert "substitute"
   (with-store s
