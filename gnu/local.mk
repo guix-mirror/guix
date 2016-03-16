@@ -40,7 +40,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/anthy.scm			\
   gnu/packages/apl.scm				\
   gnu/packages/apr.scm				\
-  gnu/packages/asciidoc.scm			\
   gnu/packages/aspell.scm			\
   gnu/packages/attr.scm				\
   gnu/packages/audacity.scm			\
@@ -98,7 +97,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/dns.scm				\
   gnu/packages/docbook.scm			\
   gnu/packages/docker.scm			\
-  gnu/packages/doxygen.scm			\
+  gnu/packages/documentation.scm		\
   gnu/packages/dunst.scm			\
   gnu/packages/dvtm.scm				\
   gnu/packages/ebook.scm			\

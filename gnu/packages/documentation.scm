@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2016 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16,12 +17,19 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages asciidoc)
+(define-module (gnu packages documentation)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (gnu packages python)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages xml)
   #:autoload   (gnu packages zip) (unzip))
 
 (define-public asciidoc
@@ -50,3 +58,32 @@ AsciiDoc is highly configurable: both the AsciiDoc source file syntax and
 the backend output markups (which can be almost any type of SGML/XML
 markup) can be customized and extended by the user.")
     (license gpl2+)))
+
+(define-public doxygen
+  (package
+    (name "doxygen")
+    (version "1.8.11")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://ftp.stack.nl/pub/users/dimitri/"
+                                 name "-" version ".src.tar.gz"))
+             (sha256
+              (base32
+               "0ja02pm3fpfhc5dkry00kq8mn141cqvdqqpmms373ncbwi38pl35"))
+             (patches (search-patches "doxygen-test.patch"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("libxml2" ,libxml2) ; provides xmllint for the tests
+       ("python" ,python-2))) ; for creating the documentation
+    (arguments
+     `(#:test-target "tests"))
+    (home-page "http://www.stack.nl/~dimitri/doxygen/")
+    (synopsis "Generate documentation from annotated sources")
+    (description "Doxygen is the de facto standard tool for generating
+documentation from annotated C++ sources, but it also supports other popular
+programming languages such as C, Objective-C, C#, PHP, Java, Python,
+IDL (Corba, Microsoft, and UNO/OpenOffice flavors), Fortran, VHDL, Tcl,
+and to some extent D.")
+    (license gpl3+)))
