@@ -3887,6 +3887,28 @@ barplots or heatmaps.")
 packages.")
     (license license:artistic2.0)))
 
+(define-public r-dnacopy
+  (package
+    (name "r-dnacopy")
+    (version "1.44.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "DNAcopy" version))
+              (sha256
+               (base32
+                "1c1px4rbr36xx929hp59k7ca9k5ab66qmn8k63fk13278ncm6h66"))))
+    (properties
+     `((upstream-name . "DNAcopy")))
+    (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "bioconductor.org/packages/DNAcopy")
+    (synopsis "Implementation of a circular binary segmentation algorithm")
+    (description "This package implements the circular binary segmentation (CBS)
+algorithm to segment DNA copy number data and identify genomic regions with
+abnormal copy number.")
+    (license license:gpl2+)))
+
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
