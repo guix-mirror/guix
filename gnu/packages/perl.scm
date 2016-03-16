@@ -5,6 +5,7 @@
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5693,6 +5694,31 @@ generally slower on larger files.")
     (description "Text::Glob implements glob(3) style matching that can be
 used to match against text, rather than fetching names from a filesystem.  If
 you want to do full file globbing use the File::Glob module instead.")
+    (license (package-license perl))))
+
+(define-public perl-text-neattemplate
+  (package
+    (name "perl-text-neattemplate")
+    (version "0.1101")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://cpan.metacpan.org/authors/id/R/RU/RUBYKAT/"
+             "Text-NeatTemplate-" version ".tar.gz"))
+       (sha256
+        (base32
+         "129msa57jzxxi2x7z9hgzi48r48y65w77ycfk1w733zz2m8nr8y3"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (home-page
+     "http://search.cpan.org/dist/Text-NeatTemplate")
+    (synopsis "Fast, middleweight template engine")
+    (description
+     "Text::NeatTemplate provides a simple, middleweight but fast
+template engine, for when you need speed rather than complex features,
+yet need more features than simple variable substitution.")
     (license (package-license perl))))
 
 (define-public perl-text-simpletable
