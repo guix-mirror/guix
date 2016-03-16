@@ -452,18 +452,18 @@ for PATH."
       (call-with-input-file cache-file
         (lambda (p)
           (match (read p)
-            (('narinfo ('version 1)
+            (('narinfo ('version 2)
                        ('cache-uri cache-uri)
-                       ('date date) ('value #f))
+                       ('date date) ('ttl _) ('value #f))
              ;; A cached negative lookup.
              (if (obsolete? date now %narinfo-negative-ttl)
                  (values #f #f)
                  (values #t #f)))
-            (('narinfo ('version 1)
+            (('narinfo ('version 2)
                        ('cache-uri cache-uri)
-                       ('date date) ('value value))
+                       ('date date) ('ttl ttl) ('value value))
              ;; A cached positive lookup
-             (if (obsolete? date now %narinfo-ttl)
+             (if (obsolete? date now ttl)
                  (values #f #f)
                  (values #t (string->narinfo value cache-uri))))
             (('narinfo ('version v) _ ...)
@@ -478,9 +478,10 @@ may be #f, in which case it indicates that PATH is unavailable at CACHE-URL."
     (current-time time-monotonic))
 
   (define (cache-entry cache-uri narinfo)
-    `(narinfo (version 1)
+    `(narinfo (version 2)
               (cache-uri ,cache-uri)
               (date ,(time-second now))
+              (ttl ,%narinfo-ttl)                 ;TODO: Make this per-entry.
               (value ,(and=> narinfo narinfo->string))))
 
   (let ((file (narinfo-cache-file cache-url path)))
@@ -704,12 +705,12 @@ indefinitely."
         (call-with-input-file file
           (lambda (port)
             (match (read port)
-              (('narinfo ('version 1) ('cache-uri _) ('date date)
-                         ('value #f))
+              (('narinfo ('version 2) ('cache-uri _)
+                         ('date date) ('ttl _) ('value #f))
                (obsolete? date now %narinfo-negative-ttl))
-              (('narinfo ('version 1) ('cache-uri _) ('date date)
-                         ('value _))
-               (obsolete? date now %narinfo-ttl))
+              (('narinfo ('version 2) ('cache-uri _)
+                         ('date date) ('ttl ttl) ('value _))
+               (obsolete? date now ttl))
               (_ #t)))))
       (lambda args
         ;; FILE may have been deleted.
