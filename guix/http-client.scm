@@ -243,7 +243,7 @@ Raise an '&http-get-error' condition if downloading fails."
                                                      (base64-encode
                                                       (string->utf8 str))))))
                          (_ '()))))
-      (unless buffered?
+      (unless (or buffered? (not (file-port? port)))
         (setvbuf port _IONBF))
       (let*-values (((resp data)
                      ;; Try hard to use the API du jour to get an input port.
