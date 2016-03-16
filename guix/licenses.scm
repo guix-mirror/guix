@@ -28,7 +28,7 @@
   #:use-module (srfi srfi-9)
   #:export (license? license-name license-uri license-comment
             agpl3 agpl3+
-            asl2.0
+            asl1.1 asl2.0
             boost1.0
             bsd-2 bsd-3 bsd-4
             non-copyleft
@@ -99,6 +99,11 @@
   (license "AGPL 3+"
            "https://gnu.org/licenses/agpl.html"
            "https://gnu.org/licenses/why-affero-gpl.html"))
+
+(define asl1.1
+  (license "ASL 1.1"
+           "http://directory.fsf.org/wiki/License:Apache1.1"
+           "https://www.gnu.org/licenses/license-list#apache1"))
 
 (define asl2.0
   (license "ASL 2.0"
