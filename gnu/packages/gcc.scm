@@ -354,6 +354,8 @@ Go.  It also includes runtime support libraries for these languages.")
                 "1ny4smkp5bzs3cp8ss7pl6lk8yss0d9m4av1mvdp72r1x695akxq"))
               (patches (list (search-patch "gcc-5.0-libvtv-runpath.patch")))))))
 
+;; Note: When changing the default gcc version, update
+;;       the gcc-toolchain-* definitions accordingly.
 (define-public gcc gcc-4.9)
 
 (define-public (make-libstdc++ gcc)

@@ -871,10 +871,10 @@ and binaries, plus debugging symbols in the 'debug' output), and Binutils.")
               ("libc-debug" ,glibc-final "debug")))))
 
 (define-public gcc-toolchain-4.8
-  (gcc-toolchain gcc-final))
+  (gcc-toolchain gcc-4.8))
 
 (define-public gcc-toolchain-4.9
-  (gcc-toolchain gcc-4.9))
+  (gcc-toolchain gcc-final))
 
 (define-public gcc-toolchain-5
   (gcc-toolchain gcc-5))
