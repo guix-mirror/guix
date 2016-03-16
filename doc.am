@@ -129,8 +129,12 @@ HELP2MANFLAGS = --source=GNU --info-page=$(PACKAGE_TARNAME)
 
 # Note: Do not depend on 'scripts/guix' since that would trigger a rebuild
 # even for people building from a tarball.
-doc/guix.1: $(sub_commands_mans)
-	-$(AM_V_HELP2MAN)$(gen_man) --output="$@" `basename "$@" .1`
+doc/guix.1: scripts/guix.in $(GOBJECTS)
+	-@case '$?' in \
+	  *$<*) $(AM_V_P) && set -x || echo "  HELP2MAN $@"; \
+	        $(gen_man) --output="$@" "guix";; \
+	  *)    : ;; \
+	esac
 
 # Note: The dependency on $(GOBJECTS) is meant to force these docs to be made
 # only after all Guile modules have been compiled.  The 'case' ensures the man
