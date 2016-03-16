@@ -108,9 +108,8 @@ disabled!~%"))
 
 (define %narinfo-ttl
   ;; Number of seconds during which cached narinfo lookups are considered
-  ;; valid.  This is a reasonable default value (corresponds to the TTL for
-  ;; nginx's .nar cache on hydra.gnu.org) but we'd rather want publishers to
-  ;; state what their TTL is in /nix-cache-info.  (XXX)
+  ;; valid for substitute servers that do not advertise a TTL via the
+  ;; 'Cache-Control' response header.
   (* 36 3600))
 
 (define %narinfo-negative-ttl
@@ -471,9 +470,10 @@ for PATH."
     (lambda _
       (values #f #f))))
 
-(define (cache-narinfo! cache-url path narinfo)
-  "Cache locally NARNIFO for PATH, which originates from CACHE-URL.  NARINFO
-may be #f, in which case it indicates that PATH is unavailable at CACHE-URL."
+(define (cache-narinfo! cache-url path narinfo ttl)
+  "Cache locally NARNIFO for PATH, which originates from CACHE-URL, with the
+given TTL (a number of seconds or #f).  NARINFO may be #f, in which case it
+indicates that PATH is unavailable at CACHE-URL."
   (define now
     (current-time time-monotonic))
 
@@ -481,7 +481,8 @@ may be #f, in which case it indicates that PATH is unavailable at CACHE-URL."
     `(narinfo (version 2)
               (cache-uri ,cache-uri)
               (date ,(time-second now))
-              (ttl ,%narinfo-ttl)                 ;TODO: Make this per-entry.
+              (ttl ,(or ttl
+                        (if narinfo %narinfo-ttl %narinfo-negative-ttl)))
               (value ,(and=> narinfo narinfo->string))))
 
   (let ((file (narinfo-cache-file cache-url path)))
@@ -584,13 +585,15 @@ if file doesn't exist, and the narinfo otherwise."
         (set! done (+ 1 done)))))
 
   (define (handle-narinfo-response request response port result)
-    (let ((len (response-content-length response)))
+    (let* ((len    (response-content-length response))
+           (cache  (response-cache-control response))
+           (ttl    (and cache (assoc-ref cache 'max-age))))
       ;; Make sure to read no more than LEN bytes since subsequent bytes may
       ;; belong to the next response.
       (case (response-code response)
         ((200)                                     ; hit
          (let ((narinfo (read-narinfo port url #:size len)))
-           (cache-narinfo! url (narinfo-path narinfo) narinfo)
+           (cache-narinfo! url (narinfo-path narinfo) narinfo ttl)
            (update-progress!)
            (cons narinfo result)))
         ((404)                                     ; failure
@@ -601,7 +604,7 @@ if file doesn't exist, and the narinfo otherwise."
                (read-to-eof port))
            (cache-narinfo! url
                            (find (cut string-contains <> hash-part) paths)
-                           #f)
+                           #f ttl)
            (update-progress!)
            result))
         (else                                      ; transient failure
