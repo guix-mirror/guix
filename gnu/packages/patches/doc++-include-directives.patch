@@ -1,0 +1,224 @@
+Adapted from https://sourceforge.net/p/docpp/patches/1/
+
+--- doc++-3.4.10/src/comment.ll	2000-06-24 18:50:23.000000000 +0200
++++ doc++-3.4.10/src/comment.ll	2012-09-17 11:14:50.744922841 +0200
+@@ -24,7 +24,7 @@
+ 
+ #include <assert.h>
+ #include <ctype.h>
+-#include <iostream.h>
++#include <iostream>
+ #include <stdarg.h>
+ #include <stdio.h>
+ 
+--- doc++-3.4.10/src/cpp.ll	2002-05-09 08:11:14.000000000 +0200
++++ doc++-3.4.10/src/cpp.ll	2012-09-17 11:15:21.184333236 +0200
+@@ -26,7 +26,7 @@
+ 
+ #include <assert.h>
+ #include <ctype.h>
+-#include <iostream.h>
++#include <iostream>
+ #include <stdarg.h>
+ #include <stdio.h>
+ 
+--- doc++-3.4.10/src/datahashtable.h	2000-08-27 21:44:34.000000000 +0200
++++ doc++-3.4.10/src/datahashtable.h	2012-09-17 11:22:59.442589960 +0200
+@@ -26,11 +26,13 @@
+ #define _DATAHASHTABLE_H
+ 
+ #include <assert.h>
+-#include <iostream.h>
++#include <iostream>
+ #include <stdlib.h>
+ 
+ #include "McDArray.h"
+ 
++using namespace std;
++
+ /* This should be a private subclass of #DataHashTable#. However, since cfront
+    is not able to compile this constrution, we had move the class to global
+    scope.
+--- doc++-3.4.10/src/doc2dbsgml.ll	2002-05-09 08:11:14.000000000 +0200
++++ doc++-3.4.10/src/doc2dbsgml.ll	2012-09-17 11:20:49.077259414 +0200
+@@ -22,8 +22,8 @@
+ 
+ %{
+ #include <assert.h>
+-#include <fstream.h>
+-#include <iostream.h>
++#include <fstream>
++#include <iostream>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -36,6 +36,8 @@
+ #undef	YY_INPUT
+ #define	YY_INPUT(buf, result, max_size) result = yyread(buf, max_size);
+ 
++using namespace std;
++
+ static Entry*	current;
+ static int	inPos;
+ static int	lastContext;
+--- doc++-3.4.10/src/doc2dbxml.ll	2002-05-09 08:11:14.000000000 +0200
++++ doc++-3.4.10/src/doc2dbxml.ll	2012-09-17 11:20:22.264831159 +0200
+@@ -25,8 +25,8 @@
+ 
+ %{
+ #include <assert.h>
+-#include <fstream.h>
+-#include <iostream.h>
++#include <fstream>
++#include <iostream>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -39,6 +39,8 @@
+ #undef	YY_INPUT
+ #define	YY_INPUT(buf, result, max_size) result = yyread(buf, max_size);
+ 
++using namespace std;
++
+ static Entry*	current;
+ static int	inPos;
+ static int	lastContext;
+--- doc++-3.4.10/src/doc2html.ll	2000-07-17 23:17:24.000000000 +0200
++++ doc++-3.4.10/src/doc2html.ll	2012-09-17 11:22:40.354469631 +0200
+@@ -29,6 +29,8 @@
+ #include "doc.h"
+ #include "nametable.h"
+ 
++using namespace std;
++
+ extern NameTable	gifs;
+ 
+ #define YY_DECL int yylex()
+--- doc++-3.4.10/src/doc2tex.ll	2000-11-05 17:21:16.000000000 +0100
++++ doc++-3.4.10/src/doc2tex.ll	2012-09-17 11:23:22.210701715 +0200
+@@ -23,8 +23,8 @@
+ 
+ %{
+ #include <assert.h>
+-#include <fstream.h>
+-#include <iostream.h>
++#include <fstream>
++#include <iostream>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -38,6 +38,8 @@
+ #undef	YY_INPUT
+ #define	YY_INPUT(buf, result, max_size) result = yyread(buf, max_size);
+ 
++using namespace std;
++
+ static Entry*	current;
+ static int	inPos;
+ static int	lastContext;
+--- doc++-3.4.10/src/doc.ll	2000-09-17 21:41:17.000000000 +0200
++++ doc++-3.4.10/src/doc.ll	2012-09-17 11:15:37.068009454 +0200
+@@ -23,8 +23,8 @@
+ 
+ %{
+ #include <assert.h>
+-#include <fstream.h>
+-#include <iostream.h>
++#include <fstream>
++#include <iostream>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+--- doc++-3.4.10/src/equate.cc	2002-05-02 21:13:10.000000000 +0200
++++ doc++-3.4.10/src/equate.cc	2012-09-17 11:25:42.850669366 +0200
+@@ -23,9 +23,9 @@
+ 
+ #include "config.h"
+ 
+-#include <fstream.h>
++#include <fstream>
+ #include <getopt.h>
+-#include <iostream.h>
++#include <iostream>
+ #include <stdio.h>
+ #include <string.h>
+ 
+--- doc++-3.4.10/src/html.cc	2001-02-17 07:34:49.000000000 +0100
++++ doc++-3.4.10/src/html.cc	2012-09-17 11:24:07.978824681 +0200
+@@ -31,7 +31,7 @@
+ #include <direct.h>
+ #endif
+ #include <errno.h>
+-#include <iostream.h>
++#include <iostream>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+--- doc++-3.4.10/src/java.ll	2001-11-25 18:04:12.000000000 +0100
++++ doc++-3.4.10/src/java.ll	2012-09-17 11:24:19.138834603 +0200
+@@ -26,7 +26,7 @@
+ 
+ #include <assert.h>
+ #include <ctype.h>
+-#include <iostream.h>
++#include <iostream>
+ #include <stdio.h>
+ 
+ #include "doc.h"
+--- doc++-3.4.10/src/main.cc	2002-05-09 08:11:14.000000000 +0200
++++ doc++-3.4.10/src/main.cc	2012-09-17 11:25:30.650719070 +0200
+@@ -25,7 +25,7 @@
+ #include "config.h"
+ 
+ #include <assert.h>
+-#include <fstream.h>
++#include <fstream>
+ #include <getopt.h>
+ #include <locale.h>
+ #include <stdio.h>
+--- doc++-3.4.10/src/nametable.cc	2000-04-08 23:11:54.000000000 +0200
++++ doc++-3.4.10/src/nametable.cc	2012-09-17 11:25:58.894591128 +0200
+@@ -22,7 +22,7 @@
+ */
+ 
+ #include <assert.h>
+-#include <iostream.h>
++#include <iostream>
+ #include <stdlib.h>
+ #include <string.h>
+ 
+--- doc++-3.4.10/src/nametable.h	2000-04-08 23:11:56.000000000 +0200
++++ doc++-3.4.10/src/nametable.h	2012-09-17 11:22:07.826207198 +0200
+@@ -25,7 +25,7 @@
+ #define	_NAME_TABLE_H
+ 
+ #include <assert.h>
+-#include <iostream.h>
++#include <iostream>
+ 
+ #include "datahashtable.h"
+ 
+--- doc++-3.4.10/src/php.ll	2001-02-16 23:34:47.000000000 +0100
++++ doc++-3.4.10/src/php.ll	2012-09-17 11:25:18.582759801 +0200
+@@ -23,7 +23,7 @@
+ %{
+ #include <assert.h>
+ #include <ctype.h>
+-#include <iostream.h>
++#include <iostream>
+ #include <stdio.h>
+ 
+ #include "doc.h"
+--- doc++-3.4.10/src/tex2gif.cc	2001-08-07 20:55:40.000000000 +0200
++++ doc++-3.4.10/src/tex2gif.cc	2012-09-17 11:26:06.698547836 +0200
+@@ -21,8 +21,8 @@
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+ 
+-#include <iostream.h>
+-#include <fstream.h>
++#include <iostream>
++#include <fstream>
+ #include <stdio.h>
+ #include <string.h>
+ 

@@ -458,6 +458,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/dico-libtool-deterministic.patch		\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
   gnu/packages/patches/dfu-programmer-fix-libusb.patch		\
+  gnu/packages/patches/doc++-include-directives.patch		\
+  gnu/packages/patches/doc++-segfault-fix.patch			\
   gnu/packages/patches/doxygen-test.patch			\
   gnu/packages/patches/duplicity-piped-password.patch		\
   gnu/packages/patches/duplicity-test_selection-tmp.patch	\

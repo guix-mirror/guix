@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages xml)
   #:autoload   (gnu packages zip) (unzip))
@@ -87,3 +89,29 @@ programming languages such as C, Objective-C, C#, PHP, Java, Python,
 IDL (Corba, Microsoft, and UNO/OpenOffice flavors), Fortran, VHDL, Tcl,
 and to some extent D.")
     (license gpl3+)))
+
+(define-public doc++
+  (package
+    (name "doc++")
+    (version "3.4.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://sourceforge.net/projects/docpp/"
+                                  "files/doc++-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0i37zlxl8g352s4hzpdx0657k5x3czh3xcsfr27irc708gb277pn"))
+              (patches (search-patches "doc++-include-directives.patch"
+                                       "doc++-segfault-fix.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("flex" ,flex)
+       ("gettext" ,gnu-gettext)))
+    (home-page "http://docpp.sourceforge.net/")
+    (synopsis "Documentation system for C, C++, IDL, and Java")
+    (description
+     "DOC++ is a documentation system for C, C++, IDL, and Java.  It can
+generate both TeX output for high-quality hardcopies or HTML output for online
+brwosing.  The documentation is extracted directly from the C/C++/IDL source
+or Java class files.")
+    (license gpl2+)))
