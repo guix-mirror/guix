@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
@@ -565,16 +565,15 @@ ASCII text files using Gmsh's own scripting language.")
           'install 'clean-install
           ;; Try to keep installed files from leaking build directory names.
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((out     (assoc-ref outputs "out"))
-                  (fortran (assoc-ref inputs  "gfortran")))
+            (let ((out     (assoc-ref outputs "out")))
               (substitute* (map (lambda (file)
                                   (string-append out "/lib/petsc/conf/" file))
                                 '("petscvariables" "PETScConfig.cmake"))
                 (((getcwd)) out))
               ;; Make compiler references point to the store
               (substitute* (string-append out "/lib/petsc/conf/petscvariables")
-                (("= g(cc|\\+\\+|fortran)" _ suffix)
-                 (string-append "= " fortran "/bin/g" suffix)))
+                (("= (gcc|g\\+\\+|gfortran)" _ compiler)
+                 (string-append "= " (which compiler))))
               ;; PETSc installs some build logs, which aren't necessary.
               (for-each (lambda (file)
                           (let ((f (string-append out "/lib/petsc/conf/" file)))
