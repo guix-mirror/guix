@@ -641,6 +641,7 @@ scientific applications modeled by partial differential equations.")
        (method url-fetch)
        (uri (string-append "http://slepc.upv.es/download/download.php?"
                            "filename=slepc-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "1pv5iqz2kc8sj49zsabyz4arnfpana8mjrhq31vzgk16xldk3d1a"))))
