@@ -1717,6 +1717,34 @@ data.")
 code for possible problems.")
     (license (list license:gpl2+ license:gpl3+))))
 
+(define-public r-foreach
+  (package
+    (name "r-foreach")
+    (version "1.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "foreach" version))
+       (sha256
+        (base32
+         "10aqsd3rxz03s1qdb6gsb1cj89mj4vmh491zfpin4skj1xvkzw0y"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-codetools" ,r-codetools)
+       ("r-iterators" ,r-iterators)))
+    (home-page "http://cran.r-project.org/web/packages/foreach")
+    (synopsis "Foreach looping construct for R")
+    (description
+     "This package provides support for the @code{foreach} looping construct.
+@code{foreach} is an idiom that allows for iterating over elements in a
+collection, without the use of an explicit loop counter.  This package in
+particular is intended to be used for its return value, rather than for its
+side effects.  In that sense, it is similar to the standard @code{lapply}
+function, but doesn't require the evaluation of a function.  Using
+@code{foreach} without side effects also facilitates executing the loop in
+parallel.")
+    (license license:asl2.0)))
+
 (define-public r-dt
   (package
     (name "r-dt")
