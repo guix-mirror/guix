@@ -113,8 +113,12 @@ disabled!~%"))
   (* 36 3600))
 
 (define %narinfo-negative-ttl
-  ;; Likewise, but for negative lookups---i.e., cached lookup failures.
+  ;; Likewise, but for negative lookups---i.e., cached lookup failures (404).
   (* 3 3600))
+
+(define %narinfo-transient-error-ttl
+  ;; Likewise, but for transient errors such as 504 ("Gateway timeout").
+  (* 10 60))
 
 (define %narinfo-expired-cache-entry-removal-delay
   ;; How often we want to remove files corresponding to expired cache entries.
@@ -585,34 +589,30 @@ if file doesn't exist, and the narinfo otherwise."
         (set! done (+ 1 done)))))
 
   (define (handle-narinfo-response request response port result)
-    (let* ((len    (response-content-length response))
+    (let* ((code   (response-code response))
+           (len    (response-content-length response))
            (cache  (response-cache-control response))
            (ttl    (and cache (assoc-ref cache 'max-age))))
       ;; Make sure to read no more than LEN bytes since subsequent bytes may
       ;; belong to the next response.
-      (case (response-code response)
-        ((200)                                     ; hit
-         (let ((narinfo (read-narinfo port url #:size len)))
-           (cache-narinfo! url (narinfo-path narinfo) narinfo ttl)
-           (update-progress!)
-           (cons narinfo result)))
-        ((404)                                     ; failure
-         (let* ((path      (uri-path (request-uri request)))
-                (hash-part (string-drop-right path 8))) ; drop ".narinfo"
-           (if len
-               (get-bytevector-n port len)
-               (read-to-eof port))
-           (cache-narinfo! url
-                           (find (cut string-contains <> hash-part) paths)
-                           #f ttl)
-           (update-progress!)
-           result))
-        (else                                      ; transient failure: 504...
-         (if len
-             (get-bytevector-n port len)
-             (read-to-eof port))
-         (update-progress!)
-         result))))
+      (if (= code 200)                            ; hit
+          (let ((narinfo (read-narinfo port url #:size len)))
+            (cache-narinfo! url (narinfo-path narinfo) narinfo ttl)
+            (update-progress!)
+            (cons narinfo result))
+          (let* ((path      (uri-path (request-uri request)))
+                 (hash-part (string-drop-right path 8))) ; drop ".narinfo"
+            (if len
+                (get-bytevector-n port len)
+                (read-to-eof port))
+            (cache-narinfo! url
+                            (find (cut string-contains <> hash-part) paths)
+                            #f
+                            (if (= 404 code)
+                                ttl
+                                %narinfo-transient-error-ttl))
+            (update-progress!)
+            result))))
 
   (define (do-fetch uri port)
     (case (and=> uri uri-scheme)
