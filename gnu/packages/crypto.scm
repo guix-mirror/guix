@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +20,8 @@
 
 (define-module (gnu packages crypto)
   #:use-module (gnu packages)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages libbsd)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -46,3 +49,42 @@
 communication, encryption, decryption, signatures, etc.")
     (license isc)
     (home-page "http://libsodium.org")))
+
+(define-public signify
+  (package
+    (name "signify")
+    (version "17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/aperezdc/signify/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0kfv2k1fqck31vwlnicavb0h541ilad9zd7j8zz8x2kx36wwqpr7"))))
+    (build-system gnu-build-system)
+    ;; TODO Build with libwaive (described in README.md), to implement something
+    ;; like OpenBSD's pledge().
+    (arguments
+     `(#:tests? #f ; no test suite
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libbsd" ,libbsd)))
+    (synopsis "Create and verify cryptographic signatures")
+    (description "The signify utility creates and verifies cryptographic
+signatures using the elliptic curve Ed25519.  This is a Linux port of the
+OpenBSD tool of the same name.")
+    (home-page "https://github.com/aperezdc/signify")
+    ;; This package includes third-party code that was originally released under
+    ;; various non-copyleft licenses. See the source files for clarification.
+    (license (list bsd-3 bsd-4 expat isc public-domain
+                   (non-copyleft "file://base64.c"
+                                 "See base64.c in the distribution for
+                                 the license from IBM.")))))
