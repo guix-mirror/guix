@@ -20,7 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix scripts lint)
-  #:use-module (guix store)
+  #:use-module ((guix store) #:hide (close-connection))
   #:use-module (guix base32)
   #:use-module (guix download)
   #:use-module (guix ftp-client)
@@ -41,7 +41,8 @@
   #:use-module (web uri)
   #:use-module ((guix build download)
                 #:select (maybe-expand-mirrors
-                          open-connection-for-uri))
+                          open-connection-for-uri
+                          close-connection))
   #:use-module (web request)
   #:use-module (web response)
   #:use-module (srfi srfi-1)
@@ -296,7 +297,7 @@ for connections to complete; when TIMEOUT is #f, wait as long as needed."
                    (force-output port)
                    (read-response port))
                  (lambda ()
-                   (close port))))
+                   (close-connection port))))
 
              (case (response-code response)
                ((301 302 307)
