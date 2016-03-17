@@ -1679,6 +1679,26 @@ matrices.  It includes Cholesky decomposition and backsolving as well as
 standard R subsetting and Kronecker products.")
     (license license:gpl2+)))
 
+(define-public r-iterators
+  (package
+    (name "r-iterators")
+    (version "1.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "iterators" version))
+       (sha256
+        (base32
+         "1f057pabs7ss9h1n244can26qsi5n2k3salrdk0b0vkphlrs4kmf"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/iterators")
+    (synopsis "Iterator construct for R")
+    (description
+     "This package provides support for iterators, which allow a programmer to
+traverse through all the elements of a vector, list, or other collection of
+data.")
+    (license license:asl2.0)))
+
 (define-public r-dt
   (package
     (name "r-dt")
