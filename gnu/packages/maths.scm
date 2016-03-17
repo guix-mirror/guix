@@ -406,7 +406,7 @@ plotting engine by third-party applications like Octave.")
 (define-public hdf5
   (package
     (name "hdf5")
-    (version "1.8.12")
+    (version "1.8.17")
     (source
      (origin
       (method url-fetch)
@@ -414,7 +414,7 @@ plotting engine by third-party applications like Octave.")
                           version "/src/hdf5-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "0f9n0v3p3lwc7564791a39c6cn1d3dbrn7d1j3ikqsi27a8hy23d"))))
+       (base32 "0sj8x0gfs5fb28gipnynb9wpkz113h8wq9sva9mxx66kv27xsdgw"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)))
