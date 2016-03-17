@@ -19,7 +19,7 @@
 
 (define-module (guix scripts substitute)
   #:use-module (guix ui)
-  #:use-module (guix store)
+  #:use-module ((guix store) #:hide (close-connection))
   #:use-module (guix utils)
   #:use-module (guix config)
   #:use-module (guix records)
@@ -33,6 +33,7 @@
   #:use-module ((guix build download)
                 #:select (progress-proc uri-abbreviation
                           open-connection-for-uri
+                          close-connection
                           store-path-abbreviation byte-count->string))
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
@@ -200,7 +201,7 @@ provide."
              (unless (or (guile-version>? "2.0.9")
                          (version>? (version) "2.0.9.39"))
                (when port
-                 (close-port port))))
+                 (close-connection port))))
            (begin
              (when (or (not port) (port-closed? port))
                (set! port (open-connection-for-uri uri))
@@ -245,7 +246,7 @@ failure, return #f and #f."
                                (uri->string (http-get-error-uri c))
                                (http-get-error-code c)
                                (http-get-error-reason c))
-                      (close-port port)
+                      (close-connection port)
                       (warning (_ "ignoring substitute server at '~s'~%") url)
                       (values #f #f)))
              (values (read-cache-info (http-fetch uri
@@ -555,7 +556,7 @@ initial connection on which HTTP requests are sent."
              ;; Note that even upon "Connection: close", we can read from BODY.
              (match (assq 'connection (response-headers resp))
                (('connection 'close)
-                (close-port p)
+                (close-connection p)
                 (connect #f tail result))         ;try again
                (_
                 (loop tail result))))))))))       ;keep going
@@ -623,8 +624,7 @@ if file doesn't exist, and the narinfo otherwise."
                                           handle-narinfo-response '()
                                           requests
                                           #:port port)))
-           (unless (port-closed? port)
-             (close-port port))
+           (close-connection port)
            (newline (current-error-port))
            result)))
       ((file #f)
@@ -646,7 +646,7 @@ if file doesn't exist, and the narinfo otherwise."
              (begin
                (warning (_ "'~a' uses different store '~a'; ignoring it~%")
                         url (cache-info-store-directory cache-info))
-               (close-port port)
+               (close-connection port)
                #f)))))
 
 (define (lookup-narinfos cache paths)
@@ -776,7 +776,7 @@ PORT.  REPORT-PROGRESS is a two-argument procedure such as that returned by
 
   (make-custom-binary-input-port "progress-port-proc"
                                  read! #f #f
-                                 (cut close-port port)))
+                                 (cut close-connection port)))
 
 (define-syntax with-networking
   (syntax-rules ()
