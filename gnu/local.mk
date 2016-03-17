@@ -188,6 +188,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/lego.scm				\
   gnu/packages/less.scm				\
   gnu/packages/lesstif.scm			\
+  gnu/packages/libbsd.scm			\
   gnu/packages/libcanberra.scm			\
   gnu/packages/libdaemon.scm			\
   gnu/packages/libedit.scm			\
