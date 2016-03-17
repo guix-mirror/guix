@@ -142,14 +142,14 @@ the freedesktop.org XDG Base Directory specification.")
 (define-public elogind
   (package
     (name "elogind")
-    (version "219.13")
+    (version "219.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wingolog.org/pub/" name "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0swwsgm28radjxf0s05a907wf0n524lckdya0rm3kqw6gy1hiax2"))
+                "1jckc4wx199n1q4r4fv43ibjs6nlq91s39w9r78ilk1z383m1hcx"))
               (modules '((guix build utils)))
               (snippet
                '(begin
