@@ -46,6 +46,7 @@
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
@@ -65,6 +66,7 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages netpbm)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages perl)
@@ -2158,3 +2160,116 @@ are built.  It can generate many different fractal types such as the Mandelbrot
 set.")
     (home-page "http://www.gnu.org/software/xaos/")
     (license license:gpl2+)))
+
+(define-public hypre
+  (package
+    (name "hypre")
+    (version "2.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/LLNL/hypre/archive/"
+                                  "v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0q69ia0jivzcr8p049dn3mg8yjpn6nwq4sw9iqac8vr63vi54l6m"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove use of __DATE__ and __TIME__ for reproducibility;
+                  ;; substitute the tarball creation time.
+                  (substitute* "src/utilities/HYPRE_utilities.h"
+                    (("Date Compiled: .*$")
+                     "Date Compiled: Mar 28 2016 20:19:59 +0000\"\n"))
+                  #t))))
+    (build-system gnu-build-system)
+    (outputs '("out"                    ;6.1 MiB of headers and libraries
+               "doc"))                  ;4.8 MiB of documentation
+    (native-inputs
+     `(("doc++" ,doc++)
+       ("netpbm" ,netpbm)
+       ("texlive" ,texlive)             ;full package required for fonts
+       ("ghostscript" ,ghostscript)))
+    (inputs
+     `(("blas" ,openblas)
+       ("lapack" ,lapack)))
+    (arguments
+     `(#:modules ((srfi srfi-1)
+                  ,@%gnu-build-system-modules)
+       #:configure-flags '("--enable-shared"
+                           "--disable-fortran"
+                           "--without-MPI"
+                           "--with-openmp"
+                           "--with-fei"
+                           "--with-lapack"
+                           "--with-blas")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir-src
+           (lambda _ (chdir "src")))
+         (replace 'configure
+           (lambda* (#:key build target configure-flags
+                           #:allow-other-keys #:rest args)
+             (let* ((configure (assoc-ref %standard-phases 'configure)))
+               (apply configure
+                      (append args
+                              (list #:configure-flags
+                                    (cons (string-append
+                                           "--host=" (or target build))
+                                          configure-flags)))))))
+         (add-after 'build 'build-docs
+           (lambda _
+             (zero? (system* "make" "-Cdocs" "pdf" "html"))))
+         (replace 'check
+           (lambda _
+             (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/hypre/lib"))
+             (setenv "PATH" (string-append "." ":" (getenv "PATH")))
+             (and (system* "make" "check" "CHECKRUN=")
+                  (fold (lambda (filename result)
+                          (and result
+                               (let ((size (stat:size (stat filename))))
+                                 (when (not (zero? size))
+                                   (format #t "~a size ~d; error indication~%"
+                                           filename size))
+                                 (zero? size))))
+                        #t
+                        (find-files "test" ".*\\.err$")))))
+         (add-after 'install 'install-docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Custom install because docs/Makefile doesn't honor ${docdir}.
+             (let* ((doc (assoc-ref outputs "doc"))
+                    (docdir (string-append doc "/share/doc/hypre-" ,version)))
+               (mkdir-p docdir)
+               (with-directory-excursion "docs"
+                 (for-each (lambda (base)
+                             (install-file (string-append base ".pdf") docdir)
+                             (copy-recursively base docdir)) ;html docs
+                           '("HYPRE_usr_manual"
+                             "HYPRE_ref_manual")))
+               #t))))))
+    (home-page "http://www.llnl.gov/casc/hypre/")
+    (synopsis "Library of solvers and preconditioners for linear equations")
+    (description
+     "HYPRE is a software library of high performance preconditioners and
+solvers for the solution of large, sparse linear systems of equations.  It
+features multigrid solvers for both structured and unstructured grid
+problems.")
+    (license license:lgpl2.1)))
+
+(define-public hypre-openmpi
+  (package (inherit hypre)
+    (name "hypre-openmpi")
+    (inputs
+     `(("mpi" ,openmpi)
+       ,@(package-inputs hypre)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments hypre)
+       ((#:configure-flags flags)
+        ``("--with-MPI"
+           ,@(delete "--without-MPI" ,flags)))))
+    (synopsis "Parallel solvers and preconditioners for linear equations")
+    (description
+     "HYPRE is a software library of high performance preconditioners and
+solvers for the solution of large, sparse linear systems of equations on
+parallel computers.  It features parallel multigrid solvers for both
+structured and unstructured grid problems.")))

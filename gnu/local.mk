@@ -535,6 +535,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/hop-linker-flags.patch			\
   gnu/packages/patches/hydra-automake-1.15.patch		\
   gnu/packages/patches/hydra-disable-darcs-test.patch		\
+  gnu/packages/patches/hypre-doc-tables.patch			\
+  gnu/packages/patches/hypre-ldflags.patch			\
   gnu/packages/patches/icecat-avoid-bundled-includes.patch	\
   gnu/packages/patches/icecat-re-enable-DHE-cipher-suites.patch	\
   gnu/packages/patches/icecat-update-bundled-graphite2.patch	\
