@@ -1,14 +1,20 @@
 # This list is used to avoid multiple name/email instances of the same
 # contributors reported by "git log" and "git shortlog" commands.
 
+Al McElrath <hello@yrns.org> <hello@atonesir.com>
 Alexander I. Grafov <grafov@gmail.com>
+Alírio Eyng <alirioeyng@gmail.com>
 Amirouche Boubekki <amirouche@hypermove.net>
+Andreas Enge <andreas@enge.fr> <andreas.enge@inria.fr>
+Andreas Enge <andreas@enge.fr> <privat@xobs-novena>
 Andy Wingo <wingo@igalia.com> <wingo@pobox.com>
-Ben Woodcroft <b.woodcroft@uq.edu.au> <donttrustben@gmail.com>
+Ben Woodcroft <donttrustben@gmail.com> <b.woodcroft@uq.edu.au>
+Ben Woodcroft <donttrustben@gmail.com> <donttrustben near gmail.com>
 Claes Wallin (韋嘉誠) <claes.wallin@greatsinodevelopment.com>
 Cyprien Nicolas <cyprien@nicolas.tf> <c.nicolas+gitorious@gmail.com>
 David Thompson <davet@gnu.org> <dthompson2@worcester.edu>
 David Thompson <davet@gnu.org> <dthompson@member.fsf.org>
+David Thompson <davet@gnu.org> <dthompson@vistahigherlearning.com>
 Deck Pickard <deck.r.pickard@gmail.com> <nebu@kipple>
 Eric Bavier <bavier@member.fsf.org> <ericbavier@gmail.com>
 Eric Dvorsak <eric@dvorsak.fr> <yenda1@gmail.com>
@@ -17,11 +23,15 @@ Joshua Grant <tadni@riseup.net> <gzg@riseup.net>
 Joshua Grant <tadni@riseup.net> <jgrant@parenthetical.io>
 Joshua Grant <tadni@riseup.net> <tadnimi@gmail.com>
 Joshua Grant <tadni@riseup.net> <youlysses@riseup.net>
+Leo Famulari <leo@famulari.name> <lfamular@gmail.com>
 Ludovic Courtès <ludo@gnu.org> <ludovic.courtes@inria.fr>
-Mathieu Lirzin <mthl@openmailbox.org> <mathieu.lirzin@openmailbox.org>
+Mathieu Lirzin <mthl@gnu.org> <mthl@openmailbox.org>
+Mathieu Lirzin <mthl@gnu.org> <mathieu.lirzin@openmailbox.org>
 Nikita Karetnikov <nikita@karetnikov.org> <nikita.karetnikov@gmail.com>
+Nils Gillmann <niasterisk@grrlz.net> <ng@niasterisk.space>
 Pjotr Prins <pjotr.public01@thebird.nl>
 Pjotr Prins <pjotr.public01@thebird.nl> <pjotr.public12@thebird.nl>
+Raimon Grau <raimonster@gmail.com> <raimon@3scale.net>
 Ricardo Wurmus <rekado@elephly.net>
 Ricardo Wurmus <rekado@elephly.net> <ricardo.wurmus@mdc-berlin.de>
 Sou Bunnbu (宋文武) <iyzsong@gmail.com>
