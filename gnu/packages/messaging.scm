@@ -70,7 +70,9 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1x8rliydhbibmzwdbyr7pd7n87m2jmxnqkpvaalnf4154hj1hfwb"))))
+                "1x8rliydhbibmzwdbyr7pd7n87m2jmxnqkpvaalnf4154hj1hfwb"))
+              (patches
+               (list (search-patch "libotr-test-auth-fix.patch")))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgcrypt" ,libgcrypt)))  ; libotr headers include gcrypt.h
