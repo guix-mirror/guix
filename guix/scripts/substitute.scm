@@ -607,10 +607,11 @@ if file doesn't exist, and the narinfo otherwise."
                            #f ttl)
            (update-progress!)
            result))
-        (else                                      ; transient failure
+        (else                                      ; transient failure: 504...
          (if len
              (get-bytevector-n port len)
              (read-to-eof port))
+         (update-progress!)
          result))))
 
   (define (do-fetch uri port)
