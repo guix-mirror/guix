@@ -10135,7 +10135,7 @@ are created using @code{define-record-type*}, you can write a succint
 @var{body} that evaluates to the new service parameters by using the
 @code{inherit} feature that @code{define-record-type*} provides.
 
-@xref{Using the Configuration System} for example usage.
+@xref{Using the Configuration System}, for example usage.
 
 @end deffn
 
