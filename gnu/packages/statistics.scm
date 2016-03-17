@@ -1745,6 +1745,29 @@ function, but doesn't require the evaluation of a function.  Using
 parallel.")
     (license license:asl2.0)))
 
+(define-public r-doparallel
+  (package
+    (name "r-doparallel")
+    (version "1.0.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "doParallel" version))
+       (sha256
+        (base32
+         "1mddx25l25pw9d0csnx2q203dbg5hbrhkr1f08kw0p02a1lln0kh"))))
+    (properties `((upstream-name . "doParallel")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-foreach" ,r-foreach)
+       ("r-iterators" ,r-iterators)))
+    (home-page "http://cran.r-project.org/web/packages/doParallel")
+    (synopsis "Foreach parallel adaptor for the 'parallel' package")
+    (description
+     "This package provides a parallel backend for the @code{%dopar%} function
+using the parallel package.")
+    (license license:gpl2+)))
+
 (define-public r-dt
   (package
     (name "r-dt")
