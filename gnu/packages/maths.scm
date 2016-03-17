@@ -442,6 +442,33 @@ extremely large and complex data collections.")
     (license (license:x11-style
               "http://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
 
+(define-public hdf5-parallel-openmpi
+  (package (inherit hdf5)
+    (name "hdf5-parallel-openmpi")
+    (inputs
+     `(("mpi" ,openmpi)
+       ,@(package-inputs hdf5)))
+    (arguments
+     (substitute-keyword-arguments `(#:configure-flags '("--enable-parallel")
+                                     ,@(package-arguments hdf5))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'check 'patch-tests
+             (lambda _
+               ;; OpenMPI's mpirun will exit with non-zero status if it
+               ;; detects an "abnormal termination", i.e. any process not
+               ;; calling MPI_Finalize().  Since the test is explicitely
+               ;; avoiding MPI_Finalize so as not to have at_exit and thus
+               ;; H5C_flush_cache from being called, mpirun will always
+               ;; complain, so turn this test off.
+               (substitute* "testpar/Makefile"
+                 (("(^TEST_PROG_PARA.*)t_pflush1(.*)" front back)
+                  (string-append front back "\n")))
+               (substitute* "tools/h5diff/testph5diff.sh"
+                 (("/bin/sh") (which "sh")))
+               #t))))))
+    (synopsis "Management suite for data with parallel IO support")))
+
 (define-public nlopt
   (package
     (name "nlopt")
@@ -479,7 +506,6 @@ extremely large and complex data collections.")
 common interface for a number of different free optimization routines available
 online as well as original implementations of various other algorithms.")
     (license license:lgpl2.1+)))
-
 
 ;; For a fully featured Octave, users  are strongly recommended also to install
 ;; the following packages: texinfo, less, ghostscript, gnuplot.
