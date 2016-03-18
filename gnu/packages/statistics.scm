@@ -2046,3 +2046,24 @@ directly from R.  Once uploaded to a plotly account, plotly graphs (and the
 data behind them) can be viewed and modified in a web browser.")
     (license license:x11)))
 
+
+(define-public r-ztable
+  (package
+    (name "r-ztable")
+    (version "0.1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "ztable" version))
+              (sha256
+               (base32
+                "1jfqnqy9544gfvz3bsb48v4177nwp4b4n9l2743asq8sbq305b5r"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/ztable")
+    (synopsis "Zebra-striped tables in LaTeX and HTML formats for R")
+    (description
+     "This package provides functions to make zebra-striped tables (tables
+with alternating row colors) in LaTeX and HTML formats easily from
+@code{data.frame}, @code{matrix}, @code{lm}, @code{aov}, @code{anova},
+@code{glm}, @code{coxph}, @code{nls}, @code{fitdistr}, @code{mytable} and
+@code{cbind.mytable} objects.")
+    (license license:gpl2+)))
