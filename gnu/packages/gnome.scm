@@ -3812,7 +3812,15 @@ such as gzip tarballs.")
                (("#ifdef HAVE_SYSTEMD") "#if 0"))
              (substitute* "gnome-session/gsm-manager.c"
                (("#ifdef HAVE_SYSTEMD") "#if 0"))
-             #t)))
+             #t))
+         (add-after 'install 'wrap-gnome-session
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make sure 'gnome-session' finds the 'gsettings' program.
+             (let ((glib (assoc-ref inputs "glib:bin"))
+                   (out  (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/gnome-session")
+                 `("PATH" ":" prefix (,(string-append glib "/bin"))))
+               #t))))
        #:configure-flags
        '("--enable-elogind")))
     (build-system glib-or-gtk-build-system)
