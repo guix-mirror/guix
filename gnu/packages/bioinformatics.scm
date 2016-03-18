@@ -3952,7 +3952,7 @@ packages.")
     (build-system r-build-system)
     (inputs
      `(("gfortran" ,gfortran)))
-    (home-page "bioconductor.org/packages/DNAcopy")
+    (home-page "https://bioconductor.org/packages/DNAcopy")
     (synopsis "Implementation of a circular binary segmentation algorithm")
     (description "This package implements the circular binary segmentation (CBS)
 algorithm to segment DNA copy number data and identify genomic regions with
