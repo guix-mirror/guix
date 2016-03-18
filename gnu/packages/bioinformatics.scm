@@ -4800,6 +4800,33 @@ Stephens (1990).")
 by UCSC (hg19, February 2009) and stored in Biostrings objects.")
     (license license:artistic2.0)))
 
+(define-public r-motifrg
+  (package
+    (name "r-motifrg")
+    (version "1.14.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "motifRG" version))
+       (sha256
+        (base32
+         "1v9zm5629k2lcqbbgw8bwflvbircyxkfavbkvmbd212kgwcng8vn"))))
+    (properties `((upstream-name . "motifRG")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-biostrings" ,r-biostrings)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-bsgenome.hsapiens.ucsc.hg19" ,r-bsgenome-hsapiens-ucsc-hg19)
+       ("r-iranges" ,r-iranges)
+       ("r-seqlogo" ,r-seqlogo)
+       ("r-xvector" ,r-xvector)))
+    (home-page "http://bioconductor.org/packages/motifRG")
+    (synopsis "Discover motifs in high throughput sequencing data")
+    (description
+     "This package provides tools for discriminative motif discovery in high
+throughput genetic sequencing data sets using regression methods.")
+    (license license:artistic2.0)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
