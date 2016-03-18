@@ -4748,6 +4748,27 @@ annotations for the genome of the model fruit fly Drosophila melanogaster.")
 annotations for the genome of the model mouse Mus musculus.")
     (license license:artistic2.0)))
 
+(define-public r-seqlogo
+  (package
+    (name "r-seqlogo")
+    (version "1.36.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (bioconductor-uri "seqLogo" version))
+       (sha256
+        (base32
+         "0kn1a1nf2j4v9c09vjkz9bmxlln7yhg87bnyrdsxy1m55x56rn5k"))))
+    (properties `((upstream-name . "seqLogo")))
+    (build-system r-build-system)
+    (home-page "http://bioconductor.org/packages/seqLogo")
+    (synopsis "Sequence logos for DNA sequence alignments")
+    (description
+     "seqLogo takes the position weight matrix of a DNA sequence motif and
+plots the corresponding sequence logo as introduced by Schneider and
+Stephens (1990).")
+    (license license:lgpl2.0+)))
+
 (define-public r-qtl
  (package
   (name "r-qtl")
