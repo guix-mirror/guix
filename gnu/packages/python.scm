@@ -8284,3 +8284,33 @@ presume or force a developer to use a particular tool or library.")
   (package (inherit (package-with-python2
                      (strip-python2-variant python-flask)))
     (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+
+(define-public python-cookies
+  (package
+    (name "python-cookies")
+    (version "2.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "cookies" version))
+              (sha256
+               (base32
+                "13pfndz8vbk4p2a44cfbjsypjarkrall71pgc97glk5fiiw9idnn"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; test are broken: https://gitlab.com/sashahart/cookies/issues/3
+       #:tests? #f))
+    (native-inputs
+     `(("python-pytest" ,python2-pytest)))
+    (synopsis "HTTP cookie parser and renderer")
+    (description "A RFC 6265-compliant HTTP cookie parser and renderer in
+Python.")
+    (home-page "https://gitlab.com/sashahart/cookies")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-cookies))))))
+
+(define-public python2-cookies
+  (let ((cookies (package-with-python2
+                  (strip-python2-variant python-cookies))))
+    (package (inherit cookies)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs cookies))))))
