@@ -3292,7 +3292,7 @@ omitted since it will take place implicitly, as we will see later
 @end example
 
 @c See
-@c <https://syntaxexclamation.wordpress.com/2014/06/26/escaping-continuations/> 
+@c <https://syntaxexclamation.wordpress.com/2014/06/26/escaping-continuations/>
 @c for the funny quote.
 Calling the monadic @code{sh-symlink} has no effect.  As someone once
 said, ``you exit a monad like you exit a building on fire: by running''.
@@ -4339,7 +4339,7 @@ So for instance, imagine you want to see the build log of GDB on MIPS,
 but you are actually on an @code{x86_64} machine:
 
 @example
-$ guix build --log-file gdb -s mips64el-linux 
+$ guix build --log-file gdb -s mips64el-linux
 https://hydra.gnu.org/log/@dots{}-gdb-7.10
 @end example
 
@@ -5338,10 +5338,11 @@ Attempt to build for @var{system}---e.g., @code{i686-linux}.
 @itemx -C
 @cindex container
 Run @var{command} within an isolated container.  The current working
-directory outside the container is mapped inside the
-container.  Additionally, the spawned process runs as the current user
-outside the container, but has root privileges in the context of the
-container.
+directory outside the container is mapped inside the container.
+Additionally, a dummy home directory is created that matches the current
+user's home directory, and @file{/etc/passwd} is configured accordingly.
+The spawned process runs as the current user outside the container, but
+has root privileges in the context of the container.
 
 @item --network
 @itemx -N
@@ -8748,7 +8749,7 @@ isn't enough disk space, just skip it.
 @item fcntl
 Use this if possible.  Works with NFS too if lockd is used.
 @item flock
-May not exist in all systems.  Doesn't work with NFS. 
+May not exist in all systems.  Doesn't work with NFS.
 @item lockf
 May not exist in all systems.  Doesn't work with NFS.
 @end table
