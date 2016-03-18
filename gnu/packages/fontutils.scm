@@ -353,37 +353,41 @@ definitions.")
 (define-public fontforge
   (package
    (name "fontforge")
-   (version "20120731-b")               ;aka 1.0
+   (version "20150824")
    (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://sourceforge/fontforge/fontforge_full-"
-                                version ".tar.bz2"))
+            (uri (string-append
+                  "https://github.com/fontforge/fontforge/releases/download/"
+                  version "/fontforge-" version ".tar.gz"))
             (sha256 (base32
-                     "1dhg0i2pf76j40cb9g1wzpag21fgarpjaad0hdbk27i1zz588q8v"))))
+                     "0gfcm8yn1d30giqhdwbchnfnspcqypqdzrxlhqhwy1i18wgl0v2v"))))
    (build-system gnu-build-system)
-   ;; TODO: Add python for scripting support.
-   (inputs `(("gettext"         ,gnu-gettext)
-             ("libtiff"         ,libtiff)
-             ("libjpeg"         ,libjpeg)
-             ("libpng"          ,libpng)
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (inputs `(("cairo"           ,cairo)
+             ("fontconfig"      ,fontconfig) ;dlopen'd
+             ("freetype"        ,freetype)
+             ("gettext"         ,gnu-gettext)
              ("giflib"          ,giflib) ;needs giflib 4.*
-             ("libxml2"         ,libxml2)
-             ("libX11"          ,libx11)
-             ("libXi"           ,libxi)
+             ("glib"            ,glib) ;needed for pango detection
              ("libICE"          ,libice)
              ("libSM"           ,libsm)
-             ("freetype"        ,freetype)
-             ("potrace"         ,potrace)
+             ("libX11"          ,libx11)
+             ("libXi"           ,libxi)
+             ("libjpeg"         ,libjpeg)
+             ("libltdl"         ,libltdl)
+             ("libpng"          ,libpng)
              ("libspiro"        ,libspiro)
-             ("zlib"            ,zlib)
-             ("cairo"           ,cairo)
-             ("fontconfig"      ,fontconfig) ;dlopen'd
+             ("libtiff"         ,libtiff)
              ("libuninameslist" ,libuninameslist)
+             ("libxft"          ,libxft)
+             ("libxml2"         ,libxml2)
              ("pango"           ,pango)
-             ("glib"            ,glib))) ;needed for pango detection
+             ("potrace"         ,potrace)
+             ("python"          ,python)
+             ("zlib"            ,zlib)))
    (arguments
-    '(#:configure-flags `("--enable-double")
-      #:tests? #f
+    '(#:tests? #f
       #:phases
       (alist-cons-before
        'configure 'patch-configure
@@ -423,5 +427,5 @@ definitions.")
     "FontForge allows you to create and modify postscript, truetype and
 opentype fonts.  You can save fonts in many different outline formats, and
 generate bitmaps.")
-   (license license:bsd-3)
+   (license license:gpl3+)
    (home-page "http://fontforge.org/")))
