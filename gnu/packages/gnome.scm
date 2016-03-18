@@ -3820,7 +3820,18 @@ such as gzip tarballs.")
                    (out  (assoc-ref outputs "out")))
                (wrap-program (string-append out "/bin/gnome-session")
                  `("PATH" ":" prefix (,(string-append glib "/bin"))))
+               #t)))
+         (add-after 'install 'disable-hardware-acceleration-check
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Do not abort if hardware acceleration is missing.  This allows
+             ;; GNOME to run in QEMU and on low-end devices.
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* (string-append out
+                                           "/share/xsessions/gnome.desktop")
+                 (("gnome-session")
+                  "gnome-session --disable-acceleration-check"))
                #t))))
+
        #:configure-flags
        '("--enable-elogind")))
     (build-system glib-or-gtk-build-system)
