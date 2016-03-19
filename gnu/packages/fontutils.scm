@@ -360,7 +360,17 @@ definitions.")
                   "https://github.com/fontforge/fontforge/releases/download/"
                   version "/fontforge-" version ".tar.gz"))
             (sha256 (base32
-                     "0gfcm8yn1d30giqhdwbchnfnspcqypqdzrxlhqhwy1i18wgl0v2v"))))
+                     "0gfcm8yn1d30giqhdwbchnfnspcqypqdzrxlhqhwy1i18wgl0v2v"))
+            (modules '((guix build utils)))
+            (snippet
+             ;; Make builds bit-reproducible by using fixed date strings.
+             '(substitute* "configure"
+                (("^FONTFORGE_MODTIME=.*$")
+                 "FONTFORGE_MODTIME=\"1458399002\"\n")
+                (("^FONTFORGE_MODTIME_STR=.*$")
+                 "FONTFORGE_MODTIME_STR=\"15:50 CET 19-Mar-2016\"\n")
+                (("^FONTFORGE_VERSIONDATE=.*$")
+                 "FONTFORGE_VERSIONDATE=\"20160319\"\n")))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
