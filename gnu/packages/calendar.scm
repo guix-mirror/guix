@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -79,12 +79,25 @@ data units.")
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases
-        ;; Bug reported: https://github.com/geier/khal/issues/309
-        (add-after 'unpack 'disable-test
+        (add-after 'unpack 'disable-tests
           (lambda _
+            ;; Bug reported for test_only_update_old_event:
+            ;; https://github.com/geier/khal/issues/309
             (substitute* "tests/khalendar_test.py"
                          (("test_only_update_old_event")
-                          "disabled_only_update_old_event"))))
+                           "disabled_only_update_old_event"))
+
+            ;; Bug reported for test_dt_two_tz:
+            ;; https://github.com/pimutils/khal/issues/382
+            (substitute* "tests/event_test.py"
+                         (("test_dt_two_tz")
+                           "disabled_dt_two_tz"))
+            ;; Another timezone / DST issue:
+            ;; https://github.com/pimutils/khal/issues/146
+            (substitute* "tests/event_test.py"
+                         (("test_raw_dt")
+                           "disabled_raw_dt"))))
+
         ;; Building the manpage requires khal to be installed.
         (add-after 'install 'manpage
           (lambda* (#:key outputs #:allow-other-keys)
@@ -95,6 +108,7 @@ data units.")
             (install-file
               "doc/build/man/khal.1"
               (string-append (assoc-ref outputs "out") "/share/man/man1"))))
+
         ;; The tests require us to choose a timezone.
         (replace 'check
           (lambda* (#:key inputs #:allow-other-keys)
