@@ -84,7 +84,8 @@ baz > 13.37")
          ('version "1.0.0")
          ('source ('origin
                     ('method 'url-fetch)
-                    ('uri (pypi-uri "foo" version))
+                    ('uri (string-append "https://example.com/foo-"
+                                         version ".tar.gz"))
                     ('sha256
                      ('base32
                       (? string? hash)))))

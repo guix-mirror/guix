@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -194,7 +194,15 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
              (version ,version)
              (source (origin
                        (method url-fetch)
-                       (uri (pypi-uri ,name version))
+
+                       ;; Sometimes 'pypi-uri' doesn't quite work due to mixed
+                       ;; cases in NAME, for instance, as is the case with
+                       ;; "uwsgi".  In that case, fall back to a full URL.
+                       (uri ,(if (equal? (pypi-uri name version) source-url)
+                                 `(pypi-uri ,name version)
+                                 `(string-append
+                                   ,@(factorize-uri source-url version))))
+
                        (sha256
                         (base32
                          ,(guix-hash-url temp)))))
