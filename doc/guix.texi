@@ -527,6 +527,14 @@ following packages are also needed:
 C++11 standard.
 @end itemize
 
+When configuring Guix on a system that already has a Guix installation,
+be sure to specify the same state directory as the existing installation
+using the @code{--localstatedir} option of the @command{configure}
+script (@pxref{Directory Variables, @code{localstatedir},, standards,
+GNU Coding Standards}).  The @command{configure} script protects against
+unintended misconfiguration of @var{localstatedir} so you do not
+inadvertently corrupt your store (@pxref{The Store}).
+
 When a working installation of @url{http://nixos.org/nix/, the Nix package
 manager} is available, you
 can instead configure Guix with @code{--disable-daemon}.  In that case,
@@ -2945,9 +2953,9 @@ Sub-directories in the store are referred to as @dfn{store items} or
 sometimes @dfn{store paths}.  The store has an associated database that
 contains information such as the store paths referred to by each store
 path, and the list of @emph{valid} store items---results of successful
-builds.  This database resides in @file{/var/guix/db} (or under whatever
-state directory was specified @i{via} @option{--localstatedir} at
-configure time).
+builds.  This database resides in @file{@var{localstatedir}/guix/db},
+where @var{localstatedir} is the state directory specified @i{via}
+@option{--localstatedir} at configure time, usually @file{/var}.
 
 The store is @emph{always} accessed by the daemon on behalf of its clients
 (@pxref{Invoking guix-daemon}).  To manipulate the store, clients

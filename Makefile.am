@@ -421,7 +421,11 @@ include daemon.am
 endif BUILD_DAEMON
 
 ACLOCAL_AMFLAGS = -I m4
+
+# Pass an explicit '--localstatedir' so that configure does not error out if
+# it finds an existing installation with a different localstatedir.
 AM_DISTCHECK_CONFIGURE_FLAGS =			\
+  --localstatedir="$$dc_install_base/var"	\
   --with-libgcrypt-prefix="$(LIBGCRYPT_PREFIX)"	\
   --with-libgcrypt-libdir="$(LIBGCRYPT_LIBDIR)"	\
   --with-nix-prefix="$(NIX_PREFIX)"		\
