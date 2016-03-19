@@ -113,7 +113,7 @@
       (inputs
        `(("util-linux" ,util-linux)))
       (synopsis "Lightweight universal identifier library")
-      (description "CrossGuid is a minimal @acronym{GUID}/@acronym{UUID}
+      (description "CrossGuid is a minimal GUID/UUID
 generator library for C++.")
       (home-page "https://github.com/graeme-hill/crossguid")
       (license license:expat))))
