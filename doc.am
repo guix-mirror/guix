@@ -129,7 +129,7 @@ HELP2MANFLAGS = --source=GNU --info-page=$(PACKAGE_TARNAME)
 
 # Note: Do not depend on 'scripts/guix' since that would trigger a rebuild
 # even for people building from a tarball.
-doc/guix.1: $(sub_commands_mans)
+doc/guix.1: scripts/guix.in $(sub_commands_mans)
 	-$(AM_V_HELP2MAN)$(gen_man) --output="$@" `basename "$@" .1`
 
 # Note: The dependency on $(GOBJECTS) is meant to force these docs to be made
