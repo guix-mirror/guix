@@ -36,6 +36,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages libphidget)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
@@ -347,6 +348,12 @@ mashups, office (web agendas, mail clients, ...), etc.")
 
        ;; Parallel builds are not supported, as noted in README.
        #:parallel-build? #f))
+    ;; One of the tests ("testing direct invocation can detect calls of too
+    ;; many arguments...") times out when building with a more recent GCC.
+    ;; The problem was reported here:
+    ;; https://lists.gnu.org/archive/html/chicken-hackers/2015-04/msg00059.html
+    (native-inputs
+     `(("gcc" ,gcc-4.8)))
     (home-page "http://www.call-cc.org/")
     (synopsis "R5RS Scheme implementation that compiles native code via C")
     (description
