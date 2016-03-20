@@ -365,6 +365,7 @@ Analysis and Reporting Technology) functionality.")
                "doc"))                            ;5 MiB of gtk-doc HTML
     (arguments
      `(#:tests? #f ; requiring system message dbus
+       #:disallowed-references ("doc")            ;enforce separation of "doc"
        #:configure-flags
        (list "--disable-man"
              "--localstatedir=/var"
