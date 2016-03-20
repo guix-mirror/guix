@@ -504,6 +504,25 @@
       (build-derivations %store (list drv))
       #f)))
 
+(test-assert "derivation #:disallowed-references, ok"
+  (let ((drv (derivation %store "disallowed" %bash
+                         '("-c" "echo hello > $out")
+                         #:inputs `((,%bash))
+                         #:disallowed-references '("out"))))
+    (build-derivations %store (list drv))))
+
+(test-assert "derivation #:disallowed-references, not ok"
+  (let* ((txt (add-text-to-store %store "foo" "Hello, world."))
+         (drv (derivation %store "disdisallowed" %bash
+                          `("-c" ,(string-append "echo " txt "> $out"))
+                          #:inputs `((,%bash) (,txt))
+                          #:disallowed-references (list txt))))
+    (guard (c ((nix-protocol-error? c)
+               ;; There's no specific error message to check for.
+               #t))
+      (build-derivations %store (list drv))
+      #f)))
+
 ;; Here we should get the value of $NIX_STATE_DIR that the daemon sees, which
 ;; is a unique value for each test process; this value is the same as the one
 ;; we see in the process executing this file since it is set by 'test-env'.

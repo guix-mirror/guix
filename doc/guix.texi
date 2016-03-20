@@ -3075,7 +3075,8 @@ a derivation is the @code{derivation} procedure:
   @var{args} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] @
   [#:recursive? #f] [#:inputs '()] [#:env-vars '()] @
   [#:system (%current-system)] [#:references-graphs #f] @
-  [#:allowed-references #f] [#:leaked-env-vars #f] [#:local-build? #f] @
+  [#:allowed-references #f] [#:disallowed-references #f] @
+  [#:leaked-env-vars #f] [#:local-build? #f] @
   [#:substitutable? #t]
 Build a derivation with the given arguments, and return the resulting
 @code{<derivation>} object.
@@ -3093,7 +3094,9 @@ path is exported in the build environment in the corresponding file, in
 a simple text format.
 
 When @var{allowed-references} is true, it must be a list of store items
-or outputs that the derivation's output may refer to.
+or outputs that the derivation's output may refer to.  Likewise,
+@var{disallowed-references}, if true, must be a list of things the
+outputs may @emph{not} refer to.
 
 When @var{leaked-env-vars} is true, it must be a list of strings
 denoting environment variables that are allowed to ``leak'' from the
@@ -3150,6 +3153,7 @@ is now deprecated in favor of the much nicer @code{gexp->derivation}.
        [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] @
        [#:recursive? #f] [#:env-vars '()] [#:modules '()] @
        [#:references-graphs #f] [#:allowed-references #f] @
+       [#:disallowed-references #f] @
        [#:local-build? #f] [#:substitutable? #t] [#:guile-for-build #f]
 Return a derivation that executes Scheme expression @var{exp} as a
 builder for derivation @var{name}.  @var{inputs} must be a list of
@@ -3173,8 +3177,9 @@ terminates by passing the result of @var{exp} to @code{exit}; thus, when
 @code{%guile-for-build} fluid is used instead.
 
 See the @code{derivation} procedure for the meaning of
-@var{references-graphs}, @var{allowed-references}, @var{local-build?},
-and @var{substitutable?}.
+@var{references-graphs}, @var{allowed-references},
+@var{disallowed-references}, @var{local-build?}, and
+@var{substitutable?}.
 @end deffn
 
 @noindent
