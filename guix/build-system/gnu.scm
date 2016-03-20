@@ -296,7 +296,8 @@ standard packages used as implicit inputs of the GNU build system."
                     (imported-modules %gnu-build-system-modules)
                     (modules %default-modules)
                     (substitutable? #t)
-                    allowed-references)
+                    allowed-references
+                    disallowed-references)
   "Return a derivation called NAME that builds from tarball SOURCE, with
 input derivation INPUTS, using the usual procedure of the GNU Build
 System.  The builder is run with GUILE, or with the distro's final Guile
@@ -313,7 +314,8 @@ SUBSTITUTABLE? determines whether users may be able to use substitutes of the
 returned derivations, or whether they should always build it locally.
 
 ALLOWED-REFERENCES can be either #f, or a list of packages that the outputs
-are allowed to refer to."
+are allowed to refer to.  Likewise for DISALLOWED-REFERENCES, which lists
+packages that must not be referenced."
   (define canonicalize-reference
     (match-lambda
      ((? package? p)
@@ -378,6 +380,10 @@ are allowed to refer to."
                                 (and allowed-references
                                      (map canonicalize-reference
                                           allowed-references))
+                                #:disallowed-references
+                                (and disallowed-references
+                                     (map canonicalize-reference
+                                          disallowed-references))
                                 #:guile-for-build guile-for-build))
 
 
@@ -432,7 +438,8 @@ is one of `host' or `target'."
                           (imported-modules %gnu-build-system-modules)
                           (modules %default-modules)
                           (substitutable? #t)
-                          allowed-references)
+                          allowed-references
+                          disallowed-references)
   "Cross-build NAME for TARGET, where TARGET is a GNU triplet.  INPUTS are
 cross-built inputs, and NATIVE-INPUTS are inputs that run on the build
 platform."
@@ -524,6 +531,10 @@ platform."
                                 (and allowed-references
                                      (map canonicalize-reference
                                           allowed-references))
+                                #:disallowed-references
+                                (and disallowed-references
+                                     (map canonicalize-reference
+                                          disallowed-references))
                                 #:guile-for-build guile-for-build))
 
 (define gnu-build-system
