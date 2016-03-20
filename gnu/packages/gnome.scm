@@ -108,6 +108,7 @@
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages fonts)
   #:use-module (srfi srfi-1))
 
 (define-public brasero
@@ -4844,6 +4845,7 @@ software that do not provide their own configuration interface.")
      ;; TODO: Add more packages according to:
      ;;       <https://packages.debian.org/jessie/gnome-core>.
      `(("adwaita-icon-theme"        ,adwaita-icon-theme)
+       ("font-cantarell"            ,font-cantarell)
        ("at-spi2-core"              ,at-spi2-core)
        ("dbus"                      ,dbus)
        ("dconf"                     ,dconf)
