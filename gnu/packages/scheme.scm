@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -309,14 +310,14 @@ mashups, office (web agendas, mail clients, ...), etc.")
 (define-public chicken
   (package
     (name "chicken")
-    (version "4.9.0.1")
+    (version "4.10.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://code.call-cc.org/releases/4.9.0/chicken-"
-                                 version ".tar.gz"))
+             (uri (string-append "http://code.call-cc.org/releases/"
+                                 version "/chicken-" version ".tar.gz"))
              (sha256
               (base32
-               "0598mar1qswfd8hva9nqs88zjn02lzkqd8fzdd21dz1nki1prpq4"))))
+               "16w96jrhb6qf62fgznk53f55yhfv81damghdjn31k5hirnmza1qf"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
