@@ -326,11 +326,12 @@ mashups, office (web agendas, mail clients, ...), etc.")
 
        ;; No `configure' script; run "make check" after "make install" as
        ;; prescribed by README.
-       #:phases (alist-cons-after
-                 'install 'check
-                 (assoc-ref %standard-phases 'check)
-                 (fold alist-delete %standard-phases
-                       '(configure check)))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'check)
+         (add-after 'install 'check
+           (assoc-ref %standard-phases 'check)))
 
        #:make-flags (let ((out (assoc-ref %outputs "out")))
                       (list "PLATFORM=linux"
