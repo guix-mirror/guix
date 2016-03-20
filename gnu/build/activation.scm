@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -91,7 +91,8 @@
     (mkdir-p home)
     (for-each (lambda (file)
                 (let ((target (string-append home "/" file)))
-                  (copy-file (string-append directory "/" file) target)
+                  (copy-recursively (string-append directory "/" file)
+                                    target)
                   (make-file-writable target)))
               files)))
 

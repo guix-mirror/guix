@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -188,7 +188,8 @@ set debug-file-directory ~/.guix-profile/lib/debug\n")))
   "Return a directory containing SKELETONS, a list of name/derivation tuples."
   (computed-file "skel"
                  #~(begin
-                     (use-modules (ice-9 match))
+                     (use-modules (ice-9 match)
+                                  (guix build utils))
 
                      (mkdir #$output)
                      (chdir #$output)
@@ -198,9 +199,10 @@ set debug-file-directory ~/.guix-profile/lib/debug\n")))
                      ;; would just copy the symlinks as is.
                      (for-each (match-lambda
                                  ((target source)
-                                  (copy-file source target)))
+                                  (copy-recursively source target)))
                                '#$skeletons)
-                     #t)))
+                     #t)
+                 #:modules '((guix build utils))))
 
 (define (assert-valid-users/groups users groups)
   "Raise an error if USERS refer to groups not listed in GROUPS."
