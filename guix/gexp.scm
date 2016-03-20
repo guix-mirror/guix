@@ -463,7 +463,7 @@ names and file names suitable for the #:allowed-references argument to
                            (guile-for-build (%guile-for-build))
                            (graft? (%graft?))
                            references-graphs
-                           allowed-references
+                           allowed-references disallowed-references
                            leaked-env-vars
                            local-build? (substitutable? #t)
                            (script-name (string-append name "-builder")))
@@ -497,6 +497,8 @@ text format.
 ALLOWED-REFERENCES must be either #f or a list of output names and packages.
 In the latter case, the list denotes store items that the result is allowed to
 refer to.  Any reference to another store item will lead to a build error.
+Similarly for DISALLOWED-REFERENCES, which can list items that must not be
+referenced by the outputs.
 
 The other arguments are as for 'derivation'."
   (define %modules modules)
@@ -557,6 +559,11 @@ The other arguments are as for 'derivation'."
                                                        #:system system
                                                        #:target target)
                                      (return #f)))
+                       (disallowed (if disallowed-references
+                                       (lower-references disallowed-references
+                                                         #:system system
+                                                         #:target target)
+                                       (return #f)))
                        (guile    (if guile-for-build
                                      (return guile-for-build)
                                      (default-guile-derivation system))))
@@ -585,6 +592,7 @@ The other arguments are as for 'derivation'."
                       #:hash hash #:hash-algo hash-algo #:recursive? recursive?
                       #:references-graphs (and=> graphs graphs-file-names)
                       #:allowed-references allowed
+                      #:disallowed-references disallowed
                       #:leaked-env-vars leaked-env-vars
                       #:local-build? local-build?
                       #:substitutable? substitutable?))))

@@ -600,6 +600,30 @@
       (build-derivations %store (list drv))
       #f)))
 
+(test-assertm "gexp->derivation #:disallowed-references, allowed"
+  (mlet %store-monad ((drv (gexp->derivation "disallowed-refs"
+                                             #~(begin
+                                                 (mkdir #$output)
+                                                 (chdir #$output)
+                                                 (symlink #$output "self")
+                                                 (symlink #$%bootstrap-guile
+                                                          "guile"))
+                                             #:disallowed-references '())))
+    (built-derivations (list drv))))
+
+
+(test-assert "gexp->derivation #:disallowed-references"
+  (let ((drv (run-with-store %store
+               (gexp->derivation "disallowed-refs"
+                                 #~(begin
+                                     (mkdir #$output)
+                                     (chdir #$output)
+                                     (symlink #$%bootstrap-guile "guile"))
+                                 #:disallowed-references (list %bootstrap-guile)))))
+    (guard (c ((nix-protocol-error? c) #t))
+      (build-derivations %store (list drv))
+      #f)))
+
 (define shebang
   (string-append "#!" (derivation->output-path (%guile-for-build))
                  "/bin/guile --no-auto-compile"))

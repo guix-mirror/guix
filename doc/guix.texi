@@ -3670,6 +3670,7 @@ information about monads.)
        [#:recursive? #f] [#:env-vars '()] [#:modules '()] @
        [#:module-path @var{%load-path}] @
        [#:references-graphs #f] [#:allowed-references #f] @
+       [#:disallowed-references #f] @
        [#:leaked-env-vars #f] @
        [#:script-name (string-append @var{name} "-builder")] @
        [#:local-build? #f] [#:substitutable? #t] [#:guile-for-build #f]
@@ -3707,6 +3708,8 @@ text format.
 @var{allowed-references} must be either @code{#f} or a list of output names and packages.
 In the latter case, the list denotes store items that the result is allowed to
 refer to.  Any reference to another store item will lead to a build error.
+Similarly for @var{disallowed-references}, which can list items that must not be
+referenced by the outputs.
 
 The other arguments are as for @code{derivation} (@pxref{Derivations}).
 @end deffn
