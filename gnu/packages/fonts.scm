@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Joshua Grant <tadni@riseup.net>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
@@ -25,6 +25,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages fonts)
+  #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -236,6 +237,25 @@ package provides the TrueType (TTF) files.")
     (license
      (license:x11-style
       "http://www.gnome.org/fonts/#Final_Bitstream_Vera_Fonts"))))
+
+(define-public font-cantarell
+  (package
+    (name "font-abattis-cantarell")
+    (version "0.0.24")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/cantarell-fonts/"
+                                  (version-major+minor version)
+                                  "/cantarell-fonts-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0r4jnc2x9yncf40lixjb1pqgpq8rzbi2fz33pshlqzjgx2d69bcw"))))
+    (build-system gnu-build-system)
+    (home-page "https://wiki.gnome.org/Projects/CantarellFonts")
+    (synopsis "Cantarell sans-serif typeface")
+    (description "The Cantarell font family is a contemporary Humanist
+sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
+    (license license:silofl1.1)))
 
 (define-public font-gnu-freefont-ttf
   (package
