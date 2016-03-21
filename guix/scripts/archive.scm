@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +22,7 @@
   #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module ((guix serialization) #:select (restore-file))
   #:use-module (guix store)
+  #:use-module (guix grafts)
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix monads)
@@ -50,6 +51,7 @@
   ;; Alist of default option values.
   `((system . ,(%current-system))
     (substitutes? . #t)
+    (graft? . #t)
     (max-silent-time . 3600)
     (verbosity . 0)))
 
@@ -318,27 +320,28 @@ the input port."
     ;; user to 'read-derivation' are absolute when it returns.
     (with-fluids ((%file-port-name-canonicalization 'absolute))
       (let ((opts (parse-command-line args %options (list %default-options))))
-        (cond ((assoc-ref opts 'generate-key)
-               =>
-               generate-key-pair)
-              ((assoc-ref opts 'authorize)
-               (authorize-key))
-              (else
-               (let ((store (open-connection)))
-                 (cond ((assoc-ref opts 'export)
-                        (export-from-store store opts))
-                       ((assoc-ref opts 'import)
-                        (import-paths store (current-input-port)))
-                       ((assoc-ref opts 'missing)
-                        (let* ((files   (lines (current-input-port)))
-                               (missing (remove (cut valid-path? store <>)
-                                                files)))
-                          (format #t "~{~a~%~}" missing)))
-                       ((assoc-ref opts 'extract)
-                        =>
-                        (lambda (target)
-                          (restore-file (current-input-port) target)))
-                       (else
-                        (leave
-                         (_ "either '--export' or '--import' \
-must be specified~%")))))))))))
+        (parameterize ((%graft? (assoc-ref opts 'graft?)))
+          (cond ((assoc-ref opts 'generate-key)
+                 =>
+                 generate-key-pair)
+                ((assoc-ref opts 'authorize)
+                 (authorize-key))
+                (else
+                 (with-store store
+                   (cond ((assoc-ref opts 'export)
+                          (export-from-store store opts))
+                         ((assoc-ref opts 'import)
+                          (import-paths store (current-input-port)))
+                         ((assoc-ref opts 'missing)
+                          (let* ((files   (lines (current-input-port)))
+                                 (missing (remove (cut valid-path? store <>)
+                                                  files)))
+                            (format #t "~{~a~%~}" missing)))
+                         ((assoc-ref opts 'extract)
+                          =>
+                          (lambda (target)
+                            (restore-file (current-input-port) target)))
+                         (else
+                          (leave
+                           (_ "either '--export' or '--import' \
+must be specified~%"))))))))))))

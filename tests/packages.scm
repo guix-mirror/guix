@@ -20,6 +20,7 @@
   #:use-module (guix tests)
   #:use-module (guix store)
   #:use-module (guix monads)
+  #:use-module (guix grafts)
   #:use-module ((guix utils)
                 ;; Rename the 'location' binding to allow proper syntax
                 ;; matching when setting the 'location' field of a package.
@@ -54,6 +55,10 @@
 
 (define %store
   (open-connection-for-tests))
+
+;; Globally disable grafting to avoid rebuilding the world ('graft-derivation'
+;; can trigger builds early.)
+(%graft? #f)
 
 
 (test-begin "packages")
@@ -549,17 +554,23 @@
       (package-cross-derivation %store p "mips64el-linux-gnu")
       #f)))
 
-(test-equal "package-derivation, direct graft"
-  (package-derivation %store gnu-make)
-  (let ((p (package (inherit coreutils)
-             (replacement gnu-make))))
-    (package-derivation %store p)))
+;; XXX: The next two tests can trigger builds when the distro defines
+;; replacements on core packages, so they're disable for lack of a better
+;; solution.
 
-(test-equal "package-cross-derivation, direct graft"
-  (package-cross-derivation %store gnu-make "mips64el-linux-gnu")
-  (let ((p (package (inherit coreutils)
-             (replacement gnu-make))))
-    (package-cross-derivation %store p "mips64el-linux-gnu")))
+;; (test-equal "package-derivation, direct graft"
+;;   (package-derivation %store gnu-make #:graft? #f)
+;;   (let ((p (package (inherit coreutils)
+;;              (replacement gnu-make))))
+;;     (package-derivation %store p #:graft? #t)))
+
+;; (test-equal "package-cross-derivation, direct graft"
+;;   (package-cross-derivation %store gnu-make "mips64el-linux-gnu"
+;;                             #:graft? #f)
+;;   (let ((p (package (inherit coreutils)
+;;              (replacement gnu-make))))
+;;     (package-cross-derivation %store p "mips64el-linux-gnu"
+;;                               #:graft? #t)))
 
 (test-assert "package-grafts, indirect grafts"
   (let* ((new   (dummy-package "dep"
@@ -583,11 +594,13 @@
                    (arguments '(#:implicit-inputs? #f))
                    (inputs `(("dep" ,dep*)))))
          (target "mips64el-linux-gnu"))
-    (equal? (package-grafts %store dummy #:target target)
-            (list (graft
-                    (origin (package-cross-derivation %store dep target))
-                    (replacement
-                     (package-cross-derivation %store new target)))))))
+    ;; XXX: There might be additional grafts, for instance if the distro
+    ;; defines replacements for core packages like Perl.
+    (member (graft
+              (origin (package-cross-derivation %store dep target))
+              (replacement
+               (package-cross-derivation %store new target)))
+            (package-grafts %store dummy #:target target))))
 
 (test-assert "package-grafts, indirect grafts, propagated inputs"
   (let* ((new   (dummy-package "dep"
@@ -605,23 +618,51 @@
                     (origin (package-derivation %store dep))
                     (replacement (package-derivation %store new)))))))
 
-(test-assert "package-derivation, indirect grafts"
-  (let* ((new   (dummy-package "dep"
-                  (arguments '(#:implicit-inputs? #f))))
-         (dep   (package (inherit new) (version "0.0")))
-         (dep*  (package (inherit dep) (replacement new)))
-         (dummy (dummy-package "dummy"
-                  (arguments '(#:implicit-inputs? #f))
-                  (inputs `(("dep" ,dep*)))))
-         (guile (package-derivation %store (canonical-package guile-2.0)
-                                    #:graft? #f)))
-    (equal? (package-derivation %store dummy)
-            (graft-derivation %store
-                              (package-derivation %store dummy #:graft? #f)
-                              (package-grafts %store dummy)
+(test-assert "package-grafts, same replacement twice"
+  (let* ((new  (dummy-package "dep"
+                 (version "1")
+                 (arguments '(#:implicit-inputs? #f))))
+         (dep  (package (inherit new) (version "0") (replacement new)))
+         (p1   (dummy-package "intermediate1"
+                 (arguments '(#:implicit-inputs? #f))
+                 (inputs `(("dep" ,dep)))))
+         (p2   (dummy-package "intermediate2"
+                 (arguments '(#:implicit-inputs? #f))
+                 ;; Here we copy DEP to have an equivalent package that is not
+                 ;; 'eq?' to DEP.  This is similar to what happens with
+                 ;; 'package-with-explicit-inputs' & co.
+                 (inputs `(("dep" ,(package (inherit dep)))))))
+         (p3   (dummy-package "final"
+                 (arguments '(#:implicit-inputs? #f))
+                 (inputs `(("p1" ,p1) ("p2" ,p2))))))
+    (equal? (package-grafts %store p3)
+            (list (graft
+                    (origin (package-derivation %store
+                                                (package (inherit dep)
+                                                         (replacement #f))))
+                    (replacement (package-derivation %store new)))))))
 
-                              ;; Use the same Guile as 'package-derivation'.
-                              #:guile guile))))
+;;; XXX: Nowadays 'graft-derivation' needs to build derivations beforehand to
+;;; find out about their run-time dependencies, so this test is no longer
+;;; applicable since it would trigger a full rebuild.
+;;
+;; (test-assert "package-derivation, indirect grafts"
+;;   (let* ((new   (dummy-package "dep"
+;;                   (arguments '(#:implicit-inputs? #f))))
+;;          (dep   (package (inherit new) (version "0.0")))
+;;          (dep*  (package (inherit dep) (replacement new)))
+;;          (dummy (dummy-package "dummy"
+;;                   (arguments '(#:implicit-inputs? #f))
+;;                   (inputs `(("dep" ,dep*)))))
+;;          (guile (package-derivation %store (canonical-package guile-2.0)
+;;                                     #:graft? #f)))
+;;     (equal? (package-derivation %store dummy)
+;;             (graft-derivation %store
+;;                               (package-derivation %store dummy #:graft? #f)
+;;                               (package-grafts %store dummy)
+
+;;                               ;; Use the same Guile as 'package-derivation'.
+;;                               #:guile guile))))
 
 (test-equal "package->bag"
   `("foo86-hurd" #f (,(package-source gnu-make))
@@ -746,6 +787,15 @@
                     (lambda ()
                       (guix-package "-p" (derivation->output-path prof)
                                     "--search-paths"))))))
+
+(test-equal "specification->package when not found"
+  'quit
+  (catch 'quit
+    (lambda ()
+      ;; This should call 'leave', producing an error message.
+      (specification->package "this-package-does-not-exist"))
+    (lambda (key . args)
+      key)))
 
 (test-end "packages")
 

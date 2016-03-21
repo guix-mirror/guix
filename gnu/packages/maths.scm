@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
@@ -177,7 +177,7 @@ numbers.")
 (define-public glpk
   (package
     (name "glpk")
-    (version "4.58")
+    (version "4.59")
     (source
      (origin
       (method url-fetch)
@@ -185,7 +185,7 @@ numbers.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1jmrya04hgwnrxrqqs40i6m9cqka3q601cx3nh9ijyvlg90zlq24"))))
+        "1bpbp5z0378kaj5bqmc5m2j5h9c7553p0s2j6a28badqghpbx673"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)))
@@ -354,9 +354,7 @@ singular value problems.")
               ("pango" ,pango)
               ("gd" ,gd)))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ;; Need 'tex', 'latex', 'pdflatex', 'kpsexand', and
-                     ;; 'texhash' binaries.
-                     ("texlive" ,texlive-bin)))
+                     ("texlive" ,texlive-minimal)))
     (home-page "http://www.gnuplot.info")
     (synopsis "Command-line driven graphing utility")
     (description "Gnuplot is a portable command-line driven graphing
@@ -567,16 +565,15 @@ ASCII text files using Gmsh's own scripting language.")
           'install 'clean-install
           ;; Try to keep installed files from leaking build directory names.
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((out     (assoc-ref outputs "out"))
-                  (fortran (assoc-ref inputs  "gfortran")))
+            (let ((out     (assoc-ref outputs "out")))
               (substitute* (map (lambda (file)
                                   (string-append out "/lib/petsc/conf/" file))
                                 '("petscvariables" "PETScConfig.cmake"))
                 (((getcwd)) out))
               ;; Make compiler references point to the store
               (substitute* (string-append out "/lib/petsc/conf/petscvariables")
-                (("= g(cc|\\+\\+|fortran)" _ suffix)
-                 (string-append "= " fortran "/bin/g" suffix)))
+                (("= (gcc|g\\+\\+|gfortran)" _ compiler)
+                 (string-append "= " (which compiler))))
               ;; PETSc installs some build logs, which aren't necessary.
               (for-each (lambda (file)
                           (let ((f (string-append out "/lib/petsc/conf/" file)))
@@ -643,6 +640,7 @@ scientific applications modeled by partial differential equations.")
        (method url-fetch)
        (uri (string-append "http://slepc.upv.es/download/download.php?"
                            "filename=slepc-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
          "1pv5iqz2kc8sj49zsabyz4arnfpana8mjrhq31vzgk16xldk3d1a"))))

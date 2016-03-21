@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -131,6 +131,12 @@
 (define (default-skeletons)
   "Return the default skeleton files for /etc/skel.  These files are copied by
 'useradd' in the home directory of newly created user accounts."
+  (define fonts.conf-content
+    ;; SXML for ~/.config/fontconfig/fonts.conf.  This works around the fact
+    ;; that Fontconfig currently does not such this directory by default,
+    ;; thereby ignoring fonts installed system-wide (FIXME).
+    `(fontconfig (dir "/run/current-system/profile/share/fonts")))
+
   (define copy-guile-wm
     #~(begin
         (use-modules (guix build utils))
@@ -174,6 +180,22 @@ source /etc/profile\n"))
         (xdefaults (plain-file "Xdefaults" "\
 XTerm*utf8: always
 XTerm*metaSendsEscape: true\n"))
+        (fonts.conf (computed-file
+                     "fonts.conf"
+                     #~(begin
+                         (use-modules (guix build utils)
+                                      (sxml simple))
+
+                         (define dir
+                           (string-append #$output
+                                          "/fontconfig"))
+
+                         (mkdir-p dir)
+                         (call-with-output-file (string-append dir
+                                                             "/fonts.conf")
+                           (lambda (port)
+                             (sxml->xml '#$fonts.conf-content port))))
+                     #:modules '((guix build utils))))
         (gdbinit   (plain-file "gdbinit" "\
 # Tell GDB where to look for separate debugging files.
 set debug-file-directory ~/.guix-profile/lib/debug\n")))
@@ -182,13 +204,15 @@ set debug-file-directory ~/.guix-profile/lib/debug\n")))
       (".zlogin" ,zlogin)
       (".Xdefaults" ,xdefaults)
       (".guile-wm" ,guile-wm)
+      (".config" ,fonts.conf)
       (".gdbinit" ,gdbinit))))
 
 (define (skeleton-directory skeletons)
   "Return a directory containing SKELETONS, a list of name/derivation tuples."
   (computed-file "skel"
                  #~(begin
-                     (use-modules (ice-9 match))
+                     (use-modules (ice-9 match)
+                                  (guix build utils))
 
                      (mkdir #$output)
                      (chdir #$output)
@@ -198,9 +222,10 @@ set debug-file-directory ~/.guix-profile/lib/debug\n")))
                      ;; would just copy the symlinks as is.
                      (for-each (match-lambda
                                  ((target source)
-                                  (copy-file source target)))
+                                  (copy-recursively source target)))
                                '#$skeletons)
-                     #t)))
+                     #t)
+                 #:modules '((guix build utils))))
 
 (define (assert-valid-users/groups users groups)
   "Raise an error if USERS refer to groups not listed in GROUPS."

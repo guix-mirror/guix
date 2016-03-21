@@ -1,8 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,9 @@
   #:use-module (guix packages)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module ((guix build utils)
+                #:select ((package-name->name+version
+                           . hyphen-separated-name->name+version)))
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
@@ -276,56 +280,63 @@ return its return value."
                     (lambda (k signum)
                       (handler signum))))
 
-(define (specification->package spec)
-  "Return a package matching SPEC.  SPEC may be a package name, or a package
-name followed by a hyphen and a version number.  If the version number is not
-present, return the preferred newest version."
-  (let-values (((name version)
-                (package-name->name+version spec)))
-    (match (find-best-packages-by-name name version)
-      ((p)                                      ; one match
-       p)
-      ((p x ...)                                ; several matches
+
+;;;
+;;; Package specification.
+;;;
+
+(define* (%find-package spec name version #:key fallback?)
+  (match (find-best-packages-by-name name version)
+    ((pkg . pkg*)
+     (unless (null? pkg*)
        (warning (_ "ambiguous package specification `~a'~%") spec)
        (warning (_ "choosing ~a from ~a~%")
-                (package-full-name p)
-                (location->string (package-location p)))
-       p)
-      (_                                        ; no matches
-       (if version
-           (leave (_ "~A: package not found for version ~a~%")
-                  name version)
-           (leave (_ "~A: unknown package~%") name))))))
+                (package-full-name pkg)
+                (location->string (package-location pkg))))
+     (when fallback?
+       (warning (_ "deprecated NAME-VERSION syntax; \
+use NAME@VERSION instead~%")))
+     pkg)
+    (_
+     (if version
+         (leave (_ "~A: package not found for version ~a~%") name version)
+         (if (not fallback?)
+             ;; XXX: Fallback to the older specification style with an hyphen
+             ;; between NAME and VERSION, for backward compatibility.
+             (call-with-values
+                 (lambda ()
+                   (hyphen-separated-name->name+version name))
+               (cut %find-package spec <> <> #:fallback? #t))
+
+             ;; The fallback case didn't find anything either, so bail out.
+             (leave (_ "~A: unknown package~%") name))))))
+
+(define (specification->package spec)
+  "Return a package matching SPEC.  SPEC may be a package name, or a package
+name followed by an at-sign and a version number.  If the version number is not
+present, return the preferred newest version."
+  (let-values (((name version) (package-name->name+version spec)))
+    (%find-package spec name version)))
 
 (define* (specification->package+output spec #:optional (output "out"))
   "Return the package and output specified by SPEC, or #f and #f; SPEC may
 optionally contain a version number and an output name, as in these examples:
 
   guile
-  guile-2.0.9
+  guile@2.0.9
   guile:debug
-  guile-2.0.9:debug
+  guile@2.0.9:debug
 
 If SPEC does not specify a version number, return the preferred newest
 version; if SPEC does not specify an output, return OUTPUT."
-  (define (ensure-output p sub-drv)
-    (if (member sub-drv (package-outputs p))
-        sub-drv
-        (leave (_ "package `~a' lacks output `~a'~%")
-               (package-full-name p)
-               sub-drv)))
-
   (let-values (((name version sub-drv)
                 (package-specification->name+version+output spec output)))
-    (match (find-best-packages-by-name name version)
-      ((p)
-       (values p (ensure-output p sub-drv)))
-      ((p p* ...)
-       (warning (_ "ambiguous package specification `~a'~%")
-                spec)
-       (warning (_ "choosing ~a from ~a~%")
-                (package-full-name p)
-                (location->string (package-location p)))
-       (values p (ensure-output p sub-drv)))
-      (()
-       (leave (_ "~a: package not found~%") spec)))))
+    (match (%find-package spec name version)
+      (#f
+       (values #f #f))
+      (package
+       (if (member sub-drv (package-outputs package))
+           (values package sub-drv)
+           (leave (_ "package `~a' lacks output `~a'~%")
+                  (package-full-name package)
+                  sub-drv))))))

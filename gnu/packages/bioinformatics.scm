@@ -1,9 +1,9 @@
-
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
-;;; Copyright © 2015 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +26,7 @@
   #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system perl)
@@ -37,11 +38,13 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages datastructures)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
@@ -246,6 +249,47 @@ allows one to intersect, merge, count, complement, and shuffle genomic
 intervals from multiple files in widely-used genomic file formats such as BAM,
 BED, GFF/GTF, VCF.")
     (license license:gpl2)))
+
+(define-public bioawk
+  (package
+    (name "bioawk")
+    (version "1.0")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/lh3/bioawk/archive/v"
+                          version ".tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32 "1daizxsk17ahi9n58fj8vpgwyhzrzh54bzqhanjanp88kgrz7gjw"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (native-inputs
+     `(("bison" ,bison)))
+    (arguments
+     `(#:tests? #f ; There are no tests to run.
+       ;; Bison must generate files, before other targets can build.
+       #:parallel-build? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure) ; There is no configure phase.
+         (replace 'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (bin  (string-append out "/bin"))
+                   (man (string-append out "/share/man/man1")))
+              (mkdir-p man)
+              (copy-file "awk.1" (string-append man "/bioawk.1"))
+              (install-file "bioawk" bin)))))))
+    (home-page "https://github.com/lh3/bioawk")
+    (synopsis "AWK with bioinformatics extensions")
+    (description "Bioawk is an extension to Brian Kernighan's awk, adding the
+support of several common biological data formats, including optionally gzip'ed
+BED, GFF, SAM, VCF, FASTA/Q and TAB-delimited formats with column names.  It
+also adds a few built-in functions and a command line option to use TAB as the
+input/output delimiter.  When the new functionality is not used, bioawk is
+intended to behave exactly the same as the original BWK awk.")
+    (license license:x11)))
 
 (define-public python2-pybedtools
   (package
@@ -535,10 +579,11 @@ confidence to have in an alignment.")
               (snippet
                `(begin
                   ;; Remove bundled boost, pigz, zlib, and .git directory
-                  ;; FIXME: also remove bundled sources for google-sparsehash,
-                  ;; murmurhash3, kmc once packaged.
+                  ;; FIXME: also remove bundled sources for murmurhash3 and
+                  ;; kmc once packaged.
                   (delete-file-recursively "boost")
                   (delete-file-recursively "pigz")
+                  (delete-file-recursively "google-sparsehash")
                   (delete-file-recursively "zlib")
                   (delete-file-recursively ".git")
                   #t))))
@@ -588,6 +633,7 @@ confidence to have in an alignment.")
     (inputs
      `(("openmpi" ,openmpi)
        ("boost" ,boost)
+       ("sparsehash" ,sparsehash)
        ("pigz" ,pigz)
        ("zlib" ,zlib)))
     (supported-systems '("x86_64-linux"))
@@ -774,6 +820,35 @@ and more accurate.  BWA-MEM also has better performance than BWA-backtrack for
 70-100bp Illumina reads.")
     (license license:gpl3+)))
 
+(define-public bwa-pssm
+  (package (inherit bwa)
+    (name "bwa-pssm")
+    (version "0.5.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/pkerpedjiev/bwa-pssm/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02p7mpbs4mlxmn84g2x4ghak638vbj4lqix2ipx5g84pz9bhdavg"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gdsl" ,gdsl)
+       ("zlib" ,zlib)
+       ("perl" ,perl)))
+    (home-page "http://bwa-pssm.binf.ku.dk/")
+    (synopsis "Burrows-Wheeler transform-based probabilistic short read mapper")
+    (description
+     "BWA-PSSM is a probabilistic short genomic sequence read aligner based on
+the use of @dfn{position specific scoring matrices} (PSSM).  Like many of the
+existing aligners it is fast and sensitive.  Unlike most other aligners,
+however, it is also adaptible in the sense that one can direct the alignment
+based on known biases within the data set.  It is coded as a modification of
+the original BWA alignment program and shares the genome index structure as
+well as many of the command line options.")
+    (license license:gpl3+)))
+
 (define-public python2-bx-python
   (package
     (name "python2-bx-python")
@@ -808,6 +883,91 @@ and more accurate.  BWA-MEM also has better performance than BWA-backtrack for
      "bx-python provides tools for manipulating biological data, particularly
 multiple sequence alignments.")
     (license license:expat)))
+
+(define-public python-pysam
+  (package
+    (name "python-pysam")
+    (version "0.8.4")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pysam" version))
+              (sha256
+               (base32
+                "1slx5mb94mzm5qzk52q270sab0sar95j67w1g1k452nz3s9j7krh"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; tests are excluded in the manifest
+       #:phases
+       (alist-cons-before
+        'build 'set-flags
+        (lambda _
+          (setenv "LDFLAGS" "-lncurses")
+          (setenv "CFLAGS" "-D_CURSES_LIB=1"))
+        %standard-phases)))
+    (inputs
+     `(("ncurses"           ,ncurses)
+       ("zlib"              ,zlib)))
+    (native-inputs
+     `(("python-cython"     ,python-cython)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/pysam-developers/pysam")
+    (synopsis "Python bindings to the SAMtools C API")
+    (description
+     "Pysam is a Python module for reading and manipulating files in the
+SAM/BAM format.  Pysam is a lightweight wrapper of the SAMtools C API.  It
+also includes an interface for tabix.")
+    (license license:expat)))
+
+(define-public python2-pysam
+  (package-with-python2 python-pysam))
+
+(define-public cd-hit
+  (package
+    (name "cd-hit")
+    (version "4.6.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/weizhongli/cdhit"
+                                  "/releases/download/V" version
+                                  "/cd-hit-v" version "-2016-0304.tar.gz"))
+              (sha256
+               (base32
+                "15db0hq38yyifwqx9b6l34z14jcq576dmjavhj8a426c18lvnhp3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:make-flags
+       ;; Executables are copied directly to the PREFIX.
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out") "/bin"))
+       #:phases
+       (modify-phases %standard-phases
+         ;; No "configure" script
+         (delete 'configure)
+         ;; Remove sources of non-determinism
+         (add-after 'unpack 'be-timeless
+           (lambda _
+             (substitute* "cdhit-utility.c++"
+               ((" \\(built on \" __DATE__ \"\\)") ""))
+             (substitute* "cdhit-common.c++"
+               (("__DATE__") "\"0\"")
+               (("\", %s, \" __TIME__ \"\\\\n\", date") ""))
+             #t))
+         ;; The "install" target does not create the target directory
+         (add-before 'install 'create-target-dir
+           (lambda* (#:key outputs #:allow-other-keys)
+             (mkdir-p (string-append (assoc-ref outputs "out") "/bin"))
+             #t)))))
+    (inputs
+     `(("perl" ,perl)))
+    (home-page "http://weizhongli-lab.org/cd-hit/")
+    (synopsis "Cluster and compare protein or nucleotide sequences")
+    (description
+     "CD-HIT is a program for clustering and comparing protein or nucleotide
+sequences.  CD-HIT is designed to be fast and handle extremely large
+databases.")
+    ;; The manual says: "It can be copied under the GNU General Public License
+    ;; version 2 (GPLv2)."
+    (license license:gpl2)))
 
 (define-public clipper
   (package
@@ -847,6 +1007,46 @@ multiple sequence alignments.")
     (description
      "CLIPper is a tool to define peaks in CLIP-seq datasets.")
     (license license:gpl2)))
+
+(define-public codingquarry
+  (package
+    (name "codingquarry")
+    (version "2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/codingquarry/CodingQuarry_v"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0115hkjflsnfzn36xppwf9h9avfxlavr43djqmshkkzbgjzsz60i"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (doc (string-append out "/share/doc/codingquarry")))
+               (install-file "INSTRUCTIONS.pdf" doc)
+               (copy-recursively "QuarryFiles"
+                                 (string-append out "/QuarryFiles"))
+               (install-file "CodingQuarry" bin)
+               (install-file "CufflinksGTF_to_CodingQuarryGFF3.py" bin)))))))
+    (inputs `(("openmpi" ,openmpi)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "QUARRY_PATH")
+            (files '("QuarryFiles")))))
+    (native-inputs `(("python" ,python-2))) ; Only Python 2 is supported
+    (synopsis "Fungal gene predictor")
+    (description "CodingQuarry is a highly accurate, self-training GHMM fungal
+gene predictor designed to work with assembled, aligned RNA-seq transcripts.")
+    (home-page "https://sourceforge.net/projects/codingquarry/")
+    (license license:gpl3+)))
 
 (define-public couger
   (package
@@ -1129,28 +1329,70 @@ other types of unwanted sequence from high-throughput sequencing reads.")
 files.")
     (license license:expat)))
 
+(define-public python-pybigwig
+  (package
+    (name "python-pybigwig")
+    (version "0.2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pyBigWig" version))
+              (sha256
+               (base32
+                "0yrpdxg3y0sny25x4w22lv1k47jzccqjmg7j4bp0hywklvp0hg7d"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled libBigWig sources
+                  (delete-file-recursively "libBigWig")))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'link-with-libBigWig
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "setup.py"
+               (("libs=\\[") "libs=[\"BigWig\", "))
+             #t)))))
+    (inputs
+     `(("libbigwig" ,libbigwig)
+       ("zlib" ,zlib)
+       ("curl" ,curl)))
+    (home-page "https://github.com/dpryan79/pyBigWig")
+    (synopsis "Access bigWig files in Python using libBigWig")
+    (description
+     "This package provides Python bindings to the libBigWig library for
+accessing bigWig files.")
+    (license license:expat)))
+
+(define-public python2-pybigwig
+  (let ((pybigwig (package-with-python2 python-pybigwig)))
+    (package (inherit pybigwig)
+      (native-inputs
+       `(("python-setuptools" ,python2-setuptools))))))
+
 (define-public deeptools
   (package
     (name "deeptools")
-    (version "1.5.11")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/fidelram/deepTools/archive/"
-                    version ".tar.gz"))
+              (uri (string-append "https://github.com/fidelram/deepTools/"
+                                  "archive/" version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1kaagygcbvjs9sxd9cqmskd02wcfp9imvb735r087w7hwqpvz6fs"))))
+                "1nmfin0zjdby3vay3r4flvz94dr6qjhj41ax4yz3vx13j6wz8izd"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
-    (propagated-inputs
+    (inputs
      `(("python-scipy" ,python2-scipy)
        ("python-numpy" ,python2-numpy)
+       ("python-numpydoc" ,python2-numpydoc)
        ("python-matplotlib" ,python2-matplotlib)
        ("python-bx-python" ,python2-bx-python)
-       ("python-pysam" ,python2-pysam)))
+       ("python-pysam" ,python2-pysam)
+       ("python-pybigwig" ,python2-pybigwig)))
     (native-inputs
      `(("python-mock" ,python2-mock) ;for tests
        ("python-pytz" ,python2-pytz) ;for tests
@@ -1851,24 +2093,17 @@ from high-throughput sequencing assays.")
               (snippet '(substitute* "build.xml"
                           (("failifexecutionfails=\"true\"")
                            "failifexecutionfails=\"false\"")))))
-    (build-system gnu-build-system)
+    (build-system ant-build-system)
     (arguments
-     `(#:modules ((srfi srfi-1)
-                  (guix build gnu-build-system)
-                  (guix build utils))
-       #:phases (alist-replace
-                 'build
-                 (lambda _
-                   (setenv "JAVA_HOME" (assoc-ref %build-inputs "jdk"))
-                   (zero? (system* "ant" "all"
-                                   (string-append "-Ddist="
-                                                  (assoc-ref %outputs "out")
-                                                  "/share/java/htsjdk/"))))
-                 (fold alist-delete %standard-phases
-                       '(configure install check)))))
-    (native-inputs
-     `(("ant" ,ant)
-       ("jdk" ,icedtea "jdk")))
+     `(#:tests? #f ; test require Internet access
+       #:make-flags
+       (list (string-append "-Ddist=" (assoc-ref %outputs "out")
+                            "/share/java/htsjdk/"))
+       #:build-target "all"
+       #:phases
+       (modify-phases %standard-phases
+         ;; The build phase also installs the jars
+         (delete 'install))))
     (home-page "http://samtools.github.io/htsjdk/")
     (synopsis "Java API for high-throughput sequencing data (HTS) formats")
     (description
@@ -2404,6 +2639,44 @@ the phenotype as it models the data.")
        "pbtranscript-tofu contains scripts to analyze transcriptome data
 generated using the PacBio Iso-Seq protocol.")
       (license license:bsd-3))))
+
+(define-public pyicoteo
+  (package
+    (name "pyicoteo")
+    (version "2.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://bitbucket.org/regulatorygenomicsupf/"
+                           "pyicoteo/get/v" version ".tar.bz2"))
+       (file-name (string-append name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "0d6087f29xp8wxwlj111c3sylli98n0l8ry58c51ixzq0zfm50wa"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; does not work with Python 3
+       #:tests? #f))      ; there are no tests
+    (inputs
+     `(("python2-matplotlib" ,python2-matplotlib)))
+    (home-page "https://bitbucket.org/regulatorygenomicsupf/pyicoteo")
+    (synopsis "Analyze high-throughput genetic sequencing data")
+    (description
+     "Pyicoteo is a suite of tools for the analysis of high-throughput genetic
+sequencing data.  It works with genomic coordinates.  There are currently six
+different command-line tools:
+
+@enumerate
+@item pyicoregion: for generating exploratory regions automatically;
+@item pyicoenrich: for differential enrichment between two conditions;
+@item pyicoclip: for calling CLIP-Seq peaks without a control;
+@item pyicos: for genomic coordinates manipulation;
+@item pyicoller: for peak calling on punctuated ChIP-Seq;
+@item pyicount: to count how many reads from N experiment files overlap in a
+  region file;
+@item pyicotrocol: to combine operations from pyicoteo.
+@end enumerate\n")
+    (license license:gpl3+)))
 
 (define-public prodigal
   (package
@@ -3664,16 +3937,38 @@ barplots or heatmaps.")
 packages.")
     (license license:artistic2.0)))
 
+(define-public r-dnacopy
+  (package
+    (name "r-dnacopy")
+    (version "1.44.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "DNAcopy" version))
+              (sha256
+               (base32
+                "1c1px4rbr36xx929hp59k7ca9k5ab66qmn8k63fk13278ncm6h66"))))
+    (properties
+     `((upstream-name . "DNAcopy")))
+    (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "https://bioconductor.org/packages/DNAcopy")
+    (synopsis "Implementation of a circular binary segmentation algorithm")
+    (description "This package implements the circular binary segmentation (CBS)
+algorithm to segment DNA copy number data and identify genomic regions with
+abnormal copy number.")
+    (license license:gpl2+)))
+
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
-    (version "0.8.5")
+    (version "0.8.11")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "S4Vectors" version))
               (sha256
                (base32
-                "10f4jxwlwsiy7zhb3kgp6anid0d7wkvrrljl80r3nhx38yr24l5k"))))
+                "12iibcs63m9iy7f45wgjcqsna2dnqwckphk682389grshz0g4x66"))))
     (properties
      `((upstream-name . "S4Vectors")
        (r-repository . bioconductor)))
@@ -3695,13 +3990,13 @@ S4Vectors package itself.")
 (define-public r-iranges
   (package
     (name "r-iranges")
-    (version "2.4.6")
+    (version "2.4.8")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "IRanges" version))
               (sha256
                (base32
-                "00x0266sys1fc5ipa639y84p6m6mgspk2xb099vcwmd3w4hypj9d"))))
+                "0hi5k1j5jm4xrg1l506g279qw1xkvp1gg1zgsjzpbng4vx4k4iyl"))))
     (properties
      `((upstream-name . "IRanges")
        (r-repository . bioconductor)))
@@ -4141,7 +4436,9 @@ extracting the desired features in a convenient format.")
     (version "3.2.2")
     (source (origin
               (method url-fetch)
-              (uri (bioconductor-uri "GO.db" version))
+              (uri (string-append "http://www.bioconductor.org/packages/"
+                                  "release/data/annotation/src/contrib/GO.db_"
+                                  version ".tar.gz"))
               (sha256
                (base32
                 "00gariag9ampz82dh0xllrc26r85d7vdcwc0vca5zdy147rwxr7f"))))
@@ -4453,3 +4750,44 @@ Using a hidden Markov model, R/qtl allows to estimate genetic maps, to
 identify genotyping errors, and to perform single-QTL and two-QTL,
 two-dimensional genome scans.")
   (license license:gpl3)))
+
+(define-public pepr
+  (package
+    (name "pepr")
+    (version "1.0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://pypi.python.org/packages/source/P"
+                                  "/PePr/PePr-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0qxjfdpl1b1y53nccws2d85f6k74zwmx8y8sd9rszcqhfayx6gdx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; python2 only
+       #:tests? #f ; no tests included
+       #:phases
+       (modify-phases %standard-phases
+         ;; When setuptools is used a ".egg" archive is generated and
+         ;; installed.  This makes it hard to actually run PePr.  This issue
+         ;; has been reported upstream:
+         ;; https://github.com/shawnzhangyx/PePr/issues/9
+         (add-after 'unpack 'disable-egg-generation
+           (lambda _
+             (substitute* "setup.py"
+               (("from setuptools import setup")
+                "from distutils.core import setup"))
+             #t)))))
+    (propagated-inputs
+     `(("python2-numpy" ,python2-numpy)
+       ("python2-scipy" ,python2-scipy)
+       ("python2-pysam" ,python2-pysam)))
+    (home-page "https://code.google.com/p/pepr-chip-seq/")
+    (synopsis "Peak-calling and prioritization pipeline for ChIP-Seq data")
+    (description
+     "PePr is a ChIP-Seq peak calling or differential binding analysis tool
+that is primarily designed for data with biological replicates.  It uses a
+negative binomial distribution to model the read counts among the samples in
+the same group, and look for consistent differences between ChIP and control
+group or two ChIP groups run under different conditions.")
+    (license license:gpl3+)))

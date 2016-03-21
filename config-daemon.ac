@@ -110,6 +110,20 @@ if test "x$guix_build_daemon" = "xyes"; then
   dnl Check for <linux/fs.h> (for immutable file support).
   AC_CHECK_HEADERS([linux/fs.h])
 
+  dnl Determine the appropriate default list of substitute URLs.
+  GUILE_MODULE_AVAILABLE([have_gnutls], [(gnutls)])
+  if test "x$have_gnutls" = "xyes"; then
+    guix_substitute_urls="https://mirror.hydra.gnu.org https://hydra.gnu.org"
+  else
+    AC_MSG_WARN([GnuTLS is missing, substitutes will be downloaded in the clear])
+    guix_substitute_urls="http://mirror.hydra.gnu.org http://hydra.gnu.org"
+  fi
+  AC_MSG_CHECKING([for default substitute URLs])
+  AC_MSG_RESULT([$guix_substitute_urls])
+
+  AC_DEFINE_UNQUOTED([GUIX_SUBSTITUTE_URLS], ["$guix_substitute_urls"],
+    [Default list of substitute URLs used by 'guix-daemon'.])
+
   dnl Check whether the 'offload' build hook can be built (uses
   dnl 'restore-file-set', which requires unbuffered custom binary input
   dnl ports from Guile >= 2.0.10.)
@@ -125,6 +139,8 @@ if test "x$guix_build_daemon" = "xyes"; then
   GUIX_TEST_ROOT_DIRECTORY
   GUIX_TEST_ROOT="$ac_cv_guix_test_root"
   AC_SUBST([GUIX_TEST_ROOT])
+
+  GUIX_CHECK_LOCALSTATEDIR
 
   AC_CONFIG_FILES([nix/scripts/list-runtime-roots],
     [chmod +x nix/scripts/list-runtime-roots])

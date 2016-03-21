@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Stefan Reichör <stefan@xsteve.at>
+;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -186,4 +187,26 @@ Ethernet devices.")
 needed/wanted real-time traffic statistics of multiple network
 interfaces, with a simple and efficient view on the command line.  It is
 intended as a substitute for the PPPStatus and EthStatus projects.")
+    (license license:gpl2+)))
+
+(define-public nload
+  (package
+    (name "nload")
+    (version "0.7.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/nload/nload-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1rb9skch2kgqzigf19x8bzk211jdfjfdkrcvaqyj89jy2pkm3h61"))))
+    (build-system gnu-build-system)
+    (inputs `(("ncurses" ,ncurses)))
+    (home-page "http://www.roland-riegel.de/nload/")
+    (synopsis "Realtime console network usage monitor")
+    (description
+     "Nload is a console application which monitors network traffic and
+bandwidth usage in real time.  It visualizes the in- and outgoing traffic using
+two graphs and provides additional info like total amount of transfered data
+and min/max network usage.")
     (license license:gpl2+)))

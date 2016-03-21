@@ -91,3 +91,27 @@ lower level classes for interaction with the X Windowing System.")
     ;; Some source files mention lgpl2.0+, but the included license is
     ;; the lgpl2.1. Some source files are under non-copyleft licenses.
     (license license:lgpl2.1+)))
+
+(define-public oxygen-icons
+  (package
+    (name "oxygen-icons")
+    (version kde-frameworks-version)
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://download.kde.org/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "5-"version ".tar.xz"))
+        (sha256
+         (base32
+          "09vfwcyidj3bl0qr4sq78bkc69zp9x8dwp8bsay5y05q8591dkg0"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qt" ,qt)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Oxygen provides the standard icon theme for the KDE desktop.")
+    (description "Oxygen icon theme for the KDE desktop")
+    (license license:lgpl3+)))

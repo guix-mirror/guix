@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,14 +60,14 @@
           ((name version)
            (let*-values (((full-name)
                           (if version
-                              (string-append name "-" version)
+                              (string-append name "@" version)
                               name))
                          ((name* version*)
                           (package-name->name+version full-name)))
              (and (equal? name* name)
                   (equal? version* version)))))
          '(("foo" "0.9.1b")
-           ("foo-bar" "1.0")
+           ("foo-14-bar" "320")
            ("foo-bar2" #f)
            ("guile" "2.0.6.65-134c9") ; as produced by `git-version-gen'
            ("nixpkgs" "1.0pre22125_a28fe19")

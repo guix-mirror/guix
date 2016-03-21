@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014 Ricardo Wurmus <rekado@elephly.net>
@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -547,14 +548,15 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
 (define-public vigra
   (package
    (name "vigra")
-   (version "1.10.0")
+   (version "1.11.0")
    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://hci.iwr.uni-heidelberg.de/vigra/vigra-"
-                           version "-src.tar.gz"))
-       (sha256 (base32
-                 "16d0jvz3k49niljg9qvvlyxxl15yk0300xkymvyznlmvn1hs7m22"))))
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/ukoethe/vigra/releases/download/"
+                          "Version-1-11-0/vigra-"
+                          version "-src.tar.gz"))
+      (sha256 (base32
+                "1jzm79kqiiilvys3b8mlzy9cvmiirrcwsrlg19qd9rza8zipsqb8"))))
    (build-system cmake-build-system)
    (inputs
     `(("boost" ,boost)
@@ -576,6 +578,7 @@ graphics image formats like PNG, BMP, JPEG, TIFF and others.")
       ("python2-sphinx" ,python2-sphinx)))
    (arguments
     `(#:test-target "check"
+      #:parallel-build? #f ; parallel builds trigger an ICE
       #:configure-flags
         (list "-Wno-dev" ; suppress developer mode with lots of warnings
               (string-append "-DVIGRANUMPY_INSTALL_DIR="
@@ -731,7 +734,10 @@ convert, manipulate, filter and display a wide variety of image formats.")
                   (search-patch "jasper-CVE-2014-8157.patch")
                   (search-patch "jasper-CVE-2014-8158.patch")
                   (search-patch "jasper-CVE-2014-9029.patch")
-                  (search-patch "jasper-CVE-2016-1867.patch")))))
+                  (search-patch "jasper-CVE-2016-1577.patch")
+                  (search-patch "jasper-CVE-2016-1867.patch")
+                  (search-patch "jasper-CVE-2016-2089.patch")
+                  (search-patch "jasper-CVE-2016-2116.patch")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("unzip" ,unzip)))

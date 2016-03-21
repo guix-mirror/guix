@@ -140,7 +140,13 @@ necessary to support this, including @env{PATH} and @env{GUILE_LOAD_PATH}.
 Note that @command{./pre-inst-env guix pull} does @emph{not} upgrade the
 local source tree; it simply updates the @file{~/.config/guix/latest}
 symlink (@pxref{Invoking guix pull}).  Run @command{git pull} instead if
-you want to upgrade your local source tree.
+you want to upgrade your local source tree.@footnote{If you would like
+to set up @command{guix} to use your Git checkout, you can point the
+@file{~/.config/guix/latest} symlink to your Git checkout directory.
+If you are the sole user of your system, you may also consider pointing
+the @file{/root/.config/guix/latest} symlink to point to
+@file{~/.config/guix/latest}; this way it will always use the same
+@command{guix} as your user does.}
 
 
 @node The Perfect Setup

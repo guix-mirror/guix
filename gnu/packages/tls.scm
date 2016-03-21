@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
@@ -179,6 +179,7 @@ required structures.")
 
 (define-public openssl
   (package
+   (replacement openssl-1.0.2g)
    (name "openssl")
    (version "1.0.2f")
    (source (origin
@@ -282,10 +283,64 @@ required structures.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
 
+(define openssl-1.0.2g
+  (package
+    (inherit openssl)
+    (replacement #f)
+    (source
+     (let ((name "openssl") (version "1.0.2g"))
+       (origin
+         (method url-fetch)
+         (uri (list (string-append "ftp://ftp.openssl.org/source/"
+                                   name "-" version ".tar.gz")
+                    (string-append "ftp://ftp.openssl.org/source/old/"
+                                   (string-trim-right version char-set:letter)
+                                   "/" name "-" version ".tar.gz")))
+         (sha256
+          (base32
+           "0cxajjayi859czi545ddafi24m9nwsnjsw4q82zrmqvwj2rv315p"))
+         (patches (map search-patch
+                       '("openssl-runpath.patch"
+                         "openssl-c-rehash-in.patch"))))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments openssl)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (replace 'configure
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (zero?
+                  (system*
+                   "./config"
+
+                   ;; XXX TEMPORARY, FOR GRAFTING ONLY
+                   ;;     Enable ssl2 code to preserve
+                   ;;     ABI compatibility with 1.0.2f
+                   "enable-ssl2"
+
+                   "shared"             ;build shared libraries
+                   "--libdir=lib"
+
+                   ;; The default for this catch-all directory is
+                   ;; PREFIX/ssl.  Change that to something more
+                   ;; conventional.
+                   (string-append "--openssldir=" out
+                                  "/share/openssl-" ,(package-version openssl))
+
+                   (string-append "--prefix=" out)
+
+                   ;; XXX FIXME: Work around a code generation bug in GCC
+                   ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
+                   ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
+                   ,@(if (and (not (%current-target-system))
+                              (string-prefix? "armhf" (%current-system)))
+                         '("-mfpu=vfpv3")
+                         '()))))))))))))
+
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.2.5")
+    (version "2.2.6")
     (source
      (origin
       (method url-fetch)
@@ -293,7 +348,7 @@ required structures.")
              "http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-"
              version ".tar.gz"))
       (sha256 (base32
-               "0jwidi7fafcdh5qml72dx0ad0kfsk94qxzm29i7wd3cx8v8dxjp3"))))
+               "0kynb15l5gq1qgp3p4ncn20sc65sbl8lk89vyr07s17xrya9kq8y"))))
     (build-system gnu-build-system)
     (native-search-paths
       ;; FIXME: These two variables must designate a single file or directory
@@ -321,13 +376,13 @@ security, and applying best practice development processes.")
 (define-public python-acme
   (package
     (name "python-acme")
-    (version "0.4.0")
+    (version "0.4.2")
     (source (origin
       (method url-fetch)
       (uri (pypi-uri "acme" version))
       (sha256
         (base32
-         "173j2zkslh43fzf3wkl1jdzfjry361m0mhlc3jpwp7hk7lrclzjg"))))
+         "1dh0qlsi309b37wa0nw0h2gvs94yk12lc4mhr3rb9c4h46m0hn8a"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -380,13 +435,13 @@ security, and applying best practice development processes.")
 (define-public letsencrypt
   (package
     (name "letsencrypt")
-    (version "0.4.0")
+    (version "0.4.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "letsencrypt" version))
               (sha256
                (base32
-                "1wwq8yvfdybf4d0gv4yfddkrg865s7rhng5xg563kks4wza1a2wp"))))
+                "1rjbblj60w7jwc5y04sy6fbxcynvakvazikg1pdmhyic5jmj9bg3"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2

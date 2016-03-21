@@ -177,7 +177,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.21")
+    (version "3.21.1")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -188,7 +188,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0fbjx3xsdm4gjc1gyzy2z315cvyw7yilsm7p9w75rpbwgl15nyiz"))
+                "0knr99yc8sba2ga6x1gwhg9gr1dmgcl344g3bmxm8c364i2vpxns"))
               ;; Create nss.pc and nss-config.
               (patches (list (search-patch "nss-pkgconfig.patch")))))
     (build-system gnu-build-system)
@@ -290,7 +290,25 @@ standards.")
       (patches (map search-patch
                     '("icecat-avoid-bundled-includes.patch"
                       "icecat-re-enable-DHE-cipher-suites.patch"
-                      "icecat-update-graphite2.patch")))
+                      "icecat-update-graphite2.patch"
+                      "icecat-update-graphite2-pt2.patch"
+                      "icecat-CVE-2015-4477.patch"
+                      "icecat-CVE-2015-7207.patch"
+                      "icecat-CVE-2016-1952-pt01.patch"
+                      "icecat-CVE-2016-1952-pt02.patch"
+                      "icecat-CVE-2016-1952-pt03.patch"
+                      "icecat-CVE-2016-1952-pt04.patch"
+                      "icecat-CVE-2016-1952-pt05.patch"
+                      "icecat-CVE-2016-1952-pt06.patch"
+                      "icecat-CVE-2016-1954.patch"
+                      "icecat-CVE-2016-1960.patch"
+                      "icecat-CVE-2016-1961.patch"
+                      "icecat-CVE-2016-1962.patch"
+                      "icecat-CVE-2016-1964.patch"
+                      "icecat-CVE-2016-1965.patch"
+                      "icecat-CVE-2016-1966.patch"
+                      "icecat-CVE-2016-1974.patch"
+                      "icecat-bug-1248851.patch")))
       (modules '((guix build utils)))
       (snippet
        '(begin

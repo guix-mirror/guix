@@ -64,7 +64,7 @@ $(AUTOLOADS): $(ELFILES)
 	$(AM_V_EMACS)$(EMACS) --batch --eval				\
 	  "(let ((backup-inhibited t)					\
 	         (generated-autoload-file				\
-	          (expand-file-name \"$(AUTOLOADS)\" \"$(srcdir)\")))	\
+	          (expand-file-name \"$(AUTOLOADS)\" \"$(builddir)\")))	\
 	     (update-directory-autoloads				\
 	      (expand-file-name \"emacs\" \"$(srcdir)\")))"
 

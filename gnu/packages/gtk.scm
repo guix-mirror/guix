@@ -433,6 +433,35 @@ in the GNOME project.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/gdk-pixbuf/")))
 
+;; To build gdk-pixbuf with SVG support, we need librsvg, and librsvg depends
+;; on gdk-pixbuf, so this new varibale.  Also, librsvg adds 90MiB to the
+;; closure size.
+(define-public gdk-pixbuf+svg
+  (package (inherit gdk-pixbuf)
+    (name "gdk-pixbuf+svg")
+    (inputs
+     `(("librsvg" ,librsvg)
+       ,@(package-inputs gdk-pixbuf)))
+    (arguments
+     '(#:configure-flags '("--with-x11")
+       #:tests? #f ; tested by the gdk-pixbuf package already
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'register-svg-loader
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (librsvg (assoc-ref inputs "librsvg"))
+                    (loaders
+                     (append
+                      (find-files out "^libpixbufloader-.*\\.so$")
+                      (find-files librsvg "^libpixbufloader-.*\\.so$")))
+                    (gdk-pixbuf-query-loaders
+                     (string-append out "/bin/gdk-pixbuf-query-loaders")))
+               (zero? (apply system* `(,gdk-pixbuf-query-loaders
+                                       "--update-cache" ,@loaders)))))))))
+    (synopsis
+     "GNOME image loading and manipulation library, with SVG support")))
+
 (define-public at-spi2-core
   (package
    (name "at-spi2-core")

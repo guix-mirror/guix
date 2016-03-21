@@ -63,17 +63,21 @@
 (define-public libotr
   (package
     (name "libotr")
-    (version "4.1.0")
+    (version "4.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://otr.cypherpunks.ca/libotr-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "0c6rkh58s6wqzcrpccwdik5qs91qj6dgd60a340d72gc80cqknsg"))))
+               (base32
+                "1x8rliydhbibmzwdbyr7pd7n87m2jmxnqkpvaalnf4154hj1hfwb"))
+              (patches
+               (list (search-patch "libotr-test-auth-fix.patch")))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgcrypt" ,libgcrypt)))  ; libotr headers include gcrypt.h
     (inputs `(("libgpg-error" ,libgpg-error)))
+    (native-inputs `(("perl" ,perl))) ; for the test suite
     (synopsis "Off-the-Record (OTR) Messaging Library and Toolkit")
     (description
      "OTR allows you to have private conversations over instant messaging by
@@ -88,27 +92,16 @@ keys, no previous conversation is compromised.")
     (home-page "https://otr.cypherpunks.ca/")
     (license (list lgpl2.1 gpl2))))
 
-(define-public libotr-3
-  (package (inherit libotr)
-    (version "3.2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://otr.cypherpunks.ca/libotr-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32 "1x6dd4rh499hdraiqfhz81igrj0a5rs0gjhc8l4sljwqhjjyla6l"))))))
-
 (define-public bitlbee
   (package
     (name "bitlbee")
-    (version "3.4")
+    (version "3.4.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://get.bitlbee.org/src/bitlbee-"
+              (uri (string-append "https://get.bitlbee.org/src/bitlbee-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "0plx4dryf8i6hz7vghg84z5f6w6rkw1l8ckl4c4wh5zxpd3ddfnf"))
-              (patches (list (search-patch "bitlbee-configure-doc-fix.patch")))))
+               (base32 "1qf0ypa9ba5jvsnpg9slmaran16hcc5fnfzbb1sdch1hjhchn2jh"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("check" ,check)))
@@ -327,14 +320,14 @@ chat protocols.")
 (define-public pidgin-otr
   (package
     (name "pidgin-otr")
-    (version "4.0.1")
+    (version "4.0.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://otr.cypherpunks.ca/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "02pkkf86fh5jvzsdn9y78impsgzj1n0p81kc2girvk3vq941yy0v"))))
+                "1i5s9rrgbyss9rszq6c6y53hwqyw1k86s40cpsfx5ccl9bprxdgl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

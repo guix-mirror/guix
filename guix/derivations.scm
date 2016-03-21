@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -695,7 +695,8 @@ HASH-ALGO, of the derivation NAME.  RECURSIVE? has the same meaning as for
                      (system (%current-system)) (env-vars '())
                      (inputs '()) (outputs '("out"))
                      hash hash-algo recursive?
-                     references-graphs allowed-references
+                     references-graphs
+                     allowed-references disallowed-references
                      leaked-env-vars local-build?
                      (substitutable? #t))
   "Build a derivation with the given arguments, and return the resulting
@@ -710,7 +711,8 @@ pairs.  In that case, the reference graph of each store path is exported in
 the build environment in the corresponding file, in a simple text format.
 
 When ALLOWED-REFERENCES is true, it must be a list of store items or outputs
-that the derivation's output may refer to.
+that the derivation's outputs may refer to.  Likewise, DISALLOWED-REFERENCES,
+if true, must be a list of things the outputs may not refer to.
 
 When LEAKED-ENV-VARS is true, it must be a list of strings denoting
 environment variables that are allowed to \"leak\" from the daemon's
@@ -767,6 +769,10 @@ output should not be used."
                       ,@(if allowed-references
                             `(("allowedReferences"
                                . ,(string-join allowed-references)))
+                            '())
+                      ,@(if disallowed-references
+                            `(("disallowedReferences"
+                               . ,(string-join disallowed-references)))
                             '())
                       ,@(if leaked-env-vars
                             `(("impureEnvVars"
@@ -1112,6 +1118,7 @@ they can refer to each other."
                                        guile-for-build
                                        references-graphs
                                        allowed-references
+                                       disallowed-references
                                        local-build? (substitutable? #t))
   "Return a derivation that executes Scheme expression EXP as a builder
 for derivation NAME.  INPUTS must be a list of (NAME DRV-PATH SUB-DRV)
@@ -1132,7 +1139,7 @@ EXP is built using GUILE-FOR-BUILD (a derivation).  When GUILE-FOR-BUILD is
 omitted or is #f, the value of the `%guile-for-build' fluid is used instead.
 
 See the `derivation' procedure for the meaning of REFERENCES-GRAPHS,
-ALLOWED-REFERENCES, LOCAL-BUILD?, and SUBSTITUTABLE?."
+ALLOWED-REFERENCES, DISALLOWED-REFERENCES, LOCAL-BUILD?, and SUBSTITUTABLE?."
   (define guile-drv
     (or guile-for-build (%guile-for-build)))
 
@@ -1258,6 +1265,7 @@ ALLOWED-REFERENCES, LOCAL-BUILD?, and SUBSTITUTABLE?."
                 #:outputs outputs
                 #:references-graphs references-graphs
                 #:allowed-references allowed-references
+                #:disallowed-references disallowed-references
                 #:local-build? local-build?
                 #:substitutable? substitutable?)))
 

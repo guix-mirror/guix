@@ -36,6 +36,10 @@
   (concat ".*\\." (regexp-opt guix-help-system-types) "\\'")
   "Regexp matching a full name of Hydra job (including system).")
 
+(defun guix-hydra-job-name-specification (name version)
+  "Return Hydra's job name specification by NAME and VERSION."
+  (concat name "-" version))
+
 (defun guix-hydra-message (entries search-type &rest _)
   "Display a message after showing Hydra ENTRIES."
   ;; XXX Add more messages maybe.

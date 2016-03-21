@@ -10,6 +10,7 @@
 ;;; Copyright © 2015 xd1le <elisp.vim@gmail.com>
 ;;; Copyright © 2015 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,9 +67,20 @@
                (base32
                 "0d574mbmhaqmh7kivaryj2hpghz6xkvic9ah43s1hf385y7c33kd"))))
     (build-system python-build-system)
-    (arguments `(#:python ,python-2     ;incompatible with python 3
-                 #:tests? #f))          ;no tests
-    (inputs `(("pygtk" ,python2-pygtk)))
+    (arguments
+     `(#:python ,python-2     ;incompatible with python 3
+       #:tests? #f ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'make-xrandr-available
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/arandr")
+               `("PATH" ":" prefix (,(string-append (assoc-ref inputs "xrandr")
+                                                    "/bin"))))
+             #t)))))
+    (inputs `(("pygtk" ,python2-pygtk)
+              ("xrandr" ,xrandr)))
     (native-inputs `(("gettext"           ,gnu-gettext)
                      ("python-docutils"   ,python2-docutils)
                      ("python-setuptools" ,python2-setuptools)))

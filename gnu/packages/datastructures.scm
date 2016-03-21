@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +22,29 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
+
+(define-public gdsl
+  (package
+    (name "gdsl")
+    (version "1.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.gna.org/gdsl/"
+                                  "gdsl-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1v64jvlnj8jfpphphgjgb36p0kv50kwfyqncf0y12f16v8ydyiaw"))))
+    (build-system gnu-build-system)
+    (home-page "http://home.gna.org/gdsl/")
+    (synopsis "Generic data structures library")
+    (description "The Generic Data Structures Library (GDSL) is a collection
+of routines for generic data structures manipulation.  It is a re-entrant
+library fully written from scratch in pure ANSI C.  It is designed to offer
+for C programmers common data structures with powerful algorithms, and hidden
+implementation.  Available structures are lists, queues, stacks, hash tables,
+binary trees, binary search trees, red-black trees, 2D arrays, permutations
+and heaps.")
+    (license license:gpl2+)))
 
 (define-public sparsehash
   (package

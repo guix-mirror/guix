@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -132,21 +132,23 @@ given by REPLACEMENT."
 ;;;
 
 (define* (derivation-narinfo drv #:key (nar "example.nar")
-                             (sha256 (make-bytevector 32 0)))
-  "Return the contents of the narinfo corresponding to DRV; NAR should be the
-file name of the archive containing the substitute for DRV, and SHA256 is the
-expected hash."
+                             (sha256 (make-bytevector 32 0))
+                             (references '()))
+  "Return the contents of the narinfo corresponding to DRV, with the specified
+REFERENCES (a list of store items); NAR should be the file name of the archive
+containing the substitute for DRV, and SHA256 is the expected hash."
   (format #f "StorePath: ~a
 URL: ~a
 Compression: none
 NarSize: 1234
 NarHash: sha256:~a
-References: 
+References: ~a
 System: ~a
 Deriver: ~a~%"
           (derivation->output-path drv)       ; StorePath
           nar                                 ; URL
           (bytevector->nix-base32-string sha256)  ; NarHash
+          (string-join (map basename references)) ; References
           (derivation-system drv)             ; System
           (basename
            (derivation-file-name drv))))      ; Deriver
@@ -157,7 +159,9 @@ Deriver: ~a~%"
           (compose uri-path string->uri))))
 
 (define* (call-with-derivation-narinfo drv thunk
-                                       #:key (sha256 (make-bytevector 32 0)))
+                                       #:key
+                                       (sha256 (make-bytevector 32 0))
+                                       (references '()))
   "Call THUNK in a context where fake substituter data, as read by 'guix
 substitute', has been installed for DRV.  SHA256 is the hash of the
 expected output of DRV."
@@ -174,27 +178,36 @@ expected output of DRV."
                     (%store-prefix))))
         (call-with-output-file narinfo
           (lambda (p)
-            (display (derivation-narinfo drv #:sha256 sha256) p))))
+            (display (derivation-narinfo drv #:sha256 sha256
+                                         #:references references)
+                     p))))
       thunk
       (lambda ()
         (delete-file narinfo)
         (delete-file info)))))
 
 (define-syntax with-derivation-narinfo
-  (syntax-rules (sha256 =>)
+  (syntax-rules (sha256 references =>)
     "Evaluate BODY in a context where DRV looks substitutable from the
 substituter's viewpoint."
-    ((_ drv (sha256 => hash) body ...)
+    ((_ drv (sha256 => hash) (references => refs) body ...)
      (call-with-derivation-narinfo drv
        (lambda () body ...)
-       #:sha256 hash))
+       #:sha256 hash
+       #:references refs))
+    ((_ drv (sha256 => hash) body ...)
+     (with-derivation-narinfo drv
+       (sha256 => hash) (references => '())
+       body ...))
     ((_ drv body ...)
      (call-with-derivation-narinfo drv
        (lambda ()
          body ...)))))
 
 (define* (call-with-derivation-substitute drv contents thunk
-                                          #:key sha256)
+                                          #:key
+                                          sha256
+                                          (references '()))
   "Call THUNK in a context where a substitute for DRV has been installed,
 using CONTENTS, a string, as its contents.  If SHA256 is true, use it as the
 expected hash of the substitute; otherwise use the hash of the nar containing
@@ -214,7 +227,8 @@ CONTENTS."
         ;; Create fake substituter data, to be read by 'guix substitute'.
         (call-with-derivation-narinfo drv
           thunk
-          #:sha256 (or sha256 hash))))
+          #:sha256 (or sha256 hash)
+          #:references references)))
     (lambda ()
       (delete-file (string-append dir "/example.out"))
       (delete-file (string-append dir "/example.nar")))))
@@ -231,13 +245,18 @@ all included."
   (> (string-length shebang) 128))
 
 (define-syntax with-derivation-substitute
-  (syntax-rules (sha256 =>)
+  (syntax-rules (sha256 references =>)
     "Evaluate BODY in a context where DRV is substitutable with the given
 CONTENTS."
-    ((_ drv contents (sha256 => hash) body ...)
+    ((_ drv contents (sha256 => hash) (references => refs) body ...)
      (call-with-derivation-substitute drv contents
        (lambda () body ...)
-       #:sha256 hash))
+       #:sha256 hash
+       #:references refs))
+    ((_ drv contents (sha256 => hash) body ...)
+     (with-derivation-substitute drv contents
+       (sha256 => hash) (references => '())
+       body ...))
     ((_ drv contents body ...)
      (call-with-derivation-substitute drv contents
        (lambda ()

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -117,6 +117,11 @@ file name pairs."
                    (chmod output (stat:perms stat))))))))
         (else
          (error "unsupported file type" stat)))))
+
+  ;; XXX: Work around occasional "suspicious ownership or permission" daemon
+  ;; errors that arise when we create the top-level /gnu/store/… directory as
+  ;; #o777.
+  (umask #o022)
 
   (n-par-for-each (parallel-job-count)
                   rewrite-leaf (find-files directory)))

@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,15 +90,14 @@ with a flexible variety of user interfaces.")
 (define-public cppunit
   (package
     (name "cppunit")
-    (version "1.12.1")
+    (version "1.13.2")
     (source (origin
              (method url-fetch)
-              (uri (string-append "mirror://sourceforge/cppunit/" name "/"
-                                  name "-"
-                                  version ".tar.gz"))
+              (uri (string-append "http://dev-www.libreoffice.org/src/"
+                                  name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0jm49v5rmc5qw34vqs56gy8xja1dhci73bmh23cig4kcir6a0a5c"))))
+               "17s2kzmkw3kfjhpp72rfppyd7syr7bdq5s69syj2nvrlwd3d4irz"))))
     ;; Explicitly link with libdl. This is expected to be done by packages
     ;; relying on cppunit for their tests. However, not all of them do.
     ;; If we added the linker flag to such packages, we would pollute all
@@ -105,7 +105,7 @@ with a flexible variety of user interfaces.")
     (arguments
      `(#:make-flags '("LDFLAGS=-ldl")))
     (build-system gnu-build-system)
-    (home-page "http://sourceforge.net/projects/cppunit/")
+    (home-page "https://wiki.freedesktop.org/www/Software/cppunit/")
     (synopsis "Unit testing framework for C++")
     (description "CppUnit is the C++ port of the famous JUnit framework for
 unit testing.  Test output is in XML for automatic testing and GUI based for
@@ -115,17 +115,17 @@ supervised tests.")
 (define-public catch-framework
   (package
     (name "catch")
-    (version "1.1.3")                  ;Sub-minor is the build number
+    (version "1.3.5")                  ;Sub-minor is the build number
     (source (origin
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/philsquared/Catch")
                     ;; Semi-arbitrary.
-                    (commit "c51e86819d")))
+                    (commit "ae5ee2cf63d6d67bd1369b512d2a7b60b571c907")))
               (file-name (string-append name "-" version))
               (sha256
                (base32
-                "0kgi7wxxysgjbpisqfj4dj0k19cyyai92f001zi8gzkybd4fkgv5"))))
+                "1yfb3lxv929szqy1nw9xw3d45wzkppziqshkjxvrb1fdmf46x564"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
@@ -172,3 +172,24 @@ different compilers.  Cmocka supports several different message output formats
 like Test Anything Protocol, Subunit, xUnit XML or the original cmockery output
 format.")
     (license asl2.0)))
+
+(define-public cppcheck
+  (package
+    (name "cppcheck")
+    (version "1.72")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/danmar/cppcheck/archive/"
+                          version ".tar.gz"))
+      (sha256
+       (base32 "0zxaixhqi4vmj7xj56gzadggcbjhbjjm6abyr86qlan23sg98667"))
+      (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system cmake-build-system)
+    (home-page "http://cppcheck.sourceforge.net")
+    (synopsis "Static C/C++ code analyzer")
+    (description "Cppcheck is a static code analyzer for C and C++.  Unlike
+C/C++ compilers and many other analysis tools it does not detect syntax errors
+in the code.  Cppcheck primarily detects the types of bugs that the compilers
+normally do not detect.  The goal is to detect only real errors in the code
+(i.e. have zero false positives).")
+    (license gpl3+)))

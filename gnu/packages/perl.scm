@@ -5,6 +5,7 @@
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
 (define-public perl
   ;; Yeah, Perl...  It is required early in the bootstrap process by Linux.
   (package
+    (replacement perl-fixed)
     (name "perl")
     (version "5.22.1")
     (source (origin
@@ -113,6 +115,28 @@
 24 years of development.")
     (home-page "http://www.perl.org/")
     (license gpl1+)))                          ; or "Artistic"
+
+(define perl-fixed
+  (package
+    (inherit perl)
+    (replacement #f)
+    (source
+      (let ((name "perl") (version "5.22.1"))
+        (origin
+          (method url-fetch)
+          (uri (string-append "http://www.cpan.org/src/5.0/perl-"
+                              version ".tar.gz"))
+          (sha256
+           (base32
+            "09wg24w5syyafyv87l6z8pxwz4bjgcdj996bx5844k6m9445sirb"))
+          (patches (map search-patch
+                        '("perl-no-sys-dirs.patch"
+                          "perl-autosplit-default-time.patch"
+                          "perl-source-date-epoch.patch"
+                          "perl-deterministic-ordering.patch"
+                          "perl-no-build-time.patch"
+                          "perl-CVE-2015-8607.patch"
+                          "perl-CVE-2016-2381.patch"))))))))
 
 (define-public perl-algorithm-c3
   (package
@@ -5670,6 +5694,31 @@ generally slower on larger files.")
     (description "Text::Glob implements glob(3) style matching that can be
 used to match against text, rather than fetching names from a filesystem.  If
 you want to do full file globbing use the File::Glob module instead.")
+    (license (package-license perl))))
+
+(define-public perl-text-neattemplate
+  (package
+    (name "perl-text-neattemplate")
+    (version "0.1101")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://cpan.metacpan.org/authors/id/R/RU/RUBYKAT/"
+             "Text-NeatTemplate-" version ".tar.gz"))
+       (sha256
+        (base32
+         "129msa57jzxxi2x7z9hgzi48r48y65w77ycfk1w733zz2m8nr8y3"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (home-page
+     "http://search.cpan.org/dist/Text-NeatTemplate")
+    (synopsis "Fast, middleweight template engine")
+    (description
+     "Text::NeatTemplate provides a simple, middleweight but fast
+template engine, for when you need speed rather than complex features,
+yet need more features than simple variable substitution.")
     (license (package-license perl))))
 
 (define-public perl-text-simpletable

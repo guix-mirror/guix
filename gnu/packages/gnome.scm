@@ -34,6 +34,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
@@ -107,6 +108,7 @@
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages fonts)
   #:use-module (srfi srfi-1))
 
 (define-public brasero
@@ -1463,7 +1465,7 @@ Hints specification (EWMH).")
     (license license:lgpl2.0+)))
 
 ;; stable version for gtk2, required by xfwm4.
-(define-public libwnck-1
+(define-public libwnck-2
   (package (inherit libwnck)
     (name "libwnck")
     (version "2.30.7")
@@ -3381,7 +3383,7 @@ USB transfers with your high-level application or system daemon.")
 (define-public simple-scan
   (package
     (name "simple-scan")
-    (version "3.17.4")
+    (version "3.19.91")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://launchpad.net/simple-scan/"
@@ -3390,7 +3392,7 @@ USB transfers with your high-level application or system daemon.")
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1pslbv45g01g039zj2b01k08f763kkhzqw8wwz7yh27m7bjllnx6"))))
+                "1c5glf5vxgld41w4jxfqcv17q76qnh43fawpv33hncgh8d283xkf"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("gtk" ,gtk+)
@@ -3408,6 +3410,21 @@ USB transfers with your high-level application or system daemon.")
        ("pkg-config" ,pkg-config)
        ("vala" ,vala)
        ("xmllint" ,libxml2)))
+    (arguments
+     '(#:configure-flags '("--disable-packagekit")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'clean
+                    (lambda _
+                      ;; Remove a left-over reference to PackageKit.
+
+                      ;; https://bugs.launchpad.net/simple-scan/+bug/1462769
+
+                      ;; There are some generated C files erroneously
+                      ;; included in the source distribution, and this
+                      ;; one breaks the build by referring to a
+                      ;; non-existent header (packagekit.h)
+                      (delete-file "src/ui.c"))))))
     (home-page "https://launchpad.net/simple-scan")
     (synopsis "Document and image scanner")
     (description "Simple Scan is an easy-to-use application, designed to let
@@ -3778,6 +3795,46 @@ such as gzip tarballs.")
               (sha256
                (base32
                 "0icajbzqf5llvp5s8nafwkhwz6a6jmwn4hhs81bk0bpzawyq4zdk"))))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Use elogind instead of systemd.
+             (substitute* "configure"
+               (("libsystemd-login >= 183 libsystemd-daemon libsystemd-journal")
+                "libelogind")
+               (("systemd") "elogind"))
+             (substitute* "gnome-session/gsm-systemd.c"
+               (("#include <systemd/sd-login.h>")
+                "#include <elogind/sd-login.h>"))
+             ;; Remove uses of the systemd journal.
+             (substitute* "gnome-session/main.c"
+               (("#ifdef HAVE_SYSTEMD") "#if 0"))
+             (substitute* "gnome-session/gsm-manager.c"
+               (("#ifdef HAVE_SYSTEMD") "#if 0"))
+             #t))
+         (add-after 'install 'wrap-gnome-session
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Make sure 'gnome-session' finds the 'gsettings' program.
+             (let ((glib (assoc-ref inputs "glib:bin"))
+                   (out  (assoc-ref outputs "out")))
+               (wrap-program (string-append out "/bin/gnome-session")
+                 `("PATH" ":" prefix (,(string-append glib "/bin"))))
+               #t)))
+         (add-after 'install 'disable-hardware-acceleration-check
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Do not abort if hardware acceleration is missing.  This allows
+             ;; GNOME to run in QEMU and on low-end devices.
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* (string-append out
+                                           "/share/xsessions/gnome.desktop")
+                 (("gnome-session")
+                  "gnome-session --disable-acceleration-check"))
+               #t))))
+
+       #:configure-flags
+       '("--enable-elogind")))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-compile-schemas, etc.
@@ -3785,7 +3842,8 @@ such as gzip tarballs.")
        ("intltool" ,intltool)
        ("xsltproc" ,libxslt)))
     (inputs
-     `(("gnome-desktop" ,gnome-desktop)
+     `(("elogind" ,elogind)
+       ("gnome-desktop" ,gnome-desktop)
        ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
        ("gtk+" ,gtk+)
        ("json-glib" ,json-glib)
@@ -4147,22 +4205,10 @@ Evolution (hence the name), but is now used by other packages as well.")
 users.")
     (license license:lgpl2.1)))
 
-(define %network-manager-glib-duplicate-test-patch
-  (origin
-    (method url-fetch)
-    (uri (string-append
-          "http://cgit.freedesktop.org/NetworkManager/NetworkManager/"
-          "patch/libnm-core/tests/test-general.c"
-          "?id=874f455d6d47c5a34ed9861a6710f4b78202e0d6"))
-    (file-name "network-manager-glib-duplicate-test.patch")
-    (sha256
-     (base32
-      "1v0vpxzf0p0b1y5lmq8w7rjndp216gr60nbf2dpdz5rgxx3p3ml6"))))
-
 (define-public network-manager
   (package
     (name "network-manager")
-    (version "1.0.6")
+    (version "1.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -4170,8 +4216,7 @@ users.")
                                   "NetworkManager-" version ".tar.xz"))
               (sha256
                (base32
-                "1galh9j95yw33iv1jj8zz0h88ahx8gm5mqmam7zq9f730cj01siq"))
-              (patches (list %network-manager-glib-duplicate-test-patch))))
+                "1g4z2wg036n0njqp8fycrisj46l3yda6pl00l4rg9nfz862cxkqv"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc")) ; 8 MiB of gtk-doc HTML
@@ -4194,6 +4239,19 @@ users.")
                (string-append "--with-dhclient=" dhclient)))
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'pre-configure
+           (lambda _
+             ;; These tests try to test aspects of network-manager's
+             ;; functionality within restricted containers, but they don't
+             ;; cope with being already in the Guix build jail as that jail
+             ;; lacks some features that they would like to proxy over (like
+             ;; a /sys mount).
+             (substitute* '("src/platform/Makefile.in")
+               (("SUBDIRS = tests") ""))
+             (substitute* '("src/tests/Makefile.in")
+               (("\ttest-route-manager-linux") "\t")
+               (("\ttest-route-manager-fake") "\t"))
+             #t))
          (add-before 'check 'pre-check
            (lambda _
              ;; For the missing /etc/machine-id.
@@ -4242,7 +4300,7 @@ services.")
 (define-public network-manager-applet
   (package
     (name "network-manager-applet")
-    (version "1.0.6")
+    (version "1.0.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4250,7 +4308,7 @@ services.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1yj0m6fb9v12d0di0rfmk3hx1vmygjkiff2c476rf792sbh56kax"))))
+                "1szh5jyijxm6z55irkp5s44pwah0nikss40mx7pvpk38m8zaqidh"))))
     (build-system glib-or-gtk-build-system)
     (arguments '(#:configure-flags '("--disable-migration")))
     (native-inputs
@@ -4634,13 +4692,17 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (propagated-inputs
-     `(("gtk+" ,gtk+))) ; required by libnautilus-extension.pc
     (inputs
      ;; TODO: add gvfs support.
      `(("dconf" ,dconf)
        ("exempi" ,exempi)
        ("gnome-desktop" ,gnome-desktop)
+       ;; XXX: gtk+ is required by libnautilus-extension.pc
+       ;;
+       ;; Don't propagate it to reduces "profile pollution" of the 'gnome' meta
+       ;; package.  See:
+       ;; <http://lists.gnu.org/archive/html/guix-devel/2016-03/msg00283.html>.
+       ("gtk+" ,gtk+)
        ("libexif" ,libexif)
        ("libxml2" ,libxml2)))
     (synopsis "File manager for GNOME")
@@ -4783,6 +4845,7 @@ software that do not provide their own configuration interface.")
      ;; TODO: Add more packages according to:
      ;;       <https://packages.debian.org/jessie/gnome-core>.
      `(("adwaita-icon-theme"        ,adwaita-icon-theme)
+       ("font-cantarell"            ,font-cantarell)
        ("at-spi2-core"              ,at-spi2-core)
        ("dbus"                      ,dbus)
        ("dconf"                     ,dconf)
@@ -4805,9 +4868,63 @@ software that do not provide their own configuration interface.")
        ("totem"                     ,totem)
        ("yelp"                      ,yelp)
        ("zenity"                    ,zenity)))
-    (synopsis "Desktop environment (meta-package)")
+    (synopsis "The GNU desktop environment")
     (home-page "https://www.gnome.org/")
     (description
-     "GNOME is an intutive and attractive desktop environment.  It aims to be
-an easy and elegant way to use your computer.")
+     "GNOME is the graphical desktop for GNU.  It includes a wide variety of
+applications for browsing the web, editing text and images, creating
+documents and diagrams, playing media, scanning, and much more.")
     (license license:gpl2+)))
+
+(define-public byzanz
+  ;; The last stable release of Byzanz was in 2011, but there have been many
+  ;; useful commits made to the Byzanz repository since then that it would be
+  ;; silly to use such an old release.
+  (let ((commit "f7af3a5bd252db84af8365bd059c117a7aa5c4af"))
+    (package
+      (name "byzanz")
+      (version (string-append "0.2-1." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://git.gnome.org/byzanz")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1l60myzxf9cav27v5v3nsijlslz9r7ip6d5kiirfpkf9k0w26hz3"))))
+      (build-system glib-or-gtk-build-system)
+      (arguments
+       '(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'bootstrap
+             (lambda _
+               ;; The build system cleverly detects that we're not building from
+               ;; a release tarball and turns on -Werror for GCC.
+               ;; Unsurprisingly, there is a warning during compilation that
+               ;; causes the build to fail unnecessarily, so we remove the flag.
+               (substitute* '("configure.ac")
+                 (("-Werror") ""))
+               ;; The autogen.sh script in gnome-common will run ./configure
+               ;; by default, which is problematic because source shebangs
+               ;; have not yet been patched.
+               (setenv "NOCONFIGURE" "t")
+               (zero? (system* "sh" "autogen.sh")))))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("gnome-common" ,gnome-common)
+         ("intltool" ,intltool)
+         ("libtool" ,libtool)
+         ("pkg-config" ,pkg-config)
+         ("which" ,which)))
+      (inputs
+       `(("glib" ,glib)
+         ("gstreamer" ,gstreamer)
+         ("gst-plugins-base" ,gst-plugins-base)
+         ("gtk+" ,gtk+)))
+      (synopsis "Desktop recording program")
+      (description "Byzanz is a simple desktop recording program with a
+command-line interface.  It can record part or all of an X display for a
+specified duration and save it as a GIF encoded animated image file.")
+      (home-page "https://git.gnome.org/browse/byzanz")
+      (license license:gpl2+))))

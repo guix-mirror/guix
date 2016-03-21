@@ -20,10 +20,11 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix scripts lint)
-  #:use-module (guix store)
+  #:use-module ((guix store) #:hide (close-connection))
   #:use-module (guix base32)
   #:use-module (guix download)
   #:use-module (guix ftp-client)
+  #:use-module (guix http-client)
   #:use-module (guix packages)
   #:use-module (guix licenses)
   #:use-module (guix records)
@@ -40,7 +41,8 @@
   #:use-module (web uri)
   #:use-module ((guix build download)
                 #:select (maybe-expand-mirrors
-                          open-connection-for-uri))
+                          open-connection-for-uri
+                          close-connection))
   #:use-module (web request)
   #:use-module (web response)
   #:use-module (srfi srfi-1)
@@ -295,7 +297,7 @@ for connections to complete; when TIMEOUT is #f, wait as long as needed."
                    (force-output port)
                    (read-response port))
                  (lambda ()
-                   (close port))))
+                   (close-connection port))))
 
              (case (response-code response)
                ((301 302 307)
@@ -551,7 +553,15 @@ descriptions maintained upstream."
                                (format #f (_ "failed to create derivation: ~a")
                                        (condition-message c)))))
         (with-store store
-          (package-derivation store package))))
+          ;; Disable grafts since it can entail rebuilds.
+          (package-derivation store package #:graft? #f)
+
+          ;; If there's a replacement, make sure we can compute its
+          ;; derivation.
+          (match (package-replacement package)
+            (#f #t)
+            (replacement
+             (package-derivation store replacement #:graft? #f))))))
     (lambda args
       (emit-warning package
                     (format #f (_ "failed to create derivation: ~s~%")
@@ -585,18 +595,30 @@ Common Platform Enumeration (CPE) name."
     ;; TODO: Add more.
     (_          name)))
 
+(define (current-vulnerabilities*)
+  "Like 'current-vulnerabilities', but return the empty list upon networking
+or HTTP errors.  This allows network-less operation and makes problems with
+the NIST server non-fatal.."
+  (guard (c ((http-get-error? c)
+             (warning (_ "failed to retrieve CVE vulnerabilities \
+from ~s: ~a (~s)~%")
+                      (uri->string (http-get-error-uri c))
+                      (http-get-error-code c)
+                      (http-get-error-reason c))
+             (warning (_ "assuming no CVE vulnerabilities~%"))
+             '()))
+    (catch 'getaddrinfo-error
+      (lambda ()
+        (current-vulnerabilities))
+      (lambda (key errcode)
+        (warning (_ "failed to lookup NIST host: ~a~%")
+                 (gai-strerror errcode))
+        (warning (_ "assuming no CVE vulnerabilities~%"))
+        '()))))
+
 (define package-vulnerabilities
   (let ((lookup (delay (vulnerabilities->lookup-proc
-                        ;; Catch networking errors to allow network-less
-                        ;; operation.
-                        (catch 'getaddrinfo-error
-                          (lambda ()
-                            (current-vulnerabilities))
-                          (lambda (key errcode)
-                            (warn (_ "failed to lookup NIST host: ~a~%")
-                                  (gai-strerror errcode))
-                            (warn (_ "assuming no CVE vulnerabilities~%"))
-                            '()))))))
+                        (current-vulnerabilities*)))))
     (lambda (package)
       "Return a list of vulnerabilities affecting PACKAGE."
       ((force lookup)

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <address@hidden>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +28,7 @@
 (define-public jrnl
   (package
     (name "jrnl")
-    (version "1.8.4")
+    (version "1.9.7")
     (source
      (origin
       (method url-fetch)
@@ -36,11 +37,10 @@
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
-        "019ky09sj5i7frmca0imv4jm46mn3f4lzah2wmiwxh22cisj7ksn"))))
+        "0mfq7hhw5np2dj9jlxpyyk2cg9i0xgz2brb894d928hczszy97bq"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("behave" ,behave)))
+     `(("behave" ,behave)))
     (inputs
      `(("python" ,python)
        ("python-keyring" ,python-keyring)

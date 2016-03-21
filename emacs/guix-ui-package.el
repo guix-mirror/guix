@@ -34,6 +34,7 @@
 (require 'guix-guile)
 (require 'guix-entry)
 (require 'guix-utils)
+(require 'guix-hydra)
 (require 'guix-hydra-build)
 (require 'guix-read)
 (require 'guix-license)
@@ -388,7 +389,7 @@ formatted with this string, an action button is inserted.")
                           :system (button-label btn))))
                (apply #'guix-hydra-build-get-display
                       'latest args)))
-   'job-name (guix-package-name-specification
+   'job-name (guix-hydra-job-name-specification
               (guix-entry-value entry 'name)
               (guix-entry-value entry 'version))))
 
@@ -776,7 +777,7 @@ for all ARGS."
   (interactive
    (let ((entry (guix-list-current-entry)))
      (guix-hydra-build-latest-prompt-args
-      :job (guix-package-name-specification
+      :job (guix-hydra-job-name-specification
             (guix-entry-value entry 'name)
             (guix-entry-value entry 'version)))))
   (apply #'guix-hydra-latest-builds number args))
@@ -945,7 +946,7 @@ See `guix-find-location' for the meaning of DIRECTORY."
 (defun guix-packages-by-name (name &optional profile)
   "Display Guix packages with NAME.
 NAME is a string with name specification.  It may optionally contain
-a version number.  Examples: \"guile\", \"guile-2.0.11\".
+a version number.  Examples: \"guile\", \"guile@2.0.11\".
 
 If PROFILE is nil, use `guix-current-profile'.
 Interactively with prefix, prompt for PROFILE."

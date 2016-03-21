@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +20,7 @@
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix gexp)
+  #:use-module (guix grafts)
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix tests)
@@ -38,6 +39,9 @@
 
 (define %store
   (open-connection-for-tests))
+
+;; Globally disable grafts because they can trigger early builds.
+(%graft? #f)
 
 ;; For white-box testing.
 (define (gexp-inputs x)
@@ -334,7 +338,8 @@
                  (equal? refs2 (list file))))))
 
 (test-assertm "gexp->derivation vs. grafts"
-  (mlet* %store-monad ((p0 ->   (dummy-package "dummy"
+  (mlet* %store-monad ((graft?  (set-grafting #f))
+                       (p0 ->   (dummy-package "dummy"
                                                (arguments
                                                 '(#:implicit-inputs? #f))))
                        (r  ->   (package (inherit p0) (name "DuMMY")))
@@ -342,9 +347,10 @@
                        (exp0 -> (gexp (frob (ungexp p0) (ungexp output))))
                        (exp1 -> (gexp (frob (ungexp p1) (ungexp output))))
                        (void    (set-guile-for-build %bootstrap-guile))
-                       (drv0    (gexp->derivation "t" exp0))
-                       (drv1    (gexp->derivation "t" exp1))
-                       (drv1*   (gexp->derivation "t" exp1 #:graft? #f)))
+                       (drv0    (gexp->derivation "t" exp0 #:graft? #t))
+                       (drv1    (gexp->derivation "t" exp1 #:graft? #t))
+                       (drv1*   (gexp->derivation "t" exp1 #:graft? #f))
+                       (_       (set-grafting graft?)))
     (return (and (not (string=? (derivation->output-path drv0)
                                 (derivation->output-path drv1)))
                  (string=? (derivation->output-path drv0)
@@ -590,6 +596,30 @@
                                      (chdir #$output)
                                      (symlink #$%bootstrap-guile "guile"))
                                  #:allowed-references '()))))
+    (guard (c ((nix-protocol-error? c) #t))
+      (build-derivations %store (list drv))
+      #f)))
+
+(test-assertm "gexp->derivation #:disallowed-references, allowed"
+  (mlet %store-monad ((drv (gexp->derivation "disallowed-refs"
+                                             #~(begin
+                                                 (mkdir #$output)
+                                                 (chdir #$output)
+                                                 (symlink #$output "self")
+                                                 (symlink #$%bootstrap-guile
+                                                          "guile"))
+                                             #:disallowed-references '())))
+    (built-derivations (list drv))))
+
+
+(test-assert "gexp->derivation #:disallowed-references"
+  (let ((drv (run-with-store %store
+               (gexp->derivation "disallowed-refs"
+                                 #~(begin
+                                     (mkdir #$output)
+                                     (chdir #$output)
+                                     (symlink #$%bootstrap-guile "guile"))
+                                 #:disallowed-references (list %bootstrap-guile)))))
     (guard (c ((nix-protocol-error? c) #t))
       (build-derivations %store (list drv))
       #f)))

@@ -1,0 +1,15 @@
+Initialize the context in 'test_auth_clear'.
+Fixes the test suite on mips64el.
+
+Patch by Mark H Weaver <mhw@netris.org>
+
+--- libotr-4.1.1/tests/unit/test_auth.c.orig	2015-12-25 12:39:45.000000000 -0500
++++ libotr-4.1.1/tests/unit/test_auth.c	2016-03-17 18:53:10.169999706 -0400
+@@ -67,6 +67,7 @@
+ 	OtrlAuthInfo *auth = &ctx.auth;
+ 
+ 	/* API call. */
++	otrl_auth_new(&ctx);
+ 	otrl_auth_clear(auth);
+ 
+ 	ok(auth->authstate == OTRL_AUTHSTATE_NONE &&

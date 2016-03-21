@@ -410,6 +410,12 @@ interpreted."
 
 (define (call-with-error-handling thunk)
   "Call THUNK within a user-friendly error handler."
+  (define (port-filename* port)
+    ;; 'port-filename' returns #f for non-file ports, but it raises an
+    ;; exception for file ports that are closed.  Work around that.
+    (and (not (port-closed? port))
+         (port-filename port)))
+
   (guard (c ((package-input-error? c)
              (let* ((package  (package-error-package c))
                     (input    (package-error-invalid-input c))
@@ -440,9 +446,9 @@ interpreted."
                    (port (nar-error-port c)))
                (if file
                    (leave (_ "corrupt input while restoring '~a' from ~s~%")
-                          file (or (port-filename port) port))
+                          file (or (port-filename* port) port))
                    (leave (_ "corrupt input while restoring archive from ~s~%")
-                          (or (port-filename port) port)))))
+                          (or (port-filename* port) port)))))
             ((nix-connection-error? c)
              (leave (_ "failed to connect to `~a': ~a~%")
                     (nix-connection-error-file c)
@@ -1081,9 +1087,9 @@ package name, version number (or #f), and output name (or OUTPUT).  SPEC may
 optionally contain a version number and an output name, as in these examples:
 
   guile
-  guile-2.0.9
+  guile@2.0.9
   guile:debug
-  guile-2.0.9:debug
+  guile@2.0.9:debug
 "
   (let*-values (((name sub-drv)
                  (match (string-rindex spec #\:)

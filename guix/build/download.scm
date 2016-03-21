@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Steve Sprang <scs@stevesprang.com>
 ;;;
@@ -34,6 +34,7 @@
   #:use-module (ice-9 format)
   #:export (open-socket-for-uri
             open-connection-for-uri
+            close-connection
             resolve-uri-reference
             maybe-expand-mirrors
             url-fetch
@@ -236,11 +237,14 @@ abbreviation of URI showing the scheme, host, and basename of the file."
 (module-autoload! (current-module)
                   '(gnutls) '(make-session connection-end/client))
 
-(define add-weak-reference
-  (let ((table (make-weak-key-hash-table)))
-    (lambda (from to)
-      "Hold a weak reference from FROM to TO."
-      (hashq-set! table from to))))
+(define %tls-ports
+  ;; Mapping of session record ports to the underlying file port.
+  (make-weak-key-hash-table))
+
+(define (register-tls-record-port record-port port)
+  "Hold a weak reference from RECORD-PORT to PORT, where RECORD-PORT is a TLS
+session record port using PORT as its underlying communication port."
+  (hashq-set! %tls-ports record-port port))
 
 (define (tls-wrap port server)
   "Return PORT wrapped in a TLS connection to SERVER.  SERVER must be a DNS
@@ -275,7 +279,7 @@ host name without trailing dot."
       ;; closed when PORT is GC'd.  If we used `port->fdes', it would instead
       ;; never be closed.  So we use `fileno', but keep a weak reference to
       ;; PORT, so the file descriptor gets closed when RECORD is GC'd.
-      (add-weak-reference record port)
+      (register-tls-record-port record port)
       record)))
 
 (define (ensure-uri uri-or-string)                ;XXX: copied from (web http)
@@ -337,7 +341,8 @@ ETIMEDOUT error is raised."
               (loop (cdr addresses))))))))
 
 (define* (open-connection-for-uri uri #:key timeout)
-  "Like 'open-socket-for-uri', but also handle HTTPS connections."
+  "Like 'open-socket-for-uri', but also handle HTTPS connections.  The
+resulting port must be closed with 'close-connection'."
   (define https?
     (eq? 'https (uri-scheme uri)))
 
@@ -366,6 +371,17 @@ ETIMEDOUT error is raised."
        (if https?
            (tls-wrap s (uri-host uri))
            s)))))
+
+(define (close-connection port)
+  "Like 'close-port', but (1) idempotent, and (2) also closes the underlying
+port if PORT is a TLS session record port."
+  ;; FIXME: This is a partial workaround for <http://bugs.gnu.org/20145>,
+  ;; because 'http-fetch' & co. may return a chunked input port whose 'close'
+  ;; method calls 'close-port', not 'close-connection'.
+  (unless (port-closed? port)
+    (close-port port))
+  (and=> (hashq-ref %tls-ports port)
+         close-connection))
 
 ;; XXX: This is an awful hack to make sure the (set-port-encoding! p
 ;; "ISO-8859-1") call in `read-response' passes, even during bootstrap

@@ -1,0 +1,14 @@
+There is no test.sh, but there are test1.sh and test2.sh.
+
+diff --git a/test/Makefile b/test/Makefile
+index 027bc5f..5383db3 100644
+--- a/test/Makefile
++++ b/test/Makefile
+@@ -1,5 +1,6 @@
+ test:
+-	./test.sh
++	./test1.sh
++	./test2.sh
+ 
+ clean:
+ 	rm -rf __pycache__

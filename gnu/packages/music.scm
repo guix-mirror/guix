@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,6 +50,7 @@
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gettext)
@@ -64,6 +66,7 @@
   #:use-module (gnu packages linux) ; for alsa-utils
   #:use-module (gnu packages man)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages mpd)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages netpbm)
   #:use-module (gnu packages pdf)
@@ -817,7 +820,7 @@ projects.")
 (define-public frescobaldi
   (package
     (name "frescobaldi")
-    (version "2.18.1")
+    (version "2.18.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -825,7 +828,7 @@ projects.")
                     version "/frescobaldi-" version ".tar.gz"))
               (sha256
                (base32
-                "1hflc6gck6dn17czc2ldai5j0ynfg3df8lqcggdry06qxsdbnns7"))))
+                "1yns7nq2a2hz5rv4xjp21bgcdi1xj6fq48lqjrld7ypqqi5nfjp5"))))
     (build-system python-build-system)
     (inputs
      `(("lilypond" ,lilypond)
@@ -1133,4 +1136,168 @@ follows a traditional multi-track tape recorder control paradigm.")
 personalized online radio pandora.com.  It has configurable keys for playing
 and managing stations, can be controlled remotely via fifo, and can run
 event-based scripts for scrobbling, notifications, etc.")
+    (license license:expat)))
+
+(define-public python-mutagen
+  (package
+    (name "python-mutagen")
+    (version "1.31")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "mutagen" version))
+              (sha256
+               (base32
+                "16fnnhspniac2i7qswxafawsh2x2a803hmc6bn9k1zl5fxq1380a"))))
+    (build-system python-build-system)
+    (home-page "https://bitbucket.org/lazka/mutagen")
+    (synopsis "Read and write audio tags")
+    (description "Mutagen is a Python module to handle audio metadata.  It
+supports ASF, FLAC, M4A, Monkey’s Audio, MP3, Musepack, Ogg FLAC, Ogg Speex, Ogg
+Theora, Ogg Vorbis, True Audio, WavPack and OptimFROG audio files.  All versions
+of ID3v2 are supported, and all standard ID3v2.4 frames are parsed.  It can read
+Xing headers to accurately calculate the bitrate and length of MP3s.  ID3 and
+APEv2 tags can be edited regardless of audio format.  It can also manipulate Ogg
+streams on an individual packet/page level.")
+    (license license:gpl2))) ; "later version" never mentioned
+
+(define-public python2-mutagen
+  (package-with-python2 python-mutagen))
+
+(define-public python-musicbrainzngs
+  (package
+    (name "python-musicbrainzngs")
+    (version "0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "musicbrainzngs" version))
+              (sha256
+               (base32
+                "12f48llmdf5rkiqxcb70k2k1dmhm8byq0ifazvlrca8dfnmqh4r8"))))
+    (build-system python-build-system)
+    (home-page "https://python-musicbrainzngs.readthedocs.org/")
+    (synopsis "Python bindings for MusicBrainz NGS webservice")
+    (description "Musicbrainzngs implements Python bindings of the MusicBrainz
+web service.  This library can be used to retrieve music metadata from the
+MusicBrainz database.")
+    ;; 'musicbrainzngs/compat.py' is ISC licensed.
+    (license (list license:bsd-2 license:isc))))
+
+(define-public python2-musicbrainzngs
+  (package-with-python2 python-musicbrainzngs))
+
+(define-public python-pyechonest
+  (package
+    (name "python-pyechonest")
+    (version "9.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pyechonest" version))
+              (sha256
+               (base32
+                "1584nira3rkiman9dm81kdshihmkj21s8navndz2l8spnjwb790x"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/echonest/pyechonest")
+    (synopsis "Python interface to The Echo Nest APIs")
+    (description "Pyechonest is an open source Python library for the Echo Nest
+API.  With Pyechonest you have Python access to the entire set of API methods
+including:
+
+@enumerate
+@item artist - search for artists by name, description, or attribute, and get
+back detailed information about any artist including audio, similar artists,
+blogs, familiarity, hotttnesss, news, reviews, urls and video.
+@item song - search songs by artist, title, description, or attribute (tempo,
+duration, etc) and get detailed information back about each song, such as
+hotttnesss, audio_summary, or tracks.
+@item track - upload a track to the Echo Nest and receive summary information
+about the track including key, duration, mode, tempo, time signature along with
+detailed track info including timbre, pitch, rhythm and loudness information.
+@end enumerate\n")
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-pyechonest))))))
+
+(define-public python2-pyechonest
+  (package (inherit (package-with-python2
+                     (strip-python2-variant python-pyechonest)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+
+(define-public python-pylast
+  (package
+    (name "python-pylast")
+    (version "1.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pylast" version))
+              (sha256
+               (base32
+                "10znd9xr1vs2ix519jkz3ccm90zciaddcdr2w2wrrh2jyy3bc59a"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-mock" ,python-mock)
+       ("python-pep8" ,python-pep8)
+       ("python-pytest" ,python-pytest)
+       ("python-pyflakes" ,python-pyflakes)
+       ("python-pyyaml" ,python-pyyaml)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/pylast/pylast")
+    (synopsis "Python interface to Last.fm and Libre.fm")
+    (description "A Python interface to Last.fm and other API-compatible
+websites such as Libre.fm.")
+    (license license:asl2.0)
+    (properties `((python2-variant . ,(delay python2-pylast))))))
+
+(define-public python2-pylast
+  (let ((pylast (package-with-python2
+                 (strip-python2-variant python-pylast))))
+    (package (inherit pylast)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs pylast))))))
+
+(define-public beets
+  (package
+    (name "beets")
+    (version "1.3.17")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri name version))
+              (sha256
+               (base32
+                "0yg7sp18sdpszkinhb0bi6yinbn316jy1baxrwiw0m4byrj3rr6c"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; only Python 2 is supported
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-HOME
+           (lambda _ (setenv "HOME" (string-append (getcwd) "/tmp")))))))
+    (native-inputs
+     `(("python2-beautifulsoup4" ,python2-beautifulsoup4)
+       ("python2-flask" ,python2-flask)
+       ("python2-setuptools" ,python2-setuptools)
+       ("python2-mock" ,python2-mock)
+       ("python2-mpd2" ,python2-mpd2)
+       ("python2-pathlib" ,python2-pathlib)
+       ("python2-pyxdg" ,python2-pyxdg)
+       ("python2-pyechonest" ,python2-pyechonest)
+       ("python2-pylast" ,python2-pylast)
+       ("python2-rarfile" ,python2-rarfile)
+       ("python2-responses" ,python2-responses)))
+    ;; TODO: Install optional plugins and dependencies.
+    (propagated-inputs
+     `(("python2-enum34" ,python2-enum34)
+       ("python2-jellyfish" ,python2-jellyfish)
+       ("python2-munkres" ,python2-munkres)
+       ("python2-musicbrainzngs" ,python2-musicbrainzngs)
+       ("python2-mutagen" ,python2-mutagen)
+       ("python2-pyyaml" ,python2-pyyaml)
+       ("python2-unidecode" ,python2-unidecode)))
+    (home-page "http://beets.io")
+    (synopsis "Music organizer")
+    (description "The purpose of beets is to get your music collection right
+once and for all.  It catalogs your collection, automatically improving its
+metadata as it goes using the MusicBrainz database.  Then it provides a variety
+of tools for manipulating and accessing your music.")
     (license license:expat)))

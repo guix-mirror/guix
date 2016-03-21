@@ -1029,44 +1029,6 @@ get the local timezone information, unless you know the zoneinfo name, and
 under several distributions that's hard or impossible to figure out.")
     (license cc0)))
 
-(define-public python-pysam
-  (package
-    (name "python-pysam")
-    (version "0.8.1")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/p/pysam/pysam-"
-                           version ".tar.gz"))
-       (sha256
-        (base32
-         "1fb6i6hbpzxaxb62kyyp5alaidwhj40f7c6gwbhr6njzlqd5l459"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:tests? #f ; tests are excluded in the manifest
-       #:phases
-       (alist-cons-before
-        'build 'set-flags
-        (lambda _
-          (setenv "LDFLAGS" "-lncurses")
-          (setenv "CFLAGS" "-D_CURSES_LIB=1"))
-        %standard-phases)))
-    (inputs
-     `(("python-cython"     ,python-cython)
-       ("python-setuptools" ,python-setuptools)
-       ("ncurses"           ,ncurses)
-       ("zlib"              ,zlib)))
-    (home-page "https://github.com/pysam-developers/pysam")
-    (synopsis "Python bindings to the SAMtools C API")
-    (description
-     "Pysam is a Python module for reading and manipulating files in the
-SAM/BAM format.  Pysam is a lightweight wrapper of the SAMtools C API.  It
-also includes an interface for tabix.")
-    (license license:expat)))
-
-(define-public python2-pysam
-  (package-with-python2 python-pysam))
-
 (define-public python2-pysqlite
   (package
     (name "python2-pysqlite")
@@ -1160,10 +1122,10 @@ Python 3.3+.")
   (package-with-python2 python-simplejson))
 
 
-(define-public python2-pyicu
+(define-public python-pyicu
   (package
-    (name "python2-pyicu")
-    (version "1.8")
+    (name "python-pyicu")
+    (version "1.9.2")
     (source
      (origin
       (method url-fetch)
@@ -1171,19 +1133,22 @@ Python 3.3+.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1y361x82lnh9k9srmdx3q92z5iag112z7r5fxm0n1sfwb349yjdw"))))
+        "1diba0g8md614fvm9yf50paiwdkhj6rd7xwf1rg9mc0pxc0hhn4v"))))
     (build-system python-build-system)
     (inputs
      `(("icu4c" ,icu4c)))
-    (arguments
-     `(#:python ,python-2 ; Python 3 works also, but needs special care for
-                          ; linking with libpython3.3m
-       #:tests? #f)) ; no check target
     (home-page "http://pyicu.osafoundation.org/")
     (synopsis "Python extension wrapping the ICU C++ API")
     (description
      "PyICU is a python extension wrapping the ICU C++ API.")
-    (license x11)))
+    (license x11)
+    (properties `((python2-variant . ,(delay python2-pyicu))))))
+
+(define-public python2-pyicu
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-pyicu)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
 
 (define-public python2-dogtail
   ;; Python 2 only, as it leads to "TabError: inconsistent use of tabs and
@@ -4585,67 +4550,6 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
               (strip-python2-variant python-beautifulsoup4)))
     (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
 
-(define-public python2-pil
-  (package
-    (name "python2-pil")
-    (version "1.1.7")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-              "http://effbot.org/downloads/Imaging-"
-              version ".tar.gz"))
-        (sha256
-          (base32
-            "04aj80jhfbmxqzvmq40zfi4z3cw6vi01m3wkk6diz3lc971cfnw9"))
-       (modules '((guix build utils)))
-       (snippet
-        ;; Adapt to newer freetype. As the package is unmaintained upstream,
-        ;; there is no use in creating a patch and reporting it.
-        '(substitute* "_imagingft.c"
-           (("freetype/")
-            "freetype2/")))))
-    (build-system python-build-system)
-    (inputs
-      `(("freetype" ,freetype)
-        ("libjpeg" ,libjpeg)
-        ("libtiff" ,libtiff)
-        ("python-setuptools" ,python-setuptools)
-        ("zlib" ,zlib)))
-    (arguments
-     ;; Only the fork python-pillow works with Python 3.
-     `(#:python ,python-2
-       #:tests? #f ; no check target
-       #:phases
-         (alist-cons-before
-          'build 'configure
-          ;; According to README and setup.py, manual configuration is
-          ;; the preferred way of "searching" for inputs.
-          ;; lcms is not found, TCL_ROOT refers to the unavailable tkinter.
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let ((jpeg (assoc-ref inputs "libjpeg"))
-                  (zlib (assoc-ref inputs "zlib"))
-                  (tiff (assoc-ref inputs "libtiff"))
-                  (freetype (assoc-ref inputs "freetype")))
-              (substitute* "setup.py"
-                (("JPEG_ROOT = None")
-                 (string-append "JPEG_ROOT = libinclude(\"" jpeg "\")"))
-                (("ZLIB_ROOT = None")
-                 (string-append "ZLIB_ROOT = libinclude(\"" zlib "\")"))
-                (("TIFF_ROOT = None")
-                 (string-append "TIFF_ROOT = libinclude(\"" tiff "\")"))
-                (("FREETYPE_ROOT = None")
-                 (string-append "FREETYPE_ROOT = libinclude(\""
-                                freetype "\")")))))
-          %standard-phases)))
-    (home-page "http://www.pythonware.com/products/pil/")
-    (synopsis "Python Imaging Library")
-    (description "The Python Imaging Library (PIL) adds image processing
-capabilities to the Python interpreter.")
-    (license (x11-style
-               "file://README"
-               "See 'README' in the distribution."))))
-
 (define-public python2-cssutils
   (package
     (name "python2-cssutils")
@@ -4947,20 +4851,19 @@ It is written entirely in Python.")
 (define-public python-tornado
   (package
     (name "python-tornado")
-    (version "4.1")
+    (version "4.3")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/t/tornado/"
-             "tornado-" version ".tar.gz"))
+       (uri (pypi-uri "tornado" version))
        (sha256
-        (base32 "0a12f00h277zbifibnj46wf14801f573irvf6hwkgja5vspd7awr"))))
+        (base32 "1gzgwayl6hmc9jfcl88bni4jcsk2jcca9dn1rvrfsvnijcjx7hn9"))))
     (build-system python-build-system)
     (inputs
      `(("python-certifi" ,python-certifi)))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
+     `(("python-backports-abc" ,python-backports-abc)
+       ("python-setuptools" ,python-setuptools)))
     (home-page "http://www.tornadoweb.org/")
     (synopsis "Python web framework and asynchronous networking library")
     (description
@@ -4977,7 +4880,33 @@ connection to each user.")
       (inputs
        `(("python2-backport-ssl-match-hostname"
           ,python2-backport-ssl-match-hostname)
+         ("python2-singledispatch", python2-singledispatch)
          ,@(package-inputs tornado))))))
+
+;; the python- version can be removed with python-3.5
+(define-public python-backports-abc
+  (package
+    (name "python-backports-abc")
+      (version "0.4")
+      (source
+        (origin
+          (method url-fetch)
+          (uri (pypi-uri "backports_abc" version))
+          (sha256
+           (base32
+            "19fh75lni9pb673n2fn505m1rckm0af0szcv5xx1qm1xpa940glb"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/cython/backports_abc")
+    (synopsis "Backport of additions to the 'collections.abc' module.")
+    (description
+     "Python-backports-abc provides a backport of additions to the
+'collections.abc' module in Python-3.5.")
+    (license psfl)))
+
+(define-public python2-backports-abc
+  (package-with-python2 python-backports-abc))
 
 (define-public python-waf
   (package
@@ -5831,7 +5760,7 @@ responses, rather than doing any computation.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
      (origin
        (method url-fetch)
@@ -5840,7 +5769,7 @@ responses, rather than doing any computation.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "1zg47fzzn30mgkkbwrxqqcfq9crgabcmxyiy106n9404wbhfjkkl"))))
+         "0shawgpax79gvjrj0a313sll9gaqys7q1hxngn6j4k24lmz7bwki"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
@@ -5857,14 +5786,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "1.2.2")
+    (version "1.2.3")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "0rvaha7ymgbqkzbxk7xmj67k5b3hbp8w8cn3m5z776vd22wrq89z"))))
+         "0kj511z4g21fhcr649pyzpl0zzkkc7hsgxxjys6z8wwfvmvirccf"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -6819,7 +6748,14 @@ WebSocket usage in Python programs.")
     (description "Library for atomic file writes using platform dependent tools
 for atomic filesystem operations.")
     (home-page "https://github.com/untitaker/python-atomicwrites")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-atomicwrites))))))
+
+(define-public python2-atomicwrites
+  (package (inherit (package-with-python2
+                     (strip-python2-variant python-atomicwrites)))
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)))))
 
 (define-public python-requests-toolbelt
   (package
@@ -7520,13 +7456,13 @@ Amazon Web Services (AWS) API.")
 (define-public python-hypothesis
   (package
     (name "python-hypothesis")
-    (version "3.0.4")
+    (version "3.1.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "hypothesis" version))
               (sha256
                (base32
-                "0bh6pqyc56cqlbpg0ffzjs6466blyylix4nsw11qrqwf01cg9gdq"))))
+                "0qyqq9akm4vshhn8cngjc1qykcvsn7cz6dlm6njfsgpbraqrmbbw"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-flake8" ,python-flake8)
@@ -8256,3 +8192,270 @@ introspection of @code{zope.interface} instances in code.")
     (inherit (package-with-python2
               (strip-python2-variant python-psycopg2)))
     (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+
+(define-public python-vobject
+  (package
+    (name "python-vobject")
+    (version "0.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "vobject" version))
+              (sha256
+               (base32
+                "1cwzjnrdr9yg2x21wbf3kf59ibnchvj33mygd69yzi178a9gs9gz"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-dateutil-2" ,python-dateutil-2)
+       ("python-pyicu" ,python-pyicu)))
+    (synopsis "Parse and generate vCard and vCalendar files")
+    (description "Vobject is intended to be a full featured Python package for
+parsing and generating vCard and vCalendar files.  Currently, iCalendar files
+are supported and well tested. vCard 3.0 files are supported, and all data
+should be imported, but only a few components are understood in a sophisticated
+way.")
+    (home-page "http://eventable.github.io/vobject/")
+    (license asl2.0)
+    (properties `((python2-variant . ,(delay python2-vobject))))))
+
+(define-public python2-vobject
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-vobject)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+
+(define-public python-munkres
+  (package
+    (name "python-munkres")
+    (version "1.0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "munkres" version))
+              (sha256
+               (base32
+                "1i6nf45i0kkzdx6k70giybsqxz4dxsjbrkrfqgjd7znfkf25sjik"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; no test suite
+    (home-page "http://software.clapper.org/munkres/")
+    (synopsis "Implementation of the Munkres algorithm")
+    (description "The Munkres module provides an implementation of the Munkres
+algorithm (also called the Hungarian algorithm or the Kuhn-Munkres algorithm),
+useful for solving the Assignment Problem.")
+    (license bsd-3)))
+
+(define-public python2-munkres
+  (package-with-python2 python-munkres))
+
+(define-public python-flask
+  (package
+    (name "python-flask")
+    (version "0.10.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "Flask" version))
+              (sha256
+               (base32
+                "0wrkavjdjndknhp8ya8j850jq7a1cli4g5a93mg8nh1xz2gq50sc"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-itsdangerous" ,python-itsdangerous)
+       ("python-jinja2" ,python-jinja2)
+       ("python-werkzeug" ,python-werkzeug)))
+    (home-page "https://github.com/mitsuhiko/flask/")
+    (synopsis "Microframework based on Werkzeug, Jinja2 and good intentions")
+    (description "Flask is a micro web framework based on the Werkzeug toolkit
+and Jinja2 template engine.  It is called a micro framework because it does not
+presume or force a developer to use a particular tool or library.")
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-flask))))))
+
+(define-public python2-flask
+  (package (inherit (package-with-python2
+                     (strip-python2-variant python-flask)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+
+(define-public python-cookies
+  (package
+    (name "python-cookies")
+    (version "2.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "cookies" version))
+              (sha256
+               (base32
+                "13pfndz8vbk4p2a44cfbjsypjarkrall71pgc97glk5fiiw9idnn"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; test are broken: https://gitlab.com/sashahart/cookies/issues/3
+       #:tests? #f))
+    (native-inputs
+     `(("python-pytest" ,python2-pytest)))
+    (synopsis "HTTP cookie parser and renderer")
+    (description "A RFC 6265-compliant HTTP cookie parser and renderer in
+Python.")
+    (home-page "https://gitlab.com/sashahart/cookies")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-cookies))))))
+
+(define-public python2-cookies
+  (let ((cookies (package-with-python2
+                  (strip-python2-variant python-cookies))))
+    (package (inherit cookies)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs cookies))))))
+
+(define-public python-responses
+  (package
+    (name "python-responses")
+    (version "0.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "responses" version))
+              (sha256
+               (base32
+                "1spcfxixyk9k7pk82jm6zqkwk031s95lh8q0mz7539jrb7269bcc"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Test suite is not distributed:
+       ;; https://github.com/getsentry/responses/issues/38
+       #:tests? #f))
+    (native-inputs
+     `(("python-cookies" ,python-cookies)
+       ("python-mock" ,python-mock)))
+    (propagated-inputs
+     `(("python-requests" ,python-requests)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/getsentry/responses")
+    (synopsis "Utility for mocking out the `requests` Python library")
+    (description "A utility library for mocking out the `requests` Python
+library.")
+    (license asl2.0)
+    (properties `((python2-variant . ,(delay python2-responses))))))
+
+(define-public python2-responses
+  (let ((responses (package-with-python2
+                    (strip-python2-variant python-responses))))
+    (package (inherit responses)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs responses))))))
+
+(define-public python-pathlib
+  (package
+    (name "python-pathlib")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pathlib" version))
+              (sha256
+               (base32
+                "17zajiw4mjbkkv6ahp3xf025qglkj0805m9s41c45zryzj6p2h39"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (zero? (system* "python" "./test_pathlib.py")))))))
+    (home-page "https://pathlib.readthedocs.org/")
+    (synopsis "Object-oriented filesystem paths")
+    (description "Pathlib offers a set of classes to handle filesystem paths.
+It offers the following advantages over using string objects:
+
+@enumerate
+@item No more cumbersome use of os and os.path functions.  Everything can
+be done easily through operators, attribute accesses, and method calls.
+@item Embodies the semantics of different path types.  For example,
+comparing Windows paths ignores casing.
+@item Well-defined semantics, eliminating any inconsistencies or
+ambiguities (forward vs. backward slashes, etc.).
+@end enumerate\n")
+    (license license:expat)))
+
+(define-public python2-pathlib
+  (package-with-python2 python-pathlib))
+
+(define-public python-jellyfish
+  (package
+    (name "python-jellyfish")
+    (version "0.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "jellyfish" version))
+              (sha256
+               (base32
+                "12bxh8cy9xmvyrjz7aw159nd5pyvb645rkvw4r6bvm4xbvs8gd07"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/jamesturk/jellyfish")
+    (synopsis "Approximate and phonetic matching of strings")
+    (description "Jellyfish uses a variety of string comparison and phonetic
+encoding algorithms to do fuzzy string matching.")
+    (license bsd-2)
+    (properties `((python2-variant . ,(delay python2-jellyfish))))))
+
+(define-public python2-jellyfish
+  (let ((jellyfish (package-with-python2
+                     (strip-python2-variant python-jellyfish))))
+    (package (inherit jellyfish)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ("python2-unicodecsv" ,python2-unicodecsv)
+                       ,@(package-native-inputs jellyfish))))))
+
+(define-public python2-unicodecsv
+  (package
+    (name "python2-unicodecsv")
+    (version "0.14.1")
+    (source (origin
+             (method url-fetch)
+             ;; The test suite is not included in the PyPi release.
+             ;; https://github.com/jdunck/python-unicodecsv/issues/19
+             (uri (string-append "https://github.com/jdunck/python-unicodecsv/"
+                                 "archive/" version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "087nqanfcyp6mlfbbr5lva5f3w6iz1bybls9xlrb8icmc474wh4w"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; It supports Python 3, but Python 3 can already do Unicode CSV.
+       #:python ,python-2))
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)
+       ("python2-unittest2" ,python2-unittest2)))
+    (home-page "https://github.com/jdunck/python-unicodecsv")
+    (synopsis "Unicode CSV module for Python 2")
+    (description "Unicodecsv is a drop-in replacement for Python 2.7's CSV
+module, adding support for Unicode strings.")
+    (license bsd-2)))
+
+(define-public python-rarfile
+  (package
+    (name "python-rarfile")
+    (version "2.7")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "rarfile" version))
+              (sha256
+               (base32
+                "0d8n1dlpiz7av8dmbp0vclrwl9cnxizr4f2c9xvj1h5nvn480527"))
+              ;; https://github.com/markokr/rarfile/pull/17/
+              (patches (list (search-patch "python-rarfile-fix-tests.patch")))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           ;; Many tests fail, but the installation proceeds.
+           (lambda _ (zero? (system* "make" "-C" "test" "test")))))))
+    (native-inputs
+     `(("which" ,which))) ; required for tests
+    (propagated-inputs
+     `(("libarchive" ,libarchive)))
+    (home-page "https://github.com/markokr/rarfile")
+    (synopsis "RAR archive reader for Python")
+    (description "This is Python module for RAR archive reading.  The interface
+is made as zipfile like as possible.")
+    (license isc)))
+
+(define-public python2-rarfile
+  (package-with-python2 python-rarfile))

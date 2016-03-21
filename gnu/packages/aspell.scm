@@ -139,3 +139,11 @@ dictionaries, including personal ones.")
                      #:sha256
                      (base32
                       "1gdf7bc1a0kmxsmphdqq8pl01h667mjsj6hihy6kqy14k5qdq69v")))
+
+(define-public aspell-dict-nl
+  (aspell-dictionary "nl" "Dutch"
+                     #:version "0.50-2"
+                     #:prefix "aspell-"
+                     #:sha256
+                     (base32
+                      "0ffb87yjsh211hllpc4b9khqqrblial4pzi1h9r3v465z1yhn3j4")))

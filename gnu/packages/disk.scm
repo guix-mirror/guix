@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <tobias.geerinckx.rice@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -99,7 +100,7 @@ tables, and it understands a variety of different formats.")
 (define-public ddrescue
   (package
     (name "ddrescue")
-    (version "1.20")
+    (version "1.21")
     (source
      (origin
       (method url-fetch)
@@ -107,7 +108,7 @@ tables, and it understands a variety of different formats.")
                           version ".tar.lz"))
       (sha256
        (base32
-        "1gb0ak2c47nass7qdf9pnfrshcb38c318z1fx5v5v1k7l6qr7yc3"))))
+        "1b71hb42lh33y9843nd1mxlwkk9qh9ajvnz6ivzd1jq9lav4x7ph"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/ddrescue/ddrescue.html")
     (synopsis "Data recovery utility")
@@ -171,3 +172,35 @@ transport), SCSI and ATAPI tape drives, and SCSI enclosures.  This utility can
 also send commands associated with starting and stopping the media, loading
 and unloading removable media and some other housekeeping functions.")
     (license bsd-3)))
+
+(define-public idle3-tools
+  (package
+    (name "idle3-tools")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/idle3-tools/idle3-tools-"
+                           version ".tgz"))
+       (sha256
+        (base32
+         "00ia7xq9yldxyl9gz0mr4xa568nav14p0fnv82f2rbbkg060cy4p"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no test suite
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))
+       #:make-flags (list "CC=gcc"
+                          (string-append "manprefix=")
+                          (string-append "DESTDIR="
+                                         (assoc-ref %outputs "out")))))
+    (home-page "http://idle3-tools.sourceforge.net")
+    (synopsis "Change or disable Western Digital hard drives' Idle3 timer")
+    (description
+     "Idle3-tools provides a utility to get, set, or disable the Idle3 timer
+present in many Western Digital hard drives.  This timer is part of the
+\"IntelliPark\" feature that stops the disk when not in use.  Unfortunately,
+the default timer setting is not well suited to Linux or other *nix systems,
+and can dramatically shorten the lifespan of the drive if left unchecked.")
+    (license gpl3+)))

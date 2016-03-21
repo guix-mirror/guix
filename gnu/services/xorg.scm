@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -246,13 +246,14 @@ which should be passed to this script as the first argument.  If not, the
         (let* ((home          (getenv "HOME"))
                (xsession-file (string-append home "/.xsession"))
                (session       (match (command-line)
-                                ((_ x) x)
-                                (_     #$fallback-session))))
+                                ((_)       (list #$fallback-session))
+                                ((_ x ..1) x))))
           (if (file-exists? xsession-file)
               ;; Run ~/.xsession when it exists.
               (exec-from-login-shell xsession-file session)
               ;; Otherwise, start the specified session.
-              (exec-from-login-shell session)))))
+              (apply exec-from-login-shell session)))))
+
   (program-file "xinitrc" builder))
 
 

@@ -307,3 +307,49 @@ AC_DEFUN([GUIX_LIBGCRYPT_LIBDIR], [
      fi])
   $1="$guix_cv_libgcrypt_libdir"
 ])
+
+dnl GUIX_CURRENT_LOCALSTATEDIR
+dnl
+dnl Determine the localstatedir of an existing Guix installation and set
+dnl 'guix_cv_current_localstatedir' accordingly.  Set it to "none" if no
+dnl existing installation was found.
+AC_DEFUN([GUIX_CURRENT_LOCALSTATEDIR], [
+  AC_PATH_PROG([GUILE], [guile])
+  AC_CACHE_CHECK([the current installation's localstatedir],
+    [guix_cv_current_localstatedir],
+    [dnl Call 'dirname' because (guix config) appends "/guix" to LOCALSTATEDIR.
+     guix_cv_current_localstatedir="`"$GUILE" \
+       -c '(use-modules (guix config))
+           (when (string=? %store-directory "'$storedir'")
+             (display (dirname %state-directory)))' \
+       2>/dev/null`"
+     if test "x$guix_cv_current_localstatedir" = "x"; then
+       guix_cv_current_localstatedir=none
+     fi])])
+
+dnl GUIX_CHECK_LOCALSTATEDIR
+dnl
+dnl Check that the LOCALSTATEDIR value is consistent with that of the existing
+dnl Guix installation, if any.  Error out or warn if they do not match.
+AC_DEFUN([GUIX_CHECK_LOCALSTATEDIR], [
+  AC_REQUIRE([GUIX_CURRENT_LOCALSTATEDIR])
+  if test "x$guix_cv_current_localstatedir" != "xnone"; then
+    if test "$guix_cv_current_localstatedir" != "$guix_localstatedir"; then
+      case "$localstatedir" in
+        NONE|\${prefix}*)
+          # User kept the default value---i.e., did not pass '--localstatedir'.
+          AC_MSG_ERROR([chosen localstatedir '$guix_localstatedir' does not match \
+that of the existing installation '$guix_cv_current_localstatedir'
+Installing may corrupt $storedir!
+Use './configure --localstatedir=$guix_cv_current_localstatedir'.])
+          ;;
+        *)
+          # User passed an explicit '--localstatedir'.  Assume they know what
+          # they're doing.
+          AC_MSG_WARN([chosen localstatedir '$guix_localstatedir' does not match \
+that of the existing installation '$guix_cv_current_localstatedir'])
+          AC_MSG_WARN([installing may corrupt $storedir!])
+         ;;
+      esac
+    fi
+  fi])

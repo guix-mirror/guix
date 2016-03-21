@@ -80,6 +80,7 @@
             nscd-service-type
             nscd-service
             syslog-service
+            %default-syslog.conf
 
             guix-configuration
             guix-configuration?
@@ -804,9 +805,12 @@ Service Switch}, for an example."
 "))
 
 (define* (syslog-service #:key (config-file %default-syslog.conf))
-  "Return a service that runs @code{syslogd}.
-If configuration file name @var{config-file} is not specified, use some
-reasonable default settings."
+  "Return a service that runs @command{syslogd}.  If configuration file
+name @var{config-file} is not specified, use some reasonable default
+settings.
+
+@xref{syslogd invocation,,, inetutils, GNU Inetutils}, for more
+information on the configuration file syntax."
   (service syslog-service-type config-file))
 
 

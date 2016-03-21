@@ -308,7 +308,7 @@ when typing parentheses directly or commenting out code line by line.")
 (define-public git-modes
   (package
     (name "git-modes")
-    (version "1.2.0")
+    (version "1.2.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -317,7 +317,7 @@ when typing parentheses directly or commenting out code line by line.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "09dv7ikbj2bi4y3lmvjfzqpdmx2f9bd4w7jkp10bkap62d05iqhk"))))
+                "088wyddh8y0yw77i0hx449n9zg4wzyc90h63wlmxba1ijg4dzm0p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -1018,44 +1018,47 @@ single buffer.")
     (arguments
      `(#:tests? #f ; there are no tests
        #:modules ((guix build gnu-build-system)
+                  ((guix build emacs-build-system) #:prefix emacs:)
                   (guix build utils)
                   (guix build emacs-utils))
        #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-build-system)
                            (guix build emacs-utils))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'enter-dir (lambda _ (chdir "server") #t))
-         (add-before
-          'configure 'autogen
-          (lambda _
-            (zero? (system* "bash" "autogen.sh"))))
-         (add-before
-          'build 'patch-variables
-          (lambda* (#:key outputs #:allow-other-keys)
-            (with-directory-excursion "../lisp"
-              ;; Set path to epdfinfo program.
-              (emacs-substitute-variables "pdf-info.el"
-                ("pdf-info-epdfinfo-program"
-                 (string-append (assoc-ref outputs "out")
-                                "/bin/epdfinfo")))
-              ;; Set 'pdf-tools-handle-upgrades' to nil to avoid "auto
-              ;; upgrading" that pdf-tools tries to perform.
-              (emacs-substitute-variables "pdf-tools.el"
-                ("pdf-tools-handle-upgrades" '())))))
-         (add-after
-          'install 'install-lisp
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((target (string-append (assoc-ref outputs "out")
-                                         "/share/emacs/site-lisp/")))
-              (for-each (lambda (file)
-                          (install-file file target))
-                        (find-files "../lisp" "^(pdf|tab).*\\.elc?"))
-              (emacs-byte-compile-directory target)
-              (emacs-generate-autoloads "pdf-tools" target)))))))
+         ;; Build server side using 'gnu-build-system'.
+         (add-after 'unpack 'enter-server-dir
+           (lambda _ (chdir "server") #t))
+         (add-before 'configure 'autogen
+           (lambda _
+             (zero? (system* "bash" "autogen.sh"))))
+
+         ;; Build emacs side using 'emacs-build-system'.
+         (add-after 'compress-documentation 'enter-lisp-dir
+           (lambda _ (chdir "../lisp") #t))
+         (add-after 'enter-lisp-dir 'emacs-patch-variables
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Set path to epdfinfo program.
+             (emacs-substitute-variables "pdf-info.el"
+               ("pdf-info-epdfinfo-program"
+                (string-append (assoc-ref outputs "out")
+                               "/bin/epdfinfo")))
+             ;; Set 'pdf-tools-handle-upgrades' to nil to avoid "auto
+             ;; upgrading" that pdf-tools tries to perform.
+             (emacs-substitute-variables "pdf-tools.el"
+               ("pdf-tools-handle-upgrades" '()))))
+         (add-after 'emacs-patch-variables 'emacs-install
+           (assoc-ref emacs:%standard-phases 'install))
+         (add-after 'emacs-install 'emacs-build
+           (assoc-ref emacs:%standard-phases 'build))
+         (add-after 'emacs-install 'emacs-make-autoloads
+           (assoc-ref emacs:%standard-phases 'make-autoloads)))))
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
                      ("pkg-config" ,pkg-config)
                      ("emacs" ,emacs-no-x)))
+    (propagated-inputs
+     `(("let-alist" ,let-alist)))
     (inputs `(("poppler" ,poppler)
               ("cairo" ,cairo)
               ("glib" ,glib)

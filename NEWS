@@ -14,18 +14,30 @@ Please send Guix bug reports to bug-guix@gnu.org.
 
 ** Package management
 
+*** New syntax for separating package names and version numbers
+
+Use ‘@’ instead of ‘-’ as a separator, as in ‘gnupg@2.0’.  This new separator
+is a reserved character which is not allowed both in package names and version
+numbers.
+
+The old syntax to specify a package’s version—e.g., as “gnupg-2.0”—is obsolete
+and support for it will be removed in the future.
+
 *** Emacs interface for licenses
 *** Emacs interface for system generations
 *** Emacs interface for hydra.gnu.org
 *** Changes in Emacs interface variables and faces
+
 In the following names, BUFFER-TYPE means "info" or "list";
 ENTRY-TYPE means "package", "output" or "generation".
 
 **** Removed
+
 - guix-info-fill-column
 - guix-info-insert-ENTRY-TYPE-function
 
 **** Renamed
+
 - guix-info-ignore-empty-vals -> guix-info-ignore-empty-values
 - guix-output-name-width -> guix-generation-output-name-width
 - guix-buffer-name-function -> guix-ui-buffer-name-function
@@ -34,6 +46,7 @@ ENTRY-TYPE means "package", "output" or "generation".
 - guix-BUFFER-TYPE-file-path (face) -> guix-BUFFER-TYPE-file-name
 
 **** Replaced
+
 - guix-list-column-format, guix-list-column-value-methods ->
   guix-ENTRY-TYPE-list-format
 - guix-info-displayed-params, guix-info-insert-methods,
@@ -43,6 +56,10 @@ ENTRY-TYPE means "package", "output" or "generation".
 - guix-list-describe-warning-count ->
   guix-ENTRY-TYPE-list-describe-warning-count
 - guix-package-info-fill-heading -> guix-info-fill
+
+** Noteworthy bug fixes
+
+*** Numbers in package names are correctly handled (http://bugs.gnu.org/19219)
 
 * Changes in 0.9.0 (since 0.8.3)
 

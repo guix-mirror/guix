@@ -3,6 +3,8 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2016 Jessica Tallon <tsyesika@tsyesika.se>
+;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,16 +27,20 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix packages)
+  #:use-module (gnu packages admin)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xorg)
   #:use-module (guix build-system python))
@@ -241,3 +247,51 @@ JSON files.  It has a command line interface as well as a very simple
 graphical interface, which can even \"type\" your passwords into
 any X11 window.")
     (license license:gpl3+)))
+
+(define-public password-store
+  (package
+    (name "password-store")
+    (version "1.6.5")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://git.zx2c4.com/password-store/snapshot/"
+                              name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "05bk3lrp5jwg0v338lvylp7glpliydzz4jf5pjr6k3kagrv3jyik"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after
+          ;; The script requires 'getopt' at run-time, and this allows
+          ;; the user to not install the providing package 'util-linux'
+          ;; in their profile.
+          'unpack 'patch-path
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((getopt (string-append (assoc-ref inputs "getopt")
+                                         "/bin/getopt")))
+              (substitute* "src/password-store.sh"
+                (("GETOPT=\"getopt\"")
+                 (string-append "GETOPT=\"" getopt "\"")))
+              #t))))
+       #:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
+       #:test-target "test"))
+    (native-inputs `(("getopt" ,util-linux))) ; getopt for the tests
+    (inputs `(("gnupg" ,gnupg)
+              ("pwgen" ,pwgen)
+              ("xclip" ,xclip)
+              ("git" ,git)
+              ("tree" ,tree)
+              ("which" ,which)))
+    (home-page "http://www.passwordstore.org/")
+    (synopsis "Encrypted password manager")
+    (description "Password-store is a password manager which uses GnuPG to
+store and retrieve passwords.  The tool stores each password in its own
+GnuPG-encrypted file, allowing the program to be simple yet secure.
+Synchronization is possible using the integrated git support, which commits
+changes to your password database to a git repository that can be managed
+through the pass command.")
+    (license license:gpl2+)))

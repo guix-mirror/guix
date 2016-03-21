@@ -22,6 +22,7 @@
 (define-module (guix scripts package)
   #:use-module (guix ui)
   #:use-module (guix store)
+  #:use-module (guix grafts)
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix profiles)
@@ -319,6 +320,7 @@ ENTRIES, a list of manifest entries, in the context of PROFILE."
   ;; Alist of default option values.
   `((max-silent-time . 3600)
     (verbosity . 0)
+    (graft? . #t)
     (substitutes? . #t)))
 
 (define (show-help)
@@ -837,7 +839,8 @@ processed, #f otherwise."
                                   #:argument-handler handle-argument)))
     (with-error-handling
       (or (process-query opts)
-          (parameterize ((%store (open-connection)))
+          (parameterize ((%store  (open-connection))
+                         (%graft? (assoc-ref opts 'graft?)))
             (set-build-options-from-command-line (%store) opts)
 
             (parameterize ((%guile-for-build

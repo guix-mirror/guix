@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
-;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,10 +20,11 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gstreamer)
-  #:use-module ((guix licenses) #:select (lgpl2.0+ bsd-2 bsd-3 gpl2+))
+  #:use-module ((guix licenses) #:select (lgpl2.0+ lgpl2.1+ bsd-2 bsd-3 gpl2+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bison)
@@ -61,14 +62,14 @@
 (define-public orc
   (package
     (name "orc")
-    (version "0.4.24")
+    (version "0.4.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://gstreamer.freedesktop.org/data/src/"
                                   "orc/orc-" version ".tar.xz"))
               (sha256
                (base32
-                "16ykgdrgxr6pfpy931p979cs68klvwmk3ii1k0a00wr4nn9x931k"))))
+                "1lak3hyvvb0w9avzmf0a8vayb7vqhj4m709q1czlhvgjb15dbcf1"))))
     (build-system gnu-build-system)
     (arguments `(#:phases
                  (alist-cons-before
@@ -400,3 +401,54 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
      "This GStreamer plugin supports a large number of audio and video
 compression formats through the use of the libav library.")
     (license gpl2+)))
+
+(define-public python-gst
+  (package
+    (name "python-gst")
+    (version "1.6.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://gstreamer.freedesktop.org/src/gst-python/"
+                    "gst-python-" version ".tar.xz"))
+              (sha256
+               (base32
+                "09ci5zvr7lms7mvgbjgsjwaxcl4nq45n1g9pdwnqmx3rf0qkwxjf"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; XXX: Factorize python-sitedir with python-build-system.
+     `(#:imported-modules (,@%gnu-build-system-modules
+                           (guix build python-build-system))
+       #:configure-flags
+       (let* ((python (assoc-ref %build-inputs "python"))
+              (python-version ((@@ (guix build python-build-system)
+                                   get-python-version)
+                               python))
+              (python-sitedir (string-append
+                               "lib/python" python-version "/site-packages")))
+         (list (string-append
+                "--with-pygi-overrides-dir=" %output "/" python-sitedir
+                "/gi/overrides")))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python)))
+    (propagated-inputs
+     `(("gst-plugins-base" ,gst-plugins-base)
+       ("python-pygobject" ,python-pygobject)))
+    (home-page "http://gstreamer.freedesktop.org/")
+    (synopsis "GStreamer GObject Introspection overrides for Python")
+    (description
+     "This package contains GObject Introspection overrides for Python that can
+be used by Python applications using GStreamer.")
+    (license lgpl2.1+)
+    (properties `((python2-variant . ,(delay python2-gst))))))
+
+(define-public python2-gst
+  (package (inherit python-gst)
+    (name "python2-gst")
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-2)))
+    (propagated-inputs
+     `(("gst-plugins-base" ,gst-plugins-base)
+       ("python-pygobject" ,python2-pygobject)))))

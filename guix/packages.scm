@@ -30,6 +30,7 @@
   #:use-module (guix build-system)
   #:use-module (guix search-paths)
   #:use-module (guix gexp)
+  #:use-module (guix sets)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
@@ -726,8 +727,8 @@ dependencies are known to build on SYSTEM."
   ;; Package to derivation-path mapping.
   (make-weak-key-hash-table 100))
 
-(define (cache package system thunk)
-  "Memoize the return values of THUNK as the derivation of PACKAGE on
+(define (cache! cache package system thunk)
+  "Memoize in CACHE the return values of THUNK as the derivation of PACKAGE on
 SYSTEM."
   ;; FIXME: This memoization should be associated with the open store, because
   ;; otherwise it breaks when switching to a different store.
@@ -735,26 +736,29 @@ SYSTEM."
     ;; Use `hashq-set!' instead of `hash-set!' because `hash' returns the
     ;; same value for all structs (as of Guile 2.0.6), and because pointer
     ;; equality is sufficient in practice.
-    (hashq-set! %derivation-cache package
+    (hashq-set! cache package
                 `((,system ,@vals)
-                  ,@(or (hashq-ref %derivation-cache package)
-                        '())))
+                  ,@(or (hashq-ref cache package) '())))
     (apply values vals)))
 
-(define-syntax-rule (cached package system body ...)
-  "Memoize the result of BODY for the arguments PACKAGE and SYSTEM.
+(define-syntax cached
+  (syntax-rules (=>)
+    "Memoize the result of BODY for the arguments PACKAGE and SYSTEM.
 Return the cached result when available."
-  (let ((thunk (lambda () body ...))
-        (key   system))
-    (match (hashq-ref %derivation-cache package)
-      ((alist (... ...))
-       (match (assoc-ref alist key)
-         ((vals (... ...))
-          (apply values vals))
+    ((_ (=> cache) package system body ...)
+     (let ((thunk (lambda () body ...))
+           (key   system))
+       (match (hashq-ref cache package)
+         ((alist (... ...))
+          (match (assoc-ref alist key)
+            ((vals (... ...))
+             (apply values vals))
+            (#f
+             (cache! cache package key thunk))))
          (#f
-          (cache package key thunk))))
-      (#f
-       (cache package key thunk)))))
+          (cache! cache package key thunk)))))
+    ((_ package system body ...)
+     (cached (=> %derivation-cache) package system body ...))))
 
 (define* (expand-input store package input system #:optional cross-system)
   "Expand INPUT, an input tuple, such that it contains only references to
@@ -794,67 +798,77 @@ information in exceptions."
                         (package package)
                         (input   x)))))))
 
+(define %bag-cache
+  ;; 'eq?' cache mapping packages to system+target+graft?-dependent bags.
+  ;; It significantly speeds things up when doing repeated calls to
+  ;; 'package->bag' as is the case when building a profile.
+  (make-weak-key-hash-table 200))
+
 (define* (package->bag package #:optional
                        (system (%current-system))
                        (target (%current-target-system))
                        #:key (graft? (%graft?)))
   "Compile PACKAGE into a bag for SYSTEM, possibly cross-compiled to TARGET,
 and return it."
-  ;; Bind %CURRENT-SYSTEM and %CURRENT-TARGET-SYSTEM so that thunked field
-  ;; values can refer to it.
-  (parameterize ((%current-system system)
-                 (%current-target-system target))
-    (match (if graft?
-               (or (package-replacement package) package)
-               package)
-      (($ <package> name version source build-system
-                    args inputs propagated-inputs native-inputs self-native-input?
-                    outputs)
-       (or (make-bag build-system (string-append name "-" version)
-                     #:system system
-                     #:target target
-                     #:source source
-                     #:inputs (append (inputs)
-                                      (propagated-inputs))
-                     #:outputs outputs
-                     #:native-inputs `(,@(if (and target self-native-input?)
-                                             `(("self" ,package))
-                                             '())
-                                       ,@(native-inputs))
-                     #:arguments (args))
-           (raise (if target
-                      (condition
-                       (&package-cross-build-system-error
-                        (package package)))
-                      (condition
-                       (&package-error
-                        (package package))))))))))
+  (cached (=> %bag-cache)
+          package (list system target graft?)
+          ;; Bind %CURRENT-SYSTEM and %CURRENT-TARGET-SYSTEM so that thunked
+          ;; field values can refer to it.
+          (parameterize ((%current-system system)
+                         (%current-target-system target))
+            (match (if graft?
+                       (or (package-replacement package) package)
+                       package)
+              (($ <package> name version source build-system
+                            args inputs propagated-inputs native-inputs
+                            self-native-input? outputs)
+               (or (make-bag build-system (string-append name "-" version)
+                             #:system system
+                             #:target target
+                             #:source source
+                             #:inputs (append (inputs)
+                                              (propagated-inputs))
+                             #:outputs outputs
+                             #:native-inputs `(,@(if (and target
+                                                          self-native-input?)
+                                                     `(("self" ,package))
+                                                     '())
+                                               ,@(native-inputs))
+                             #:arguments (args))
+                   (raise (if target
+                              (condition
+                               (&package-cross-build-system-error
+                                (package package)))
+                              (condition
+                               (&package-error
+                                (package package)))))))))))
+
+(define %graft-cache
+  ;; 'eq?' cache mapping package objects to a graft corresponding to their
+  ;; replacement package.
+  (make-weak-key-hash-table 200))
 
 (define (input-graft store system)
-  "Return a procedure that, given an input referring to a package with a
-graft, returns a pair with the original derivation and the graft's derivation,
-and returns #f for other inputs."
+  "Return a procedure that, given a package with a graft, returns a graft, and
+#f otherwise."
   (match-lambda
-   ((label (? package? package) sub-drv ...)
-    (let ((replacement (package-replacement package)))
-      (and replacement
-           (let ((orig (package-derivation store package system
-                                           #:graft? #f))
-                 (new  (package-derivation store replacement system)))
-             (graft
-               (origin orig)
-               (replacement new)
-               (origin-output (match sub-drv
-                                (() "out")
-                                ((output) output)))
-               (replacement-output origin-output))))))
-   (x
-    #f)))
+    ((? package? package)
+     (let ((replacement (package-replacement package)))
+       (and replacement
+            (cached (=> %graft-cache) package system
+                    (let ((orig (package-derivation store package system
+                                                    #:graft? #f))
+                          (new  (package-derivation store replacement system)))
+                      (graft
+                        (origin orig)
+                        (replacement new)))))))
+    (x
+     #f)))
 
 (define (input-cross-graft store target system)
   "Same as 'input-graft', but for cross-compilation inputs."
   (match-lambda
-   ((label (? package? package) sub-drv ...)
+    ((? package? package)
     (let ((replacement (package-replacement package)))
       (and replacement
            (let ((orig (package-cross-derivation store package target system
@@ -863,34 +877,80 @@ and returns #f for other inputs."
                                                  target system)))
              (graft
                (origin orig)
-               (replacement new)
-               (origin-output (match sub-drv
-                                (() "out")
-                                ((output) output)))
-               (replacement-output origin-output))))))
+               (replacement new))))))
    (_
     #f)))
 
+(define* (fold-bag-dependencies proc seed bag
+                                #:key (native? #t))
+  "Fold PROC over the packages BAG depends on.  Each package is visited only
+once, in depth-first order.  If NATIVE? is true, restrict to native
+dependencies; otherwise, restrict to target dependencies."
+  (define nodes
+    (match (if native?
+               (append (bag-build-inputs bag)
+                       (bag-target-inputs bag)
+                       (if (bag-target bag)
+                           '()
+                           (bag-host-inputs bag)))
+               (bag-host-inputs bag))
+      (((labels things _ ...) ...)
+       things)))
+
+  (let loop ((nodes nodes)
+             (result seed)
+             (visited (setq)))
+    (match nodes
+      (()
+       result)
+      (((? package? head) . tail)
+       (if (set-contains? visited head)
+           (loop tail result visited)
+           (let ((inputs (bag-direct-inputs (package->bag head))))
+             (loop (match inputs
+                     (((labels things _ ...) ...)
+                      (append things tail)))
+                   (proc head result)
+                   (set-insert head visited)))))
+      ((head . tail)
+       (loop tail result visited)))))
+
 (define* (bag-grafts store bag)
-  "Return the list of grafts applicable to BAG.  Each graft is a <graft>
-record."
-  (let ((target (bag-target bag))
-        (system (bag-system bag)))
-    (define native-grafts
-      (filter-map (input-graft store system)
-                  (append (bag-transitive-build-inputs bag)
-                          (bag-transitive-target-inputs bag)
-                          (if target
-                              '()
-                              (bag-transitive-host-inputs bag)))))
+  "Return the list of grafts potentially applicable to BAG.  Potentially
+applicable grafts are collected by looking at direct or indirect dependencies
+of BAG that have a 'replacement'.  Whether a graft is actually applicable
+depends on whether the outputs of BAG depend on the items the grafts refer
+to (see 'graft-derivation'.)"
+  (define system (bag-system bag))
+  (define target (bag-target bag))
 
-    (define target-grafts
-      (if target
-          (filter-map (input-cross-graft store target system)
-                      (bag-transitive-host-inputs bag))
-          '()))
+  (define native-grafts
+    (let ((->graft (input-graft store system)))
+      (fold-bag-dependencies (lambda (package grafts)
+                               (match (->graft package)
+                                 (#f    grafts)
+                                 (graft (cons graft grafts))))
+                             '()
+                             bag)))
 
-    (append native-grafts target-grafts)))
+  (define target-grafts
+    (if target
+        (let ((->graft (input-cross-graft store target system)))
+          (fold-bag-dependencies (lambda (package grafts)
+                                   (match (->graft package)
+                                     (#f    grafts)
+                                     (graft (cons graft grafts))))
+                                 '()
+                                 bag
+                                 #:native? #f))
+        '()))
+
+  ;; We can end up with several identical grafts if we stumble upon packages
+  ;; that are not 'eq?' but map to the same derivation (this can happen when
+  ;; using things like 'package-with-explicit-inputs'.)  Hence the
+  ;; 'delete-duplicates' call.
+  (delete-duplicates
+   (append native-grafts target-grafts)))
 
 (define* (package-grafts store package
                          #:optional (system (%current-system))
@@ -985,6 +1045,9 @@ This is an internal procedure."
                   (grafts
                    (let ((guile (package-derivation store (default-guile)
                                                     system #:graft? #f)))
+                     ;; TODO: As an optimization, we can simply graft the tip
+                     ;; of the derivation graph since 'graft-derivation'
+                     ;; recurses anyway.
                      (graft-derivation store drv grafts
                                        #:system system
                                        #:guile guile))))

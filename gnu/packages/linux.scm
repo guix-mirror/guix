@@ -220,7 +220,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
     (search-path %load-path file)))
 
 (define-public linux-libre
-  (let* ((version "4.4.3")
+  (let* ((version "4.5")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -294,7 +294,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "06wl6gvhds6j6aaryzpz4jngdf3v70spvp1xb7k2c03kvm9v5f4v"))))
+               "0km863vwy557flpygkr869yshpjs1v11ni78p8k9p9nm31ai6yn3"))))
     (build-system gnu-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
@@ -303,8 +303,10 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
                      ("module-init-tools" ,module-init-tools)
                      ("patch/freedo+gnu" ,%boot-logo-patch)
 
-                     ,@(let ((conf (kernel-config (or (%current-target-system)
-                                                      (%current-system)))))
+                     ,@(let ((conf (kernel-config
+                                    (or (%current-target-system)
+                                        (%current-system))
+                                    #:variant (version-major+minor version))))
                          (if conf
                              `(("kconfig" ,conf))
                              '()))))
@@ -326,16 +328,33 @@ It has been modified to remove all non-free binary blobs.")
     (license license:gpl2)
     (home-page "http://www.gnu.org/software/linux-libre/"))))
 
-(define-public linux-libre-4.1
+(define-public linux-libre-4.4
   (package
     (inherit linux-libre)
-    (version "4.1.18")
+    (version "4.4.6")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "1bddh2rg645lavhjkk9z75vflba5y0g73z2fjwgbfrj5jb44x9i7"))))
+                "0sf623knc4j23p96r0w1ng725kj45ra50bwix01z5nvl5aqpnsrp"))))
+    (native-inputs
+     (let ((conf (kernel-config (or (%current-target-system)
+                                    (%current-system))
+                                #:variant "4.4")))
+       `(,@(alist-delete "kconfig" (package-native-inputs linux-libre))
+         ("kconfig" ,conf))))))
+
+(define-public linux-libre-4.1
+  (package
+    (inherit linux-libre)
+    (version "4.1.19")
+    (source (origin
+              (method url-fetch)
+              (uri (linux-libre-urls version))
+              (sha256
+               (base32
+                "0xkj94xmnmxr768qp6n68r1g68ix1sds95nv6zfg4x8fc7fzn8km"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))
@@ -2472,7 +2491,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.4")
+    (version "4.4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2480,7 +2499,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "0jssv1ys4nw2jf7mkp58c19yspaa8ybf48fxsrhhp0683mzpr73p"))))
+                "1z5882zx9jx02vyg067siws0irsl8pg37myx17hr4imn9ypf6r4r"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
@@ -2505,3 +2524,35 @@ easy administration.")
     ;; GPL2+: crc32.c, radix-tree.c, raid6.c, rbtree.c.
     ;; GPL2: Everything else.
     (license (list license:gpl2 license:gpl2+))))
+
+(define-public freefall
+  (package
+    (name "freefall")
+    (version (package-version linux-libre))
+    (source (package-source linux-libre))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'enter-subdirectory
+                    (lambda _
+                      (chdir "tools/laptop/freefall")))
+                  (delete 'configure)
+                  (add-before 'build 'increase-timeout
+                    (lambda _
+                      ;; The default of 2 seconds is too low: it assumes an
+                      ;; open lid and AC power without actually checking.
+                      (substitute* "freefall.c"
+                        (("alarm\\(2\\)") "alarm(5)")))))
+       #:make-flags (list (string-append "PREFIX="
+                                         (assoc-ref %outputs "out")))
+       #:tests? #f)) ;no tests
+    (home-page (package-home-page linux-libre))
+    (synopsis "Free-fall protection for spinning laptop hard drives")
+    (description
+     "Prevents shock damage to the internal spinning hard drive(s) of some
+HP and Dell laptops.  When sudden movement is detected, all input/output
+operations on the drive are suspended and its heads are parked on the ramp,
+where they are less likely to cause damage to the spinning disc.  Requires a
+drive that supports the ATA/ATAPI-7 IDLE IMMEDIATE command with unload
+feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
+    (license license:gpl2)))

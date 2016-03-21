@@ -232,7 +232,18 @@ initrd code."
           (check? #f)
           (flags '(no-suid no-dev no-exec))
           (options "mode=0755")
-          (create-mount-point? #t))))
+          (create-mount-point? #t))
+        ;; Elogind uses cgroups to organize processes, allowing it to map PIDs
+        ;; to sessions.  Elogind's cgroup hierarchy isn't associated with any
+        ;; resource controller ("subsystem").
+        (file-system
+          (device "cgroup")
+          (mount-point "/sys/fs/cgroup/elogind")
+          (type "cgroup")
+          (check? #f)
+          (options "none,name=elogind")
+          (create-mount-point? #t)
+          (dependencies (list (car %control-groups))))))
 
 (define %base-file-systems
   ;; List of basic file systems to be mounted.  Note that /proc and /sys are

@@ -18,6 +18,7 @@
 
 (define-module (test-derivations)
   #:use-module (guix derivations)
+  #:use-module (guix grafts)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix hash)
@@ -43,6 +44,9 @@
 
 (define %store
   (open-connection-for-tests))
+
+;; Globally disable grafts because they can trigger early builds.
+(%graft? #f)
 
 (define (bootstrap-binary name)
   (let ((bin (search-bootstrap-binary name (%current-system))))
@@ -71,6 +75,7 @@
         (lambda (e1 e2)
           (string<? (car e1) (car e2)))))
 
+
 (test-begin "derivations")
 
 (test-assert "parse & export"
@@ -493,6 +498,25 @@
                          `("-c" ,"echo $out > $out")
                          #:inputs `((,%bash))
                          #:allowed-references '())))
+    (guard (c ((nix-protocol-error? c)
+               ;; There's no specific error message to check for.
+               #t))
+      (build-derivations %store (list drv))
+      #f)))
+
+(test-assert "derivation #:disallowed-references, ok"
+  (let ((drv (derivation %store "disallowed" %bash
+                         '("-c" "echo hello > $out")
+                         #:inputs `((,%bash))
+                         #:disallowed-references '("out"))))
+    (build-derivations %store (list drv))))
+
+(test-assert "derivation #:disallowed-references, not ok"
+  (let* ((txt (add-text-to-store %store "foo" "Hello, world."))
+         (drv (derivation %store "disdisallowed" %bash
+                          `("-c" ,(string-append "echo " txt "> $out"))
+                          #:inputs `((,%bash) (,txt))
+                          #:disallowed-references (list txt))))
     (guard (c ((nix-protocol-error? c)
                ;; There's no specific error message to check for.
                #t))

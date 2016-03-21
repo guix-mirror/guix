@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -127,7 +128,7 @@ provide connectivity for client applications written in any language.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "0.13.1")
+    (version "0.15.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bjorn/tiled/archive/v"
@@ -135,19 +136,18 @@ provide connectivity for client applications written in any language.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "057a5cna3vhznpl9hyql2sxz995aprv43r8wva89x4vdphxv04lm"))))
+                "10bbjdv5r36229r1dqg32bxcj9yvpkx9jgs9v4s1qb71v856b15h"))))
     (build-system gnu-build-system)
     (inputs `(("qt" ,qt)
               ("zlib" ,zlib)))
     (arguments
      '(#:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-            (system* "qmake"
-                     (string-append "PREFIX=" out))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (system* "qmake"
+                        (string-append "PREFIX=" out))))))))
     (home-page "http://www.mapeditor.org/")
     (synopsis "Tile map editor")
     (description

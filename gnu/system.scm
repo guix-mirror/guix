@@ -360,7 +360,7 @@ explicitly appear in OS."
 
          ;; wireless-tools is deprecated in favor of iw, but it's still what
          ;; many people are familiar with, so keep it around.
-         iw wireless-tools
+         iw wireless-tools rfkill
 
          iproute
          net-tools                        ; XXX: remove when Inetutils suffices
@@ -478,6 +478,9 @@ then
   export `cat /etc/environment | cut -d= -f1`
 fi
 
+# Set the umask, notably for users logging in via 'lsh'.
+# See <http://bugs.gnu.org/22650>.
+umask 022
 
 # Allow GStreamer-based applications to find plugins.
 export GST_PLUGIN_PATH=\"$HOME/.guix-profile/lib/gstreamer-1.0\"
@@ -702,7 +705,7 @@ listed in OS.  The C library expects to find it under
   (string-append "GNU with "
                  (string-titlecase (package-name kernel)) " "
                  (package-version kernel)
-                 " (alpha)"))
+                 " (beta)"))
 
 (define (store-file-system file-systems)
   "Return the file system object among FILE-SYSTEMS that contains the store."

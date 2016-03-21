@@ -86,13 +86,13 @@
 (define (full-name->name+version spec)
   "Given package specification SPEC with or without output,
 return two values: name and version.  For example, for SPEC
-\"foo-0.9.1b:lib\", return \"foo\" and \"0.9.1b\"."
+\"foo@0.9.1b:lib\", return \"foo\" and \"0.9.1b\"."
   (let-values (((name version output)
                 (package-specification->name+version+output spec)))
     (values name version)))
 
 (define (name+version->full-name name version)
-  (string-append name "-" version))
+  (string-append name "@" version))
 
 (define* (make-package-specification name #:optional version output)
   (let ((full-name (if version
@@ -263,7 +263,8 @@ Example:
   "Return a list of full names of the packages from package INPUTS."
   (filter-map (match-lambda
                ((_ (? package? package))
-                (package-full-name package))
+                (make-package-specification (package-name package)
+                                            (package-version package)))
                ((_ (? package? package) output)
                 (make-package-specification (package-name package)
                                             (package-version package)
@@ -953,10 +954,11 @@ GENERATIONS is a list of generation numbers."
 
 (define (package-location-string id-or-name)
   "Return a location string of a package with ID-OR-NAME."
-  (and-let* ((package  (or (package-by-id id-or-name)
-                           (first (packages-by-name id-or-name))))
-             (location (package-location package)))
-    (location->string location)))
+  (and=> (or (package-by-id id-or-name)
+             (match (packages-by-name id-or-name)
+               (()              #f)
+               ((package _ ...) package)))
+         (compose location->string package-location)))
 
 (define (package-source-derivation->store-path derivation)
   "Return a store path of the package source DERIVATION."

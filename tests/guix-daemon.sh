@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -27,8 +27,9 @@ guix build --version
 
 drv="`guix build emacs -d`"
 out="`guile -c '								\
-  (use-modules (guix) (gnu packages emacs))					\
+  (use-modules (guix) (guix grafts) (gnu packages emacs))			\
   (define store (open-connection))						\
+  (%graft? #f)
   (display (derivation->output-path (package-derivation store emacs)))'`"
 
 hash_part="`basename $out | cut -c 1-32`"
@@ -88,8 +89,11 @@ guix-daemon --no-substitutes --listen="$socket" --disable-chroot	\
 daemon_pid=$!
 
 guile -c "
-  (use-modules (guix) (guix tests) (srfi srfi-34))
+  (use-modules (guix) (guix grafts) (guix tests) (srfi srfi-34))
   (define store (open-connection-for-tests \"$socket\"))
+
+  ;; Disable grafts to avoid building more than needed.
+  (%graft? #f)
 
   (define (build-without-failing drv)
     (lambda (store)

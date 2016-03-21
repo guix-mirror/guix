@@ -2,7 +2,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@pobox.com>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -82,14 +82,14 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "1.1.902")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "19wa5yizc3nfq3gibyqb3ygdvcs7v7bz1m5ifv0f4va3igxc3nk3"))))
+                "0b3f67xsy1s84cvzw22mjfkbcv6pj4p4yns4h3m0fmb7zqbvjm0p"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -142,14 +142,14 @@ the freedesktop.org XDG Base Directory specification.")
 (define-public elogind
   (package
     (name "elogind")
-    (version "219.12")
+    (version "219.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wingolog.org/pub/" name "/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "13qc4f0dl7ynnfp1y565z2k0jjizly5w3dqhiqkdk7v6jr4pksb7"))
+                "1jckc4wx199n1q4r4fv43ibjs6nlq91s39w9r78ilk1z383m1hcx"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -165,11 +165,17 @@ the freedesktop.org XDG Base Directory specification.")
                             (assoc-ref %build-inputs "libcap"))
              (string-append "--with-udevrulesdir="
                             (assoc-ref %outputs "out")
-                            "/lib/udev/rules.d")
-             ;; XXX: fail with:
-             ;;  src/shared/clean-ipc.c:315: undefined reference to `mq_unlink'
-             "LDFLAGS=-lrt")
-       #:make-flags '("PKTTYAGENT=/run/current-system/profile/bin/pkttyagent")))
+                            "/lib/udev/rules.d"))
+       #:make-flags '("PKTTYAGENT=/run/current-system/profile/bin/pkttyagent")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'fix-service-file
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Fix the file name of the 'elogind' binary in the D-Bus
+                      ;; '.service' file.
+                      (substitute* "src/login/org.freedesktop.login1.service"
+                        (("^Exec=.*")
+                         (string-append "Exec=" (assoc-ref %outputs "out")
+                                        "/libexec/elogind/elogind\n"))))))))
     (native-inputs
      `(("intltool" ,intltool)
        ("gettext" ,gnu-gettext)
@@ -188,7 +194,7 @@ the freedesktop.org XDG Base Directory specification.")
                                              ;when pressing the power button
        ("dbus" ,dbus)
        ("eudev" ,eudev)))
-    (home-page "https://github.com/andywingo/elogind")
+    (home-page "https://github.com/wingo/elogind")
     (synopsis "User, seat, and session management service")
     (description "Elogind is the systemd project's \"logind\" service,
 extracted out as a separate project.  Elogind integrates with PAM to provide
@@ -247,15 +253,16 @@ Python.")
 (define-public wayland
   (package
     (name "wayland")
-    (version "1.9.0")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wayland.freedesktop.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1yhy62vkbq8j8c9zaa6yzvn75cd99kfa8n2zfdwl80x019r711ww"))))
+                "1p307ly1yyqjnzn9dbv78yffql2qszn84qk74lwanl3gma8fgxjb"))))
     (build-system gnu-build-system)
+    (arguments `(#:parallel-tests? #f))
     (native-inputs
      `(("doxygen" ,doxygen)
        ("graphviz" ,graphviz)
@@ -268,7 +275,7 @@ Python.")
        ("expat" ,expat)
        ("libffi" ,libffi)
        ("libxml2" ,libxml2))) ; for XML_CATALOG_FILES
-    (home-page "http://wayland.freedesktop.org/")
+    (home-page "https://wayland.freedesktop.org/")
     (synopsis "Display server protocol")
     (description
      "Wayland is a protocol for a compositor to talk to its clients as well as
@@ -358,6 +365,7 @@ Analysis and Reporting Technology) functionality.")
                "doc"))                            ;5 MiB of gtk-doc HTML
     (arguments
      `(#:tests? #f ; requiring system message dbus
+       #:disallowed-references ("doc")            ;enforce separation of "doc"
        #:configure-flags
        (list "--disable-man"
              "--localstatedir=/var"
@@ -404,7 +412,7 @@ message bus.")
     (version "0.6.40")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.freedesktop.org/software/"
+              (uri (string-append "https://www.freedesktop.org/software/"
                                   name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
@@ -444,7 +452,7 @@ interfaces, based on the useradd, usermod and userdel commands.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.freedesktop.org/software/" name "/"
+                    "https://www.freedesktop.org/software/" name "/"
                     name "-" version ".tar.xz"))
               (sha256
                (base32
@@ -471,15 +479,15 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
 (define-public libqmi
   (package
     (name "libqmi")
-    (version "1.12.6")
+    (version "1.12.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.freedesktop.org/software/" name "/"
+                    "https://www.freedesktop.org/software/" name "/"
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "101ppan2q1h4pyp2zbn9b8sdwy2c7fk9rp91yykxz3afrvzbymq8"))))
+                "19w2zkm5xl6i3vm1xhjjclks4awas17gfbb2k5y66gwnkiykjfnj"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
@@ -488,7 +496,7 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
     (propagated-inputs
      `(("glib" ,glib))) ; required by qmi-glib.pc
     (synopsis "Library to communicate with QMI-powered modems")
-    (home-page "http://www.freedesktop.org/wiki/Software/libqmi/")
+    (home-page "https://www.freedesktop.org/wiki/Software/libqmi/")
     (description
      "Libqmi is a GLib-based library for talking to WWAN modems and devices
 which speak the Qualcomm MSM Interface (QMI) protocol.")

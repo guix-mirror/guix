@@ -207,13 +207,13 @@ cat > "$module_dir/foo.scm"<<EOF
 EOF
 
 guix package -A emacs-foo-bar -L "$module_dir" | grep 42
-guix package -i emacs-foo-bar-42 -n -L "$module_dir"
+guix package -i emacs-foo-bar@42 -n -L "$module_dir"
 
 # Same thing using the 'GUIX_PACKAGE_PATH' environment variable.
 GUIX_PACKAGE_PATH="$module_dir"
 export GUIX_PACKAGE_PATH
 guix package -A emacs-foo-bar | grep 42
-guix package -i emacs-foo-bar-42 -n
+guix package -i emacs-foo-bar@42 -n
 
 # Make sure patches that live under $GUIX_PACKAGE_PATH are found.
 cat > "$module_dir/emacs.patch"<<EOF
@@ -261,7 +261,7 @@ unset GUIX_PACKAGE_PATH
 
 # Using 'GUIX_BUILD_OPTIONS'.
 available="`guix package -A | sort`"
-GUIX_BUILD_OPTIONS="--dry-run"
+GUIX_BUILD_OPTIONS="--dry-run --no-grafts"
 export GUIX_BUILD_OPTIONS
 
 # Make sure $GUIX_BUILD_OPTIONS is not simply appended to the command-line,
@@ -270,7 +270,9 @@ available2="`guix package -A | sort`"
 test "$available2" = "$available"
 guix package -I
 
-unset GUIX_BUILD_OPTIONS
+# Restore '--no-grafts', which makes sure we don't end up building stuff when
+# '--dry-run' is passed.
+GUIX_BUILD_OPTIONS="--no-grafts"
 
 # Applying a manifest file.
 cat > "$module_dir/manifest.scm"<<EOF

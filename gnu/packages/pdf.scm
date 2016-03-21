@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
@@ -410,26 +410,18 @@ extracting content or merging files.")
 (define-public mupdf
   (package
     (name "mupdf")
-    (version "1.6")
+    (version "1.8")
     (source
       (origin
         (method url-fetch)
         (uri (string-append "http://mupdf.com/downloads/archive/"
                             name "-" version "-source.tar.gz"))
         (sha256
-          (base32 "0qx51rj6alzcagcixm59rvdpm54w6syrwr4184v439jh14ryw4wq"))
-        (patches
-          (list (search-patch "mupdf-buildsystem-fix.patch")))
+          (base32 "01n26cy41lc2fjri63s4js23ixxb4nd37aafry3hz4i4id6wd8x2"))
         (modules '((guix build utils)))
         (snippet
-          '(begin
             ;; Don't build the bundled-in third party libraries.
-            (delete-file-recursively "thirdparty")
-
-            ;; Make the scripts for finding openjpeg build details executable.
-            (chmod "ojp2_cppflags.sh" #o0755)
-            (chmod "ojp2_ldflags.sh" #o0755)))))
-
+            '(delete-file-recursively "thirdparty"))))
     (build-system gnu-build-system)
     (inputs
       `(("curl" ,curl)
@@ -444,22 +436,12 @@ extracting content or merging files.")
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (arguments
-      ;; Trying to run `$ make check' results in a no rule fault.
-      '(#:tests? #f
-
-        #:modules ((guix build gnu-build-system)
-                     (guix build utils)
-                     (srfi srfi-1))
-        #:phases (alist-replace
-                   'build
-                   (lambda _ (zero? (system* "make" "XCFLAGS=-fpic")))
-                   (alist-replace
-                     'install
-                     (lambda* (#:key outputs #:allow-other-keys)
-                       (let ((out (assoc-ref outputs "out")))
-                         (zero? (system* "make" (string-append "prefix=" out)
-                                         "install"))))
-                     (alist-delete 'configure %standard-phases)))))
+      '(#:tests? #f ; no check target
+        #:make-flags (list "CC=gcc"
+                           "XCFLAGS=-fpic"
+                           (string-append "prefix=" (assoc-ref %outputs "out")))
+        #:phases (modify-phases %standard-phases
+                  (delete 'configure))))
     (home-page "http://mupdf.com")
     (synopsis "Lightweight PDF viewer and toolkit")
     (description

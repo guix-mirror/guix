@@ -28,6 +28,7 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages icu4c)
@@ -40,6 +41,7 @@
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages databases)
@@ -240,3 +242,34 @@ information about tracks being played to a scrobbler, such as Libre.FM.")
     ;; instead.
     (home-page "http://mpd.wikia.com/wiki/Client:Mpdscribble")
     (license license:gpl2+)))
+
+(define-public python-mpd2
+  (package
+    (name "python-mpd2")
+    (version "0.5.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "python-mpd2" version))
+              (sha256
+               (base32
+                "0laypd7h1j14b4vrmiayqlzdsh2j5hc3zv4l0fqvbrbw9y6763ii"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _ (zero? (system* "python" "mpd_test.py")))))))
+    (native-inputs `(("python-mock" ,python-mock)))
+    (home-page "https://github.com/Mic92/python-mpd2")
+    (synopsis "Python MPD client library")
+    (description "Python-mpd2 is a Python library which provides a client
+interface for the Music Player Daemon.")
+    (license license:lgpl3+)
+    (properties `((python2-variant . ,(delay python2-mpd2))))))
+
+(define-public python2-mpd2
+  (let ((mpd2 (package-with-python2
+               (strip-python2-variant python-mpd2))))
+    (package (inherit mpd2)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs mpd2))))))

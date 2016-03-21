@@ -1,0 +1,401 @@
+These patches are required to build with a modern GCC; most of them
+are taken from the Debian package. Upstream has disappeared.
+
+diff -r -u einstein-2.0.orig/convert.h einstein-2.0/convert.h
+--- einstein-2.0.orig/convert.h	2005-08-14 04:40:58.000000000 +0200
++++ einstein-2.0/convert.h	2016-03-05 18:25:08.488917021 +0100
+@@ -5,6 +5,7 @@
+ #include <iostream>
+ #include <sstream>
+ #include <string>
++#include <typeinfo>
+ 
+ #include "exceptions.h"
+ #include "unicode.h"
+diff -r -u einstein-2.0.orig/descr.cpp einstein-2.0/descr.cpp
+--- einstein-2.0.orig/descr.cpp	2005-08-17 15:42:29.000000000 +0200
++++ einstein-2.0/descr.cpp	2016-03-05 18:29:27.960352230 +0100
+@@ -139,9 +139,9 @@
+ {
+     currentPage = 0;
+     //area.add(parentArea, false);
+-    titleFont = new Font(L"nova.ttf", 26);
+-    buttonFont = new Font(L"laudcn2.ttf", 14);
+-    textFont = new Font(L"laudcn2.ttf", 16);
++    titleFont = new Font(L"DejaVuSans.ttf", 26);
++    buttonFont = new Font(L"DejaVuSans.ttf", 14);
++    textFont = new Font(L"DejaVuSans.ttf", 16);
+     textHeight = (int)(textFont->getHeight(L"A") * 1.0);
+     text = new TextParser(msg(L"rulesText"), *textFont, START_X, START_Y, 
+                 CLIENT_WIDTH, CLIENT_HEIGHT);
+diff -r -u einstein-2.0.orig/font.h einstein-2.0/font.h
+--- einstein-2.0.orig/font.h	2005-08-16 00:33:17.000000000 +0200
++++ einstein-2.0/font.h	2016-03-05 18:22:05.563794039 +0100
+@@ -3,7 +3,7 @@
+ 
+ 
+ #include <string>
+-#include <SDL_ttf.h>
++#include <SDL/SDL_ttf.h>
+ 
+ 
+ class Font
+diff -r -u einstein-2.0.orig/formatter.cpp einstein-2.0/formatter.cpp
+--- einstein-2.0.orig/formatter.cpp	2005-08-14 04:40:58.000000000 +0200
++++ einstein-2.0/formatter.cpp	2016-03-05 18:18:41.146882565 +0100
+@@ -58,7 +58,7 @@
+             if ((c.type == INT_ARG) || (c.type == STRING_ARG) ||
+                     (c.type == FLOAT_ARG) || (c.type == DOUBLE_ARG))
+             {
+-                int no = (int)c.data;
++                long no = (long)c.data;
+                 args[no - 1] = c.type;
+             }
+         }
+@@ -123,7 +123,7 @@
+ std::wstring Formatter::format(std::vector<ArgValue*> &argValues) const
+ {
+     std::wstring s;
+-    int no;
++    long no;
+ 
+     for (int i = 0; i < commandsCnt; i++) {
+         Command *cmd = &commands[i];
+@@ -135,8 +135,8 @@
+                 
+             case STRING_ARG:
+             case INT_ARG:
+-                no = (int)cmd->data - 1;
+-                if (no < (int)argValues.size())
++                no = (long)cmd->data - 1;
++                if (no < (long)argValues.size())
+                     s += argValues[no]->format(cmd);
+                 break;
+ 
+diff -r -u einstein-2.0.orig/game.cpp einstein-2.0/game.cpp
+--- einstein-2.0.orig/game.cpp	2005-08-23 00:44:54.000000000 +0200
++++ einstein-2.0/game.cpp	2016-03-05 18:29:27.960352230 +0100
+@@ -33,7 +33,7 @@
+     screen.draw(8, 10, tile);
+     SDL_FreeSurface(tile);
+     
+-    Font titleFont(L"nova.ttf", 28);
++    Font titleFont(L"DejaVuSans.ttf", 28);
+     titleFont.draw(screen.getSurface(), 20, 20, 255,255,0, true, 
+             msg(L"einsteinPuzzle"));
+     
+@@ -89,7 +89,7 @@
+ {
+     lastRun = elapsed = lastUpdate = 0;
+     stop();
+-    font = new Font(L"luximb.ttf", 16);
++    font = new Font(L"DejaVuSans.ttf", 16);
+ }
+ 
+ Watch::Watch(std::istream &stream)
+@@ -97,7 +97,7 @@
+     elapsed = readInt(stream);
+     lastUpdate = 0;
+     stop();
+-    font = new Font(L"luximb.ttf", 16);
++    font = new Font(L"DejaVuSans.ttf", 16);
+ }
+ 
+ Watch::~Watch()
+@@ -178,7 +178,7 @@
+             watch->stop();
+             Area area;
+             area.add(background, false);
+-            Font font(L"laudcn2.ttf", 16);
++            Font font(L"DejaVuSans.ttf", 16);
+             area.add(new Window(280, 275, 240, 50, L"greenpattern.bmp", 6));
+             area.add(new Label(&font, 280, 275, 240, 50, Label::ALIGN_CENTER,
+                 Label::ALIGN_MIDDLE, 255,255,0, msg(L"paused")));
+@@ -209,7 +209,7 @@
+         virtual void doAction() {
+             sound->play(L"applause.wav");
+             watch->stop();
+-            Font font(L"laudcn2.ttf", 20);
++            Font font(L"DejaVuSans.ttf", 20);
+             showMessageWindow(gameArea, L"marble1.bmp", 
+                     500, 70, &font, 255,0,0, msg(L"won"));
+             gameArea->draw();
+@@ -257,8 +257,8 @@
+             sound->play(L"glasbk2.wav");
+             bool restart = false;
+             bool newGame = false;
+-            Font font(L"laudcn2.ttf", 24);
+-            Font btnFont(L"laudcn2.ttf", 14);
++            Font font(L"DejaVuSans.ttf", 24);
++            Font btnFont(L"DejaVuSans.ttf", 14);
+             Area area;
+             area.add(gameArea);
+             area.add(new Window(220, 240, 360, 140, L"redpattern.bmp", 6));
+@@ -329,7 +329,7 @@
+         CheatCommand(Area *a) { gameArea = a; };
+         
+         virtual void doAction() {
+-            Font font(L"nova.ttf", 30);
++            Font font(L"DejaVuSans.ttf", 30);
+             showMessageWindow(gameArea, L"darkpattern.bmp", 
+                     500, 100, &font, 255,255,255, 
+                     msg(L"iddqd"));
+@@ -475,7 +475,7 @@
+     drawWallpaper(L"rain.bmp");
+     Window window(230, 260, 340, 80, L"greenpattern.bmp", 6);
+     window.draw();
+-    Font font(L"laudcn2.ttf", 16);
++    Font font(L"DejaVuSans.ttf", 16);
+     Label label(&font, 280, 275, 240, 50, Label::ALIGN_CENTER,
+                 Label::ALIGN_MIDDLE, 255,255,0, msg(L"loading"));
+     label.draw();
+@@ -533,7 +533,7 @@
+ void Game::run()
+ {
+     Area area;
+-    Font btnFont(L"laudcn2.ttf", 14);
++    Font btnFont(L"DejaVuSans.ttf", 14);
+     
+     area.setTimer(300, watch);
+ 
+diff -r -u einstein-2.0.orig/main.cpp einstein-2.0/main.cpp
+--- einstein-2.0.orig/main.cpp	2005-09-26 12:32:54.000000000 +0200
++++ einstein-2.0/main.cpp	2016-03-05 18:29:27.960352230 +0100
+@@ -2,7 +2,7 @@
+ #include <iostream>
+ #include <SDL.h>
+ #include <SDL_main.h>
+-#include <SDL_ttf.h>
++#include <SDL/SDL_ttf.h>
+ #include "main.h"
+ #include "utils.h"
+ #include "storage.h"
+@@ -78,7 +78,7 @@
+ /*static void checkBetaExpire()
+ {
+     if (1124832535L + 60L*60L*24L*40L < time(NULL)) {
+-        Font font(L"laudcn2.ttf", 16);
++        Font font(L"DejaVuSans.ttf", 16);
+         Area area;
+         showMessageWindow(&area, L"darkpattern.bmp", 
+                 700, 100, &font, 255,255,255, 
+diff -r -u einstein-2.0.orig/Makefile einstein-2.0/Makefile
+--- einstein-2.0.orig/Makefile	2005-09-25 23:20:30.000000000 +0200
++++ einstein-2.0/Makefile	2016-03-05 18:14:22.365450608 +0100
+@@ -49,10 +49,14 @@
+ 
+ 
+ $(TARGET): $(OBJECTS)
++	cd mkres && make
++	cd res && ../mkres/mkres --source resources.descr --output ../einstein.res
+ 	$(CXX) $(LNFLAGS) $(OBJECTS) -o $(TARGET)
+ 
+ clean:
+ 	rm -f $(OBJECTS) core* *core $(TARGET) *~
++	cd res && rm -f einstein.res
++	cd mkres && make clean
+ 
+ depend:
+ 	@makedepend $(SOURCES) 2> /dev/null
+diff -r -u einstein-2.0.orig/menu.cpp einstein-2.0/menu.cpp
+--- einstein-2.0.orig/menu.cpp	2005-09-25 22:51:00.000000000 +0200
++++ einstein-2.0/menu.cpp	2016-03-05 18:29:27.960352230 +0100
+@@ -23,11 +23,11 @@
+     SDL_Surface *title = loadImage(L"nova.bmp");
+     screen.draw(0, 0, title);
+     SDL_FreeSurface(title);
+-    Font font(L"nova.ttf", 28);
++    Font font(L"DejaVuSans.ttf", 28);
+     std::wstring s(msg(L"einsteinFlowix"));
+     int width = font.getWidth(s);
+     font.draw((screen.getWidth() - width) / 2, 30, 255,255,255, true, s);
+-    Font urlFont(L"luximb.ttf", 16);
++    Font urlFont(L"DejaVuSans.ttf", 16);
+     s = L"http://games.flowix.com";
+     width = urlFont.getWidth(s);
+     urlFont.draw((screen.getWidth() - width) / 2, 60, 255,255,0, true, s);
+@@ -133,9 +133,9 @@
+ 
+         virtual void doAction() {
+             Area area;
+-            Font titleFont(L"nova.ttf", 26);
+-            Font font(L"laudcn2.ttf", 14);
+-            Font urlFont(L"luximb.ttf", 16);
++            Font titleFont(L"DejaVuSans.ttf", 26);
++            Font font(L"DejaVuSans.ttf", 14);
++            Font urlFont(L"DejaVuSans.ttf", 16);
+ 
+ #define LABEL(pos, c, f, text) area.add(new Label(&f, 220, pos, 360, 20, \
+             Label::ALIGN_CENTER, Label::ALIGN_MIDDLE, 255,255,c, text));
+@@ -171,7 +171,7 @@
+ void menu()
+ {
+     Area area;
+-    Font font(L"laudcn2.ttf", 20);
++    Font font(L"DejaVuSans.ttf", 20);
+ 
+     area.add(new MenuBackground());
+     area.draw();
+diff -r -u einstein-2.0.orig/mkres/compressor.cpp einstein-2.0/mkres/compressor.cpp
+--- einstein-2.0.orig/mkres/compressor.cpp	2005-08-14 04:40:58.000000000 +0200
++++ einstein-2.0/mkres/compressor.cpp	2016-03-05 18:26:13.194264129 +0100
+@@ -2,6 +2,7 @@
+ #include <zlib.h>
+ #include "convert.h"
+ #include "exceptions.h"
++#include "string.h"
+ 
+ 
+ ResourceCompressor::ResourceCompressor() 
+diff -r -u einstein-2.0.orig/mkres/convert.h einstein-2.0/mkres/convert.h
+--- einstein-2.0.orig/mkres/convert.h	2005-08-14 04:40:58.000000000 +0200
++++ einstein-2.0/mkres/convert.h	2016-03-05 18:25:21.479990669 +0100
+@@ -5,6 +5,7 @@
+ #include <iostream>
+ #include <sstream>
+ #include <string>
++#include <typeinfo>
+ 
+ #include "exceptions.h"
+ #include "unicode.h"
+diff -r -u einstein-2.0.orig/mkres/main.cpp einstein-2.0/mkres/main.cpp
+--- einstein-2.0.orig/mkres/main.cpp	2005-08-14 04:40:58.000000000 +0200
++++ einstein-2.0/mkres/main.cpp	2016-03-05 18:25:55.062765900 +0100
+@@ -1,5 +1,6 @@
+ #include "compressor.h"
+ #include "exceptions.h"
++#include "string.h"
+ #include "unicode.h"
+ #include "table.h"
+ 
+diff -r -u einstein-2.0.orig/mkres/unicode.cpp einstein-2.0/mkres/unicode.cpp
+--- einstein-2.0.orig/mkres/unicode.cpp	2005-08-14 04:40:58.000000000 +0200
++++ einstein-2.0/mkres/unicode.cpp	2016-03-05 18:26:28.065492890 +0100
+@@ -5,6 +5,7 @@
+ #endif
+ #include "unicode.h"
+ #include "exceptions.h"
++#include "string.h"
+ 
+ 
+ /// Returns length of wide character in utf-8
+diff -r -u einstein-2.0.orig/opensave.cpp einstein-2.0/opensave.cpp
+--- einstein-2.0.orig/opensave.cpp	2005-08-14 23:33:36.000000000 +0200
++++ einstein-2.0/opensave.cpp	2016-03-05 18:29:27.960352230 +0100
+@@ -160,7 +160,7 @@
+ static void showListWindow(SavesList &list, Command **commands,
+         const std::wstring &title, Area &area, Font *font)
+ {
+-    Font titleFont(L"nova.ttf", 26);
++    Font titleFont(L"DejaVuSans.ttf", 26);
+ 
+     area.add(new Window(250, 90, 300, 420, L"blue.bmp"));
+     area.add(new Label(&titleFont, 250, 95, 300, 40, Label::ALIGN_CENTER,
+@@ -189,7 +189,7 @@
+     
+     Area area;
+     area.add(parentArea, false);
+-    Font font(L"laudcn2.ttf", 14);
++    Font font(L"DejaVuSans.ttf", 14);
+     bool saved = false;
+     
+     SavesList list;
+@@ -258,7 +258,7 @@
+     
+     Area area;
+     area.add(parentArea, false);
+-    Font font(L"laudcn2.ttf", 14);
++    Font font(L"DejaVuSans.ttf", 14);
+     
+     Game *newGame = NULL;
+     
+diff -r -u einstein-2.0.orig/options.cpp einstein-2.0/options.cpp
+--- einstein-2.0.orig/options.cpp	2005-09-26 12:33:18.000000000 +0200
++++ einstein-2.0/options.cpp	2016-03-05 18:29:27.960352230 +0100
+@@ -53,8 +53,8 @@
+ 
+ void showOptionsWindow(Area *parentArea)
+ {
+-    Font titleFont(L"nova.ttf", 26);
+-    Font font(L"laudcn2.ttf", 14);
++    Font titleFont(L"DejaVuSans.ttf", 26);
++    Font font(L"DejaVuSans.ttf", 14);
+ 
+     bool fullscreen = (getStorage()->get(L"fullscreen", 1) != 0);
+     bool niceCursor = (getStorage()->get(L"niceCursor", 1) != 0);
+diff -r -u einstein-2.0.orig/res/resources.descr einstein-2.0/res/resources.descr
+--- einstein-2.0.orig/res/resources.descr	2005-09-25 22:51:14.000000000 +0200
++++ einstein-2.0/res/resources.descr	2016-03-05 18:30:08.563704873 +0100
+@@ -89,13 +89,11 @@
+     { name = "title.bmp" }
+     { name = "marble1.bmp" }
+     { name = "blue.bmp" }
+-    { name = "luximb.ttf" }
+     { name = "redpattern.bmp" }
+     { name = "greenpattern.bmp" }
+     { name = "darkpattern.bmp" }
+     { name = "nova.bmp" }
+-    { name = "nova.ttf" }
+-    { name = "laudcn2.ttf" }
++    { name = "DejaVuSans.ttf" }
+     { name = "btn.bmp" }
+     { name = "rules.txt", format = "messages" group = "messages" }
+     { name = "rules_ru.txt", format = "messages" group = "messages" }
+Only in einstein-2.0/res: resources.descr.orig
+diff -r -u einstein-2.0.orig/sound.h einstein-2.0/sound.h
+--- einstein-2.0.orig/sound.h	2005-09-24 08:24:20.000000000 +0200
++++ einstein-2.0/sound.h	2016-03-05 18:22:19.314931225 +0100
+@@ -4,7 +4,7 @@
+ 
+ #include <string>
+ #include <map>
+-#include <SDL_mixer.h>
++#include <SDL/SDL_mixer.h>
+ 
+ 
+ class Sound
+diff -r -u einstein-2.0.orig/topscores.cpp einstein-2.0/topscores.cpp
+--- einstein-2.0.orig/topscores.cpp	2005-08-14 23:08:43.000000000 +0200
++++ einstein-2.0/topscores.cpp	2016-03-05 18:29:27.970353055 +0100
+@@ -103,9 +103,9 @@
+ ScoresWindow::ScoresWindow(int x, int y, TopScores *scores, int highlight): 
+                 Window(x, y, 320, 350, L"blue.bmp")
+ {
+-    Font titleFont(L"nova.ttf", 26);
+-    Font entryFont(L"laudcn2.ttf", 14);
+-    Font timeFont(L"luximb.ttf", 14);
++    Font titleFont(L"DejaVuSans.ttf", 26);
++    Font entryFont(L"DejaVuSans.ttf", 14);
++    Font timeFont(L"DejaVuSans.ttf", 14);
+     
+     std::wstring txt = msg(L"topScores");
+     int w = titleFont.getWidth(txt);
+@@ -139,7 +139,7 @@
+ {
+     Area area;
+ 
+-    Font font(L"laudcn2.ttf", 16);
++    Font font(L"DejaVuSans.ttf", 16);
+     area.add(parentArea);
+     area.add(new ScoresWindow(240, 125, scores, highlight));
+     ExitCommand exitCmd(area);
+@@ -154,7 +154,7 @@
+ {
+     Area area;
+     
+-    Font font(L"laudcn2.ttf", 16);
++    Font font(L"DejaVuSans.ttf", 16);
+     area.add(parentArea);
+     area.add(new Window(170, 280, 460, 100, L"blue.bmp"));
+     Storage *storage = getStorage();
+diff -r -u einstein-2.0.orig/unicode.cpp einstein-2.0/unicode.cpp
+--- einstein-2.0.orig/unicode.cpp	2005-08-14 04:40:58.000000000 +0200
++++ einstein-2.0/unicode.cpp	2016-03-05 18:26:55.747780024 +0100
+@@ -5,6 +5,7 @@
+ #endif
+ #include "unicode.h"
+ #include "exceptions.h"
++#include "string.h"
+ 
+ 
+ /// Returns length of wide character in utf-8

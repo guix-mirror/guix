@@ -68,14 +68,14 @@ a major mode for Emacs for examining the flowcharts that it produces.")
 (define-public complexity
   (package
     (name "complexity")
-    (version "1.3")
+    (version "1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/complexity/complexity-"
-                                  version ".tar.gz"))
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "19bc64sxpqd5rqylqaa7dijz2x7qp2b0dg3ah3fb3qbcvd8b4wgy"))))
+                "0lr0l9kj2w3jilz9h9y4np9pf9i9ccpy6331lanki2fnz4z8ldvd"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)
@@ -190,7 +190,7 @@ COCOMO model or user-provided parameters.")
 (define-public the-silver-searcher
   (package
     (name "the-silver-searcher")
-    (version "0.29.1")
+    (version "0.31.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -198,7 +198,7 @@ COCOMO model or user-provided parameters.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0ah7vcqprl9hhafi68bvzaiywy7dfm28zf7kpw3xrlqzfn0vg7kp"))
+                "1a3xncsq3x8pci194k484s5mdqij2sirpz6dj6711n2p8mzq5g31"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -284,14 +284,14 @@ stack traces.")
 (define-public lcov
   (package
     (name "lcov")
-    (version "1.10")
+    (version "1.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/ltp/lcov-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "13xq2ln4jjasslqzzhr5g11q1c19gwpng1jphzbzmylmrjz62ila"))))
+                "19wfifdpxxivhq9adbphanjfga9bg9spms9v7c3589wndjff8x5l"))))
     (build-system gnu-build-system)
     (arguments
      '(#:make-flags (let ((out (assoc-ref %outputs "out")))

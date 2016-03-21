@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module ((guix licenses)
-                #:select (gpl2+ lgpl2.1+ mpl1.1 mpl2.0
+                #:select (gpl2+ lgpl2.1+ lgpl3+ mpl1.1 mpl2.0
                           non-copyleft x11-style))
   #:use-module (guix packages)
   #:use-module (guix utils)
@@ -373,6 +374,33 @@ CorelDRAW documents of all versions.")
 Apple Keynote documents.  It currently supports Keynote versions 2 to 5.")
     (license mpl2.0)))
 
+(define-public liblangtag
+  (package
+    (name "liblangtag")
+    (version "0.5.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://bitbucket.org/tagoh/liblangtag/downloads/"
+                            name "-" version ".tar.bz2"))
+        (sha256
+         (base32
+          "1akf0d7yp29pv3j2pw2riii4n5kyjr9szc0y77khnx9zzr5zdqh8"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libxml2" ,libxml2)))
+    (home-page "http://tagoh.bitbucket.org/liblangtag/")
+    (synopsis "Library to access tags for identifying languages")
+    (description "Liblangtag implements an interface to work with tags
+for identifying languages as described in RFC 5646.  It supports the
+extensions described in RFC6067 and RFC6497, and Extension T for
+language/locale identifiers as described in the Unicode CLDR
+standard 21.0.2.")
+    (license (list lgpl3+ mpl2.0)))) ; dual license
+
 (define-public libexttextcat
   (package
     (name "libexttextcat")
@@ -681,7 +709,7 @@ and to return information on pronunciations, meanings and synonyms.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "5.0.3.2")
+    (version "5.0.5.2")
     (source
      (origin
       (method url-fetch)
@@ -690,7 +718,7 @@ and to return information on pronunciations, meanings and synonyms.")
           "http://download.documentfoundation.org/libreoffice/src/"
           (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
       (sha256 (base32
-               "1gflcsnw7bx02jbb2x5darf56x0qgia03ylaycadk68ikibckybp"))))
+               "120vcxpxzs0za76fyfry281ysv6d1ianb37d1yq8py8chkdjkrqy"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; autoreconf is run by the LibreOffice build system, since after
@@ -762,8 +790,7 @@ and to return information on pronunciations, meanings and synonyms.")
        ("xmlsec-src" ,xmlsec-src-libreoffice)
        ("zip" ,zip)))
     (arguments
-     `(#:parallel-build? #f ; Otherwise the build fails.
-       #:tests? #f ; Building the tests already fails.
+     `(#:tests? #f ; Building the tests already fails.
        #:make-flags '("build-nocheck") ; Do not build unit tests, which fails.
        #:phases
          (modify-phases %standard-phases

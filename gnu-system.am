@@ -166,12 +166,13 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/indent.scm			\
   gnu/packages/inklingreader.scm		\
   gnu/packages/inkscape.scm			\
-  gnu/packages/irssi.scm			\
+  gnu/packages/irc.scm  			\
   gnu/packages/iso-codes.scm			\
   gnu/packages/java.scm				\
   gnu/packages/jemalloc.scm			\
   gnu/packages/jrnl.scm				\
   gnu/packages/julia.scm			\
+  gnu/packages/kde.scm              \
   gnu/packages/kde-frameworks.scm		\
   gnu/packages/key-mon.scm			\
   gnu/packages/kodi.scm				\
@@ -336,7 +337,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/wdiff.scm			\
   gnu/packages/web.scm				\
   gnu/packages/webkit.scm			\
-  gnu/packages/weechat.scm			\
   gnu/packages/wget.scm				\
   gnu/packages/wicd.scm				\
   gnu/packages/wine.scm				\
@@ -426,7 +426,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/bigloo-gc-shebangs.patch			\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
   gnu/packages/patches/binutils-loongson-workaround.patch	\
-  gnu/packages/patches/bitlbee-configure-doc-fix.patch		\
   gnu/packages/patches/byobu-writable-status.patch		\
   gnu/packages/patches/calibre-drop-unrar.patch			\
   gnu/packages/patches/calibre-no-updates-dialog.patch		\
@@ -455,6 +454,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/duplicity-piped-password.patch		\
   gnu/packages/patches/duplicity-test_selection-tmp.patch	\
   gnu/packages/patches/elfutils-tests-ptrace.patch		\
+  gnu/packages/patches/einstein-build.patch			\
   gnu/packages/patches/emacs-constants-lisp-like.patch		\
   gnu/packages/patches/emacs-exec-path.patch			\
   gnu/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
@@ -484,7 +484,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/geoclue-config.patch			\
   gnu/packages/patches/ghostscript-CVE-2015-3228.patch		\
   gnu/packages/patches/ghostscript-runpath.patch		\
-  gnu/packages/patches/gitolite-openssh-6.8-compat.patch	\
   gnu/packages/patches/glib-networking-ssl-cert-file.patch	\
   gnu/packages/patches/glib-tests-desktop.patch			\
   gnu/packages/patches/glib-tests-homedir.patch			\
@@ -526,10 +525,29 @@ dist_patch_DATA =						\
   gnu/packages/patches/hydra-disable-darcs-test.patch		\
   gnu/packages/patches/icecat-avoid-bundled-includes.patch	\
   gnu/packages/patches/icecat-update-graphite2.patch		\
+  gnu/packages/patches/icecat-update-graphite2-pt2.patch	\
   gnu/packages/patches/icecat-re-enable-DHE-cipher-suites.patch	\
+  gnu/packages/patches/icecat-CVE-2015-4477.patch		\
+  gnu/packages/patches/icecat-CVE-2015-7207.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1952-pt01.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1952-pt02.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1952-pt03.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1952-pt04.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1952-pt05.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1952-pt06.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1954.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1960.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1961.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1962.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1964.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1965.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1966.patch		\
+  gnu/packages/patches/icecat-CVE-2016-1974.patch		\
+  gnu/packages/patches/icecat-bug-1248851.patch			\
   gnu/packages/patches/icu4c-CVE-2014-6585.patch		\
   gnu/packages/patches/icu4c-CVE-2015-1270.patch		\
   gnu/packages/patches/icu4c-CVE-2015-4760.patch		\
+  gnu/packages/patches/ilmbase-fix-tests.patch			\
   gnu/packages/patches/imagemagick-test-segv.patch		\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jasper-CVE-2007-2721.patch		\
@@ -541,7 +559,10 @@ dist_patch_DATA =						\
   gnu/packages/patches/jasper-CVE-2014-8157.patch		\
   gnu/packages/patches/jasper-CVE-2014-8158.patch		\
   gnu/packages/patches/jasper-CVE-2014-9029.patch		\
+  gnu/packages/patches/jasper-CVE-2016-1577.patch		\
   gnu/packages/patches/jasper-CVE-2016-1867.patch		\
+  gnu/packages/patches/jasper-CVE-2016-2089.patch		\
+  gnu/packages/patches/jasper-CVE-2016-2116.patch		\
   gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\
   gnu/packages/patches/ldc-disable-tests.patch			\
@@ -561,6 +582,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/libevent-dns-tests.patch			\
   gnu/packages/patches/libmtp-devices.patch			\
   gnu/packages/patches/liboop-mips64-deplibs-fix.patch		\
+  gnu/packages/patches/libotr-test-auth-fix.patch		\
   gnu/packages/patches/liblxqt-include.patch			\
   gnu/packages/patches/libmad-armv7-thumb-pt1.patch		\
   gnu/packages/patches/libmad-armv7-thumb-pt2.patch		\
@@ -614,7 +636,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/module-init-tools-moduledir.patch	\
   gnu/packages/patches/mumps-build-parallelism.patch		\
   gnu/packages/patches/mupen64plus-ui-console-notice.patch	\
-  gnu/packages/patches/mupdf-buildsystem-fix.patch		\
   gnu/packages/patches/mutt-store-references.patch		\
   gnu/packages/patches/net-tools-bitrot.patch			\
   gnu/packages/patches/ngircd-handle-zombies.patch		\
@@ -632,6 +653,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/openjpeg-use-after-free-fix.patch	\
   gnu/packages/patches/openssl-runpath.patch			\
   gnu/packages/patches/openssl-c-rehash.patch			\
+  gnu/packages/patches/openssl-c-rehash-in.patch		\
   gnu/packages/patches/orpheus-cast-errors-and-includes.patch	\
   gnu/packages/patches/ots-no-include-missing-file.patch	\
   gnu/packages/patches/patchelf-page-size.patch			\
@@ -639,6 +661,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   gnu/packages/patches/patch-hurd-path-max.patch		\
   gnu/packages/patches/perl-CVE-2015-8607.patch			\
+  gnu/packages/patches/perl-CVE-2016-2381.patch			\
   gnu/packages/patches/perl-autosplit-default-time.patch	\
   gnu/packages/patches/perl-deterministic-ordering.patch	\
   gnu/packages/patches/perl-finance-quote-unuse-mozilla-ca.patch \
@@ -661,6 +684,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/polkit-drop-test.patch			\
   gnu/packages/patches/portaudio-audacity-compat.patch		\
+  gnu/packages/patches/procmail-ambiguous-getline-debian.patch  \
   gnu/packages/patches/pt-scotch-build-parallelism.patch	\
   gnu/packages/patches/pulseaudio-fix-mult-test.patch		\
   gnu/packages/patches/pulseaudio-longer-test-timeout.patch	\
@@ -677,6 +701,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/python-disable-ssl-test.patch		\
   gnu/packages/patches/python-fix-tests.patch			\
   gnu/packages/patches/python-ipython-inputhook-ctype.patch	\
+  gnu/packages/patches/python-rarfile-fix-tests.patch		\
   gnu/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
   gnu/packages/patches/python-configobj-setuptools.patch	\
   gnu/packages/patches/python-paste-remove-website-test.patch	\
@@ -702,7 +727,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/sed-hurd-path-max.patch			\
   gnu/packages/patches/scheme48-tests.patch			\
   gnu/packages/patches/scotch-test-threading.patch		\
-  gnu/packages/patches/scribus-qobject.patch			\
   gnu/packages/patches/sdl-libx11-1.6.patch			\
   gnu/packages/patches/serf-comment-style-fix.patch		\
   gnu/packages/patches/serf-deflate-buckets-test-fix.patch	\
@@ -746,6 +770,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/util-linux-tests.patch			\
   gnu/packages/patches/upower-builddir.patch			\
   gnu/packages/patches/valgrind-enable-arm.patch		\
+  gnu/packages/patches/vorbis-tools-CVE-2015-6749.patch		\
   gnu/packages/patches/vpnc-script.patch			\
   gnu/packages/patches/vtk-mesa-10.patch			\
   gnu/packages/patches/w3m-libgc.patch				\

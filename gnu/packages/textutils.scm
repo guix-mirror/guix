@@ -185,6 +185,49 @@ the Hannon Lab.")
 input bits thoroughly but are not suitable for cryptography.")
       (license license:expat))))
 
+(define-public ustr
+  (package
+    (name "ustr")
+    (version "1.0.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.and.org/ustr/" version
+                                  "/ustr-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1i623ygdj7rkizj7985q9d6vj5amwg686aqb5j3ixpkqkyp6xbrx"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list "CC=gcc"
+             "HIDE="
+             ;; Override "/sbin/ldconfig" with "echo" because we don't need
+             ;; "ldconfig".
+             "LDCONFIG=echo"
+             (string-append "prefix=" (assoc-ref %outputs "out"))
+             "all-shared")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-check-for-stdint
+           (lambda _
+             ;; Of course we have stdint.h, just not in /usr/include
+             (substitute* '("Makefile"
+                            "ustr-import.in")
+               (("-f \"/usr/include/stdint.h\"") "-z \"\""))
+             #t))
+         ;; No configure script
+         (delete 'configure))))
+    (home-page "http://www.and.org/ustr/")
+    (synopsis "String library with very low memory overhead")
+    (description
+     "Ustr is a string library for C with very low memory overhead.")
+    ;; Quoted from the home page: "The License for the code is MIT, new-BSD,
+    ;; LGPL, etc. ... if you need another license to help compatibility, just
+    ;; ask for it.  It's basically public domain, without all the legal
+    ;; problems for everyone that trying to make something public domain
+    ;; entails."
+    (license license:public-domain)))
+
 (define-public libconfig
   (package
     (name "libconfig")

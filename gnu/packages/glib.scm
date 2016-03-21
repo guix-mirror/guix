@@ -524,9 +524,11 @@ useful for C++.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("python" ,python)
-       ("glib"   ,glib)
        ("python-pycairo" ,python-pycairo)
-       ("gobject-introspection" ,gobject-introspection)
+       ("gobject-introspection" ,gobject-introspection)))
+    (propagated-inputs
+     ;; pygobject-3.0.pc refers to all these.
+     `(("glib" ,glib)
        ("libffi" ,libffi)))
     (arguments
      ;; TODO: failing tests: test_native_calls_async
@@ -538,6 +540,8 @@ useful for C++.")
      ;; test_callback_user_data_middle_single
      ;; test_callback_user_data_middle_tuple
      '(#:tests? #f))
+    ;; For finding typelib files, since gobject-introscpetion isn't propagated.
+    (native-search-paths (package-native-search-paths gobject-introspection))
     (home-page "https://live.gnome.org/PyGObject")
     (synopsis "Python bindings for GObject")
     (description
@@ -550,10 +554,8 @@ useful for C++.")
     (name "python2-pygobject")
     (inputs
      `(("python" ,python-2)
-       ("glib" ,glib)
        ("python-pycairo" ,python2-pycairo)
-       ("gobject-introspection" ,gobject-introspection)
-       ("libffi" ,libffi)))))
+       ("gobject-introspection" ,gobject-introspection)))))
 
 (define telepathy-glib
   (package
