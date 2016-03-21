@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <tobias.geerinckx.rice@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -99,7 +100,7 @@ tables, and it understands a variety of different formats.")
 (define-public ddrescue
   (package
     (name "ddrescue")
-    (version "1.20")
+    (version "1.21")
     (source
      (origin
       (method url-fetch)
@@ -107,7 +108,7 @@ tables, and it understands a variety of different formats.")
                           version ".tar.lz"))
       (sha256
        (base32
-        "1gb0ak2c47nass7qdf9pnfrshcb38c318z1fx5v5v1k7l6qr7yc3"))))
+        "1b71hb42lh33y9843nd1mxlwkk9qh9ajvnz6ivzd1jq9lav4x7ph"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/ddrescue/ddrescue.html")
     (synopsis "Data recovery utility")
