@@ -357,7 +357,8 @@ formatted with this string, an action button is inserted.")
             (guix-buffer-get-display-entries-current
              'info guix-package-info-type
              (list (guix-ui-current-profile)
-                   'name (button-label btn))
+                   'name (or (button-get btn 'spec)
+                             (button-label btn)))
              'add)))
 
 (define-button-type 'guix-package-heading
@@ -374,10 +375,12 @@ formatted with this string, an action button is inserted.")
             (message "Yes, this is the source URL. What did you expect?")))
 
 (defun guix-package-info-insert-heading (entry)
-  "Insert package ENTRY heading (name specification) at point."
+  "Insert package ENTRY heading (name and version) at point."
   (guix-insert-button
-   (guix-package-entry->name-specification entry)
-   'guix-package-heading))
+   (concat (guix-entry-value entry 'name) " "
+           (guix-entry-value entry 'version))
+   'guix-package-heading
+   'spec (guix-package-entry->name-specification entry)))
 
 (defun guix-package-info-insert-systems (systems entry)
   "Insert supported package SYSTEMS at point."
