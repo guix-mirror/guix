@@ -776,7 +776,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/w3m-force-ssl_verify_server-on.patch	\
   gnu/packages/patches/w3m-disable-sslv2-and-sslv3.patch	\
   gnu/packages/patches/w3m-disable-weak-ciphers.patch		\
-  gnu/packages/patches/webkitgtk-2.4-sql-init-string.patch	\
   gnu/packages/patches/weechat-python.patch			\
   gnu/packages/patches/weex-vacopy.patch			\
   gnu/packages/patches/wicd-bitrate-none-fix.patch		\
