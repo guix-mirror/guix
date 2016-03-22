@@ -902,11 +902,6 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
                       #:guile-for-build guile
                       #:local-build? #t)))
 
-(define search-path*
-  ;; A memoizing version of 'search-path' so 'imported-modules' does not end
-  ;; up looking for the same files over and over again.
-  (memoize search-path))
-
 (define* (imported-modules modules
                            #:key (name "module-import")
                            (system (%current-system))

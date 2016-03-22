@@ -570,6 +570,15 @@
 
 (test-skip (if (%guile-for-build) 0 8))
 
+(test-equal "build-expression->derivation and invalid module name"
+  '(file-search-error "guix/module/that/does/not/exist.scm")
+  (guard (c ((file-search-error? c)
+             (list 'file-search-error
+                   (file-search-error-file-name c))))
+    (build-expression->derivation %store "foo" #t
+                                  #:modules '((guix module that
+                                                    does not exist)))))
+
 (test-assert "build-expression->derivation and derivation-prerequisites"
   (let ((drv (build-expression->derivation %store "fail" #f)))
     (any (match-lambda
