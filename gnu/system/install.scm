@@ -215,9 +215,11 @@ the user's target storage device rather than on the RAM disk."
                                               (string-append #$output "/"
                                                              target)))
                                  '(#$(file "bare-bones.tmpl")
-                                   #$(file "desktop.tmpl"))
+                                   #$(file "desktop.tmpl")
+                                   #$(file "lightweight-desktop.tmpl"))
                                  '("bare-bones.scm"
-                                   "desktop.scm"))
+                                   "desktop.scm"
+                                   "lightweight-desktop.scm"))
                        #t)
                    #:modules '((guix build utils))))
 

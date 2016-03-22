@@ -6218,11 +6218,19 @@ to create a new configuration which has the same values as the old
 configuration, but with a few modifications.
 
 The configuration for a typical ``desktop'' usage, with the X11 display
-server, a desktop environment, network management, power management, and
-more, would look like this:
+server, GNOME and Xfce (users can choose which of these desktop
+environments to use at the log-in screen by pressing @kbd{F1}), network
+management, power management, and more, would look like this:
 
 @lisp
 @include os-config-desktop.texi
+@end lisp
+
+A graphical environment with a choice of lightweight window managers
+instead of full-blown desktop environments would look like this:
+
+@lisp
+@include os-config-lightweight-desktop.texi
 @end lisp
 
 @xref{Desktop Services}, for the exact list of services provided by
