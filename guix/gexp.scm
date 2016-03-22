@@ -918,9 +918,7 @@ search path."
   ;; TODO: Determine the closure of MODULES, build the `.go' files,
   ;; canonicalize the source files through read/write, etc.
   (let ((files (map (lambda (m)
-                      (let ((f (string-append
-                                (string-join (map symbol->string m) "/")
-                                ".scm")))
+                      (let ((f (module->source-file-name m)))
                         (cons f (search-path* module-path f))))
                     modules)))
     (imported-files files #:name name #:system system

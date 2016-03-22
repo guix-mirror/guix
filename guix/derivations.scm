@@ -91,6 +91,7 @@
             built-derivations
 
 
+            module->source-file-name
             build-expression->derivation)
 
   ;; Re-export it from here for backward compatibility.
@@ -1040,6 +1041,12 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
   ;; up looking for the same files over and over again.
   (memoize search-path))
 
+(define (module->source-file-name module)
+  "Return the file name corresponding to MODULE, a Guile module name (a list
+of symbols.)"
+  (string-append (string-join (map symbol->string module) "/")
+                 ".scm"))
+
 (define* (%imported-modules store modules         ;deprecated
                             #:key (name "module-import")
                             (system (%current-system))
@@ -1051,9 +1058,7 @@ search path."
   ;; TODO: Determine the closure of MODULES, build the `.go' files,
   ;; canonicalize the source files through read/write, etc.
   (let ((files (map (lambda (m)
-                      (let ((f (string-append
-                                (string-join (map symbol->string m) "/")
-                                ".scm")))
+                      (let ((f (module->source-file-name m)))
                         (cons f (search-path* module-path f))))
                     modules)))
     (imported-files store files #:name name #:system system
