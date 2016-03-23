@@ -19,20 +19,25 @@
 
 (define-module (guix import hackage)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-1)
-  #:use-module ((guix download) #:select (download-to-store))
+  #:use-module (gnu packages)
+  #:use-module ((guix download) #:select (download-to-store url-fetch))
   #:use-module ((guix utils) #:select (package-name->name+version
                                        canonical-newline-port))
-  #:use-module (guix import utils)
   #:use-module (guix http-client)
+  #:use-module ((guix import utils) #:select (factorize-uri))
   #:use-module (guix import cabal)
   #:use-module (guix store)
   #:use-module (guix hash)
   #:use-module (guix base32)
+  #:use-module (guix upstream)
+  #:use-module (guix packages)
   #:use-module ((guix utils) #:select (call-with-temporary-output-file))
-  #:export (hackage->guix-package))
+  #:export (hackage->guix-package
+            %hackage-updater))
 
 (define ghc-standard-libraries
   ;; List of libraries distributed with ghc (7.10.2). We include GHC itself as
@@ -88,6 +93,17 @@ version is returned."
   (if (string-prefix? package-name-prefix name)
       (string-downcase name)
       (string-append package-name-prefix (string-downcase name))))
+
+(define guix-package->hackage-name
+  (let ((uri-rx (make-regexp "https?://hackage.haskell.org/package/([^/]+)/.*"))
+        (name-rx (make-regexp "(.*)-[0-9\\.]+")))
+    (lambda (package)
+      "Given a Guix package name, return the corresponding Hackage name."
+      (let* ((source-url (and=> (package-source package) origin-uri))
+             (name (match:substring (regexp-exec uri-rx source-url) 1)))
+        (match (regexp-exec name-rx name)
+          (#f name)
+          (m (match:substring m 1)))))))
 
 (define (hackage-fetch name-version)
   "Return the Cabal file for the package NAME-VERSION, or #f on failure.  If
@@ -235,5 +251,47 @@ respectively."
                                     #:include-test-dependencies? 
                                     include-test-dependencies?)
                                (cut eval-cabal <> cabal-environment)))))
+
+(define (hackage-package? package)
+  "Return #t if PACKAGE is a Haskell package from Hackage."
+
+  (define haskell-url?
+    (let ((hackage-rx (make-regexp "https?://hackage.haskell.org")))
+      (lambda (url)
+        (regexp-exec hackage-rx url))))
+
+  (let ((source-url (and=> (package-source package) origin-uri))
+        (fetch-method (and=> (package-source package) origin-method)))
+    (and (eq? fetch-method url-fetch)
+         (match source-url
+           ((? string?)
+            (haskell-url? source-url))
+           ((source-url ...)
+            (any haskell-url? source-url))))))
+
+(define (latest-release guix-package)
+  "Return an <upstream-source> for the latest release of GUIX-PACKAGE."
+  (let* ((hackage-name (guix-package->hackage-name
+                        (specification->package guix-package)))
+         (cabal-meta (hackage-fetch hackage-name)))
+    (match cabal-meta
+      (#f
+       (format (current-error-port)
+               "warning: failed to parse ~a~%"
+               (hackage-cabal-url hackage-name))
+       #f)
+      ((_ *** ("version" (version)))
+       (let ((url (hackage-source-url hackage-name version)))
+         (upstream-source
+          (package guix-package)
+          (version version)
+          (urls (list url))))))))
+
+(define %hackage-updater
+  (upstream-updater
+   (name 'hackage)
+   (description "Updater for Hackage packages")
+   (pred hackage-package?)
+   (latest latest-release)))
 
 ;;; cabal.scm ends here

@@ -4792,6 +4792,8 @@ the updater for @uref{https://pypi.python.org, PyPI} packages.
 the updater for @uref{https://rubygems.org, RubyGems} packages.
 @item github
 the updater for @uref{https://github.com, GitHub} packages.
+@item hackage
+the updater for @uref{https://hackage.haskell.org, Hackage} packages.
 @end table
 
 For instance, the following command only checks for updates of Emacs
