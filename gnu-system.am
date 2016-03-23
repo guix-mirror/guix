@@ -134,6 +134,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/gl.scm				\
   gnu/packages/glib.scm				\
   gnu/packages/gnome.scm			\
+  gnu/packages/gnu-doc.scm			\
   gnu/packages/gnucash.scm			\
   gnu/packages/gnunet.scm			\
   gnu/packages/gnupg.scm			\
