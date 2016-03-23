@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,6 +66,22 @@
 
 (define package-name-prefix "ghc-")
 
+(define (hackage-source-url name version)
+  "Given a Hackage package NAME and VERSION, return a url to the source
+tarball."
+  (string-append "http://hackage.haskell.org/package/" name
+                 "/" name "-" version ".tar.gz"))
+
+(define* (hackage-cabal-url name #:optional version)
+  "Given a Hackage package NAME and VERSION, return a url to the corresponding
+.cabal file on Hackage.  If VERSION is #f or missing, the url for the latest
+version is returned."
+  (if version
+      (string-append "http://hackage.haskell.org/package/"
+                     name "-" version "/" name ".cabal")
+      (string-append "http://hackage.haskell.org/package/"
+                     name "/" name ".cabal")))
+
 (define (hackage-name->package-name name)
   "Given the NAME of a Cabal package, return the corresponding Guix name."
   (if (string-prefix? package-name-prefix name)
@@ -76,12 +93,7 @@
 the version part is omitted from the package name, then return the latest
 version."
   (let*-values (((name version) (package-name->name+version name-version))
-                ((url)
-                 (if version
-                     (string-append "http://hackage.haskell.org/package/"
-                                    name "-" version "/" name ".cabal")
-                     (string-append "http://hackage.haskell.org/package/"
-                                    name "/" name ".cabal"))))
+                ((url) (hackage-cabal-url name version)))
     (call-with-temporary-output-file
      (lambda (temp port)
        (and (url-fetch url temp)
@@ -154,8 +166,7 @@ representation of a Cabal file as produced by 'read-cabal'."
     (cabal-package-version cabal))
   
   (define source-url
-    (string-append "http://hackage.haskell.org/package/" name
-                   "/" name "-" version ".tar.gz"))
+    (hackage-source-url name version))
 
   (define dependencies
     (let ((names
