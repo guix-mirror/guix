@@ -26,6 +26,7 @@
   #:use-module ((guix utils) #:select (package-name->name+version
                                        canonical-newline-port))
   #:use-module (guix import utils)
+  #:use-module (guix http-client)
   #:use-module (guix import cabal)
   #:use-module (guix store)
   #:use-module (guix hash)
@@ -92,13 +93,12 @@ version is returned."
   "Return the Cabal file for the package NAME-VERSION, or #f on failure.  If
 the version part is omitted from the package name, then return the latest
 version."
-  (let*-values (((name version) (package-name->name+version name-version))
-                ((url) (hackage-cabal-url name version)))
-    (call-with-temporary-output-file
-     (lambda (temp port)
-       (and (url-fetch url temp)
-            (call-with-input-file temp
-              (compose read-cabal canonical-newline-port)))))))
+  (let-values (((name version) (package-name->name+version name-version)))
+    (let* ((url (hackage-cabal-url name version))
+           (port (http-fetch url))
+           (result (read-cabal (canonical-newline-port port))))
+      (close-port port)
+      result)))
 
 (define string->license
   ;; List of valid values from
