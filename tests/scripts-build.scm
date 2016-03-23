@@ -22,6 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix scripts build)
   #:use-module (guix ui)
+  #:use-module (guix utils)
   #:use-module (gnu packages base)
   #:use-module (gnu packages busybox)
   #:use-module (ice-9 match)
@@ -48,6 +49,25 @@
              (string=? (package-source new)
                        (add-to-store store "guix.scm" #t
                                      "sha256" s)))))))
+
+(test-assert "options->transformation, with-source, with version"
+  ;; Our pseudo-package is called 'guix.scm' so the 'guix.scm-2.0' source
+  ;; should be applicable, and its version should be extracted.
+  (let ((p (dummy-package "foo"))
+        (s (search-path %load-path "guix.scm")))
+    (call-with-temporary-directory
+     (lambda (directory)
+       (let* ((f (string-append directory "/foo-42.0.tar.gz"))
+              (t (options->transformation `((with-source . ,f)))))
+         (copy-file s f)
+         (with-store store
+           (let ((new (t store p)))
+             (and (not (eq? new p))
+                  (string=? (package-name new) (package-name p))
+                  (string=? (package-version new) "42.0")
+                  (string=? (package-source new)
+                            (add-to-store store (basename f) #t
+                                          "sha256" f))))))))))
 
 (test-assert "options->transformation, with-source, no matches"
   ;; When a transformation in not applicable, a warning must be raised.
