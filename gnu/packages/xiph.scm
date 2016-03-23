@@ -378,7 +378,7 @@ windows systems.")
 (define-public icecast
   (package
     (name "icecast")
-    (version "2.4.1")
+    (version "2.4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -386,7 +386,7 @@ windows systems.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0js5lylrgklhvvaksx46zc8lc975qb1bns8h1ms545nv071rxy23"))))
+                "14n5vm2xnyn8y7kl46lnnlgv6v5fjykhc57ffdsh0qaxfs6a8p68"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
