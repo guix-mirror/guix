@@ -141,14 +141,14 @@ interface and is based on GNU Guile.")
 (define-public shepherd
   (package
     (name "shepherd")
-    (version "0.3")
+    (version "0.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://alpha.gnu.org/gnu/dmd/shepherd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "13mcy2131h7hggqvxbfxyrnbz46aaiaq2agng3x3f789a78n4mnn"))))
+                "0f3yi3n4sl9myiay95yhv2a9an338qddfjrbv7da753ip66dkfz6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
