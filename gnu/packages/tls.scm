@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -285,7 +286,7 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.2.6")
+    (version "2.3.3")
     (source
      (origin
       (method url-fetch)
@@ -293,7 +294,7 @@ required structures.")
              "http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-"
              version ".tar.gz"))
       (sha256 (base32
-               "0kynb15l5gq1qgp3p4ncn20sc65sbl8lk89vyr07s17xrya9kq8y"))))
+               "1a8anm8nsfyxds03csk738m2cmzjbsb867my1rz5ij3w31k32wvn"))))
     (build-system gnu-build-system)
     (native-search-paths
       ;; FIXME: These two variables must designate a single file or directory
