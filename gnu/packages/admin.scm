@@ -53,6 +53,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages openldap)
+  #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages texinfo)
@@ -65,6 +66,37 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages man)
   #:use-module (gnu packages autotools))
+
+(define-public aide
+  (package
+    (name "aide")
+    (version "0.15.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/aide/aide/"
+                                  version "/aide-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vsrc0s62kv1i84skm6k6zy868gayjck268qwj38rpspc8c5qgih"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (inputs
+     `(("libgcrypt" ,libgcrypt)
+       ("libgpg-error" ,libgpg-error)
+       ("libmhash" ,libmhash)
+       ("zlib" ,zlib)))
+    (synopsis "File and directory integrity checker")
+    (description
+     "AIDE (Advanced Intrusion Detection Environment) is a file and directory
+integrity checker.  It creates a database from the regular expression rules
+that it finds from its configuration files.  Once this database is initialized
+it can be used to verify the integrity of the files.  It has several message
+digest algorithms that are used to check the integrity of files.  All of the
+usual file attributes can be checked for inconsistencies.")
+    (home-page "http://aide.sourceforge.net/")
+    (license license:gpl2+)))
 
 (define-public dmd
   ;; Deprecated.  Kept around "just in case."
