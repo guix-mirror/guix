@@ -65,13 +65,8 @@
                  (target (@ (name "jar")
                             (depends "compile"))
                          (mkdir (@ (dir "${jar.dir}")))
-                         ;; We cannot use the simpler "jar" task here, because
-                         ;; there is no way to disable generation of a
-                         ;; manifest.  We do not include a generated manifest
-                         ;; to ensure determinism, because we cannot easily
-                         ;; reset the ctime/mtime before creating the archive.
                          (exec (@ (executable "jar"))
-                               (arg (@ (line ,(string-append "-Mcf ${jar.dir}/" jar-name
+                               (arg (@ (line ,(string-append "-cf ${jar.dir}/" jar-name
                                                              " -C ${classes.dir} ."))))))
 
                  (target (@ (name "install"))
@@ -105,16 +100,15 @@ INPUTS."
   (zero? (apply system* `("ant" ,build-target ,@make-flags))))
 
 (define* (strip-jar-timestamps #:key outputs
-                 #:allow-other-keys)
+                               #:allow-other-keys)
   "Unpack all jar archives, reset the timestamp of all contained files, and
 repack them.  This is necessary to ensure that archives are reproducible."
   (define (repack-archive jar)
     (format #t "repacking ~a\n" jar)
-    (let ((dir (mkdtemp! "jar-contents.XXXXXX")))
+    (let* ((dir (mkdtemp! "jar-contents.XXXXXX"))
+           (manifest (string-append dir "/META-INF/MANIFEST.MF")))
       (and (with-directory-excursion dir
              (zero? (system* "jar" "xf" jar)))
-           ;; The manifest file contains timestamps
-           (for-each delete-file (find-files dir "MANIFEST.MF"))
            (delete-file jar)
            ;; XXX: copied from (gnu build install)
            (for-each (lambda (file)
@@ -122,8 +116,19 @@ repack them.  This is necessary to ensure that archives are reproducible."
                          (unless (eq? (stat:type s) 'symlink)
                            (utime file 0 0 0 0))))
                      (find-files dir #:directories? #t))
-           (unless (zero? (system* "jar" "-Mcf" jar "-C" dir "."))
-             (error "'jar' failed"))
+
+           ;; The jar tool will always set the timestamp on the manifest file
+           ;; and the containing directory to the current time, even when we
+           ;; reuse an existing manifest file.  To avoid this we use "zip"
+           ;; instead of "jar".  It is important that the manifest appears
+           ;; first.
+           (with-directory-excursion dir
+             (let* ((files (find-files "." ".*" #:directories? #t))
+                    (command (if (file-exists? manifest)
+                                 `("zip" "-X" ,jar ,manifest ,@files)
+                                 `("zip" "-X" ,jar ,@files))))
+               (unless (zero? (apply system* command))
+                 (error "'zip' failed"))))
            (utime jar 0 0)
            #t)))
 
