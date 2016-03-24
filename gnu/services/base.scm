@@ -733,9 +733,7 @@ the tty to run, among other things."
                                                   (string-append dir "/lib"))
                                                 (list #$@name-services))
                                            ":")))))
-           (stop #~(make-kill-destructor))
-
-           (respawn? #f)))))
+           (stop #~(make-kill-destructor))))))
 
 (define nscd-activation
   ;; Actions to take before starting nscd.
