@@ -357,7 +357,11 @@ Use Alt-F2 for documentation.
               (type "tmpfs")
               (check? #f))
 
-            %base-file-systems))
+            ;; XXX: This should be %BASE-FILE-SYSTEMS but we don't need
+            ;; elogind's cgroup file systems.
+            (list %pseudo-terminal-file-system
+                  %shared-memory-file-system
+                  %immutable-store)))
 
     (users (list (user-account
                   (name "guest")
