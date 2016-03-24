@@ -92,7 +92,8 @@
     (for-each (lambda (file)
                 (let ((target (string-append home "/" file)))
                   (copy-recursively (string-append directory "/" file)
-                                    target)
+                                    target
+                                    #:log (%make-void-port "w"))
                   (make-file-writable target)))
               files)))
 
