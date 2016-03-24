@@ -101,6 +101,41 @@ is on expressing the content semantically, avoiding physical markup commands.")
     (native-inputs '())
     (inputs `(("ncurses" ,ncurses) ("xz" ,xz)))))
 
+(define-public info-reader
+  ;; The idea of this package is to have the standalone Info reader without
+  ;; the dependency on Perl that 'makeinfo' drags.
+  (package
+    (inherit texinfo-6.1)
+    (name "info-reader")
+    (arguments
+     `(#:disallowed-references ,(assoc-ref (package-inputs texinfo-6.1)
+                                           "perl")
+
+       #:modules ((ice-9 ftw) (srfi srfi-1)
+                  ,@%gnu-build-system-modules)
+
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'keep-only-info-reader
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      ;; Remove everything but 'bin/info' and associated
+                      ;; files.
+                      (define (files)
+                        (scandir "." (lambda (file)
+                                       (not (member file '("." ".."))))))
+
+                      (let ((out (assoc-ref outputs "out")))
+                        (with-directory-excursion out
+                          (for-each delete-file-recursively
+                                    (fold delete (files) '("bin" "share"))))
+                        (with-directory-excursion (string-append out "/bin")
+                          (for-each delete-file (delete "info" (files))))
+                        (with-directory-excursion (string-append out "/share")
+                          (for-each delete-file-recursively
+                                    (fold delete (files)
+                                          '("info" "locale"))))
+                        #t))))))
+    (synopsis "Standalone Info documentation reader")))
+
 (define-public texi2html
   (package
     (name "texi2html")
