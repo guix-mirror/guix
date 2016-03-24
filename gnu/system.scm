@@ -365,7 +365,7 @@ explicitly appear in OS."
          iproute
          net-tools                        ; XXX: remove when Inetutils suffices
          man-db
-         texinfo                               ;for the standalone Info reader
+         info-reader                     ;the standalone Info reader (no Perl)
 
          ;; The 'sudo' command is already in %SETUID-PROGRAMS, but we also
          ;; want the other commands and the man pages (notably because
