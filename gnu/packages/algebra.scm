@@ -133,17 +133,14 @@ solve the shortest vector problem.")
              ("readline" ,readline)))
    (arguments
     '(#:make-flags '("all")
-      ;; FIXME: building the documentation requires tex; once this is
-      ;; available, replace "gp" by "all"
       #:test-target "dobench"
-      #:phases
-      (alist-replace
-       'configure
-       (lambda* (#:key outputs #:allow-other-keys)
-         (let ((out (assoc-ref outputs "out")))
-           (zero?
-            (system* "./Configure" (string-append "--prefix=" out)))))
-       %standard-phases)))
+      #:phases (modify-phases %standard-phases
+                 (replace 'configure
+                          (lambda* (#:key outputs #:allow-other-keys)
+                           (let ((out (assoc-ref outputs "out")))
+                            (zero?
+                             (system* "./Configure"
+                                      (string-append "--prefix=" out)))))))))
    (synopsis "PARI/GP, a computer algebra system for number theory")
    (description
     "PARI/GP is a widely used computer algebra system designed for fast
