@@ -5689,8 +5689,8 @@ also be installed on top of a running GNU/Linux system,
 @c installation image.
 You are reading this documentation with an Info reader.  For details on
 how to use it, hit the @key{RET} key (``return'' or ``enter'') on the
-link that follows: @pxref{Help,,, info, Info: An Introduction}.  Hit
-@kbd{l} afterwards to come back here.
+link that follows: @pxref{Top, Info reader,, info-stnd, Stand-alone GNU
+Info}.  Hit @kbd{l} afterwards to come back here.
 @end ifinfo
 
 @menu
@@ -5830,10 +5830,10 @@ menu, where you can choose to boot from the USB stick.
 Once you have successfully booted the image on the USB stick, you should
 end up with a root prompt.  Several console TTYs are configured and can
 be used to run commands as root.  TTY2 shows this documentation,
-browsable using the Info reader commands (@pxref{Help,,, info, Info: An
-Introduction}).  The installation system runs the GPM mouse daemon,
-which allows you to select text with the left mouse button and to paste
-it with the middle button.
+browsable using the Info reader commands (@pxref{Top,,, info-stnd,
+Stand-alone GNU Info}).  The installation system runs the GPM mouse
+daemon, which allows you to select text with the left mouse button and
+to paste it with the middle button.
 
 @subsubsection Keyboard Layout
 
