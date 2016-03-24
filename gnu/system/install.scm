@@ -340,17 +340,29 @@ Use Alt-F2 for documentation.
     (file-systems
      ;; Note: the disk image build code overrides this root file system with
      ;; the appropriate one.
-     (cons (file-system
-             (mount-point "/")
-             (device "gnu-disk-image")
-             (title 'label)
-             (type "ext4"))
-           %base-file-systems))
+     (cons* (file-system
+              (mount-point "/")
+              (device "gnu-disk-image")
+              (title 'label)
+              (type "ext4"))
+
+            ;; Make /tmp a tmpfs instead of keeping the unionfs.  This is
+            ;; because FUSE creates '.fuse_hiddenXYZ' files for each open file,
+            ;; and this confuses Guix's test suite, for instance.  See
+            ;; <http://bugs.gnu.org/23056>.
+            (file-system
+              (mount-point "/tmp")
+              (device "none")
+              (title 'device)
+              (type "tmpfs")
+              (check? #f))
+
+            %base-file-systems))
 
     (users (list (user-account
                   (name "guest")
                   (group "users")
-                  (supplementary-groups '("wheel"))  ; allow use of sudo
+                  (supplementary-groups '("wheel")) ; allow use of sudo
                   (password "")
                   (comment "Guest of GNU")
                   (home-directory "/home/guest"))))
