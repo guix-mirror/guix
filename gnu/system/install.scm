@@ -111,7 +111,7 @@ manual."
                     ;; 'gunzip' is needed to decompress the doc.
                     (setenv "PATH" (string-append #$gzip "/bin"))
 
-                    (execl (string-append #$texinfo-4 "/bin/info") "info"
+                    (execl (string-append #$info-reader "/bin/info") "info"
                            "-d" "/run/current-system/profile/share/info"
                            "-f" (string-append #$guix "/share/info/guix.info")
                            "-n" "System Installation"))))
@@ -384,7 +384,6 @@ Use Alt-F2 for documentation.
      (base-pam-services #:allow-empty-passwords? #t))
 
     (packages (cons* (canonical-package glibc) ;for 'tzselect' & co.
-                     texinfo-4                 ;for the standalone Info reader
                      parted ddrescue
                      grub                  ;mostly so xrefs to its manual work
                      cryptsetup
