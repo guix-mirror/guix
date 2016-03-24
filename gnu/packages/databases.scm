@@ -283,6 +283,16 @@ as a drop-in replacement of MySQL.")
                (base32
                 "1ljvijaja5zy4i5b1450drbj8m3fcm3ly1zzaakp75x30s2rsc3b"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-/bin/sh
+                     (lambda _
+                       ;; Refer to the actual shell.
+                       (substitute* '("src/bin/pg_ctl/pg_ctl.c"
+                                      "src/bin/psql/command.c")
+                         (("/bin/sh") (which "sh")))
+                       #t)))))
     (inputs
      `(("readline" ,readline)
        ("zlib" ,zlib)))
