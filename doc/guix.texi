@@ -1264,7 +1264,10 @@ deployment}.  When a pre-built binary for a @file{/gnu/store} item is
 available from an external source---a @dfn{substitute}, Guix just
 downloads it and unpacks it;
 otherwise, it builds the package from source, locally
-(@pxref{Substitutes}).
+(@pxref{Substitutes}).  Because build results are usually bit-for-bit
+reproducible, users do not have to trust servers that provide
+substitutes: they can force a local build and @emph{challenge} providers
+(@pxref{Invoking guix challenge}).
 
 Control over the build environment is a feature that is also useful for
 developers.  The @command{guix environment} command allows developers of
