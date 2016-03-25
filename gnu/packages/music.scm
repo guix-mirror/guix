@@ -312,7 +312,10 @@ interface.  It is implemented as a frontend to @code{klick}.")
          (add-before 'configure 'prepare-configuration
           (lambda _
             (substitute* "configure"
-              (("SHELL=/bin/sh") "SHELL=sh"))
+              (("SHELL=/bin/sh") "SHELL=sh")
+              ;; When checking the fontforge version do not consider the
+              ;; version string that's part of the directory.
+              (("head -n") "tail -n"))
             (setenv "out" "www")
             (setenv "conf" "www")
             #t))
