@@ -249,20 +249,52 @@ Coding Style
 @node Introduction
 @chapter Introduction
 
+@cindex purpose
 GNU Guix@footnote{``Guix'' is pronounced like ``geeks'', or ``ɡiːks''
-using the international phonetic alphabet (IPA).} is a functional
-package management tool for the GNU system.  Package management consists
-of all activities that relate to building packages from sources,
-honoring their build-time and run-time dependencies,
-installing packages in user environments, upgrading installed packages
-to new versions or rolling back to a previous set, removing unused
-software packages, etc.
+using the international phonetic alphabet (IPA).} is a package
+management tool for the GNU system.  Guix makes it easy for unprivileged
+users to install, upgrade, or remove packages, to roll back to a
+previous package set, to build packages from source, and generally
+assists with the creation and maintenance of software environments.
+
+@cindex user interfaces
+Guix provides a command-line package management interface
+(@pxref{Invoking guix package}), a set of command-line utilities
+(@pxref{Utilities}), a visual user interface in Emacs (@pxref{Emacs
+Interface}), as well as Scheme programming interfaces
+(@pxref{Programming Interface}).
+@cindex build daemon
+Its @dfn{build daemon} is responsible for building packages on behalf of
+users (@pxref{Setting Up the Daemon}) and for downloading pre-built
+binaries from authorized sources (@pxref{Substitutes}).
+
+@cindex extensibility of the distribution
+@cindex customization of packages
+Guix includes package definitions for many GNU and non-GNU packages, all
+of which @uref{https://www.gnu.org/philosophy/free-sw.html, respect the
+user's computing freedom}.  It is @emph{extensible}: users can write
+their own package definitions (@pxref{Defining Packages}) and make them
+available as independent package modules (@pxref{Package Modules}).  It
+is also @emph{customizable}: users can @emph{derive} specialized package
+definitions from existing ones, including from the command line
+(@pxref{Package Transformation Options}).
+
+@cindex Guix System Distribution
+@cindex GuixSD
+You can install GNU@tie{}Guix on top of an existing GNU/Linux system
+where it complements the available tools without interference
+(@pxref{Installation}), or you can use it as part of the standalone
+@dfn{Guix System Distribution} or GuixSD (@pxref{GNU Distribution}).
+With GNU@tie{}GuixSD, you @emph{declare} all aspects of the operating
+system configuration and Guix takes care of instantiating the
+configuration in a transactional, reproducible, and stateless fashion
+(@pxref{System Configuration}).
 
 @cindex functional package management
-The term @dfn{functional} refers to a specific package management
+Under the hood, Guix implements the @dfn{functional package management}
 discipline pioneered by Nix (@pxref{Acknowledgments}).
 In Guix, the package build and installation process is seen
-as a function, in the mathematical sense.  That function takes inputs,
+as a @emph{function}, in the mathematical sense.  That function takes inputs,
 such as build scripts, a compiler, and libraries, and
 returns an installed package.  As a pure function, its result depends
 solely on its inputs---for instance, it cannot refer to software or
@@ -286,18 +318,6 @@ This approach is the foundation for the salient features of Guix: support
 for transactional package upgrade and rollback, per-user installation, and
 garbage collection of packages (@pxref{Features}).
 
-Guix has a command-line interface, which allows users to build, install,
-upgrade, and remove packages, as well as a Scheme programming interface.
-
-@cindex Guix System Distribution
-@cindex GuixSD
-Last but not least, Guix is used to build a distribution of the GNU
-system, with many GNU and non-GNU free software packages.  The Guix
-System Distribution, or GNU@tie{}GuixSD, takes advantage of the core
-properties of Guix at the system level.  With GuixSD, users
-@emph{declare} all aspects of the operating system configuration, and
-Guix takes care of instantiating that configuration in a reproducible,
-stateless fashion.  @xref{GNU Distribution}.
 
 @c *********************************************************************
 @node Installation
@@ -1214,7 +1234,8 @@ In addition, any package transaction may be @emph{rolled back}.  So, if,
 for example, an upgrade installs a new version of a package that turns
 out to have a serious bug, users may roll back to the previous instance
 of their profile, which was known to work well.  Similarly, the global
-system configuration is subject to transactional upgrades and roll-back
+system configuration on GuixSD is subject to
+transactional upgrades and roll-back
 (@pxref{Using the Configuration System}).
 
 All packages in the package store may be @emph{garbage-collected}.
@@ -3878,9 +3899,10 @@ has an associated gexp compiler, such as a @code{<package>}.
 @node Utilities
 @chapter Utilities
 
-This section describes tools primarily targeted at developers and users
-who write new package definitions.  They complement the Scheme
-programming interface of Guix in a convenient way.
+This section describes Guix command-line utilities.  Some of them are
+primarily targeted at developers and users who write new package
+definitions, while others are more generally useful.  They complement
+the Scheme programming interface of Guix in a convenient way.
 
 @menu
 * Invoking guix build::         Building packages from the command line.
