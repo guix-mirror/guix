@@ -193,11 +193,11 @@ the Nix package manager.")
 (define guix-devel
   ;; Development version of Guix.
   ;;
-  ;; Note: use a short commit id; when using the long one, the limit on socket
-  ;; file names is exceeded while running the tests.
-  (let ((commit "71e2065a38cf2641b7eb8c557b0f043f5a42a649"))
+  ;; Note: use a very short commit id; with a longer one, the limit on
+  ;; hash-bang lines would be exceeded while running the tests.
+  (let ((commit "dd21308225610e7adfcbd1bfa07f72a42d7c7c35"))
     (package (inherit guix-0.9.0)
-      (version (string-append "0.9.0." (string-take commit 7)))
+      (version (string-append "0.9.0-1." (string-take commit 4)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -205,7 +205,7 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0wrrywfdc27yxjns55qdz5si49c8zcb9q5557g2kx48dbm7p0dzw"))
+                  "1yxjmjjfw2n6hwidrbaawljca11pwzsvif2b02virs94xqdy9zww"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.9.0)
