@@ -917,34 +917,14 @@ OUTPUTS is a list of package outputs (may be an empty list)."
                         manifest transaction)))
     (unless (and (null? install) (null? remove))
       (with-store store
-        (let* ((derivation (run-with-store store
-                             (mbegin %store-monad
-                               (set-guile-for-build (default-guile))
-                               (profile-derivation new-manifest))))
-               (derivations (list derivation))
-               (new-profile (derivation->output-path derivation)))
-          (set-build-options store
-                             #:print-build-trace #f
-                             #:use-substitutes? use-substitutes?)
-          (show-manifest-transaction store manifest transaction
-                                     #:dry-run? dry-run?)
-          (show-what-to-build store derivations
-                              #:use-substitutes? use-substitutes?
-                              #:dry-run? dry-run?)
-          (unless dry-run?
-            (let ((name (generation-file-name
-                         profile
-                         (+ 1 (generation-number profile)))))
-              (and (build-derivations store derivations)
-                   (let* ((entries (manifest-entries new-manifest))
-                          (count   (length entries)))
-                     (switch-symlinks name new-profile)
-                     (switch-symlinks profile name)
-                     (format #t (N_ "~a package in profile~%"
-                                    "~a packages in profile~%"
-                                    count)
-                             count)
-                     (display-search-paths entries (list profile)))))))))))
+        (set-build-options store
+                           #:print-build-trace #f
+                           #:use-substitutes? use-substitutes?)
+        (show-manifest-transaction store manifest transaction
+                                   #:dry-run? dry-run?)
+        (build-and-use-profile store profile new-manifest
+                               #:use-substitutes? use-substitutes?
+                               #:dry-run? dry-run?)))))
 
 (define (delete-generations* profile generations)
   "Delete GENERATIONS from PROFILE.
