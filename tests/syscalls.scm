@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -223,7 +223,11 @@
     ((interfaces ..1)
      (list (every interface? interfaces)
            (every string? (map interface-name interfaces))
-           (every vector? (map interface-address interfaces))))))
+           (every (lambda (sockaddr)
+                    ;; Sometimes interfaces have no associated address.
+                    (or (vector? sockaddr)
+                        (not sockaddr)))
+                  (map interface-address interfaces))))))
 
 (test-equal "network-interfaces returns \"lo\""
   (list #t (make-socket-address AF_INET (inet-pton AF_INET "127.0.0.1") 0))
