@@ -8,6 +8,7 @@
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,10 +54,12 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages statistics))
 
@@ -3184,3 +3187,33 @@ embedded_plugins =
 implementing message/object passing, caching, RPC and process management.
 It uses the uwsgi protocol for all the networking/interprocess communications.")
     (license l:gpl2+))) ; with linking exception
+
+(define-public jq
+  (package
+    (name "jq")
+    (version "1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/stedolan/" name
+                                  "/releases/download/" name "-" version
+                                  "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0g29kyz4ykasdcrb0zmbrp2jqs9kv1wz9swx849i2d1ncknbzln4"))))
+    (inputs
+     `(("oniguruma" ,oniguruma)))
+    (native-inputs
+     `(;; TODO fix gems to generate documentation
+       ;;("ruby" ,ruby)
+       ;;("bundler" ,bundler)
+       ("valgrind" ,valgrind)))
+    (build-system gnu-build-system)
+    (home-page "http://stedolan.github.io/jq/")
+    (synopsis "Command-line JSON processor")
+    (description "jq is like sed for JSON data – you can use it to slice and
+filter and map and transform structured data with the same ease that sed, awk,
+grep and friends let you play with text.  It is written in portable C.  jq can
+mangle the data format that you have into the one that you want with very
+little effort, and the program to do so is often shorter and simpler than
+you'd expect.")
+    (license (list l:expat l:cc-by3.0))))
