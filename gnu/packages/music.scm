@@ -1201,9 +1201,8 @@ MusicBrainz database.")
     (build-system python-build-system)
     (home-page "https://github.com/echonest/pyechonest")
     (synopsis "Python interface to The Echo Nest APIs")
-    (description "Pyechonest is an open source Python library for the Echo Nest
-API.  With Pyechonest you have Python access to the entire set of API methods
-including:
+    (description "Pyechonest is a Python library for the Echo Nest API.  With
+Pyechonest you have Python access to the entire set of API methods including:
 
 @enumerate
 @item artist - search for artists by name, description, or attribute, and get
