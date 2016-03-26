@@ -358,8 +358,22 @@ and suitable for 'exit'."
   "Run COMMAND in a new environment containing INPUTS, using the native search
 paths defined by the list PATHS.  When PURE?, pre-existing environment
 variables are cleared before setting the new ones."
+  ;; Properly handle SIGINT, so pressing C-c in an interactive terminal
+  ;; application works.
+  (sigaction SIGINT SIG_DFL)
   (create-environment inputs paths pure?)
-  (apply system* command))
+  (match command
+    ((program . args)
+     (apply execlp program program args))))
+
+(define (launch-environment/fork command inputs paths pure?)
+  "Run COMMAND in a new process with an environment containing INPUTS, using
+the native search paths defined by the list PATHS.  When PURE?, pre-existing
+environment variables are cleared before setting the new ones."
+  (match (primitive-fork)
+    (0 (launch-environment command inputs paths pure?))
+    (pid (match (waitpid pid)
+           ((_ . status) status)))))
 
 (define* (launch-environment/container #:key command bash user-mappings
                                        profile paths network?)
@@ -582,4 +596,5 @@ message if any test fails."
                  (else
                   (return
                    (exit/status
-                    (launch-environment command profile paths pure?)))))))))))))
+                    (launch-environment/fork command profile
+                                             paths pure?)))))))))))))
