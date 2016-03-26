@@ -74,6 +74,9 @@ AC_DEFUN([GUIX_SYSTEM_TYPE], [
        linux-gnu*)
 	  # For backward compatibility, strip the `-gnu' part.
 	  guix_system="$machine_name-linux";;
+       gnu*)
+          # Always use i586 for GNU/Hurd.
+          guix_system="i586-gnu";;
        *)
 	  # Strip the version number from names such as `gnu0.3',
 	  # `darwin10.2.0', etc.
