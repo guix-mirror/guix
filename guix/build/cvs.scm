@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,7 +59,10 @@ Return #t on success, #f otherwise."
                            "-D" "-r")
                        revision
                        module))
-       (rename-file module directory)
+       ;; Copy rather than rename in case MODULE and DIRECTORY are on
+       ;; different devices.
+       (copy-recursively module directory)
+
        (with-directory-excursion directory
          (for-each delete-file-recursively (find-cvs-directories)))
        #t))
