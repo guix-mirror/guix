@@ -1274,13 +1274,16 @@ websites such as Libre.fm.")
        #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'set-HOME
-           (lambda _ (setenv "HOME" (string-append (getcwd) "/tmp")))))))
+           (lambda _ (setenv "HOME" (string-append (getcwd) "/tmp"))))
+         (replace 'check
+           (lambda _ (zero? (system* "nosetests" "-v")))))))
     (native-inputs
      `(("python2-beautifulsoup4" ,python2-beautifulsoup4)
        ("python2-flask" ,python2-flask)
        ("python2-setuptools" ,python2-setuptools)
        ("python2-mock" ,python2-mock)
        ("python2-mpd2" ,python2-mpd2)
+       ("python2-nose" ,python2-nose)
        ("python2-pathlib" ,python2-pathlib)
        ("python2-pyxdg" ,python2-pyxdg)
        ("python2-pyechonest" ,python2-pyechonest)
