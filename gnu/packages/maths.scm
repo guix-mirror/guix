@@ -204,7 +204,7 @@ LP/MIP solver is included in the package.")
 (define-public pspp
   (package
     (name "pspp")
-    (version "0.8.5")
+    (version "0.10.0")
     (source
      (origin
       (method url-fetch)
@@ -212,7 +212,7 @@ LP/MIP solver is included in the package.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0c8326yykidi94xi7jn27j8iqxc38vc07d4wf5zyk0l8lpzx5vz7"))))
+        "1nwnxr8mvf8y4lc8h8sd2xn2njwjk42x8mzj91zzv92m2z3vyggg"))))
     (build-system gnu-build-system)
     (inputs
      `(("cairo" ,cairo)
@@ -222,8 +222,8 @@ LP/MIP solver is included in the package.")
        ("libxml2" ,libxml2)
        ("pango" ,pango)
        ("readline" ,readline)
-       ("gtk" ,gtk+-2)
-       ("gtksourceview" ,gtksourceview-2)
+       ("gtk" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
        ("zlib" ,zlib)))
     (native-inputs
      `(("glib" ,glib "bin")             ;for glib-genmarshal
