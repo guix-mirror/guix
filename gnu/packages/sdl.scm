@@ -346,15 +346,19 @@ directory.")
 (define-public sdl2-ttf
   (package (inherit sdl-ttf)
     (name "sdl2-ttf")
-    (version "2.0.12")
+    (version "2.0.14")
     (source (origin
              (method url-fetch)
              (uri
               (string-append "http://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-"
                              version ".tar.gz"))
+             (modules '((guix build utils)))
+             (snippet
+              ;; Remove bundled libraries.
+              '(delete-file-recursively "external"))
              (sha256
               (base32
-               "0vkg6lyj278mdpd52map3rfi65fbq16w67ahmmfcl77a8da60a47"))))
+               "0xljwcpvd2knrjdfag5b257xqayplz55mqlszrqp0kpnphh5xnrl"))))
     (propagated-inputs
      (propagated-inputs-with-sdl2 sdl-ttf))))
 
