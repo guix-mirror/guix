@@ -5929,7 +5929,7 @@ network interface you want to use):
 wpa_supplicant -c wpa_supplicant.conf -i @var{interface} -B
 @end example
 
-Run @command{man wpa_supplication} for more information.
+Run @command{man wpa_supplicant} for more information.
 @end table
 
 At this point, you need to acquire an IP address.  On a network where IP
