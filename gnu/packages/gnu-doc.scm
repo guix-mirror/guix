@@ -1,4 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -21,10 +22,36 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages texinfo)
 
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix cvs-download)
+  #:use-module (guix download)
   #:use-module (guix licenses)
   #:use-module (guix packages))
+
+(define-public miscfiles
+  (package
+    (name "miscfiles")
+    (version "1.5")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/" name "/" name "-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "005588vfrwx8ghsdv9p7zczj9lbc9a3r4m5aphcaqv8gif4siaka"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.gnu.org/software/miscfiles/")
+    (synopsis
+     "Data files for airport codes, zip codes, a dictionary, and more")
+    (description
+     "GNU Miscfiles is a collection of common data files.  They include, for
+example, country abbreviations, names and capital cities; currency
+abbreviations and names; a Best Current Practices index; a map of the ASCII
+character set; a list of three-letter airport codes; and an English word
+list.")
+    (license gpl2+)))
 
 (define-public gnu-standards
   (package
