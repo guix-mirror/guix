@@ -364,6 +364,67 @@ write native speed custom Git applications in any language with bindings.")
     ;; GPLv2 with linking exception
     (license gpl2)))
 
+(define-public cgit
+  (package
+    (name "cgit")
+    (version "0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://git.zx2c4.com/cgit/snapshot/cgit-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "1dx54hgfyabmg9nm5qp6d01f54nlbqbbdwhwl0llb9imjf237qif"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; XXX: fail to build the in-source git.
+       #:test-target "test"
+       #:make-flags '("CC=gcc" "SHELL_PATH=sh")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-git
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Unpack the source of git into the 'git' directory.
+             (zero? (system*
+                     "tar" "--strip-components=1" "-C" "git" "-xf"
+                     (assoc-ref inputs "git:src")))))
+         (delete 'configure) ; no configure script
+         (add-after 'build 'build-man
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (zero? (apply system* `("make" ,@make-flags "doc-man")))))
+         (replace 'install
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (and (zero? (apply system*
+                                  `("make" ,@make-flags
+                                    ,(string-append "prefix=" out)
+                                    ,(string-append
+                                      "CGIT_SCRIPT_PATH=" out "/share/cgit")
+                                    "install" "install-man")))
+                    ;; Move the platform-dependent 'cgit.cgi' into lib
+                    ;; to get it stripped.
+                    (rename-file (string-append out "/share/cgit/cgit.cgi")
+                                 (string-append out "/lib/cgit/cgit.cgi"))
+                    #t)))))))
+    (native-inputs
+     ;; For building manpage.
+     `(("asciidoc" ,asciidoc)
+       ("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("xmllint" ,libxml2)
+       ("xsltprot" ,libxslt)))
+    (inputs
+     `(("git:src" ,(package-source git))
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (home-page "https://git.zx2c4.com/cgit/")
+    (synopsis "Web frontend for git repositories")
+    (description
+     "CGit is an attempt to create a fast web interface for the Git SCM, using
+a built-in cache to decrease server I/O pressure.")
+    (license gpl2)))
+
 (define-public shflags
   (package
     (name "shflags")
