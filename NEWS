@@ -2,7 +2,7 @@
 #+TITLE: Guix NEWS – history of user-visible changes
 #+STARTUP: content hidestars
 
-Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
@@ -10,11 +10,14 @@ Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 
 Please send Guix bug reports to bug-guix@gnu.org.
 
-* Changes in 0.9.1 (since 0.9.0)
+* Changes in 0.10.0 (since 0.9.0)
+
+GNU Guix adopted a contributor code of conduct, see ‘CODE-OF-CONDUCT’ in the
+source tree.
 
 ** Package management
 
-*** New syntax for separating package names and version numbers
+*** New command-line syntax for separating package names and version numbers
 
 Use ‘@’ instead of ‘-’ as a separator, as in ‘gnupg@2.0’.  This new separator
 is a reserved character which is not allowed both in package names and version
@@ -23,9 +26,31 @@ numbers.
 The old syntax to specify a package’s version—e.g., as “gnupg-2.0”—is obsolete
 and support for it will be removed in the future.
 
-*** Emacs interface for licenses
-*** Emacs interface for system generations
-*** Emacs interface for hydra.gnu.org
+*** “Grafts” apply recursively, based on run-time dependencies
+
+“Grafts” is the mechanism by which we can apply security updates of core
+packages without rebuilding or re-downloading the entire set of dependent
+packages.  See “Security Updates” in the manual, as well as
+<https://savannah.gnu.org/forum/forum.php?forum_id=8470> and
+<http://bugs.gnu.org/22139> for more info.
+
+*** Substitutes are fetched over HTTPS by default
+*** Substitutes are cached for the duration reported in ‘Cache-Control’ headers
+*** Default substitute URL list includes a faster mirror, mirror.hydra.gnu.org
+*** New ‘--with-input’ and ‘--with-source’ for ‘guix package’ and ‘guix build’
+
+See “Package Transformation Options” in the manual.
+
+*** ‘guix package --search-paths -p X -p Y’ combines search paths for X and Y
+*** ‘guix package’ can be passed several ‘--search’ options
+*** New ‘--rounds’ and ‘--check’ for ‘guix build’, for bit-reproducibility
+*** New ‘--rounds’ option for ‘guix-daemon’
+*** New ‘--quiet’ option for ‘guix build’
+*** ‘guix package -u’ no longer checks for upstream GNU releases
+*** ‘guix-daemon’ always uses /tmp in chroots, regardless of $TMPDIR
+*** New Emacs interface to browse licenses: M-x guix-licenses
+*** New Emacs interface to list system generations: M-x guix-system-generations
+*** New Emacs interface for hydra.gnu.org: M-x guix-hydra-…
 *** Changes in Emacs interface variables and faces
 
 In the following names, BUFFER-TYPE means "info" or "list";
@@ -57,9 +82,72 @@ ENTRY-TYPE means "package", "output" or "generation".
   guix-ENTRY-TYPE-list-describe-warning-count
 - guix-package-info-fill-heading -> guix-info-fill
 
+*** New ‘cve’ linter: ‘guix lint -c cve’ reports pending vulnerabilities
+*** New ‘gnome’, ‘xorg’, and ‘github’ updaters for ‘guix refresh’
+*** ‘guix lint’ times out after 3 seconds when probing URLs
+*** ‘guix graph -t bag-with-origins’ includes origins in the graph
+*** ‘guix import cran’ can import packages from bioconductor.org
+
+** Distribution
+
+*** GuixSD upgraded to GNU Shepherd 0.3.1 and GNU Linux-libre 4.5.0
+*** “System Installation” section of the manual has been expounded
+*** Installation image runs GPM and includes more programs
+*** GNOME and Xfce desktops are available via services; see "Desktop Services"
+*** New ‘tor-hidden-service’ procedure, to declare Tor hidden services
+*** New Dovecot service
+*** New ‘fstab-service-type’, to populate /etc/fstab
+*** New ‘mount?’ field for ‘file-system’ forms
+*** Most global environment variables are now set in /etc/environment (pam_env)
+*** ‘guix system reconfigure’ now loads/starts new services, stops old ones
+    (see <http://bugs.gnu.org/22039>)
+*** ‘local-file’ resolves file names relative to the current source file
+*** Many reproducibility issues fixed: glibc, perl, bison, emacs-*, python-*, …
+*** Initial RAM disk supports ‘modprobe.blacklist’ on the kernel command line
+*** New “Running GuixSD in a VM” section in the manual
+*** ‘dmd’ changed to ’shepherd’ in ‘guix system’ sub-commands
+*** A Bourne-like shell is spawned upon ‘fsck’ failure
+    (see <http://bugs.gnu.org/22588>)
+*** XXX new packages
+*** XXX package updates
+
+** Programming interfaces
+
+*** Build systems always set the ‘SOURCE_DATE_EPOCH’ environment variable
+*** New (guix graph) graph manipulation module, abstracted from ‘guix graph’
+*** New (guix cve) module, to navigate the CVE database
+*** ‘build-things’ procedure takes a new ‘mode’ parameter
+*** Mass rename of ‘dmd’ to ‘shepherd’ in the (gnu …) modules
+*** New ‘gnome-desktop-service’ and ‘xfce-desktop-service’ procedures
+*** ‘pam-root-service-type’ can be extended with cross-cutting transformations
+*** ‘package-with-python2’ honors the ‘python2-variant’ package property
+    (see <http://bugs.gnu.org/22437>)
+
 ** Noteworthy bug fixes
 
-*** Numbers in package names are correctly handled (http://bugs.gnu.org/19219)
+*** Grafts are applied recursively (<http://bugs.gnu.org/22139>)
+*** Commands correctly handle numbers in package names
+    (http://bugs.gnu.org/19219)
+*** ‘guix-daemon’ deduplication code detects corrupt items
+*** eudev now populates /dev/disk/by-{id,label}
+*** Selected locale is automatically built (<http://bugs.gnu.org/22572>)
+*** Substitutes can be downloaded over HTTPS (<http://bugs.gnu.org/22937>)
+*** umask explicitly set in /etc/profile (<http://bugs.gnu.org/22650>)
+*** ‘guix system init’ writes GC root on the target file system
+    (<http://bugs.gnu.org/22802>)
+*** ‘guix system vm’ now works in the absence of KVM support
+    (<http://bugs.gnu.org/22633>)
+*** GuixSD includes an Info reader by default (<http://bugs.gnu.org/22598>)
+*** MacBook keyboards are now properly detected (<http://bugs.gnu.org/20433>)
+*** GRUB searches root by label or UUID (<http://bugs.gnu.org/22281>)
+*** ‘guix package --search-paths’ honors propagated inputs
+    (<http://bugs.gnu.org/22073>)
+*** GCC uses ‘C_INCLUDE_PATH’ et al. instead of ‘CPATH’
+    (<http://bugs.gnu.org/22186>)
+*** ‘ld-wrapper’ computes library search path based on all ‘-L’ flags
+    (<http://bugs.gnu.org/21941>)
+*** ‘guix environment --container’ gracefully handles abnormal exists
+    (<http://bugs.gnu.org/21958>)
 
 * Changes in 0.9.0 (since 0.8.3)
 
