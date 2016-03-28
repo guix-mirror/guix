@@ -6033,9 +6033,11 @@ With the target partitions ready and the target root mounted on
 herd start cow-store /mnt
 @end example
 
-This makes @file{/gnu/store} copy-on-write, such that packages added to
-it during the installation phase are written to the target disk rather
-than kept in memory.
+This makes @file{/gnu/store} copy-on-write, such that packages added to it
+during the installation phase are written to the target disk on @file{/mnt}
+rather than kept in memory.  This is necessary because the first phase of
+the @command{guix system init} command (see below) entails downloads or
+builds to @file{/gnu/store} which, initially, is an in-memory file system.
 
 Next, you have to edit a file and
 provide the declaration of the operating system to be installed.  To
