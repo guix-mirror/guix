@@ -16,7 +16,7 @@
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2015 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -6056,7 +6056,10 @@ Python's @code{ctypes} foreign function interface (FFI).")
                         #t))))))
     (inputs `(("file" ,file)))
     (self-native-input? #f)
-    (synopsis "Python bindings to the libmagic file type guesser")))
+    (synopsis "Python bindings to the libmagic file type guesser.  Note that
+this module and the python-magic module both provide a \"magic.py\" file;
+these two modules, which are different and were developed separately, both
+serve the same purpose: provide Python bindings for libmagic.")))
 
 (define-public python2-file
   (package-with-python2 python-file))
@@ -8490,3 +8493,64 @@ is made as zipfile like as possible.")
 
 (define-public python2-rarfile
   (package-with-python2 python-rarfile))
+
+(define-public python-magic
+  (package
+    (name "python-magic")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/ahupp/python-magic/archive/"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "17bgy92i7sb021f2s4mw1dcvpm6p1mi9jihridwy1pyn8mzvpjgk"))
+       (file-name (string-append name "-" version "-checkout"))))
+    (build-system python-build-system)
+    (arguments
+     ;; The tests are unreliable, so don't run them.  The tests fail
+     ;; under Python3 because they were written for Python2 and
+     ;; contain import statements that do not work in Python3.  One of
+     ;; the tests fails under Python2 because its assertions are
+     ;; overly stringent; it relies on comparing output strings which
+     ;; are brittle and can change depending on the version of
+     ;; libmagic being used and the system on which the test is
+     ;; running.  In my case, under GuixSD 0.10.0, only one test
+     ;; failed, and it seems to have failed only because the version
+     ;; of libmagic that is packaged in Guix outputs a slightly
+     ;; different (but not wrong) string than the one that the test
+     ;; expected.
+     '(#:tests? #f
+       #:phases (modify-phases %standard-phases
+         ;; Replace a specific method call with a hard-coded
+         ;; path to the necessary libmagic.so file in the
+         ;; store.  If we don't do this, then the method call
+         ;; will fail to find the libmagic.so file, which in
+         ;; turn will cause any application using
+         ;; python-magic to fail.
+         (add-before 'build 'hard-code-path-to-libmagic
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((file (assoc-ref inputs "file")))
+               (substitute* "magic.py"
+                 (("ctypes.util.find_library\\('magic'\\)")
+                  (string-append "'" file "/lib/libmagic.so'")))
+           #t))))))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (inputs
+     ;; python-magic needs to be able to find libmagic.so.
+     `(("file" ,file)))
+    (home-page "https://github.com/ahupp/python-magic")
+    (synopsis "File type identification using libmagic")
+    (description
+     "This module uses ctypes to access the libmagic file type
+identification library.  It makes use of the local magic database and
+supports both textual and MIME-type output.  Note that this module and
+the python-file module both provide a \"magic.py\" file; these two
+modules, which are different and were developed separately, both serve
+the same purpose: to provide Python bindings for libmagic.")
+    (license license:expat)))
+
+(define-public python2-magic
+  (package-with-python2 python-magic))
