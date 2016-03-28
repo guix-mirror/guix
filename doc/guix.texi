@@ -5876,6 +5876,12 @@ Stand-alone GNU Info}).  The installation system runs the GPM mouse
 daemon, which allows you to select text with the left mouse button and
 to paste it with the middle button.
 
+@quotation Note
+Installation requires access to the Internet so that any missing
+dependencies of your system configuration can be downloaded.  See the
+``Networking'' section below.
+@end quotation
+
 @subsubsection Keyboard Layout
 
 @cindex keyboard layout
