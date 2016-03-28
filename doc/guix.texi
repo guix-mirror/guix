@@ -4913,10 +4913,25 @@ just a version number or ``git-checkout'', without a declared
 @code{file-name} (@pxref{origin Reference}).
 
 @item cve
+@cindex security vulnerabilities
+@cindex CVE, Common Vulnerabilities and Exposures
 Report known vulnerabilities found in the Common Vulnerabilities and
-Exposures (CVE) database
+Exposures (CVE) databases of the current and past year
 @uref{https://nvd.nist.gov/download.cfm#CVE_FEED, published by the US
 NIST}.
+
+To view information about a particular vulnerability, visit pages such as:
+
+@itemize
+@item
+@indicateurl{https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-YYYY-ABCD}
+@item
+@indicateurl{https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-YYYY-ABCD}
+@end itemize
+
+@noindent
+where @code{CVE-YYYY-ABCD} is the CVE identifier---e.g.,
+@code{CVE-2015-7554}.
 
 @item formatting
 Warn about obvious source code formatting issues: trailing white space,
@@ -10450,14 +10465,32 @@ the load.  To check whether a package has a @code{debug} output, use
 @node Security Updates
 @section Security Updates
 
+@cindex security updates
+@cindex security vulnerabilities
+Occasionally, important security vulnerabilities are discovered in software
+packages and must be patched.  Guix developers try hard to keep track of
+known vulnerabilities and to apply fixes as soon as possible in the
+@code{master} branch of Guix (we do not yet provide a ``stable'' branch
+containing only security updates.)  The @command{guix lint} tool helps
+developers find out about vulnerable versions of software packages in the
+distribution:
+
+@smallexample
+$ guix lint -c cve
+gnu/packages/base.scm:652:2: glibc-2.21: probably vulnerable to CVE-2015-1781, CVE-2015-7547
+gnu/packages/gcc.scm:334:2: gcc-4.9.3: probably vulnerable to CVE-2015-5276
+gnu/packages/image.scm:312:2: openjpeg-2.1.0: probably vulnerable to CVE-2016-1923, CVE-2016-1924
+@dots{}
+@end smallexample
+
+@xref{Invoking guix lint}, for more information.
+
 @quotation Note
-As of version @value{VERSION}, the feature described in this section is
-experimental.
+As of version @value{VERSION}, the feature described below is considered
+``beta''.
 @end quotation
 
-@cindex security updates
-Occasionally, important security vulnerabilities are discovered in core
-software packages and must be patched.  Guix follows a functional
+Guix follows a functional
 package management discipline (@pxref{Introduction}), which implies
 that, when a package is changed, @emph{every package that depends on it}
 must be rebuilt.  This can significantly slow down the deployment of
