@@ -6048,8 +6048,9 @@ Next, you have to edit a file and
 provide the declaration of the operating system to be installed.  To
 that end, the installation system comes with two text editors: GNU nano
 (@pxref{Top,,, nano, GNU nano Manual}), and GNU Zile, an Emacs clone.
-It is better to store that file on the target root file system, say, as
-@file{/mnt/etc/config.scm}.
+We strongly recommend storing that file on the target root file system, say,
+as @file{/mnt/etc/config.scm}.  Failing to do that, you will have lost your
+configuration file once you have rebooted into the newly-installed system.
 
 @xref{Using the Configuration System}, for an overview of the
 configuration file.  The example configurations discussed in that
