@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
+;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3109,3 +3110,77 @@ callback or connection interfaces.")
      "Gumbo is an implementation of the HTML5 parsing algorithm implemented as
 a pure C99 library.")
     (license l:asl2.0)))
+
+(define-public uwsgi
+  (package
+    (name "uwsgi")
+    (version "2.0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://projects.unbit.it/downloads/uwsgi-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "02g46dnw5j1iw8fsq392bxbk8d21b9pdgb3ypcinv3b4jzdm2srh"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "python"))
+    (arguments
+     '(;; XXX: The 'check' target runs cppcheck to do static code analysis.
+       ;;      But there is no obvious way to run the real tests.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; Configuration is done by writing an ini file.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out       (assoc-ref outputs "out"))
+                    (bindir    (string-append out "/bin"))
+                    (plugindir (string-append out "/lib/uwsgi")))
+               ;; The build phase outputs files to these directories directly.
+               (mkdir-p bindir)
+               (mkdir-p plugindir)
+               ;; XXX: Enable other plugins.
+               (call-with-output-file "buildconf/guix.ini"
+                 (lambda (port)
+                   (format port "[uwsgi]
+yaml = libyaml
+bin_name = ~a/uwsgi
+plugin_dir = ~a
+
+inherit = base
+plugins = cgi,python
+embedded_plugins =
+" bindir plugindir))))
+             (setenv "PROFILE" "guix")
+             #t))
+         (replace 'install
+           ;; Move plugins into their own output.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out           (assoc-ref outputs "out"))
+                    (plugindir     (string-append out "/lib/uwsgi"))
+                    (python-plugin (string-append
+                                    plugindir "/python_plugin.so")))
+               (install-file python-plugin
+                             (string-append
+                              (assoc-ref outputs "python") "/lib/uwsgi"))
+               (delete-file python-plugin)
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("jansson" ,jansson)
+       ("libxml2" ,libxml2)
+       ("libyaml" ,libyaml)
+       ("openssl" ,openssl)
+       ("pcre" ,pcre)
+       ("zlib" ,zlib)
+       ;; For plugins.
+       ("python" ,python)))
+    (home-page "https://uwsgi-docs.readthedocs.org/")
+    (synopsis "Application container server")
+    (description
+     "uWSGI presents a complete stack for networked/clustered web applications,
+implementing message/object passing, caching, RPC and process management.
+It uses the uwsgi protocol for all the networking/interprocess communications.")
+    (license l:gpl2+))) ; with linking exception
