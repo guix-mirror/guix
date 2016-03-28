@@ -234,7 +234,7 @@ the Nix package manager.")
          ("help2man" ,help2man)
          ,@(package-native-inputs guix-0.10.0))))))
 
-(define-public guix guix-devel)
+(define-public guix guix-0.10.0)
 
 (define-public nix
   (package
