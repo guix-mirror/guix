@@ -5726,12 +5726,17 @@ also be installed on top of a running GNU/Linux system,
 @pxref{Installation}.
 
 @ifinfo
+@quotation Note
 @c This paragraph is for people reading this from tty2 of the
 @c installation image.
 You are reading this documentation with an Info reader.  For details on
 how to use it, hit the @key{RET} key (``return'' or ``enter'') on the
 link that follows: @pxref{Top, Info reader,, info-stnd, Stand-alone GNU
 Info}.  Hit @kbd{l} afterwards to come back here.
+
+Alternately, run @command{info info} in another tty to keep the manual
+available.
+@end quotation
 @end ifinfo
 
 @menu
