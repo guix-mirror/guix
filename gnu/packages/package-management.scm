@@ -60,17 +60,17 @@
                      arch "-linux"
                      "/20131110/guile-2.0.9.tar.xz")))
 
-(define-public guix-0.9.0
+(define-public guix-0.10.0
   (package
     (name "guix")
-    (version "0.9.0")
+    (version "0.10.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://alpha.gnu.org/gnu/guix/guix-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0h573z2br0bf43sxyzia9xlm03n3y43zg1snds3c2piq2m6kabrn"))))
+               "0d4afwy7bpqi4k4bzvwc4ga4shwssis1nrvdw53qjyg9bw1a8lbn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list
@@ -196,7 +196,7 @@ the Nix package manager.")
   ;; Note: use a very short commit id; with a longer one, the limit on
   ;; hash-bang lines would be exceeded while running the tests.
   (let ((commit "dd21308225610e7adfcbd1bfa07f72a42d7c7c35"))
-    (package (inherit guix-0.9.0)
+    (package (inherit guix-0.10.0)
       (version (string-append "0.9.0-1." (string-take commit 4)))
       (source (origin
                 (method git-fetch)
@@ -208,7 +208,7 @@ the Nix package manager.")
                   "1yxjmjjfw2n6hwidrbaawljca11pwzsvif2b02virs94xqdy9zww"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (arguments
-       (substitute-keyword-arguments (package-arguments guix-0.9.0)
+       (substitute-keyword-arguments (package-arguments guix-0.10.0)
          ((#:configure-flags flags)
           ;; Set 'DOT_USER_PROGRAM' to the empty string so we don't keep a
           ;; reference to Graphviz, whose closure is pretty big (too big for
@@ -232,7 +232,7 @@ the Nix package manager.")
          ("texinfo" ,texinfo)
          ("graphviz" ,graphviz)
          ("help2man" ,help2man)
-         ,@(package-native-inputs guix-0.9.0))))))
+         ,@(package-native-inputs guix-0.10.0))))))
 
 (define-public guix guix-devel)
 
