@@ -86,11 +86,78 @@
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages zip)
   #:use-module ((srfi srfi-1) #:select (last)))
+
+(define-public aria-maestosa
+  (package
+    (name "aria-maestosa")
+    (version "1.4.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/ariamaestosa/ariamaestosa/"
+                                  version "/AriaSrc-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0gf9z96z83jiabxhpl856j15vl9flfgs6x1r0r6hc7g2xvwag0vy"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ;no tests
+       #:phases
+       ;; TODO: Add scons-build-system and use it here.
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'scons-propagate-environment
+           (lambda _
+             ;; By design, SCons does not, by default, propagate
+             ;; environment variables to subprocesses.  See:
+             ;; <http://comments.gmane.org/gmane.linux.distributions.nixos/4969>
+             ;; Here, we modify the SConstruct file to arrange for
+             ;; environment variables to be propagated.
+             (substitute* "SConstruct"
+               (("env = Environment\\(\\)")
+                "env = Environment(ENV=os.environ)")
+               ;; Scons errors out when copying subdirectories from Resources,
+               ;; so we move them instead.
+               (("Copy") "Move")
+               ;; We move the "score" and "Documentation" directories at once,
+               ;; so we have to ignore files contained therein.
+               (("if \".svn\" in file" line)
+                (string-append line
+                               " or \"score/\" in file"
+                               " or \"Documentation/\" in file")))
+             #t))
+         (replace 'build (lambda _ (zero? (system* "scons"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (and
+                (zero? (system* "scons"
+                                (string-append "prefix=" out)
+                                "install"))
+                ;; Fix directory permissions
+                (begin
+                  (chmod (string-append out "/share/Aria/Documentation") #o555)
+                  (chmod (string-append out "/share/Aria/score") #o555)
+                  #t))))))))
+    (inputs
+     `(("wxwidgets" ,wxwidgets)
+       ("glib" ,glib)
+       ("alsa-lib" ,alsa-lib)))
+    (native-inputs
+     `(("scons" ,scons)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://ariamaestosa.sourceforge.net/")
+    (synopsis "MIDI sequencer and editor")
+    (description
+     "Aria Maestosa is a MIDI sequencer and editor.  It lets you compose, edit
+and play MIDI files with a few clicks in a user-friendly interface offering
+score, keyboard, guitar, drum and controller views.")
+    (license license:gpl3+)))
 
 (define-public cmus
   (package
