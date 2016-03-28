@@ -425,6 +425,9 @@ host file systems to mount inside the container."
             (mkdir-p "/bin")
             (symlink bash "/bin/sh")
 
+            ;; Set a reasonable default PS1.
+            (setenv "PS1" "\\u@\\h \\w [env]\\$ ")
+
             ;; Setup directory for temporary files.
             (mkdir-p "/tmp")
             (for-each (lambda (var)
