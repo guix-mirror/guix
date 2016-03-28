@@ -8554,3 +8554,42 @@ the same purpose: to provide Python bindings for libmagic.")
 
 (define-public python2-magic
   (package-with-python2 python-magic))
+
+(define-public python2-s3cmd
+  (package
+    (name "python2-s3cmd")
+    (version "1.6.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://sourceforge/s3tools/"
+                            "s3cmd-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0ki1rzhm5icvi9ry5jswi4b22yqwyj0d2wsqsgilwx6qhi7pjxa6"))))
+    (build-system python-build-system)
+    (arguments
+     ;; s3cmd is written for python2 only and contains no tests.
+     `(#:python ,python-2
+       #:tests? #f))
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)))
+    (inputs
+     `(("python2-dateutil" ,python2-dateutil)
+       ;; The python-file package also provides a magic.py module.
+       ;; This is an unfortunate state of affairs; however, s3cmd
+       ;; fails to install if it cannot find specifically the
+       ;; python-magic package.  Thus we include it, instead of using
+       ;; python-file.  Ironically, s3cmd sometimes works better
+       ;; without libmagic bindings at all:
+       ;; https://github.com/s3tools/s3cmd/issues/198
+       ("python2-magic" ,python2-magic)))
+    (home-page "http://s3tools.org/s3cmd")
+    (synopsis "Command line tool for S3-compatible storage services")
+    (description
+     "S3cmd is a command line tool for uploading, retrieving and managing data
+in storage services that are compatible with the Amazon Simple Storage
+Service (S3) protocol, including S3 itself.  It supports rsync-like backup,
+GnuPG encryption, and more.  It also supports management of Amazon's
+CloudFront content delivery network.")
+    (license gpl2+)))
