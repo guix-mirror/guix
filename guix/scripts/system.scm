@@ -482,6 +482,21 @@ PATTERN, a string.  When PATTERN is #f, display all the system generations."
     ((disk-image)
      (system-disk-image os #:disk-image-size image-size))))
 
+(define (maybe-suggest-running-guix-pull)
+  "Suggest running 'guix pull' if this has never been done before."
+  ;; The reason for this is that the 'guix' binding that we see here comes
+  ;; from either ~/.config/latest or, if it's missing, from the
+  ;; globally-installed Guix, which is necessarily older.  See
+  ;; <http://lists.gnu.org/archive/html/guix-devel/2014-08/msg00057.html> for
+  ;; a discussion.
+  (define latest
+    (string-append (config-directory) "/latest"))
+
+  (unless (file-exists? latest)
+    (warning (_ "~a not found: 'guix pull' was never run~%") latest)
+    (warning (_ "Consider running 'guix pull' before 'reconfigure'.~%"))
+    (warning (_ "Failing to do that may downgrade your system!~%"))))
+
 (define* (perform-action action os
                          #:key grub? dry-run? derivations-only?
                          use-substitutes? device target
@@ -497,6 +512,9 @@ When DERIVATIONS-ONLY? is true, print the derivation file name(s) without
 building anything."
   (define println
     (cut format #t "~a~%" <>))
+
+  (when (eq? action 'reconfigure)
+    (maybe-suggest-running-guix-pull))
 
   (mlet* %store-monad
       ((sys       (system-derivation-for-action os action
