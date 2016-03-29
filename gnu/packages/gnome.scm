@@ -14,6 +14,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
+;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4928,3 +4929,31 @@ command-line interface.  It can record part or all of an X display for a
 specified duration and save it as a GIF encoded animated image file.")
       (home-page "https://git.gnome.org/browse/byzanz")
       (license license:gpl2+))))
+
+(define-public libzapojit
+  (package
+    (name "libzapojit")
+    (version "0.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0zn3s7ryjc3k1abj4k55dr2na844l451nrg9s6cvnnhh569zj99x"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gnome-online-accounts" ,gnome-online-accounts)
+       ("json-glib" ,json-glib)
+       ("rest" ,rest)))
+    (home-page "https://wiki.gnome.org/Projects/Zapojit")
+    (synopsis "Library for accessing SkyDrive and Hotmail")
+    (description
+     "Libzapojit is a GLib-based library for accessing online service APIs of
+Microsoft SkyDrive and Hotmail, using their REST protocols.")
+    (license license:lgpl2.1+)))
