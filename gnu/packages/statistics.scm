@@ -1234,13 +1234,13 @@ informative error messages when it's not available.")
 (define-public r-devtools
   (package
     (name "r-devtools")
-    (version "1.9.1")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "devtools" version))
               (sha256
                (base32
-                "10ycx3kkiz5x8nmgw31d9wa5hhlx2fhda2nqzxfrczqpz1jik6ci"))))
+                "11x51bqhjwypbxv5sfnrnxx06b92k8kzmmx7zrwk3537r072b6pa"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-curl" ,r-curl)
@@ -1253,7 +1253,8 @@ informative error messages when it's not available.")
        ("r-roxygen2" ,r-roxygen2)
        ("r-rstudioapi" ,r-rstudioapi)
        ("r-rversions" ,r-rversions)
-       ("r-whisker" ,r-whisker)))
+       ("r-whisker" ,r-whisker)
+       ("r-withr" ,r-withr)))
     (home-page "https://github.com/hadley/devtools")
     (synopsis "Tools to make developing R packages easier")
     (description "The devtools package is a collection of package development
