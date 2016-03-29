@@ -1260,6 +1260,25 @@ informative error messages when it's not available.")
 tools to simplify the devolpment of R packages.")
     (license license:gpl2+)))
 
+(define-public r-withr
+  (package
+    (name "r-withr")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "withr" version))
+              (sha256
+               (base32
+                "0zbj3rd7dc0ycknmay7y7rm1qvnh9n05jw93gjggz46j2zfmy93y"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/jimhester/withr")
+    (synopsis "Run code with temporarily modified global state")
+    (description
+     "This package provides a set of functions to run R code in an environment
+in which global state has been temporarily modified.  Many of these functions
+were originally a part of the r-devtools package.")
+    (license license:gpl2+)))
+
 (define-public r-readr
   (package
     (name "r-readr")
