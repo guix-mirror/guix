@@ -140,9 +140,16 @@
                             (path   (string-append
                                      json "/share/guile/site/2.0:"
                                      gnutls "/share/guile/site/2.0")))
+
+                       ;; Ignore user settings so that a bogus
+                       ;; GUILE_LOAD_COMPILED_PATH does not prevent use of
+                       ;; 'guix', notably when it contains entries pointing to
+                       ;; incompatible .go files as reported at
+                       ;; <https://lists.gnu.org/archive/html/guix-devel/2016-03/msg01261.html>.
                        (wrap-program (string-append out "/bin/guix")
-                         `("GUILE_LOAD_PATH" ":" prefix (,path))
-                         `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,path)))
+                         `("GUILE_LOAD_PATH" ":" = (,path))
+                         `("GUILE_LOAD_COMPILED_PATH" ":" = (,path)))
+
                        #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("emacs" ,emacs-no-x)))      ;for guix.el
