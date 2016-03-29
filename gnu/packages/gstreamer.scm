@@ -331,7 +331,7 @@ par compared to the rest.")
 (define-public gst-plugins-ugly
   (package
     (name "gst-plugins-ugly")
-    (version "1.6.3")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
@@ -339,7 +339,7 @@ par compared to the rest.")
                            name "/" name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0r6h3ys5n90jv3c06crxzcac561z07s4h04hy5i8ybw8qyvzgv1g"))))
+         "137b6kqykh5nwbmiv28nn1pc1d2x2rb2xxg382pc9pa9gpxpyrak"))))
     (build-system gnu-build-system)
     (inputs
      `(("gst-plugins-base" ,gst-plugins-base)
@@ -359,7 +359,7 @@ par compared to the rest.")
      `(("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)))
-    (home-page "http://gstreamer.freedesktop.org/")
+    (home-page "https://gstreamer.freedesktop.org/")
     (synopsis "GStreamer plugins from the \"ugly\" set")
     (description "GStreamer Ugly Plug-ins.  This set contains those plug-ins
 which the developers consider to have good quality code but that might pose
