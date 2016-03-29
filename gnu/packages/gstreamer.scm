@@ -406,7 +406,7 @@ compression formats through the use of the libav library.")
 (define-public python-gst
   (package
     (name "python-gst")
-    (version "1.6.2")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -414,7 +414,7 @@ compression formats through the use of the libav library.")
                     "gst-python-" version ".tar.xz"))
               (sha256
                (base32
-                "09ci5zvr7lms7mvgbjgsjwaxcl4nq45n1g9pdwnqmx3rf0qkwxjf"))))
+                "1spn49x7yaj69df6mxh9wwcs0y3abswkfpk84njs71lzqlbzyiff"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Factorize python-sitedir with python-build-system.
@@ -436,7 +436,7 @@ compression formats through the use of the libav library.")
     (propagated-inputs
      `(("gst-plugins-base" ,gst-plugins-base)
        ("python-pygobject" ,python-pygobject)))
-    (home-page "http://gstreamer.freedesktop.org/")
+    (home-page "https://gstreamer.freedesktop.org/")
     (synopsis "GStreamer GObject Introspection overrides for Python")
     (description
      "This package contains GObject Introspection overrides for Python that can
