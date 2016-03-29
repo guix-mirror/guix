@@ -195,9 +195,9 @@ the Nix package manager.")
   ;;
   ;; Note: use a very short commit id; with a longer one, the limit on
   ;; hash-bang lines would be exceeded while running the tests.
-  (let ((commit "dd21308225610e7adfcbd1bfa07f72a42d7c7c35"))
+  (let ((commit "761139354798303c605964b896c250a01486b00a"))
     (package (inherit guix-0.10.0)
-      (version (string-append "0.9.0-1." (string-take commit 4)))
+      (version (string-append "0.10.0-0." (string-take commit 4)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -205,7 +205,7 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1yxjmjjfw2n6hwidrbaawljca11pwzsvif2b02virs94xqdy9zww"))
+                  "1wvy9kms3v6k7cybw6489mqk161lv8d03qgmmxbmdgiwjmjxbzbn"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.10.0)
@@ -234,7 +234,7 @@ the Nix package manager.")
          ("help2man" ,help2man)
          ,@(package-native-inputs guix-0.10.0))))))
 
-(define-public guix guix-0.10.0)
+(define-public guix guix-devel)
 
 (define-public nix
   (package
