@@ -198,7 +198,7 @@ for the GStreamer multimedia library.")
 (define-public gst-plugins-good
   (package
     (name "gst-plugins-good")
-    (version "1.6.3")
+    (version "1.8.0")
     (source
      (origin
       (method url-fetch)
@@ -207,7 +207,7 @@ for the GStreamer multimedia library.")
             name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0xx16h0q63gs3pxlzdflnpyssba3vcrh1qnzplg4d0ra1fvrvc94"))))
+        "0kczdvqxvl8kxiy2d7czv16jp73hv9k3nykh47ckihnv8x6i6362"))))
     (build-system gnu-build-system)
     (inputs
      `(("aalib" ,aalib)
@@ -238,16 +238,18 @@ for the GStreamer multimedia library.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after
-          'unpack 'disable-failing-rtprtx-tests
+          'unpack 'disable-failing-tests
           (lambda _
-            ;; Disable rtprtx tests that frequently fail.
-            ;; XXX FIXME: Try removing this for version > 1.6.3.
+            ;; Disable tests that fail non-deterministically.
+            ;; XXX FIXME: Try removing this for version > 1.8.0.
             (substitute* "tests/check/elements/rtprtx.c"
-              (("tcase_add_test \\(tc_chain,\
- (test_rtxsender_max_size_packets|test_rtxreceive_data_reconstruction)\\);" all)
+              (("tcase_add_test \\(tc_chain, test_push_forward_seq\\);" all)
+               (string-append "/* " all " */")))
+            (substitute* "tests/check/elements/splitmux.c"
+              (("tcase_add_test \\(tc_chain, test_splitmuxsink\\);" all)
                (string-append "/* " all " */")))
             #t)))))
-    (home-page "http://gstreamer.freedesktop.org/")
+    (home-page "https://gstreamer.freedesktop.org/")
     (synopsis
      "Plugins for the GStreamer multimedia library")
     (description "GStreamer Good Plug-ins is a set of plug-ins for the
