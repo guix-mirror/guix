@@ -4341,13 +4341,13 @@ alignments.")
 (define-public r-rtracklayer
   (package
     (name "r-rtracklayer")
-    (version "1.30.1")
+    (version "1.30.4")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "rtracklayer" version))
               (sha256
                (base32
-                "1if31hg56islx5vwydpgs5gkyas26kyvv2ljv1c7jikpm62w14qv"))))
+                "0knjnwywh9k726mq28s3sy013zhw6d6nfa8hfw670720nq18i2p0"))))
     (build-system r-build-system)
     (arguments
      `(#:phases
