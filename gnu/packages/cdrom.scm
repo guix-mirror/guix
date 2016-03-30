@@ -233,13 +233,14 @@ capacity is user-selectable.")
     (version "1.4.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://github.com/lipnitsk/libcue/archive/v"
+             (uri (string-append "https://github.com/lipnitsk/libcue/releases/"
+                                 "download/v" version "/libcue-"
                                  version ".tar.bz2"))
              (sha256
               (base32
                "17kjd7rjz1bvfn44n3n2bjb7a1ywd0yc0g4sqp5ihf9b5bn7cwlb"))))
     (build-system gnu-build-system)
-    (home-page "http://libcue.sourceforge.net/")
+    (home-page "https://github.com/lipnitsk/libcue")
     (synopsis "C library to parse cue sheets")
     (description "Libcue is a C library to parse so-called @dfn{cue sheets}
 which contain meta-data for CD/DVD tracks.  It provides an API to manipulate
