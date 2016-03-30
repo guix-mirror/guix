@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -78,6 +79,7 @@
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages rsync)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
@@ -1306,3 +1308,33 @@ once and for all.  It catalogs your collection, automatically improving its
 metadata as it goes using the MusicBrainz database.  Then it provides a variety
 of tools for manipulating and accessing your music.")
     (license license:expat)))
+
+(define-public milkytracker
+  (package
+    (name "milkytracker")
+    (version "0.90.86")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://milkytracker.org/files/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1v9vp8vi24lkagfpr92c128whvakwgrm9pq2zf6ijpl5sh7014zb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags '("CXXFLAGS=-lasound")))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("sdl" ,sdl)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Music tracker for working with .MOD/.XM module files")
+    (description "MilkyTracker is a music application for creating .MOD and .XM
+module files.  It attempts to recreate the module replay and user experience of
+the popular DOS program Fasttracker II, with special playback modes available
+for improved Amiga ProTracker 2/3 compatibility.")
+    (home-page "http://milkytracker.org/")
+    ;; 'src/milkyplay' is under Modified BSD, the rest is under GPL3 or later.
+    (license (list license:bsd-3 license:gpl3+))))
