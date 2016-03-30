@@ -4017,13 +4017,13 @@ possible.")
 (define-public r-genomeinfodb
   (package
     (name "r-genomeinfodb")
-    (version "1.6.1")
+    (version "1.6.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomeInfoDb" version))
               (sha256
                (base32
-                "1j2n1v1mrw1fxn7cyffz112pm76wd6gy9q9qwlsfv3brbsqbvdbf"))))
+                "1ggp005n2rlkad00ilzn95y4rd484yr1chdhnd6fwg45rbi94d63"))))
     (properties
      `((upstream-name . "GenomeInfoDb")))
     (build-system r-build-system)
