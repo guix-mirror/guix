@@ -3248,7 +3248,7 @@ provides a framework for working with @dfn{monads}, and a particularly
 useful monad for our uses, the @dfn{store monad}.  Monads are a
 construct that allows two things: associating ``context'' with values
 (in our case, the context is the store), and building sequences of
-computations (here computations include accesses to the store.)  Values
+computations (here computations include accesses to the store).  Values
 in a monad---values that carry this additional context---are called
 @dfn{monadic values}; procedures that return such values are called
 @dfn{monadic procedures}.
@@ -3277,7 +3277,7 @@ as a monadic function:
                                  #$output))))
 @end example
 
-There several things to note in the second version: the @code{store}
+There are several things to note in the second version: the @code{store}
 parameter is now implicit and is ``threaded'' in the calls to the
 @code{package->derivation} and @code{gexp->derivation} monadic
 procedures, and the monadic value returned by @code{package->derivation}
@@ -3544,7 +3544,7 @@ S-expressions adapted to build expressions.  G-expressions, or
 @code{ungexp}, and @code{ungexp-splicing} (or simply: @code{#~},
 @code{#$}, and @code{#$@@}), which are comparable to
 @code{quasiquote}, @code{unquote}, and @code{unquote-splicing},
-respectivel (@pxref{Expression Syntax, @code{quasiquote},, guile,
+respectively (@pxref{Expression Syntax, @code{quasiquote},, guile,
 GNU Guile Reference Manual}).  However, there are major differences:
 
 @itemize
