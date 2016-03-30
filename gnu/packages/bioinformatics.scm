@@ -4079,13 +4079,13 @@ names in their natural, rather than lexicographic, order.")
 (define-public r-genomicranges
   (package
     (name "r-genomicranges")
-    (version "1.22.2")
+    (version "1.22.4")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicRanges" version))
               (sha256
                (base32
-                "1jffvcs0jsi7q4l3pvjj6r73vll80csgkljvhqp0g2ixc43jjng9"))))
+                "02df5683nrpn9d10ws8jz9b55nr9055hh882xp2i154xdddir0k0"))))
     (properties
      `((upstream-name . "GenomicRanges")))
     (build-system r-build-system)
