@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <tobias.geerinckx.rice@gmail.com>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -223,6 +224,10 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
   (let* ((version "4.5")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
+             ;; Avoid introducing timestamps
+             (setenv "KCONFIG_NOTIMESTAMP" "1")
+             (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
+
              ;; Apply the neat patch.
              (system* "patch" "-p1" "--force"
                       "-i" (assoc-ref inputs "patch/freedo+gnu"))
