@@ -2854,8 +2854,11 @@ For packages that install stand-alone Python programs under @code{bin/},
 it takes care of wrapping these programs so that their @code{PYTHONPATH}
 environment variable points to all the Python libraries they depend on.
 
-Which Python package is used can be specified with the @code{#:python}
-parameter.
+Which Python package is used to perform the build can be specified with
+the @code{#:python} parameter.  This is a useful way to force a package
+to be built for a specific version of the Python interpreter, which
+might be necessary if the package is only compatible with a single
+interpreter version.
 @end defvr
 
 @defvr {Scheme Variable} perl-build-system
