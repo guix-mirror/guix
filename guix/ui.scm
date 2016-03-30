@@ -1048,6 +1048,9 @@ DURATION-RELATION with the current time."
                            "~b ~d ~Y ~T")))
           (current (generation-number profile)))
       (if (= number current)
+          ;; TRANSLATORS: The word "current" here is an adjective for
+          ;; "Generation", as in "current generation".  Use the appropriate
+          ;; gender where applicable.
           (format #t (_ "~a\t(current)~%") header)
           (format #t "~a~%" header)))))
 
