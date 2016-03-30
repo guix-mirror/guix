@@ -77,9 +77,18 @@ static void throwSQLiteError(sqlite3 * db, const format & f)
 }
 
 
-/* Convenience macros for retrying a SQLite transaction. */
-#define retry_sqlite while (1) { try {
-#define end_retry_sqlite break; } catch (SQLiteBusy & e) { } }
+/* Convenience function for retrying a SQLite transaction when the
+   database is busy. */
+template<typename T>
+T retrySQLite(std::function<T()> fun)
+{
+    while (true) {
+        try {
+            return fun();
+        } catch (SQLiteBusy & e) {
+        }
+    }
+}
 
 
 SQLite::~SQLite()
@@ -746,32 +755,32 @@ void LocalStore::addReference(unsigned long long referrer, unsigned long long re
 
 void LocalStore::registerFailedPath(const Path & path)
 {
-    retry_sqlite {
+    retrySQLite<void>([&]() {
         SQLiteStmtUse use(stmtRegisterFailedPath);
         stmtRegisterFailedPath.bind(path);
         stmtRegisterFailedPath.bind(time(0));
         if (sqlite3_step(stmtRegisterFailedPath) != SQLITE_DONE)
             throwSQLiteError(db, format("registering failed path `%1%'") % path);
-    } end_retry_sqlite;
+    });
 }
 
 
 bool LocalStore::hasPathFailed(const Path & path)
 {
-    retry_sqlite {
+    return retrySQLite<bool>([&]() {
         SQLiteStmtUse use(stmtHasPathFailed);
         stmtHasPathFailed.bind(path);
         int res = sqlite3_step(stmtHasPathFailed);
         if (res != SQLITE_DONE && res != SQLITE_ROW)
             throwSQLiteError(db, "querying whether path failed");
         return res == SQLITE_ROW;
-    } end_retry_sqlite;
+    });
 }
 
 
 PathSet LocalStore::queryFailedPaths()
 {
-    retry_sqlite {
+    return retrySQLite<PathSet>([&]() {
         SQLiteStmtUse use(stmtQueryFailedPaths);
 
         PathSet res;
@@ -786,13 +795,13 @@ PathSet LocalStore::queryFailedPaths()
             throwSQLiteError(db, "error querying failed paths");
 
         return res;
-    } end_retry_sqlite;
+    });
 }
 
 
 void LocalStore::clearFailedPaths(const PathSet & paths)
 {
-    retry_sqlite {
+    retrySQLite<void>([&]() {
         SQLiteTxn txn(db);
 
         foreach (PathSet::const_iterator, i, paths) {
@@ -803,7 +812,7 @@ void LocalStore::clearFailedPaths(const PathSet & paths)
         }
 
         txn.commit();
-    } end_retry_sqlite;
+    });
 }
 
 
@@ -828,7 +837,7 @@ ValidPathInfo LocalStore::queryPathInfo(const Path & path)
 
     assertStorePath(path);
 
-    retry_sqlite {
+    return retrySQLite<ValidPathInfo>([&]() {
 
         /* Get the path info. */
         SQLiteStmtUse use1(stmtQueryPathInfo);
@@ -868,7 +877,7 @@ ValidPathInfo LocalStore::queryPathInfo(const Path & path)
             throwSQLiteError(db, format("error getting references of `%1%'") % path);
 
         return info;
-    } end_retry_sqlite;
+    });
 }
 
 
@@ -912,26 +921,26 @@ bool LocalStore::isValidPath_(const Path & path)
 
 bool LocalStore::isValidPath(const Path & path)
 {
-    retry_sqlite {
+    return retrySQLite<bool>([&]() {
         return isValidPath_(path);
-    } end_retry_sqlite;
+    });
 }
 
 
 PathSet LocalStore::queryValidPaths(const PathSet & paths)
 {
-    retry_sqlite {
+    return retrySQLite<PathSet>([&]() {
         PathSet res;
         foreach (PathSet::const_iterator, i, paths)
             if (isValidPath_(*i)) res.insert(*i);
         return res;
-    } end_retry_sqlite;
+    });
 }
 
 
 PathSet LocalStore::queryAllValidPaths()
 {
-    retry_sqlite {
+    return retrySQLite<PathSet>([&]() {
         SQLiteStmt stmt;
         stmt.create(db, "select path from ValidPaths");
 
@@ -947,7 +956,7 @@ PathSet LocalStore::queryAllValidPaths()
             throwSQLiteError(db, "error getting valid paths");
 
         return res;
-    } end_retry_sqlite;
+    });
 }
 
 
@@ -980,9 +989,9 @@ void LocalStore::queryReferrers_(const Path & path, PathSet & referrers)
 void LocalStore::queryReferrers(const Path & path, PathSet & referrers)
 {
     assertStorePath(path);
-    retry_sqlite {
+    return retrySQLite<void>([&]() {
         queryReferrers_(path, referrers);
-    } end_retry_sqlite;
+    });
 }
 
 
@@ -996,7 +1005,7 @@ PathSet LocalStore::queryValidDerivers(const Path & path)
 {
     assertStorePath(path);
 
-    retry_sqlite {
+    return retrySQLite<PathSet>([&]() {
         SQLiteStmtUse use(stmtQueryValidDerivers);
         stmtQueryValidDerivers.bind(path);
 
@@ -1012,13 +1021,13 @@ PathSet LocalStore::queryValidDerivers(const Path & path)
             throwSQLiteError(db, format("error getting valid derivers of `%1%'") % path);
 
         return derivers;
-    } end_retry_sqlite;
+    });
 }
 
 
 PathSet LocalStore::queryDerivationOutputs(const Path & path)
 {
-    retry_sqlite {
+    return retrySQLite<PathSet>([&]() {
         SQLiteStmtUse use(stmtQueryDerivationOutputs);
         stmtQueryDerivationOutputs.bind(queryValidPathId(path));
 
@@ -1034,13 +1043,13 @@ PathSet LocalStore::queryDerivationOutputs(const Path & path)
             throwSQLiteError(db, format("error getting outputs of `%1%'") % path);
 
         return outputs;
-    } end_retry_sqlite;
+    });
 }
 
 
 StringSet LocalStore::queryDerivationOutputNames(const Path & path)
 {
-    retry_sqlite {
+    return retrySQLite<StringSet>([&]() {
         SQLiteStmtUse use(stmtQueryDerivationOutputs);
         stmtQueryDerivationOutputs.bind(queryValidPathId(path));
 
@@ -1056,7 +1065,7 @@ StringSet LocalStore::queryDerivationOutputNames(const Path & path)
             throwSQLiteError(db, format("error getting output names of `%1%'") % path);
 
         return outputNames;
-    } end_retry_sqlite;
+    });
 }
 
 
@@ -1066,7 +1075,7 @@ Path LocalStore::queryPathFromHashPart(const string & hashPart)
 
     Path prefix = settings.nixStore + "/" + hashPart;
 
-    retry_sqlite {
+    return retrySQLite<Path>([&]() -> Path {
         SQLiteStmtUse use(stmtQueryPathFromHashPart);
         stmtQueryPathFromHashPart.bind(prefix);
 
@@ -1076,7 +1085,7 @@ Path LocalStore::queryPathFromHashPart(const string & hashPart)
 
         const char * s = (const char *) sqlite3_column_text(stmtQueryPathFromHashPart, 0);
         return s && prefix.compare(0, prefix.size(), s, prefix.size()) == 0 ? s : "";
-    } end_retry_sqlite;
+    });
 }
 
 
@@ -1306,7 +1315,7 @@ void LocalStore::registerValidPaths(const ValidPathInfos & infos)
      * expense of some speed of the path registering operation. */
     if (settings.syncBeforeRegistering) sync();
 
-    retry_sqlite {
+    return retrySQLite<void>([&]() {
         SQLiteTxn txn(db);
         PathSet paths;
 
@@ -1343,7 +1352,7 @@ void LocalStore::registerValidPaths(const ValidPathInfos & infos)
         topoSortPaths(*this, paths);
 
         txn.commit();
-    } end_retry_sqlite;
+    });
 }
 
 
@@ -1733,7 +1742,7 @@ void LocalStore::invalidatePathChecked(const Path & path)
 {
     assertStorePath(path);
 
-    retry_sqlite {
+    retrySQLite<void>([&]() {
         SQLiteTxn txn(db);
 
         if (isValidPath_(path)) {
@@ -1746,7 +1755,7 @@ void LocalStore::invalidatePathChecked(const Path & path)
         }
 
         txn.commit();
-    } end_retry_sqlite;
+    });
 }
 
 
