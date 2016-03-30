@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2507,16 +2508,13 @@ interrupted by stop codons.  OrfM finds and prints these ORFs.")
 (define-public python2-pbcore
   (package
     (name "python2-pbcore")
-    (version "0.9.3")
+    (version "1.2.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://github.com/PacificBiosciences/pbcore/archive/"
-                    version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (pypi-uri "pbcore" version))
               (sha256
                (base32
-                "1z46rwjac93jm87cbj2zgjg6qvsgs65140wkbbxsvxps7ai4pm09"))))
+                "02pfn5raa3zf739672bg0dkx7z3j2c4nx7vmpfjqy5b12jrqpymk"))))
     (build-system python-build-system)
     (arguments `(#:python ,python-2)) ; pbcore requires Python 2.7
     (inputs
@@ -2525,7 +2523,10 @@ interrupted by stop codons.  OrfM finds and prints these ORFs.")
        ("python-pysam" ,python2-pysam)
        ("python-h5py" ,python2-h5py)))
     (native-inputs
-     `(("python-setuptools" ,python2-setuptools)))
+     `(("python-docutils" ,python2-docutils)
+       ("python-nose" ,python2-nose)
+       ("python-setuptools" ,python2-setuptools)
+       ("python-sphinx" ,python2-sphinx)))
     (home-page "http://pacificbiosciences.github.io/pbcore/")
     (synopsis "Library for reading and writing PacBio data files")
     (description
