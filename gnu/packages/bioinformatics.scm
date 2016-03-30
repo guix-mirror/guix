@@ -4773,6 +4773,25 @@ identify genotyping errors, and to perform single-QTL and two-QTL,
 two-dimensional genome scans.")
   (license license:gpl3)))
 
+(define-public r-zlibbioc
+  (package
+    (name "r-zlibbioc")
+    (version "1.16.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "zlibbioc" version))
+              (sha256
+               (base32
+                "01wc26ndg4jsn1wyrl6zzq636gxaip5fci0xapym4lh9wryc4wnw"))))
+    (properties
+     `((upstream-name . "zlibbioc")))
+    (build-system r-build-system)
+    (home-page "https://bioconductor.org/packages/zlibbioc")
+    (synopsis "Provider for zlib-1.2.5 to R packages")
+    (description "This package uses the source code of zlib-1.2.5 to create
+libraries for systems that do not have these available via other means.")
+    (license license:artistic2.0)))
+
 (define-public pepr
   (package
     (name "pepr")
