@@ -4036,6 +4036,38 @@ translation between different chromosome sequence naming conventions (e.g.,
 names in their natural, rather than lexicographic, order.")
     (license license:artistic2.0)))
 
+(define-public r-variantannotation
+  (package
+    (name "r-variantannotation")
+    (version "1.16.4")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "VariantAnnotation" version))
+              (sha256
+               (base32
+                "1z42j3p9b8h725inq8n0230llsdbav3gwcxy1nliypzfkxbzahsb"))))
+    (properties
+     `((upstream-name . "VariantAnnotation")))
+    (inputs
+     `(("zlib" ,zlib)))
+    (propagated-inputs
+     `(("r-annotationdbi" ,r-annotationdbi)
+       ("r-biocgenerics" ,r-biocgenerics)
+       ("r-bsgenome" ,r-bsgenome)
+       ("r-dbi" ,r-dbi)
+       ("r-genomeinfodb" ,r-genomeinfodb)
+       ("r-genomicfeatures" ,r-genomicfeatures)
+       ("r-genomicranges" ,r-genomicranges)
+       ("r-summarizedexperiment" ,r-summarizedexperiment)
+       ("r-rsamtools" ,r-rsamtools)
+       ("r-zlibbioc" ,r-zlibbioc)))
+    (build-system r-build-system)
+    (home-page "https://bioconductor.org/packages/VariantAnnotation")
+    (synopsis "Package for annotation of genetic variants")
+    (description "This R package can annotate variants, compute amino acid
+coding changes and predict coding outcomes.")
+    (license license:artistic2.0)))
+
 (define-public r-xvector
   (package
     (name "r-xvector")
