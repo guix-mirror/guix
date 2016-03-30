@@ -1,7 +1,7 @@
 # htmlxref.cnf - reference file for free Texinfo manuals on the web.
 # Modified by Ludovic Courtès <ludo@gnu.org> for the GNU Guix manual.
 
-htmlxrefversion=2016-02-21.21; # UTC
+htmlxrefversion=2016-03-30.07; # UTC
 
 # Copyright 2010, 2011, 2012, 2013, 2014, 2015 Free Software Foundation, Inc.
 # 
@@ -324,7 +324,7 @@ gnutls		mono	http://gnutls.org/manual/gnutls.html
 gnutls		node	http://gnutls.org/manual/html_node/
 
 gnutls-guile	mono	http://gnutls.org/manual/gnutls-guile.html
-gnutls-guile	node	http://gnutls.org/manual/gnutls-guile/index.html
+gnutls-guile	node	http://gnutls.org/manual/gnutls-guile/
 
 gperf		mono	${GS}/gperf/manual/gperf.html
 gperf		node	${GS}/gperf/manual/html_node/
