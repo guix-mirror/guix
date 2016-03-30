@@ -329,6 +329,7 @@ void LocalStore::openDB(bool create)
     // ensure efficient lookup.
     stmtQueryPathFromHashPart.create(db,
         "select path from ValidPaths where path >= ? limit 1;");
+    stmtQueryValidPaths.create(db, "select path from ValidPaths");
 }
 
 
@@ -523,23 +524,16 @@ void LocalStore::checkDerivationOutputs(const Path & drvPath, const Derivation &
 }
 
 
-unsigned long long LocalStore::addValidPath(const ValidPathInfo & info, bool checkOutputs)
+uint64_t LocalStore::addValidPath(const ValidPathInfo & info, bool checkOutputs)
 {
-    SQLiteStmtUse use(stmtRegisterValidPath);
-    stmtRegisterValidPath.bind(info.path);
-    stmtRegisterValidPath.bind("sha256:" + printHash(info.hash));
-    stmtRegisterValidPath.bind(info.registrationTime == 0 ? time(0) : info.registrationTime);
-    if (info.deriver != "")
-        stmtRegisterValidPath.bind(info.deriver);
-    else
-        stmtRegisterValidPath.bind(); // null
-    if (info.narSize != 0)
-        stmtRegisterValidPath.bind64(info.narSize);
-    else
-        stmtRegisterValidPath.bind(); // null
-    if (sqlite3_step(stmtRegisterValidPath) != SQLITE_DONE)
-        throwSQLiteError(db, format("registering valid path `%1%' in database") % info.path);
-    unsigned long long id = sqlite3_last_insert_rowid(db);
+    stmtRegisterValidPath.use()
+        (info.path)
+        ("sha256:" + printHash(info.hash))
+        (info.registrationTime == 0 ? time(0) : info.registrationTime)
+        (info.deriver, info.deriver != "")
+        (info.narSize, info.narSize != 0)
+        .exec();
+    uint64_t id = sqlite3_last_insert_rowid(db);
 
     /* If this is a derivation, then store the derivation outputs in
        the database.  This is useful for the garbage collector: it can
@@ -555,13 +549,12 @@ unsigned long long LocalStore::addValidPath(const ValidPathInfo & info, bool che
            registration above is undone. */
         if (checkOutputs) checkDerivationOutputs(info.path, drv);
 
-        foreach (DerivationOutputs::iterator, i, drv.outputs) {
-            SQLiteStmtUse use(stmtAddDerivationOutput);
-            stmtAddDerivationOutput.bind(id);
-            stmtAddDerivationOutput.bind(i->first);
-            stmtAddDerivationOutput.bind(i->second.path);
-            if (sqlite3_step(stmtAddDerivationOutput) != SQLITE_DONE)
-                throwSQLiteError(db, format("adding derivation output for `%1%' in database") % info.path);
+        for (auto & i : drv.outputs) {
+            stmtAddDerivationOutput.use()
+                (id)
+                (i.first)
+                (i.second.path)
+                .exec();
         }
     }
 
@@ -569,24 +562,16 @@ unsigned long long LocalStore::addValidPath(const ValidPathInfo & info, bool che
 }
 
 
-void LocalStore::addReference(unsigned long long referrer, unsigned long long reference)
+void LocalStore::addReference(uint64_t referrer, uint64_t reference)
 {
-    SQLiteStmtUse use(stmtAddReference);
-    stmtAddReference.bind(referrer);
-    stmtAddReference.bind(reference);
-    if (sqlite3_step(stmtAddReference) != SQLITE_DONE)
-        throwSQLiteError(db, "adding reference to database");
+    stmtAddReference.use()(referrer)(reference).exec();
 }
 
 
 void LocalStore::registerFailedPath(const Path & path)
 {
     retrySQLite<void>([&]() {
-        SQLiteStmtUse use(stmtRegisterFailedPath);
-        stmtRegisterFailedPath.bind(path);
-        stmtRegisterFailedPath.bind(time(0));
-        if (sqlite3_step(stmtRegisterFailedPath) != SQLITE_DONE)
-            throwSQLiteError(db, format("registering failed path `%1%'") % path);
+        stmtRegisterFailedPath.use()(path)(time(0)).step();
     });
 }
 
@@ -594,12 +579,7 @@ void LocalStore::registerFailedPath(const Path & path)
 bool LocalStore::hasPathFailed(const Path & path)
 {
     return retrySQLite<bool>([&]() {
-        SQLiteStmtUse use(stmtHasPathFailed);
-        stmtHasPathFailed.bind(path);
-        int res = sqlite3_step(stmtHasPathFailed);
-        if (res != SQLITE_DONE && res != SQLITE_ROW)
-            throwSQLiteError(db, "querying whether path failed");
-        return res == SQLITE_ROW;
+        return stmtHasPathFailed.use()(path).next();
     });
 }
 
@@ -607,18 +587,11 @@ bool LocalStore::hasPathFailed(const Path & path)
 PathSet LocalStore::queryFailedPaths()
 {
     return retrySQLite<PathSet>([&]() {
-        SQLiteStmtUse use(stmtQueryFailedPaths);
+        auto useQueryFailedPaths(stmtQueryFailedPaths.use());
 
         PathSet res;
-        int r;
-        while ((r = sqlite3_step(stmtQueryFailedPaths)) == SQLITE_ROW) {
-            const char * s = (const char *) sqlite3_column_text(stmtQueryFailedPaths, 0);
-            assert(s);
-            res.insert(s);
-        }
-
-        if (r != SQLITE_DONE)
-            throwSQLiteError(db, "error querying failed paths");
+        while (useQueryFailedPaths.next())
+            res.insert(useQueryFailedPaths.getStr(0));
 
         return res;
     });
@@ -630,12 +603,8 @@ void LocalStore::clearFailedPaths(const PathSet & paths)
     retrySQLite<void>([&]() {
         SQLiteTxn txn(db);
 
-        foreach (PathSet::const_iterator, i, paths) {
-            SQLiteStmtUse use(stmtClearFailedPath);
-            stmtClearFailedPath.bind(*i);
-            if (sqlite3_step(stmtClearFailedPath) != SQLITE_DONE)
-                throwSQLiteError(db, format("clearing failed path `%1%' in database") % *i);
-        }
+        for (auto & path : paths)
+            stmtClearFailedPath.use()(path).exec();
 
         txn.commit();
     });
@@ -666,41 +635,28 @@ ValidPathInfo LocalStore::queryPathInfo(const Path & path)
     return retrySQLite<ValidPathInfo>([&]() {
 
         /* Get the path info. */
-        SQLiteStmtUse use1(stmtQueryPathInfo);
+        auto useQueryPathInfo(stmtQueryPathInfo.use()(path));
 
-        stmtQueryPathInfo.bind(path);
+        if (!useQueryPathInfo.next())
+            throw Error(format("path `%1%' is not valid") % path);
 
-        int r = sqlite3_step(stmtQueryPathInfo);
-        if (r == SQLITE_DONE) throw Error(format("path `%1%' is not valid") % path);
-        if (r != SQLITE_ROW) throwSQLiteError(db, "querying path in database");
+        info.id = useQueryPathInfo.getInt(0);
 
-        info.id = sqlite3_column_int(stmtQueryPathInfo, 0);
+        info.hash = parseHashField(path, useQueryPathInfo.getStr(1));
 
-        const char * s = (const char *) sqlite3_column_text(stmtQueryPathInfo, 1);
-        assert(s);
-        info.hash = parseHashField(path, s);
+        info.registrationTime = useQueryPathInfo.getInt(2);
 
-        info.registrationTime = sqlite3_column_int(stmtQueryPathInfo, 2);
-
-        s = (const char *) sqlite3_column_text(stmtQueryPathInfo, 3);
+        auto s = (const char *) sqlite3_column_text(stmtQueryPathInfo, 3);
         if (s) info.deriver = s;
 
         /* Note that narSize = NULL yields 0. */
-        info.narSize = sqlite3_column_int64(stmtQueryPathInfo, 4);
+        info.narSize = useQueryPathInfo.getInt(4);
 
         /* Get the references. */
-        SQLiteStmtUse use2(stmtQueryReferences);
+        auto useQueryReferences(stmtQueryReferences.use()(info.id));
 
-        stmtQueryReferences.bind(info.id);
-
-        while ((r = sqlite3_step(stmtQueryReferences)) == SQLITE_ROW) {
-            s = (const char *) sqlite3_column_text(stmtQueryReferences, 0);
-            assert(s);
-            info.references.insert(s);
-        }
-
-        if (r != SQLITE_DONE)
-            throwSQLiteError(db, format("error getting references of `%1%'") % path);
+        while (useQueryReferences.next())
+            info.references.insert(useQueryReferences.getStr(0));
 
         return info;
     });
@@ -711,37 +667,26 @@ ValidPathInfo LocalStore::queryPathInfo(const Path & path)
    narSize field. */
 void LocalStore::updatePathInfo(const ValidPathInfo & info)
 {
-    SQLiteStmtUse use(stmtUpdatePathInfo);
-    if (info.narSize != 0)
-        stmtUpdatePathInfo.bind64(info.narSize);
-    else
-        stmtUpdatePathInfo.bind(); // null
-    stmtUpdatePathInfo.bind("sha256:" + printHash(info.hash));
-    stmtUpdatePathInfo.bind(info.path);
-    if (sqlite3_step(stmtUpdatePathInfo) != SQLITE_DONE)
-        throwSQLiteError(db, format("updating info of path `%1%' in database") % info.path);
+    stmtUpdatePathInfo.use()
+        (info.narSize, info.narSize != 0)
+        ("sha256:" + printHash(info.hash))
+        (info.path)
+        .exec();
 }
 
 
-unsigned long long LocalStore::queryValidPathId(const Path & path)
+uint64_t LocalStore::queryValidPathId(const Path & path)
 {
-    SQLiteStmtUse use(stmtQueryPathInfo);
-    stmtQueryPathInfo.bind(path);
-    int res = sqlite3_step(stmtQueryPathInfo);
-    if (res == SQLITE_ROW) return sqlite3_column_int(stmtQueryPathInfo, 0);
-    if (res == SQLITE_DONE) throw Error(format("path `%1%' is not valid") % path);
-    throwSQLiteError(db, "querying path in database");
+    auto use(stmtQueryPathInfo.use()(path));
+    if (!use.next())
+        throw Error(format("path ‘%1%’ is not valid") % path);
+    return use.getInt(0);
 }
 
 
 bool LocalStore::isValidPath_(const Path & path)
 {
-    SQLiteStmtUse use(stmtQueryPathInfo);
-    stmtQueryPathInfo.bind(path);
-    int res = sqlite3_step(stmtQueryPathInfo);
-    if (res != SQLITE_DONE && res != SQLITE_ROW)
-        throwSQLiteError(db, "querying path in database");
-    return res == SQLITE_ROW;
+    return stmtQueryPathInfo.use()(path).next();
 }
 
 
@@ -767,20 +712,9 @@ PathSet LocalStore::queryValidPaths(const PathSet & paths)
 PathSet LocalStore::queryAllValidPaths()
 {
     return retrySQLite<PathSet>([&]() {
-        SQLiteStmt stmt;
-        stmt.create(db, "select path from ValidPaths");
-
+        auto use(stmtQueryValidPaths.use());
         PathSet res;
-        int r;
-        while ((r = sqlite3_step(stmt)) == SQLITE_ROW) {
-            const char * s = (const char *) sqlite3_column_text(stmt, 0);
-            assert(s);
-            res.insert(s);
-        }
-
-        if (r != SQLITE_DONE)
-            throwSQLiteError(db, "error getting valid paths");
-
+        while (use.next()) res.insert(use.getStr(0));
         return res;
     });
 }
@@ -796,19 +730,10 @@ void LocalStore::queryReferences(const Path & path,
 
 void LocalStore::queryReferrers_(const Path & path, PathSet & referrers)
 {
-    SQLiteStmtUse use(stmtQueryReferrers);
+    auto useQueryReferrers(stmtQueryReferrers.use()(path));
 
-    stmtQueryReferrers.bind(path);
-
-    int r;
-    while ((r = sqlite3_step(stmtQueryReferrers)) == SQLITE_ROW) {
-        const char * s = (const char *) sqlite3_column_text(stmtQueryReferrers, 0);
-        assert(s);
-        referrers.insert(s);
-    }
-
-    if (r != SQLITE_DONE)
-        throwSQLiteError(db, format("error getting references of `%1%'") % path);
+    while (useQueryReferrers.next())
+        referrers.insert(useQueryReferrers.getStr(0));
 }
 
 
@@ -832,19 +757,11 @@ PathSet LocalStore::queryValidDerivers(const Path & path)
     assertStorePath(path);
 
     return retrySQLite<PathSet>([&]() {
-        SQLiteStmtUse use(stmtQueryValidDerivers);
-        stmtQueryValidDerivers.bind(path);
+        auto useQueryValidDerivers(stmtQueryValidDerivers.use()(path));
 
         PathSet derivers;
-        int r;
-        while ((r = sqlite3_step(stmtQueryValidDerivers)) == SQLITE_ROW) {
-            const char * s = (const char *) sqlite3_column_text(stmtQueryValidDerivers, 1);
-            assert(s);
-            derivers.insert(s);
-        }
-
-        if (r != SQLITE_DONE)
-            throwSQLiteError(db, format("error getting valid derivers of `%1%'") % path);
+        while (useQueryValidDerivers.next())
+            derivers.insert(useQueryValidDerivers.getStr(1));
 
         return derivers;
     });
@@ -854,19 +771,11 @@ PathSet LocalStore::queryValidDerivers(const Path & path)
 PathSet LocalStore::queryDerivationOutputs(const Path & path)
 {
     return retrySQLite<PathSet>([&]() {
-        SQLiteStmtUse use(stmtQueryDerivationOutputs);
-        stmtQueryDerivationOutputs.bind(queryValidPathId(path));
+        auto useQueryDerivationOutputs(stmtQueryDerivationOutputs.use()(queryValidPathId(path)));
 
         PathSet outputs;
-        int r;
-        while ((r = sqlite3_step(stmtQueryDerivationOutputs)) == SQLITE_ROW) {
-            const char * s = (const char *) sqlite3_column_text(stmtQueryDerivationOutputs, 1);
-            assert(s);
-            outputs.insert(s);
-        }
-
-        if (r != SQLITE_DONE)
-            throwSQLiteError(db, format("error getting outputs of `%1%'") % path);
+        while (useQueryDerivationOutputs.next())
+            outputs.insert(useQueryDerivationOutputs.getStr(1));
 
         return outputs;
     });
@@ -876,19 +785,11 @@ PathSet LocalStore::queryDerivationOutputs(const Path & path)
 StringSet LocalStore::queryDerivationOutputNames(const Path & path)
 {
     return retrySQLite<StringSet>([&]() {
-        SQLiteStmtUse use(stmtQueryDerivationOutputs);
-        stmtQueryDerivationOutputs.bind(queryValidPathId(path));
+        auto useQueryDerivationOutputs(stmtQueryDerivationOutputs.use()(queryValidPathId(path)));
 
         StringSet outputNames;
-        int r;
-        while ((r = sqlite3_step(stmtQueryDerivationOutputs)) == SQLITE_ROW) {
-            const char * s = (const char *) sqlite3_column_text(stmtQueryDerivationOutputs, 0);
-            assert(s);
-            outputNames.insert(s);
-        }
-
-        if (r != SQLITE_DONE)
-            throwSQLiteError(db, format("error getting output names of `%1%'") % path);
+        while (useQueryDerivationOutputs.next())
+            outputNames.insert(useQueryDerivationOutputs.getStr(0));
 
         return outputNames;
     });
@@ -902,12 +803,9 @@ Path LocalStore::queryPathFromHashPart(const string & hashPart)
     Path prefix = settings.nixStore + "/" + hashPart;
 
     return retrySQLite<Path>([&]() -> Path {
-        SQLiteStmtUse use(stmtQueryPathFromHashPart);
-        stmtQueryPathFromHashPart.bind(prefix);
+        auto useQueryPathFromHashPart(stmtQueryPathFromHashPart.use()(prefix));
 
-        int res = sqlite3_step(stmtQueryPathFromHashPart);
-        if (res == SQLITE_DONE) return "";
-        if (res != SQLITE_ROW) throwSQLiteError(db, "finding path in database");
+        if (!useQueryPathFromHashPart.next()) return "";
 
         const char * s = (const char *) sqlite3_column_text(stmtQueryPathFromHashPart, 0);
         return s && prefix.compare(0, prefix.size(), s, prefix.size()) == 0 ? s : "";
@@ -1154,10 +1052,10 @@ void LocalStore::registerValidPaths(const ValidPathInfos & infos)
             paths.insert(i->path);
         }
 
-        foreach (ValidPathInfos::const_iterator, i, infos) {
-            unsigned long long referrer = queryValidPathId(i->path);
-            foreach (PathSet::iterator, j, i->references)
-                addReference(referrer, queryValidPathId(*j));
+        for (auto & i : infos) {
+            auto referrer = queryValidPathId(i.path);
+            for (auto & j : i.references)
+                addReference(referrer, queryValidPathId(j));
         }
 
         /* Check that the derivation outputs are correct.  We can't do
@@ -1190,12 +1088,7 @@ void LocalStore::invalidatePath(const Path & path)
 
     drvHashes.erase(path);
 
-    SQLiteStmtUse use(stmtInvalidatePath);
-
-    stmtInvalidatePath.bind(path);
-
-    if (sqlite3_step(stmtInvalidatePath) != SQLITE_DONE)
-        throwSQLiteError(db, format("invalidating path `%1%' in database") % path);
+    stmtInvalidatePath.use()(path).exec();
 
     /* Note that the foreign key constraints on the Refs table take
        care of deleting the references entries for `path'. */
