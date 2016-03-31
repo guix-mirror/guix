@@ -58,7 +58,6 @@
  (guix licenses)
  (guix utils)
  (guix ui)
- (guix scripts lint)
  (guix scripts package)
  (gnu packages)
  (gnu system))
@@ -1022,8 +1021,9 @@ Return #t if the shell command was executed successfully."
 (define (lint-checker-names)
   "Return a list of names of available lint checkers."
   (map (lambda (checker)
-         (symbol->string (lint-checker-name checker)))
-       %checkers))
+         (symbol->string ((@ (guix scripts lint) lint-checker-name)
+                          checker)))
+       (@ (guix scripts lint) %checkers)))
 
 (define (package-names)
   "Return a list of names of available packages."
