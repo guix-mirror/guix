@@ -1029,6 +1029,25 @@ regressors on the right-hand side and/or multiple responses on the left-hand
 side.")
     (license (list license:gpl2+ license:gpl3+))))
 
+(define-public r-locfit
+  (package
+    (name "r-locfit")
+    (version "1.5-9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "locfit" version))
+       (sha256
+        (base32
+         "0lafrmq1q7x026m92h01hc9cjjiximqqi3v1g2hw7ai9vf7i897m"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/locfit")
+    (synopsis "Local regression, likelihood and density estimation")
+    (description
+     "This package provides functions used for local regression, likelihood
+and density estimation.")
+    (license (list license:gpl2+ license:gpl3+))))
+
 (define-public r-chron
   (package
     (name "r-chron")
