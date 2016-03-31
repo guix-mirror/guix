@@ -1007,6 +1007,28 @@ some versions of Epi Info, Minitab, S, SAS, SPSS, Stata, Systat and Weka, and
 for reading and writing some dBase files.")
     (license license:gpl2+)))
 
+(define-public r-formula
+  (package
+    (name "r-formula")
+    (version "1.2-1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "Formula" version))
+       (sha256
+        (base32
+         "02in5325zzrqbhlygx6s0dinj6ymw845q70y56frqacv25ayzcax"))))
+    (properties `((upstream-name . "Formula")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/Formula")
+    (synopsis "Extended model formulas")
+    (description
+     "This package provides a new class @code{Formula}, which extends the base
+class @code{formula}.  It supports extended formulas with multiple parts of
+regressors on the right-hand side and/or multiple responses on the left-hand
+side.")
+    (license (list license:gpl2+ license:gpl3+))))
+
 (define-public r-chron
   (package
     (name "r-chron")
