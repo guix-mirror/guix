@@ -160,6 +160,11 @@ Display package(s) with the specified name.
 @item M-x guix-packages-by-license
 Display package(s) with the specified license.
 
+@item M-x guix-packages-by-location
+Display package(s) located in the specified file.  These files usually
+have the following form: @file{gnu/packages/emacs.scm}, but don't type
+them manually!  Press @key{TAB} to complete the file name.
+
 @item M-x guix-search-by-regexp
 Search for packages by a specified regexp.  By default ``name'',
 ``synopsis'' and ``description'' of the packages will be searched.  This

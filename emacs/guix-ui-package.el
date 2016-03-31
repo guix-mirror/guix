@@ -1,6 +1,6 @@
 ;;; guix-ui-package.el --- Interface for displaying packages  -*- lexical-binding: t -*-
 
-;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -968,6 +968,16 @@ Interactively with prefix, prompt for PROFILE."
    (list (guix-read-license-name)
          (guix-ui-read-profile)))
   (guix-package-get-display profile 'license license))
+
+;;;###autoload
+(defun guix-packages-by-location (location &optional profile)
+  "Display Guix packages placed in LOCATION file.
+If PROFILE is nil, use `guix-current-profile'.
+Interactively with prefix, prompt for PROFILE."
+  (interactive
+   (list (guix-read-package-location)
+         (guix-ui-read-profile)))
+  (guix-package-get-display profile 'location location))
 
 ;;;###autoload
 (defun guix-search-by-regexp (regexp &optional params profile)

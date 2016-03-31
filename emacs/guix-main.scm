@@ -684,6 +684,8 @@ ENTRIES is a list of installed manifest entries."
          (license-proc          (lambda (_ license-name)
                                   (packages-by-license
                                    (lookup-license license-name))))
+         (location-proc         (lambda (_ location)
+                                  (packages-by-location-file location)))
          (all-proc              (lambda _ (all-available-packages)))
          (newest-proc           (lambda _ (newest-available-packages))))
     `((package
@@ -693,6 +695,7 @@ ENTRIES is a list of installed manifest entries."
        (obsolete         . ,(apply-to-first obsolete-package-patterns))
        (regexp           . ,regexp-proc)
        (license          . ,license-proc)
+       (location         . ,location-proc)
        (all-available    . ,all-proc)
        (newest-available . ,newest-proc))
       (output
@@ -702,6 +705,7 @@ ENTRIES is a list of installed manifest entries."
        (obsolete         . ,(apply-to-first obsolete-output-patterns))
        (regexp           . ,regexp-proc)
        (license          . ,license-proc)
+       (location         . ,location-proc)
        (all-available    . ,all-proc)
        (newest-available . ,newest-proc)))))
 
@@ -1097,3 +1101,29 @@ Return #t if the shell command was executed successfully."
 (define (license-entries search-type . search-values)
   (map license->sexp
        (apply find-licenses search-type search-values)))
+
+
+;;; Package locations
+
+(define-values (packages-by-location-file
+                package-location-files)
+  (let* ((table (delay (fold-packages
+                        (lambda (package table)
+                          (let ((file (location-file
+                                       (package-location package))))
+                            (vhash-cons file package table)))
+                        vlist-null)))
+         (files (delay (vhash-fold
+                        (lambda (file _ result)
+                          (if (member file result)
+                              result
+                              (cons file result)))
+                        '()
+                        (force table)))))
+    (values
+     (lambda (file)
+       "Return the (possibly empty) list of packages defined in location FILE."
+       (vhash-fold* cons '() file (force table)))
+     (lambda ()
+       "Return the list of file names of all package locations."
+       (force files)))))
