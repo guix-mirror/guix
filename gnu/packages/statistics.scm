@@ -2029,6 +2029,26 @@ The 'DataTables' library has been included in this R package.")
 flexible than the orphaned \"base64\" package.")
     (license license:gpl2+)))
 
+(define-public r-irlba
+  (package
+    (name "r-irlba")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "irlba" version))
+       (sha256
+        (base32
+         "1gms3rxrm24ri4vjvnpl4v47m7bx0zk63z8y85rbhsvx230xdy0m"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/irlba")
+    (synopsis "Methods for eigendecomposition of large matrices")
+    (description
+     "This package provides fast and memory efficient methods for truncated
+singular and eigenvalue decompositions, as well as for principal component
+analysis of large sparse or dense matrices.")
+    (license (list license:gpl2+ license:gpl3+))))
+
 (define-public r-r-methodss3
   (package
     (name "r-r-methodss3")
