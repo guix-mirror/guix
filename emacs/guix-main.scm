@@ -293,8 +293,10 @@ Example:
 
 (define (package-unique? package)
   "Return #t if PACKAGE is a single package with such name/version."
-  (null? (cdr (packages-by-name (package-name package)
-                                (package-version package)))))
+  (match (packages-by-name (package-name package)
+                           (package-version package))
+    ((package) #t)
+    (_ #f)))
 
 (define %package-param-alist
   `((id                . ,object-address)
@@ -330,8 +332,9 @@ Example:
 ;;; Finding packages.
 
 (define (package-by-address address)
-  (and=> (vhash-assq address %packages)
-         cdr))
+  (match (vhash-assq address %packages)
+    ((_ . package) package)
+    (_ #f)))
 
 (define (packages-by-name+version name version)
   (or (hash-ref %package-table
