@@ -2120,6 +2120,44 @@ for reproducibility.  Notably, convenient default methods greatly facilitate
 the way current RNG settings can be changed.")
     (license license:gpl3+)))
 
+(define-public r-nmf
+  (package
+    (name "r-nmf")
+    (version "0.20.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "NMF" version))
+       (sha256
+        (base32
+         "0mmh9bz0zjwd8h9jplz4rq3g94npaqj8s4px51vcv47csssd9k6z"))))
+    (properties `((upstream-name . "NMF")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-colorspace" ,r-colorspace)
+       ("r-digest" ,r-digest)
+       ("r-doparallel" ,r-doparallel)
+       ("r-foreach" ,r-foreach)
+       ("r-ggplot2" ,r-ggplot2)
+       ("r-gridbase" ,r-gridbase)
+       ("r-pkgmaker" ,r-pkgmaker)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)
+       ("r-registry" ,r-registry)
+       ("r-reshape2" ,r-reshape2)
+       ("r-rngtools" ,r-rngtools)
+       ("r-stringr" ,r-stringr)))
+    (home-page "http://renozao.github.io/NMF")
+    (synopsis "Algorithms and framework for nonnegative matrix factorization")
+    (description
+     "This package provides a framework to perform Non-negative Matrix
+Factorization (NMF).  The package implements a set of already published
+algorithms and seeding methods, and provides a framework to test, develop and
+plug new or custom algorithms.  Most of the built-in algorithms have been
+optimized in C++, and the main interface function provides an easy way of
+performing parallel computations on multicore machines.")
+    (license license:gpl2+)))
+
 (define-public r-r-methodss3
   (package
     (name "r-r-methodss3")
