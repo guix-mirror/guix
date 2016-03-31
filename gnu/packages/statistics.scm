@@ -944,6 +944,27 @@ matter where it is stored, whether in a data frame, a data table or
 database.")
     (license license:expat)))
 
+(define-public r-acepack
+  (package
+    (name "r-acepack")
+    (version "1.3-3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "acepack" version))
+       (sha256
+        (base32
+         "13ry3vyys12iplb14jfhmkrl9g5fxg3iijiggq4s4zb5m5436b1y"))))
+    (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://cran.r-project.org/web/packages/acepack")
+    (synopsis "Functions for regression transformations")
+    (description
+     "This package provides ACE and AVAS methods for choosing regression
+transformations.")
+    (license license:expat)))
+
 (define-public r-chron
   (package
     (name "r-chron")
