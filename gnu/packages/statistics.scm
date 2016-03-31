@@ -987,6 +987,26 @@ It is based on the methods described in Kaufman and Rousseeuw (1990) \"Finding
 Groups in Data\".")
     (license license:gpl2+)))
 
+(define-public r-foreign
+  (package
+    (name "r-foreign")
+    (version "0.8-66")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "foreign" version))
+       (sha256
+        (base32
+         "19278jm85728zb20800w6hq9q8jy8ywdn81mgmlnxkmrr9giwh6p"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/foreign")
+    (synopsis "Read data stored by other statistics software in R")
+    (description
+     "This package provides functions for reading and writing data stored by
+some versions of Epi Info, Minitab, S, SAS, SPSS, Stata, Systat and Weka, and
+for reading and writing some dBase files.")
+    (license license:gpl2+)))
+
 (define-public r-chron
   (package
     (name "r-chron")
