@@ -40,6 +40,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages java)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -2156,6 +2157,36 @@ algorithms and seeding methods, and provides a framework to test, develop and
 plug new or custom algorithms.  Most of the built-in algorithms have been
 optimized in C++, and the main interface function provides an easy way of
 performing parallel computations on multicore machines.")
+    (license license:gpl2+)))
+
+(define-public r-igraph
+  (package
+    (name "r-igraph")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "igraph" version))
+       (sha256
+        (base32
+         "00jnm8v3kvxpxav5klld2z2nnkcpj4sdwv4ksipddy5mp04ysr6w"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("libxml2" ,libxml2)))
+    (propagated-inputs
+     `(("r-irlba" ,r-irlba)
+       ("r-magrittr" ,r-magrittr)
+       ("r-nmf" ,r-nmf)))
+    (home-page "http://igraph.org")
+    (synopsis "Network analysis and visualization")
+    (description
+     "This package provides routines for simple graphs and network analysis.
+It can handle large graphs very well and provides functions for generating
+random and regular graphs, graph visualization, centrality methods and much
+more.")
     (license license:gpl2+)))
 
 (define-public r-r-methodss3
