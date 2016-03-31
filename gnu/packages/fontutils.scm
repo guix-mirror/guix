@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -29,6 +29,8 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages python)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gtk)
@@ -69,6 +71,37 @@ Type1, CID, CFF, Windows FON/FNT, X11 PCF, and others.  It supports high-speed
 anti-aliased glyph bitmap generation with 256 gray levels.")
    (license license:freetype)           ; some files have other licenses
    (home-page "http://www.freetype.org/")))
+
+(define-public ttfautohint
+  (package
+    (name "ttfautohint")
+    (version "1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/freetype/ttfautohint-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1lgghck46p33z3hg8dnl76jryig4fh6d8rhzms837zp7x4hyfkv4"))
+       (patches (list (search-patch "ttfautohint-source-date-epoch.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("flex" ,flex)
+       ("bison" ,bison)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("freetype" ,freetype)
+       ("harfbuzz" ,harfbuzz)))
+    (arguments
+     `(#:configure-flags '("--with-qt=no"))) ;no gui
+    (synopsis "Automated font hinting")
+    (description
+     "ttfautohint provides a 99% automated hinting process and a platform for
+finely hand-hinting the last 1%.  It is ideal for web fonts and supports many
+scripts.")
+    (license (list license:gpl2+ license:freetype)) ;choose one or the other
+    (home-page "http://www.freetype.org/ttfautohint/")))
 
 (define-public fontconfig
   (package
