@@ -1522,6 +1522,30 @@ multivariate data.  Lattice is sufficient for typical graphics needs, and is
 also flexible enough to handle most nonstandard requirements.")
     (license license:gpl2+)))
 
+(define-public r-latticeextra
+  (package
+    (name "r-latticeextra")
+    (version "0.6-28")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "latticeExtra" version))
+       (sha256
+        (base32
+         "1hkyqsa7klk5glj9y1hg3rxr5qilqw8h0017zc4c3nps7lr9a1kq"))))
+    (properties `((upstream-name . "latticeExtra")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)
+       ("r-rcolorbrewer" ,r-rcolorbrewer)))
+    (home-page "http://latticeextra.r-forge.r-project.org/")
+    (synopsis "Extra graphical utilities based on lattice")
+    (description
+     "Building on the infrastructure provided by the lattice package, this
+package provides several new high-level graphics functions and methods, as
+well as additional utilities such as panel and axis annotation functions.")
+    (license license:gpl2+)))
+
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
