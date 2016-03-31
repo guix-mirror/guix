@@ -2049,6 +2049,32 @@ singular and eigenvalue decompositions, as well as for principal component
 analysis of large sparse or dense matrices.")
     (license (list license:gpl2+ license:gpl3+))))
 
+(define-public r-pkgmaker
+  (package
+    (name "r-pkgmaker")
+    (version "0.22")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "pkgmaker" version))
+       (sha256
+        (base32
+         "0vrqnd3kg6liqvpbd969jjsdx0f0rvmmxgdbwwrp6xfmdg0pib8r"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-codetools" ,r-codetools)
+       ("r-digest" ,r-digest)
+       ("r-registry" ,r-registry)
+       ("r-stringr" ,r-stringr)
+       ("r-xtable" ,r-xtable)))
+    (home-page "https://renozao.github.io/pkgmaker")
+    (synopsis "Package development utilities")
+    (description
+     "This package provides some low-level utilities to use for R package
+development.  It currently provides managers for multiple package specific
+options and registries, vignette, unit test and bibtex related utilities.")
+    (license license:gpl2+)))
+
 (define-public r-r-methodss3
   (package
     (name "r-r-methodss3")
