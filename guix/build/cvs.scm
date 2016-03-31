@@ -52,7 +52,10 @@
   "Fetch REVISION from MODULE of CVS-ROOT-DIRECTORY into DIRECTORY.  REVISION
 must either be a date in ISO-8601 format (e.g. \"2012-12-21\") or a CVS tag.
 Return #t on success, #f otherwise."
-  (and (zero? (system* cvs-command "-z3"
+  ;; Use "-z0" because enabling compression leads to hangs during checkout on
+  ;; certain repositories, such as
+  ;; ":pserver:anonymous@cvs.savannah.gnu.org:/sources/gnustandards".
+  (and (zero? (system* cvs-command "-z0"
                        "-d" cvs-root-directory
                        "checkout"
                        (if (string-match "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" revision)
