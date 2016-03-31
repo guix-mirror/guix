@@ -60,7 +60,6 @@
  (guix ui)
  (guix scripts lint)
  (guix scripts package)
- (guix scripts pull)
  (gnu packages)
  (gnu system))
 
