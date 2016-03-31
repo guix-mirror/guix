@@ -33,10 +33,12 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages zip)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages zip))
 
 (define-public font-inconsolata
   (package
@@ -260,47 +262,44 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
 (define-public font-gnu-freefont-ttf
   (package
     (name "font-gnu-freefont-ttf")
-    (version "20100919")
+    (version "20120503")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnu/freefont/freefont-ttf-"
+             (uri (string-append "mirror://gnu/freefont/freefont-src-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1q3h5jp1mbdkinkwxy0lfd0a1q7azlbagraydlzaa2ng82836wg4"))))
-    (build-system trivial-build-system)
+               "0yk58blhcd4hm7nyincmqq4jrzjjk82wif2zmk1l3y2m4vif4qhd"))))
+    (build-system gnu-build-system)
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (guix build utils)
-                                (srfi srfi-26))
-
-                   (let ((tar      (string-append (assoc-ref %build-inputs
-                                                             "tar")
-                                                  "/bin/tar"))
-                         (PATH     (string-append (assoc-ref %build-inputs
-                                                             "gzip")
-                                                  "/bin"))
-                         (font-dir (string-append %output
-                                                  "/share/fonts/truetype"))
-                         (doc-dir  (string-append %output "/share/doc/"
-                                                  ,name "-" ,version)))
-                     (setenv "PATH" PATH)
-                     (system* tar "xvf" (assoc-ref %build-inputs "source"))
-
-                     (mkdir-p font-dir)
-                     (mkdir-p doc-dir)
-                     (chdir (string-append "freefont-" ,version))
-                     (for-each (lambda (file)
-                                 (let ((dir (if (string-suffix? "ttf" file)
-                                                font-dir
-                                                doc-dir)))
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure)
+                  (replace 'install
+                   (lambda _
+                     (let ((doc-dir  (string-append %output "/share/doc/"
+                                                    ,name "-" ,version))
+                           (font-dir (string-append %output
+                                                    "/share/fonts/truetype")))
+                       (mkdir-p doc-dir)
+                       (substitute* "Makefile"
+                         (("\\$\\(TMPDIR\\)") doc-dir)
+                         (("sfd/\\*.ttf") ""))
+                       (system* "make" "ttftar")
+                       (mkdir-p font-dir)
+                       (for-each (lambda (file)
                                    (copy-file file
-                                              (string-append dir "/" file))))
-                               (find-files "." ""))))))
-    (native-inputs `(("source" ,source)
-                     ("tar" ,tar)
-                     ("gzip" ,gzip)))
+                                              (string-append font-dir "/"
+                                                             (basename file))))
+                                 (filter
+                                   (lambda (file) (string-suffix? "ttf" file))
+                                   (find-files "." "")))))))
+       #:test-target "tests"))
+    ;; replace python 3 with python 2
+    ;; python 3 support commits aren't yet released in 20120503
+    ;; so freefont needs python 2 support in fontforge
+    (native-inputs `(("fontforge" ,(package (inherit fontforge)
+                                     (inputs `(("python-2" ,python-2)
+                                     ,@(package-inputs fontforge)))))))
     (home-page "http://www.gnu.org/software/freefont/")
     (synopsis "Unicode-encoded outline fonts")
     (description
