@@ -21,7 +21,9 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix profiles)
-  #:use-module (guix utils)
+  #:use-module ((guix utils) #:hide (package-name->name+version))
+  #:use-module ((guix build utils)
+                #:select (package-name->name+version))
   #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module (guix derivations)
