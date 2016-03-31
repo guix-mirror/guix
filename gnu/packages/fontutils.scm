@@ -103,6 +103,47 @@ scripts.")
     (license (list license:gpl2+ license:freetype)) ;choose one or the other
     (home-page "http://www.freetype.org/ttfautohint/")))
 
+(define-public woff-tools
+  (package
+    (name "woff-tools")
+    (version "2009.10.04")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Upstream source is unversioned, so use Debian's versioned tarball
+       (uri (string-append "mirror://debian/pool/main/w/woff-tools/"
+                           "woff-tools_" version ".orig.tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1i97gkqa6jfzlslsngqf556kx60knlgf7yc9pzsq2pizc6f0d4zl"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("zlib" ,zlib)))
+    (arguments
+     `(#:make-flags '("CC=gcc")
+       #:tests? #f                      ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configuration
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "sfnt2woff" bin)
+               (install-file "woff2sfnt" bin)))))))
+    (synopsis "Convert between OpenType and WOFF fonts")
+    (description
+     "This package provides two tools:
+@table @code
+@item sfnt2woff
+Converts OpenType fonts to WOFF fonts
+@item woff2sfnt
+Converts WOFF fonts to OpenType fonts
+@end table")
+    (license (list license:mpl1.1 license:gpl2+ license:lgpl2.1+))
+    (home-page "https://people.mozilla.com/~jkew/woff/")))
+
 (define-public fontconfig
   (package
    (name "fontconfig")
