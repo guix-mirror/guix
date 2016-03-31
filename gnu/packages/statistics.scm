@@ -2075,6 +2075,25 @@ development.  It currently provides managers for multiple package specific
 options and registries, vignette, unit test and bibtex related utilities.")
     (license license:gpl2+)))
 
+ (define-public r-registry
+   (package
+     (name "r-registry")
+     (version "0.3")
+     (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "registry" version))
+        (sha256
+         (base32
+          "0c7lscfxncwwd8zp46h2xfw9gw14dypqv6m2kx85xjhjh0xw99aq"))))
+     (build-system r-build-system)
+     (home-page "http://cran.r-project.org/web/packages/registry")
+     (synopsis "Infrastructure for R package registries")
+     (description
+      "This package provides a generic infrastructure for creating and using R
+package registries.")
+     (license license:gpl2+)))
+
 (define-public r-r-methodss3
   (package
     (name "r-r-methodss3")
