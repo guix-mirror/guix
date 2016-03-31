@@ -144,6 +144,43 @@ Converts WOFF fonts to OpenType fonts
     (license (list license:mpl1.1 license:gpl2+ license:lgpl2.1+))
     (home-page "https://people.mozilla.com/~jkew/woff/")))
 
+(define-public ttf2eot
+  (package
+    (name "ttf2eot")
+    (version "0.0.2-2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://storage.googleapis.com/"
+                           "google-code-archive-downloads/v2/"
+                           "code.google.com/ttf2eot/"
+                           "ttf2eot-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1f4dzzmhn0208dvbm3ia5ar6ls9apwc6ampy5blmfxkigi6z0g02"))
+       (patches (list (search-patch "ttf2eot-cstddef.patch")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)            ;no configuration
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (install-file "ttf2eot" bin)))))))
+    (synopsis "Convert from TrueType to Embeddable Open Type")
+    (description
+     "This package contains a commandline wrapper around OpenTypeUtilities.cpp
+from Chromium, used to make EOT (Embeddable Open Type) files from
+TTF (TrueType/OpenType Font) files.")
+    ;; While the README states "License: Derived from WebKit, so BSD/LGPL
+    ;; 2/LGPL 2.1", the single derived source file includes only BSD in its
+    ;; license header, and the wrapper source contains no license header.
+    (license license:bsd-2)
+    (home-page "https://code.google.com/archive/p/ttf2eot/")))
+
 (define-public fontconfig
   (package
    (name "fontconfig")

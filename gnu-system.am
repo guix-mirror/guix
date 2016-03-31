@@ -727,6 +727,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/tidy-CVE-2015-5522+5523.patch		\
   gnu/packages/patches/tinyxml-use-stl.patch			\
   gnu/packages/patches/tk-find-library.patch			\
+  gnu/packages/patches/ttf2eot-cstddef.patch			\
   gnu/packages/patches/ttfautohint-source-date-epoch.patch	\
   gnu/packages/patches/tophat-build-with-later-seqan.patch	\
   gnu/packages/patches/torsocks-dns-test.patch			\
