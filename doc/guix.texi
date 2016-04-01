@@ -118,6 +118,7 @@ Emacs Interface
 * Initial Setup: Emacs Initial Setup.	Preparing @file{~/.emacs}.
 * Package Management: Emacs Package Management.	Managing packages and generations.
 * Licenses: Emacs Licenses.		Interface for licenses of Guix packages.
+* Package Source Locations: Emacs Package Locations.	Interface for package location files.
 * Popup Interface: Emacs Popup Interface.	Magit-like interface for guix commands.
 * Prettify Mode: Emacs Prettify.	Abbreviating @file{/gnu/store/@dots{}} file names.
 * Build Log Mode: Emacs Build Log.	Highlighting Guix build logs.
