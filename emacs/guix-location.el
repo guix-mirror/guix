@@ -34,24 +34,31 @@ For the meaning of location, see `guix-find-location'."
   (guix-eval-read (guix-make-guile-expression
                    'package-location-string id-or-name)))
 
+;;;###autoload
 (defun guix-find-location (location &optional directory)
   "Go to LOCATION of a package.
 LOCATION is a string of the form:
 
-  \"PATH:LINE:COLUMN\"
+  \"FILE:LINE:COLUMN\"
 
-If PATH is relative, it is considered to be relative to
-DIRECTORY (`guix-directory' by default)."
-  (cl-multiple-value-bind (path line col)
+If FILE is relative, it is considered to be relative to
+DIRECTORY (`guix-directory' by default).
+
+Interactively, prompt for LOCATION.  With prefix argument, prompt
+for DIRECTORY as well."
+  (interactive
+   (list (guix-read-package-location)
+         (guix-read-directory)))
+  (cl-multiple-value-bind (file line column)
       (split-string location ":")
-    (let ((file (expand-file-name path (or directory guix-directory)))
-          (line (string-to-number line))
-          (col  (string-to-number col)))
-      (find-file file)
-      (goto-char (point-min))
-      (forward-line (- line 1))
-      (move-to-column col)
-      (recenter 1))))
+    (find-file (expand-file-name file (or directory guix-directory)))
+    (when (and line column)
+      (let ((line   (string-to-number line))
+            (column (string-to-number column)))
+        (goto-char (point-min))
+        (forward-line (- line 1))
+        (move-to-column column)
+        (recenter 1)))))
 
 ;;;###autoload
 (defun guix-edit (id-or-name &optional directory)
