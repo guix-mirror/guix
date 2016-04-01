@@ -121,7 +121,7 @@ a focus on simplicity and productivity.")
 
 (define-public ruby-2.1
   (package (inherit ruby)
-    (version "2.1.8")
+    (version "2.1.10")
     (source
      (origin
        (method url-fetch)
@@ -130,7 +130,7 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.bz2"))
        (sha256
         (base32
-         "11rkbfc90cg9p9mzg32475alf3ddcn9q8a3ar3fwm5xskic0n395"))))
+         "1wglbd599mlwxfcb2xgqcxi2shr363pjn5dpbv11m04si9bpaim7"))))
     (arguments
      `(#:test-target "test"
        #:parallel-tests? #f
