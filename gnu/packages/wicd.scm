@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,7 +49,8 @@
        (patches (map search-patch
                      '("wicd-bitrate-none-fix.patch"
                        "wicd-get-selected-profile-fix.patch"
-                       "wicd-urwid-1.3.patch")))))
+                       "wicd-urwid-1.3.patch"
+                       "wicd-wpa2-ttls.patch")))))
     (build-system python-build-system)
     (native-inputs `(("gettext" ,gnu-gettext)))
     (inputs `(("dbus-glib" ,dbus-glib)
