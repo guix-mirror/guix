@@ -1127,3 +1127,15 @@ Return #t if the shell command was executed successfully."
      (lambda ()
        "Return the list of file names of all package locations."
        (force files)))))
+
+(define %package-location-param-alist
+  `((id       . ,identity)
+    (location . ,identity)
+    (number-of-packages . ,(lambda (location)
+                             (length (packages-by-location-file location))))))
+
+(define package-location->sexp
+  (object-transformer %package-location-param-alist))
+
+(define (package-location-entries)
+  (map package-location->sexp (package-location-files)))

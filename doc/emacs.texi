@@ -556,6 +556,13 @@ get lost in these locations:
 
 @table @kbd
 
+@item M-x guix-locations
+Display a list of package locations.  You can press @key{RET} there to
+display packages placed in the current location in the same way as
+@kbd{M-x guix-packages-by-location} would do (@pxref{Emacs Commands}).
+Note that when the point is on a location button, @key{RET} will open
+this location file.
+
 @item M-x guix-find-location
 Open the given package definition source file (press @key{TAB} to choose
 a location from a completion list).
