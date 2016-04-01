@@ -48,53 +48,7 @@
           (when output (concat ":" output))))
 
 
-;;; Location of packages, profiles and manifests
-
-(defvar guix-directory nil
-  "Default Guix directory.
-If it is not set by a user, it is set after starting Guile REPL.
-This directory is used to define location of the packages.")
-
-(defun guix-read-directory ()
-  "Return `guix-directory' or prompt for it.
-This function is intended for using in `interactive' forms."
-  (if current-prefix-arg
-      (read-directory-name "Directory with Guix modules: "
-                           guix-directory)
-    guix-directory))
-
-(defun guix-set-directory ()
-  "Set `guix-directory' if needed."
-  (or guix-directory
-      (setq guix-directory
-            (guix-eval-read "%guix-dir"))))
-
-(add-hook 'guix-after-start-repl-hook 'guix-set-directory)
-
-(defun guix-find-location (location &optional directory)
-  "Go to LOCATION of a package.
-LOCATION is a string of the form:
-
-  \"PATH:LINE:COLUMN\"
-
-If PATH is relative, it is considered to be relative to
-DIRECTORY (`guix-directory' by default)."
-  (cl-multiple-value-bind (path line col)
-      (split-string location ":")
-    (let ((file (expand-file-name path (or directory guix-directory)))
-          (line (string-to-number line))
-          (col  (string-to-number col)))
-      (find-file file)
-      (goto-char (point-min))
-      (forward-line (- line 1))
-      (move-to-column col)
-      (recenter 1))))
-
-(defun guix-package-location (id-or-name)
-  "Return location of a package with ID-OR-NAME.
-For the meaning of location, see `guix-find-location'."
-  (guix-eval-read (guix-make-guile-expression
-                   'package-location-string id-or-name)))
+;;; Location of profiles and manifests
 
 (defun guix-generation-file (profile generation)
   "Return the file name of a PROFILE's GENERATION."
@@ -119,20 +73,6 @@ are placed in 'profile' subdirectory."
 See `guix-packages-profile'."
   (expand-file-name "manifest"
                     (guix-packages-profile profile generation system?)))
-
-;;;###autoload
-(defun guix-edit (id-or-name &optional directory)
-  "Edit (go to location of) package with ID-OR-NAME.
-See `guix-find-location' for the meaning of package location and
-DIRECTORY.
-Interactively, with prefix argument, prompt for DIRECTORY."
-  (interactive
-   (list (guix-read-package-name)
-         (guix-read-directory)))
-  (let ((loc (guix-package-location id-or-name)))
-    (if loc
-        (guix-find-location loc directory)
-      (message "Couldn't find package location."))))
 
 
 ;;; Actions on packages and generations

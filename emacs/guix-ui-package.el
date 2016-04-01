@@ -38,6 +38,7 @@
 (require 'guix-hydra-build)
 (require 'guix-read)
 (require 'guix-license)
+(require 'guix-location)
 (require 'guix-profiles)
 
 (guix-ui-define-entry-type package)
