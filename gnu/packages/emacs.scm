@@ -378,7 +378,7 @@ on stdout instead of using a socket as the Emacsclient does.")
 (define-public magit
   (package
     (name "magit")
-    (version "2.5.0")
+    (version "2.6.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -386,7 +386,7 @@ on stdout instead of using a socket as the Emacsclient does.")
                    version "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0i6qpx5szzc4kyfcdhaic8gif0sqdqcya1niyj93lpvw66jcxsxa"))))
+               "04km5j6118yqz7h3dyfd4ijjd6w3pb76pjlaj25wh1bchf1yilir"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-no-x)))
