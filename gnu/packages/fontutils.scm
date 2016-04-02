@@ -46,23 +46,14 @@
 (define-public freetype
   (package
    (name "freetype")
-   (version "2.6")
+   (version "2.6.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://savannah/freetype/freetype-"
                                 version ".tar.bz2"))
             (sha256 (base32
-                     "0zilx15fwcpa8hmcxpc423jwb8ijw4qpq968kh18akvn4j0znsc4"))))
+                     "18k3b026762lmyrxfil5xv8qwnvj7hc12gz9bjqzbb12lmx707ip"))))
    (build-system gnu-build-system)
-   (arguments
-    `(#:phases
-       ;; This should not be necessary; reported upstream as
-       ;; https://savannah.nongnu.org/bugs/index.php?44261
-       (alist-cons-before
-        'configure 'set-paths
-        (lambda _
-          (setenv "CONFIG_SHELL" (which "bash")))
-        %standard-phases)))
    (synopsis "Font rendering library")
    (description
     "Freetype is a library that can be used by applications to access the
