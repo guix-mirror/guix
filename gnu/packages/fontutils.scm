@@ -54,6 +54,13 @@
             (sha256 (base32
                      "18k3b026762lmyrxfil5xv8qwnvj7hc12gz9bjqzbb12lmx707ip"))))
    (build-system gnu-build-system)
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (propagated-inputs
+    ;; These are all in the Requires.private field of freetype2.pc.
+    ;; XXX: add harfbuzz.
+    `(("libpng" ,libpng)
+      ("zlib" ,zlib)))
    (synopsis "Font rendering library")
    (description
     "Freetype is a library that can be used by applications to access the
