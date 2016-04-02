@@ -100,6 +100,35 @@ usual file attributes can be checked for inconsistencies.")
     (home-page "http://aide.sourceforge.net/")
     (license license:gpl2+)))
 
+(define-public progress
+  (package
+    (name "progress")
+    (version "0.13")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/Xfennec/"
+                          name "/archive/v" version ".tar.gz"))
+      (sha256
+       (base32 "133iar4vq5vlklydb4cyazjy6slmpbndrws474mg738bd8avc30n"))
+      (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (arguments
+     `(#:tests? #f ; There is no test suite.
+       #:make-flags (list "CC=gcc" "LDFLAGS+=-lncurses"
+                          (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; There's no configure phase.
+    (home-page "https://github.com/Xfennec/progress")
+    (synopsis "Program to view the progress of the coreutils commands")
+    (description "A program that looks for coreutils basic commands (cp, mv,
+dd, tar, gzip/gunzip, cat, etc.) currently running on your system and displays
+the percentage of copied data.  It can also show estimated time and throughput,
+and provides a \"top-like\" mode (monitoring).")
+    (license license:gpl3+)))
+
 (define-public dmd
   ;; Deprecated.  Kept around "just in case."
   (let ((base-version "0.2")
