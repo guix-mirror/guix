@@ -33,6 +33,8 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
@@ -52,6 +54,45 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages zip)
   #:use-module (srfi srfi-1))
+
+
+(define-public pspp
+  (package
+    (name "pspp")
+    (version "0.10.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/pspp/pspp-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0xw61kq0hxh7f6a4yjhnqbhc0fj9r3wb3qnpq05qhdp79n30ik24"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("cairo" ,cairo)
+       ("gettext" ,gnu-gettext)
+       ("gsl" ,gsl)
+       ("libxml2" ,libxml2)
+       ("pango" ,pango)
+       ("readline" ,readline)
+       ("gtk" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("glib" ,glib "bin")             ;for glib-genmarshal
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://www.gnu.org/software/pspp/")
+    (synopsis "Statistical analysis")
+    (description
+     "GNU PSPP is a statistical analysis program.  It can perform
+descriptive statistics, T-tests, linear regression and non-parametric tests.
+It features both a graphical interface as well as command-line input.  PSPP
+is designed to interoperate with Gnumeric, LibreOffice and OpenOffice.  Data
+can be imported from spreadsheets, text files and database sources and it can
+be output in text, PostScript, PDF or HTML.")
+    (license license:gpl3+)))
 
 (define-public r
   (package
