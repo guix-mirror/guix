@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,9 +20,11 @@
 (define-module (gnu packages gimp)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -157,3 +160,53 @@ retouching, composition and authoring.  It supports all common image formats
 as well as specialized ones.  It features a highly customizable interface
 that is extensible via a plugin system.")
     (license license:gpl3+))) ; some files are lgplv3
+
+(define-public gimp-fourier
+  (package
+    (name "gimp-fourier")
+    (version "0.4.3-2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://registry.gimp.org/files/fourier-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1rpacyad678lqgxa3hh2n0zpg4azs8dpa8q079bqsl12812k9184"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;no tests
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'set-prefix
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; gimptool-2.0 does not allow us to install to any target
+             ;; directory.
+             (let ((target (string-append (assoc-ref outputs "out")
+                                          "/lib/gimp/"
+                                          (car (string-split ,(package-version gimp) #\.))
+                                          ".0/plug-ins")))
+               (substitute* "Makefile"
+                 (("\\$\\(PLUGIN_INSTALL\\) fourier")
+                  (string-append "cp fourier " target)))
+               (mkdir-p target))
+             #t)))))
+    (inputs
+     `(("fftw" ,fftw)
+       ("gimp" ,gimp)
+       ;; needed by gimp-2.0.pc
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("cairo" ,cairo)
+       ("glib" ,glib)
+       ;; needed by gimpui-2.0.pc
+       ("gtk+" ,gtk+-2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://registry.gimp.org/node/19596")
+    (synopsis "GIMP plug-in to edit image in fourier space")
+    (description
+     "This package provides a simple plug-in to apply the fourier transform on
+an image, allowing you to work with the transformed image inside GIMP.  You
+can draw or apply filters in fourier space and get the modified image with an
+inverse fourier transform.")
+    (license license:gpl3+)))
