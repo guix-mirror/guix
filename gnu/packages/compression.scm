@@ -3,7 +3,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
@@ -33,6 +33,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
   #:use-module (gnu packages perl)
@@ -688,3 +689,45 @@ a collection of smaller blocks which makes random access to the original data
 possible and can compress in parallel.  This is especially useful for large
 tarballs.")
     (license license:bsd-2)))
+
+(define-public brotli
+  (let ((commit "e992cce7a174d6e2b3486616499d26bb0bad6448")
+        (revision "1"))
+    (package
+      (name "brotli")
+      (version (string-append "0.1-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/bagder/libbrotli.git")
+                      (commit commit)
+                      (recursive? #t)))
+                (file-name (string-append name "-" version ".tar.xz"))
+                (sha256
+                 (base32
+                  "1qxxsasvwbbbh6dl3138y9h3fg0q2v7xdk5jjc690bdg7g1wrj6n"))
+                (modules '((guix build utils)))
+                (snippet
+                 ;; This is a recursive submodule that is unnecessary for this
+                 ;; package, so delete it.
+                 '(delete-file-recursively "brotli/terryfy"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)))
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'autogen
+                      (lambda _
+                        (mkdir "m4")
+                        (zero? (system* "autoreconf" "-vfi")))))))
+      (home-page "https://github.com/bagder/libbrotli/")
+      (synopsis "Implementation of the Brotli compression algorithm")
+      (description
+       "Brotli is a general-purpose lossless compression algorithm.  It is
+similar in speed to deflate but offers denser compression.  This package
+provides encoder and a decoder libraries: libbrotlienc and libbrotlidec,
+respectively, based on the reference implementation from Google.")
+      (license license:expat))))
