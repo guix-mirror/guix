@@ -105,10 +105,11 @@ If `all', update all Guix buffers (not recommended)."
   :group 'guix-ui)
 
 (defcustom guix-ui-buffer-name-function
-  #'guix-ui-buffer-name-default
+  #'guix-ui-buffer-name-full
   "Function used to define a name of a Guix buffer.
 The function is called with 2 arguments: BASE-NAME and PROFILE."
-  :type '(choice (function-item guix-ui-buffer-name-default)
+  :type '(choice (function-item guix-ui-buffer-name-full)
+                 (function-item guix-ui-buffer-name-short)
                  (function-item guix-ui-buffer-name-simple)
                  (function :tag "Other function"))
   :group 'guix-ui)
@@ -117,10 +118,14 @@ The function is called with 2 arguments: BASE-NAME and PROFILE."
   "Return BASE-NAME."
   base-name)
 
-(defun guix-ui-buffer-name-default (base-name profile)
+(defun guix-ui-buffer-name-short (base-name profile)
   "Return buffer name by appending BASE-NAME and PROFILE's base file name."
   (guix-compose-buffer-name base-name
                             (file-name-base (directory-file-name profile))))
+
+(defun guix-ui-buffer-name-full (base-name profile)
+  "Return buffer name by appending BASE-NAME and PROFILE's full name."
+  (guix-compose-buffer-name base-name profile))
 
 (defun guix-ui-buffer-name (base-name profile)
   "Return Guix buffer name based on BASE-NAME and profile.
