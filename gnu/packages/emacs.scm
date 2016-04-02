@@ -1534,3 +1534,28 @@ browsing the index of RFC documents and fetching them from remote servers or
 local directories.")
     (license license:gpl3+)))
 
+(define-public emacs-ffap-rfc-space
+  (package
+    (name "emacs-ffap-rfc-space")
+    (version "12")
+    (home-page "http://user42.tuxfamily.org/ffap-rfc-space/index.html")
+    (source (origin
+              (method uncompressed-file-fetch)
+              (uri "http://download.tuxfamily.org/user42/ffap-rfc-space.el")
+              (sha256
+               (base32
+                "1iv61dv57a73mdps7rn6zmgz7nqh14v0ninidyrasy45b1nv6gck"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("emacs" ,emacs-no-x)))
+    (synopsis "Make ffap recognize an RFC with a space before its number")
+    (description "The Internet Engineering Task Force (IETF) and the
+Internet Society (ISOC) publish various Internet-related protocols and
+specifications as \"Request for Comments\" (RFC) documents.  The
+built-in Emacs module \"ffap\" (Find File at Point) has the ability to
+recognize names at point which look like \"RFC1234\" and \"RFC-1234\"
+and load the appropriate RFC from a remote server.  However, it fails
+to recognize a name like \"RFC 1234\".  This package enhances ffap so
+that it correctly finds RFCs even when a space appears before the
+number.")
+    (license license:gpl3+)))
