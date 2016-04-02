@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -131,6 +131,16 @@ typically returned by 'node-edges' or 'node-back-edges'."
   (node     graph-backend-node)
   (edge     graph-backend-edge))
 
+(define %colors
+  ;; See colortbl.h in Graphviz.
+  #("red" "magenta" "blue" "cyan3" "darkseagreen"
+    "peachpuff4" "darkviolet" "dimgrey" "darkgoldenrod"))
+
+(define (pop-color hint)
+  "Return a Graphviz color based on HINT, an arbitrary object."
+  (let ((index (hash hint (vector-length %colors))))
+    (vector-ref %colors index)))
+
 (define (emit-prologue name port)
   (format port "digraph \"Guix ~a\" {\n"
           name))
@@ -140,8 +150,8 @@ typically returned by 'node-edges' or 'node-back-edges'."
   (format port "  \"~a\" [label = \"~a\", shape = box, fontname = Helvetica];~%"
           id label))
 (define (emit-edge id1 id2 port)
-  (format port "  \"~a\" -> \"~a\" [color = red];~%"
-          id1 id2))
+  (format port "  \"~a\" -> \"~a\" [color = ~a];~%"
+          id1 id2 (pop-color id1)))
 
 (define %graphviz-backend
   (graph-backend emit-prologue emit-epilogue
