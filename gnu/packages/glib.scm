@@ -138,8 +138,7 @@ shared NFS home directories.")
             (sha256
              (base32
               "1yzxr1ip3l0m9ydk5nq32piq70c9f17p5f0jyvlsghzbaawh67ss"))
-            (patches (search-patches "glib-tests-homedir.patch"
-                                     "glib-tests-desktop.patch"
+            (patches (search-patches "glib-tests-desktop.patch"
                                      "glib-tests-prlimit.patch"
                                      "glib-tests-timer.patch"
                                      "glib-tests-gapplication.patch"))))
@@ -170,6 +169,7 @@ shared NFS home directories.")
                                    "/share/zoneinfo"))
 
             ;; Some tests want write access there.
+            (setenv "HOME" (getcwd))
             (setenv "XDG_CACHE_HOME" (getcwd))
 
             (substitute* '("glib/gspawn.c"
@@ -178,6 +178,9 @@ shared NFS home directories.")
               (("/bin/sh")
                (string-append (assoc-ref inputs "bash") "/bin/sh")))
 
+            ;; Disable a test that requires /etc/machine-id.
+            (substitute* "gio/tests/gdbus-peer.c"
+              (("g_test_add_func.*/gdbus/codegen-peer-to-peer.*") ""))
             ;; Disable a test that requires dbus.
             (substitute* "gio/tests/gdbus-serialization.c"
               (("g_test_add_func \

@@ -486,7 +486,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/ghostscript-runpath.patch		\
   gnu/packages/patches/glib-networking-ssl-cert-file.patch	\
   gnu/packages/patches/glib-tests-desktop.patch			\
-  gnu/packages/patches/glib-tests-homedir.patch			\
   gnu/packages/patches/glib-tests-prlimit.patch			\
   gnu/packages/patches/glib-tests-timer.patch			\
   gnu/packages/patches/glib-tests-gapplication.patch		\
