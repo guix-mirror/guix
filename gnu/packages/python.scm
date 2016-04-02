@@ -978,20 +978,14 @@ datetime module, available in Python 2.3+.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "0.16.2")
+    (version "0.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "10agmrkps8bi5948vwpipfxds5kj1d076m9i0nhaxwqiw7gm6670"))))
+        (base32 "050qw0ap5bhyv5flp78x3lcq1dlminl3xaj6kbrm0jqmx0672xf9"))))
     (build-system python-build-system)
-    (arguments
-     `(;; Three tests fail:
-       ;; - test_read_google
-       ;; - test_read_yahoo
-       ;; - test_month_range_union_tz_dateutil
-       #:tests? #f))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-pytz" ,python-pytz)
