@@ -1,6 +1,6 @@
 ;;; guix-utils.el --- General utility functions  -*- lexical-binding: t -*-
 
-;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -222,6 +222,32 @@ If NO-MESSAGE? is non-nil, do not display a message about it."
   "Put 'guix ARGS ...' string into `kill-ring'.
 See also `guix-copy-as-kill'."
   (guix-copy-as-kill (guix-command-string args) no-message?))
+
+(defun guix-compose-buffer-name (base-name postfix)
+  "Return buffer name by appending BASE-NAME and POSTFIX.
+
+In a simple case the result is:
+
+  BASE-NAME: POSTFIX
+
+If BASE-NAME is wrapped by '*', then the result is:
+
+  *BASE-NAME: POSTFIX*"
+  (let ((re (rx string-start
+                (group (? "*"))
+                (group (*? any))
+                (group (? "*"))
+                string-end)))
+    (or (string-match re base-name)
+        (error "Unexpected error in defining buffer name"))
+    (let ((first*    (match-string 1 base-name))
+          (name-body (match-string 2 base-name))
+          (last*     (match-string 3 base-name)))
+      ;; Handle the case when buffer name is wrapped by '*'.
+      (if (and (string= "*" first*)
+               (string= "*" last*))
+          (concat "*" name-body ": " postfix "*")
+        (concat base-name ": " postfix)))))
 
 (defun guix-completing-read (prompt table &optional predicate
                              require-match initial-input

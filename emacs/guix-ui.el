@@ -1,6 +1,6 @@
 ;;; guix-ui.el --- Common code for Guix package management interface  -*- lexical-binding: t -*-
 
-;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -117,26 +117,10 @@ The function is called with 2 arguments: BASE-NAME and PROFILE."
   "Return BASE-NAME."
   base-name)
 
-;; TODO separate '*...*' logic from the real profile appending.  Also add
-;; another function to return '*Guix ...: /full/path/to/profile*' name.
 (defun guix-ui-buffer-name-default (base-name profile)
   "Return buffer name by appending BASE-NAME and PROFILE's base file name."
-  (let ((profile-name (file-name-base (directory-file-name profile)))
-        (re (rx string-start
-                (group (? "*"))
-                (group (*? any))
-                (group (? "*"))
-                string-end)))
-    (or (string-match re base-name)
-        (error "Unexpected error in defining guix buffer name"))
-    (let ((first*    (match-string 1 base-name))
-          (name-body (match-string 2 base-name))
-          (last*     (match-string 3 base-name)))
-      ;; Handle the case when buffer name is wrapped by '*'.
-      (if (and (string= "*" first*)
-               (string= "*" last*))
-          (concat "*" name-body ": " profile-name "*")
-        (concat base-name ": " profile-name)))))
+  (guix-compose-buffer-name base-name
+                            (file-name-base (directory-file-name profile))))
 
 (defun guix-ui-buffer-name (base-name profile)
   "Return Guix buffer name based on BASE-NAME and profile.
