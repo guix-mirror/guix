@@ -160,29 +160,29 @@ shared NFS home directories.")
       ("perl" ,perl)                              ; needed by GIO tests
       ("bash" ,bash)))
    (arguments
-    '(#:phases (alist-cons-before
-                'build 'pre-build
-                (lambda* (#:key inputs outputs #:allow-other-keys)
-                  ;; For tests/gdatetime.c.
-                  (setenv "TZDIR"
-                          (string-append (assoc-ref inputs "tzdata")
-                                         "/share/zoneinfo"))
+    '(#:phases
+      (modify-phases %standard-phases
+        (add-before 'build 'pre-build
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            ;; For tests/gdatetime.c.
+            (setenv "TZDIR"
+                    (string-append (assoc-ref inputs "tzdata")
+                                   "/share/zoneinfo"))
 
-                  ;; Some tests want write access there.
-                  (setenv "XDG_CACHE_HOME" (getcwd))
+            ;; Some tests want write access there.
+            (setenv "XDG_CACHE_HOME" (getcwd))
 
-                  (substitute* '("glib/gspawn.c"
-                                 "glib/tests/utils.c"
-                                 "tests/spawn-test.c")
-                    (("/bin/sh")
-                     (string-append (assoc-ref inputs "bash") "/bin/sh")))
+            (substitute* '("glib/gspawn.c"
+                           "glib/tests/utils.c"
+                           "tests/spawn-test.c")
+              (("/bin/sh")
+               (string-append (assoc-ref inputs "bash") "/bin/sh")))
 
-                  ;; Disable a test that requires dbus.
-                  (substitute* "gio/tests/gdbus-serialization.c"
-                    (("g_test_add_func \
+            ;; Disable a test that requires dbus.
+            (substitute* "gio/tests/gdbus-serialization.c"
+              (("g_test_add_func \
 \\(\"/gdbus/message-serialize/double-array\", test_double_array\\);" all)
-                     (string-append "/* " all " */"))))
-                %standard-phases)
+               (string-append "/* " all " */"))))))
 
       ;; Note: `--docdir' and `--htmldir' are not honored, so work around it.
       #:configure-flags (list (string-append "--with-html-dir="
