@@ -223,7 +223,7 @@ ENTRIES is a list of package entries to get info about packages."
             ignore
             (outputs simple guix-package-info-insert-outputs)
             (source simple guix-package-info-insert-source)
-            (location format (format guix-package-location))
+            (location simple guix-package-info-insert-location)
             (home-url format (format guix-url))
             (license format (format guix-package-license))
             (systems format guix-package-info-insert-systems)
@@ -382,6 +382,22 @@ formatted with this string, an action button is inserted.")
            (guix-entry-value entry 'version))
    'guix-package-heading
    'spec (guix-package-entry->name-specification entry)))
+
+(defun guix-package-info-insert-location (location &optional _)
+  "Insert package LOCATION at point."
+  (if (null location)
+      (guix-format-insert nil)
+    (let ((location-file (car (split-string location ":"))))
+      (guix-info-insert-value-indent location 'guix-package-location)
+      (guix-info-insert-indent)
+      (guix-info-insert-action-button
+       "Packages"
+       (lambda (btn)
+         (guix-package-get-display (guix-ui-current-profile)
+                                   'location
+                                   (button-get btn 'location)))
+       (format "Display packages from location '%s'" location-file)
+       'location location-file))))
 
 (defun guix-package-info-insert-systems (systems entry)
   "Insert supported package SYSTEMS at point."
@@ -798,7 +814,7 @@ for all ARGS."
             (source simple guix-package-info-insert-source)
             (path simple (indent guix-file))
             (dependencies simple (indent guix-file))
-            (location format (format guix-package-location))
+            (location simple guix-package-info-insert-location)
             (home-url format (format guix-url))
             (license format (format guix-package-license))
             (systems format guix-package-info-insert-systems)
