@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
+;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1506,3 +1507,30 @@ without modifier keys.  It's similar to Vim's separation of commands and
 insertion mode.  When enabled all keys are implicitly prefixed with
 @samp{C-} (among other helpful shortcuts).")
       (license license:gpl3+))))
+
+(define-public emacs-rfcview
+  (package
+    (name "emacs-rfcview")
+    (version "0.13")
+    (home-page "http://www.loveshack.ukfsn.org/emacs")
+    (source (origin
+              (method uncompressed-file-fetch)
+              (uri "http://www.loveshack.ukfsn.org/emacs/rfcview.el")
+              (sha256
+               (base32
+                "0ympj5rxig383zl2jf0pzdsa80nnq0dpvjiriq0ivfi98fj7kxbz"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("emacs" ,emacs-no-x)))
+    (synopsis "Prettify Request for Comments (RFC) documents")
+    (description "The Internet Engineering Task Force (IETF) and the Internet
+Society (ISOC) publish various Internet-related protocols and specifications
+as \"Request for Comments\" (RFC) documents and Internet Standard (STD)
+documents.  RFCs and STDs are published in a simple text form.  This package
+provides an Emacs major mode, rfcview-mode, which makes it more pleasant to
+read these documents in Emacs.  It prettifies the text and adds
+hyperlinks/menus for easier navigation.  It also provides functions for
+browsing the index of RFC documents and fetching them from remote servers or
+local directories.")
+    (license license:gpl3+)))
+
