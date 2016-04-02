@@ -623,7 +623,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/mars-sfml-2.3.patch			\
   gnu/packages/patches/matplotlib-setupext-tk.patch		\
   gnu/packages/patches/maxima-defsystem-mkdir.patch		\
-  gnu/packages/patches/mc-fix-ncurses-build.patch		\
   gnu/packages/patches/mcron-install.patch			\
   gnu/packages/patches/mdadm-gcc-4.9-fix.patch			\
   gnu/packages/patches/mhash-keygen-test-segfault.patch		\

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +34,7 @@
 (define-public mc
   (package
     (name "mc")
-    (version "4.8.11")
+    (version "4.8.16")
     (source
      (origin
       (method url-fetch)
@@ -41,8 +42,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "0flrw5pq2mg2d39bh6dllndhpcfppjza6g70p4ry2wcx9y2flxqq"))
-      (patches (list (search-patch "mc-fix-ncurses-build.patch")))))
+        "083h5gwc0nny9b557way5dsmj71g2bzkiai4bn30y5nkjwqbxg5v"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("perl" ,perl)))
@@ -63,4 +63,4 @@ copying and moving, Midnight Commander also supports viewing the contents of
 RPM package files and other archives and managing files on other computers via
 FTP or FISH.  It also includes a powerful text editor for opening text
 files.")
-    (license gpl2)))
+    (license gpl3+)))
