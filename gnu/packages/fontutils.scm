@@ -39,6 +39,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix svn-download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
@@ -180,6 +181,46 @@ TTF (TrueType/OpenType Font) files.")
     ;; license header, and the wrapper source contains no license header.
     (license license:bsd-2)
     (home-page "https://code.google.com/archive/p/ttf2eot/")))
+
+(define-public woff2
+  (let ((commit "4e698b8c6c5e070d53c340db9ddf160e21070ede")
+        (revision "1"))
+    (package
+      (name "woff2")
+      (version (string-append "20160306-" revision "."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/google/woff2.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version ".tar.xz"))
+                (sha256
+                 (base32
+                  "0wka0yhf0cjmd4rv2jckxpyv6lb5ckj4nj0k1ajq5hrjy7f30lcp"))
+                (patches (list (search-patch "woff2-libbrotli.patch")))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("pkg-config" ,pkg-config)))
+      (inputs
+       `(("brotli" ,brotli)))
+      (arguments
+       `(#:tests? #f                    ;no tests
+         #:phases (modify-phases %standard-phases
+                    (delete 'configure)
+                    (replace 'install
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        (let* ((out (assoc-ref outputs "out"))
+                               (bin (string-append out "/bin")))
+                          (install-file "woff2_compress" bin)
+                          (install-file "woff2_decompress" bin)
+                          #t))))))
+      (synopsis "Compress TrueType fonts to WOFF2")
+      (description
+       "This package provides utilities for compressing/decompressing TrueType
+fonts to/from the WOFF2 format.")
+      (license license:asl2.0)
+      (home-page "https://github.com/google/woff2"))))
 
 (define-public fontconfig
   (package
