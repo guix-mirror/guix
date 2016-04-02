@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -73,7 +73,12 @@
                      (mkdir-p (string-append gui "/bin"))
                      (rename-file (string-append out "/bin/transmission-gtk")
                                   (string-append gui
-                                                 "/bin/transmission-gtk"))))
+                                                 "/bin/transmission-gtk"))
+
+                     ;; Move the '.desktop' file as well.
+                     (mkdir (string-append gui "/share"))
+                     (rename-file (string-append out "/share/applications")
+                                  (string-append gui "/share/applications"))))
                  %standard-phases)))
     (inputs
      `(("inotify-tools" ,inotify-tools)
