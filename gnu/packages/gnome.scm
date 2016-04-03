@@ -16,6 +16,7 @@
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -682,7 +683,8 @@ database is translated at Transifex.")
        ("libpng" ,libpng)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
-        ("glib" ,glib "bin")))
+        ("glib" ,glib "bin")
+        ("gobject-introspection" ,gobject-introspection)))
     (home-page "https://developer-next.gnome.org/libnotify/")
     (synopsis
      "GNOME desktop notification library")
