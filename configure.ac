@@ -211,8 +211,9 @@ AC_CONFIG_FILES([Makefile
 		 guix/config.scm])
 
 AC_CONFIG_FILES([scripts/guix], [chmod +x scripts/guix])
-AC_CONFIG_FILES([pre-inst-env], [chmod +x pre-inst-env])
-AC_CONFIG_FILES([test-env],     [chmod +x test-env])
+AC_CONFIG_FILES([test-env:build-aux/test-env.in], [chmod +x test-env])
+AC_CONFIG_FILES([pre-inst-env:build-aux/pre-inst-env.in],
+  [chmod +x pre-inst-env])
 
 dnl Emacs interface.
 AC_PATH_PROG([DOT_USER_PROGRAM], [dot], [dot])
