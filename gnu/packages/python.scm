@@ -712,7 +712,7 @@ concepts.")
 (define-public python-lockfile
   (package
     (name "python-lockfile")
-    (version "0.9.1")
+    (version "0.12.2")
     (source
      (origin
        (method url-fetch)
@@ -720,9 +720,11 @@ concepts.")
                            "lockfile-" version ".tar.gz"))
        (sha256
         (base32
-         "0iwif7i84gwpvrnpv4brshdk8j6l77smvknm8k3bg77mj6f5ini3"))))
+         "16gpx5hm73ah5n1079ng0vy381hl802v606npkx4x8nb0gg05vba"))))
     (build-system python-build-system)
     (arguments '(#:test-target "check"))
+    (native-inputs
+     `(("python-pbr" ,python-pbr)))
     (home-page "http://code.google.com/p/pylockfile/")
     (synopsis "Platform-independent file locking module")
     (description
@@ -734,7 +736,9 @@ API for locking files.")
 (define-public python2-lockfile
   (let ((base (package-with-python2 (strip-python2-variant python-lockfile))))
     (package
-      (inherit base))))
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
 
 (define-public python-mock
   (package
