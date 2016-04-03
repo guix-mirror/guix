@@ -35,6 +35,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -129,7 +130,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.46.1")
+   (version "2.48.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -137,12 +138,14 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1yzxr1ip3l0m9ydk5nq32piq70c9f17p5f0jyvlsghzbaawh67ss"))
+              "0d3w2hblrw7vvpx60l1kbvb830ygn3v8zhwdz65cc5593j9ycjvl"))
             (patches (search-patches "glib-tests-timer.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
               "bin"           ; glib-mkenums, gtester, etc.; depends on Python
               "doc"))         ; 20 MiB of GTK-Doc reference
+   (propagated-inputs
+    `(("pcre" ,pcre))) ; in the Requires.private field of glib-2.0.pc
    (inputs
     `(("coreutils" ,coreutils)
       ("libffi" ,libffi)
