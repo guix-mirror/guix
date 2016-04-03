@@ -2509,12 +2509,26 @@ and copy/paste text in the console and in xterm.")
                (base32
                 "1z5882zx9jx02vyg067siws0irsl8pg37myx17hr4imn9ypf6r4r"))))
     (build-system gnu-build-system)
+    (outputs '("out"
+               "static"))      ; static versions of binaries in "out" (~16MiB!)
     (arguments
-     '(#:test-target "test"
+     '(#:phases (modify-phases %standard-phases
+                 (add-after 'build 'build-static
+                   (lambda _ (zero? (system* "make" "static"))))
+                 (add-after 'install 'install-static
+                   (let ((staticbin (string-append (assoc-ref %outputs "static")
+                                                  "/bin")))
+                     (lambda _
+                       (zero? (system* "make"
+                                       (string-append "bindir=" staticbin)
+                                       "install-static"))))))
+       #:test-target "test"
        #:parallel-tests? #f)) ; tests fail when run in parallel
     (inputs `(("e2fsprogs" ,e2fsprogs)
               ("libblkid" ,util-linux)
+              ("libblkid:static" ,util-linux "static")
               ("libuuid" ,util-linux)
+              ("libuuid:static" ,util-linux "static")
               ("zlib" ,zlib)
               ("lzo" ,lzo)))
     (native-inputs `(("pkg-config" ,pkg-config)
