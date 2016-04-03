@@ -3,6 +3,7 @@
 # Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+# Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 #
 # This file is part of GNU Guix.
 #
@@ -35,6 +36,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/algebra.scm			\
   gnu/packages/aidc.scm				\
   gnu/packages/animation.scm			\
+  gnu/packages/anthy.scm			\
   gnu/packages/apl.scm				\
   gnu/packages/apr.scm				\
   gnu/packages/asciidoc.scm			\
