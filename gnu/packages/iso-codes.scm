@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,21 +29,21 @@
 (define-public iso-codes
   (package
     (name "iso-codes")
-    (version "3.49")
+    (version "3.67")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://pkg-isocodes.alioth.debian.org/downloads/iso-codes-"
+                   "https://pkg-isocodes.alioth.debian.org/downloads/iso-codes-"
                    version ".tar.xz"))
              (sha256
               (base32
-               "1ryk5i467p7xxrbrqynb35ci046yj9k9b4d3hfxzass962lz9q04"))))
+               "037hmfs5pk3g36psm378vap1mbrkk86vv8wsdnv65mzbnph52gv0"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gnu-gettext)
        ("perl" ,perl)
-       ("python-2" ,python-2)))
-    (home-page "http://pkg-isocodes.alioth.debian.org/")
+       ("python" ,python-wrapper)))
+    (home-page "https://pkg-isocodes.alioth.debian.org/")
     (synopsis "Various ISO standards")
     (description
      "This package provides lists of various ISO standards (e.g. country,
