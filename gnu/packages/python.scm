@@ -1867,6 +1867,27 @@ and sensible default behaviors into your setuptools run.")
 (define-public python2-pbr-0.11
   (package-with-python2 python-pbr-0.11))
 
+(define-public python-pbr
+  (package (inherit python-pbr-0.11)
+    (version "1.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pbr" version))
+       (sha256
+        (base32
+         "0jcny36cf3s8ar5r4a575npz080hndnrfs4np1fqhv0ym4k7c4p2"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-fixtures" ,python-fixtures)
+       ("python-pip" ,python-pip)))
+    (properties `((python2-variant . ,(delay python2-pbr))))))
+
+(define-public python2-pbr
+  (package (inherit (package-with-python2
+                 (strip-python2-variant python-pbr)))))
+
 (define-public python-fixtures
   (package
     (name "python-fixtures")
