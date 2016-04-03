@@ -45,7 +45,7 @@
        (base32
         "02l4g79d81s07hzywcv1knwj5dyrwjiq2pgxaz7kidxi8m364wn2"))))
     (build-system gnu-build-system)
-    (home-page "http://check.sourceforge.net/")
+    (home-page "https://libcheck.github.io/check/")
     (synopsis "Unit test framework for C")
     (description
      "Check is a unit testing framework for C.  It features a simple
