@@ -138,10 +138,7 @@ shared NFS home directories.")
             (sha256
              (base32
               "1yzxr1ip3l0m9ydk5nq32piq70c9f17p5f0jyvlsghzbaawh67ss"))
-            (patches (search-patches "glib-tests-desktop.patch"
-                                     "glib-tests-prlimit.patch"
-                                     "glib-tests-timer.patch"
-                                     "glib-tests-gapplication.patch"))))
+            (patches (search-patches "glib-tests-timer.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
               "bin"           ; glib-mkenums, gtester, etc.; depends on Python
@@ -176,16 +173,66 @@ shared NFS home directories.")
                            "glib/tests/utils.c"
                            "tests/spawn-test.c")
               (("/bin/sh")
-               (string-append (assoc-ref inputs "bash") "/bin/sh")))
+               (string-append (assoc-ref inputs "bash") "/bin/sh")))))
+        (add-before 'check 'disable-failing-tests
+          (lambda _
+            (let ((disable
+                   (lambda (test-file test-paths)
+                     (define pattern+procs
+                       (map (lambda (test-path)
+                              (cons
+                               ;; XXX: only works for single line statements.
+                               (format #f "g_test_add_func.*\"~a\".*" test-path)
+                               (const "")))
+                            test-paths))
+                     (substitute test-file pattern+procs)))
+                  (failing-tests
+                   '(("glib/tests/thread.c"
+                      (;; prlimit(2) returns ENOSYS on Linux 2.6.32-5-xen-amd64
+                       ;; as found on hydra.gnu.org, and strace(1) doesn't
+                       ;; recognize it.
+                       "/thread/thread4"))
 
-            ;; Disable a test that requires /etc/machine-id.
-            (substitute* "gio/tests/gdbus-peer.c"
-              (("g_test_add_func.*/gdbus/codegen-peer-to-peer.*") ""))
-            ;; Disable a test that requires dbus.
-            (substitute* "gio/tests/gdbus-serialization.c"
-              (("g_test_add_func \
-\\(\"/gdbus/message-serialize/double-array\", test_double_array\\);" all)
-               (string-append "/* " all " */"))))))
+                     ("glib/tests/timer.c"
+                      (;; fails if compiler optimizations are enabled, which they
+                       ;; are by default.
+                       "/timer/stop"))
+
+                     ("gio/tests/gapplication.c"
+                      (;; XXX: proven to be unreliable.  See:
+                       ;;  <https://bugs.debian.org/756273>
+                       ;;  <http://bugs.gnu.org/18445>
+                       "/gapplication/quit"))
+
+                     ("gio/tests/contenttype.c"
+                      (;; XXX: requires shared-mime-info.
+                       "/contenttype/guess"
+                       "/contenttype/subtype"
+                       "/contenttype/list"
+                       "/contenttype/icon"
+                       "/contenttype/symbolic-icon"
+                       "/contenttype/tree"))
+
+                     ("gio/tests/appinfo.c"
+                      (;; XXX: requires update-desktop-database.
+                       "/appinfo/associations"))
+
+                     ("gio/tests/desktop-app-info.c"
+                      (;; XXX: requires update-desktop-database.
+                       "/desktop-app-info/delete"
+                       "/desktop-app-info/default"
+                       "/desktop-app-info/fallback"
+                       "/desktop-app-info/lastused"
+                       "/desktop-app-info/search"))
+
+                     ("gio/tests/gdbus-peer.c"
+                      (;; Requires /etc/machine-id.
+                       "/gdbus/codegen-peer-to-peer"))
+
+                     ("gio/tests/gdbus-unix-addresses.c"
+                      (;; Requires /etc/machine-id.
+                       "/gdbus/x11-autolaunch")))))
+              (and-map (lambda (x) (apply disable x)) failing-tests)))))
 
       ;; Note: `--docdir' and `--htmldir' are not honored, so work around it.
       #:configure-flags (list (string-append "--with-html-dir="

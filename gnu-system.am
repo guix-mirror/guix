@@ -485,10 +485,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/ghostscript-CVE-2015-3228.patch		\
   gnu/packages/patches/ghostscript-runpath.patch		\
   gnu/packages/patches/glib-networking-ssl-cert-file.patch	\
-  gnu/packages/patches/glib-tests-desktop.patch			\
-  gnu/packages/patches/glib-tests-prlimit.patch			\
   gnu/packages/patches/glib-tests-timer.patch			\
-  gnu/packages/patches/glib-tests-gapplication.patch		\
   gnu/packages/patches/glibc-CVE-2015-7547.patch		\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-hurd-extern-inline.patch		\
