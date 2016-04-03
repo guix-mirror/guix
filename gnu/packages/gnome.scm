@@ -5024,3 +5024,46 @@ specified duration and save it as a GIF encoded animated image file.")
      "Libzapojit is a GLib-based library for accessing online service APIs of
 Microsoft SkyDrive and Hotmail, using their REST protocols.")
     (license license:lgpl2.1+)))
+
+(define-public gnome-tweak-tool
+  (package
+    (name "gnome-tweak-tool")
+    (version "3.20.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/gnome-tweak-tool/"
+                                  (version-major+minor version) "/"
+                                  "gnome-tweak-tool-" version ".tar.xz"))
+              (patches (list
+                        (search-patch "gnome-tweak-tool-search-paths.patch")))
+              (sha256
+               (base32
+                "1fj6wjvnjygzm9br3sw9gya6d18yly1rm69yaiar9spfbkvv4wai"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--localstatedir=/tmp"
+                           "--sysconfdir=/tmp")
+       #:imported-modules ((guix build python-build-system)
+                           ,@%gnu-build-system-modules)
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap
+                    (@@ (guix build python-build-system) wrap)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python" ,python-2)
+       ("python2-pygobject" ,python2-pygobject)))
+    (propagated-inputs
+     `(("libnotify" ,libnotify)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)))
+    (synopsis "Customize advanced GNOME 3 options")
+    (home-page "https://wiki.gnome.org/action/show/Apps/GnomeTweakTool")
+    (description
+     "GNOME Tweak Tool allows adjusting advanced configuration settings in
+GNOME 3.  This includes things like the fonts used in user interface elements,
+alternative user interface themes, changes in window management behavior,
+GNOME Shell appearance and extension, etc.")
+    (license license:gpl3+)))
