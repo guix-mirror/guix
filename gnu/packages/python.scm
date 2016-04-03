@@ -69,6 +69,7 @@
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages base)
   #:use-module (gnu packages xml)
@@ -1875,25 +1876,46 @@ and sensible default behaviors into your setuptools run.")
   (package-with-python2 python-pbr-0.11))
 
 (define-public python-pbr
-  (package (inherit python-pbr-0.11)
+  (package
+    (name "python-pbr")
     (version "1.8.1")
     (source
-     (origin
-       (method url-fetch)
-       (uri (pypi-uri "pbr" version))
-       (sha256
-        (base32
-         "0jcny36cf3s8ar5r4a575npz080hndnrfs4np1fqhv0ym4k7c4p2"))))
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/p/pbr/pbr-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0jcny36cf3s8ar5r4a575npz080hndnrfs4np1fqhv0ym4k7c4p2"))))
     (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ;; Most tests seem to use the Internet.
+    (propagated-inputs
+      `(("python-testrepository" ,python-testrepository)
+        ("git" ,git))) ;; pbr actually uses the "git" binary.
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-fixtures" ,python-fixtures)
-       ("python-pip" ,python-pip)))
-    (properties `((python2-variant . ,(delay python2-pbr))))))
+      `(("python-fixtures" ,python-fixtures)
+        ("python-mimeparse" ,python-mimeparse)
+        ("python-mock" ,python-mock)
+        ("python-setuptools" ,python-setuptools)
+        ("python-six" ,python-six)
+        ("python-sphinx" ,python-sphinx)
+        ("python-testrepository" ,python-testrepository)
+        ("python-testresources" ,python-testresources)
+        ("python-testscenarios" ,python-testscenarios)
+        ("python-testtools" ,python-testtools)
+        ("python-virtualenv" ,python-virtualenv)))
+    (home-page "https://launchpad.net/pbr")
+    (synopsis "Change the default behavior of Python’s setuptools")
+    (description
+      "Python Build Reasonableness (PBR) is a library that injects some useful
+and sensible default behaviors into your setuptools run.")
+    (license asl2.0)))
 
 (define-public python2-pbr
-  (package (inherit (package-with-python2
-                 (strip-python2-variant python-pbr)))))
+  (package-with-python2 python-pbr))
 
 (define-public python-fixtures
   (package
