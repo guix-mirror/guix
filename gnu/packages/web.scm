@@ -9,6 +9,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -355,29 +356,19 @@ for efficient socket-like bidirectional reliable communication channels.")
 (define-public libpsl
   (package
     (name "libpsl")
-    (version "0.7.1")
+    (version "0.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rockdaboot/libpsl/"
-                                  "archive/libpsl-" version ".tar.gz"))
+                                  "releases/download/libpsl-" version
+                                  "/libpsl-" version ".tar.gz"))
               (sha256
                (base32
-                "1k0klj668c9v0r4993vfs3kq773mzdz61vsigqw6v1mjcwnf1si3"))))
+                "0afn2c4s2m65xifa5sfdll0s2gyqbh2q9k9nq4nsmx1b6c2i3i7x"))))
     (build-system gnu-build-system)
-    (inputs `(("icu4c" ,icu4c)))
-    ;; The release tarball lacks the generated files.
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("gettext"  ,gnu-gettext)
-                     ("which"    ,which)
-                     ("libtool"  ,libtool)
-                     ("pkg-config" ,pkg-config)))
-    (arguments
-     `(#:phases (alist-cons-after
-                 'unpack 'bootstrap
-                 (lambda _
-                   (zero? (system* "sh" "autogen.sh")))
-                 %standard-phases)))
+    (inputs
+     `(("icu4c" ,icu4c)
+       ("python-2" ,python-2)))
     (home-page "https://github.com/rockdaboot/libpsl")
     (synopsis "C library for the Publix Suffix List")
     (description
