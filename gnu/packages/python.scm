@@ -728,10 +728,13 @@ concepts.")
     (description
      "The lockfile package exports a LockFile class which provides a simple
 API for locking files.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-lockfile))))))
 
 (define-public python2-lockfile
-  (package-with-python2 python-lockfile))
+  (let ((base (package-with-python2 (strip-python2-variant python-lockfile))))
+    (package
+      (inherit base))))
 
 (define-public python-mock
   (package
