@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
@@ -32,6 +32,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
@@ -42,6 +43,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)               ;for libgudev
   #:use-module (gnu packages ncurses)
@@ -377,6 +379,38 @@ of the screen selected by mouse.")
     ;; X11 license.
     (license (license:x11-style "file://COPYING"
                                 "See 'COPYING' in the distribution."))))
+
+(define-public slop
+  (package
+    (name "slop")
+    (version "4.3.21")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/naelstrof/slop/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0z0p4a3p5mc6fjh5f8js9ppb0maxyvfxpiw2n6nqc5nim1kv6bim"))))
+    (build-system cmake-build-system)
+    (arguments '(#:tests? #f))  ; no "check" target
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxrandr" ,libxrandr)
+       ("libxext" ,libxext)
+       ("imlib2" ,imlib2)
+       ("glew" ,glew)
+       ("mesa" ,mesa)))
+    (home-page "https://github.com/naelstrof/slop")
+    (synopsis "Select a region and print its bounds to stdout")
+    (description
+     "slop (Select Operation) is a tool that queries for a selection from a
+user and prints the region to stdout.  It grabs the mouse and turns it into a
+crosshair, lets the user click and drag to make a selection (or click on a
+window) while drawing a pretty box around it, then finally prints the
+selection's dimensions to stdout.")
+    (license license:gpl3+)))
 
 (define-public unclutter
   (package
