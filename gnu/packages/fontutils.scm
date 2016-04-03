@@ -95,10 +95,10 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
                            (assoc-ref %build-inputs "gs-fonts")
                            "/share/fonts")
 
-            ;; register fonts from user profile
-            ;; TODO: Add /run/current-system/profile/share/fonts and remove
-            ;; the skeleton that works around it from 'default-skeletons'.
-            "--with-add-fonts=~/.guix-profile/share/fonts"
+            ;; Register fonts from user and system profiles.
+            (string-append "--with-add-fonts="
+                           "~/.guix-profile/share/fonts,"
+                           "/run/current-system/profile/share/fonts")
 
             ;; python is not actually needed
             "PYTHON=false")

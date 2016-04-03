@@ -131,12 +131,6 @@
 (define (default-skeletons)
   "Return the default skeleton files for /etc/skel.  These files are copied by
 'useradd' in the home directory of newly created user accounts."
-  (define fonts.conf-content
-    ;; SXML for ~/.config/fontconfig/fonts.conf.  This works around the fact
-    ;; that Fontconfig currently does not such this directory by default,
-    ;; thereby ignoring fonts installed system-wide (FIXME).
-    `(fontconfig (dir "/run/current-system/profile/share/fonts")))
-
   (define copy-guile-wm
     #~(begin
         (use-modules (guix build utils))
@@ -180,22 +174,6 @@ source /etc/profile\n"))
         (xdefaults (plain-file "Xdefaults" "\
 XTerm*utf8: always
 XTerm*metaSendsEscape: true\n"))
-        (fonts.conf (computed-file
-                     "fonts.conf"
-                     #~(begin
-                         (use-modules (guix build utils)
-                                      (sxml simple))
-
-                         (define dir
-                           (string-append #$output
-                                          "/fontconfig"))
-
-                         (mkdir-p dir)
-                         (call-with-output-file (string-append dir
-                                                             "/fonts.conf")
-                           (lambda (port)
-                             (sxml->xml '#$fonts.conf-content port))))
-                     #:modules '((guix build utils))))
         (gdbinit   (plain-file "gdbinit" "\
 # Tell GDB where to look for separate debugging files.
 set debug-file-directory ~/.guix-profile/lib/debug\n")))
@@ -204,7 +182,6 @@ set debug-file-directory ~/.guix-profile/lib/debug\n")))
       (".zlogin" ,zlogin)
       (".Xdefaults" ,xdefaults)
       (".guile-wm" ,guile-wm)
-      (".config" ,fonts.conf)
       (".gdbinit" ,gdbinit))))
 
 (define (skeleton-directory skeletons)
