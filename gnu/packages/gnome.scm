@@ -4209,7 +4209,7 @@ users.")
 (define-public network-manager
   (package
     (name "network-manager")
-    (version "1.0.10")
+    (version "1.0.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -4217,7 +4217,7 @@ users.")
                                   "NetworkManager-" version ".tar.xz"))
               (sha256
                (base32
-                "1g4z2wg036n0njqp8fycrisj46l3yda6pl00l4rg9nfz862cxkqv"))))
+                "17jan0g5jzp8mrpklyacwdgnnw016m1c5pc4az5im6qhc260yirs"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc")) ; 8 MiB of gtk-doc HTML
