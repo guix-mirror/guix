@@ -602,7 +602,7 @@ treaming protocols.")
 (define-public mplayer
   (package
     (name "mplayer")
-    (version "1.2.1")
+    (version "1.3.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -610,7 +610,7 @@ treaming protocols.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "0prbqnsl6s7fbpp6nc6babx7gzwdrhrhzf0cmp6xz6w9gl4sy6w3"))))
+               "0hwqn04bdknb2ic88xd75smffxx63scvz0zvwvjb56nqj9n89l1s"))))
     (build-system gnu-build-system)
     ;; FIXME: Add additional inputs once available.
     (native-inputs
