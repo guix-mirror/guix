@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <tobias.geerinckx.rice@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +27,10 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages ncurses))
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages compression))
 
 (define-public miredo
   (package
@@ -210,3 +214,41 @@ bandwidth usage in real time.  It visualizes the in- and outgoing traffic using
 two graphs and provides additional info like total amount of transfered data
 and min/max network usage.")
     (license license:gpl2+)))
+
+(define-public iodine
+  (package
+    (name "iodine")
+    (version "0.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://code.kryo.se/" name "/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gh17kcxxi37k65zm4gqsvbk3aw7yphcs3c02pn1c4s2y6n40axd"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'check 'delete-failing-tests
+           ;; Avoid https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=802105
+           (lambda _
+             (substitute* "tests/common.c"
+               (("tcase_add_test\\(tc, \
+test_parse_format_ipv(4(|_listen_all|_mapped_ipv6)|6)\\);")
+                "")))))
+       #:make-flags (list "CC=gcc"
+                          (string-append "prefix=" (assoc-ref %outputs "out")))
+       #:test-target "test"))
+    (inputs `(("zlib" ,zlib)))
+    (native-inputs `(("check" ,check)
+                     ("pkg-config" ,pkg-config)))
+    (home-page "http://code.kryo.se/iodine/")
+    (synopsis "Tunnel IPv4 data through a DNS server")
+    (description "Iodine tunnels IPv4 data through a DNS server.  This
+can be useful in different situations where internet access is firewalled, but
+DNS queries are allowed.  The bandwidth is asymmetrical, with limited upstream
+and up to 1 Mbit/s downstream.")
+    ;; src/md5.[ch] is released under the zlib license
+    (license (list license:isc license:zlib))))
