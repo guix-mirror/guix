@@ -560,6 +560,11 @@ use 'plain-file' instead~%")
     ("SSL_CERT_DIR" . "/etc/ssl/certs")
     ("SSL_CERT_FILE" . "/etc/ssl/certs/ca-certificates.crt")
     ("GIT_SSL_CAINFO" . "/etc/ssl/certs/ca-certificates.crt")
+
+    ;; 'GTK_DATA_PREFIX' must name one directory where GTK+ themes are
+    ;; searched for.
+    ("GTK_DATA_PREFIX" . "/run/current-system/profile")
+
     ;; By default, applications that use D-Bus, such as Emacs, abort at startup
     ;; when /etc/machine-id is missing.  Make sure these warnings are non-fatal.
     ("DBUS_FATAL_WARNINGS" . "0")))
