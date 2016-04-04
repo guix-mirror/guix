@@ -412,6 +412,48 @@ window) while drawing a pretty box around it, then finally prints the
 selection's dimensions to stdout.")
     (license license:gpl3+)))
 
+(define-public maim
+  (package
+    (name "maim")
+    (version "3.4.47")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/naelstrof/maim/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0kfp7k55bxc5h6h0wv8bwmsc5ny66h9ra2z4dzs4yzszq16544pv"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f              ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-source
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((slop (string-append (assoc-ref inputs "slop")
+                                        "/bin/slop")))
+               ;; "slop" command is hardcoded in the source; replace it
+               ;; with the full file name.
+               (substitute* "src/main.cpp"
+                 (("^( +slopcommand.*)\"slop\"" all front)
+                  (string-append front "\"" slop "\"")))))))))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxrandr" ,libxrandr)
+       ("libxfixes" ,libxfixes)
+       ("imlib2" ,imlib2)
+       ("slop" ,slop)))
+    (home-page "https://github.com/naelstrof/maim")
+    (synopsis "Screenshot utility for X Window System")
+    (description
+     "maim (Make Image) is a tool that takes screenshots of your desktop and
+saves it in any format.  Along with a full screen, it allows you to capture a
+predefined region or a particular window.  Also, it makes it possible to
+include cursor in the resulting image.")
+    (license license:gpl3+)))
+
 (define-public unclutter
   (package
     (name "unclutter")
