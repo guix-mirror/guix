@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -365,14 +366,14 @@ language standard, and includes many enhancements and extensions.")
 (define-public scheme48
   (package
     (name "scheme48")
-    (version "1.9")
+    (version "1.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://s48.org/" version
                                  "/scheme48-" version ".tgz"))
              (sha256
               (base32
-               "0rw2lz5xgld0klvld292ds6hvfk5l12vskzgf1hhwjdpa38r3fnw"))
+               "1x4xfm3lyz2piqcw1h01vbs1iq89zq7wrsfjgh3fxnlm1slj2jcw"))
              (patches (list (search-patch "scheme48-tests.patch")))))
     (build-system gnu-build-system)
     (home-page "http://s48.org/")
