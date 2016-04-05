@@ -177,14 +177,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.5.24")
+    (version "1.6.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.mutt.org/pub/mutt/mutt-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0012njrgxf1barjksqkx7ccid2l0xyikhna9mjs9vcfpbrvcm4m2"))
+               "06bc2drbgalkk68rzg7hq2v5m5qgjxff5357wg0419dpi8ivdbr9"))
              (patches (list (search-patch "mutt-store-references.patch")))))
     (build-system gnu-build-system)
     (inputs
