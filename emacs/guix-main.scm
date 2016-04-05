@@ -300,17 +300,26 @@ Example:
 
 ;;; Finding packages.
 
-(define package-by-address
+(define-values (package-by-address
+                register-package)
   (let ((table (delay (fold-packages
                        (lambda (package table)
                          (vhash-consq (object-address package)
                                       package table))
                        vlist-null))))
-    (lambda (address)
-      "Return package by its object ADDRESS."
-      (match (vhash-assq address (force table))
-        ((_ . package) package)
-        (_ #f)))))
+    (values
+     (lambda (address)
+       "Return package by its object ADDRESS."
+       (match (vhash-assq address (force table))
+         ((_ . package) package)
+         (_ #f)))
+     (lambda (package)
+       "Register PACKAGE by its 'object-address', so that later
+'package-by-address' can be used to access it."
+       (let ((table* (force table)))
+         (set! table
+               (delay (vhash-consq (object-address package)
+                                   package table*))))))))
 
 (define packages-by-name+version
   (let ((table (delay (fold-packages
@@ -409,6 +418,15 @@ MATCH-PARAMS is a list of parameters that REGEXP can match."
                    (cons newest res))))
               '()
               (find-newest-available-packages)))
+
+(define (packages-from-file file)
+  "Return a list of packages from FILE."
+  (let ((package (load (canonicalize-path file))))
+    (if (package? package)
+        (begin
+          (register-package package)
+          (list package))
+        '())))
 
 
 ;;; Making package/output patterns.
@@ -662,6 +680,8 @@ ENTRIES is a list of installed manifest entries."
                                    (lookup-license license-name))))
          (location-proc         (lambda (_ location)
                                   (packages-by-location-file location)))
+         (file-proc             (lambda (_ file)
+                                  (packages-from-file file)))
          (all-proc              (lambda _ (all-available-packages)))
          (newest-proc           (lambda _ (newest-available-packages))))
     `((package
@@ -672,6 +692,7 @@ ENTRIES is a list of installed manifest entries."
        (regexp           . ,regexp-proc)
        (license          . ,license-proc)
        (location         . ,location-proc)
+       (from-file        . ,file-proc)
        (all-available    . ,all-proc)
        (newest-available . ,newest-proc))
       (output
@@ -682,6 +703,7 @@ ENTRIES is a list of installed manifest entries."
        (regexp           . ,regexp-proc)
        (license          . ,license-proc)
        (location         . ,location-proc)
+       (from-file        . ,file-proc)
        (all-available    . ,all-proc)
        (newest-available . ,newest-proc)))))
 
