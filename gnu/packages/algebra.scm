@@ -20,6 +20,7 @@
 
 (define-module (gnu packages algebra)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages mpi)
@@ -280,6 +281,46 @@ polynomials, power series, matrices and special functions over the
 real and complex numbers, with automatic, rigorous error control.")
    (license license:gpl2+)
    (home-page "http://fredrikj.net/arb/")))
+
+(define-public ntl
+  (package
+   (name "ntl")
+   (version "9.7.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "http://shoup.net/ntl/ntl-"
+                                version ".tar.gz"))
+            (sha256 (base32
+                     "115frp5flyvw9wghz4zph1b3llmr5nbxk1skgsggckr81fh3gmxq"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("libtool" ,libtool)
+      ("perl" ,perl))) ; for configuration
+   ;; FIXME: Add optional input gf2x once available; then also add
+   ;; configure flag "NTL_GF2X_LIB=on".
+   (inputs
+    `(("gmp" ,gmp)))
+   (arguments
+    `(#:phases
+      (modify-phases %standard-phases
+        (replace 'configure
+         (lambda* (#:key outputs #:allow-other-keys)
+           (chdir "src")
+           (system* "./configure"
+                    (string-append "PREFIX=" (assoc-ref outputs "out"))
+                    ;; Do not build especially for the build machine.
+                    "NATIVE=off"
+                    ;; Also do not tune to the build machine.
+                    "WIZARD=off"
+                    "SHARED=on")
+           #t)))))
+   (synopsis "C++ library for number theory")
+   (description
+    "NTL is a C++ library providing data structures and algorithms
+for manipulating signed, arbitrary length integers, and for vectors,
+matrices, and polynomials over the integers and over finite fields.")
+   (license license:gpl2+)
+   (home-page "http://shoup.net/ntl/")))
 
 (define-public bc
   (package
