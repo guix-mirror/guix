@@ -510,7 +510,7 @@ is part of the GNOME accessibility project.")
 (define-public at-spi2-atk
   (package
    (name "at-spi2-atk")
-   (version "2.18.1")
+   (version "2.20.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -518,7 +518,7 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0bf1g5cj84rmx7p1q547vwbc0hlpcs2wrxnmv96lckfkhs9mzcf4"))))
+              "1lis9zj4r3d5ff3chs0r93gjkbp0wgflfx35gbax47cgdqmi8jx2"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
