@@ -22,11 +22,15 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses) #:prefix license:)
@@ -321,6 +325,46 @@ for manipulating signed, arbitrary length integers, and for vectors,
 matrices, and polynomials over the integers and over finite fields.")
    (license license:gpl2+)
    (home-page "http://shoup.net/ntl/")))
+
+(define-public singular
+  (package
+   (name "singular")
+   (version "4.0.3")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "http://www.mathematik.uni-kl.de/ftp/pub/"
+                                "Math/Singular/SOURCES/"
+                                (string-join (string-split version #\.) "-")
+                                "/singular-" version ".tar.gz"))
+            (sha256 (base32
+                     "0lc76137072yyizdbmrjwan3gcgfsvp7p6hkvyn8a15la0qqkgg2"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("doxygen" ,doxygen)
+      ("graphviz" ,graphviz)
+      ("perl" ,perl)))
+   (inputs
+    `(("cddlib" ,cddlib)
+      ("gmp" ,gmp)
+      ("flint" ,flint)
+      ("mpfr" ,mpfr)
+      ("ntl" ,ntl)
+      ("python" ,python-2)
+      ("readline" ,readline)))
+   (arguments
+    `(#:configure-flags
+      (list (string-append "--with-ntl="
+                           (assoc-ref %build-inputs "ntl")))))
+   (synopsis "Computer algebra system for polynomial computations")
+   (description
+    "Singular is a computer algebra system for polynomial computations,
+with special emphasis on commutative and non-commutative algebra, algebraic
+geometry and singularity theory.")
+   ;; Singular itself is dual licensed gpl2 or gpl3, but some of the
+   ;; libraries with which it links are licensed under lgpl3+, so the
+   ;; combined work becomes gpl3. See COPYING in the source code.
+   (license license:gpl3)
+   (home-page "http://www.singular.uni-kl.de/index.php")))
 
 (define-public bc
   (package
