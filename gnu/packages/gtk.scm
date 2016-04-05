@@ -465,7 +465,7 @@ in the GNOME project.")
 (define-public at-spi2-core
   (package
    (name "at-spi2-core")
-   (version "2.18.1")
+   (version "2.20.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -473,7 +473,7 @@ in the GNOME project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1kq17w4fm51d49vzmglkxqdm6s0yvjvrpgw78r2hajf69jz5bmap"))))
+              "16v09iwnd3895fshsvsci836dar21c8y9w8zn882jn4fq2vrzi6w"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (arguments
