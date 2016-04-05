@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
+;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -88,7 +89,7 @@ programs.")
 (define-public libuv
   (package
     (name "libuv")
-    (version "1.4.2")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libuv/libuv/archive/v"
@@ -96,7 +97,7 @@ programs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0hdpysawz85zpmsfkcsd1b7bmx53szcir1szbh1w7ldhkpv29r5r"))))
+                "1plwz98ljdi161gxhl4wgj7llnx611rxpb6y38kcp59wcxf1lvlh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
