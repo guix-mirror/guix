@@ -127,3 +127,28 @@ of battery life remain, battery life remaining (with both a percentage and a
 graph), and battery status (high - green, low - yellow, or critical - red).")
     (license gpl2)))
 
+(define-public wmnd
+  (package
+    (name "wmnd")
+    (version "0.4.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.thregr.org/~wavexx/software/wmnd/releases/"
+                    name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1amkbiwgr31gwkcp7wrjsr7aj1kns8bpmjpv70n86wb8v9mpm828"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxpm" ,libxpm)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.thregr.org/~wavexx/software/wmnd/")
+    (synopsis "Network interface monitor")
+    (description
+     "WMND is a dockapp for monitoring network interfaces under WindowMaker and
+other compatible window managers.")
+    (license gpl2+)))
