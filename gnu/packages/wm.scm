@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages qt)
@@ -108,14 +110,14 @@ the leaves of a full binary tree.")
 (define-public i3status
   (package
     (name "i3status")
-    (version "2.9")
+    (version "2.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://i3wm.org/i3status/i3status-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1qwxbrga2fi5wf742hh9ajwa8b2kpzkjjnhjlz4wlpv21i80kss2"))))
+                "1497dsvb32z9xljmxz95dnyvsbayn188ilm3l4ys8m5h25vd1xfs"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
@@ -128,9 +130,12 @@ the leaves of a full binary tree.")
        ("libconfuse" ,libconfuse)
        ("libyajl" ,libyajl)
        ("alsa-lib" ,alsa-lib)
-       ("wireless-tools" ,wireless-tools)
+       ("pulseaudio" ,pulseaudio)
+       ("libnl" ,libnl)
        ("libcap" ,libcap)
        ("asciidoc" ,asciidoc)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "https://i3wm.org/i3status/")
     (synopsis "Status bar for i3bar, dzen2, xmobar or similar programs")
     (description "i3status is a small program for generating a status bar for
