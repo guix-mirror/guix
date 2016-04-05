@@ -606,14 +606,14 @@ control to Git repositories.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "3.7.2")
+    (version "3.7.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
              (sha256
               (base32
-               "0ykdvj7k4yxiwbfk0gnrq2flmdlf2cracsvqn3vr7nxhda6l7aav"))))
+               "0c2vkad9piqkggyk8y310rf619qgdfcwswnk3nv21mg2fhnw96f0"))))
     (build-system python-build-system)
     (arguments
      `(;; Restrict to Python 2, as Python 3 would require
