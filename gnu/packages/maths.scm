@@ -227,6 +227,31 @@ of linear equations, computes extreme rays of polyhedral cones, solves
 integer programming problems and computes Markov bases for statistics.")
     (license license:gpl2+)))
 
+(define-public cddlib
+  (package
+    (name "cddlib")
+    (version "0.94h")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "ftp://ftp.ifor.math.ethz.ch/pub/fukuda/cdd/cddlib-"
+                          (string-delete #\. version) ".tar.gz"))
+      (sha256
+       (base32
+        "1dasasscwfg793q8fwzgwf64xwj7w62yfvszpr8x8g38jka08vgy"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gmp" ,gmp)))
+    (home-page "https://www.inf.ethz.ch/personal/fukudak/cdd_home/index.html")
+    (synopsis "Library for convex hulls and extreme rays of polyhedra")
+    (description
+     "The C-library cddlib implements the Double Description Method of
+Motzkin et al. for generating all vertices (i.e. extreme points) and extreme
+rays of a general convex polyhedron given by a system of linear inequalities
+in arbitrary dimension.  It can also be used for the converse operation of
+computing convex hulls.")
+    (license license:gpl2+)))
+
 (define-public arpack-ng
   (package
     (name "arpack-ng")
