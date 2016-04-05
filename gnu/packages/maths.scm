@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
@@ -199,6 +199,33 @@ GNU MathProg modeling language, a subset of the AMPL language, and features a
 translator for the language.  In addition to the C library, a stand-alone
 LP/MIP solver is included in the package.")
     (license license:gpl3+)))
+
+(define-public 4ti2
+  (package
+    (name "4ti2")
+    (version "1.6.7")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://www.4ti2.de/version_" version
+                          "/4ti2-" version ".tar.gz"))
+      (sha256
+       (base32
+        "1frix3rnm9ffr93alqzw4cavxbfpf524l8rfbmcpyhwd3n1km0yl"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("which" ,(@ (gnu packages base) which)))) ; for the tests
+    (inputs
+     `(("glpk" ,glpk)
+       ("gmp" ,gmp)))
+    (home-page "http://www.4ti2.de/")
+    (synopsis "Mathematical tool suite for problems on linear spaces")
+    (description
+     "4ti2 implements algorithms for solving algebraic, geometric and
+combinatorial problems on linear spaces.  Among others, it solves systems
+of linear equations, computes extreme rays of polyhedral cones, solves
+integer programming problems and computes Markov bases for statistics.")
+    (license license:gpl2+)))
 
 (define-public arpack-ng
   (package
