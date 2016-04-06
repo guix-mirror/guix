@@ -2169,7 +2169,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
 (define-public gnome-mines
   (package
     (name "gnome-mines")
-    (version "3.18.2")
+    (version "3.20.0")
     (source
      (origin
        (method url-fetch)
@@ -2178,7 +2178,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0izkcf81rji4dj9k0k93ij4lp5iza2bh6jwlcdhbjfv2xdw0f7ky"))))
+         "19khp4ckqbdgk6828gprxy52fsg8klf957dnwsin75nskk8whxbp"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:phases
@@ -2186,16 +2186,7 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
          (add-before 'configure 'patch-/bin/true
                      (lambda _
                        (substitute* "configure"
-                         (("/bin/true") (which "true")))))
-         (add-after 'install 'wrap-pixbuf
-                    ;; Use librsvg's loaders.cache to support SVG files.
-                    (lambda* (#:key inputs outputs #:allow-other-keys)
-                      (let* ((out    (assoc-ref outputs "out"))
-                             (prog   (string-append out "/bin/gnome-mines"))
-                             (rsvg   (assoc-ref inputs "librsvg"))
-                             (pixbuf (find-files rsvg "^loaders\\.cache$")))
-                        (wrap-program prog
-                          `("GDK_PIXBUF_MODULE_FILE" = ,pixbuf))))))))
+                         (("/bin/true") (which "true"))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("desktop-file-utils" ,desktop-file-utils)
