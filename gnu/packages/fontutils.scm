@@ -541,39 +541,37 @@ definitions.")
    (arguments
     '(#:tests? #f
       #:phases
-      (alist-cons-before
-       'configure 'patch-configure
-       (lambda* (#:key inputs #:allow-other-keys)
-         (let ((libxml2 (assoc-ref inputs "libxml2"))
-               (cairo   (assoc-ref inputs "cairo"))
-               (pango   (assoc-ref inputs "pango")))
-           (substitute* "configure"
-             ;; configure looks for a directory to be present to determine
-             ;; whether libxml2 is available, rather than checking for the
-             ;; library or headers.  Point it to the correct directory.
-             (("/usr/include/libxml2")
-              (string-append libxml2 "/include/libxml2"))
-             ;; Similary, the search directories for cairo and pango are
-             ;; hard-coded.
-             (("gww_prefix in.*") (string-append "gww_prefix in "
-                                                 cairo " " pango "\n")))))
-       (alist-cons-after
-        'install 'set-library-path
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out"))
-                (potrace (string-append (assoc-ref inputs "potrace") "/bin")))
-            (wrap-program (string-append out "/bin/fontforge")
-                          ;; Fontforge dynamically opens libraries.
-                          `("LD_LIBRARY_PATH" ":" prefix
-                            ,(map (lambda (input)
-                                    (string-append (assoc-ref inputs input)
-                                                   "/lib"))
-                                  '("libtiff" "libjpeg" "libpng" "giflib"
-                                    "libxml2" "zlib" "libspiro" "freetype"
-                                    "pango" "cairo" "fontconfig")))
-                          ;; Checks for potrace program at runtime
-                          `("PATH" ":" prefix (,potrace)))))
-        %standard-phases))))
+      (modify-phases %standard-phases
+        (add-before 'configure 'patch-configure
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((libxml2 (assoc-ref inputs "libxml2"))
+                  (cairo   (assoc-ref inputs "cairo"))
+                  (pango   (assoc-ref inputs "pango")))
+              (substitute* "configure"
+                ;; configure looks for a directory to be present to determine
+                ;; whether libxml2 is available, rather than checking for the
+                ;; library or headers.  Point it to the correct directory.
+                (("/usr/include/libxml2")
+                 (string-append libxml2 "/include/libxml2"))
+                ;; Similary, the search directories for cairo and pango are
+                ;; hard-coded.
+                (("gww_prefix in.*") (string-append "gww_prefix in "
+                                                   cairo " " pango "\n"))))))
+        (add-after 'install 'set-library-path
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out"))
+                  (potrace (string-append (assoc-ref inputs "potrace") "/bin")))
+              (wrap-program (string-append out "/bin/fontforge")
+                ;; Fontforge dynamically opens libraries.
+                `("LD_LIBRARY_PATH" ":" prefix
+                  ,(map (lambda (input)
+                          (string-append (assoc-ref inputs input)
+                                         "/lib"))
+                        '("libtiff" "libjpeg" "libpng" "giflib"
+                          "libxml2" "zlib" "libspiro" "freetype"
+                          "pango" "cairo" "fontconfig")))
+                ;; Checks for potrace program at runtime
+                `("PATH" ":" prefix (,potrace)))))))))
    (synopsis "Outline font editor")
    (description
     "FontForge allows you to create and modify postscript, truetype and
