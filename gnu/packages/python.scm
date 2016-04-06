@@ -2954,14 +2954,14 @@ is designed to have a low barrier to entry.")
 (define-public python-cython
   (package
     (name "python-cython")
-    (version "0.23.4")
+    (version "0.24")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "Cython" version))
        (sha256
         (base32
-         "13hdffhd37mx3gjby018xl179jaj957fy7kzi01crmimxvn2zi7y"))))
+         "1wd3q97gia3zhsgcdlvxh26hkrf3m53i6r1l4g0yya119264vr3d"))))
     (build-system python-build-system)
     ;; we need the full python package and not just the python-wrapper
     ;; because we need libpython3.3m.so
