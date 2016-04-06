@@ -41,6 +41,7 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
+  #:use-module ((ice-9 iconv) #:select (bytevector->string))
   #:use-module (system foreign)
   #:export (bytevector->base16-string
             base16-string->bytevector
@@ -86,6 +87,7 @@
             split
             cache-directory
             readlink*
+            edit-expression
 
             filtered-port
             compressed-port
@@ -317,6 +319,44 @@ a list of command-line arguments passed to the compression program."
         (close-port compressed)
         (unless (every (compose zero? cdr waitpid) pids)
           (error "compressed-output-port failure" pids))))))
+
+(define* (edit-expression source-properties proc #:key (encoding "UTF-8"))
+  "Edit the expression specified by SOURCE-PROPERTIES using PROC, which should
+be a procedure that takes the original expression in string and returns a new
+one.  ENCODING will be used to interpret all port I/O, it default to UTF-8.
+This procedure returns #t on success."
+  (with-fluids ((%default-port-encoding encoding))
+    (let* ((file   (assq-ref source-properties 'filename))
+           (line   (assq-ref source-properties 'line))
+           (column (assq-ref source-properties 'column))
+           (in     (open-input-file file))
+           ;; The start byte position of the expression.
+           (start  (begin (while (not (and (= line (port-line in))
+                                           (= column (port-column in))))
+                            (when (eof-object? (read-char in))
+                              (error (format #f "~a: end of file~%" in))))
+                          (ftell in)))
+           ;; The end byte position of the expression.
+           (end    (begin (read in) (ftell in))))
+      (seek in 0 SEEK_SET) ; read from the beginning of the file.
+      (let* ((pre-bv  (get-bytevector-n in start))
+             ;; The expression in string form.
+             (str     (bytevector->string
+                       (get-bytevector-n in (- end start))
+                       (port-encoding in)))
+             (post-bv (get-bytevector-all in))
+             (str*    (proc str)))
+        ;; Verify the edited expression is still a scheme expression.
+        (call-with-input-string str* read)
+        ;; Update the file with edited expression.
+        (with-atomic-file-output file
+          (lambda (out)
+            (put-bytevector out pre-bv)
+            (display str* out)
+            ;; post-bv maybe the end-of-file object.
+            (when (not (eof-object? post-bv))
+              (put-bytevector out post-bv))
+            #t))))))
 
 
 ;;;
