@@ -421,7 +421,8 @@ highlighting and other features typical of a source code editor.")
    (inputs
     `(("libjpeg" ,libjpeg)
       ("libtiff" ,libtiff)
-      ("libx11"  ,libx11)))
+      ("libx11"  ,libx11)
+      ("shared-mime-info" ,shared-mime-info))) ; for testing
    (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
