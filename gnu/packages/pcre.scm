@@ -50,7 +50,8 @@
              ("readline" ,readline)
              ("zlib" ,zlib)))
    (arguments
-    `(#:configure-flags '("--enable-utf"
+    '(#:disallowed-references ("doc")
+      #:configure-flags '("--enable-utf"
                           "--enable-pcregrep-libz"
                           "--enable-pcregrep-libbz2"
                           "--enable-pcretest-libreadline"
