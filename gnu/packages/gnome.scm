@@ -1647,7 +1647,7 @@ engineering.")
 (define-public seahorse
   (package
     (name "seahorse")
-    (version "3.18.0")
+    (version "3.20.0")
     (source
      (origin
        (method url-fetch)
@@ -1656,7 +1656,7 @@ engineering.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "0rxnq47xcagmpqb63g49ay3lfiyjjnmmiay9yifx5jn406d8h32k"))))
+         "1py6fj19kb8aaxvg6yrpd0876azc2zjvis98aqz37a2lxmhp9c72"))))
     (build-system glib-or-gtk-build-system)
     (inputs
      `(("gtk+" ,gtk+)
