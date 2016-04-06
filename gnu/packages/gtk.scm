@@ -853,7 +853,7 @@ library.")
 (define-public pangomm
   (package
     (name "pangomm")
-    (version "2.38.1")
+    (version "2.40.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -861,7 +861,7 @@ library.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "12xwjvqfxhqblcv7641k0l6r8n3qifnrx8w9571izn1nbd81iyzg"))))
+               "03fpqdjp7plybf4zsgszbm8yhgl28vmajzfpmaqcsmyfvjlszl3x"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
