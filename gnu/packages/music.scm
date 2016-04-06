@@ -838,6 +838,46 @@ your own lessons.")
 Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
     (license license:gpl3+)))
 
+(define-public jalv-select
+  (package
+    (name "jalv-select")
+    (version "0.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/brummer10/jalv_select/"
+                                  "archive/V" version ".tar.gz"))
+              (sha256
+               (base32
+                "01y93l5c1f8za04a0y4b3v0nhsm1lhj6rny9xpdgd7jz6sl6w581"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:make-flags
+       (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'ignore-PATH
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "jalv.select.cpp"
+               (("echo \\$PATH | tr ':' '\\\n' | xargs ls")
+                (string-append "ls -1 " (assoc-ref inputs "jalv") "/bin")))
+             (substitute* "jalv.select.h"
+               (("gtkmm.h") "gtkmm-2.4/gtkmm.h"))
+             #t)))))
+    (inputs
+     `(("lilv" ,lilv)
+       ("lv2" ,lv2)
+       ("jalv" ,jalv)
+       ("gtkmm" ,gtkmm-2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/brummer10/jalv_select")
+    (synopsis "GUI to select LV2 plugins and run them with jalv")
+    (description
+     "The jalv.select package provides a graphical user interface allowing
+users to select LV2 plugins and run them with jalv.")
+    (license license:public-domain)))
+
 (define-public synthv1
   (package
     (name "synthv1")
