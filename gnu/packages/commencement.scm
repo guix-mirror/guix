@@ -306,7 +306,12 @@
   ;; Also, use %BOOT0-INPUTS to avoid building Perl once more.
   (let ((texinfo (package (inherit texinfo)
                    (native-inputs '())
-                   (inputs `(("perl" ,perl-boot0))))))
+                   (inputs `(("perl" ,perl-boot0)))
+
+                   ;; Some of Texinfo 6.1's tests would fail with "Couldn't
+                   ;; set UTF-8 character type in locale" but we don't have a
+                   ;; UTF-8 locale at this stage, so skip them.
+                   (arguments '(#:tests? #f)))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs texinfo %boot0-inputs
                                    (current-source-location)
