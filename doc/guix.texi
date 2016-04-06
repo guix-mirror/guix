@@ -5544,7 +5544,7 @@ various things that Guix does not fully control, in spite of building
 packages in isolated environments (@pxref{Features}).  Most common
 sources of non-determinism include the addition of timestamps in build
 results, the inclusion of random numbers, and directory listings sorted
-by inode number.  See @uref{https://reproducible.debian.net/howto/}, for
+by inode number.  See @uref{https://reproducible-builds.org/docs/}, for
 more information.
 
 To find out what is wrong with this Git binary, we can do something along
