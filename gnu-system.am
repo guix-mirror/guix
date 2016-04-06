@@ -656,6 +656,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/patchelf-rework-for-arm.patch		\
   gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   gnu/packages/patches/patch-hurd-path-max.patch		\
+  gnu/packages/patches/pcre-CVE-2016-3191.patch			\
   gnu/packages/patches/perl-CVE-2015-8607.patch			\
   gnu/packages/patches/perl-CVE-2016-2381.patch			\
   gnu/packages/patches/perl-autosplit-default-time.patch	\
