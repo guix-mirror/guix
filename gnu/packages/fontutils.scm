@@ -557,6 +557,14 @@ definitions.")
                 ;; hard-coded.
                 (("gww_prefix in.*") (string-append "gww_prefix in "
                                                    cairo " " pango "\n"))))))
+        (add-after 'build 'build-contrib
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out"))
+                   (bin (string-append out "/bin")))
+              (and (zero? (system* "make" "-Ccontrib/fonttools"
+                                   "CC=gcc" "showttf"))
+                   (begin (install-file "contrib/fonttools/showttf" bin)
+                          #t)))))
         (add-after 'install 'set-library-path
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out"))
