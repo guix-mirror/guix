@@ -93,10 +93,10 @@ is on expressing the content semantically, avoiding physical markup commands.")
   ;; The idea of this package is to have the standalone Info reader without
   ;; the dependency on Perl that 'makeinfo' drags.
   (package
-    (inherit texinfo-6.1)
+    (inherit texinfo)
     (name "info-reader")
     (arguments
-     `(#:disallowed-references ,(assoc-ref (package-inputs texinfo-6.1)
+     `(#:disallowed-references ,(assoc-ref (package-inputs texinfo)
                                            "perl")
 
        #:modules ((ice-9 ftw) (srfi srfi-1)
