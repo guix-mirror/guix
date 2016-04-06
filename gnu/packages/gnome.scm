@@ -1605,7 +1605,7 @@ engineering.")
 (define-public gnome-themes-standard
   (package
     (name "gnome-themes-standard")
-    (version "3.18.0")
+    (version "3.20")
     (source
      (origin
        (method url-fetch)
@@ -1614,7 +1614,7 @@ engineering.")
                            version ".tar.xz"))
        (sha256
         (base32
-         "1jxss8kxszhf66vic9n1sagczm5amm0mgxpzyxyjna15q82fnip6"))))
+         "1p1vvmzfky1ax3yv9ld10xgqwydhmglxpgq3skrfc4539nrq9phw"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+)
