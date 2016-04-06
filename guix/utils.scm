@@ -61,6 +61,7 @@
             location-line
             location-column
             source-properties->location
+            location->source-properties
 
             nix-system->gnu-triplet
             gnu-triplet->nix-system
@@ -895,3 +896,10 @@ etc."
     ;; In accordance with the GCS, start line and column numbers at 1.  Note
     ;; that unlike LINE and `port-column', COL is actually 1-indexed here...
     (location file (and line (+ line 1)) col)))
+
+(define (location->source-properties loc)
+  "Return the source property association list based on the info in LOC,
+a location object."
+  `((line     . ,(and=> (location-line loc) 1-))
+    (column   . ,(location-column loc))
+    (filename . ,(location-file loc))))
