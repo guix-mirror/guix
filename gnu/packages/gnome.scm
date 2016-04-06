@@ -769,7 +769,7 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
               (sha256
                (base32
                 "1zhqvhagy0m85p54jfiayfl0v9af7g0lj7glw8sfwh7cbp56vnc2"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f ; needs X, GL, and software rendering
        #:phases
