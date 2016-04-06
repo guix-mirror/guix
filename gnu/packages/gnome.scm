@@ -474,7 +474,7 @@ on the GNOME Desktop with a single simple application.")
 (define-public gsettings-desktop-schemas
   (package
     (name "gsettings-desktop-schemas")
-    (version "3.18.0")
+    (version "3.20.0")
     (source
      (origin
       (method url-fetch)
@@ -483,7 +483,7 @@ on the GNOME Desktop with a single simple application.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "1szc857f46spdhrbnq9ci3kwfqg5vwpikbf0hprq6vd94rr369xs"))))
+        "1hfrqqsmqscgbnaikmyq4yq8h72554wdg13algh5bf8a7i9ip92m"))))
     (build-system gnu-build-system)
     (inputs
      `(("glib" ,glib)))
