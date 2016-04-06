@@ -804,7 +804,7 @@ the GNOME desktop environment.")
 (define-public libcroco
   (package
     (name "libcroco")
-    (version "0.6.8")
+    (version "0.6.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -812,7 +812,7 @@ the GNOME desktop environment.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0w453f3nnkbkrly7spx5lx5pf6mwynzmd5qhszprq8amij2invpa"))))
+                "0mm0wldbi40am5qn0nv7psisbg01k42rwzjxl3gv11l5jj554aqk"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
