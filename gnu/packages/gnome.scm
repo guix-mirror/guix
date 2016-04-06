@@ -1724,7 +1724,7 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.42.3")
+    (version "0.44.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1732,8 +1732,16 @@ libraries written in C.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1832mrw2hhgjipbsfsv2fmdnwnar4rkx589ciz008bg8x908mscn"))))
+                "1ahjxysiv38q91gfq2wddcbvndlggfr8ynls25m42pw83akv38wk"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; XXX: fails to compile tests with the default flags.
+     ;; vteconv.cc:774:40:
+     ;;    error: missing sentinel in function call [-Werror=format=]
+     ;;    g_test_init (&argc, &argv, NULL);
+     ;;
+     ;; cc1plus: some warnings being treated as errors
+     '(#:configure-flags '("CXXFLAGS=-Wformat=0")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)
