@@ -8614,3 +8614,49 @@ Service (S3) protocol, including S3 itself.  It supports rsync-like backup,
 GnuPG encryption, and more.  It also supports management of Amazon's
 CloudFront content delivery network.")
     (license gpl2+)))
+
+(define-public python-pkgconfig
+  (package
+    (name "python-pkgconfig")
+    (version "1.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "pkgconfig" version))
+        (sha256
+          (base32
+            "1pw0kmvc57sjmaxi6c54fqsnihqj6hvhc9y1vaz36axafzqam7bh"))))
+    (build-system python-build-system)
+    (native-inputs
+      `(("python-nose" ,python-nose)
+        ("python-setuptools" ,python-setuptools)))
+    (inputs
+      `(("pkg-config" ,pkg-config)))
+    (arguments
+      `(;; Tests fail with "ValueError: _type_ 'v' not supported" on Python 3,
+        ;; and on Python 2 they need the dl module deprecated since Python 2.6.
+        #:tests? #f
+        ;; Prevent creation of the egg. This works around
+        ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=20765 .
+        #:configure-flags '("--single-version-externally-managed" "--root=/")
+        ;; Hard-code the path to pkg-config.
+        #:phases
+        (modify-phases %standard-phases
+          (add-before
+           'build 'patch
+           (lambda _
+             (substitute* "pkgconfig/pkgconfig.py"
+               (("cmd = 'pkg-config")
+                (string-append "cmd = '" (which "pkg-config"))))
+             #t)))))
+    (home-page "http://github.com/matze/pkgconfig")
+    (synopsis "Python interface for pkg-config")
+    (description "This module provides a Python interface to pkg-config.  It
+can be used to find all pkg-config packages, check if a package exists,
+check if a package meets certain version requirements, query CFLAGS and
+LDFLAGS and parse the output to build extensions with setup.py.")
+    (license expat)))
+
+(define-public python2-pkgconfig
+  (package-with-python2 python-pkgconfig))
+
