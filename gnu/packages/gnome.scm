@@ -697,7 +697,7 @@ some form of information without getting in the user's way.")
 (define-public libpeas
   (package
     (name "libpeas")
-    (version "1.16.0")
+    (version "1.18.0")
     (source
      (origin
       (method url-fetch)
@@ -706,7 +706,7 @@ some form of information without getting in the user's way.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0kj5n5hz93xq7qdb2r7n86nibzwqjr88jxaih1fdbxv5rn7014xh"))))
+        "09jy2rwwgp0xx7cnypxl56m7zzxnj3j4v58xqjxjasf3chn88jdz"))))
     (build-system gnu-build-system)
     (inputs
      `(("atk" ,atk)
