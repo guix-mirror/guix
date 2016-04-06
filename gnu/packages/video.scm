@@ -372,14 +372,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "2.8.6")
+    (version "3.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1yh7dvm7zwdlsspdaq524s5qaggma5md9h95qc4kvb5dmyyyvg15"))))
+               "0w74b165l4ry4y72f4xmgd357pvbc7yr61y313v3ai6787p2rwqj"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -392,7 +392,6 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
        ("libbluray" ,libbluray)
        ("libcaca" ,libcaca)
        ("libcdio-paranoia" ,libcdio-paranoia)
-       ("libquvi" ,libquvi)
        ("libtheora" ,libtheora)
        ("libvdpau" ,libvdpau)
        ("libvorbis" ,libvorbis)
@@ -480,7 +479,6 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
          "--enable-libmp3lame"
          "--enable-libopus"
          "--enable-libpulse"
-         "--enable-libquvi"
          "--enable-libsoxr"
          "--enable-libspeex"
          "--enable-libtheora"
@@ -498,7 +496,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
          ;; Runtime cpu detection is not implemented on
          ;; MIPS, so we disable some features.
          "--disable-mips32r2"
-         "--disable-mipsdspr1"
+         "--disable-mipsdsp"
          "--disable-mipsdspr2"
          "--disable-mipsfpu")
        #:phases
@@ -604,7 +602,7 @@ treaming protocols.")
 (define-public mplayer
   (package
     (name "mplayer")
-    (version "1.2.1")
+    (version "1.3.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -612,7 +610,7 @@ treaming protocols.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "0prbqnsl6s7fbpp6nc6babx7gzwdrhrhzf0cmp6xz6w9gl4sy6w3"))))
+               "0hwqn04bdknb2ic88xd75smffxx63scvz0zvwvjb56nqj9n89l1s"))))
     (build-system gnu-build-system)
     ;; FIXME: Add additional inputs once available.
     (native-inputs

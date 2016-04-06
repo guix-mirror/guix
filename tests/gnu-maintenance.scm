@@ -39,6 +39,3 @@
                 ("gnutls" "gnutls-3.2.18-w32.zip")))))
 
 (test-end)
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

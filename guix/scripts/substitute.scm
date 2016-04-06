@@ -780,16 +780,24 @@ PORT.  REPORT-PROGRESS is a two-argument procedure such as that returned by
 
 (define-syntax with-networking
   (syntax-rules ()
-    "Catch DNS lookup errors and gracefully exit."
+    "Catch DNS lookup errors and TLS errors and gracefully exit."
     ;; Note: no attempt is made to catch other networking errors, because DNS
     ;; lookup errors are typically the first one, and because other errors are
     ;; a subset of `system-error', which is harder to filter.
     ((_ exp ...)
-     (catch 'getaddrinfo-error
+     (catch #t
        (lambda () exp ...)
-       (lambda (key error)
-         (leave (_ "host name lookup error: ~a~%")
-                (gai-strerror error)))))))
+       (match-lambda*
+         (('getaddrinfo-error error)
+          (leave (_ "host name lookup error: ~a~%")
+                 (gai-strerror error)))
+         (('gnutls-error error proc . rest)
+          (let ((error->string (module-ref (resolve-interface '(gnutls))
+                                           'error->string)))
+            (leave (_ "TLS error in procedure '~a': ~a~%")
+                   proc (error->string error))))
+         (args
+          (apply throw args)))))))
 
 
 ;;;

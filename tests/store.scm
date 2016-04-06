@@ -911,6 +911,3 @@
                    (path-info-deriver (query-path-info %store o))))))
 
 (test-end "store")
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

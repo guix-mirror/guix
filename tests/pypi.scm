@@ -106,6 +106,3 @@ baz > 13.37")
        (pk 'fail x #f)))))
 
 (test-end "pypi")
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

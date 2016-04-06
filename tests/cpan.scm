@@ -98,6 +98,3 @@
        (pk 'fail x #f)))))
 
 (test-end "cpan")
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

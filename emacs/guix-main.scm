@@ -58,9 +58,7 @@
  (guix licenses)
  (guix utils)
  (guix ui)
- (guix scripts lint)
  (guix scripts package)
- (guix scripts pull)
  (gnu packages)
  (gnu system))
 
@@ -105,24 +103,34 @@ return two values: name and version.  For example, for SPEC
 (define name+version->key cons)
 (define key->name+version car+cdr)
 
-(define %packages
-  (fold-packages (lambda (pkg res)
-                   (vhash-consq (object-address pkg) pkg res))
-                 vlist-null))
+(define %package-vhash
+  (delay
+    (fold-packages (lambda (pkg res)
+                     (vhash-consq (object-address pkg) pkg res))
+                   vlist-null)))
+
+(define (package-vhash)
+  "Return vhash of 'package ID (address)'/'package' pairs."
+  (force %package-vhash))
 
 (define %package-table
-  (let ((table (make-hash-table (vlist-length %packages))))
-    (vlist-for-each
-     (lambda (elem)
-       (match elem
-         ((address . pkg)
-          (let* ((key (name+version->key (package-name pkg)
-                                         (package-version pkg)))
-                 (ref (hash-ref table key)))
-            (hash-set! table key
-                       (if ref (cons pkg ref) (list pkg)))))))
-     %packages)
-    table))
+  (delay
+    (let ((table (make-hash-table (vlist-length (package-vhash)))))
+      (vlist-for-each
+       (lambda (elem)
+         (match elem
+           ((address . pkg)
+            (let* ((key (name+version->key (package-name pkg)
+                                           (package-version pkg)))
+                   (ref (hash-ref table key)))
+              (hash-set! table key
+                         (if ref (cons pkg ref) (list pkg)))))))
+       (package-vhash))
+      table)))
+
+(define (package-table)
+  "Return hash table of 'name+version key'/'list of packages' pairs."
+  (force %package-table))
 
 (define (manifest-entry->name+version+output entry)
   (values
@@ -293,8 +301,10 @@ Example:
 
 (define (package-unique? package)
   "Return #t if PACKAGE is a single package with such name/version."
-  (null? (cdr (packages-by-name (package-name package)
-                                (package-version package)))))
+  (match (packages-by-name (package-name package)
+                           (package-version package))
+    ((package) #t)
+    (_ #f)))
 
 (define %package-param-alist
   `((id                . ,object-address)
@@ -330,11 +340,12 @@ Example:
 ;;; Finding packages.
 
 (define (package-by-address address)
-  (and=> (vhash-assq address %packages)
-         cdr))
+  (match (vhash-assq address (package-vhash))
+    ((_ . package) package)
+    (_ #f)))
 
 (define (packages-by-name+version name version)
-  (or (hash-ref %package-table
+  (or (hash-ref (package-table)
                 (name+version->key name version))
       '()))
 
@@ -917,34 +928,14 @@ OUTPUTS is a list of package outputs (may be an empty list)."
                         manifest transaction)))
     (unless (and (null? install) (null? remove))
       (with-store store
-        (let* ((derivation (run-with-store store
-                             (mbegin %store-monad
-                               (set-guile-for-build (default-guile))
-                               (profile-derivation new-manifest))))
-               (derivations (list derivation))
-               (new-profile (derivation->output-path derivation)))
-          (set-build-options store
-                             #:print-build-trace #f
-                             #:use-substitutes? use-substitutes?)
-          (show-manifest-transaction store manifest transaction
-                                     #:dry-run? dry-run?)
-          (show-what-to-build store derivations
-                              #:use-substitutes? use-substitutes?
-                              #:dry-run? dry-run?)
-          (unless dry-run?
-            (let ((name (generation-file-name
-                         profile
-                         (+ 1 (generation-number profile)))))
-              (and (build-derivations store derivations)
-                   (let* ((entries (manifest-entries new-manifest))
-                          (count   (length entries)))
-                     (switch-symlinks name new-profile)
-                     (switch-symlinks profile name)
-                     (format #t (N_ "~a package in profile~%"
-                                    "~a packages in profile~%"
-                                    count)
-                             count)
-                     (display-search-paths entries (list profile)))))))))))
+        (set-build-options store
+                           #:print-build-trace #f
+                           #:use-substitutes? use-substitutes?)
+        (show-manifest-transaction store manifest transaction
+                                   #:dry-run? dry-run?)
+        (build-and-use-profile store profile new-manifest
+                               #:use-substitutes? use-substitutes?
+                               #:dry-run? dry-run?)))))
 
 (define (delete-generations* profile generations)
   "Delete GENERATIONS from PROFILE.
@@ -1040,8 +1031,9 @@ Return #t if the shell command was executed successfully."
 (define (lint-checker-names)
   "Return a list of names of available lint checkers."
   (map (lambda (checker)
-         (symbol->string (lint-checker-name checker)))
-       %checkers))
+         (symbol->string ((@ (guix scripts lint) lint-checker-name)
+                          checker)))
+       (@ (guix scripts lint) %checkers)))
 
 (define (package-names)
   "Return a list of names of available packages."

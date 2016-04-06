@@ -71,6 +71,3 @@
      (pk 'fail x #f))))
 
 (test-end "snix")
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

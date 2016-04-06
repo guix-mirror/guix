@@ -227,7 +227,7 @@ s-expression corresponding to that package, or #f on failure."
         (match (package-source package)
           ((? origin? origin)
            (match (origin-uri origin)
-             ((url rest ...)
+             ((or (? string? url) (url _ ...))
               (let ((end   (string-rindex url #\_))
                     (start (string-rindex url #\/)))
                 ;; The URL ends on

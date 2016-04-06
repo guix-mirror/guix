@@ -123,3 +123,4 @@ Makefile.in
 config.cache
 stamp-h[0-9]
 tmp
+/doc/os-config-lightweight-desktop.texi

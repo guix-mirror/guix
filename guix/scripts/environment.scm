@@ -358,8 +358,22 @@ and suitable for 'exit'."
   "Run COMMAND in a new environment containing INPUTS, using the native search
 paths defined by the list PATHS.  When PURE?, pre-existing environment
 variables are cleared before setting the new ones."
+  ;; Properly handle SIGINT, so pressing C-c in an interactive terminal
+  ;; application works.
+  (sigaction SIGINT SIG_DFL)
   (create-environment inputs paths pure?)
-  (apply system* command))
+  (match command
+    ((program . args)
+     (apply execlp program program args))))
+
+(define (launch-environment/fork command inputs paths pure?)
+  "Run COMMAND in a new process with an environment containing INPUTS, using
+the native search paths defined by the list PATHS.  When PURE?, pre-existing
+environment variables are cleared before setting the new ones."
+  (match (primitive-fork)
+    (0 (launch-environment command inputs paths pure?))
+    (pid (match (waitpid pid)
+           ((_ . status) status)))))
 
 (define* (launch-environment/container #:key command bash user-mappings
                                        profile paths network?)
@@ -373,6 +387,7 @@ host file systems to mount inside the container."
                              (list (direct-store-path bash) profile))))
     (return
      (let* ((cwd (getcwd))
+            (passwd (getpwuid (getuid)))
             ;; Bind-mount all requisite store items, user-specified mappings,
             ;; /bin/sh, the current working directory, and possibly networking
             ;; configuration files within the container.
@@ -410,6 +425,9 @@ host file systems to mount inside the container."
             (mkdir-p "/bin")
             (symlink bash "/bin/sh")
 
+            ;; Set a reasonable default PS1.
+            (setenv "PS1" "\\u@\\h \\w [env]\\$ ")
+
             ;; Setup directory for temporary files.
             (mkdir-p "/tmp")
             (for-each (lambda (var)
@@ -417,16 +435,26 @@ host file systems to mount inside the container."
                       ;; The same variables as in Nix's 'build.cc'.
                       '("TMPDIR" "TEMPDIR" "TMP" "TEMP"))
 
-            ;; From Nix build.cc:
-            ;;
-            ;; Set HOME to a non-existing path to prevent certain
-            ;; programs from using /etc/passwd (or NIS, or whatever)
-            ;; to locate the home directory (for example, wget looks
-            ;; for ~/.wgetrc).  I.e., these tools use /etc/passwd if
-            ;; HOME is not set, but they will just assume that the
-            ;; settings file they are looking for does not exist if
-            ;; HOME is set but points to some non-existing path.
-            (setenv "HOME" "/homeless-shelter")
+            ;; Create a dummy home directory under the same name as on the
+            ;; host.
+            (mkdir-p (passwd:dir passwd))
+            (setenv "HOME" (passwd:dir passwd))
+
+            ;; Create a dummy /etc/passwd to satisfy applications that demand
+            ;; to read it, such as 'git clone' over SSH, a valid use-case when
+            ;; sharing the host's network namespace.
+            (mkdir-p "/etc")
+            (call-with-output-file "/etc/passwd"
+              (lambda (port)
+                (display (string-join (list (passwd:name passwd)
+                                            "x" ; but there is no shadow
+                                            "0" "0" ; user is now root
+                                            (passwd:gecos passwd)
+                                            (passwd:dir passwd)
+                                            bash)
+                                      ":")
+                         port)
+                (newline port)))
 
             ;; For convenience, start in the user's current working
             ;; directory rather than the root directory.
@@ -571,4 +599,5 @@ message if any test fails."
                  (else
                   (return
                    (exit/status
-                    (launch-environment command profile paths pure?)))))))))))))
+                    (launch-environment/fork command profile
+                                             paths pure?)))))))))))))

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
@@ -52,7 +52,6 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages ghostscript)
-  #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages less)
@@ -177,7 +176,7 @@ numbers.")
 (define-public glpk
   (package
     (name "glpk")
-    (version "4.59")
+    (version "4.60")
     (source
      (origin
       (method url-fetch)
@@ -185,7 +184,7 @@ numbers.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1bpbp5z0378kaj5bqmc5m2j5h9c7553p0s2j6a28badqghpbx673"))))
+        "15z2ymzqhxwss6wgdj5f7vkyqlqdsjgrvm0x871kmlx0n0664mhk"))))
     (build-system gnu-build-system)
     (inputs
      `(("gmp" ,gmp)))
@@ -201,45 +200,57 @@ translator for the language.  In addition to the C library, a stand-alone
 LP/MIP solver is included in the package.")
     (license license:gpl3+)))
 
-(define-public pspp
+(define-public 4ti2
   (package
-    (name "pspp")
-    (version "0.8.5")
+    (name "4ti2")
+    (version "1.6.7")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://gnu/pspp/pspp-"
-                          version ".tar.gz"))
+      (uri (string-append "http://www.4ti2.de/version_" version
+                          "/4ti2-" version ".tar.gz"))
       (sha256
        (base32
-        "0c8326yykidi94xi7jn27j8iqxc38vc07d4wf5zyk0l8lpzx5vz7"))))
+        "1frix3rnm9ffr93alqzw4cavxbfpf524l8rfbmcpyhwd3n1km0yl"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("which" ,(@ (gnu packages base) which)))) ; for the tests
+    (inputs
+     `(("glpk" ,glpk)
+       ("gmp" ,gmp)))
+    (home-page "http://www.4ti2.de/")
+    (synopsis "Mathematical tool suite for problems on linear spaces")
+    (description
+     "4ti2 implements algorithms for solving algebraic, geometric and
+combinatorial problems on linear spaces.  Among others, it solves systems
+of linear equations, computes extreme rays of polyhedral cones, solves
+integer programming problems and computes Markov bases for statistics.")
+    (license license:gpl2+)))
+
+(define-public cddlib
+  (package
+    (name "cddlib")
+    (version "0.94h")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "ftp://ftp.ifor.math.ethz.ch/pub/fukuda/cdd/cddlib-"
+                          (string-delete #\. version) ".tar.gz"))
+      (sha256
+       (base32
+        "1dasasscwfg793q8fwzgwf64xwj7w62yfvszpr8x8g38jka08vgy"))))
     (build-system gnu-build-system)
     (inputs
-     `(("cairo" ,cairo)
-       ("fontconfig" ,fontconfig)
-       ("gettext" ,gnu-gettext)
-       ("gsl" ,gsl)
-       ("libxml2" ,libxml2)
-       ("pango" ,pango)
-       ("readline" ,readline)
-       ("gtk" ,gtk+-2)
-       ("gtksourceview" ,gtksourceview-2)
-       ("zlib" ,zlib)))
-    (native-inputs
-     `(("glib" ,glib "bin")             ;for glib-genmarshal
-       ("perl" ,perl)
-       ("texinfo" ,texinfo)
-       ("pkg-config" ,pkg-config)))
-    (home-page "http://www.gnu.org/software/pspp/")
-    (synopsis "Statistical analysis")
+     `(("gmp" ,gmp)))
+    (home-page "https://www.inf.ethz.ch/personal/fukudak/cdd_home/index.html")
+    (synopsis "Library for convex hulls and extreme rays of polyhedra")
     (description
-     "GNU PSPP is a statistical analysis program.  It can perform
-descriptive statistics, T-tests, linear regression and non-parametric tests.
-It features both a graphical interface as well as command-line input.  PSPP
-is designed to interoperate with Gnumeric, LibreOffice and OpenOffice.  Data
-can be imported from spreadsheets, text files and database sources and it can
-be output in text, PostScript, PDF or HTML.")
-    (license license:gpl3+)))
+     "The C-library cddlib implements the Double Description Method of
+Motzkin et al. for generating all vertices (i.e. extreme points) and extreme
+rays of a general convex polyhedron given by a system of linear inequalities
+in arbitrary dimension.  It can also be used for the converse operation of
+computing convex hulls.")
+    (license license:gpl2+)))
 
 (define-public arpack-ng
   (package

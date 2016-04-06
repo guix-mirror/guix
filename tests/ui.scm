@@ -250,6 +250,3 @@ Second line" 24))
                               (show-manifest-transaction store m t)))))))))
 
 (test-end "ui")
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

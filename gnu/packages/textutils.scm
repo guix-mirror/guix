@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2015 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -271,3 +272,23 @@ Consequently, the computation has a flat performance characteristic,
 correlated with data variation rather than file size.  pfff can be as reliable
 as existing hashing techniques, with provably negligible risk of collisions.")
     (license license:bsd-3)))
+
+(define-public oniguruma
+  (package
+    (name "oniguruma")
+    (version "5.9.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/kkos/"
+                                  "oniguruma/releases/download/v" version
+                                  "/onig-" version ".tar.gz"))
+              (sha256
+               (base32
+                "19s79vsclqn170mw0ajwv7j37qsbn4f1yjz3yavnhvva6c820r6m"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/kkos/oniguruma")
+    (synopsis "Regular expression library")
+    (description "Oniguruma is a regular expressions library.  The special
+characteristic of this library is that different character encoding for every
+regular expression object can be specified.")
+    (license license:bsd-2)))

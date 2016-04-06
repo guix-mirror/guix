@@ -72,6 +72,3 @@
     (eq? gnu (operating-system-store-file-system os))))
 
 (test-end)
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

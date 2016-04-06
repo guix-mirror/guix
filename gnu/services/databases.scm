@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -56,6 +56,7 @@ host	all	all	::1/128 	trust"))
 
 (define %default-postgres-config
   (mixed-text-file "postgresql.conf"
+                   "log_destination = 'syslog'\n"
                    "hba_file = '" %default-postgres-hba "'\n"
                    "ident_file = '" %default-postgres-ident "'\n"))
 
@@ -116,7 +117,7 @@ host	all	all	::1/128 	trust"))
        (list (shepherd-service
               (provision '(postgres))
               (documentation "Run the PostgreSQL daemon.")
-              (requirement '(user-processes loopback))
+              (requirement '(user-processes loopback syslogd))
               (start #~(make-forkexec-constructor #$start-script))
               (stop #~(make-kill-destructor))))))))
 

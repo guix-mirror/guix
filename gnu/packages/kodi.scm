@@ -80,6 +80,7 @@
                 (uri (git-reference
                       (url "https://github.com/graeme-hill/crossguid.git")
                       (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
                   "1i29y207qqddvaxbn39pk2fbh3gx8zvdprfp35wasj9rw2wjk3s9"))))

@@ -121,6 +121,3 @@ References: ~a~%"
     (response-code (http-get (publish-uri (string-append "/nar/invalid"))))))
 
 (test-end "publish")
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

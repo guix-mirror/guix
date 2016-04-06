@@ -82,8 +82,13 @@ grep -e "$NIX_STORE_DIR/.*-bash" $tmpdir/mounts # bootstrap bash
 
 rm $tmpdir/mounts
 
+abnormal_exit_code="
+(use-modules (system foreign))
+;; Purposely make Guile crash with a segfault. :)
+(pointer->string (make-pointer 123) 123)"
+
 if guix environment --bootstrap --container \
-	--ad-hoc bootstrap-binaries -- kill -SEGV 2
+	--ad-hoc guile-bootstrap -- guile -c "$abnormal_exit_code"
 then false;
 else
     test $? -gt 127

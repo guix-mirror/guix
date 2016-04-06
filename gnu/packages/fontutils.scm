@@ -208,9 +208,8 @@ applications should be.")
 
 (define-public graphite2
   (package
-   (replacement graphite2-1.3.6)
    (name "graphite2")
-   (version "1.3.5")
+   (version "1.3.6")
    (source
      (origin
        (method url-fetch)
@@ -218,8 +217,8 @@ applications should be.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-         (base32
-           "0jrjb56zim57xg2pckfdyrw46c624mqz9zywgwza0g1bxg26940w"))))
+        (base32
+         "1frd9mjaqzvh9gs74ngc43igi53vzjzlwr5chbrs6ii1hc4aa23s"))))
    (build-system cmake-build-system)
    (native-inputs
     `(("python" ,python-2) ; because of "import imap" in tests
@@ -234,21 +233,6 @@ process known as shaping.  This process takes an input Unicode text string
 and returns a sequence of positioned glyphids from the font.")
    (license license:lgpl2.1+)
    (home-page "https://github.com/silnrsi/graphite")))
-
-(define graphite2-1.3.6
-  (package
-    (inherit graphite2)
-    (replacement #f)
-    (source
-     (let ((name "graphite2") (version "1.3.6"))
-       (origin
-         (method url-fetch)
-         (uri (string-append "https://github.com/silnrsi/graphite/archive/"
-                             version ".tar.gz"))
-         (file-name (string-append name "-" version ".tar.gz"))
-         (sha256
-          (base32
-           "1frd9mjaqzvh9gs74ngc43igi53vzjzlwr5chbrs6ii1hc4aa23s")))))))
 
 (define-public potrace
   (package
@@ -367,14 +351,20 @@ definitions.")
                      "0gfcm8yn1d30giqhdwbchnfnspcqypqdzrxlhqhwy1i18wgl0v2v"))
             (modules '((guix build utils)))
             (snippet
-             ;; Make builds bit-reproducible by using fixed date strings.
-             '(substitute* "configure"
-                (("^FONTFORGE_MODTIME=.*$")
-                 "FONTFORGE_MODTIME=\"1458399002\"\n")
-                (("^FONTFORGE_MODTIME_STR=.*$")
-                 "FONTFORGE_MODTIME_STR=\"15:50 CET 19-Mar-2016\"\n")
-                (("^FONTFORGE_VERSIONDATE=.*$")
-                 "FONTFORGE_VERSIONDATE=\"20160319\"\n")))))
+             '(begin
+               ;; Make builds bit-reproducible by using fixed date strings.
+               (substitute* "configure"
+                 (("^FONTFORGE_MODTIME=.*$")
+                  "FONTFORGE_MODTIME=\"1458399002\"\n")
+                 (("^FONTFORGE_MODTIME_STR=.*$")
+                  "FONTFORGE_MODTIME_STR=\"15:50 CET 19-Mar-2016\"\n")
+                 (("^FONTFORGE_VERSIONDATE=.*$")
+                  "FONTFORGE_VERSIONDATE=\"20160319\"\n"))
+
+               ;; Make TTF builds bit-reproducible by clearing the timestamp
+               ;; that goes in TTF files.
+               (substitute* "fontforge/tottf.c"
+                 (("cvt_unix_to_1904\\(now") "cvt_unix_to_1904(0"))))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))

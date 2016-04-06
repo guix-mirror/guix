@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,10 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config))
@@ -83,3 +88,42 @@ interface.  It is fast, feature rich, easy to configure, and easy to use.")
 
     ;; Artwork is distributed under the WTFPL.
     (license gpl2+)))
+
+(define-public wmbattery
+  (package
+    (name "wmbattery")
+    (version "2.50")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://debian/pool/main/w/wmbattery/wmbattery_"
+                    version ".orig.tar.gz"))
+              (sha256
+               (base32
+                "0hi6bivv3xd2k68w08krndfl68wdx7nmc2wjzsmcd4q3qgwgyk44"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f              ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+    (inputs
+     `(("glib" ,glib)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxpm" ,libxpm)
+       ("upower" ,upower)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://windowmaker.org/dockapps/?name=wmbattery")
+    (synopsis "Display laptop battery info")
+    (description
+     "Wmbattery displays the status of your laptop's battery in a small icon.
+This includes if it is plugged in, if the battery is charging, how many minutes
+of battery life remain, battery life remaining (with both a percentage and a
+graph), and battery status (high - green, low - yellow, or critical - red).")
+    (license gpl2)))
+

@@ -3,7 +3,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2015, 2016 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
@@ -42,8 +42,10 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages compression)
@@ -53,6 +55,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages openldap)
+  #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages texinfo)
@@ -65,6 +68,37 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages man)
   #:use-module (gnu packages autotools))
+
+(define-public aide
+  (package
+    (name "aide")
+    (version "0.15.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/aide/aide/"
+                                  version "/aide-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vsrc0s62kv1i84skm6k6zy868gayjck268qwj38rpspc8c5qgih"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
+    (inputs
+     `(("libgcrypt" ,libgcrypt)
+       ("libgpg-error" ,libgpg-error)
+       ("libmhash" ,libmhash)
+       ("zlib" ,zlib)))
+    (synopsis "File and directory integrity checker")
+    (description
+     "AIDE (Advanced Intrusion Detection Environment) is a file and directory
+integrity checker.  It creates a database from the regular expression rules
+that it finds from its configuration files.  Once this database is initialized
+it can be used to verify the integrity of the files.  It has several message
+digest algorithms that are used to check the integrity of files.  All of the
+usual file attributes can be checked for inconsistencies.")
+    (home-page "http://aide.sourceforge.net/")
+    (license license:gpl2+)))
 
 (define-public dmd
   ;; Deprecated.  Kept around "just in case."
@@ -109,14 +143,14 @@ interface and is based on GNU Guile.")
 (define-public shepherd
   (package
     (name "shepherd")
-    (version "0.3")
+    (version "0.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://alpha.gnu.org/gnu/dmd/shepherd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "13mcy2131h7hggqvxbfxyrnbz46aaiaq2agng3x3f789a78n4mnn"))))
+                "0f3yi3n4sl9myiay95yhv2a9an338qddfjrbv7da753ip66dkfz6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
@@ -157,14 +191,14 @@ graphs and can export its output to different formats.")
 (define-public htop
   (package
    (name "htop")
-   (version "2.0.0")
+   (version "2.0.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://hisham.hm/htop/releases/"
                   version "/htop-" version ".tar.gz"))
             (sha256
              (base32
-              "1d944hn0ldxvxfrz9acr26lpmzlwj91m0s7x2xnivnfnmfha4p6i"))))
+              "0rjn9ybqx5sav7z4gn18f1q6k23nmqyb6yydfgghzdznz9nn447l"))))
    (build-system gnu-build-system)
    (inputs
     `(("ncurses" ,ncurses)))
@@ -1497,3 +1531,80 @@ for writing audit records to the disk.  Viewing the logs is done with the
 @code{ausearch} or @code{aureport} utilities.  Configuring the audit rules is
 done with the @code{auditctl} utility.")
     (license license:gpl2+)))
+
+(define-public nmap
+  (package
+    (name "nmap")
+    (version "7.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://nmap.org/dist/nmap-" version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "0jlmq1w0gjqpa7qa523kdj73ndm1xzww2wjvb94hxh6yalargyhk"))
+              (modules '((guix build utils)))
+              (snippet
+               '(map delete-file-recursively
+                 ;; Remove bundled lua, pcap, and pcre libraries.
+                 ;; FIXME: Remove bundled liblinear once packaged.
+                 '("liblua"
+                   "libpcap"
+                   "libpcre"
+                   ;; Remove pre-compiled binares.
+                   "mswin32")))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("openssl" ,openssl)
+       ("libpcap" ,libpcap)
+       ("pcre" ,pcre)
+       ("lua" ,lua)
+       ;; For 'ndiff'.
+       ("python" ,python-2)))
+
+    ;; TODO Add zenmap output.
+    (outputs '("out" "ndiff"))
+    (arguments
+     '(#:configure-flags '("--without-zenmap")
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (define (make out . args)
+               (unless (zero? (apply system* "make"
+                                     (string-append "prefix=" out)
+                                     args))
+                 (error "make failed")))
+             (define (python-path dir)
+               (string-append dir "/lib/python2.7/site-packages"))
+             (let ((out (assoc-ref outputs "out"))
+                   (ndiff (assoc-ref outputs "ndiff")))
+               (for-each mkdir-p (list out ndiff))
+               (make out
+                 "install-nmap"
+                 "install-nse"
+                 "install-ncat"
+                 "install-nping")
+               (make ndiff "install-ndiff")
+               (wrap-program (string-append ndiff "/bin/ndiff")
+                 `("PYTHONPATH" prefix
+                   (,(python-path ndiff)))))))
+         ;; These are the tests that do not require network access.
+         (replace 'check
+           (lambda _ (zero? (system* "make"
+                                     "check-nse"
+                                     "check-ndiff"
+                                     "check-dns")))))
+       ;; Nmap can't cope with out-of-source building.
+       #:out-of-source? #f))
+    (home-page "https://nmap.org/")
+    (synopsis "Network discovery and security auditing tool")
+    (description
+     "Nmap (\"Network Mapper\") is a network discovery and security auditing
+tool.  It is also useful for tasks such as network inventory, managing service
+upgrade schedules, and monitoring host or service uptime.  It also provides an
+advanced netcat implementation (ncat), a utility for comparing scan
+results (ndiff), and a packet generation and response analysis tool (nping).")
+    ;; This package uses nmap's bundled versions of libdnet and liblinear, which
+    ;; both use a 3-clause BSD license.
+    (license (list license:nmap license:bsd-3))))

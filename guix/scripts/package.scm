@@ -47,7 +47,8 @@
   #:autoload   (gnu packages base) (canonical-package)
   #:autoload   (gnu packages guile) (guile-2.0)
   #:autoload   (gnu packages bootstrap) (%bootstrap-guile)
-  #:export (delete-generations
+  #:export (build-and-use-profile
+            delete-generations
             display-search-paths
             guix-package))
 

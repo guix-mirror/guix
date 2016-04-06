@@ -336,6 +336,3 @@
 (test-end)
 
 (false-if-exception (delete-file temp-file))
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

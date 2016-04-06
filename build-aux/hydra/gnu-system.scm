@@ -161,7 +161,7 @@ system.")
                        (set-guile-for-build (default-guile))
                        (system-disk-image installation-os
                                           #:disk-image-size
-                                          (* 860 MiB))))))
+                                          (* 1024 MiB))))))
       '()))
 
 (define (tarball-jobs store system)

@@ -249,20 +249,52 @@ Coding Style
 @node Introduction
 @chapter Introduction
 
+@cindex purpose
 GNU Guix@footnote{``Guix'' is pronounced like ``geeks'', or ``ɡiːks''
-using the international phonetic alphabet (IPA).} is a functional
-package management tool for the GNU system.  Package management consists
-of all activities that relate to building packages from sources,
-honoring their build-time and run-time dependencies,
-installing packages in user environments, upgrading installed packages
-to new versions or rolling back to a previous set, removing unused
-software packages, etc.
+using the international phonetic alphabet (IPA).} is a package
+management tool for the GNU system.  Guix makes it easy for unprivileged
+users to install, upgrade, or remove packages, to roll back to a
+previous package set, to build packages from source, and generally
+assists with the creation and maintenance of software environments.
+
+@cindex user interfaces
+Guix provides a command-line package management interface
+(@pxref{Invoking guix package}), a set of command-line utilities
+(@pxref{Utilities}), a visual user interface in Emacs (@pxref{Emacs
+Interface}), as well as Scheme programming interfaces
+(@pxref{Programming Interface}).
+@cindex build daemon
+Its @dfn{build daemon} is responsible for building packages on behalf of
+users (@pxref{Setting Up the Daemon}) and for downloading pre-built
+binaries from authorized sources (@pxref{Substitutes}).
+
+@cindex extensibility of the distribution
+@cindex customization of packages
+Guix includes package definitions for many GNU and non-GNU packages, all
+of which @uref{https://www.gnu.org/philosophy/free-sw.html, respect the
+user's computing freedom}.  It is @emph{extensible}: users can write
+their own package definitions (@pxref{Defining Packages}) and make them
+available as independent package modules (@pxref{Package Modules}).  It
+is also @emph{customizable}: users can @emph{derive} specialized package
+definitions from existing ones, including from the command line
+(@pxref{Package Transformation Options}).
+
+@cindex Guix System Distribution
+@cindex GuixSD
+You can install GNU@tie{}Guix on top of an existing GNU/Linux system
+where it complements the available tools without interference
+(@pxref{Installation}), or you can use it as part of the standalone
+@dfn{Guix System Distribution} or GuixSD (@pxref{GNU Distribution}).
+With GNU@tie{}GuixSD, you @emph{declare} all aspects of the operating
+system configuration and Guix takes care of instantiating the
+configuration in a transactional, reproducible, and stateless fashion
+(@pxref{System Configuration}).
 
 @cindex functional package management
-The term @dfn{functional} refers to a specific package management
+Under the hood, Guix implements the @dfn{functional package management}
 discipline pioneered by Nix (@pxref{Acknowledgments}).
 In Guix, the package build and installation process is seen
-as a function, in the mathematical sense.  That function takes inputs,
+as a @emph{function}, in the mathematical sense.  That function takes inputs,
 such as build scripts, a compiler, and libraries, and
 returns an installed package.  As a pure function, its result depends
 solely on its inputs---for instance, it cannot refer to software or
@@ -286,18 +318,6 @@ This approach is the foundation for the salient features of Guix: support
 for transactional package upgrade and rollback, per-user installation, and
 garbage collection of packages (@pxref{Features}).
 
-Guix has a command-line interface, which allows users to build, install,
-upgrade, and remove packages, as well as a Scheme programming interface.
-
-@cindex Guix System Distribution
-@cindex GuixSD
-Last but not least, Guix is used to build a distribution of the GNU
-system, with many GNU and non-GNU free software packages.  The Guix
-System Distribution, or GNU@tie{}GuixSD, takes advantage of the core
-properties of Guix at the system level.  With GuixSD, users
-@emph{declare} all aspects of the operating system configuration, and
-Guix takes care of instantiating that configuration in a reproducible,
-stateless fashion.  @xref{GNU Distribution}.
 
 @c *********************************************************************
 @node Installation
@@ -576,12 +596,18 @@ It is also possible to run a subset of the tests by defining the
 make check TESTS="tests/store.scm tests/cpio.scm"
 @end example
 
+By default, tests results are displayed at a file level.  In order to
+see the details of every individual test cases, it is possible to define
+the @code{SCM_LOG_DRIVER_FLAGS} makefile variable as in this example:
+
+@example
+make check TESTS="tests/base64.scm" SCM_LOG_DRIVER_FLAGS="--brief=no"
+@end example
+
 Upon failure, please email @email{bug-guix@@gnu.org} and attach the
-@file{test-suite.log} file.  When @file{tests/@var{something}.scm}
-fails, please also attach the @file{@var{something}.log} file available
-in the top-level build directory.  Please specify the Guix version being
-used as well as version numbers of the dependencies
-(@pxref{Requirements}) in your message.
+@file{test-suite.log} file.  Please specify the Guix version being used
+as well as version numbers of the dependencies (@pxref{Requirements}) in
+your message.
 
 @node Setting Up the Daemon
 @section Setting Up the Daemon
@@ -1214,7 +1240,8 @@ In addition, any package transaction may be @emph{rolled back}.  So, if,
 for example, an upgrade installs a new version of a package that turns
 out to have a serious bug, users may roll back to the previous instance
 of their profile, which was known to work well.  Similarly, the global
-system configuration is subject to transactional upgrades and roll-back
+system configuration on GuixSD is subject to
+transactional upgrades and roll-back
 (@pxref{Using the Configuration System}).
 
 All packages in the package store may be @emph{garbage-collected}.
@@ -1243,7 +1270,10 @@ deployment}.  When a pre-built binary for a @file{/gnu/store} item is
 available from an external source---a @dfn{substitute}, Guix just
 downloads it and unpacks it;
 otherwise, it builds the package from source, locally
-(@pxref{Substitutes}).
+(@pxref{Substitutes}).  Because build results are usually bit-for-bit
+reproducible, users do not have to trust servers that provide
+substitutes: they can force a local build and @emph{challenge} providers
+(@pxref{Invoking guix challenge}).
 
 Control over the build environment is a feature that is also useful for
 developers.  The @command{guix environment} command allows developers of
@@ -2830,8 +2860,11 @@ For packages that install stand-alone Python programs under @code{bin/},
 it takes care of wrapping these programs so that their @code{PYTHONPATH}
 environment variable points to all the Python libraries they depend on.
 
-Which Python package is used can be specified with the @code{#:python}
-parameter.
+Which Python package is used to perform the build can be specified with
+the @code{#:python} parameter.  This is a useful way to force a package
+to be built for a specific version of the Python interpreter, which
+might be necessary if the package is only compatible with a single
+interpreter version.
 @end defvr
 
 @defvr {Scheme Variable} perl-build-system
@@ -3221,7 +3254,7 @@ provides a framework for working with @dfn{monads}, and a particularly
 useful monad for our uses, the @dfn{store monad}.  Monads are a
 construct that allows two things: associating ``context'' with values
 (in our case, the context is the store), and building sequences of
-computations (here computations include accesses to the store.)  Values
+computations (here computations include accesses to the store).  Values
 in a monad---values that carry this additional context---are called
 @dfn{monadic values}; procedures that return such values are called
 @dfn{monadic procedures}.
@@ -3250,7 +3283,7 @@ as a monadic function:
                                  #$output))))
 @end example
 
-There several things to note in the second version: the @code{store}
+There are several things to note in the second version: the @code{store}
 parameter is now implicit and is ``threaded'' in the calls to the
 @code{package->derivation} and @code{gexp->derivation} monadic
 procedures, and the monadic value returned by @code{package->derivation}
@@ -3268,7 +3301,7 @@ omitted since it will take place implicitly, as we will see later
 @end example
 
 @c See
-@c <https://syntaxexclamation.wordpress.com/2014/06/26/escaping-continuations/> 
+@c <https://syntaxexclamation.wordpress.com/2014/06/26/escaping-continuations/>
 @c for the funny quote.
 Calling the monadic @code{sh-symlink} has no effect.  As someone once
 said, ``you exit a monad like you exit a building on fire: by running''.
@@ -3517,7 +3550,7 @@ S-expressions adapted to build expressions.  G-expressions, or
 @code{ungexp}, and @code{ungexp-splicing} (or simply: @code{#~},
 @code{#$}, and @code{#$@@}), which are comparable to
 @code{quasiquote}, @code{unquote}, and @code{unquote-splicing},
-respectivel (@pxref{Expression Syntax, @code{quasiquote},, guile,
+respectively (@pxref{Expression Syntax, @code{quasiquote},, guile,
 GNU Guile Reference Manual}).  However, there are major differences:
 
 @itemize
@@ -3878,9 +3911,10 @@ has an associated gexp compiler, such as a @code{<package>}.
 @node Utilities
 @chapter Utilities
 
-This section describes tools primarily targeted at developers and users
-who write new package definitions.  They complement the Scheme
-programming interface of Guix in a convenient way.
+This section describes Guix command-line utilities.  Some of them are
+primarily targeted at developers and users who write new package
+definitions, while others are more generally useful.  They complement
+the Scheme programming interface of Guix in a convenient way.
 
 @menu
 * Invoking guix build::         Building packages from the command line.
@@ -4314,7 +4348,7 @@ So for instance, imagine you want to see the build log of GDB on MIPS,
 but you are actually on an @code{x86_64} machine:
 
 @example
-$ guix build --log-file gdb -s mips64el-linux 
+$ guix build --log-file gdb -s mips64el-linux
 https://hydra.gnu.org/log/@dots{}-gdb-7.10
 @end example
 
@@ -4764,6 +4798,8 @@ the updater for @uref{https://pypi.python.org, PyPI} packages.
 the updater for @uref{https://rubygems.org, RubyGems} packages.
 @item github
 the updater for @uref{https://github.com, GitHub} packages.
+@item hackage
+the updater for @uref{https://hackage.haskell.org, Hackage} packages.
 @end table
 
 For instance, the following command only checks for updates of Emacs
@@ -4888,10 +4924,25 @@ just a version number or ``git-checkout'', without a declared
 @code{file-name} (@pxref{origin Reference}).
 
 @item cve
+@cindex security vulnerabilities
+@cindex CVE, Common Vulnerabilities and Exposures
 Report known vulnerabilities found in the Common Vulnerabilities and
-Exposures (CVE) database
+Exposures (CVE) databases of the current and past year
 @uref{https://nvd.nist.gov/download.cfm#CVE_FEED, published by the US
 NIST}.
+
+To view information about a particular vulnerability, visit pages such as:
+
+@itemize
+@item
+@indicateurl{https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-YYYY-ABCD}
+@item
+@indicateurl{https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-YYYY-ABCD}
+@end itemize
+
+@noindent
+where @code{CVE-YYYY-ABCD} is the CVE identifier---e.g.,
+@code{CVE-2015-7554}.
 
 @item formatting
 Warn about obvious source code formatting issues: trailing white space,
@@ -5313,10 +5364,11 @@ Attempt to build for @var{system}---e.g., @code{i686-linux}.
 @itemx -C
 @cindex container
 Run @var{command} within an isolated container.  The current working
-directory outside the container is mapped inside the
-container.  Additionally, the spawned process runs as the current user
-outside the container, but has root privileges in the context of the
-container.
+directory outside the container is mapped inside the container.
+Additionally, a dummy home directory is created that matches the current
+user's home directory, and @file{/etc/passwd} is configured accordingly.
+The spawned process runs as the current user outside the container, but
+has root privileges in the context of the container.
 
 @item --network
 @itemx -N
@@ -5685,12 +5737,17 @@ also be installed on top of a running GNU/Linux system,
 @pxref{Installation}.
 
 @ifinfo
+@quotation Note
 @c This paragraph is for people reading this from tty2 of the
 @c installation image.
 You are reading this documentation with an Info reader.  For details on
 how to use it, hit the @key{RET} key (``return'' or ``enter'') on the
-link that follows: @pxref{Help,,, info, Info: An Introduction}.  Hit
-@kbd{l} afterwards to come back here.
+link that follows: @pxref{Top, Info reader,, info-stnd, Stand-alone GNU
+Info}.  Hit @kbd{l} afterwards to come back here.
+
+Alternately, run @command{info info} in another tty to keep the manual
+available.
+@end quotation
 @end ifinfo
 
 @menu
@@ -5732,7 +5789,7 @@ Few system services are currently supported out-of-the-box
 (@pxref{Services}).
 
 @item
-More than 3,000 packages are available, but you may
+More than 3,200 packages are available, but you may
 occasionally find that a useful package is missing.
 
 @item
@@ -5830,10 +5887,16 @@ menu, where you can choose to boot from the USB stick.
 Once you have successfully booted the image on the USB stick, you should
 end up with a root prompt.  Several console TTYs are configured and can
 be used to run commands as root.  TTY2 shows this documentation,
-browsable using the Info reader commands (@pxref{Help,,, info, Info: An
-Introduction}).  The installation system runs the GPM mouse daemon,
-which allows you to select text with the left mouse button and to paste
-it with the middle button.
+browsable using the Info reader commands (@pxref{Top,,, info-stnd,
+Stand-alone GNU Info}).  The installation system runs the GPM mouse
+daemon, which allows you to select text with the left mouse button and
+to paste it with the middle button.
+
+@quotation Note
+Installation requires access to the Internet so that any missing
+dependencies of your system configuration can be downloaded.  See the
+``Networking'' section below.
+@end quotation
 
 @subsubsection Keyboard Layout
 
@@ -5903,14 +5966,14 @@ network interface you want to use):
 wpa_supplicant -c wpa_supplicant.conf -i @var{interface} -B
 @end example
 
-Run @command{man wpa_supplication} for more information.
+Run @command{man wpa_supplicant} for more information.
 @end table
 
 At this point, you need to acquire an IP address.  On a network where IP
 addresses are automatically assigned @i{via} DHCP, you can run:
 
 @example
-dhclient @var{interface}
+dhclient -v @var{interface}
 @end example
 
 Try to ping a server to see if networking is up and running:
@@ -5986,16 +6049,19 @@ With the target partitions ready and the target root mounted on
 herd start cow-store /mnt
 @end example
 
-This makes @file{/gnu/store} copy-on-write, such that packages added to
-it during the installation phase are written to the target disk rather
-than kept in memory.
+This makes @file{/gnu/store} copy-on-write, such that packages added to it
+during the installation phase are written to the target disk on @file{/mnt}
+rather than kept in memory.  This is necessary because the first phase of
+the @command{guix system init} command (see below) entails downloads or
+builds to @file{/gnu/store} which, initially, is an in-memory file system.
 
 Next, you have to edit a file and
 provide the declaration of the operating system to be installed.  To
 that end, the installation system comes with two text editors: GNU nano
 (@pxref{Top,,, nano, GNU nano Manual}), and GNU Zile, an Emacs clone.
-It is better to store that file on the target root file system, say, as
-@file{/mnt/etc/config.scm}.
+We strongly recommend storing that file on the target root file system, say,
+as @file{/mnt/etc/config.scm}.  Failing to do that, you will have lost your
+configuration file once you have rebooted into the newly-installed system.
 
 @xref{Using the Configuration System}, for an overview of the
 configuration file.  The example configurations discussed in that
@@ -6056,8 +6122,9 @@ good.
 The installation image described above was built using the @command{guix
 system} command, specifically:
 
+@c FIXME: 1G is too much; see <http://bugs.gnu.org/23077>.
 @example
-guix system disk-image --image-size=850MiB gnu/system/install.scm
+guix system disk-image --image-size=1G gnu/system/install.scm
 @end example
 
 Have a look at @file{gnu/system/install.scm} in the source tree,
@@ -6218,11 +6285,19 @@ to create a new configuration which has the same values as the old
 configuration, but with a few modifications.
 
 The configuration for a typical ``desktop'' usage, with the X11 display
-server, a desktop environment, network management, power management, and
-more, would look like this:
+server, GNOME and Xfce (users can choose which of these desktop
+environments to use at the log-in screen by pressing @kbd{F1}), network
+management, power management, and more, would look like this:
 
 @lisp
 @include os-config-desktop.texi
+@end lisp
+
+A graphical environment with a choice of lightweight window managers
+instead of full-blown desktop environments would look like this:
+
+@lisp
+@include os-config-lightweight-desktop.texi
 @end lisp
 
 @xref{Desktop Services}, for the exact list of services provided by
@@ -8714,7 +8789,7 @@ isn't enough disk space, just skip it.
 @item fcntl
 Use this if possible.  Works with NFS too if lockd is used.
 @item flock
-May not exist in all systems.  Doesn't work with NFS. 
+May not exist in all systems.  Doesn't work with NFS.
 @item lockf
 May not exist in all systems.  Doesn't work with NFS.
 @end table
@@ -10415,14 +10490,32 @@ the load.  To check whether a package has a @code{debug} output, use
 @node Security Updates
 @section Security Updates
 
+@cindex security updates
+@cindex security vulnerabilities
+Occasionally, important security vulnerabilities are discovered in software
+packages and must be patched.  Guix developers try hard to keep track of
+known vulnerabilities and to apply fixes as soon as possible in the
+@code{master} branch of Guix (we do not yet provide a ``stable'' branch
+containing only security updates.)  The @command{guix lint} tool helps
+developers find out about vulnerable versions of software packages in the
+distribution:
+
+@smallexample
+$ guix lint -c cve
+gnu/packages/base.scm:652:2: glibc-2.21: probably vulnerable to CVE-2015-1781, CVE-2015-7547
+gnu/packages/gcc.scm:334:2: gcc-4.9.3: probably vulnerable to CVE-2015-5276
+gnu/packages/image.scm:312:2: openjpeg-2.1.0: probably vulnerable to CVE-2016-1923, CVE-2016-1924
+@dots{}
+@end smallexample
+
+@xref{Invoking guix lint}, for more information.
+
 @quotation Note
-As of version @value{VERSION}, the feature described in this section is
-experimental.
+As of version @value{VERSION}, the feature described below is considered
+``beta''.
 @end quotation
 
-@cindex security updates
-Occasionally, important security vulnerabilities are discovered in core
-software packages and must be patched.  Guix follows a functional
+Guix follows a functional
 package management discipline (@pxref{Introduction}), which implies
 that, when a package is changed, @emph{every package that depends on it}
 must be rebuilt.  This can significantly slow down the deployment of

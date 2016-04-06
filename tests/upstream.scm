@@ -44,6 +44,3 @@
                             '("ftp://example.org/foo-1.tar.xz.sig"))))))
 
 (test-end)
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

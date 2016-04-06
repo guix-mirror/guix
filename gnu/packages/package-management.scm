@@ -60,17 +60,17 @@
                      arch "-linux"
                      "/20131110/guile-2.0.9.tar.xz")))
 
-(define-public guix-0.9.0
+(define-public guix-0.10.0
   (package
     (name "guix")
-    (version "0.9.0")
+    (version "0.10.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://alpha.gnu.org/gnu/guix/guix-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0h573z2br0bf43sxyzia9xlm03n3y43zg1snds3c2piq2m6kabrn"))))
+               "0d4afwy7bpqi4k4bzvwc4ga4shwssis1nrvdw53qjyg9bw1a8lbn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list
@@ -140,9 +140,16 @@
                             (path   (string-append
                                      json "/share/guile/site/2.0:"
                                      gnutls "/share/guile/site/2.0")))
+
+                       ;; Ignore user settings so that a bogus
+                       ;; GUILE_LOAD_COMPILED_PATH does not prevent use of
+                       ;; 'guix', notably when it contains entries pointing to
+                       ;; incompatible .go files as reported at
+                       ;; <https://lists.gnu.org/archive/html/guix-devel/2016-03/msg01261.html>.
                        (wrap-program (string-append out "/bin/guix")
-                         `("GUILE_LOAD_PATH" ":" prefix (,path))
-                         `("GUILE_LOAD_COMPILED_PATH" ":" prefix (,path)))
+                         `("GUILE_LOAD_PATH" ":" = (,path))
+                         `("GUILE_LOAD_COMPILED_PATH" ":" = (,path)))
+
                        #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("emacs" ,emacs-no-x)))      ;for guix.el
@@ -193,11 +200,11 @@ the Nix package manager.")
 (define guix-devel
   ;; Development version of Guix.
   ;;
-  ;; Note: use a short commit id; when using the long one, the limit on socket
-  ;; file names is exceeded while running the tests.
-  (let ((commit "71e2065a38cf2641b7eb8c557b0f043f5a42a649"))
-    (package (inherit guix-0.9.0)
-      (version (string-append "0.9.0." (string-take commit 7)))
+  ;; Note: use a very short commit id; with a longer one, the limit on
+  ;; hash-bang lines would be exceeded while running the tests.
+  (let ((commit "761139354798303c605964b896c250a01486b00a"))
+    (package (inherit guix-0.10.0)
+      (version (string-append "0.10.0-0." (string-take commit 4)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -205,10 +212,10 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0wrrywfdc27yxjns55qdz5si49c8zcb9q5557g2kx48dbm7p0dzw"))
+                  "1wvy9kms3v6k7cybw6489mqk161lv8d03qgmmxbmdgiwjmjxbzbn"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (arguments
-       (substitute-keyword-arguments (package-arguments guix-0.9.0)
+       (substitute-keyword-arguments (package-arguments guix-0.10.0)
          ((#:configure-flags flags)
           ;; Set 'DOT_USER_PROGRAM' to the empty string so we don't keep a
           ;; reference to Graphviz, whose closure is pretty big (too big for
@@ -232,7 +239,7 @@ the Nix package manager.")
          ("texinfo" ,texinfo)
          ("graphviz" ,graphviz)
          ("help2man" ,help2man)
-         ,@(package-native-inputs guix-0.9.0))))))
+         ,@(package-native-inputs guix-0.10.0))))))
 
 (define-public guix guix-devel)
 
@@ -389,13 +396,13 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "49")
+    (version "51")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "1mf6b7j82ckn90ggz6bp6c2jydz87xj8r8jmfl4hg7jcmf7dxmim"))))
+                "18rn6rrwh586228vnaf1nq0wayh19zbvfc0qmnbys6ln2pv2v007"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases

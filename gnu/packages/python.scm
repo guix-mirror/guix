@@ -16,7 +16,7 @@
 ;;; Copyright © 2015, 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
-;;; Copyright © 2015 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -69,6 +69,7 @@
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages base)
   #:use-module (gnu packages xml)
@@ -701,7 +702,7 @@ concepts.")
 (define-public python-lockfile
   (package
     (name "python-lockfile")
-    (version "0.9.1")
+    (version "0.12.2")
     (source
      (origin
        (method url-fetch)
@@ -709,18 +710,25 @@ concepts.")
                            "lockfile-" version ".tar.gz"))
        (sha256
         (base32
-         "0iwif7i84gwpvrnpv4brshdk8j6l77smvknm8k3bg77mj6f5ini3"))))
+         "16gpx5hm73ah5n1079ng0vy381hl802v606npkx4x8nb0gg05vba"))))
     (build-system python-build-system)
     (arguments '(#:test-target "check"))
+    (native-inputs
+     `(("python-pbr" ,python-pbr)))
     (home-page "http://code.google.com/p/pylockfile/")
     (synopsis "Platform-independent file locking module")
     (description
      "The lockfile package exports a LockFile class which provides a simple
 API for locking files.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-lockfile))))))
 
 (define-public python2-lockfile
-  (package-with-python2 python-lockfile))
+  (let ((base (package-with-python2 (strip-python2-variant python-lockfile))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
 
 (define-public python-mock
   (package
@@ -967,20 +975,14 @@ datetime module, available in Python 2.3+.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "0.16.2")
+    (version "0.18.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "10agmrkps8bi5948vwpipfxds5kj1d076m9i0nhaxwqiw7gm6670"))))
+        (base32 "050qw0ap5bhyv5flp78x3lcq1dlminl3xaj6kbrm0jqmx0672xf9"))))
     (build-system python-build-system)
-    (arguments
-     `(;; Three tests fail:
-       ;; - test_read_google
-       ;; - test_read_yahoo
-       ;; - test_month_range_union_tz_dateutil
-       #:tests? #f))
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
        ("python-pytz" ,python-pytz)
@@ -1519,7 +1521,7 @@ code introspection, and logging.")
 (define-public python-pytest
   (package
     (name "python-pytest")
-    (version "2.6.1")
+    (version "2.7.3")
     (source
      (origin
        (method url-fetch)
@@ -1528,7 +1530,7 @@ code introspection, and logging.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0g2w4p0n42wvz8rq4k6gnzpkakgz3g8sfanxk8jrsra9675snkcr"))
+         "1z4yi986f9n0p8qmzmn21m21m8j1x78hk3505f89baqm6pdw7afm"))
        (modules '((guix build utils)))
        (snippet
         ;; One of the tests involves the /usr directory, so it fails.
@@ -1861,6 +1863,48 @@ and sensible default behaviors into your setuptools run.")
 
 (define-public python2-pbr-0.11
   (package-with-python2 python-pbr-0.11))
+
+(define-public python-pbr
+  (package
+    (name "python-pbr")
+    (version "1.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/p/pbr/pbr-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0jcny36cf3s8ar5r4a575npz080hndnrfs4np1fqhv0ym4k7c4p2"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ;; Most tests seem to use the Internet.
+    (propagated-inputs
+      `(("python-testrepository" ,python-testrepository)
+        ("git" ,git))) ;; pbr actually uses the "git" binary.
+    (inputs
+      `(("python-fixtures" ,python-fixtures)
+        ("python-mimeparse" ,python-mimeparse)
+        ("python-mock" ,python-mock)
+        ("python-setuptools" ,python-setuptools)
+        ("python-six" ,python-six)
+        ("python-sphinx" ,python-sphinx)
+        ("python-testrepository" ,python-testrepository)
+        ("python-testresources" ,python-testresources)
+        ("python-testscenarios" ,python-testscenarios)
+        ("python-testtools" ,python-testtools)
+        ("python-virtualenv" ,python-virtualenv)))
+    (home-page "https://launchpad.net/pbr")
+    (synopsis "Change the default behavior of Python’s setuptools")
+    (description
+      "Python Build Reasonableness (PBR) is a library that injects some useful
+and sensible default behaviors into your setuptools run.")
+    (license asl2.0)))
+
+(define-public python2-pbr
+  (package-with-python2 python-pbr))
 
 (define-public python-fixtures
   (package
@@ -5376,7 +5420,7 @@ should be stored on various operating systems.")
 (define-public python-llfuse
   (package
     (name "python-llfuse")
-    (version "0.41")
+    (version "1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5384,7 +5428,7 @@ should be stored on various operating systems.")
                     "llfuse-" version ".tar.bz2"))
               (sha256
                (base32
-                "0yzy8ixpmxk00kdq6lx5vvwbs0n6s59qnja5q0js2ahbqyxiz2hb"))))
+                "1li7q04ljrvwharw4fblcbfhvk6s0l3lnv8yqb4c22lcgbkiqlps"))))
     (build-system python-build-system)
     (inputs
      `(("fuse" ,fuse)
@@ -5396,34 +5440,54 @@ should be stored on various operating systems.")
     (description
      "Python-LLFUSE is a set of Python bindings for the low level FUSE API.")
     (home-page "https://bitbucket.org/nikratio/python-llfuse/")
-    ;; Python-LLFUSE includes underscore.js, which is MIT (expat) licensed.
-    ;; The rest of the package is licensed under LGPL2.0 or later.
-    (license (list license:expat lgpl2.0+))))
+    (license lgpl2.0+)
+    (properties `((python2-variant . ,(delay python2-llfuse))))))
 
 (define-public python2-llfuse
-  (package-with-python2 python-llfuse))
+  (package (inherit (package-with-python2
+                 (strip-python2-variant python-llfuse)))
+    (propagated-inputs `(("python2-contextlib2" ,python2-contextlib2)))))
+
+;; For attic-0.16
+(define-public python-llfuse-0.41
+  (package (inherit python-llfuse)
+    (version "0.41.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://bitbucket.org/nikratio/python-llfuse/downloads/"
+                    "llfuse-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1imlqw9b73086y97izr036f58pgc5akv4ihc2rrf8j5h75jbrlaa"))))
+    ;; Python-LLFUSE < 0.42 includes underscore.js, which is MIT (expat)
+    ;; licensed.  The rest of the package is licensed under LGPL2.0 or later.
+    (license (list license:expat lgpl2.0+))))
 
 (define-public python-msgpack
   (package
     (name "python-msgpack")
-    (version "0.4.6")
+    (version "0.4.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://pypi.python.org/packages/source/m/"
-                    "msgpack-python/msgpack-python-" version ".tar.gz"))
+              (uri (pypi-uri "msgpack-python" version))
               (sha256
                (base32
-                "1527c76b6fn4zzkgfq5xvhh7x9a9686g7fjiz717rw5vklf5ik5z"))))
+                "0syd7bs83qs9qmxw540jbgsildbqk4yb57fmrlns1021llli402y"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
     (synopsis "MessagePack (de)serializer")
     (description "MessagePack is a fast, compact binary serialization format,
 suitable for similar data to JSON.  This package provides CPython bindings for
 reading and writing MessagePack data.")
     (home-page "https://pypi.python.org/pypi/msgpack-python/")
-    (license asl2.0)))
+    (license asl2.0)
+    (properties `((python2-variant . ,(delay python2-msgpack))))))
+
+(define-public python2-msgpack
+  (package (inherit (package-with-python2
+                     (strip-python2-variant python-msgpack)))
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)))))
 
 (define-public python2-msgpack
   (package-with-python2 python-msgpack))
@@ -5760,7 +5824,7 @@ responses, rather than doing any computation.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "1.2.3")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
@@ -5769,7 +5833,7 @@ responses, rather than doing any computation.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0shawgpax79gvjrj0a313sll9gaqys7q1hxngn6j4k24lmz7bwki"))))
+         "1144l3ypz3bngxd59lb4y74xa401w92lhvvjgxzglmvbh8wzkcbb"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
@@ -5786,14 +5850,14 @@ responses, rather than doing any computation.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "1.2.3")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "cryptography" version))
        (sha256
         (base32
-         "0kj511z4g21fhcr649pyzpl0zzkkc7hsgxxjys6z8wwfvmvirccf"))))
+         "1qjkrpfvxcyd0kal3zpm5y7f9p3y77ixn9jw8f4dqpgrw1sn3cxl"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -5837,7 +5901,7 @@ message digests and key derivation functions.")
 (define-public python-pyopenssl
   (package
     (name "python-pyopenssl")
-    (version "0.15.1")
+    (version "16.0.0")
     (source
      (origin
        (method url-fetch)
@@ -5845,29 +5909,8 @@ message digests and key derivation functions.")
                            "pyOpenSSL/pyOpenSSL-" version ".tar.gz"))
        (sha256
         (base32
-         "0wnnq15rhj7fhdcd8ycwiw6r6g3w9f9lcy6cigg8226vsrq618ph"))))
+         "0zfijaxlq4vgi6jz0d4i5xq9ygqnyps6br7lmigjhqnh8gp10g9n"))))
     (build-system python-build-system)
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'fix-tests
-          (lambda* (#:key inputs #:allow-other-keys)
-            (substitute* "OpenSSL/test/test_ssl.py"
-              (("client\\.connect\\(\\('verisign\\.com', 443\\)\\)")
-               "return True")
-              ;; FIXME: disable broken test
-              (("test_set_tmp_ecdh") "disabled__set_tmp_ecdh"))
-            (substitute* "OpenSSL/test/test_crypto.py"
-              (("command = b\"openssl \"")
-               (string-append "command = b\""
-                              (assoc-ref inputs "openssl")
-                              "/bin/openssl" " \""))
-              ;; FIXME: disable four broken tests
-              (("test_der")             "disabled__der")
-              (("test_digest")          "disabled__digest")
-              (("test_get_extension")   "disabled__get_extension")
-              (("test_extension_count") "disabled__extension_count"))
-            #t)))))
     (propagated-inputs
      `(("python-cryptography" ,python-cryptography)
        ("python-six" ,python-six)))
@@ -6025,7 +6068,10 @@ Python's @code{ctypes} foreign function interface (FFI).")
                         #t))))))
     (inputs `(("file" ,file)))
     (self-native-input? #f)
-    (synopsis "Python bindings to the libmagic file type guesser")))
+    (synopsis "Python bindings to the libmagic file type guesser.  Note that
+this module and the python-magic module both provide a \"magic.py\" file;
+these two modules, which are different and were developed separately, both
+serve the same purpose: provide Python bindings for libmagic.")))
 
 (define-public python2-file
   (package-with-python2 python-file))
@@ -6736,13 +6782,13 @@ WebSocket usage in Python programs.")
 (define-public python-atomicwrites
   (package
     (name "python-atomicwrites")
-    (version "0.1.9")
+    (version "1.0.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "atomicwrites" version))
              (sha256
               (base32
-               "08s05h211r07vs66r4din3swrbzb344vli041fihpg34q3lcxpvw"))))
+               "019fa4771q7fb1167yfbh6msdzcqini6v7i59rmf72mzdjd7x5qv"))))
     (build-system python-build-system)
     (synopsis "Atomic file writes in Python")
     (description "Library for atomic file writes using platform dependent tools
@@ -7200,9 +7246,9 @@ authenticated session objects providing things like keep-alive.")
 3.2.3 for use with older versions of Python and PyPy.")
     (license license:expat)))
 
-(define-public python-futures
+(define-public python2-futures
   (package
-    (name "python-futures")
+    (name "python2-futures")
     (version "3.0.3")
     (source
       (origin
@@ -7212,8 +7258,9 @@ authenticated session objects providing things like keep-alive.")
          (base32
           "1vcb34dqhzkhbq1957vdjszhhm5y3j9ba88dgwhqx2zynhmk9qig"))))
     (build-system python-build-system)
+    (arguments `(#:python ,python-2))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
+     `(("python2-setuptools" ,python2-setuptools)))
     (home-page "https://github.com/agronholm/pythonfutures")
     (synopsis
      "Backport of the concurrent.futures package from Python 3.2")
@@ -7222,9 +7269,6 @@ authenticated session objects providing things like keep-alive.")
 asynchronously executing callables.  This package backports the
 concurrent.futures package from Python 3.2")
     (license bsd-3)))
-
-(define-public python2-futures
-  (package-with-python2 python-futures))
 
 (define-public python-urllib3
   (package
@@ -8459,3 +8503,103 @@ is made as zipfile like as possible.")
 
 (define-public python2-rarfile
   (package-with-python2 python-rarfile))
+
+(define-public python-magic
+  (package
+    (name "python-magic")
+    (version "0.4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/ahupp/python-magic/archive/"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "17bgy92i7sb021f2s4mw1dcvpm6p1mi9jihridwy1pyn8mzvpjgk"))
+       (file-name (string-append name "-" version "-checkout"))))
+    (build-system python-build-system)
+    (arguments
+     ;; The tests are unreliable, so don't run them.  The tests fail
+     ;; under Python3 because they were written for Python2 and
+     ;; contain import statements that do not work in Python3.  One of
+     ;; the tests fails under Python2 because its assertions are
+     ;; overly stringent; it relies on comparing output strings which
+     ;; are brittle and can change depending on the version of
+     ;; libmagic being used and the system on which the test is
+     ;; running.  In my case, under GuixSD 0.10.0, only one test
+     ;; failed, and it seems to have failed only because the version
+     ;; of libmagic that is packaged in Guix outputs a slightly
+     ;; different (but not wrong) string than the one that the test
+     ;; expected.
+     '(#:tests? #f
+       #:phases (modify-phases %standard-phases
+         ;; Replace a specific method call with a hard-coded
+         ;; path to the necessary libmagic.so file in the
+         ;; store.  If we don't do this, then the method call
+         ;; will fail to find the libmagic.so file, which in
+         ;; turn will cause any application using
+         ;; python-magic to fail.
+         (add-before 'build 'hard-code-path-to-libmagic
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((file (assoc-ref inputs "file")))
+               (substitute* "magic.py"
+                 (("ctypes.util.find_library\\('magic'\\)")
+                  (string-append "'" file "/lib/libmagic.so'")))
+           #t))))))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (inputs
+     ;; python-magic needs to be able to find libmagic.so.
+     `(("file" ,file)))
+    (home-page "https://github.com/ahupp/python-magic")
+    (synopsis "File type identification using libmagic")
+    (description
+     "This module uses ctypes to access the libmagic file type
+identification library.  It makes use of the local magic database and
+supports both textual and MIME-type output.  Note that this module and
+the python-file module both provide a \"magic.py\" file; these two
+modules, which are different and were developed separately, both serve
+the same purpose: to provide Python bindings for libmagic.")
+    (license license:expat)))
+
+(define-public python2-magic
+  (package-with-python2 python-magic))
+
+(define-public python2-s3cmd
+  (package
+    (name "python2-s3cmd")
+    (version "1.6.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://sourceforge/s3tools/"
+                            "s3cmd-" version ".tar.gz"))
+        (sha256
+          (base32
+            "0ki1rzhm5icvi9ry5jswi4b22yqwyj0d2wsqsgilwx6qhi7pjxa6"))))
+    (build-system python-build-system)
+    (arguments
+     ;; s3cmd is written for python2 only and contains no tests.
+     `(#:python ,python-2
+       #:tests? #f))
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)))
+    (inputs
+     `(("python2-dateutil" ,python2-dateutil)
+       ;; The python-file package also provides a magic.py module.
+       ;; This is an unfortunate state of affairs; however, s3cmd
+       ;; fails to install if it cannot find specifically the
+       ;; python-magic package.  Thus we include it, instead of using
+       ;; python-file.  Ironically, s3cmd sometimes works better
+       ;; without libmagic bindings at all:
+       ;; https://github.com/s3tools/s3cmd/issues/198
+       ("python2-magic" ,python2-magic)))
+    (home-page "http://s3tools.org/s3cmd")
+    (synopsis "Command line tool for S3-compatible storage services")
+    (description
+     "S3cmd is a command line tool for uploading, retrieving and managing data
+in storage services that are compatible with the Amazon Simple Storage
+Service (S3) protocol, including S3 itself.  It supports rsync-like backup,
+GnuPG encryption, and more.  It also supports management of Amazon's
+CloudFront content delivery network.")
+    (license gpl2+)))

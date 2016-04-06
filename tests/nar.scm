@@ -320,9 +320,6 @@
 
 (test-end "nar")
 
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))
-
 ;;; Local Variables:
 ;;; eval: (put 'with-file-tree 'scheme-indent-function 2)
 ;;; End:

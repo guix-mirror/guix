@@ -275,14 +275,14 @@ without requiring the source code to be rewritten.")
 (define-public artanis
   (package
     (name "artanis")
-    (version "0.1.0")
+    (version "0.1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://alpha.gnu.org/gnu/artanis/artanis-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1mc2zy6n9wnn4hzi3zp3jd6b5rlr0lv7fvh800xf4fyrxg0zia4g"))))
+                "19m3ak12cqk8js9d2mdg11kh4fjsq8frfpd10qw75h0zpr5cywpp"))))
     (build-system gnu-build-system)
     ;; TODO: Add guile-dbi and guile-dbd optional dependencies.
     (inputs `(("guile" ,guile-2.0)))
@@ -296,7 +296,8 @@ without requiring the source code to be rewritten.")
               (dir (string-append out "/share/guile/site/2.0")))
          ;; Don't use (%site-dir) for site paths.
          (list (string-append "MOD_PATH=" dir)
-               (string-append "MOD_COMPILED_PATH=" dir)))
+               (string-append "MOD_COMPILED_PATH=" dir)
+               (string-append "DESTDIR=" out)))
        #:test-target "test"
        #:phases
        (modify-phases %standard-phases

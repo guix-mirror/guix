@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +37,7 @@
 (define-public wicd
   (package
     (name "wicd")
-    (version "1.7.3")
+    (version "1.7.4")
     (source
      (origin
        (method url-fetch)
@@ -44,12 +45,12 @@
                            (version-major+minor version) "/" version
                            "/+download/wicd-" version ".tar.gz"))
        (sha256
-        (base32 "00c4rq753bhg64rv1v9yl834ssq7igyy7cz3swp287b5n5bqiqwi"))
+        (base32 "0qpbwwsrqdp40mm3a8djpn2d055rxxspdhwijwsdnws700a9d637"))
        (patches (map search-patch
                      '("wicd-bitrate-none-fix.patch"
                        "wicd-get-selected-profile-fix.patch"
                        "wicd-urwid-1.3.patch"
-                       "wicd-template-instantiation.patch")))))
+                       "wicd-wpa2-ttls.patch")))))
     (build-system python-build-system)
     (native-inputs `(("gettext" ,gnu-gettext)))
     (inputs `(("dbus-glib" ,dbus-glib)

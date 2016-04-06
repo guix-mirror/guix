@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -126,14 +127,14 @@ proposed for standardization.")
 (define-public gmtp
   (package
     (name "gmtp")
-    (version "1.3.9")
+    (version "1.3.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/gmtp/" version
                                   "/gmtp-" version ".tar.gz"))
               (sha256
                (base32
-                "0bdxvi0jf3q870a39xzsaj4qrjwc9b5bgvc95plc7xb6vf2m7zsv"))))
+                "0fyi3pdl2g57vr0p46ip2wwzyap3l0by7iqaqygv0yxfcs79l6xj"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(#:configure-flags

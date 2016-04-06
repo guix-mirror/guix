@@ -24,7 +24,11 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix grafts)
-  #:use-module (guix utils)
+
+  ;; Use the procedure that destructures "NAME-VERSION" forms.
+  #:use-module ((guix utils) #:hide (package-name->name+version))
+  #:use-module ((guix build utils) #:select (package-name->name+version))
+
   #:use-module (guix monads)
   #:use-module (guix gexp)
   #:autoload   (guix http-client) (http-fetch http-get-error?)

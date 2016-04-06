@@ -7,6 +7,9 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
+;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,10 +55,12 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages textutils)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages statistics))
 
@@ -351,29 +356,19 @@ for efficient socket-like bidirectional reliable communication channels.")
 (define-public libpsl
   (package
     (name "libpsl")
-    (version "0.7.1")
+    (version "0.13.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/rockdaboot/libpsl/"
-                                  "archive/libpsl-" version ".tar.gz"))
+                                  "releases/download/libpsl-" version
+                                  "/libpsl-" version ".tar.gz"))
               (sha256
                (base32
-                "1k0klj668c9v0r4993vfs3kq773mzdz61vsigqw6v1mjcwnf1si3"))))
+                "0afn2c4s2m65xifa5sfdll0s2gyqbh2q9k9nq4nsmx1b6c2i3i7x"))))
     (build-system gnu-build-system)
-    (inputs `(("icu4c" ,icu4c)))
-    ;; The release tarball lacks the generated files.
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("gettext"  ,gnu-gettext)
-                     ("which"    ,which)
-                     ("libtool"  ,libtool)
-                     ("pkg-config" ,pkg-config)))
-    (arguments
-     `(#:phases (alist-cons-after
-                 'unpack 'bootstrap
-                 (lambda _
-                   (zero? (system* "sh" "autogen.sh")))
-                 %standard-phases)))
+    (inputs
+     `(("icu4c" ,icu4c)
+       ("python-2" ,python-2)))
     (home-page "https://github.com/rockdaboot/libpsl")
     (synopsis "C library for the Publix Suffix List")
     (description
@@ -3109,3 +3104,107 @@ callback or connection interfaces.")
      "Gumbo is an implementation of the HTML5 parsing algorithm implemented as
 a pure C99 library.")
     (license l:asl2.0)))
+
+(define-public uwsgi
+  (package
+    (name "uwsgi")
+    (version "2.0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://projects.unbit.it/downloads/uwsgi-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "02g46dnw5j1iw8fsq392bxbk8d21b9pdgb3ypcinv3b4jzdm2srh"))))
+    (build-system gnu-build-system)
+    (outputs '("out" "python"))
+    (arguments
+     '(;; XXX: The 'check' target runs cppcheck to do static code analysis.
+       ;;      But there is no obvious way to run the real tests.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; Configuration is done by writing an ini file.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out       (assoc-ref outputs "out"))
+                    (bindir    (string-append out "/bin"))
+                    (plugindir (string-append out "/lib/uwsgi")))
+               ;; The build phase outputs files to these directories directly.
+               (mkdir-p bindir)
+               (mkdir-p plugindir)
+               ;; XXX: Enable other plugins.
+               (call-with-output-file "buildconf/guix.ini"
+                 (lambda (port)
+                   (format port "[uwsgi]
+yaml = libyaml
+bin_name = ~a/uwsgi
+plugin_dir = ~a
+
+inherit = base
+plugins = cgi,python
+embedded_plugins =
+" bindir plugindir))))
+             (setenv "PROFILE" "guix")
+             #t))
+         (replace 'install
+           ;; Move plugins into their own output.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out           (assoc-ref outputs "out"))
+                    (plugindir     (string-append out "/lib/uwsgi"))
+                    (python-plugin (string-append
+                                    plugindir "/python_plugin.so")))
+               (install-file python-plugin
+                             (string-append
+                              (assoc-ref outputs "python") "/lib/uwsgi"))
+               (delete-file python-plugin)
+               #t))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
+    (inputs
+     `(("jansson" ,jansson)
+       ("libxml2" ,libxml2)
+       ("libyaml" ,libyaml)
+       ("openssl" ,openssl)
+       ("pcre" ,pcre)
+       ("zlib" ,zlib)
+       ;; For plugins.
+       ("python" ,python)))
+    (home-page "https://uwsgi-docs.readthedocs.org/")
+    (synopsis "Application container server")
+    (description
+     "uWSGI presents a complete stack for networked/clustered web applications,
+implementing message/object passing, caching, RPC and process management.
+It uses the uwsgi protocol for all the networking/interprocess communications.")
+    (license l:gpl2+))) ; with linking exception
+
+(define-public jq
+  (package
+    (name "jq")
+    (version "1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/stedolan/" name
+                                  "/releases/download/" name "-" version
+                                  "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0g29kyz4ykasdcrb0zmbrp2jqs9kv1wz9swx849i2d1ncknbzln4"))))
+    (inputs
+     `(("oniguruma" ,oniguruma)))
+    (native-inputs
+     `(;; TODO fix gems to generate documentation
+       ;;("ruby" ,ruby)
+       ;;("bundler" ,bundler)
+       ("valgrind" ,valgrind)))
+    (build-system gnu-build-system)
+    (home-page "http://stedolan.github.io/jq/")
+    (synopsis "Command-line JSON processor")
+    (description "jq is like sed for JSON data – you can use it to slice and
+filter and map and transform structured data with the same ease that sed, awk,
+grep and friends let you play with text.  It is written in portable C.  jq can
+mangle the data format that you have into the one that you want with very
+little effort, and the program to do so is often shorter and simpler than
+you'd expect.")
+    (license (list l:expat l:cc-by3.0))))

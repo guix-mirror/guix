@@ -54,15 +54,22 @@
   (let ((jdk-mod (resolve-interface '(gnu packages java))))
     (module-ref jdk-mod 'ant)))
 
+(define (default-zip)
+  "Return the default ZIP package."
+  ;; Lazily resolve the binding to avoid a circular dependency.
+  (let ((zip-mod (resolve-interface '(gnu packages zip))))
+    (module-ref zip-mod 'zip)))
+
 (define* (lower name
                 #:key source inputs native-inputs outputs system target
                 (jdk (default-jdk))
                 (ant (default-ant))
+                (zip (default-zip))
                 #:allow-other-keys
                 #:rest arguments)
   "Return a bag for NAME."
   (define private-keywords
-    '(#:source #:target #:jdk #:ant #:inputs #:native-inputs))
+    '(#:source #:target #:jdk #:ant #:zip #:inputs #:native-inputs))
 
   (and (not target)                               ;XXX: no cross-compilation
        (bag
@@ -77,6 +84,7 @@
                         ,@(standard-packages)))
          (build-inputs `(("jdk" ,jdk "jdk")
                          ("ant" ,ant)
+                         ("zip" ,zip)
                          ,@native-inputs))
          (outputs outputs)
          (build ant-build)

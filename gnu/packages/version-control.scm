@@ -364,6 +364,67 @@ write native speed custom Git applications in any language with bindings.")
     ;; GPLv2 with linking exception
     (license gpl2)))
 
+(define-public cgit
+  (package
+    (name "cgit")
+    (version "0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://git.zx2c4.com/cgit/snapshot/cgit-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "1dx54hgfyabmg9nm5qp6d01f54nlbqbbdwhwl0llb9imjf237qif"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; XXX: fail to build the in-source git.
+       #:test-target "test"
+       #:make-flags '("CC=gcc" "SHELL_PATH=sh")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'unpack-git
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; Unpack the source of git into the 'git' directory.
+             (zero? (system*
+                     "tar" "--strip-components=1" "-C" "git" "-xf"
+                     (assoc-ref inputs "git:src")))))
+         (delete 'configure) ; no configure script
+         (add-after 'build 'build-man
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (zero? (apply system* `("make" ,@make-flags "doc-man")))))
+         (replace 'install
+           (lambda* (#:key make-flags outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (and (zero? (apply system*
+                                  `("make" ,@make-flags
+                                    ,(string-append "prefix=" out)
+                                    ,(string-append
+                                      "CGIT_SCRIPT_PATH=" out "/share/cgit")
+                                    "install" "install-man")))
+                    ;; Move the platform-dependent 'cgit.cgi' into lib
+                    ;; to get it stripped.
+                    (rename-file (string-append out "/share/cgit/cgit.cgi")
+                                 (string-append out "/lib/cgit/cgit.cgi"))
+                    #t)))))))
+    (native-inputs
+     ;; For building manpage.
+     `(("asciidoc" ,asciidoc)
+       ("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("xmllint" ,libxml2)
+       ("xsltprot" ,libxslt)))
+    (inputs
+     `(("git:src" ,(package-source git))
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))
+    (home-page "https://git.zx2c4.com/cgit/")
+    (synopsis "Web frontend for git repositories")
+    (description
+     "CGit is an attempt to create a fast web interface for the Git SCM, using
+a built-in cache to decrease server I/O pressure.")
+    (license gpl2)))
+
 (define-public shflags
   (package
     (name "shflags")
@@ -545,14 +606,14 @@ control to Git repositories.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "3.7.2")
+    (version "3.7.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
              (sha256
               (base32
-               "0ykdvj7k4yxiwbfk0gnrq2flmdlf2cracsvqn3vr7nxhda6l7aav"))))
+               "0c2vkad9piqkggyk8y310rf619qgdfcwswnk3nv21mg2fhnw96f0"))))
     (build-system python-build-system)
     (arguments
      `(;; Restrict to Python 2, as Python 3 would require
@@ -1048,15 +1109,16 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
                (base32
                 "196g3jkaybjx11nbr51n0cjps3wjzb145ab76y717diqvvxp5v4r"))))
     (build-system python-build-system)
+    (arguments `(#:python ,python-2))
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
+     `(("python2-setuptools" ,python2-setuptools)
        ;; for the tests
-       ("python-six" ,python-six)))
+       ("python2-six" ,python2-six)))
     (propagated-inputs
-     `(("python-dateutil" ,python-dateutil-2)
-       ("python-futures" ,python-futures)
-       ("python-rauth" ,python-rauth)
-       ("python-swiftclient" ,python-swiftclient)))
+     `(("python2-dateutil" ,python2-dateutil-2)
+       ("python2-futures" ,python2-futures)
+       ("python2-rauth" ,python2-rauth)
+       ("python2-swiftclient" ,python2-swiftclient)))
     (home-page "https://github.com/Schnouki/git-annex-remote-hubic/")
     (synopsis "Use hubic as a git-annex remote")
     (description

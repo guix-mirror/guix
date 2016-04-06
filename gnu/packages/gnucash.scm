@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +38,7 @@
 (define-public gnucash
   (package
     (name "gnucash")
-    (version "2.6.9")
+    (version "2.6.12")
     (source
      (origin
       (method url-fetch)
@@ -45,7 +46,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0iw25l1kv60cg6fd2vg11mcvzmjqnc5p9lp3rjy06ghkjfrn3and"))
+        "0x84f07p30pwhriamv8ifljgw755cj87rc12jy1xddf47spyj7rp"))
       (patches (list (search-patch "gnucash-price-quotes-perl.patch")))))
     (build-system gnu-build-system)
     (inputs
@@ -97,7 +98,7 @@
                         "gnc-fq-check"
                         "gnc-fq-helper"
                         "gnc-fq-dump")))))))
-    (home-page "https://gnu.org/software/gnucash")
+    (home-page "http://www.gnucash.org/")
     (synopsis "Personal and small business financial accounting software")
     (description
      "GnuCash is personal and professional financial-accounting software.

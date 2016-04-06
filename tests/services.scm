@@ -119,6 +119,3 @@
          (null? (e s3)))))
 
 (test-end)
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

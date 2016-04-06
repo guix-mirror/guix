@@ -504,12 +504,13 @@ encoding conversion errors."
                               (status   k))))))))
 
 (define %default-substitute-urls
-  ;; Default list of substituters.  This is *not* the list used by
-  ;; 'guix-daemon', and few clients use it ('guix build --log-file' uses it.)
+  ;; Default list of substituters.  This is *not* the list baked in
+  ;; 'guix-daemon', but it is used by 'guix-service-type' and and a couple of
+  ;; clients ('guix build --log-file' uses it.)
   (map (if (false-if-exception (resolve-interface '(gnutls)))
            (cut string-append "https://" <>)
            (cut string-append "http://" <>))
-       '("hydra.gnu.org")))
+       '("mirror.hydra.gnu.org" "hydra.gnu.org")))
 
 (define* (set-build-options server
                             #:key keep-failed? keep-going? fallback?

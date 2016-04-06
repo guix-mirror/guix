@@ -113,6 +113,3 @@
          (file-exists? (string-append out "/bin/hello")))))
 
 (test-end "builders")
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

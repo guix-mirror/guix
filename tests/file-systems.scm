@@ -51,6 +51,3 @@
            (equal? form '(uuid "foobar"))))))
 
 (test-end)
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

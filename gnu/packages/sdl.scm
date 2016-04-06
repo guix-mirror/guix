@@ -27,6 +27,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module (gnu packages audio)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages image)
@@ -94,7 +95,7 @@ joystick, and graphics hardware.")
 (define sdl2
   (package (inherit sdl)
     (name "sdl2")
-    (version "2.0.3")
+    (version "2.0.4")
     (source (origin
              (method url-fetch)
              (uri
@@ -102,7 +103,7 @@ joystick, and graphics hardware.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "0369ngvb46x6c26h8zva4x22ywgy6mvn0wx87xqwxg40pxm9m9m5"))))
+               "0jqp46mxxbh9lhpx1ih6sp93k752j2smhpc0ad0q4cb3px0famfs"))))
     (license bsd-3)))
 
 (define libmikmod
@@ -216,7 +217,8 @@ WEBP, XCF, XPM, and XV.")
     (inputs `(("libvorbis" ,libvorbis)
               ("libflac" ,flac)
               ("libmad" ,libmad)
-              ("libmikmod" ,libmikmod)))
+              ("libmikmod" ,libmikmod)
+              ("libmodplug" ,libmodplug)))
     ;; FIXME: Add libfluidsynth
     (propagated-inputs `(("sdl" ,sdl)))
     (synopsis "SDL multi-channel audio mixer library")
@@ -310,7 +312,7 @@ directory.")
 (define-public sdl2-image
   (package (inherit sdl-image)
     (name "sdl2-image")
-    (version "2.0.0")
+    (version "2.0.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -318,37 +320,45 @@ directory.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "0d3jlhkmr0j5a2dd5h6y29jfcsj7mkl16wghm6n3nqqp7g3ib65j"))))
+                "0r3z1l7fdn76qkpy7snpkcjqz8dkv2zp6lsqpq25q4m5xsyaygis"))))
     (propagated-inputs
      (propagated-inputs-with-sdl2 sdl-image))))
 
 (define-public sdl2-mixer
   (package (inherit sdl-mixer)
     (name "sdl2-mixer")
-    (version "2.0.0")
+    (version "2.0.1")
     (source (origin
               (method url-fetch)
               (uri
                (string-append "http://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-"
                               version ".tar.gz"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Remove bundled libraries.
+               '(delete-file-recursively "external"))
               (sha256
                (base32
-                "0nvjdxjchrajrn0jag877hdx9zb788hsd315zzg1lyck2wb0xkm8"))))
+                "0pv9jzjpcjlbiaybvwrb4avmv46qk7iqxlnqrd2dfj82c4mgc92s"))))
     (propagated-inputs
      (propagated-inputs-with-sdl2 sdl-mixer))))
 
 (define-public sdl2-ttf
   (package (inherit sdl-ttf)
     (name "sdl2-ttf")
-    (version "2.0.12")
+    (version "2.0.14")
     (source (origin
              (method url-fetch)
              (uri
               (string-append "http://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-"
                              version ".tar.gz"))
+             (modules '((guix build utils)))
+             (snippet
+              ;; Remove bundled libraries.
+              '(delete-file-recursively "external"))
              (sha256
               (base32
-               "0vkg6lyj278mdpd52map3rfi65fbq16w67ahmmfcl77a8da60a47"))))
+               "0xljwcpvd2knrjdfag5b257xqayplz55mqlszrqp0kpnphh5xnrl"))))
     (propagated-inputs
      (propagated-inputs-with-sdl2 sdl-ttf))))
 

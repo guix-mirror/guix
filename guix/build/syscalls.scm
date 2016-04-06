@@ -767,10 +767,14 @@ the same type as that returned by 'make-socket-address'."
      (format port "#<interface ~s " name)
      (unless (zero? (logand IFF_UP flags))
        (display "up " port))
-     (if (member (sockaddr:fam address) (list AF_INET AF_INET6))
-         (format port "~a " (inet-ntop (sockaddr:fam address)
-                                       (sockaddr:addr address)))
-         (format port "family:~a " (sockaddr:fam address)))
+
+     ;; Check whether ADDRESS really is a sockaddr.
+     (when address
+       (if (member (sockaddr:fam address) (list AF_INET AF_INET6))
+           (format port "~a " (inet-ntop (sockaddr:fam address)
+                                         (sockaddr:addr address)))
+           (format port "family:~a " (sockaddr:fam address))))
+
      (format port "~a>" (number->string (object-address interface) 16)))))
 
 (set-record-type-printer! <interface> write-interface)

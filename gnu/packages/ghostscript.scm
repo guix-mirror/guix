@@ -64,7 +64,10 @@ Consortium standard (ICC), approved as ISO 15076-1.")
    (source (origin
             (method url-fetch)
             (uri (string-append
-                   "http://ftp.de.debian.org/debian/pool/main/libp/libpaper/libpaper_"
+                   ;; Debian moved their libpaper-1.1.24 to archive.debian.net
+                   ;; but in the move the hash of their tarball changed.
+                   "http://pkgs.fedoraproject.org/repo/pkgs/libpaper/libpaper_"
+                   version ".tar.gz/5bc87d494ba470aba54f6d2d51471834/libpaper_"
                    version ".tar.gz"))
             (sha256 (base32
                      "0zhcx67afb6b5r936w5jmaydj3ks8zh83n9rm5sv3m3k8q8jib1q"))))
@@ -75,7 +78,7 @@ Consortium standard (ICC), approved as ISO 15076-1.")
 way for applications to take actions based on a system- or user-specified
 paper size.")
    (license license:gpl2)
-   (home-page "http://packages.qa.debian.org/libp/libpaper.html")))
+   (home-page "https://packages.qa.debian.org/libp/libpaper.html")))
 
 (define-public psutils
   (package

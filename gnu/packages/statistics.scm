@@ -33,6 +33,8 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
@@ -52,6 +54,45 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages zip)
   #:use-module (srfi srfi-1))
+
+
+(define-public pspp
+  (package
+    (name "pspp")
+    (version "0.10.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/pspp/pspp-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0xw61kq0hxh7f6a4yjhnqbhc0fj9r3wb3qnpq05qhdp79n30ik24"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("cairo" ,cairo)
+       ("gettext" ,gnu-gettext)
+       ("gsl" ,gsl)
+       ("libxml2" ,libxml2)
+       ("pango" ,pango)
+       ("readline" ,readline)
+       ("gtk" ,gtk+)
+       ("gtksourceview" ,gtksourceview)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("glib" ,glib "bin")             ;for glib-genmarshal
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://www.gnu.org/software/pspp/")
+    (synopsis "Statistical analysis")
+    (description
+     "GNU PSPP is a statistical analysis program.  It can perform
+descriptive statistics, T-tests, linear regression and non-parametric tests.
+It features both a graphical interface as well as command-line input.  PSPP
+is designed to interoperate with Gnumeric, LibreOffice and OpenOffice.  Data
+can be imported from spreadsheets, text files and database sources and it can
+be output in text, PostScript, PDF or HTML.")
+    (license license:gpl3+)))
 
 (define-public r
   (package
@@ -1234,13 +1275,13 @@ informative error messages when it's not available.")
 (define-public r-devtools
   (package
     (name "r-devtools")
-    (version "1.9.1")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "devtools" version))
               (sha256
                (base32
-                "10ycx3kkiz5x8nmgw31d9wa5hhlx2fhda2nqzxfrczqpz1jik6ci"))))
+                "11x51bqhjwypbxv5sfnrnxx06b92k8kzmmx7zrwk3537r072b6pa"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-curl" ,r-curl)
@@ -1253,11 +1294,31 @@ informative error messages when it's not available.")
        ("r-roxygen2" ,r-roxygen2)
        ("r-rstudioapi" ,r-rstudioapi)
        ("r-rversions" ,r-rversions)
-       ("r-whisker" ,r-whisker)))
+       ("r-whisker" ,r-whisker)
+       ("r-withr" ,r-withr)))
     (home-page "https://github.com/hadley/devtools")
     (synopsis "Tools to make developing R packages easier")
     (description "The devtools package is a collection of package development
 tools to simplify the devolpment of R packages.")
+    (license license:gpl2+)))
+
+(define-public r-withr
+  (package
+    (name "r-withr")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "withr" version))
+              (sha256
+               (base32
+                "0zbj3rd7dc0ycknmay7y7rm1qvnh9n05jw93gjggz46j2zfmy93y"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/jimhester/withr")
+    (synopsis "Run code with temporarily modified global state")
+    (description
+     "This package provides a set of functions to run R code in an environment
+in which global state has been temporarily modified.  Many of these functions
+were originally a part of the r-devtools package.")
     (license license:gpl2+)))
 
 (define-public r-readr
@@ -2026,3 +2087,24 @@ directly from R.  Once uploaded to a plotly account, plotly graphs (and the
 data behind them) can be viewed and modified in a web browser.")
     (license license:x11)))
 
+
+(define-public r-ztable
+  (package
+    (name "r-ztable")
+    (version "0.1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "ztable" version))
+              (sha256
+               (base32
+                "1jfqnqy9544gfvz3bsb48v4177nwp4b4n9l2743asq8sbq305b5r"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/ztable")
+    (synopsis "Zebra-striped tables in LaTeX and HTML formats for R")
+    (description
+     "This package provides functions to make zebra-striped tables (tables
+with alternating row colors) in LaTeX and HTML formats easily from
+@code{data.frame}, @code{matrix}, @code{lm}, @code{aov}, @code{anova},
+@code{glm}, @code{coxph}, @code{nls}, @code{fitdistr}, @code{mytable} and
+@code{cbind.mytable} objects.")
+    (license license:gpl2+)))

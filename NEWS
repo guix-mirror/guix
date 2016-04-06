@@ -2,7 +2,7 @@
 #+TITLE: Guix NEWS – history of user-visible changes
 #+STARTUP: content hidestars
 
-Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
@@ -10,11 +10,16 @@ Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 
 Please send Guix bug reports to bug-guix@gnu.org.
 
-* Changes in 0.9.1 (since 0.9.0)
+* Changes in 0.10.0 (since 0.9.0)
+
+** Community
+
+GNU Guix adopted a contributor code of conduct, see ‘CODE-OF-CONDUCT’ in the
+source tree.
 
 ** Package management
 
-*** New syntax for separating package names and version numbers
+*** New command-line syntax for separating package names and version numbers
 
 Use ‘@’ instead of ‘-’ as a separator, as in ‘gnupg@2.0’.  This new separator
 is a reserved character which is not allowed both in package names and version
@@ -23,9 +28,31 @@ numbers.
 The old syntax to specify a package’s version—e.g., as “gnupg-2.0”—is obsolete
 and support for it will be removed in the future.
 
-*** Emacs interface for licenses
-*** Emacs interface for system generations
-*** Emacs interface for hydra.gnu.org
+*** “Grafts” apply recursively, based on run-time dependencies
+
+“Grafts” is the mechanism by which we can apply security updates of core
+packages without rebuilding or re-downloading the entire set of dependent
+packages.  See “Security Updates” in the manual, as well as
+<https://savannah.gnu.org/forum/forum.php?forum_id=8470> and
+<http://bugs.gnu.org/22139> for more info.
+
+*** Substitutes are fetched over HTTPS by default
+*** Substitutes are cached for the duration reported in ‘Cache-Control’ headers
+*** Default substitute URL list includes a faster mirror, mirror.hydra.gnu.org
+*** New ‘--with-input’ and ‘--with-source’ for ‘guix package’ and ‘guix build’
+
+See “Package Transformation Options” in the manual.
+
+*** ‘guix package --search-paths -p X -p Y’ combines search paths for X and Y
+*** ‘guix package’ can be passed several ‘--search’ options
+*** New ‘--rounds’ and ‘--check’ for ‘guix build’, for bit-reproducibility
+*** New ‘--rounds’ option for ‘guix-daemon’
+*** New ‘--quiet’ option for ‘guix build’
+*** ‘guix package -u’ no longer checks for upstream GNU releases
+*** ‘guix-daemon’ always uses /tmp in chroots, regardless of $TMPDIR
+*** New Emacs interface to browse licenses: M-x guix-licenses
+*** New Emacs interface to list system generations: M-x guix-system-generations
+*** New Emacs interface for hydra.gnu.org: M-x guix-hydra-…
 *** Changes in Emacs interface variables and faces
 
 In the following names, BUFFER-TYPE means "info" or "list";
@@ -57,9 +84,375 @@ ENTRY-TYPE means "package", "output" or "generation".
   guix-ENTRY-TYPE-list-describe-warning-count
 - guix-package-info-fill-heading -> guix-info-fill
 
+*** New ‘cve’ linter: ‘guix lint -c cve’ reports pending vulnerabilities
+*** New ‘gnome’, ‘xorg’, and ‘github’ updaters for ‘guix refresh’
+*** ‘guix lint’ times out after 3 seconds when probing URLs
+*** ‘guix graph -t bag-with-origins’ includes origins in the graph
+*** ‘guix import cran’ can import packages from bioconductor.org
+
+** Distribution
+
+*** GuixSD upgraded to GNU Shepherd 0.3.1 and GNU Linux-libre 4.5.0
+
+See <http://git.savannah.gnu.org/cgit/shepherd.git/tree/NEWS?id=v0.3.1> for
+information on the changes between GNU dmd 0.2 and the GNU Shepherd 0.3.1.
+
+*** “System Installation” section of the manual has been expounded
+*** Installation image runs GPM and includes more programs
+*** GNOME and Xfce desktops are available via services; see "Desktop Services"
+*** New ‘tor-hidden-service’ procedure, to declare Tor hidden services
+*** New Dovecot service
+*** New ‘fstab-service-type’, to populate /etc/fstab
+*** New ‘mount?’ field for ‘file-system’ forms
+*** Most global environment variables are now set in /etc/environment (pam_env)
+*** ‘guix system reconfigure’ now loads/starts new services, stops old ones
+    (see <http://bugs.gnu.org/22039>)
+*** ‘local-file’ resolves file names relative to the current source file
+*** Many reproducibility issues fixed: glibc, perl, bison, emacs-*, python-*, …
+*** Initial RAM disk supports ‘modprobe.blacklist’ on the kernel command line
+*** New “Running GuixSD in a VM” section in the manual
+*** ‘dmd’ changed to ’shepherd’ in ‘guix system’ sub-commands
+*** A Bourne-like shell is spawned upon ‘fsck’ failure
+    (see <http://bugs.gnu.org/22588>)
+*** 639 new packages
+
+aide, allegro, amb-plugins, aria2, armadillo, armadillo, artanis, aseprite,
+aspell-dict-it, aspell-dict-nl, assword, asymptote, audit, augeas, autojump,
+awscli, baobab, beets, bioawk, blender, bless, borg, bristol, btrfs-progs,
+bwa-pssm, byzanz, c-ares, caribou, cd-hit, cereal, cmocka, codingquarry,
+colord-gtk, cppcheck, cpulimit, cracklib, crossguid, cuetools, cufflinks,
+dcadec, dconf-editor, desmume, devil, dialog, docker-compose, drumstick,
+einstein, emacs-async, emacs-constants, emacs-god-mode, emacs-mit-scheme-doc,
+emacs-popup, emacs-scheme-complete, emacs-slime, emacs-undo-tree,
+emacs-with-editor, emulation-station, etl, evolution-data-server, eyed3, fdm,
+fil-plugins, findnewest, fluxbox, font-abattis-cantarell, font-google-noto,
+font-un, fraggenescan, freefall, fritzing, fxtract, g-wrap, g2reverb,
+gdk-pixbuf+svg, gdm, gdsl, gedit, ghc-aeson-qq, ghc-asn1-encoding,
+ghc-asn1-parse, ghc-asn1-types, ghc-byteable, ghc-chasingbottoms, ghc-cmark,
+ghc-conduit, ghc-connection, ghc-cryptonite, ghc-deepseq-generics, ghc-diff,
+ghc-enclosed-exceptions, ghc-executable-path, ghc-filemanip,
+ghc-haskell-src-meta, ghc-highlighting-kate, ghc-hostname, ghc-hourglass,
+ghc-hslua, ghc-hspec-contrib, ghc-http-client, ghc-http-client-tls,
+ghc-juicypixels, ghc-libxml, ghc-logging-facade, ghc-memory, ghc-mime-types,
+ghc-mmap, ghc-mockery, ghc-packedstring, ghc-pandoc, ghc-pandoc-types,
+ghc-pem, ghc-regex-pcre-builtin, ghc-sha, ghc-socks, ghc-tasty-kat,
+ghc-test-framework, ghc-test-framework-hunit, ghc-test-framework-quickcheck2,
+ghc-texmath, ghc-th-expand-syns, ghc-th-lift, ghc-th-orphans,
+ghc-th-reify-many, ghc-tls, ghc-x509, ghc-x509-store, ghc-x509-system,
+ghc-x509-validation, ghc-yaml, git-annex-remote-hubic, gjs, gnome,
+gnome-backgrounds, gnome-bluetooth, gnome-control-center,
+gnome-online-accounts, gnome-screenshot, gnome-session, gnome-shell,
+gnunet-gtk, gpm, graphicsmagick, gst-plugins-bad, gtk-engines, gtk-vnc,
+gtklick, guile-config, guile-gnunet, guile-irregex, guile-sly, gumbo-parser,
+icedtea, icedtea, idle3-tools, iftop, info-reader, inklingreader, jasper,
+jellyfish, jpegoptim, khal, khard, kodi, kyotocabinet, lcov, ldb, ldc, ledger,
+letsencrypt, libbigwig, libcanberra-gtk2, libconfig, libgit2, libgtop,
+liblangtag, libmateweather, libmbim, libotf, libpwquality, libqmi, libvdpau,
+libxml++, lispf4, love, mate-desktop, mate-icon-theme, mate-menus,
+mate-themes, mcp-plugins, microscheme, mlt, modem-manager, munge,
+mupen64plus-audio-sdl, mupen64plus-core, mupen64plus-input-sdl,
+mupen64plus-rsp-hle, mupen64plus-rsp-z64, mupen64plus-ui-console,
+mupen64plus-video-arachnoid, mupen64plus-video-glide64,
+mupen64plus-video-glide64mk2, mupen64plus-video-rice, mupen64plus-video-z64,
+murrine, mutter, myrepos, nagios, nautilus, network-manager,
+network-manager-applet, nload, notmuch-addrlookup-c, nqc, obs, ocaml-findlib,
+owncloud-client, password-store, pepr, perl-cgi, perl-dbd-mysql,
+perl-file-slurp-tiny, perl-html-template, perl-log-report,
+perl-log-report-optional, perl-mime-charset, perl-module-pluggable,
+perl-shell-command, perl-string-print, perl-text-neattemplate,
+perl-unicode-linebreak, perl-xml-compile, perl-xml-compile-cache,
+perl-xml-compile-soap, perl-xml-compile-tester, perl-xml-compile-wsdl11,
+perl-xml-libxml-simple, pfff, pianobar, pinball, pioneers, pixz, powwow, ppp,
+procmail, pyicoteo, python-acme, python-alembic, python-amqp, python-anyjson,
+python-apipkg, python-args, python-astor, python-atomicwrites,
+python-backports-abc, python-beautifulsoup4, python-billiard, python-botocore,
+python-celery, python-click-log, python-click-threading, python-clint,
+python-colorama, python-configargparse, python-configobj, python-contextlib2,
+python-cookies, python-docker-py, python-dockerpty, python-docopt,
+python-editor, python-efl, python-execnet, python-flask, python-futures,
+python-gst, python-hy, python-hypothesis, python-icalendar, python-jellyfish,
+python-jmespath, python-keystoneclient, python-kombu, python-mako,
+python-markdown, python-minimal-wrapper, python-mpd2, python-munkres,
+python-musicbrainzngs, python-mutagen, python-ndg-httpsclient, python-paste,
+python-pastedeploy, python-pastescript, python-pathlib, python-pluggy,
+python-psycopg2, python-pyasn1-modules, python-pybigwig, python-pyechonest,
+python-pygpgme, python-pyicu, python-pylast, python-pyliblo, python-pyquery,
+python-pyrfc3339, python-pystache, python-pytest-cache, python-pytest-cov,
+python-pytest-localserver, python-pytest-subtesthack, python-pytest-xdist,
+python-pytest-xprocess, python-rarfile, python-rauth,
+python-requests-toolbelt, python-responses, python-rply, python-rsa,
+python-sphinx-repoze-autointerface, python-sphinxcontrib-newsfeed,
+python-sphinxcontrib-programoutput, python-swiftclient, python-texttable,
+python-tox, python-translitcodec, python-urllib3, python-vcversioner,
+python-vobject, python-waitress, python-websocket-client, python-webtest,
+python-werkzeug, python-wheel, python-wsgi-intercept, python-wsgiproxy2,
+python-wtforms, python-zope-component, python-zope-configuration,
+python-zope-event, python-zope-exceptions, python-zope-i18nmessageid,
+python-zope-interface, python-zope-location, python-zope-proxy,
+python-zope-schema, python-zope-security, python-zope-testing,
+python-zope-testrunner, python2-acme, python2-alembic, python2-amqp,
+python2-anyjson, python2-apipkg, python2-args, python2-astor,
+python2-atomicwrites, python2-backports-abc, python2-beautifulsoup4,
+python2-billiard, python2-botocore, python2-celery, python2-clint,
+python2-colorama, python2-configargparse, python2-configobj,
+python2-contextlib2, python2-cookies, python2-docopt, python2-editor,
+python2-efl, python2-enum34, python2-execnet, python2-flask,
+python2-functools32, python2-futures, python2-gst, python2-hy,
+python2-hypothesis, python2-jellyfish, python2-jmespath,
+python2-keystoneclient, python2-kombu, python2-mako, python2-markdown,
+python2-mpd2, python2-munkres, python2-musicbrainzngs, python2-mutagen,
+python2-ndg-httpsclient, python2-parsedatetime, python2-paste,
+python2-pastedeploy, python2-pastescript, python2-pathlib, python2-pluggy,
+python2-psycopg2, python2-pyasn1-modules, python2-pybigwig,
+python2-pyechonest, python2-pygpgme, python2-pylast, python2-pyliblo,
+python2-pyquery, python2-pyrfc3339, python2-pystache, python2-pytest-cov,
+python2-pytest-subtesthack, python2-pytest-xdist, python2-pythondialog,
+python2-rarfile, python2-rauth, python2-responses, python2-rply, python2-rsa,
+python2-sphinx-repoze-autointerface, python2-sphinxcontrib-programoutput,
+python2-swiftclient, python2-texttable, python2-tox, python2-translitcodec,
+python2-unicodecsv, python2-urllib3, python2-vcversioner, python2-vobject,
+python2-waitress, python2-websocket-client, python2-webtest, python2-werkzeug,
+python2-wheel, python2-wsgiproxy2, python2-wtforms, python2-xdo,
+python2-zope-component, python2-zope-configuration, python2-zope-event,
+python2-zope-exceptions, python2-zope-i18nmessageid, python2-zope-interface,
+python2-zope-location, python2-zope-proxy, python2-zope-schema,
+python2-zope-security, python2-zope-testing, python2-zope-testrunner, qca,
+qemu-minimal, qtkeychain, qtractor, quassel, r-acsnminer, r-adaptivesparsity,
+r-annotationdbi, r-base64enc, r-biobase, r-biocgenerics, r-biocparallel,
+r-biomart, r-biostrings, r-bitops, r-brew, r-bsgenome, r-catools, r-curl,
+r-data-table, r-devtools, r-dnacopy, r-doparallel, r-dt, r-foreach,
+r-futile-logger, r-futile-options, r-genomation, r-genomeinfodb,
+r-genomicalignments, r-genomicfeatures, r-genomicranges, r-git2r, r-go-db,
+r-graph, r-gridbase, r-gridextra, r-httr, r-impute, r-iranges, r-iterators,
+r-lambda-r, r-lattice, r-matrixstats, r-org-ce-eg-db, r-org-dm-eg-db,
+r-org-hs-eg-db, r-org-mm-eg-db, r-plotly, r-plotrix, r-r-cache, r-r-methodss3,
+r-r-oo, r-r-rsp, r-r-utils, r-rcpparmadillo, r-rcurl, r-readr, r-rmarkdown,
+r-roxygen2, r-rsamtools, r-rsqlite, r-rstudioapi, r-rtracklayer, r-rversions,
+r-s4vectors, r-seqpattern, r-snow, r-sparsem, r-summarizedexperiment, r-topgo,
+r-viridis, r-whisker, r-xml, r-xml2, r-xvector, radicale, ragel, rakarrack,
+rdmd, redshift, rev-plugins, ruby-ae, ruby-afm, ruby-ansi, ruby-ascii85,
+ruby-atoulme-saikuro, ruby-bio-commandeer, ruby-blankslate, ruby-brass,
+ruby-ci-reporter, ruby-clap, ruby-crass, ruby-cutest, ruby-domain-name,
+ruby-eventmachine, ruby-fivemat, ruby-gem-hadar, ruby-gettext, ruby-guard,
+ruby-hashery, ruby-http-cookie, ruby-instantiator, ruby-introspection,
+ruby-json-pure, ruby-lemon, ruby-locale, ruby-metaclass, ruby-mime-types,
+ruby-mime-types-data, ruby-minitest-bonus-assertions, ruby-minitest-focus,
+ruby-minitest-moar, ruby-minitest-pretty-diff, ruby-minitest-rg,
+ruby-minitest-tu-shim, ruby-mocha, ruby-net-ssh, ruby-netrc,
+ruby-nokogiri-diff, ruby-nokogumbo, ruby-packnga, ruby-power-assert,
+ruby-pry-editline, ruby-pstree, ruby-pygmentize, ruby-qed, ruby-rb-fsevent,
+ruby-rc4, ruby-redcarpet, ruby-redcloth, ruby-rubytest, ruby-rubytest-cli,
+ruby-saikuro-treemap, ruby-sanitize, ruby-sdoc, ruby-shoulda,
+ruby-shoulda-context, ruby-shoulda-matchers, ruby-shoulda-matchers,
+ruby-simplecov, ruby-sqlite3, ruby-systemu, ruby-tdiff, ruby-term-ansicolor,
+ruby-test-unit, ruby-text, ruby-tins, ruby-ttfunk, ruby-turn, ruby-unf,
+ruby-unf-ext, ruby-utils, scribus, sdl2-image, sdl2-mixer, sdl2-ttf, sdparm,
+shepherd, shntool, slurm, smithlab-cpp, snap-aligner, snorenotify, sortmerna,
+sparsehash, ste-plugins, stringtie, synfig, synfigstudio, tcllib, tclxml,
+telepathy-logger, tevent, texlive-minimal, tilda, tinyxml, tlsdate, tophat,
+transmission-remote-cli, ustr, v4l-utils, vco-plugins, vdirsyncer, vdpauinfo,
+vmpk, wah-plugins, wcalc, xaos, xfce4-power-manager, xfce4-xkb-plugin,
+xmlstarlet, yoshimi, zenity
+
+*** 577 package updates
+
+abcde-2.7.1, abduco-0.5, adwaita-icon-theme-3.18.0, aisleriot-3.18.2,
+alsa-modular-synth-2.1.2, alsa-utils-1.1.0, american-fuzzy-lop-1.96b,
+ant-1.9.6, ao-1.2.0, arb-2.8.1, ardour-4.7, aspell-dict-en-2016.01.19-0,
+atkmm-2.24.2, attr-2.4.47, autogen-5.18.7, bash-4.3.42, bash-minimal-4.3.42,
+bash-static-4.3.42, bazaar-2.7.0, bdftopcf-1.0.5, bedtools-2.25.0,
+bind-utils-9.10.3-P4, bitcoin-core-0.11.2, bitlbee-3.4.1, bluez-5.36,
+boost-1.60.0, bowtie-2.2.6, bundler-1.11.2, calibre-2.51.0, catch-1.3.5,
+ccache-3.2.4, chicken-4.10.0, clang-3.6.2, claws-mail-3.13.2, clutter-1.24.2,
+clutter-gst-3.0.14, clutter-gtk-1.6.6, cm-0.3, cogl-1.22.0, colordiff-1.0.16,
+complexity-1.10, cppunit-1.13.2, cups-filters-1.4.0, curl-7.47.0,
+datamash-1.1.0, dconf-0.24.0, ddrescue-1.21, deeptools-2.1.1, devhelp-3.18.1,
+diffoscope-51, docbook-xml-4.3, docbook-xml-4.4, docbook-xml-4.5,
+dovecot-2.2.19, doxygen-1.8.11, dropbear-2016.72, dvdisaster-0.79.5,
+dvtm-0.15, edirect-3.50, efl-1.17.0, eigen-3.2.7, elementary-1.17.0,
+elogind-219.14, emacs-dash-2.12.1, emacs-debbugs-0.9, emacs-pdf-tools-0.70,
+emacs-w3m-1.4.538+0.20141022, emotion-generic-players-1.17.0,
+enlightenment-0.20.6, eog-3.18.1, epiphany-3.18.2,
+evas-generic-loaders-1.17.0, evince-3.18.1, exim-4.86.2,
+extra-cmake-modules-5.19.0, feh-2.14.1, ffmpeg-2.8.6, file-5.25,
+file-roller-3.16.4, findutils-4.6.0, flex-2.6.0,
+font-adobe-source-han-sans-1.004, font-terminus-4.40, font-ubuntu-0.83,
+font-util-1.3.1, fontforge-20150824, freeipmi-1.5.1, frescobaldi-2.18.2,
+fribidi-0.19.7, fuse-2.9.5, gajim-0.16.5, gcc-5.3.0, gcc-toolchain-5.3.0,
+gccgo-4.9.3, gcr-3.18.0, gdb-7.11, gdk-pixbuf-2.32.3, geocode-glib-3.18.0,
+getmail-4.48.0, gettext-0.19.7, gfortran-5.3.0, git-2.7.3, git-manpages-2.7.3,
+git-modes-1.2.1, gitolite-3.6.5, glade-3.18.3, glibc-2.22, glibmm-2.46.3,
+global-6.5.2, glpk-4.59, gmime-2.6.20, gmp-6.1.0, gmsh-2.11.0, gmtp-1.3.10,
+gnome-common-3.18.0, gnome-desktop-3.18.1, gnome-keyring-3.18.3,
+gnome-klotski-3.18.2, gnome-mines-3.18.2, gnome-settings-daemon-3.18.2,
+gnome-terminal-3.18.2, gnome-themes-standard-3.18.0, gnucash-2.6.9,
+gnumeric-1.12.24, gnupg-2.0.29, gnupg-2.1.11, gnuplot-5.0.2, gnutls-3.4.7,
+goffice-0.10.24, gp2c-0.0.9pl5, gpgme-1.6.0, gpsbabel-1.5.2, graphite2-1.3.6,
+grep-2.22, grilo-0.2.14, grilo-plugins-0.2.16, gsl-2.1, gst-libav-1.6.3,
+gst-plugins-base-1.6.3, gst-plugins-good-1.6.3, gst-plugins-ugly-1.6.3,
+gstreamer-1.6.3, gtksourceview-3.18.2, guile-2.0.11, guile-2.0.11,
+guile-json-0.5.0, guile-ssh-0.9.0, guitarix-0.34.0, guix-0.9.0,
+guix-0.9.0-1.dd21, gvfs-1.26.2, harfbuzz-1.0.6, help2man-1.47.3, hevea-2.28,
+htop-2.0.1, hwloc-1.11.1, hydrogen-0.9.6.1, iceauth-1.0.7, icecast-2.4.3,
+icecat-38.6.0-gnu1, iproute2-4.4.0, irssi-0.8.18, isc-dhcp-4.3.3-P1,
+isync-1.2.1, jrnl-1.9.7, julia-0.4.3, kbproto-1.0.7, keepassx-2.0.2,
+kwindowsystem-5.19.0, libass-0.13.2, libassuan-2.4.2, libbluray-0.9.2,
+libcddb-1.3.2, libchamplain-0.12.12, libdvdcss-1.4.0, libevent-2.0.22,
+libffi-3.2.1, libfontenc-1.1.3, libfs-1.0.7, libgcrypt-1.6.5,
+libgnome-keyring-3.12.0, libgpg-error-1.21, libgweather-3.18.1,
+libinput-1.2.0, libjpeg-9a, libmicrohttpd-0.9.48, libotr-4.1.1,
+libpeas-1.16.0, libpng-1.5.26, librecad-2.0.9, libreoffice-5.0.5.2,
+libressl-2.3.3, librsvg-2.40.13, libsecret-0.18.3, libshout-2.4.1,
+libsndfile-1.0.26, libssh-0.7.3, libssh2-1.7.0, libstdc++-doc-5.3.0,
+libtasn1-4.7, libtiff-4.0.6, libuninameslist-0.5.20150701, libvpx-1.5.0,
+libwnck-3.14.0, libx11-1.6.3, libx264-20160220-2245, libxaw-1.0.13,
+libxdmcp-1.1.2, libxi-1.7.6, libxkbfile-1.0.9, libxml2-2.9.3, libxmp-4.3.10,
+libxp-1.0.3, libxrandr-1.5.0, libxrender-0.9.9, libxshmfence-1.2, libxt-1.1.5,
+libxvmc-1.0.9, libxxf86vm-1.1.4, libyubikey-1.13, lilypond-2.19.33,
+linux-libre-4.4.6, linux-libre-4.5, lua-5.2.3, macs-2.1.0.20151222,
+mafft-7.267, magit-2.5.0, man-pages-4.04, manaplus-1.6.3.12, mariadb-10.1.12,
+mercurial-3.7.2, mesa-11.0.9, mesa-headers-11.0.9, mit-krb5-1.13.3,
+mkfontscale-1.1.2, moe-1.8, moreutils-0.57, mozjs-24.2.0, mpd-0.19.12,
+mplayer-1.2.1, mpv-0.16.0, msmtp-1.6.3, mumps-5.0.1, mumps-metis-5.0.1,
+mumps-metis-openmpi-5.0.1, mumps-openmpi-5.0.1, mupdf-1.8, mysql-5.7.11,
+nano-2.5.3, ncbi-vdb-2.5.7, ncmpcpp-0.7.3, neon-0.30.1, nettle-3.2,
+nginx-1.8.1, ngs-java-1.2.3, ngs-sdk-1.2.3, nix-1.11.2, notmuch-0.21,
+nspr-4.10.10, nss-3.21.1, nss-certs-3.21.1, ntp-4.2.8p6, numactl-2.0.11,
+octave-4.0.0, offlineimap-6.7.0, openbox-3.6.1, openjpeg-2.0.1,
+openjpeg-2.1.0, openmpi-1.10.1, openssh-7.2p2, openssl-1.0.2g, opus-1.1.2,
+opusfile-0.7, orc-0.4.25, orfm-0.5.3, oxygen-icons-5.19.0, parallel-20160222,
+paredit-24, pari-gp-2.7.5, parted-3.2, pcre-8.38, pelican-3.6.3, perf-4.5,
+perl-5.22.1, perl-tk-804.033, petsc-3.6.2, petsc-complex-3.6.2,
+petsc-complex-openmpi-3.6.2, petsc-openmpi-3.6.2, pidgin-otr-4.0.2,
+pinentry-0.9.6, pius-2.2.2, pkg-config-0.29, postgresql-9.5.1, powertop-2.8,
+preseq-2.0, privoxy-3.0.24, procps-3.3.11, prodigal-2.6.3, pspp-0.10.0,
+pulseaudio-8.0, pumpa-0.9.2, python-3.4.3, python-apsw-3.9.2-r1,
+python-babel-2.1.1, python-biopython-1.66, python-blinker-1.4,
+python-certifi-2015.11.20.1, python-cffi-1.4.2, python-click-6.2,
+python-coverage-4.0.3, python-cryptography-1.2.3,
+python-cryptography-vectors-1.2.3, python-cython-0.23.4,
+python-dateutil-2.4.2, python-debtcollector-1.0.0, python-decorator-4.0.9,
+python-enum34-1.1.0, python-exif-read-2.1.2, python-file-5.25,
+python-fixtures-1.4.0, python-flake8-2.5.4, python-gnupg-0.3.8,
+python-html5lib-1.0b8, python-isodate-0.5.4, python-jinja2-2.8,
+python-jsonschema-2.5.1, python-keyring-5.7.1, python-libarchive-c-2.2,
+python-libxml2-2.9.3, python-llfuse-0.41.1, python-llfuse-1.0,
+python-lxml-3.5.0, python-ly-0.9.3, python-matplotlib-1.4.3,
+python-mccabe-0.4.0, python-mox3-0.13.0, python-msgpack-0.4.7,
+python-networkx-1.11, python-nose-1.3.7, python-numpy-1.10.4,
+python-oauthlib-1.0.3, python-os-client-config-1.12.0, python-os-testr-0.5.0,
+python-oslo.context-1.0.0, python-oslo.i18n-3.0.0,
+python-oslo.serialization-2.2.0, python-oslo.utils-3.0.0,
+python-oslosphinx-4.2.0, python-pandas-0.16.2, python-parsedatetime-1.5,
+python-passlib-1.6.5, python-patsy-0.4.1, python-pbr-1.8.1, python-pep8-1.7.0,
+python-pillow-3.1.1, python-pip-8.0.2, python-psutil-3.3.0, python-py-1.4.31,
+python-pycparser-2.14, python-pyflakes-1.0.0, python-pygments-2.0.2,
+python-pyjwt-1.4.0, python-pyld-0.6.8, python-pysam-0.8.4, python-pytz-2015.7,
+python-pyzmq-15.1.0, python-requests-2.9.1, python-requests-mock-0.7.0,
+python-rpy2-2.7.6, python-setuptools-scm-1.9.0, python-six-1.10.0,
+python-sqlalchemy-1.0.12, python-stevedore-1.10.0, python-tempest-lib-0.12.0,
+python-tlsh-3.4.4, python-tornado-4.3, python-traitlets-4.1.0,
+python-tzlocal-1.2, python-unidecode-0.04.18, python-virtualenv-13.1.2,
+python-webob-1.5.1, python2-apsw-3.9.2-r1, python2-babel-2.1.1,
+python2-backport-ssl-match-hostname-3.5.0.1, python2-biopython-1.66,
+python2-blinker-1.4, python2-certifi-2015.11.20.1, python2-cffi-1.4.2,
+python2-click-6.2, python2-coverage-4.0.3, python2-cryptography-1.2.3,
+python2-cryptography-vectors-1.2.3, python2-cython-0.23.4,
+python2-dateutil-2.4.2, python2-debtcollector-1.0.0, python2-decorator-4.0.9,
+python2-exif-read-2.1.2, python2-fastlmm-0.2.21, python2-file-5.25,
+python2-fixtures-1.4.0, python2-flake8-2.5.4, python2-gnupg-0.3.8,
+python2-html5lib-1.0b8, python2-isodate-0.5.4, python2-jinja2-2.8,
+python2-jsonschema-2.5.1, python2-keyring-5.7.1, python2-libarchive-c-2.2,
+python2-libxml2-2.9.3, python2-llfuse-1.0, python2-lxml-3.5.0,
+python2-matplotlib-1.4.3, python2-mccabe-0.4.0, python2-mox3-0.13.0,
+python2-msgpack-0.4.7, python2-networkx-1.11, python2-nose-1.3.7,
+python2-numpy-1.10.4, python2-oauthlib-1.0.3, python2-os-client-config-1.12.0,
+python2-os-testr-0.5.0, python2-oslo.context-1.0.0, python2-oslo.i18n-3.0.0,
+python2-oslo.serialization-2.2.0, python2-oslo.utils-3.0.0,
+python2-oslosphinx-4.2.0, python2-pandas-0.16.2, python2-passlib-1.6.5,
+python2-patsy-0.4.1, python2-pbr-1.8.1, python2-pep8-1.7.0,
+python2-pillow-3.1.1, python2-pip-8.0.2, python2-psutil-3.3.0,
+python2-py-1.4.31, python2-pycparser-2.14, python2-pyflakes-1.0.0,
+python2-pygments-2.0.2, python2-pyicu-1.9.2, python2-pyjwt-1.4.0,
+python2-pyld-0.6.8, python2-pysam-0.8.4, python2-pysnptools-0.3.5,
+python2-pysqlite-2.8.1, python2-pytz-2015.7, python2-pyzmq-15.1.0,
+python2-requests-2.9.1, python2-requests-mock-0.7.0, python2-rpy2-2.7.6,
+python2-setuptools-scm-1.9.0, python2-six-1.10.0, python2-sqlalchemy-1.0.12,
+python2-stevedore-1.10.0, python2-tempest-lib-0.12.0, python2-tlsh-3.4.4,
+python2-tornado-4.3, python2-traitlets-4.1.0, python2-unidecode-0.04.18,
+python2-virtualenv-13.1.2, python2-webob-1.5.1, qemu-2.5.0, qrencode-3.4.4,
+r-3.2.3, r-ggplot2-2.0.0, r-qtl-1.38-4, randrproto-1.5.0, retroarch-1.3.1,
+rsync-3.1.2, ruby-2.2.4, ruby-2.3.0, ruby-mini-portile-2.0.0,
+ruby-nokogiri-1.6.7.1, samba-4.3.6, samtools-1.3, sdl2-2.0.4, seahorse-3.18.0,
+sessreg-1.1.0, setxkbmap-1.3.1, shflags-1.2.0, simple-scan-3.19.91,
+sipwitch-1.9.15, skribilo-0.9.3, slepc-3.6.2, slepc-complex-3.6.2,
+slepc-complex-openmpi-3.6.2, slepc-openmpi-3.6.2, smproxy-1.0.6,
+socat-1.7.3.1, sqlite-3.10.0, sra-tools-2.5.7, star-2.5.1b, stow-2.2.2,
+subversion-1.8.15, sudo-1.8.15, sxiv-1.3.2, talloc-2.1.5, tdb-1.3.8,
+texinfo-5.2, texinfo-6.0, texinfo-6.1, the-silver-searcher-0.31.0, tig-2.1.1,
+tiled-0.15.1, tmux-2.1, tor-0.2.7.6, torsocks-2.0.0, totem-3.18.1,
+tzdata-2015g, ucommon-7.0.0, upower-0.99.3, utf8proc-1.3.1, vapoursynth-28,
+vera-1.23, vigra-1.11.0, vsearch-1.10.0, vte-0.42.3, wayland-1.10.0,
+webkitgtk-2.12.0, webkitgtk-2.4.10, webkitgtk-gtk2-2.4.10, weechat-1.4,
+wget-1.17.1, wine-1.9.4, x11perf-1.6.0, xcmsdb-1.0.5, xdotool-3.20150503.1,
+xdpyinfo-1.3.2, xdriinfo-1.0.5, xev-1.2.2, xf86-input-evdev-2.10.1,
+xf86-input-keyboard-1.8.1, xf86-input-libinput-0.16.0,
+xf86-input-synaptics-1.8.3, xf86-input-void-1.4.1, xf86-video-ati-7.6.1,
+xf86-video-cirrus-1.5.3, xf86-video-geode-2.11.18,
+xf86-video-intel-2.99.917-1-d167280, xf86-video-mach64-6.9.5,
+xf86-video-mga-1.6.4, xf86-video-neomagic-1.2.9, xf86-video-nouveau-1.0.12,
+xf86-video-r128-6.10.1, xf86-video-savage-2.3.8,
+xf86-video-siliconmotion-1.7.8, xf86-video-sis-0.10.8, xf86-video-tdfx-1.4.6,
+xf86-video-trident-1.3.7, xf86-video-vesa-2.3.4, xf86-video-vmware-13.1.0,
+xgamma-1.0.6, xhost-1.0.7, xinput-1.6.2, xkbevd-1.1.4, xkeyboard-config-2.17,
+xlockmore-5.46, xlsatoms-1.1.2, xmlto-0.0.28, xmodmap-1.0.9,
+xorg-server-1.18.1, xorriso-1.4.2, xproto-7.0.28, xrandr-1.5.0, xterm-322,
+xvid-1.3.4, xvinfo-1.1.3, xz-5.2.2, yasm-1.3.0, yelp-3.18.1,
+yelp-tools-3.18.0, yelp-xsl-3.18.1, ykclient-2.15, youtube-dl-2016.03.01,
+zlib-1.2.8, znc-1.6.2, zynaddsubfx-2.5.3
+
+** Programming interfaces
+
+*** Build systems always set the ‘SOURCE_DATE_EPOCH’ environment variable
+*** New (guix graph) graph manipulation module, abstracted from ‘guix graph’
+*** New (guix cve) module, to navigate the CVE database
+*** ‘build-things’ procedure takes a new ‘mode’ parameter
+*** Mass rename of ‘dmd’ to ‘shepherd’ in the (gnu …) modules
+*** New ‘gnome-desktop-service’ and ‘xfce-desktop-service’ procedures
+*** ‘pam-root-service-type’ can be extended with cross-cutting transformations
+*** ‘package-with-python2’ honors the ‘python2-variant’ package property
+    (see <http://bugs.gnu.org/22437>)
+
 ** Noteworthy bug fixes
 
-*** Numbers in package names are correctly handled (http://bugs.gnu.org/19219)
+*** Grafts are applied recursively (<http://bugs.gnu.org/22139>)
+*** Commands correctly handle numbers in package names
+    (http://bugs.gnu.org/19219)
+*** ‘guix-daemon’ deduplication code detects corrupt items
+*** eudev now populates /dev/disk/by-{id,label}
+*** Selected locale is automatically built (<http://bugs.gnu.org/22572>)
+*** Substitutes can be downloaded over HTTPS (<http://bugs.gnu.org/22937>)
+*** umask explicitly set in /etc/profile (<http://bugs.gnu.org/22650>)
+*** ‘guix system init’ writes GC root on the target file system
+    (<http://bugs.gnu.org/22802>)
+*** ‘guix system vm’ now works in the absence of KVM support
+    (<http://bugs.gnu.org/22633>)
+*** GuixSD includes an Info reader by default (<http://bugs.gnu.org/22598>)
+*** MacBook keyboards are now properly detected (<http://bugs.gnu.org/20433>)
+*** GRUB searches root by label or UUID (<http://bugs.gnu.org/22281>)
+*** ‘guix package --search-paths’ honors propagated inputs
+    (<http://bugs.gnu.org/22073>)
+*** GCC uses ‘C_INCLUDE_PATH’ et al. instead of ‘CPATH’
+    (<http://bugs.gnu.org/22186>)
+*** ‘ld-wrapper’ computes library search path based on all ‘-L’ flags
+    (<http://bugs.gnu.org/21941>)
+*** ‘guix environment --container’ gracefully handles abnormal exists
+    (<http://bugs.gnu.org/21958>)
+
+** Native language support
+
+*** Updated translations: da, de
+*** New translation: pl (Polish)
 
 * Changes in 0.9.0 (since 0.8.3)
 

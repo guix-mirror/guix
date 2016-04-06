@@ -53,14 +53,14 @@
 (define-public webkitgtk
   (package
     (name "webkitgtk")
-    (version "2.10.8")
+    (version "2.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1a98z7fa8vxk7y2hlbnkl767908anyyxbwkyiar5gi037yr84dii"))))
+                "19jyvyw8ss4bacq3f7ybdb0r16r84q12j2bpciyj9jqvzpw091m6"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -136,16 +136,14 @@ HTML/CSS applications to full-fledged web browsers.")
 (define-public webkitgtk-2.4
   (package (inherit webkitgtk)
     (name "webkitgtk")
-    (version "2.4.9")
+    (version "2.4.10")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0r651ar3p0f8zwl7764kyimxk5hy88cwy116pv8cl5l8hbkjkpxg"))
-              (patches
-               (list (search-patch "webkitgtk-2.4-sql-init-string.patch")))))
+                "0566yx5lxi40g0wpvmwbc8y76akd7zph7flrjdp2vv3z1nra9z9k"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests

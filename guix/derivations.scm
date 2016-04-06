@@ -90,7 +90,12 @@
             build-derivations
             built-derivations
 
+            file-search-error?
+            file-search-error-file-name
+            file-search-error-search-path
 
+            search-path*
+            module->source-file-name
             build-expression->derivation)
 
   ;; Re-export it from here for backward compatibility.
@@ -1035,10 +1040,28 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
                                   #:guile-for-build guile
                                   #:local-build? #t)))
 
+;; The "file not found" error condition.
+(define-condition-type &file-search-error &error
+  file-search-error?
+  (file     file-search-error-file-name)
+  (path     file-search-error-search-path))
+
 (define search-path*
   ;; A memoizing version of 'search-path' so 'imported-modules' does not end
   ;; up looking for the same files over and over again.
-  (memoize search-path))
+  (memoize (lambda (path file)
+             "Search for FILE in PATH and memoize the result.  Raise a
+'&file-search-error' condition if it could not be found."
+             (or (search-path path file)
+                 (raise (condition
+                         (&file-search-error (file file)
+                                             (path path))))))))
+
+(define (module->source-file-name module)
+  "Return the file name corresponding to MODULE, a Guile module name (a list
+of symbols.)"
+  (string-append (string-join (map symbol->string module) "/")
+                 ".scm"))
 
 (define* (%imported-modules store modules         ;deprecated
                             #:key (name "module-import")
@@ -1051,9 +1074,7 @@ search path."
   ;; TODO: Determine the closure of MODULES, build the `.go' files,
   ;; canonicalize the source files through read/write, etc.
   (let ((files (map (lambda (m)
-                      (let ((f (string-append
-                                (string-join (map symbol->string m) "/")
-                                ".scm")))
+                      (let ((f (module->source-file-name m)))
                         (cons f (search-path* module-path f))))
                     modules)))
     (imported-files store files #:name name #:system system

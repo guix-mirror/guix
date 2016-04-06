@@ -159,6 +159,3 @@
                 (string=? (readlink two) one))))))
 
 (test-end)
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

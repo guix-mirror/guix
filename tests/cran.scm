@@ -131,6 +131,3 @@ lines.  And: this line continues the description.")
          (pk 'fail x #f))))))
 
 (test-end "cran")
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

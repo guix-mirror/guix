@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ni* Gillmann <ng@niasterisk.space>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,6 +67,7 @@
             (sha256
              (base32
               "0zvv7wd011npcx7yphw9bpgivyxz6mlp87a57n96nv85k96dd2l6"))
+            (patches (list (search-patch "libextractor-ffmpeg-3.patch")))
             (modules '((guix build utils)))
             (snippet
              ;; Nowadays libmagic (from 'file') returns 'audio/ogg' and not

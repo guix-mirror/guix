@@ -64,6 +64,3 @@
           (lookup "openoffice.org" "2.3.0"))))
 
 (test-end "cve")
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

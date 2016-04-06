@@ -46,11 +46,23 @@ Return a list of strings with result values of evaluation."
 (defun guix-geiser-eval-read (str &optional repl)
   "Evaluate STR with guile expression using Geiser REPL.
 Return elisp expression of the first result value of evaluation."
-  ;; Parsing scheme code with elisp `read' is probably not the best idea.
-  (read (replace-regexp-in-string
-         "#f\\|#<unspecified>" "nil"
-         (replace-regexp-in-string
-          "#t" "t" (car (guix-geiser-eval str repl))))))
+  ;; The goal is to convert a string with scheme expression into elisp
+  ;; expression.
+  (let ((result (car (guix-geiser-eval str repl))))
+    (cond
+     ((or (string= result "#f")
+          (string= result "#<unspecified>"))
+      nil)
+     ((string= result "#t")
+      t)
+     (t
+      (read (replace-regexp-in-string
+             "[ (]\\(#f\\)" "nil"
+             (replace-regexp-in-string
+              "[ (]\\(#t\\)" "t"
+              result
+              nil nil 1)
+             nil nil 1))))))
 
 (defun guix-repl-send (cmd &optional save-history)
   "Send CMD input string to the current REPL buffer.

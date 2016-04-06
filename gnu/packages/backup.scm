@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
-;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -348,8 +348,16 @@ rdiff-backup is easy to use and settings have sensible defaults.")
     (inputs
      `(("acl" ,acl)
        ("openssl" ,openssl)
-       ("python-llfuse" ,python-llfuse)
-       ("python-msgpack" ,python-msgpack)))
+       ("python-msgpack" ,python-msgpack)
+
+       ;; Attic is probably incompatible with llfuse > 0.41.
+       ;; These links are to discussions of llfuse compatibility from
+       ;; the borg project. Borg is a recent fork of attic, and attic
+       ;; has not been updated since the fork, so it's likely that
+       ;; llfuse compatibility requirements are still the same.
+       ;; https://github.com/borgbackup/borg/issues/642
+       ;; https://github.com/borgbackup/borg/issues/643
+       ("python-llfuse" ,python-llfuse-0.41)))
     (synopsis "Deduplicating backup program")
     (description "Attic is a deduplicating backup program.  The main goal of
 Attic is to provide an efficient and secure way to backup data.  The data
@@ -398,3 +406,56 @@ compression, and more.  The library itself implements storage techniques such
 as content-addressable storage, content hash keys, Merkle trees, similarity
 detection, and lossless compression.")
     (license license:gpl3+)))
+
+(define-public borg
+  (package
+    (name "borg")
+    (version "1.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "borgbackup" version))
+              (sha256
+               (base32
+                "0wa6cvqs3rni5nwrgagigchcly8a53rxk56z0zn8iaii2cqrw2sh"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-env
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((openssl (assoc-ref inputs "openssl"))
+                   (lz4 (assoc-ref inputs "lz4")))
+               (setenv "BORG_OPENSSL_PREFIX" openssl)
+               (setenv "BORG_LZ4_PREFIX" lz4)
+               (setenv "PYTHON_EGG_CACHE" "/tmp")
+               #t)))
+         (add-after 'install 'install-doc
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (man (string-append out "/share/man/man1")))
+               (and
+                 (zero? (system* "python3" "setup.py" "build_ext" "--inplace"))
+                 (zero? (system* "make" "-C" "docs" "man"))
+                 (begin
+                   (install-file "docs/_build/man/borg.1" man)
+                   #t))))))))
+    (native-inputs
+     `(("python-setuptools-scm" ,python-setuptools-scm)
+       ;; For generating the documentation.
+       ("python-sphinx" ,python-sphinx)
+       ("python-sphinx-rtd-theme" ,python-sphinx-rtd-theme)))
+    (inputs
+     `(("acl" ,acl)
+       ("lz4" ,lz4)
+       ("openssl" ,openssl)
+       ("python-llfuse" ,python-llfuse)
+       ("python-msgpack" ,python-msgpack)))
+    (synopsis "Deduplicated, encrypted, authenticated and compressed backups")
+    (description "Borg is a deduplicating backup program.  Optionally, it
+supports compression and authenticated encryption.  The main goal of Borg is to
+provide an efficient and secure way to backup data.  The data deduplication
+technique used makes Borg suitable for daily backups since only changes are
+stored.  The authenticated encryption technique makes it suitable for backups
+to not fully trusted targets.  Borg is a fork of Attic.")
+    (home-page "https://borgbackup.github.io/borgbackup/")
+    (license license:bsd-3)))

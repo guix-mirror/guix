@@ -20,7 +20,6 @@
 (define-module (gnu packages openstack)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages version-control)
   #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module ((guix licenses)
@@ -234,48 +233,6 @@ tested on Python version 3.2, 2.7 and 2.6.")
 
 (define-public python2-os-testr
   (package-with-python2 python-os-testr))
-
-(define-public python-pbr
-  (package
-    (name "python-pbr")
-    (version "1.8.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "https://pypi.python.org/packages/source/p/pbr/pbr-"
-               version
-               ".tar.gz"))
-        (sha256
-          (base32
-            "0jcny36cf3s8ar5r4a575npz080hndnrfs4np1fqhv0ym4k7c4p2"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:tests? #f)) ;; Most tests seem to use the Internet.
-    (propagated-inputs
-      `(("python-testrepository" ,python-testrepository)
-        ("git" ,git))) ;; pbr actually uses the "git" binary.
-    (inputs
-      `(("python-fixtures" ,python-fixtures)
-        ("python-mimeparse" ,python-mimeparse)
-        ("python-mock" ,python-mock)
-        ("python-setuptools" ,python-setuptools)
-        ("python-six" ,python-six)
-        ("python-sphinx" ,python-sphinx)
-        ("python-testrepository" ,python-testrepository)
-        ("python-testresources" ,python-testresources)
-        ("python-testscenarios" ,python-testscenarios)
-        ("python-testtools" ,python-testtools)
-        ("python-virtualenv" ,python-virtualenv)))
-    (home-page "https://launchpad.net/pbr")
-    (synopsis "Change the default behavior of Python’s setuptools")
-    (description
-      "Python Build Reasonableness (PBR) is a library that injects some useful
-and sensible default behaviors into your setuptools run.")
-    (license asl2.0)))
-
-(define-public python2-pbr
-  (package-with-python2 python-pbr))
 
 (define-public python-requests-mock
   (package

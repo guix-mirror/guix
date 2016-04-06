@@ -141,6 +141,3 @@
            (equal? str "hello world\n")))))
 
 (test-end)
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

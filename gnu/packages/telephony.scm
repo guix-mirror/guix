@@ -191,14 +191,14 @@ internet.")
 (define-public libsrtp
   (package
     (name "libsrtp")
-    (version "1.5.2")
+    (version "1.5.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/cisco/libsrtp/archive/v"
                                   version ".tar.gz"))
              (sha256
               (base32
-               "1njf62f6sazz2q7qc4j495v1pga385whkmxxyr8hfz1ragiyzqc6"))))
+               "1w2g623qkd7gdyydglx2hr4s2y237lg0nszjmy7z8d2iq8hvb9sn"))))
     (native-inputs
      `(("procps" ,procps)))
     (build-system gnu-build-system)

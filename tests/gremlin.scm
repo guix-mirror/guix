@@ -64,6 +64,3 @@
          "ORIGIN/foo")))
 
 (test-end "gremlin")
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

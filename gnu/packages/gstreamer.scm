@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,7 +97,7 @@ arrays of data.")
 (define-public gstreamer
   (package
     (name "gstreamer")
-    (version "1.6.3")
+    (version "1.8.0")
     (source
      (origin
       (method url-fetch)
@@ -105,7 +106,7 @@ arrays of data.")
             version ".tar.xz"))
       (sha256
        (base32
-        "093zldafh7xh3lrlwzm7j0vvjz6k9ca83wqil40gfz5qcy6mdy92"))))
+        "1p5y9bbrhywng0prmpxv29p6jsz6vd039d49bnc98p9b45532yll"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (arguments
@@ -144,7 +145,7 @@ This package provides the core library and elements.")
 (define-public gst-plugins-base
   (package
     (name "gst-plugins-base")
-    (version "1.6.3")
+    (version "1.8.0")
     (source
      (origin
       (method url-fetch)
@@ -152,7 +153,7 @@ This package provides the core library and elements.")
                           name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0xbskifk95rw7jd85sqjrmqh2kys1bpi0inrxyapx1x4vf7ly5dn"))))
+        "08hmg7fp519wim1fm04r7f2q2020ssdninawqsbrqjsvs70srh5b"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs
@@ -186,7 +187,7 @@ This package provides the core library and elements.")
            (lambda _
              (substitute* "tests/check/libs/pbutils.c"
                (("/bin/sh") (which "sh"))))))))
-    (home-page "http://gstreamer.freedesktop.org/")
+    (home-page "https://gstreamer.freedesktop.org/")
     (synopsis
      "Plugins for the GStreamer multimedia library")
     (description "This package provides an essential exemplary set of plug-ins
@@ -197,7 +198,7 @@ for the GStreamer multimedia library.")
 (define-public gst-plugins-good
   (package
     (name "gst-plugins-good")
-    (version "1.6.3")
+    (version "1.8.0")
     (source
      (origin
       (method url-fetch)
@@ -206,7 +207,7 @@ for the GStreamer multimedia library.")
             name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0xx16h0q63gs3pxlzdflnpyssba3vcrh1qnzplg4d0ra1fvrvc94"))))
+        "0kczdvqxvl8kxiy2d7czv16jp73hv9k3nykh47ckihnv8x6i6362"))))
     (build-system gnu-build-system)
     (inputs
      `(("aalib" ,aalib)
@@ -237,16 +238,18 @@ for the GStreamer multimedia library.")
      `(#:phases
        (modify-phases %standard-phases
          (add-after
-          'unpack 'disable-failing-rtprtx-tests
+          'unpack 'disable-failing-tests
           (lambda _
-            ;; Disable rtprtx tests that frequently fail.
-            ;; XXX FIXME: Try removing this for version > 1.6.3.
+            ;; Disable tests that fail non-deterministically.
+            ;; XXX FIXME: Try removing this for version > 1.8.0.
             (substitute* "tests/check/elements/rtprtx.c"
-              (("tcase_add_test \\(tc_chain,\
- (test_rtxsender_max_size_packets|test_rtxreceive_data_reconstruction)\\);" all)
+              (("tcase_add_test \\(tc_chain, test_push_forward_seq\\);" all)
+               (string-append "/* " all " */")))
+            (substitute* "tests/check/elements/splitmux.c"
+              (("tcase_add_test \\(tc_chain, test_splitmuxsink\\);" all)
                (string-append "/* " all " */")))
             #t)))))
-    (home-page "http://gstreamer.freedesktop.org/")
+    (home-page "https://gstreamer.freedesktop.org/")
     (synopsis
      "Plugins for the GStreamer multimedia library")
     (description "GStreamer Good Plug-ins is a set of plug-ins for the
@@ -330,7 +333,7 @@ par compared to the rest.")
 (define-public gst-plugins-ugly
   (package
     (name "gst-plugins-ugly")
-    (version "1.6.3")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
@@ -338,7 +341,7 @@ par compared to the rest.")
                            name "/" name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0r6h3ys5n90jv3c06crxzcac561z07s4h04hy5i8ybw8qyvzgv1g"))))
+         "137b6kqykh5nwbmiv28nn1pc1d2x2rb2xxg382pc9pa9gpxpyrak"))))
     (build-system gnu-build-system)
     (inputs
      `(("gst-plugins-base" ,gst-plugins-base)
@@ -358,7 +361,7 @@ par compared to the rest.")
      `(("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)))
-    (home-page "http://gstreamer.freedesktop.org/")
+    (home-page "https://gstreamer.freedesktop.org/")
     (synopsis "GStreamer plugins from the \"ugly\" set")
     (description "GStreamer Ugly Plug-ins.  This set contains those plug-ins
 which the developers consider to have good quality code but that might pose
@@ -368,7 +371,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
 (define-public gst-libav
   (package
     (name "gst-libav")
-    (version "1.6.3")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -376,7 +379,7 @@ distribution problems in some jurisdictions, e.g. due to patent threats.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1aylbg1xnm68c3wc49mzx813qhsjfg23hqnjqqwdwdq31839qyw5"))))
+                "0719njp8aarhvn038pijq6dmsnli0zlg146hyfs3rsdffs4f472s"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-system-libav")
@@ -405,7 +408,7 @@ compression formats through the use of the libav library.")
 (define-public python-gst
   (package
     (name "python-gst")
-    (version "1.6.2")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -413,7 +416,7 @@ compression formats through the use of the libav library.")
                     "gst-python-" version ".tar.xz"))
               (sha256
                (base32
-                "09ci5zvr7lms7mvgbjgsjwaxcl4nq45n1g9pdwnqmx3rf0qkwxjf"))))
+                "1spn49x7yaj69df6mxh9wwcs0y3abswkfpk84njs71lzqlbzyiff"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: Factorize python-sitedir with python-build-system.
@@ -435,7 +438,7 @@ compression formats through the use of the libav library.")
     (propagated-inputs
      `(("gst-plugins-base" ,gst-plugins-base)
        ("python-pygobject" ,python-pygobject)))
-    (home-page "http://gstreamer.freedesktop.org/")
+    (home-page "https://gstreamer.freedesktop.org/")
     (synopsis "GStreamer GObject Introspection overrides for Python")
     (description
      "This package contains GObject Introspection overrides for Python that can

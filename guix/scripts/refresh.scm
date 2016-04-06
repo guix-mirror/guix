@@ -35,6 +35,7 @@
                 #:select (%gnu-updater %gnome-updater %xorg-updater))
   #:use-module (guix import elpa)
   #:use-module (guix import cran)
+  #:use-module (guix import hackage)
   #:use-module (guix gnupg)
   #:use-module (gnu packages)
   #:use-module ((gnu packages commencement) #:select (%final-inputs))
@@ -198,6 +199,7 @@ unavailable optional dependencies such as Guile-JSON."
                  %elpa-updater
                  %cran-updater
                  %bioconductor-updater
+                 %hackage-updater
                  ((guix import pypi) => %pypi-updater)
                  ((guix import gem) => %gem-updater)
                  ((guix import github) => %github-updater)))

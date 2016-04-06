@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <tobias.geerinckx.rice@gmail.com>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -223,6 +224,10 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
   (let* ((version "4.5")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
+             ;; Avoid introducing timestamps
+             (setenv "KCONFIG_NOTIMESTAMP" "1")
+             (setenv "KBUILD_BUILD_TIMESTAMP" (getenv "SOURCE_DATE_EPOCH"))
+
              ;; Apply the neat patch.
              (system* "patch" "-p1" "--force"
                       "-i" (assoc-ref inputs "patch/freedo+gnu"))
@@ -348,13 +353,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.1
   (package
     (inherit linux-libre)
-    (version "4.1.19")
+    (version "4.1.20")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "0xkj94xmnmxr768qp6n68r1g68ix1sds95nv6zfg4x8fc7fzn8km"))))
+                "0vwk6jh57djbwr29xvlgaf14409bq9vmwf6r6nq9jdl6dizfd110"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))
@@ -1581,7 +1586,6 @@ from the module-init-tools project.")
 
 (define-public eudev
   ;; The post-systemd fork, maintained by Gentoo.
-  ;; TODO: Merge with 'eudev-with-blkid' below at an opportune time.
   (package
     (name "eudev")
     (version "3.1.5")
@@ -1600,25 +1604,17 @@ from the module-init-tools project.")
        ("perl" ,perl)
        ("gperf" ,gperf)))
     (inputs
-     `(("kmod" ,kmod)))
+     ;; When linked against libblkid, eudev can populate /dev/disk/by-label
+     ;; and similar; it also installs the '60-persistent-storage.rules' file,
+     ;; which contains the rules to do that.
+     `(("util-linux" ,util-linux)                 ;for blkid
+       ("kmod" ,kmod)))
     (home-page "https://wiki.gentoo.org/wiki/Project:Eudev")
     (synopsis "Userspace device management")
     (description "Udev is a daemon which dynamically creates and removes
 device nodes from /dev/, handles hotplug events and loads drivers at boot
 time.")
     (license license:gpl2+)))
-
-(define-public eudev-with-blkid
-  ;; TODO: Merge with 'eudev' above at an opportune time.
-  (package
-    (inherit eudev)
-    (name "eudev-with-blkid")
-    (inputs
-     ;; When linked against libblkid, eudev can populate /dev/disk/by-label
-     ;; and similar; it also installs the '60-persistent-storage.rules' file,
-     ;; which contains the rules to do that.
-     `(("util-linux" ,util-linux)                 ;for blkid
-       ,@(package-inputs eudev)))))
 
 (define-public lvm2
   (package

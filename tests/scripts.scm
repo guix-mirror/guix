@@ -64,9 +64,6 @@
 
 (test-end "scripts")
 
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))
-
 ;;; Local Variables:
 ;;; eval: (put 'with-environment-variable 'scheme-indent-function 2)
 ;;; End:

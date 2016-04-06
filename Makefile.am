@@ -183,7 +183,8 @@ KCONFIGS =					\
 # Templates, examples.
 EXAMPLES =					\
   gnu/system/examples/bare-bones.tmpl		\
-  gnu/system/examples/desktop.tmpl
+  gnu/system/examples/desktop.tmpl		\
+  gnu/system/examples/lightweight-desktop.tmpl
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go guix/tests.go
 
@@ -292,10 +293,11 @@ endif BUILD_DAEMON
 
 TESTS = $(SCM_TESTS) $(SH_TESTS)
 
-AM_TESTS_ENVIRONMENT = abs_top_srcdir="$(abs_top_srcdir)"
+AM_TESTS_ENVIRONMENT = abs_top_srcdir="$(abs_top_srcdir)" GUILE_AUTO_COMPILE=0
 
-SCM_LOG_COMPILER = $(top_builddir)/test-env $(GUILE)
-AM_SCM_LOG_FLAGS = --no-auto-compile -L "$(top_srcdir)"
+SCM_LOG_DRIVER = $(top_builddir)/test-env $(GUILE) --no-auto-compile \
+                   -e main $(top_srcdir)/build-aux/test-driver.scm
+AM_SCM_LOG_DRIVER_FLAGS = --brief=yes
 
 SH_LOG_COMPILER = $(top_builddir)/test-env $(SHELL)
 AM_SH_LOG_FLAGS = -x -e
@@ -345,6 +347,7 @@ EXTRA_DIST =						\
   build-aux/download.scm				\
   build-aux/make-binary-tarball.scm			\
   build-aux/generate-authors.scm			\
+  build-aux/test-driver.scm				\
   srfi/srfi-37.scm.in					\
   srfi/srfi-64.scm					\
   srfi/srfi-64.upstream.scm				\

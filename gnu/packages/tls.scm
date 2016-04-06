@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -179,22 +180,21 @@ required structures.")
 
 (define-public openssl
   (package
-   (replacement openssl-1.0.2g)
    (name "openssl")
-   (version "1.0.2f")
+   (version "1.0.2g")
    (source (origin
-            (method url-fetch)
-            (uri (list (string-append "ftp://ftp.openssl.org/source/"
-                                      name "-" version ".tar.gz")
-                       (string-append "ftp://ftp.openssl.org/source/old/"
-                                      (string-trim-right version char-set:letter)
-                                      "/" name "-" version ".tar.gz")))
-            (sha256
-             (base32
-              "171fkdg9v6j29d962nh6kb79kfm8kkhy7n9makw39d7jvvj4wawk"))
-            (patches (map search-patch
-                          '("openssl-runpath.patch"
-                            "openssl-c-rehash.patch")))))
+             (method url-fetch)
+             (uri (list (string-append "ftp://ftp.openssl.org/source/"
+                                       name "-" version ".tar.gz")
+                        (string-append "ftp://ftp.openssl.org/source/old/"
+                                       (string-trim-right version char-set:letter)
+                                       "/" name "-" version ".tar.gz")))
+             (sha256
+              (base32
+               "0cxajjayi859czi545ddafi24m9nwsnjsw4q82zrmqvwj2rv315p"))
+             (patches (map search-patch
+                           '("openssl-runpath.patch"
+                             "openssl-c-rehash-in.patch")))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (arguments
@@ -287,64 +287,10 @@ required structures.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
 
-(define openssl-1.0.2g
-  (package
-    (inherit openssl)
-    (replacement #f)
-    (source
-     (let ((name "openssl") (version "1.0.2g"))
-       (origin
-         (method url-fetch)
-         (uri (list (string-append "ftp://ftp.openssl.org/source/"
-                                   name "-" version ".tar.gz")
-                    (string-append "ftp://ftp.openssl.org/source/old/"
-                                   (string-trim-right version char-set:letter)
-                                   "/" name "-" version ".tar.gz")))
-         (sha256
-          (base32
-           "0cxajjayi859czi545ddafi24m9nwsnjsw4q82zrmqvwj2rv315p"))
-         (patches (map search-patch
-                       '("openssl-runpath.patch"
-                         "openssl-c-rehash-in.patch"))))))
-    (arguments
-     (substitute-keyword-arguments (package-arguments openssl)
-       ((#:phases phases)
-        `(modify-phases ,phases
-           (replace 'configure
-             (lambda* (#:key outputs #:allow-other-keys)
-               (let ((out (assoc-ref outputs "out")))
-                 (zero?
-                  (system*
-                   "./config"
-
-                   ;; XXX TEMPORARY, FOR GRAFTING ONLY
-                   ;;     Enable ssl2 code to preserve
-                   ;;     ABI compatibility with 1.0.2f
-                   "enable-ssl2"
-
-                   "shared"             ;build shared libraries
-                   "--libdir=lib"
-
-                   ;; The default for this catch-all directory is
-                   ;; PREFIX/ssl.  Change that to something more
-                   ;; conventional.
-                   (string-append "--openssldir=" out
-                                  "/share/openssl-" ,(package-version openssl))
-
-                   (string-append "--prefix=" out)
-
-                   ;; XXX FIXME: Work around a code generation bug in GCC
-                   ;; 4.9.3 on ARM when compiled with -mfpu=neon.  See:
-                   ;; <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66917>
-                   ,@(if (and (not (%current-target-system))
-                              (string-prefix? "armhf" (%current-system)))
-                         '("-mfpu=vfpv3")
-                         '()))))))))))))
-
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.2.6")
+    (version "2.3.3")
     (source
      (origin
       (method url-fetch)
@@ -352,7 +298,7 @@ required structures.")
              "http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-"
              version ".tar.gz"))
       (sha256 (base32
-               "0kynb15l5gq1qgp3p4ncn20sc65sbl8lk89vyr07s17xrya9kq8y"))))
+               "1a8anm8nsfyxds03csk738m2cmzjbsb867my1rz5ij3w31k32wvn"))))
     (build-system gnu-build-system)
     (native-search-paths
       ;; FIXME: These two variables must designate a single file or directory

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,19 +19,25 @@
 
 (define-module (guix import hackage)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-1)
-  #:use-module ((guix download) #:select (download-to-store))
+  #:use-module (gnu packages)
+  #:use-module ((guix download) #:select (download-to-store url-fetch))
   #:use-module ((guix utils) #:select (package-name->name+version
                                        canonical-newline-port))
-  #:use-module (guix import utils)
+  #:use-module (guix http-client)
+  #:use-module ((guix import utils) #:select (factorize-uri))
   #:use-module (guix import cabal)
   #:use-module (guix store)
   #:use-module (guix hash)
   #:use-module (guix base32)
+  #:use-module (guix upstream)
+  #:use-module (guix packages)
   #:use-module ((guix utils) #:select (call-with-temporary-output-file))
-  #:export (hackage->guix-package))
+  #:export (hackage->guix-package
+            %hackage-updater))
 
 (define ghc-standard-libraries
   ;; List of libraries distributed with ghc (7.10.2). We include GHC itself as
@@ -65,28 +72,49 @@
 
 (define package-name-prefix "ghc-")
 
+(define (hackage-source-url name version)
+  "Given a Hackage package NAME and VERSION, return a url to the source
+tarball."
+  (string-append "http://hackage.haskell.org/package/" name
+                 "/" name "-" version ".tar.gz"))
+
+(define* (hackage-cabal-url name #:optional version)
+  "Given a Hackage package NAME and VERSION, return a url to the corresponding
+.cabal file on Hackage.  If VERSION is #f or missing, the url for the latest
+version is returned."
+  (if version
+      (string-append "http://hackage.haskell.org/package/"
+                     name "-" version "/" name ".cabal")
+      (string-append "http://hackage.haskell.org/package/"
+                     name "/" name ".cabal")))
+
 (define (hackage-name->package-name name)
   "Given the NAME of a Cabal package, return the corresponding Guix name."
   (if (string-prefix? package-name-prefix name)
       (string-downcase name)
       (string-append package-name-prefix (string-downcase name))))
 
+(define guix-package->hackage-name
+  (let ((uri-rx (make-regexp "https?://hackage.haskell.org/package/([^/]+)/.*"))
+        (name-rx (make-regexp "(.*)-[0-9\\.]+")))
+    (lambda (package)
+      "Given a Guix package name, return the corresponding Hackage name."
+      (let* ((source-url (and=> (package-source package) origin-uri))
+             (name (match:substring (regexp-exec uri-rx source-url) 1)))
+        (match (regexp-exec name-rx name)
+          (#f name)
+          (m (match:substring m 1)))))))
+
 (define (hackage-fetch name-version)
   "Return the Cabal file for the package NAME-VERSION, or #f on failure.  If
 the version part is omitted from the package name, then return the latest
 version."
-  (let*-values (((name version) (package-name->name+version name-version))
-                ((url)
-                 (if version
-                     (string-append "http://hackage.haskell.org/package/"
-                                    name "-" version "/" name ".cabal")
-                     (string-append "http://hackage.haskell.org/package/"
-                                    name "/" name ".cabal"))))
-    (call-with-temporary-output-file
-     (lambda (temp port)
-       (and (url-fetch url temp)
-            (call-with-input-file temp
-              (compose read-cabal canonical-newline-port)))))))
+  (let-values (((name version) (package-name->name+version name-version)))
+    (let* ((url (hackage-cabal-url name version))
+           (port (http-fetch url))
+           (result (read-cabal (canonical-newline-port port))))
+      (close-port port)
+      result)))
 
 (define string->license
   ;; List of valid values from
@@ -154,8 +182,7 @@ representation of a Cabal file as produced by 'read-cabal'."
     (cabal-package-version cabal))
   
   (define source-url
-    (string-append "http://hackage.haskell.org/package/" name
-                   "/" name "-" version ".tar.gz"))
+    (hackage-source-url name version))
 
   (define dependencies
     (let ((names
@@ -224,5 +251,47 @@ respectively."
                                     #:include-test-dependencies? 
                                     include-test-dependencies?)
                                (cut eval-cabal <> cabal-environment)))))
+
+(define (hackage-package? package)
+  "Return #t if PACKAGE is a Haskell package from Hackage."
+
+  (define haskell-url?
+    (let ((hackage-rx (make-regexp "https?://hackage.haskell.org")))
+      (lambda (url)
+        (regexp-exec hackage-rx url))))
+
+  (let ((source-url (and=> (package-source package) origin-uri))
+        (fetch-method (and=> (package-source package) origin-method)))
+    (and (eq? fetch-method url-fetch)
+         (match source-url
+           ((? string?)
+            (haskell-url? source-url))
+           ((source-url ...)
+            (any haskell-url? source-url))))))
+
+(define (latest-release guix-package)
+  "Return an <upstream-source> for the latest release of GUIX-PACKAGE."
+  (let* ((hackage-name (guix-package->hackage-name
+                        (specification->package guix-package)))
+         (cabal-meta (hackage-fetch hackage-name)))
+    (match cabal-meta
+      (#f
+       (format (current-error-port)
+               "warning: failed to parse ~a~%"
+               (hackage-cabal-url hackage-name))
+       #f)
+      ((_ *** ("version" (version)))
+       (let ((url (hackage-source-url hackage-name version)))
+         (upstream-source
+          (package guix-package)
+          (version version)
+          (urls (list url))))))))
+
+(define %hackage-updater
+  (upstream-updater
+   (name 'hackage)
+   (description "Updater for Hackage packages")
+   (pred hackage-package?)
+   (latest latest-release)))
 
 ;;; cabal.scm ends here

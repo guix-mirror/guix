@@ -101,6 +101,7 @@ release corresponding to NAME and VERSION."
                   (search-paths '())
                   (system (%current-system))
                   (guile #f)
+                  (substitutable? #t)
                   (imported-modules %r-build-system-modules)
                   (modules '((guix build r-build-system)
                              (guix build utils))))
@@ -140,7 +141,8 @@ release corresponding to NAME and VERSION."
                                 #:system system
                                 #:modules imported-modules
                                 #:outputs outputs
-                                #:guile-for-build guile-for-build))
+                                #:guile-for-build guile-for-build
+                                #:substitutable? substitutable?))
 
 (define r-build-system
   (build-system

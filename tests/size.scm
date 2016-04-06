@@ -88,9 +88,6 @@
 
 (test-end "size")
 
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))
-
 ;;; Local Variables:
 ;;; eval: (put 'match* 'scheme-indent-function 1)
 ;;; End:

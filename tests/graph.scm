@@ -276,6 +276,3 @@ edges."
                        (list p1a p1b p0)))))))
 
 (test-end "graph")
-
-
-(exit (= (test-runner-fail-count (test-runner-current)) 0))

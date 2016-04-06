@@ -461,6 +461,11 @@ interpreted."
              (leave (_ "reference to invalid output '~a' of derivation '~a'~%")
                     (derivation-missing-output c)
                     (derivation-file-name (derivation-error-derivation c))))
+            ((file-search-error? c)
+             (leave (_ "file '~a' could not be found in these \
+directories:~{ ~a~}~%")
+                    (file-search-error-file-name c)
+                    (file-search-error-search-path c)))
             ((message-condition? c)
              ;; Normally '&message' error conditions have an i18n'd message.
              (leave (_ "~a~%")
@@ -1043,6 +1048,9 @@ DURATION-RELATION with the current time."
                            "~b ~d ~Y ~T")))
           (current (generation-number profile)))
       (if (= number current)
+          ;; TRANSLATORS: The word "current" here is an adjective for
+          ;; "Generation", as in "current generation".  Use the appropriate
+          ;; gender where applicable.
           (format #t (_ "~a\t(current)~%") header)
           (format #t "~a~%" header)))))
 
