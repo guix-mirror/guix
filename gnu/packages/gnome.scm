@@ -1862,7 +1862,7 @@ configuration storage systems.")
 (define-public json-glib
   (package
     (name "json-glib")
-    (version "1.0.4")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1870,7 +1870,7 @@ configuration storage systems.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1k85vvb2prmk8aa8hmr2rp9rnbhffjgnmr18b13g24xxnqy5kww0"))
+                "1lx7p1c7cl21byvfgw92n8dhm09vi6qxrs0zkx9dg3y096zdzmlr"))
               (modules '((guix build utils)))
               (snippet
                ;; Don't duplicate test names.
