@@ -5582,13 +5582,18 @@ $ guix challenge @var{package}
 
 @noindent
 where @var{package} is a package specification such as
-@code{guile-2.0} or @code{glibc:debug}.
+@code{guile@@2.0} or @code{glibc:debug}.
 
 The general syntax is:
 
 @example
 guix challenge @var{options} [@var{packages}@dots{}]
 @end example
+
+When a difference is found between the hash of a locally-built item and
+that of a server-provided substitute, or among substitutes provided by
+different servers, the command displays it as in the example above and
+exits with a non-zero return code.
 
 The one option that matters is:
 

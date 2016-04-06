@@ -233,9 +233,11 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
 
            (run-with-store store
              (mlet* %store-monad ((items  (mapm %store-monad
-                                               ensure-store-item files))
+                                                ensure-store-item files))
                                   (issues (discrepancies items urls)))
                (for-each summarize-discrepancy issues)
+               (unless (null? issues)
+                 (exit 1))
                (return (null? issues)))
              #:system system)))))))
 
