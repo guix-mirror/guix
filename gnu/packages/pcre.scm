@@ -22,6 +22,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
