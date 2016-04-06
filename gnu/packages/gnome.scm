@@ -265,7 +265,7 @@ and keep up to date translations of documentation.")
 (define-public gcr
   (package
     (name "gcr")
-    (version "3.18.0")
+    (version "3.20.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -273,7 +273,7 @@ and keep up to date translations of documentation.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "006f6xbd3jppkf9avg83mpqdld5d0z6mr0sm81lql52mmyjnvlfl"))))
+               "0ydk9dzxx6snxza7j5ps8x932hbr3x1b8hhcaqjq4w4admi2qmwh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;25 of 598 tests fail because /var/lib/dbus/machine-id does
