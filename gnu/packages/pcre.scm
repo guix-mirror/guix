@@ -22,6 +22,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -30,6 +31,7 @@
   (package
    (name "pcre")
    (version "8.38")
+   (replacement pcre-fixed)
    (source (origin
             (method url-fetch)
             (uri (list
@@ -64,6 +66,13 @@ own native API, as well as a set of wrapper functions that correspond to the
 POSIX regular expression API.")
    (license license:bsd-3)
    (home-page "http://www.pcre.org/")))
+
+(define pcre-fixed                                ;for CVE-2016-3191
+  (package
+    (inherit pcre)
+    (source (origin
+              (inherit (package-source pcre))
+              (patches (list (search-patch "pcre-CVE-2016-3191.patch")))))))
 
 (define-public pcre2
   (package
