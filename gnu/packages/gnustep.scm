@@ -152,3 +152,32 @@ graph), and battery status (high - green, low - yellow, or critical - red).")
      "WMND is a dockapp for monitoring network interfaces under WindowMaker and
 other compatible window managers.")
     (license gpl2+)))
+
+(define-public wmcpuload
+  (package
+    (name "wmcpuload")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://debian/pool/main/w/wmcpuload/"
+                    name "_" version ".orig.tar.gz"))
+              (sha256
+               (base32
+                "0irlns4cvxy2mnicx75bya166hdxq7h8bphds3ligijcl9fzgs6n"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxpm" ,libxpm)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://windowmaker.org/dockapps/?name=wmcpuload")
+    (synopsis "Monitor CPU usage")
+    (description
+     "Wmcpuload displays the current CPU usage, expressed as a percentile and a
+chart, and has an LCD look-alike user interface.  The back-light may be turned
+on and off by clicking the mouse button over the application.  If the CPU usage
+hits a certain threshold, an alarm-mode will alert you by turning back-light
+on.")
+    (license gpl2+)))
