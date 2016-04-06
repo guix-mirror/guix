@@ -459,14 +459,14 @@ store.")
 (define-public glibc
   (package
    (name "glibc")
-   (version "2.22")
+   (version "2.23")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0j49682pm2nh4qbdw35bas82p1pgfnz4d2l7iwfyzvrvj0318wzb"))
+              "1s8krs3y2n6pzav7ic59dz41alqalphv7vww4138ag30wh0fpvwl"))
             (snippet
              ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
              ;; required on LFS distros to avoid loading the distro's libc.so
@@ -477,10 +477,8 @@ store.")
             (modules '((guix build utils)))
             (patches (map search-patch
                           '("glibc-ldd-x86_64.patch"
-                            "glibc-locale-incompatibility.patch"
                             "glibc-versioned-locpath.patch"
-                            "glibc-o-largefile.patch"
-                            "glibc-CVE-2015-7547.patch")))))
+                            "glibc-o-largefile.patch")))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -497,7 +495,7 @@ store.")
       #:parallel-build? #f
 
       ;; The libraries have an empty RUNPATH, but some, such as the versioned
-      ;; libraries (libdl-2.22.so, etc.) have ld.so marked as NEEDED.  Since
+      ;; libraries (libdl-2.23.so, etc.) have ld.so marked as NEEDED.  Since
       ;; these libraries are always going to be found anyway, just skip
       ;; RUNPATH checks.
       #:validate-runpath? #f
@@ -539,7 +537,7 @@ store.")
                            "/bin/bash")
 
             ;; XXX: Work around "undefined reference to `__stack_chk_guard'".
-            "libc_cv_ssp=no")
+            "libc_cv_ssp=no" "libc_cv_ssp_strong=no")
 
       #:tests? #f                                 ; XXX
       #:phases (modify-phases %standard-phases
@@ -553,10 +551,6 @@ store.")
                            ;; but cross-base uses it as a native input.
                            (bash (or (assoc-ref inputs "static-bash")
                                      (assoc-ref native-inputs "static-bash"))))
-                      ;; Use `pwd', not `/bin/pwd'.
-                      (substitute* "configure"
-                        (("/bin/pwd") "pwd"))
-
                       ;; Install the rpc data base file under `$out/etc/rpc'.
                       ;; FIXME: Use installFlags = [ "sysconfdir=$(out)/etc" ];
                       (substitute* "sunrpc/Makefile"

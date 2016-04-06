@@ -489,12 +489,10 @@ dist_patch_DATA =						\
   gnu/packages/patches/glib-tests-prlimit.patch			\
   gnu/packages/patches/glib-tests-timer.patch			\
   gnu/packages/patches/glib-tests-gapplication.patch		\
-  gnu/packages/patches/glibc-CVE-2015-7547.patch		\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-hurd-extern-inline.patch		\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
   gnu/packages/patches/glibc-locales.patch			\
-  gnu/packages/patches/glibc-locale-incompatibility.patch	\
   gnu/packages/patches/glibc-o-largefile.patch			\
   gnu/packages/patches/glibc-versioned-locpath.patch		\
   gnu/packages/patches/gmp-arm-asm-nothumb.patch		\
