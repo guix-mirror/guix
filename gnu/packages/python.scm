@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
@@ -42,6 +42,7 @@
                           zpl2.1))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
@@ -8659,4 +8660,49 @@ LDFLAGS and parse the output to build extensions with setup.py.")
 
 (define-public python2-pkgconfig
   (package-with-python2 python-pkgconfig))
+
+(define-public python-cysignals
+  (package
+    (name "python-cysignals")
+    (version "1.1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "cysignals" version ".tar.bz2"))
+        (sha256
+          (base32
+            "14cbyd9znlz6cxy1s3g6v6dv5jj45hn27pywkidd9b1zanaysqc6"))))
+    (build-system python-build-system)
+    (native-inputs
+      `(("python-cython" ,python-cython)
+        ("python-setuptools" ,python-setuptools)
+        ("python-sphinx" ,python-sphinx)))
+    (inputs
+      `(("pari-gp" ,pari-gp)))
+    (arguments
+     `(#:modules ((guix build python-build-system)
+                  ((guix build gnu-build-system) #:prefix gnu:)
+                  (guix build utils))
+       ;; FIXME: Tests are executed after installation and currently fail
+       ;; when not installing into standard locations; the author is working
+       ;; on a fix.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before
+          'build 'configure
+          (assoc-ref gnu:%standard-phases 'configure)))))
+    (home-page
+      "https://github.com/sagemath/cysignals")
+    (synopsis
+      "Handling of interrupts and signals for Cython")
+    (description
+      "The cysignals package provides mechanisms to handle interrupts (and
+other signals and errors) in Cython code, using two related approaches,
+for mixed Cython/Python code or external C libraries and pure Cython code,
+respectively.")
+    (license lgpl3+)))
+
+(define-public python2-cysignals
+  (package-with-python2 python-cysignals))
 
