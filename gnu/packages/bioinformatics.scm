@@ -922,6 +922,34 @@ also includes an interface for tabix.")
 (define-public python2-pysam
   (package-with-python2 python-pysam))
 
+(define-public python-twobitreader
+  (package
+    (name "python-twobitreader")
+    (version "3.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "twobitreader" version))
+              (sha256
+               (base32
+                "0y408fp6psqzwxpcpqn0wp7fr41dwz8d54wpj6j261fj5q8vs169"))))
+    (properties `((python2-variant . ,(delay python2-twobitreader))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-sphinx" ,python-sphinx)))
+    (home-page "https://github.com/benjschiller/twobitreader")
+    (synopsis "Python library for reading .2bit files")
+    (description
+     "twobitreader is a Python library for reading .2bit files as used by the
+UCSC genome browser.")
+    (license license:artistic2.0)))
+
+(define-public python2-twobitreader
+  (let ((base (package-with-python2 (strip-python2-variant python-twobitreader))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
+
 (define-public cd-hit
   (package
     (name "cd-hit")
