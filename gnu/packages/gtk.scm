@@ -415,14 +415,16 @@ highlighting and other features typical of a source code editor.")
              ;; (gdk-pixbuf-error-quark, 0)
              (("pixbuf-jpeg\\$\\(EXEEXT\\) ") ""))
            #t)))))
-   (propagated-inputs ; required by gdk-pixbuf-2.0.pc
-    `(("glib" ,glib)
-      ("libpng" ,libpng)))
+   (propagated-inputs
+    `(;; Required by gdk-pixbuf-2.0.pc
+      ("glib" ,glib)
+      ("libpng" ,libpng)
+      ;; Used for testing and required at runtime.
+      ("shared-mime-info" ,shared-mime-info)))
    (inputs
     `(("libjpeg" ,libjpeg)
       ("libtiff" ,libtiff)
-      ("libx11"  ,libx11)
-      ("shared-mime-info" ,shared-mime-info))) ; for testing
+      ("libx11"  ,libx11)))
    (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
