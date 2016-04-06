@@ -950,6 +950,46 @@ UCSC genome browser.")
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
                        ,@(package-native-inputs base))))))
 
+(define-public python-plastid
+  (package
+    (name "python-plastid")
+    (version "0.4.5")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "plastid" version))
+              (sha256
+               (base32
+                "1nhxw8a5gn9as58i2ih52c5cjwj48ik418pzsjwph3s66mmy9yvq"))))
+    (properties `((python2-variant . ,(delay python2-plastid))))
+    (build-system python-build-system)
+    (arguments
+     ;; Some test files are not included.
+     `(#:tests? #f))
+    (propagated-inputs
+     `(("python-numpy" ,python-numpy)
+       ("python-scipy" ,python-scipy)
+       ("python-pandas" ,python-pandas)
+       ("python-pysam" ,python-pysam)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-biopython" ,python-biopython)
+       ("python-twobitreader" ,python-twobitreader)))
+    (native-inputs
+     `(("python-cython" ,python-cython)
+       ("python-nose" ,python-nose)))
+    (home-page "https://github.com/joshuagryphon/plastid")
+    (synopsis "Python library for genomic analysis")
+    (description
+     "plastid is a Python library for genomic analysis – in particular,
+high-throughput sequencing data – with an emphasis on simplicity.")
+    (license license:bsd-3)))
+
+(define-public python2-plastid
+  (let ((base (package-with-python2 (strip-python2-variant python-plastid))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
+
 (define-public cd-hit
   (package
     (name "cd-hit")
