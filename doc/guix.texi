@@ -4365,12 +4365,12 @@ facilitates the life of packagers by pointing their editor at the source
 file containing the definition of the specified packages.  For instance:
 
 @example
-guix edit gcc-4.8 vim
+guix edit gcc@@4.9 vim
 @end example
 
 @noindent
 launches the program specified in the @code{VISUAL} or in the
-@code{EDITOR} environment variable to edit the recipe of GCC@tie{}4.8.4
+@code{EDITOR} environment variable to edit the recipe of GCC@tie{}4.9.3
 and that of Vim.
 
 If you are using Emacs, note that the Emacs user interface provides the
