@@ -5511,21 +5511,21 @@ any given store item.
 The command output looks like this:
 
 @smallexample
-$ guix challenge --substitute-urls="http://hydra.gnu.org http://guix.example.org"
-updating list of substitutes from 'http://hydra.gnu.org'... 100.0%
-updating list of substitutes from 'http://guix.example.org'... 100.0%
+$ guix challenge --substitute-urls="https://hydra.gnu.org https://guix.example.org"
+updating list of substitutes from 'https://hydra.gnu.org'... 100.0%
+updating list of substitutes from 'https://guix.example.org'... 100.0%
 /gnu/store/@dots{}-openssl-1.0.2d contents differ:
   local hash: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
-  http://hydra.gnu.org/nar/@dots{}-openssl-1.0.2d: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
-  http://guix.example.org/nar/@dots{}-openssl-1.0.2d: 1zy4fmaaqcnjrzzajkdn3f5gmjk754b43qkq47llbyak9z0qjyim
+  https://hydra.gnu.org/nar/@dots{}-openssl-1.0.2d: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
+  https://guix.example.org/nar/@dots{}-openssl-1.0.2d: 1zy4fmaaqcnjrzzajkdn3f5gmjk754b43qkq47llbyak9z0qjyim
 /gnu/store/@dots{}-git-2.5.0 contents differ:
   local hash: 00p3bmryhjxrhpn2gxs2fy0a15lnip05l97205pgbk5ra395hyha
-  http://hydra.gnu.org/nar/@dots{}-git-2.5.0: 069nb85bv4d4a6slrwjdy8v1cn4cwspm3kdbmyb81d6zckj3nq9f
-  http://guix.example.org/nar/@dots{}-git-2.5.0: 0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73
+  https://hydra.gnu.org/nar/@dots{}-git-2.5.0: 069nb85bv4d4a6slrwjdy8v1cn4cwspm3kdbmyb81d6zckj3nq9f
+  https://guix.example.org/nar/@dots{}-git-2.5.0: 0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73
 /gnu/store/@dots{}-pius-2.1.1 contents differ:
   local hash: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
-  http://hydra.gnu.org/nar/@dots{}-pius-2.1.1: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
-  http://guix.example.org/nar/@dots{}-pius-2.1.1: 1cy25x1a4fzq5rk0pmvc8xhwyffnqz95h2bpvqsz2mpvlbccy0gs
+  https://hydra.gnu.org/nar/@dots{}-pius-2.1.1: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
+  https://guix.example.org/nar/@dots{}-pius-2.1.1: 1cy25x1a4fzq5rk0pmvc8xhwyffnqz95h2bpvqsz2mpvlbccy0gs
 @end smallexample
 
 @noindent
@@ -5544,14 +5544,14 @@ various things that Guix does not fully control, in spite of building
 packages in isolated environments (@pxref{Features}).  Most common
 sources of non-determinism include the addition of timestamps in build
 results, the inclusion of random numbers, and directory listings sorted
-by inode number.  See @uref{http://reproducible.debian.net/howto/}, for
+by inode number.  See @uref{https://reproducible.debian.net/howto/}, for
 more information.
 
 To find out what is wrong with this Git binary, we can do something along
 these lines (@pxref{Invoking guix archive}):
 
 @example
-$ wget -q -O - http://hydra.gnu.org/nar/@dots{}-git-2.5.0 \
+$ wget -q -O - https://hydra.gnu.org/nar/@dots{}-git-2.5.0 \
    | guix archive -x /tmp/git
 $ diff -ur --no-dereference /gnu/store/@dots{}-git.2.5.0 /tmp/git
 @end example
@@ -5561,7 +5561,7 @@ local build, and the files resulting from the build on
 @code{hydra.gnu.org} (@pxref{Overview, Comparing and Merging Files,,
 diffutils, Comparing and Merging Files}).  The @command{diff} command
 works great for text files.  When binary files differ, a better option
-is @uref{http://diffoscope.org/, Diffoscope}, a tool that helps
+is @uref{https://diffoscope.org/, Diffoscope}, a tool that helps
 visualize differences for all kinds of files.
 
 Once you have done that work, you can tell whether the differences are due
