@@ -63,12 +63,12 @@
         (list
           "--enable-clipart"     ;; TODO: The following plugins have unresolved
           "--enable-templates"   ;; dependencies: aiksaurus, grammar, wpg, gda,
-          (string-append         ;; wordperfect, psion, mathview, goffice, epub.
+          (string-append         ;; wordperfect, psion, mathview.
             "--enable-plugins="
               "applix " "babelfish " "bmp " "clarisworks " "collab " "command "
-              "docbook " "eml " "freetranslation " "garble " "gdict " "gimp "
-              "google " "hancom " "hrtext " "iscii " "kword " "latex "
-              "loadbindings " "mht " "mif " "mswrite " "opendocument "
+              "docbook " "eml " "epub " "freetranslation " "garble " "gdict "
+              "gimp " "goffice " "google " "hancom " "hrtext " "iscii " "kword "
+              "latex " "loadbindings " "mht " "mif " "mswrite " "opendocument "
               "openwriter " "openxml " "opml " "ots " "paint " "passepartout "
               "pdb " "pdf " "presentation " "s5 " "sdw " "t602 " "urldict "
               "wikipedia " "wmf " "wml " "xslfo"))
@@ -85,7 +85,9 @@
         ("fontconfig" ,fontconfig)
         ("fribidi" ,fribidi)
         ("glib" ,glib)
+        ("goffice" ,goffice)
         ("gtk+" ,gtk+)
+        ("libchamplain" ,libchamplain)
         ("libglade" ,libglade)
         ("libgsf" ,libgsf)
         ("libjpeg" ,libjpeg)
@@ -97,6 +99,7 @@
         ("ots" ,ots)
         ("popt" ,popt)
         ("readline" ,readline)
+        ("telepathy" ,telepathy-glib)
         ("wv" ,wv)
         ("zlib" ,zlib)))
     (native-inputs
