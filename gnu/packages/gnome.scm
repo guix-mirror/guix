@@ -3942,7 +3942,7 @@ javascript engine and the GObject introspection framework.")
 (define-public gedit
   (package
     (name "gedit")
-    (version "3.18.3")
+    (version "3.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3950,7 +3950,7 @@ javascript engine and the GObject introspection framework.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1rrjdkvwwjyj05jc9icifjm9v8sgs0wqgy555m57a3rvg46sqqk7"))))
+                "1i0x1jd9x1vpv8lwdlzwf0ml8jxh3b3l6nlg6pbnfjw47w3y6iws"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
