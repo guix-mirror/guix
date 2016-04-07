@@ -4114,7 +4114,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
 (define-public evolution-data-server
   (package
     (name "evolution-data-server")
-    (version "3.18.2")
+    (version "3.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4122,7 +4122,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "16yfd2a00xqxikyf6pi2awfd0qfq4hwdhfar88axrb4mycfgqhjr"))))
+                "0jsgzahaha6bxrm15da7c32m8ksnmx9rfm7xdx99lbxhsm7yiwh5"))))
     (build-system gnu-build-system)
     (arguments
      '(;; XXX: fails with:
