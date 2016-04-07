@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <tobias.geerinckx.rice@gmail.com>
+;;; Copyright   2016 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,26 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression))
+
+(define-public macchanger
+  (package
+    (name "macchanger")
+    (version "1.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/"
+                                  name "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xsiivjjyhqcs6dyjcshrnxlgypvyfzacjz7gcjgl88xiw9lylri"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.gnu.org/software/macchanger")
+    (synopsis "Display or change the MAC address of networking devices")
+    (description "GNU MAC Changer is a utility for viewing and changing MAC
+addresses of networking devices.  New addresses may be set explicitly or
+randomly.  They can include MAC addresses of the same or other hardware vendors
+or, more generally, MAC addresses of the same category of hardware.") 
+    (license license:gpl2+)))
 
 (define-public miredo
   (package
