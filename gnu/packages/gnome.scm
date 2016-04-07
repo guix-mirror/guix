@@ -3818,7 +3818,7 @@ such as gzip tarballs.")
 (define-public gnome-session
   (package
     (name "gnome-session")
-    (version "3.18.1.2")
+    (version "3.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3826,7 +3826,7 @@ such as gzip tarballs.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0icajbzqf5llvp5s8nafwkhwz6a6jmwn4hhs81bk0bpzawyq4zdk"))))
+                "0d0v60lmvr8wbrswfpc4f4jg2dhxj6nkgv7wnwdf2zifk8vp5zv6"))))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
