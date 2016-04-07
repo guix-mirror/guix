@@ -4394,7 +4394,7 @@ libxml2.")
 (define-public gdm
   (package
     (name "gdm")
-    (version "3.18.2")
+    (version "3.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4402,7 +4402,7 @@ libxml2.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "08pqhslwd487nh9w0jp4d0s4s2imm4ds0jjsbl6lzmqifqj3b4jl"))))
+                "1hnkv4j4m6z9l2y1rzxn674ir34k57apz1ybr15m11ksn05vlky6"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
