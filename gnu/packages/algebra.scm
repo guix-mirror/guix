@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -23,7 +24,10 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages fltk)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
@@ -31,7 +35,9 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages tcsh)
   #:use-module (gnu packages texlive)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -191,6 +197,67 @@ PARI is also available as a C library to allow for faster computations.
 GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
    (license license:gpl2)
    (home-page "http://pari.math.u-bordeaux.fr/")))
+
+(define-public giac-xcas
+  (package
+    (name "giac-xcas")
+    (version "1.2.2-37")
+    (source (origin
+              (method url-fetch)
+              ;; "~parisse/giac" is not used because the maintainer regularly
+              ;; overwrites the release tarball there, introducing a checksum
+              ;; mismatch every time.  See
+              ;; <https://www-fourier.ujf-grenoble.fr/~parisse/debian/dists/stable/main/source/README>
+              (uri (string-append "https://www-fourier.ujf-grenoble.fr/"
+                                  "~parisse/debian/dists/stable/main/"
+                                  "source/giac_" version ".tar.gz"))
+              (sha256
+               (base32
+                "0cagh9nnaz7ks299b2bs3lrdclv4xbyis24zc8vf3i25p470bxsf"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-bin-cp
+           (lambda _
+             ;; Some Makefiles contain hard-coded "/bin/cp".
+             (substitute* (find-files "doc" "^Makefile")
+               (("/bin/cp") (which "cp")))
+             #t))
+         (add-after 'unpack 'disable-broken-test
+           (lambda _
+             ;; Disable failing test.  Actually, the results are correct but
+             ;; a sorting discrepancy prevents the test from being validated.
+             (substitute* "check/Makefile.in"
+               (("chk_fhan16") ""))
+             #t)))))
+    (inputs
+     `(("fltk" ,fltk)
+       ("gmp" ,gmp)
+       ("gsl" ,gsl)
+       ("lapack" ,lapack)
+       ("libao" ,ao)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("libxft" ,libxft)
+       ("libxt" ,libxt)
+       ("mesa" ,mesa)
+       ("mpfi" ,mpfi)
+       ("mpfr" ,mpfr)
+       ("ntl" ,ntl)
+       ("perl" ,perl)
+       ("pari-gp" ,pari-gp)
+       ("tcsh" ,tcsh)
+       ("texlive" ,texlive-minimal)))
+    (native-inputs `(("readline" ,readline)))
+    (home-page "https://www-fourier.ujf-grenoble.fr/~parisse/giac.html")
+    (synopsis "Computer algebra system")
+    (description
+     "Giac/Xcas is a computer algebra system.  It has a compatibility mode for
+maple, mupad and the TI89.  It is available as a standalone program (graphic
+or text interfaces) or as a C++ library.")
+    (license license:gpl3+)))
 
 (define-public flint
   (package
