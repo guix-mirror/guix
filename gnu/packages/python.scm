@@ -37,7 +37,7 @@
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
                 #:select (asl2.0 bsd-4 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
-                          gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+ agpl3+
+                          gpl2 gpl2+ gpl3 gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+ agpl3+
                           isc mpl2.0 psfl public-domain repoze unlicense x11-style
                           zpl2.1))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
@@ -78,6 +78,8 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages zip)
   #:use-module (gnu packages tcl)
+  #:use-module (gnu packages bdw-gc)
+  #:use-module (gnu packages pcre)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -8704,3 +8706,42 @@ respectively.")
 (define-public python2-cysignals
   (package-with-python2 python-cysignals))
 
+(define-public python2-shedskin
+ (package
+  (name "python2-shedskin")
+  (version "0.9.4")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/shedskin/shedskin/"
+                          "releases/download/v" version
+                          "/shedskin-" version ".tgz"))
+      (sha256
+        (base32
+          "0nzwrzgw1ga8rw6f0ryq7zr9kkiavd1cqz5hzxkcbicl1dk7kz41"))))
+  (build-system python-build-system)
+  (arguments
+   `(#:python ,python-2
+     #:phases (modify-phases %standard-phases
+               (add-after 'unpack 'fix-resulting-include-libs
+                (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((libgc (assoc-ref inputs "libgc"))
+                       (pcre (assoc-ref inputs "pcre")))
+                  (substitute* "shedskin/makefile.py"
+                   (("variable == 'CCFLAGS':[ ]*")
+                    (string-append "variable == 'CCFLAGS':\n"
+                                   "            line += ' -I " pcre "/include"
+                                   " -I " libgc "/include'"))
+                   (("variable == 'LFLAGS':[ ]*")
+                    (string-append "variable == 'LFLAGS':\n"
+                                   "            line += ' -L" pcre "/lib"
+                                   " -L " libgc "/lib'")))
+                  #t))))))
+  (native-inputs `(("python2-setuptools" ,python2-setuptools)))
+  (inputs `(("pcre" ,pcre)
+            ("libgc" ,libgc)))
+  (home-page "https://shedskin.github.io/")
+  (synopsis "Experimental Python-2 to C++ Compiler")
+  (description (string-append "This is an experimental compiler for a subset of
+Python.  It generates C++ code and a Makefile."))
+  (license (list gpl3 bsd-3 license:expat))))
