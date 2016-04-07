@@ -3785,7 +3785,7 @@ share them with others via social networking and more.")
 (define-public file-roller
   (package
     (name "file-roller")
-    (version "3.16.4")
+    (version "3.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3793,7 +3793,7 @@ share them with others via social networking and more.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "11a1g8f2700n2mz998wf40dz1rxjgap60mfns9iv0zlw5h5rhmal"))))
+                "1a5598zyzdhdyk7sq59h8hqrjlacxw6wfdmgi0cs5kvbzjr9jnhq"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("intltool" ,intltool)
