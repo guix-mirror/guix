@@ -2939,7 +2939,7 @@ queries upon that data.")
 (define-public gnome-klotski
   (package
     (name "gnome-klotski")
-    (version "3.18.2")
+    (version "3.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -2947,7 +2947,7 @@ queries upon that data.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "14l1fji0860yam41x2cy72nd9bljph385ynfm6k1lsv4qhv72az2"))))
+                "00hs3ci8swmq12rmgidy7rf3ql9isbklhn114v8rzdfs46y5dzkp"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("desktop-file-utils" ,desktop-file-utils)
