@@ -2875,7 +2875,7 @@ GL based interactive canvas library.")
 (define-public libchamplain
   (package
     (name "libchamplain")
-    (version "0.12.12")
+    (version "0.12.13")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2883,7 +2883,7 @@ GL based interactive canvas library.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "19jlhbgfn9c9g40b3fa2x373s6rfcwx5i9lbpl3vl7d901r7kpp7"))))
+                "1arzd1hsgq14rbiwa1ih2g250x6ljna2s2kiqfrw155c612s9cxk"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
