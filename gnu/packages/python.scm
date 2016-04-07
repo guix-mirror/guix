@@ -8656,7 +8656,7 @@ CloudFront content delivery network.")
 can be used to find all pkg-config packages, check if a package exists,
 check if a package meets certain version requirements, query CFLAGS and
 LDFLAGS and parse the output to build extensions with setup.py.")
-    (license expat)))
+    (license license:expat)))
 
 (define-public python2-pkgconfig
   (package-with-python2 python-pkgconfig))
