@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,7 +75,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
 
 (define-public docbook-xml-4.4
   (package (inherit docbook-xml)
-   (version "4.4")
+    (version "4.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.docbook.org/xml/" version
@@ -85,7 +86,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
 
 (define-public docbook-xml-4.3
   (package (inherit docbook-xml)
-   (version "4.3")
+    (version "4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.docbook.org/xml/" version
@@ -96,7 +97,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
 
 (define-public docbook-xml-4.2
   (package (inherit docbook-xml)
-   (version "4.2")
+    (version "4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.docbook.org/xml/" version
@@ -104,6 +105,29 @@ by no means limited to these applications.)  This package provides XML DTDs.")
               (sha256
                (base32
                 "18hgwvmywh6a5jh38szjmg3hg2r4v5lb6r3ydc3rd8cp9wg61i5c"))))))
+
+(define-public docbook-xml-4.1.2
+  (package (inherit docbook-xml)
+    (version "4.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.docbook.org/xml/" version
+                                  "/docbkx412.zip"))
+              (sha256
+               (base32
+                "0wkp5rvnqj0ghxia0558mnn4c7s3n501j99q2isp3sp0ci069w1h"))))
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let ((source (assoc-ref %build-inputs "source"))
+               (unzip  (string-append (assoc-ref %build-inputs "unzip")
+                                      "/bin/unzip"))
+               (dtd    (string-append (assoc-ref %outputs "out")
+                                      "/xml/dtd/docbook")))
+           (mkdir-p dtd)
+           (zero? (system* unzip source "-d" dtd))))))))
 
 (define-public docbook-xsl
   (package
