@@ -3469,7 +3469,7 @@ work and the interface is well tested.")
 (define-public epiphany
   (package
     (name "epiphany")
-    (version "3.18.2")
+    (version "3.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3477,7 +3477,7 @@ work and the interface is well tested.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1hm6bpdcc6nf3zamzkvjhpvxnpaxzbnxnacfgl5v8swn643ifdl4"))))
+                "0x09dfc0zdxw93g1dcmxqpvy9vnv94bd27sfq23ix31z6i9fcs63"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      ;; FIXME: tests run under Xvfb, but fail with:
