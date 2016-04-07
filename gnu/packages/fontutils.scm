@@ -341,30 +341,25 @@ definitions.")
 (define-public fontforge
   (package
    (name "fontforge")
-   (version "20150824")
+   (version "20160404")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "https://github.com/fontforge/fontforge/releases/download/"
-                  version "/fontforge-" version ".tar.gz"))
+                  version "/fontforge-dist-" version ".tar.gz"))
             (sha256 (base32
-                     "0gfcm8yn1d30giqhdwbchnfnspcqypqdzrxlhqhwy1i18wgl0v2v"))
+                     "1kavnhbkzc1hk6f39fynq9s0haama81ddrbld4b5x60d0dbaawvc"))
             (modules '((guix build utils)))
             (snippet
              '(begin
                ;; Make builds bit-reproducible by using fixed date strings.
                (substitute* "configure"
                  (("^FONTFORGE_MODTIME=.*$")
-                  "FONTFORGE_MODTIME=\"1458399002\"\n")
+                  "FONTFORGE_MODTIME=\"1459819518L\"\n")
                  (("^FONTFORGE_MODTIME_STR=.*$")
-                  "FONTFORGE_MODTIME_STR=\"15:50 CET 19-Mar-2016\"\n")
+                  "FONTFORGE_MODTIME_STR=\"20:25 CDT  4-Apr-2016\"\n")
                  (("^FONTFORGE_VERSIONDATE=.*$")
-                  "FONTFORGE_VERSIONDATE=\"20160319\"\n"))
-
-               ;; Make TTF builds bit-reproducible by clearing the timestamp
-               ;; that goes in TTF files.
-               (substitute* "fontforge/tottf.c"
-                 (("cvt_unix_to_1904\\(now") "cvt_unix_to_1904(0"))))))
+                  "FONTFORGE_VERSIONDATE=\"20160404\"\n"))))))
    (build-system gnu-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)))
