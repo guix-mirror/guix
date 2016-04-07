@@ -4704,7 +4704,7 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
 (define-public nautilus
   (package
     (name "nautilus")
-    (version "3.18.2") ; XXX: later version require gtk+-3.0 >= 3.18.5
+    (version "3.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4712,10 +4712,11 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0jj23n8vmmyc4gp5xhiz7slsxwksydp26blxi5m154yaw9lgdp38"))))
+                "14s234b4l7hsxng1n3kkj4c8sjsq2vl2l2fw0caqfxva9md9k9vw"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     '(#:configure-flags '("--disable-tracker") ; XXX: not packaged
+     '(#:configure-flags
+       '("--disable-tracker" "--disable-selinux") ; XXX: not packaged
        ;; XXX: FAIL: check-nautilus
        ;;   Settings schema 'org.gnome.nautilus.preferences' is not installed
        #:tests? #f))
