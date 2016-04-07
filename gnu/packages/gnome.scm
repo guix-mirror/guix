@@ -2815,7 +2815,7 @@ presentations, kiosk style applications and so on.")
 (define-public clutter-gtk
   (package
     (name "clutter-gtk")
-    (version "1.6.6")
+    (version "1.8.0")
     (source
      (origin
        (method url-fetch)
@@ -2824,7 +2824,7 @@ presentations, kiosk style applications and so on.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0a2a8ci6in82l43zak3zj3cyms23i5rq6lzk1bz013gm023ach4l"))))
+         "07dzvx0b3fsswxnpxgk0adjgccnrvbxsd971naqwndnfivbgjbkl"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
