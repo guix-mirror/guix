@@ -3575,7 +3575,7 @@ of running programs and invoke methods on those interfaces.")
 (define-public yelp-xsl
   (package
     (name "yelp-xsl")
-    (version "3.18.1")
+    (version "3.20.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3583,7 +3583,7 @@ of running programs and invoke methods on those interfaces.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0qmsq7qkc06gmnkvbs84qj3jjzlihriy3z45nfbpgg51b6z0z1q0"))))
+                "0j288fw7bqbswl2vk73ihs0ngky0b3p8k1yy5lrxfh1whn3phclz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
