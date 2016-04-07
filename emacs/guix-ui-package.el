@@ -346,9 +346,13 @@ formatted with this string, an action button is inserted.")
 (define-button-type 'guix-package-license
   :supertype 'guix
   'face 'guix-package-info-license
-  'help-echo "Browse license URL"
+  'help-echo "Display license info"
   'action (lambda (btn)
-            (guix-browse-license-url (button-label btn))))
+            (require 'guix-ui-license)
+            (guix-buffer-get-display-entries
+             'info 'license
+             (list 'name (button-label btn))
+             'add)))
 
 (define-button-type 'guix-package-name
   :supertype 'guix
