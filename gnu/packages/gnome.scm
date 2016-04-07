@@ -3239,7 +3239,7 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
 (define-public eog
  (package
    (name "eog")
-   (version "3.18.1")
+   (version "3.20.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3247,7 +3247,7 @@ supports playlists, song ratings, and any codecs installed through gstreamer.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "19wkawrcwjjcvlmizkj57qycnbgizhr8ck3j5qg70605d1xb8yvv"))))
+              "0avy7sss6rf659rxipvp3gbqw083liq627lxjpfp1ij34hbmqwfv"))))
    (build-system glib-or-gtk-build-system)
    (arguments
     `(#:phases
