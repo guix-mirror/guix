@@ -302,11 +302,21 @@ and corrections.  It is based on a Bayesian filter.")
                 "0462mal2fxvavxhwjk1a6vsnspx07yniifa687dwg46aplqznin4"))))
     (build-system python-build-system)
     (native-inputs `(("python" ,python-2)))
+    (inputs `(("python2-pysqlite" ,python2-pysqlite)))
     (arguments
      ;; The setup.py script expects python-2.
      `(#:python ,python-2
       ;; Tests require a modifiable IMAP account.
-       #:tests? #f))
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-binary
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/offlineimap")))
+               (wrap-program bin
+                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+               #t))))))
     (home-page "http://www.offlineimap.org")
     (synopsis "Sync emails between two repositories")
     (description
