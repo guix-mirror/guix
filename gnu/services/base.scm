@@ -494,18 +494,18 @@ strings or string-valued gexps."
 (define console-keymap-service-type
   (shepherd-service-type
    'console-keymap
-   (lambda (file)
+   (lambda (files)
      (shepherd-service
       (documentation (string-append "Load console keymap (loadkeys)."))
       (provision '(console-keymap))
       (start #~(lambda _
                  (zero? (system* (string-append #$kbd "/bin/loadkeys")
-                                 #$file))))
+                                 #$@files))))
       (respawn? #f)))))
 
-(define (console-keymap-service file)
-  "Return a service to load console keymap from @var{file}."
-  (service console-keymap-service-type file))
+(define (console-keymap-service . files)
+  "Return a service to load console keymaps from @var{files}."
+  (service console-keymap-service-type files))
 
 (define console-font-service-type
   (shepherd-service-type
