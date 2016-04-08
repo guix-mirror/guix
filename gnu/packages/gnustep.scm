@@ -181,3 +181,38 @@ on and off by clicking the mouse button over the application.  If the CPU usage
 hits a certain threshold, an alarm-mode will alert you by turning back-light
 on.")
     (license gpl2+)))
+
+(define-public wmclock
+  (package
+    (name "wmclock")
+    (version "1.0.16")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://debian/pool/main/w/wmclock/"
+                    name "_" version ".orig.tar.gz"))
+              (sha256
+               (base32
+                "1lx276ba8r2yydhmwj1g586jdqg695ad89ng36fr3mb067gvb2rz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+    ;; wmclock requires autoreconf to generate its configure script.
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxpm" ,libxpm)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://windowmaker.org/dockapps/?name=wmclock")
+    (synopsis "Display the date and time")
+    (description
+     "wmclock is an applet for Window Maker which displays the date and time in
+a dockable tile.  It features multiple language support, 24h or 12h time
+display, and can run a user-specified program on mouse click.")
+    (license gpl2+)))
