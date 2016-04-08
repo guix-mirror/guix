@@ -133,7 +133,7 @@ adding and extracting files to/from a tar archive.")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gzip/gzip-"
-                                version ".tar.gz"))
+                                version ".tar.xz"))
             (sha256
              (base32
               "1as1ddq58spflzz5kxm0ni0xfpswrkkrncjpxyb3aw77gizcacgv"))))
