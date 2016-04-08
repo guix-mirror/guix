@@ -337,7 +337,7 @@ matrices, and polynomials over the integers and over finite fields.")
                                 (string-join (string-split version #\.) "-")
                                 "/singular-" version ".tar.gz"))
             (sha256 (base32
-                     "0lc76137072yyizdbmrjwan3gcgfsvp7p6hkvyn8a15la0qqkgg2"))))
+                     "0viidy2fz62rln9p0s9qfs7fnm55c6fw1agydd1py26gxylp1ksc"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("doxygen" ,doxygen)
