@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -799,11 +800,14 @@ or a list thereof")
         (name (package-full-name package)))
     (for-each (lambda (checker)
                 (when tty?
-                  (format (current-error-port) "checking ~a [~a]...\r"
+                  (format (current-error-port) "checking ~a [~a]...\x1b[K\r"
                           name (lint-checker-name checker))
                   (force-output (current-error-port)))
                 ((lint-checker-check checker) package))
-              checkers)))
+              checkers)
+    (when tty?
+      (format (current-error-port) "\x1b[K")
+      (force-output (current-error-port)))))
 
 
 ;;;
