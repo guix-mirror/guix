@@ -37,6 +37,7 @@
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-39)
   #:export (search-patch
+            search-patches
             search-bootstrap-binary
             %patch-path
             %bootstrap-binaries-path
@@ -75,6 +76,11 @@
       (raise (condition
               (&message (message (format #f (_ "~a: patch not found")
                                          file-name)))))))
+
+(define-syntax-rule (search-patches file-name ...)
+  "Return the list of absolute file names corresponding to each
+FILE-NAME found in %PATCH-PATH."
+  (list (search-patch file-name) ...))
 
 (define (search-bootstrap-binary file-name system)
   "Search the bootstrap binary FILE-NAME for SYSTEM.  Raise an error if not
