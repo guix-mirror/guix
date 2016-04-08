@@ -29,6 +29,7 @@
 (require 'guix-info)
 (require 'guix-backend)
 (require 'guix-guile)
+(require 'guix-license)
 
 (guix-define-entry-type license)
 
@@ -64,7 +65,9 @@ SEARCH-TYPE may be one of the following symbols: `all', `id', `name'."
             ignore
             guix-license-insert-packages-button
             (url ignore (simple guix-url))
-            guix-license-insert-comment)
+            guix-license-insert-comment
+            ignore
+            guix-license-insert-file)
   :titles '((url . "URL")))
 
 (declare-function guix-packages-by-license "guix-ui-package")
@@ -88,6 +91,16 @@ SEARCH-TYPE may be one of the following symbols: `all', `id', `name'."
       (guix-info-insert-title-simple
        (guix-info-param-title 'license 'comment))
       (guix-info-insert-value-indent comment))))
+
+(defun guix-license-insert-file (entry)
+  "Insert button to open license definition."
+  (let ((license (guix-entry-value entry 'name)))
+    (guix-insert-button
+     (guix-license-file) 'guix-file
+     'help-echo (format "Open definition of license '%s'" license)
+     'action (lambda (btn)
+               (guix-find-license-definition (button-get btn 'license)))
+     'license license)))
 
 
 ;;; License 'list'
