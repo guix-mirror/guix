@@ -544,6 +544,9 @@ Display a list of available licenses.  You can press @kbd{@key{RET}}
 there to display packages with this license in the same way as @kbd{M-x
 guix-packages-by-license} would do (@pxref{Emacs Commands}).
 
+@item M-x guix-find-license-definition
+Open @file{@dots{}/guix/licenses.scm} and move to the specified license.
+
 @end table
 
 

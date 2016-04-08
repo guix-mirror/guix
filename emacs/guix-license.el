@@ -27,11 +27,32 @@
 (require 'guix-backend)
 (require 'guix-guile)
 
+(defun guix-license-file (&optional directory)
+  "Return name of the file with license definitions.
+DIRECTORY is a directory with Guix source (`guix-directory' by default)."
+  (expand-file-name "guix/licenses.scm"
+                    (or directory guix-directory)))
+
 (defun guix-lookup-license-url (license)
   "Return URL of a LICENSE."
   (or (guix-eval-read (guix-make-guile-expression
                        'lookup-license-uri license))
       (error "Hm, I don't know URL of '%s' license" license)))
+
+;;;###autoload
+(defun guix-find-license-definition (license &optional directory)
+  "Open licenses file from DIRECTORY and move to the LICENSE definition.
+See `guix-license-file' for the meaning of DIRECTORY.
+Interactively, with prefix argument, prompt for DIRECTORY."
+  (interactive
+   (list (guix-read-license-name)
+         (guix-read-directory)))
+  (find-file (guix-license-file directory))
+  (goto-char (point-min))
+  (when (re-search-forward (concat "\"" (regexp-quote license) "\"")
+                           nil t)
+    (beginning-of-defun)
+    (recenter 1)))
 
 ;;;###autoload
 (defun guix-browse-license-url (license)
