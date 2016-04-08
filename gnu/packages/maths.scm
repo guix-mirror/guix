@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2014, 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
@@ -77,6 +77,26 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages zip)
   #:use-module (srfi srfi-1))
+
+(define-public c-graph
+  (package
+   (name "c-graph")
+   (version "2.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnu/c-graph/c-graph-" version
+                                ".tar.gz"))
+            (sha256 (base32
+                     "1hlvpzrh7hzzf533diyfiabzskddi8zx92av9hwkjw3l46z7qv01"))))
+   (build-system gnu-build-system)
+   (inputs
+     `(("fortran" ,gfortran)))
+   (synopsis "Visualize and analyze convolution operations")
+   (description
+    "GNU C-Graph demonstrates the theory of convolution underlying
+engineering systems and signal analysis.")
+   (license license:gpl3+)
+   (home-page "http://www.gnu.org/software/c-graph/")))
 
 (define-public units
   (package
