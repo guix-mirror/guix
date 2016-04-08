@@ -42,7 +42,7 @@
              (sha256
               (base32
                "18qz9qfwrkakmazdlwxvjmw8p76g70n3faikwvdwznns1agw9hki"))
-             (patches (list (search-patch "libevent-dns-tests.patch")))))
+             (patches (search-patches "libevent-dns-tests.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(;; Dependencies used for the tests and for `event_rpcgen.py'.

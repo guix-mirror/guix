@@ -100,10 +100,10 @@
       (sha256
        (base32
         "1h7zbrf9pkj29hlm18b10548ch9757f75m64l47sy75rh43p7lqw"))
-      (patches (map search-patch
-                    '("python-2.7-search-paths.patch"
-                      "python-2-deterministic-build-info.patch"
-                      "python-2.7-source-date-epoch.patch")))))
+      (patches (search-patches
+                "python-2.7-search-paths.patch"
+                "python-2-deterministic-build-info.patch"
+                "python-2.7-source-date-epoch.patch"))))
     (outputs '("out"
                "tk"))                     ;tkinter; adds 50 MiB to the closure
     (build-system gnu-build-system)
@@ -267,12 +267,12 @@ data types.")
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
-              (patches (map search-patch
-                            '("python-fix-tests.patch"
-                              ;; XXX Try removing this patch for python > 3.4.3
-                              "python-disable-ssl-test.patch"
-                              "python-3-deterministic-build-info.patch"
-                              "python-3-search-paths.patch")))
+              (patches (search-patches
+                        "python-fix-tests.patch"
+                        ;; XXX Try removing this patch for python > 3.4.3
+                        "python-disable-ssl-test.patch"
+                        "python-3-deterministic-build-info.patch"
+                        "python-3-search-paths.patch"))
               (patch-flags '("-p0"))
               (sha256
                (base32
@@ -1255,9 +1255,8 @@ commands.")
               (sha256
                (base32
                 "17ni00p08gp5lkxlrrcnvi3x09fmajnlbz4da03qcgl9q21ym4jd"))
-              (patches (map search-patch
-                            (list "pybugz-stty.patch"
-                                  "pybugz-encode-error.patch")))))
+              (patches (search-patches "pybugz-stty.patch"
+                                       "pybugz-encode-error.patch"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2                         ; SyntaxError with Python 3
@@ -3298,7 +3297,7 @@ transcendental functions).")
        (sha256
         (base32
          "1dn05cvd0g984lzhh72wa0z93psgwshbbg93fkab6slx5m3l95av"))
-       (patches (list (search-patch "matplotlib-setupext-tk.patch")))))
+       (patches (search-patches "matplotlib-setupext-tk.patch"))))
     (build-system python-build-system)
     (outputs '("out" "doc"))
     (propagated-inputs ; the following packages are all needed at run time
@@ -4272,7 +4271,7 @@ without using the configuration machinery.")
     (source
      (origin
        (method url-fetch)
-       (patches (list (search-patch "python-ipython-inputhook-ctype.patch")))
+       (patches (search-patches "python-ipython-inputhook-ctype.patch"))
        (uri (string-append "https://pypi.python.org/packages/source/i/"
                            "ipython/ipython-" version ".tar.gz"))
        (sha256
@@ -6642,7 +6641,7 @@ addon modules.")
                 "00h9rcmws03xvdlfni11yb60bz3kxfvsj6dg6nrpzj71f03nbxd2"))
               ;; Patch setup.py so it looks for python-setuptools, which is
               ;; required to parse the keyword 'install_requires' in setup.py.
-              (patches (list (search-patch "python-configobj-setuptools.patch")))))
+              (patches (search-patches "python-configobj-setuptools.patch"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)
@@ -7767,10 +7766,8 @@ file.")
        (sha256
         (base32
          "16dsv9qi0r4qsrsb6dilpq2rx0fnglvh36flzywcdnm2jg43mb5d"))
-       (patches (list (search-patch
-                       "python-paste-remove-website-test.patch")
-                      (search-patch
-                       "python-paste-remove-timing-test.patch")))))
+       (patches (search-patches "python-paste-remove-website-test.patch"
+                                "python-paste-remove-timing-test.patch"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
@@ -8502,7 +8499,7 @@ module, adding support for Unicode strings.")
                (base32
                 "0d8n1dlpiz7av8dmbp0vclrwl9cnxizr4f2c9xvj1h5nvn480527"))
               ;; https://github.com/markokr/rarfile/pull/17/
-              (patches (list (search-patch "python-rarfile-fix-tests.patch")))))
+              (patches (search-patches "python-rarfile-fix-tests.patch"))))
     (build-system python-build-system)
     (arguments
      '(#:phases

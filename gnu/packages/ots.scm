@@ -40,8 +40,7 @@
                            ".tar.gz"))
        (sha256
         (base32 "0dz1ccd7ymzk4swz1aly4im0k3pascnshmgg1whd2rk14li8v47a"))
-       (patches
-        (list (search-patch "ots-no-include-missing-file.patch")))))
+       (patches (search-patches "ots-no-include-missing-file.patch"))))
 
     (build-system gnu-build-system)
     (arguments

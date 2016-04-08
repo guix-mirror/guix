@@ -47,14 +47,14 @@
              (sha256
               (base32
                "09wg24w5syyafyv87l6z8pxwz4bjgcdj996bx5844k6m9445sirb"))
-             (patches (map search-patch
-                           '("perl-no-sys-dirs.patch"
-                             "perl-autosplit-default-time.patch"
-                             "perl-source-date-epoch.patch"
-                             "perl-deterministic-ordering.patch"
-                             "perl-no-build-time.patch"
-                             "perl-CVE-2015-8607.patch"
-                             "perl-CVE-2016-2381.patch")))))
+             (patches (search-patches
+                       "perl-no-sys-dirs.patch"
+                       "perl-autosplit-default-time.patch"
+                       "perl-source-date-epoch.patch"
+                       "perl-deterministic-ordering.patch"
+                       "perl-no-build-time.patch"
+                       "perl-CVE-2015-8607.patch"
+                       "perl-CVE-2016-2381.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -3109,7 +3109,7 @@ installation version 5.005 or newer.")
        (sha256
         (base32
          "1px6qmszmfc69v36vd8d92av4nkrif6xf4nrj3xv647xwi2svwmk"))
-       (patches (list (search-patch "perl-module-pluggable-search.patch")))))
+       (patches (search-patches "perl-module-pluggable-search.patch"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Module-Pluggable")
     (synopsis "Give your Perl module the ability to have plugins")

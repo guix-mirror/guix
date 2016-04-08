@@ -43,9 +43,8 @@
               (sha256
                (base32
                 "1grmp8zg7cjgjinz66mrh53whigkqzl90nlxj05hapnhk3ns3vni"))
-              (patches
-               (list (search-patch
-                      "lftp-dont-save-unknown-host-fingerprint.patch")))))
+              (patches (search-patches
+                        "lftp-dont-save-unknown-host-fingerprint.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -126,7 +125,7 @@ FTP browser, as well as non-interactive commands such as 'ncftpput' and
         (sha256
           (base32
             "0f5cj5p852wkm24mzy2sxgxyahv2p9rk4wlq21j310pi7wlhgwyl"))
-        (patches (list (search-patch "weex-vacopy.patch")))))
+        (patches (search-patches "weex-vacopy.patch"))))
     (build-system gnu-build-system)
     (arguments
       `(#:phases

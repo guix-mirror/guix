@@ -286,7 +286,7 @@ tiling window manager for X.")
        (sha256
         (base32
          "0ak0yajzk3v4dg5wmaghv6acf7v02a4iw8qxmq5yw5ard8lrqn3r"))
-       (patches (map search-patch '("evilwm-lost-focus-bug.patch")))))
+       (patches (search-patches "evilwm-lost-focus-bug.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)

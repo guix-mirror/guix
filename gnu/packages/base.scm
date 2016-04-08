@@ -82,8 +82,7 @@ command-line arguments, multiple languages, and so on.")
             (sha256
              (base32
               "1srn321x7whlhs5ks36zlcrrmj4iahll8fxwsh1vbz3v04px54fa"))
-            (patches
-             (list (search-patch "grep-timing-sensitive-test.patch")))))
+            (patches (search-patches "grep-timing-sensitive-test.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))             ;some of the tests require it
    (synopsis "Print lines matching a pattern")
@@ -109,7 +108,7 @@ including, for example, recursive directory searching.")
             (sha256
              (base32
               "1myvrmh99jsvk7v3d7crm0gcrq51hmmm1r2kjyyci152in1x2j7h"))
-            (patches (list (search-patch "sed-hurd-path-max.patch")))))
+            (patches (search-patches "sed-hurd-path-max.patch"))))
    (build-system gnu-build-system)
    (synopsis "Stream editor")
    (arguments
@@ -145,9 +144,8 @@ implementation offers several extensions over the standard utility.")
             (sha256
              (base32
               "1wi2zwm4c9r3h3b8y4w0nm0qq897kn8kyj9k22ba0iqvxj48vvk4"))
-            (patches (map search-patch
-                          '("tar-d_ino_in_dirent-fix.patch"
-                            "tar-skip-unreliable-tests.patch")))))
+            (patches (search-patches "tar-d_ino_in_dirent-fix.patch"
+                                     "tar-skip-unreliable-tests.patch"))))
    (build-system gnu-build-system)
    (synopsis "Managing tar archives")
    (description
@@ -171,7 +169,7 @@ standard utility.")
               (sha256
                (base32
                 "16d2r9kpivaak948mxzc0bai45mqfw73m113wrkmbffnalv1b5gx"))
-              (patches (list (search-patch "patch-hurd-path-max.patch")))))
+              (patches (search-patches "patch-hurd-path-max.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("ed" ,ed)))
    (synopsis "Apply differences to originals, with optional backups")
@@ -217,9 +215,8 @@ interactive means to merge two files.")
             (sha256
              (base32
               "178nn4dl7wbcw499czikirnkniwnx36argdnqgz4ik9i6zvwkm6y"))
-            (patches (map search-patch
-                          '("findutils-localstatedir.patch"
-                            "findutils-test-xargs.patch")))))
+            (patches (search-patches "findutils-localstatedir.patch"
+                                     "findutils-test-xargs.patch"))))
    (build-system gnu-build-system)
    (arguments
     `(#:configure-flags (list
@@ -325,7 +322,7 @@ functionality beyond that which is outlined in the POSIX standard.")
             (sha256
              (base32
               "19gwwhik3wdwn0r42b7xcihkbxvjl9r2bdal8nifc3k5i4rn3iqb"))
-            (patches (list (search-patch "make-impure-dirs.patch")))))
+            (patches (search-patches "make-impure-dirs.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("pkg-config" ,pkg-config)))  ; to detect Guile
    (inputs `(("guile" ,guile-2.0)))
@@ -363,8 +360,8 @@ change.  GNU make offers many powerful extensions over the standard utility.")
             (sha256
              (base32
               "08lzmhidzc16af1zbx34f8cy4z7mzrswpdbhrb8shy3xxpflmcdm"))
-            (patches (list (search-patch "binutils-ld-new-dtags.patch")
-                           (search-patch "binutils-loongson-workaround.patch")))))
+            (patches (search-patches "binutils-ld-new-dtags.patch"
+                                     "binutils-loongson-workaround.patch"))))
    (build-system gnu-build-system)
 
    ;; TODO: Add dependency on zlib + those for Gold.
@@ -484,12 +481,12 @@ store.")
                 (("use_ldconfig=yes")
                  "use_ldconfig=no")))
             (modules '((guix build utils)))
-            (patches (map search-patch
-                          '("glibc-ldd-x86_64.patch"
-                            "glibc-locale-incompatibility.patch"
-                            "glibc-versioned-locpath.patch"
-                            "glibc-o-largefile.patch"
-                            "glibc-CVE-2015-7547.patch")))))
+            (patches
+             (search-patches "glibc-ldd-x86_64.patch"
+                             "glibc-locale-incompatibility.patch"
+                             "glibc-versioned-locpath.patch"
+                             "glibc-o-largefile.patch"
+                             "glibc-CVE-2015-7547.patch"))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -659,7 +656,7 @@ with the Linux kernel.")
               (sha256
                (base32
                 "1f135546j34s9bfkydmx2nhh9vwxlx60jldi80zmsnln6wj3dsxf"))
-              (patches (list (search-patch "glibc-ldd-x86_64.patch")))))))
+              (patches (search-patches "glibc-ldd-x86_64.patch"))))))
 
 (define-public glibc-locales
   (package
@@ -779,8 +776,7 @@ command.")
                (base32
                 "17gsh0kaz0zyvghjmx861mi2p65m9901lngi179x61zm6v2v3xc4"))
               (file-name (string-append name "-" version))
-              (patches (map search-patch
-                            '("glibc-hurd-extern-inline.patch")))))
+              (patches (search-patches "glibc-hurd-extern-inline.patch"))))
 
     ;; Libc provides <hurd.h>, which includes a bunch of Hurd and Mach headers,
     ;; so both should be propagated.

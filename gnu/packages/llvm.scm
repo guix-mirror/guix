@@ -102,7 +102,7 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
        (uri (string-append "http://llvm.org/releases/"
                            version "/cfe-" version ".src.tar.xz"))
        (sha256 (base32 hash))
-       (patches (list (search-patch "clang-libc-search-path.patch")))))
+       (patches (search-patches "clang-libc-search-path.patch"))))
     ;; Using cmake allows us to treat llvm as an external library.  There
     ;; doesn't seem to be any way to do this with clang's autotools-based
     ;; build system.

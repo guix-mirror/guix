@@ -797,7 +797,7 @@ system administrator.")
               (sha256
                (base32
                 "0263gi6i19fyzzc488n0qw3m518i39f6a7qmrfvahk9j10bkh5j3"))
-              (patches (list (search-patch "sudo-CVE-2015-5602.patch")))))
+              (patches (search-patches "sudo-CVE-2015-5602.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -871,10 +871,10 @@ commands and their arguments.")
                (base32
                 "05mkp5bx1c3z7h5biddsv0p49gkrq9ksany3anp4wdiv92p5prfc"))
               (patches
-               (map search-patch '("wpa-supplicant-CVE-2015-5310.patch"
-                                   "wpa-supplicant-CVE-2015-5314.patch"
-                                   "wpa-supplicant-CVE-2015-5315.patch"
-                                   "wpa-supplicant-CVE-2015-5316.patch")))))
+               (search-patches "wpa-supplicant-CVE-2015-5310.patch"
+                               "wpa-supplicant-CVE-2015-5314.patch"
+                               "wpa-supplicant-CVE-2015-5315.patch"
+                               "wpa-supplicant-CVE-2015-5316.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace

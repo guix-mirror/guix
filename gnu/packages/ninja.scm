@@ -37,8 +37,8 @@
               (sha256
                (base32
                 "1h3yfwcfl61v493vna6jia2fizh8rpig7qw2504cvkr6gid3p5bw"))
-              (patches (map search-patch
-                            '("ninja-zero-mtime.patch" "ninja-tests.patch")))))
+              (patches (search-patches "ninja-zero-mtime.patch"
+                                       "ninja-tests.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("python" ,python-2)))
     (arguments

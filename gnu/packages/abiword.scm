@@ -53,9 +53,8 @@
         (sha256
           (base32 "1ik591rx15nn3n1297cwykl8wvrlgj78i528id9wbidgy3xzd570"))
         (patches
-          (list
-            (search-patch "abiword-wmf-version-lookup-fix.patch")
-            (search-patch "abiword-explictly-cast-bools.patch")))))
+         (search-patches "abiword-wmf-version-lookup-fix.patch"
+                         "abiword-explictly-cast-bools.patch"))))
 
     (build-system gnu-build-system)
     (arguments                   ;; NOTE: rsvg is disabled, since Abiword

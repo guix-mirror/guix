@@ -192,9 +192,8 @@ required structures.")
              (sha256
               (base32
                "0cxajjayi859czi545ddafi24m9nwsnjsw4q82zrmqvwj2rv315p"))
-             (patches (map search-patch
-                           '("openssl-runpath.patch"
-                             "openssl-c-rehash-in.patch")))))
+             (patches (search-patches "openssl-runpath.patch"
+                                      "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (arguments

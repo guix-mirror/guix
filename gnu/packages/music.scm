@@ -1055,7 +1055,7 @@ improves on support for JACK features, such as JACK MIDI.")
                           version ".tar.gz"))
       (sha256
        (base32 "1dhphsya41rv8z6yqcv9l6fwbslsds4zh1y56zizi39nd996d40v"))
-      (patches (list (search-patch "cursynth-wave-rand.patch")))))
+      (patches (search-patches "cursynth-wave-rand.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     ;; TODO: See https://github.com/iyoko/cursynth/issues/4 which currently

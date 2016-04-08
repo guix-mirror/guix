@@ -40,7 +40,7 @@
              (sha256
               (base32
                "0ja02pm3fpfhc5dkry00kq8mn141cqvdqqpmms373ncbwi38pl35"))
-             (patches (list (search-patch "doxygen-test.patch")))))
+             (patches (search-patches "doxygen-test.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("bison" ,bison)

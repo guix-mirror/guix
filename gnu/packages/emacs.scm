@@ -76,8 +76,8 @@
              (sha256
               (base32
                "0kn3rzm91qiswi0cql89kbv6mqn27rwsyjfb8xmwy9m5s8fxfiyx"))
-             (patches (list (search-patch "emacs-exec-path.patch")
-                            (search-patch "emacs-source-date-epoch.patch")))))
+             (patches (search-patches "emacs-exec-path.patch"
+                                      "emacs-source-date-epoch.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -1308,7 +1308,7 @@ on context.")
           (base32
            "141wn9l0m33w0g3dqmx8nxbfdny1r5xbr6ak61rsz21bk0qafs7x"))
          (patches
-          (list (search-patch "emacs-scheme-complete-scheme-r5rs-info.patch")))))
+          (search-patches "emacs-scheme-complete-scheme-r5rs-info.patch"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/ashinn/scheme-complete")
       (synopsis "Smart tab completion for Scheme in Emacs")
@@ -1385,8 +1385,7 @@ identifiers in the MIT-Scheme documentation.")
        (file-name (string-append name "-" version ".el"))
        (method uncompressed-file-fetch)
        (uri "https://staff.fnwi.uva.nl/c.dominik/Tools/constants/constants.el")
-       (patches
-        (list (search-patch "emacs-constants-lisp-like.patch")))
+       (patches (search-patches "emacs-constants-lisp-like.patch"))
        (sha256
         (base32
          "14q094aphsjhq8gklv7i5a7byl0ygz63cv3n6b5p8ji2jy0mnnw3"))))

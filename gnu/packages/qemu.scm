@@ -62,20 +62,19 @@
              (sha256
               (base32
                "1m3j6xl7msrniidkvr5pw9d44yba5m7hm42xz8xy77v105s8hhrl"))
-             (patches
-              (map search-patch
-                   '("qemu-virtio-9p-use-accessor-to-get-thread-pool.patch"
-                     "qemu-CVE-2015-8558.patch"
-                     "qemu-CVE-2015-8567.patch"
-                     "qemu-CVE-2016-1922.patch"
-                     "qemu-CVE-2015-8613.patch"
-                     "qemu-CVE-2015-8701.patch"
-                     "qemu-CVE-2015-8743.patch"
-                     "qemu-CVE-2016-1568.patch"
-                     "qemu-CVE-2015-8619.patch"
-                     "qemu-CVE-2016-1981.patch"
-                     "qemu-usb-ehci-oob-read.patch"
-                     "qemu-CVE-2016-2197.patch")))))
+             (patches (search-patches
+                       "qemu-virtio-9p-use-accessor-to-get-thread-pool.patch"
+                       "qemu-CVE-2015-8558.patch"
+                       "qemu-CVE-2015-8567.patch"
+                       "qemu-CVE-2016-1922.patch"
+                       "qemu-CVE-2015-8613.patch"
+                       "qemu-CVE-2015-8701.patch"
+                       "qemu-CVE-2015-8743.patch"
+                       "qemu-CVE-2016-1568.patch"
+                       "qemu-CVE-2015-8619.patch"
+                       "qemu-CVE-2016-1981.patch"
+                       "qemu-usb-ehci-oob-read.patch"
+                       "qemu-CVE-2016-2197.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace

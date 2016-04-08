@@ -232,8 +232,8 @@ optimizer; and it can produce photorealistic and design review images.")
               (modules '((guix build utils)
                          (guix build download)
                          (guix ftp-client)))
-              (patches (list (search-patch "fastcap-mulSetup.patch")
-                             (search-patch "fastcap-mulGlobal.patch")))))
+              (patches (search-patches "fastcap-mulSetup.patch"
+                                       "fastcap-mulGlobal.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,texlive)
@@ -329,11 +329,11 @@ multipole-accelerated algorithm.")
                     "-" version ".tar.z"))
               (sha256
                (base32 "1a06xyyd40zhknrkz17xppl2zd5ig4w9g1grc8qrs0zqqcl5hpzi"))
-              (patches (list (search-patch "fasthenry-spAllocate.patch")
-                             (search-patch "fasthenry-spBuild.patch")
-                             (search-patch "fasthenry-spUtils.patch")
-                             (search-patch "fasthenry-spSolve.patch")
-                             (search-patch "fasthenry-spFactor.patch")))))
+              (patches (search-patches "fasthenry-spAllocate.patch"
+                                       "fasthenry-spBuild.patch"
+                                       "fasthenry-spUtils.patch"
+                                       "fasthenry-spSolve.patch"
+                                       "fasthenry-spFactor.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("CC=gcc" "RM=rm" "SHELL=sh" "all")

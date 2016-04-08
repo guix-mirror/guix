@@ -72,7 +72,7 @@ POSIX regular expression API.")
     (inherit pcre)
     (source (origin
               (inherit (package-source pcre))
-              (patches (list (search-patch "pcre-CVE-2016-3191.patch")))))))
+              (patches (search-patches "pcre-CVE-2016-3191.patch"))))))
 
 (define-public pcre2
   (package

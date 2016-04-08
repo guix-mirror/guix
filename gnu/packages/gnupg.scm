@@ -207,9 +207,8 @@ compatible to GNU Pth.")
               (sha256
                (base32
                 "06mn2viiwsyq991arh5i5fhr9jyxq2bi0jkdj7ndfisxihngpc5p"))
-              (patches
-               (list (search-patch
-                      "gnupg-simple-query-ignore-status-messages.patch")))))
+              (patches (search-patches
+                        "gnupg-simple-query-ignore-status-messages.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -351,7 +350,7 @@ and every application benefits from this.")
        ;; Unfortunately, we have to disable some tests due to some gpg-agent
        ;; goofiness... see:
        ;;   https://bugs.launchpad.net/pygpgme/+bug/999949
-       (patches (list (search-patch "pygpgme-disable-problematic-tests.patch")))))
+       (patches (search-patches "pygpgme-disable-problematic-tests.patch"))))
     (arguments
      `(#:phases
        (modify-phases %standard-phases

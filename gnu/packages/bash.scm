@@ -285,7 +285,7 @@ without modification.")
                (base32
                 "0kxf8s5bw7y50x0ksb77d3kv0dwadixhybl818w27y6mlw26hq1b"))
               (patches
-               (list (search-patch "bash-completion-directories.patch")))))
+               (search-patches "bash-completion-directories.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("util-linux" ,util-linux)))
     (arguments

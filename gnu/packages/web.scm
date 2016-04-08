@@ -402,7 +402,7 @@ UTS#46.")
               (sha256
                (base32
                 "14dsnmirjcrvwsffqp3as70qr6bbfaig2fv3zvs5g7005jrsbvpb"))
-              (patches (list (search-patch "tidy-CVE-2015-5522+5523.patch")))))
+              (patches (search-patches "tidy-CVE-2015-5522+5523.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
@@ -605,8 +605,8 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
                            version ".tar.bz2"))
        (sha256
         (base32 "14155g48gamcv5s0828bzij6vr14nqmbndwq8j8f9g6vcph0nl70"))
-       (patches (map search-patch '("serf-comment-style-fix.patch"
-                                    "serf-deflate-buckets-test-fix.patch")))
+       (patches (search-patches "serf-comment-style-fix.patch"
+                                "serf-deflate-buckets-test-fix.patch"))
        (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -1718,8 +1718,8 @@ which can be used to parse directory listings.")
       (sha256
        (base32
         "1b6pbh7f76fb5sa4f0lhx085xy55pprz5v7z7li7pqiyw7i4f4bf"))
-      (patches (list
-                (search-patch "perl-finance-quote-unuse-mozilla-ca.patch")))))
+      (patches (search-patches
+                "perl-finance-quote-unuse-mozilla-ca.patch"))))
    (build-system perl-build-system)
    (propagated-inputs
     `(("perl-cgi" ,perl-cgi)
@@ -2288,9 +2288,8 @@ and IPv6 sockets, intended as a replacement for IO::Socket::INET.")
               (sha256
                (base32
                 "1mph52lw6x5v44wf8mw00llzi8pp6k5c4jnrnrvlacrlfv260jb8"))
-              (patches
-               (list
-                (search-patch "perl-io-socket-ssl-openssl-1.0.2f-fix.patch")))))
+              (patches (search-patches
+                        "perl-io-socket-ssl-openssl-1.0.2f-fix.patch"))))
     (build-system perl-build-system)
     (propagated-inputs `(("perl-net-ssleay" ,perl-net-ssleay)))
     (synopsis "Nearly transparent SSL encapsulation for IO::Socket::INET")
@@ -2418,8 +2417,8 @@ and retry a few times.")
        (sha256
         (base32
          "10dcsq4s2kc9cb1vccx17r187c81drirc3s1hbxh3rb8489kg2b2"))
-       (patches (list
-                 (search-patch "perl-net-amazon-s3-moose-warning.patch")))))
+       (patches (search-patches
+                 "perl-net-amazon-s3-moose-warning.patch"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-libwww" ,perl-libwww)

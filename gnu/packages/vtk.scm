@@ -39,7 +39,7 @@
               (sha256
                (base32
                 "0d7shccdkyj4mbh2riilslgx3gd28in4c7xpm0lxa1ln8w5g2zdx"))
-              (patches (list (search-patch "vtk-mesa-10.patch")))))
+              (patches (search-patches "vtk-mesa-10.patch"))))
     (build-system cmake-build-system)
     (arguments
      ;; Build without '-g' to save space.

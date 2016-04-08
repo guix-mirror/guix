@@ -48,8 +48,7 @@
       (sha256
        (base32
         "0g5df00cj4nczrmr4k791l7la0sq2wnf8rn981fsrz1f3d2yix4i"))
-      (patches
-       (list (search-patch "patchutils-xfail-gendiff-tests.patch")))))
+      (patches (search-patches "patchutils-xfail-gendiff-tests.patch"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (arguments

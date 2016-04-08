@@ -71,8 +71,7 @@
               (sha256
                (base32
                 "1x8rliydhbibmzwdbyr7pd7n87m2jmxnqkpvaalnf4154hj1hfwb"))
-              (patches
-               (list (search-patch "libotr-test-auth-fix.patch")))))
+              (patches (search-patches "libotr-test-auth-fix.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgcrypt" ,libgcrypt)))  ; libotr headers include gcrypt.h
@@ -180,8 +179,8 @@ dictionaries.  HexChat can be extended with multiple addons.")
               (sha256
                (base32
                 "17k3g9qd9d010czk5846qxvzkmw4fihv8l6m2a2287crbxm3xhd4"))
-              (patches (list (search-patch "ngircd-no-dns-in-tests.patch")
-                             (search-patch "ngircd-handle-zombies.patch")))))
+              (patches (search-patches "ngircd-no-dns-in-tests.patch"
+                                       "ngircd-handle-zombies.patch"))))
     (build-system gnu-build-system)
     ;; Needed for the test suite.
     (native-inputs `(("procps" ,procps)
@@ -246,7 +245,7 @@ supports IPv6, SSL-protected connections as well as PAM for authentication.")
        (sha256
         (base32
          "01s0q30qrjlzj7kkz6f8lvrwsdd55a9yjh2xjjwyyxzw849j3bpj"))
-       (patches (list (search-patch "pidgin-add-search-path.patch")))))
+       (patches (search-patches "pidgin-add-search-path.patch"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

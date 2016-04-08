@@ -98,7 +98,7 @@ version of libusb to run with newer libusb.")
              (sha256
                (base32
                 "12dinqic0ljnhrwx3rc61jc7q24ybr0mckc2ya5kh1s1np0d7w93"))
-             (patches (list (search-patch "libmtp-devices.patch")))))
+             (patches (search-patches "libmtp-devices.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

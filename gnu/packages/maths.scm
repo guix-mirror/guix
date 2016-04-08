@@ -777,7 +777,7 @@ arising after the discretization of partial differential equations.")
        (sha256
         (base32
          "1820jfp3mbl7n85765v5mp6p0gzqpgr4d2lrnhwj4gl7cwp5ndah"))
-       (patches (list (search-patch "mumps-build-parallelism.patch")))))
+       (patches (search-patches "mumps-build-parallelism.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("fortran" ,gfortran)
@@ -1044,7 +1044,7 @@ also provides threshold-based ILU factorization preconditioners.")
                            "superlu_dist_" version ".tar.gz"))
        (sha256
         (base32 "1hnak09yxxp026blq8zhrl7685yip16svwngh1wysqxf8z48vzfj"))
-       (patches (list (search-patch "superlu-dist-scotchmetis.patch")))))
+       (patches (search-patches "superlu-dist-scotchmetis.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("tcsh" ,tcsh)))
@@ -1145,8 +1145,8 @@ implemented in ANSI C, and MPI for communications.")
                           "scotch_" version ".tar.gz"))
       (sha256
        (base32 "1ir088mvrqggyqdkx9qfynmiaffqbyih5qfl5mga2nrlm1qlsgzm"))
-      (patches (list (search-patch "scotch-test-threading.patch")
-                     (search-patch "pt-scotch-build-parallelism.patch")))))
+      (patches (search-patches "scotch-test-threading.patch"
+                               "pt-scotch-build-parallelism.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
@@ -1371,7 +1371,7 @@ to BMP, JPEG or PNG image formats.")
        (sha256
         (base32
          "0x1rk659sn3cq0n5c90848ilzr1gb1wf0072fl6jhkdq00qgh2s0"))
-       (patches (list (search-patch "maxima-defsystem-mkdir.patch")))))
+       (patches (search-patches "maxima-defsystem-mkdir.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("gcl" ,gcl)
@@ -1960,7 +1960,7 @@ revised simplex and the branch-and-bound methods.")
        (sha256
         (base32
          "185jych0gdnpkjwxni7pd0dda149492zwq2457xdjg76bzj78mnp"))
-       (patches (list (search-patch "dealii-p4est-interface.patch")))
+       (patches (search-patches "dealii-p4est-interface.patch"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled sources: UMFPACK, TBB, muParser, and boost

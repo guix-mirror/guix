@@ -52,7 +52,7 @@
              (sha256
               (base32
                "11pblz61zyxh68s5pdcbhc30ha1b2vfjd83aiwfg4vc15x3hadw2"))
-             (patches (list (search-patch "expat-CVE-2015-1283.patch")))))
+             (patches (search-patches "expat-CVE-2015-1283.patch"))))
     (build-system gnu-build-system)
     (home-page "http://www.libexpat.org/")
     (synopsis "Stream-oriented XML parser library written in C")
@@ -132,7 +132,7 @@ project (but it is usable outside of the Gnome platform).")
              (sha256
               (base32
                "13029baw9kkyjgr7q3jccw2mz38amq7mmpr5p3bh775qawd1bisz"))
-             (patches (list (search-patch "libxslt-CVE-2015-7995.patch")))))
+             (patches (search-patches "libxslt-CVE-2015-7995.patch"))))
     (build-system gnu-build-system)
     (home-page "http://xmlsoft.org/XSLT/index.html")
     (synopsis "C library for applying XSLT stylesheets to XML documents")
@@ -654,7 +654,7 @@ UTF-8 and UTF-16 encoding.")
               (sha256
                (base32
                 "14smciid19lvkxqznfig77jxn5s4iq3jpb47vh5a6zcaqp7gvg8m"))
-              (patches (list (search-patch "tinyxml-use-stl.patch")))))
+              (patches (search-patches "tinyxml-use-stl.patch"))))
     (build-system gnu-build-system)
     ;; This library is missing *a lot* of the steps to make it usable, so we
     ;; have to add them here, like every other distro must do.

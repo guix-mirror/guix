@@ -82,8 +82,8 @@ remote applications.")
               (sha256
                (base32
                 "0b6wyx6bwbb8jpn8x4rhlrdiqwqrwrs0mxjmrnqykm9kw1ijgm8g"))
-              (patches (list
-                        (search-patch "libssh-0.6.5-CVE-2016-0739.patch")))))))
+              (patches (search-patches
+                        "libssh-0.6.5-CVE-2016-0739.patch"))))))
 
 (define-public libssh2
   (package

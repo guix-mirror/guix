@@ -142,7 +142,7 @@ SILC and ICB protocols via plugins.")
               (sha256
                (base32
                 "19apd3hav77v74j7flicai0843k7wrkr2fd3q2ayvzkgnbrrp1ai"))
-              (patches (list (search-patch "weechat-python.patch")))))
+              (patches (search-patches "weechat-python.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
                      ("pkg-config" ,pkg-config)

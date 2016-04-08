@@ -336,9 +336,8 @@ by using the poppler rendering engine.")
               (sha256
                (base32
                 "1rywx09qn6ap5hb1z31wxby4lzdrqdbldm51pjk1ifflr37xwirk"))
-              (patches
-               (list
-                (search-patch "zathura-plugindir-environment-variable.patch")))))
+              (patches (search-patches
+                        "zathura-plugindir-environment-variable.patch"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gnu-gettext)))
     (inputs `(("girara" ,girara)

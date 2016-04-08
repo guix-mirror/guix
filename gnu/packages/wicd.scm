@@ -46,11 +46,11 @@
                            "/+download/wicd-" version ".tar.gz"))
        (sha256
         (base32 "0qpbwwsrqdp40mm3a8djpn2d055rxxspdhwijwsdnws700a9d637"))
-       (patches (map search-patch
-                     '("wicd-bitrate-none-fix.patch"
-                       "wicd-get-selected-profile-fix.patch"
-                       "wicd-urwid-1.3.patch"
-                       "wicd-wpa2-ttls.patch")))))
+       (patches (search-patches
+                 "wicd-bitrate-none-fix.patch"
+                 "wicd-get-selected-profile-fix.patch"
+                 "wicd-urwid-1.3.patch"
+                 "wicd-wpa2-ttls.patch"))))
     (build-system python-build-system)
     (native-inputs `(("gettext" ,gnu-gettext)))
     (inputs `(("dbus-glib" ,dbus-glib)

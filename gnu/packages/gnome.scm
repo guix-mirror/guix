@@ -739,8 +739,8 @@ the API.")
                                   version "/gtkglext-" version ".tar.gz"))
               (sha256
                (base32 "1ya4d2j2aacr9ii5zj4ac95fjpdvlm2rg79mgnk7yvl1dcy3y1z5"))
-              (patches (list
-                        (search-patch "gtkglext-disable-disable-deprecated.patch")))))
+              (patches (search-patches
+                        "gtkglext-disable-disable-deprecated.patch"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)
               ("mesa" ,mesa)
@@ -1010,7 +1010,8 @@ featuring mature C, C++ and Python bindings.")
                                   "/" name "-" version ".tar.bz2"))
               (sha256
                (base32 "0swp4kk6x7hy1rvd1f9jba31lvfc6qvafkvbpg9h0r34fzrd8q4i"))
-              (patches (list (search-patch "libbonobo-activation-test-race.patch")))))
+              (patches (search-patches
+                        "libbonobo-activation-test-race.patch"))))
     (build-system gnu-build-system)
     (arguments
      ;; The programmer kindly gives us a hook to turn off deprecation warnings ...
@@ -1976,7 +1977,7 @@ library.")
                (base32
                 "1cchmi08jpjypgmm9i7xzh5qfg2q5k61kry9ns8mhw3z44a440ym"))
               (patches
-               (list (search-patch "glib-networking-ssl-cert-file.patch")))))
+               (search-patches "glib-networking-ssl-cert-file.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -2371,7 +2372,7 @@ output devices.")
        (sha256
         (base32
          "0inlqx0zar498fhi9hh92p2g4kp8qy3zdl4z3vw6bjwp9w6xx454"))
-       (patches (list (search-patch "geoclue-config.patch")))))
+       (patches (search-patches "geoclue-config.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '(;; The tests want to run the system bus.
@@ -2450,7 +2451,7 @@ faster results and to avoid unnecessary server load.")
               (sha256
                (base32
                 "0f6x9mi1jzgqdpycaikyhjljnw3aacsl3gxndyg0dfqkq6y9jwb9"))
-              (patches (list (search-patch "upower-builddir.patch")))))
+              (patches (search-patches "upower-builddir.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      '( ;; The tests want to contact the system bus, which can't be done in the

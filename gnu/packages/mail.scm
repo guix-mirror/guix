@@ -92,7 +92,7 @@
              (sha256
               (base32
                "0szbqa12zqzldqyw97lxqax3ja2adis83i7brdfsxmrfw68iaf65"))
-             (patches (list (search-patch "m4-gets-undeclared.patch")))))
+             (patches (search-patches "m4-gets-undeclared.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(;; TODO: Add `--with-sql'.
@@ -185,7 +185,7 @@ aliasing facilities to work just as they would on normal mail.")
              (sha256
               (base32
                "06bc2drbgalkk68rzg7hq2v5m5qgjxff5357wg0419dpi8ivdbr9"))
-             (patches (list (search-patch "mutt-store-references.patch")))))
+             (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
@@ -1129,9 +1129,7 @@ deliver it in various ways.")
        ;; The following patch fixes an ambiguous definition of
        ;; getline() in formail.c.  The patch is provided by Debian as
        ;; patch 24.
-       (patches
-        (list
-         (search-patch "procmail-ambiguous-getline-debian.patch")))))
+       (patches (search-patches "procmail-ambiguous-getline-debian.patch"))))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'configure

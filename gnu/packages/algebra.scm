@@ -270,7 +270,7 @@ or text interfaces) or as a C++ library.")
                   version ".tar.gz"))
             (sha256 (base32
                      "11syazv1a8rrnac3wj3hnyhhflpqcmq02q8pqk2m6g2k6h0gxwfb"))
-            (patches (map search-patch '("flint-ldconfig.patch")))))
+            (patches (search-patches "flint-ldconfig.patch"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("gmp" ,gmp)
@@ -319,7 +319,7 @@ fast arithmetic.")
             (sha256
               (base32
                 "04hhcpshfkcq9fr4hixbhpps50yf9drk62xgkvlcaj5kb4nyrx7l"))
-            (patches (map search-patch '("arb-ldconfig.patch")))))
+            (patches (search-patches "arb-ldconfig.patch"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("flint" ,flint))) ; flint.h is included by arf.h

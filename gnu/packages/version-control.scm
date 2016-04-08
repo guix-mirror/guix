@@ -896,8 +896,8 @@ large, complex patch files.")
               (sha256
                (base32
                 "0bkw6fjh20ppvn54smv05461lm1vcwvn02avx941c4acafmkl1cm"))
-              (patches (list (search-patch "cssc-gets-undeclared.patch")
-                             (search-patch "cssc-missing-include.patch")))))
+              (patches (search-patches "cssc-gets-undeclared.patch"
+                                       "cssc-missing-include.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-cons-before
@@ -940,11 +940,11 @@ accessed and migrated on modern systems.")
               (sha256
                (base32
                 "18s86ssarfmc4l17gbpzybca29m5wa37cbaimdji8czlcry3mcjl"))
-            (patches (list (search-patch "aegis-perl-tempdir1.patch")
-                           (search-patch "aegis-perl-tempdir2.patch")
-                           (search-patch "aegis-test-fixup-1.patch")
-                           (search-patch "aegis-test-fixup-2.patch")
-                           (search-patch "aegis-constness-error.patch")))))
+            (patches (search-patches "aegis-perl-tempdir1.patch"
+                                     "aegis-perl-tempdir2.patch"
+                                     "aegis-test-fixup-1.patch"
+                                     "aegis-test-fixup-2.patch"
+                                     "aegis-constness-error.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("e2fsprogs" ,e2fsprogs)

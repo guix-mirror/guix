@@ -74,8 +74,8 @@ and they are executed on lists of files, hosts, users or other items.")
             (sha256
              (base32
               "1rmi35l4img00dr4vic8cv8s7b6n1yx1mkq2s7kjf5hvqdh6s2ki"))
-            (patches (list
-             (search-patch "slurm-configure-remove-nonfree-contribs.patch")))
+            (patches (search-patches
+                      "slurm-configure-remove-nonfree-contribs.patch"))
             (modules '((guix build utils)))
             (snippet
              '(begin

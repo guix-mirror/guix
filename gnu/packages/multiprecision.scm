@@ -40,8 +40,7 @@
             (sha256
              (base32
               "12b9s4jn48gbar6dbs5qrlmljdmnq43xy3ji9yjzic0mwp6dmnk8"))
-            (patches (map search-patch
-                          '("gmp-faulty-test.patch")))))
+            (patches (search-patches "gmp-faulty-test.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)))
    (outputs '("out" "debug"))
@@ -75,9 +74,8 @@ cryptography and computational algebra.")
               (sha256
                (base32
                 "0r5pp27cy7ch3dg5v0rsny8bib1zfvrza6027g2mp5f6v8pd6mli"))
-              (patches (map search-patch
-                            '("gmp-arm-asm-nothumb.patch"
-                              "gmp-faulty-test.patch")))))))
+              (patches (search-patches "gmp-arm-asm-nothumb.patch"
+                                       "gmp-faulty-test.patch"))))))
 
 (define-public mpfr
   (package

@@ -69,7 +69,7 @@ in Qt.")
        (sha256
         (base32
          "0ljdzqavvy82qwwwnhg2bgbshl2ns0k2lcswxlx1cfc8rcdr9w5l"))
-       (patches (map search-patch '("liblxqt-include.patch")))))
+       (patches (search-patches "liblxqt-include.patch"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f))

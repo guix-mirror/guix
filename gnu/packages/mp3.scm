@@ -55,10 +55,10 @@
             (sha256
              (base32
               "14460zhacxhswnzb36qfpd1f2wbk10qvksvm6wyq5hpvdgnw7ymv"))
-            (patches (map search-patch '("libmad-armv7-thumb-pt1.patch"
-                                         "libmad-armv7-thumb-pt2.patch"
-                                         "libmad-frame-length.patch"
-                                         "libmad-mips-newgcc.patch")))))
+            (patches (search-patches "libmad-armv7-thumb-pt1.patch"
+                                     "libmad-armv7-thumb-pt2.patch"
+                                     "libmad-frame-length.patch"
+                                     "libmad-mips-newgcc.patch"))))
    (build-system gnu-build-system)
    (arguments
     `(#:phases
@@ -367,8 +367,7 @@ use with CD-recording software).")
             (sha256
              (base32
               "1ss3c1a5hx6c99q1cryxg0jhbnbdj6ga9xyz0dzlz9qhzg5qswfs"))
-            (patches
-             (list (search-patch "ripperx-missing-file.patch")))))
+            (patches (search-patches "ripperx-missing-file.patch"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("gs-fonts" ,gs-fonts)
@@ -423,7 +422,7 @@ format.")
               (sha256
                (base32
                 "0sf4pns0245009z6mbxpx7kqy4kwl69bc95wz9v23wgappsvxgy1"))
-              (patches (list (search-patch "mpc123-initialize-ao.patch")))))
+              (patches (search-patches "mpc123-initialize-ao.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace

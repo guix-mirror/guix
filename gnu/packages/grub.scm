@@ -83,9 +83,9 @@
              (sha256
               (base32
                "0n64hpmsccvicagvr0c6v0kgp2yw0kgnd3jvsyd26cnwgs7c6kkq"))
-             (patches (list (search-patch "grub-gets-undeclared.patch")
-                            (search-patch "grub-freetype.patch")
-                            (search-patch "grub-CVE-2015-8370.patch")))))
+             (patches (search-patches "grub-gets-undeclared.patch"
+                                      "grub-freetype.patch"
+                                      "grub-CVE-2015-8370.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--disable-werror")

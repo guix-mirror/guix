@@ -220,7 +220,7 @@ that beneath its ruins lay buried an ancient evil.")
        (sha256
         (base32
          "0q34d2k6anzqvb0mf67x85q92lfx9jr71ry13dlp47jx0x9i573m"))
-       (patches (list (search-patch "pingus-sdl-libs-config.patch")))))
+       (patches (search-patches "pingus-sdl-libs-config.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("scons" ,scons)))
@@ -598,8 +598,8 @@ for common mesh file formats, and collision detection.")
                 (sha256
                  (base32
                   "1r4c5gap1z2zsv4yjd34qriqkxaq4lb4rykapyzkkdf4g36lc3nh"))
-                (patches (list (search-patch "mars-sfml-2.3.patch")
-                               (search-patch "mars-install.patch")))))
+                (patches (search-patches "mars-sfml-2.3.patch"
+                                         "mars-install.patch"))))
       (build-system cmake-build-system)
       (arguments
        `(#:tests? #f        ; There are no tests
@@ -1709,8 +1709,7 @@ Z64 video plugin.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32 "04qkpd8ic7xsgnqz7spl00wxdygf79m7d1k8rabbygjk5lg6p8z2"))
-       (patches
-        (list (search-patch "mupen64plus-ui-console-notice.patch")))))
+       (patches (search-patches "mupen64plus-ui-console-notice.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1871,12 +1870,11 @@ and a game metadata scraper.")
              (sha256
               (base32
                "1f2whlrfidwfh8lvr8cspcyirc6840r5d1ajm7x99qmngygrhixs"))
-             (patches (map search-patch
-                           '("pinball-const-fix.patch"
-                             "pinball-cstddef.patch"
-                             "pinball-missing-separators.patch"
-                             "pinball-src-deps.patch"
-                             "pinball-system-ltdl.patch")))))
+             (patches (search-patches "pinball-const-fix.patch"
+                                      "pinball-cstddef.patch"
+                                      "pinball-missing-separators.patch"
+                                      "pinball-src-deps.patch"
+                                      "pinball-system-ltdl.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("glu" ,glu)
@@ -1965,7 +1963,7 @@ players.")
               (sha256
                (base32
                 "1hxrlv6n8py48j487i6wbb4n4vd55w0na69r7ccmmr9vmrsw5mlk"))
-              (patches (list (search-patch "einstein-build.patch")))))
+              (patches (search-patches "einstein-build.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("freetype" ,freetype)

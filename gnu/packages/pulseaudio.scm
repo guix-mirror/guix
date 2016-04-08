@@ -131,9 +131,9 @@ rates.")
               '(substitute* "src/daemon/default.pa.in"
                  (("load-module module-console-kit" all)
                   (string-append "#" all "\n"))))
-             (patches
-              (list (search-patch "pulseaudio-fix-mult-test.patch")
-                    (search-patch "pulseaudio-longer-test-timeout.patch")))))
+             (patches (search-patches
+                       "pulseaudio-fix-mult-test.patch"
+                       "pulseaudio-longer-test-timeout.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list "--localstatedir=/var" ;"--sysconfdir=/etc"

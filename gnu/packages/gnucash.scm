@@ -47,7 +47,7 @@
       (sha256
        (base32
         "0x84f07p30pwhriamv8ifljgw755cj87rc12jy1xddf47spyj7rp"))
-      (patches (list (search-patch "gnucash-price-quotes-perl.patch")))))
+      (patches (search-patches "gnucash-price-quotes-perl.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("guile" ,guile-2.0)

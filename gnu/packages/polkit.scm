@@ -48,7 +48,7 @@
              (sha256
               (base32
                "109w86kfqrgz83g9ivggplmgc77rz8kx8646izvm2jb57h4rbh71"))
-             (patches (list (search-patch "polkit-drop-test.patch")))
+             (patches (search-patches "polkit-drop-test.patch"))
              (modules '((guix build utils)))
              (snippet
               '(begin

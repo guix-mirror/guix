@@ -333,7 +333,7 @@ tools (analyzer, mono/stereo tools, crossovers).")
               (sha256
                (base32
                 "0a1sni6lr7qpwywpggbkp0ia3h9bwwgf9i87gsag8ra2h30v82hd"))
-              (patches (list (search-patch "csound-header-ordering.patch")))))
+              (patches (search-patches "csound-header-ordering.patch"))))
     (build-system cmake-build-system)
     (arguments
      ;; Work around this error on x86_64 with libc 2.22+:
@@ -2064,7 +2064,7 @@ portions of LAME.")
              ".tgz"))
        (sha256
         (base32 "0mwddk4qzybaf85wqfhxqlf0c5im9il8z03rd4n127k8y2jj9q4g"))
-       (patches (list (search-patch "portaudio-audacity-compat.patch")))))
+       (patches (search-patches "portaudio-audacity-compat.patch"))))
     (build-system gnu-build-system)
     (inputs
      ;; TODO: Add ASIHPI.

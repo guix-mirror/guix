@@ -716,7 +716,7 @@ gapped, local, and paired-end alignment modes.")
               (sha256
                (base32
                 "168zlzykq622zbgkh90a90f1bdgsxkscq2zxzbj8brq80hbjpyp7"))
-              (patches (list (search-patch "tophat-build-with-later-seqan.patch")))
+              (patches (search-patches "tophat-build-with-later-seqan.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1156,8 +1156,7 @@ time.")
                 "07y179f63d7qnzdvkqcziwk9bs3k4zhp81q392fp1hwszjdvy22f"))
               ;; This patch has been sent upstream already and is available
               ;; for download from Sourceforge, but it has not been merged.
-              (patches (list
-                        (search-patch "crossmap-allow-system-pysam.patch")))
+              (patches (search-patches "crossmap-allow-system-pysam.patch"))
               (modules '((guix build utils)))
               ;; remove bundled copy of pysam
               (snippet
@@ -2722,7 +2721,7 @@ partial genes, and identifies translation initiation sites.")
                        version ".tar.gz"))
        (sha256
         (base32 "0nzdc0j0hjllhsd5f2xli95dafm3nawskigs140xzvjk67xh0r9q"))
-       (patches (list (search-patch "rsem-makefile.patch")))
+       (patches (search-patches "rsem-makefile.patch"))
        (modules '((guix build utils)))
        (snippet
         '(begin
@@ -3129,7 +3128,7 @@ accessed/downloaded on demand across HTTP.")
              version "-src.zip"))
        (sha256
         (base32 "0as8gxm4pjyc8dxmm1sl873rrd7wn5qs0l29nqfnl31x8i467xaa"))
-       (patches (list (search-patch "plink-1.07-unclobber-i.patch")))))
+       (patches (search-patches "plink-1.07-unclobber-i.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;no "check" target

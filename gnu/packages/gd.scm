@@ -83,9 +83,8 @@ most common applications of GD involve website development.")
        (sha256
         (base32
          "1ya8f9hpiax8j29vwaiwlvvgah0vkyvpzva28r8231nyk0f3s40z"))
-       (patches
-        (list
-         (search-patch "perl-gd-options-passthrough-and-fontconfig.patch")))))
+       (patches (search-patches
+                 "perl-gd-options-passthrough-and-fontconfig.patch"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-module-build" ,perl-module-build))) ;needs Module::Build >= 0.42

@@ -39,7 +39,7 @@
                (base32
                 "16jbj8avg5jkgvq5lxm0hdxxn4c3zn7fx8b4nxllvr024apk9w23"))
               (file-name (string-append name "-" version "-checkout"))
-              (patches (list (search-patch "ath9k-htc-firmware-objcopy.patch")))))
+              (patches (search-patches "ath9k-htc-firmware-objcopy.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-before

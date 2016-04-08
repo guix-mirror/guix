@@ -170,8 +170,7 @@
              (sha256
               (base32
                "0jxnz9ahfic79rp93l5wxcbgh4pkv85mwnjlbv1gz3jawv5cvwp1"))
-             (patches
-              (list (search-patch "module-init-tools-moduledir.patch")))))
+             (patches (search-patches "module-init-tools-moduledir.patch"))))
     (build-system gnu-build-system)
     (arguments
      ;; FIXME: The upstream tarball lacks man pages, and building them would
@@ -453,7 +452,7 @@ providing the system administrator with some help in common tasks.")
               (sha256
                (base32
                 "1ivdx1bhjbakf77agm9dn3wyxia1wgz9lzxgd61zqxw3xzih9gzw"))
-              (patches (list (search-patch "util-linux-tests.patch")))
+              (patches (search-patches "util-linux-tests.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; We take the 'logger' program from GNU Inetutils and 'kill'
@@ -820,7 +819,7 @@ intercept and print the system calls executed by the program.")
              (sha256
               (base32
                "0fx057746dj7rjdi0jnvx2m9b0y1lgdkh1hks87d8w32xyihf3k9"))
-             (patches (list (search-patch "alsa-lib-mips-atomic-fix.patch")))))
+             (patches (search-patches "alsa-lib-mips-atomic-fix.patch"))))
     (build-system gnu-build-system)
     (home-page "http://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
@@ -981,8 +980,7 @@ manpages.")
              (sha256
               (base32
                "0yvxrzk0mzmspr7sa34hm1anw6sif39gyn85w4c5ywfn8inxvr3s"))
-             (patches
-              (list (search-patch "net-tools-bitrot.patch")))))
+             (patches (search-patches "net-tools-bitrot.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:modules ((guix build gnu-build-system)
@@ -1564,7 +1562,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
               (sha256
                (base32
                 "1yid3a9b64a60ybj66fk2ysrq5klnl0ijl4g624cl16y8404g9rv"))
-              (patches (list (search-patch "kmod-module-directory.patch")))))
+              (patches (search-patches "kmod-module-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1609,7 +1607,7 @@ from the module-init-tools project.")
               (sha256
                (base32
                 "0akg9gcc3c2p56xbhlvbybqavcprly5q0bvk655zwl6d62j8an7p"))
-              (patches (list (search-patch "eudev-rules-directory.patch")))))
+              (patches (search-patches "eudev-rules-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1743,7 +1741,7 @@ interface.")
               (sha256
                (base32
                 "1gydiqgb08d9gbx4l6gv98zg3pljc984m50hmn3ysxcbkxkvkz23"))
-              (patches (list (search-patch "crda-optional-gcrypt.patch")))))
+              (patches (search-patches "crda-optional-gcrypt.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -1861,7 +1859,7 @@ country-specific regulations for the wireless spectrum.")
               (sha256
                (base32
                 "1ksgrynxgrq590nb2fwxrl1gwzisjkqlyg3ljfd1al0ibrk6mbjx"))
-              (patches (list (search-patch "lm-sensors-hwmon-attrs.patch")))))
+              (patches (search-patches "lm-sensors-hwmon-attrs.patch"))))
     (build-system gnu-build-system)
     (inputs `(("rrdtool" ,rrdtool)
               ("perl" ,perl)
@@ -2201,7 +2199,7 @@ also contains the libsysfs library.")
          version ".tar.gz"))
        (sha256
         (base32 "0qfqv7nqmjfr3p0bwrdlxkiqwqr7vmx053cadaa548ybqbghxmvm"))
-       (patches (list (search-patch "cpufrequtils-fix-aclocal.patch")))))
+       (patches (search-patches "cpufrequtils-fix-aclocal.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("sysfsutils" ,sysfsutils-1)))
@@ -2298,7 +2296,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
               (sha256
                (base32
                 "132vdvh3myjgcjn6i9w90ck16ddjxjcszklzkyvr4f5ifqd7wfhg"))
-              (patches (list (search-patch "mdadm-gcc-4.9-fix.patch")))))
+              (patches (search-patches "mdadm-gcc-4.9-fix.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("udev" ,eudev)))

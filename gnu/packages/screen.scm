@@ -107,7 +107,7 @@ controlling terminal and attach to it later.")
        (sha256
         (base32
          "1s8nh4wbds1nh52i0d1hy1b308jjf4siwpq92lna1zh9ll4x71j5"))
-       (patches (list (search-patch "byobu-writable-status.patch")))))
+       (patches (search-patches "byobu-writable-status.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("python" ,python-wrapper)       ;for config and session GUIs

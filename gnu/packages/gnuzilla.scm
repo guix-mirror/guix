@@ -191,7 +191,7 @@ in the Mozilla clients.")
                (base32
                 "0knr99yc8sba2ga6x1gwhg9gr1dmgcl344g3bmxm8c364i2vpxns"))
               ;; Create nss.pc and nss-config.
-              (patches (list (search-patch "nss-pkgconfig.patch")))))
+              (patches (search-patches "nss-pkgconfig.patch"))))
     (build-system gnu-build-system)
     (outputs '("out" "bin"))
     (arguments
@@ -288,9 +288,9 @@ standards.")
       (sha256
        (base32
         "1wdmd6hasra36g86ha1dw8sl7a5mvr7c4jbjx4zyg9629y5gqr8g"))
-      (patches (map search-patch
-                    '("icecat-avoid-bundled-includes.patch"
-                      "icecat-re-enable-DHE-cipher-suites.patch")))
+      (patches (search-patches
+                "icecat-avoid-bundled-includes.patch"
+                "icecat-re-enable-DHE-cipher-suites.patch"))
       (modules '((guix build utils)))
       (snippet
        '(begin

@@ -72,7 +72,7 @@
             (sha256
              (base32
               "0l200a0v7h8bh0cwz6v7hc13ds39cgqsmfrks55b1rbj5vniyiy3"))
-            (patches (list (search-patch "guile-1.8-cpp-4.5.patch")))))
+            (patches (search-patches "guile-1.8-cpp-4.5.patch"))))
    (build-system gnu-build-system)
    (arguments '(#:configure-flags '("--disable-error-on-warning")
 
@@ -132,7 +132,7 @@ without requiring the source code to be rewritten.")
             (sha256
              (base32
               "1qh3j7308qvsjgwf7h94yqgckpbgz2k3yqdkzsyhqcafvfka9l5f"))
-            (patches (list (search-patch "guile-arm-fixes.patch")))))
+            (patches (search-patches "guile-arm-fixes.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("pkgconfig" ,pkg-config)))
    (inputs `(("libffi" ,libffi)
@@ -410,7 +410,7 @@ library.")
              (sha256
               (base32
                "0zparwgf01jgl1x53ik71ghabldq6zz18ha4dscps1i0qrzgap1b"))
-             (patches (list (search-patch "mcron-install.patch")))))
+             (patches (search-patches "mcron-install.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("ed" ,ed) ("which" ,which) ("guile" ,guile-2.0)))

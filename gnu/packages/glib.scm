@@ -68,8 +68,7 @@
               (sha256
                (base32
                 "0jwj7wlrhq5y0fwfh8k2d9rgdpfax06lj8698g6iqbwrzd2rgyqx"))
-              (patches
-               (list (search-patch "dbus-helper-search-path.patch")))))
+              (patches (search-patches "dbus-helper-search-path.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -139,11 +138,11 @@ shared NFS home directories.")
             (sha256
              (base32
               "1yzxr1ip3l0m9ydk5nq32piq70c9f17p5f0jyvlsghzbaawh67ss"))
-            (patches (list (search-patch "glib-tests-homedir.patch")
-                           (search-patch "glib-tests-desktop.patch")
-                           (search-patch "glib-tests-prlimit.patch")
-                           (search-patch "glib-tests-timer.patch")
-                           (search-patch "glib-tests-gapplication.patch")))))
+            (patches (search-patches "glib-tests-homedir.patch"
+                                     "glib-tests-desktop.patch"
+                                     "glib-tests-prlimit.patch"
+                                     "glib-tests-timer.patch"
+                                     "glib-tests-gapplication.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
               "bin"           ; glib-mkenums, gtester, etc.; depends on Python
@@ -231,12 +230,10 @@ dynamic loading, and an object system.")
              (snippet
               '(substitute* "tools/g-ir-tool-template.in"
                  (("#!/usr/bin/env @PYTHON@") "#!@PYTHON@")))
-             (patches (list
-                       (search-patch "gobject-introspection-cc.patch")
-                       (search-patch
-                        "gobject-introspection-girepository.patch")
-                       (search-patch
-                        "gobject-introspection-absolute-shlib-path.patch")))))
+             (patches (search-patches
+                       "gobject-introspection-cc.patch"
+                       "gobject-introspection-girepository.patch"
+                       "gobject-introspection-absolute-shlib-path.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("bison" ,bison)
@@ -479,9 +476,8 @@ useful for C++.")
        (sha256
         (base32
          "1f5dfxjnil2glfwxnqr14d2cjfbkghsbsn8n04js2c2icr7iv2pv"))
-       (patches
-        (list (search-patch
-               "python2-pygobject-2-gi-info-type-error-domain.patch")))))
+       (patches (search-patches
+                 "python2-pygobject-2-gi-info-type-error-domain.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)

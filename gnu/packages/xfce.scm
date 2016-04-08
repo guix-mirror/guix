@@ -272,7 +272,7 @@ management D-Bus specification.")
               (sha256
                (base32
                 "1c4p3ckghvsad1sj5v8wmar5mh9cbhail9mmhad2f9pwwb10z4ih"))
-              (patches (list (search-patch "xfce4-panel-plugins.patch")))))
+              (patches (search-patches "xfce4-panel-plugins.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-gtk3")))
@@ -467,7 +467,7 @@ your system in categories, so you can quickly find and launch them.")
                 "01kvbd09c06j20n155hracsgrq06rlmfgdywffjsvlwpn19m9j38"))
               (patches
                ;; See: https://bugzilla.xfce.org/show_bug.cgi?id=12282
-               (list (search-patch "xfce4-session-fix-xflock4.patch")))
+               (search-patches "xfce4-session-fix-xflock4.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -510,8 +510,7 @@ allows you to shutdown the computer from Xfce.")
               (sha256
                (base32
                 "108za1cmjslwzkdl76x9kwxkq8z734kg9nz8rxk057f10pqwxgh4"))
-              (patches
-               (list (search-patch "xfce4-settings-defaults.patch")))))
+              (patches (search-patches "xfce4-settings-defaults.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

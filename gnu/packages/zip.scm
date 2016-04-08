@@ -81,19 +81,19 @@ Compression ratios of 2:1 to 3:1 are common for text files.")
       (sha256
        (base32
         "0dxx11knh3nk95p2gg2ak777dd11pr7jx5das2g49l262scrcv83"))
-      (patches (map search-patch '("unzip-CVE-2014-8139.patch"
-                                   "unzip-CVE-2014-8140.patch"
-                                   "unzip-CVE-2014-8141.patch"
-                                   "unzip-CVE-2014-9636.patch"
-                                   "unzip-CVE-2015-7696.patch"
-                                   "unzip-CVE-2015-7697.patch"
-                                   "unzip-allow-greater-hostver-values.patch"
-                                   "unzip-initialize-symlink-flag.patch"
-                                   "unzip-remove-build-date.patch"
-                                   "unzip-attribs-overflow.patch"
-                                   "unzip-overflow-on-invalid-input.patch"
-                                   "unzip-format-secure.patch"
-                                   "unzip-overflow-long-fsize.patch")))))
+      (patches (search-patches "unzip-CVE-2014-8139.patch"
+                               "unzip-CVE-2014-8140.patch"
+                               "unzip-CVE-2014-8141.patch"
+                               "unzip-CVE-2014-9636.patch"
+                               "unzip-CVE-2015-7696.patch"
+                               "unzip-CVE-2015-7697.patch"
+                               "unzip-allow-greater-hostver-values.patch"
+                               "unzip-initialize-symlink-flag.patch"
+                               "unzip-remove-build-date.patch"
+                               "unzip-attribs-overflow.patch"
+                               "unzip-overflow-on-invalid-input.patch"
+                               "unzip-format-secure.patch"
+                               "unzip-overflow-long-fsize.patch"))))
     (build-system gnu-build-system)
     ;; no inputs; bzip2 is not supported, since not compiled with BZ_NO_STDIO
     (arguments

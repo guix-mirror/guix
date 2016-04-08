@@ -201,7 +201,7 @@ may be either a libc package or #f.)"
   "Return GCC patches needed for TARGET."
   (cond ((string-prefix? "xtensa-" target)
          ;; Patch by Qualcomm needed to build the ath9k-htc firmware.
-         (list (search-patch "ath9k-htc-firmware-gcc.patch")))
+         (search-patches "ath9k-htc-firmware-gcc.patch"))
         (else '())))
 
 (define* (cross-gcc target

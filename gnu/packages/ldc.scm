@@ -129,7 +129,7 @@ and freshness without requiring additional information from the user.")
            (sha256
             (base32
              "0sgdj0536c4nb118yiw1f8lqy5d3g3lpg9l99l165lk9xy45l9z4"))
-           (patches (list (search-patch "ldc-disable-tests.patch")))))
+           (patches (search-patches "ldc-disable-tests.patch"))))
        ("druntime-src"
         ,(origin
            (method url-fetch)

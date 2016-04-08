@@ -133,8 +133,8 @@ printing, and psresize, for adjusting page sizes.")
             (sha256
              (base32
               "0q4jj41p0qbr4mgcc9q78f5zs8cm1g57wgryhsm2yq4lfslm3ib1"))
-            (patches (map search-patch '("ghostscript-CVE-2015-3228.patch"
-                                         "ghostscript-runpath.patch")))
+            (patches (search-patches "ghostscript-CVE-2015-3228.patch"
+                                     "ghostscript-runpath.patch"))
             (modules '((guix build utils)))
             (snippet
              ;; Honor --docdir.

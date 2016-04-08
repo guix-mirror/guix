@@ -132,10 +132,10 @@ old-fashioned output methods with powerful ascii-art renderer.")
               (sha256
                (base32
                 "0czccp4fcpf2ykp16xcrzdfmnircz1ynhls334q374xknd5747d2"))
-              (patches (map search-patch '("liba52-enable-pic.patch"
-                                           "liba52-set-soname.patch"
-                                           "liba52-use-mtune-not-mcpu.patch"
-                                           "liba52-link-with-libm.patch")))))
+              (patches (search-patches "liba52-enable-pic.patch"
+                                       "liba52-set-soname.patch"
+                                       "liba52-use-mtune-not-mcpu.patch"
+                                       "liba52-link-with-libm.patch"))))
     (build-system gnu-build-system)
     ;; XXX We need to run ./bootstrap because of the build system fixes above.
     (native-inputs
@@ -1007,7 +1007,7 @@ for use with HTML5 video.")
              (sha256
               (base32
                "1vas43bwb15q2wv3dpp7fgp8dc6szinmwl7i0ziq2vv5l2128v0p"))
-             (patches (map search-patch '("avidemux-install-to-lib.patch")))))
+             (patches (search-patches "avidemux-install-to-lib.patch"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

@@ -39,10 +39,10 @@
               (sha256
                (base32
                 "08q5gzbyz0lxb730rz6d6amkzimlc7nanv6n50j2bpw4n2xa9wmf"))
-              (patches (list (search-patch "tvtime-videodev2.patch")
-                             (search-patch "tvtime-pngoutput.patch")
-                             (search-patch "tvtime-xmltv.patch")
-                             (search-patch "tvtime-gcc41.patch")))))
+              (patches (search-patches "tvtime-videodev2.patch"
+                                       "tvtime-pngoutput.patch"
+                                       "tvtime-xmltv.patch"
+                                       "tvtime-gcc41.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)

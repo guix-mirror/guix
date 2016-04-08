@@ -135,7 +135,7 @@ avoiding password prompts when X11 forwarding has already been setup.")
         (sha256
           (base32
            "1lcngsw33fy9my21rdiz1gs474bfdqcfxjrnfggbx4aypn1nhcp8"))
-        (patches (list (search-patch "xdotool-fix-makefile.patch")))))
+        (patches (search-patches "xdotool-fix-makefile.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; Test suite requires a lot of black magic
@@ -233,7 +233,7 @@ rasterisation.")
         (sha256
           (base32
             "1i4n7mz49l0j4kr0dg9n1j3hlc786ncqgj0v5fci1mz7pp40m5ki"))
-        (patches (list (search-patch "libdrm-symbol-check.patch")))))
+        (patches (search-patches "libdrm-symbol-check.patch"))))
     (build-system gnu-build-system)
     (inputs
       `(("libpciaccess" ,libpciaccess)
@@ -315,7 +315,7 @@ System style license, and has no special dependencies.")
               (sha256
                (base32
                 "1afclc57b9017a73mfs9w7lbdvdipmf9q0xdk116f61gnvyix2np"))
-              (patches (list (search-patch "wmctrl-64-fix.patch")))))
+              (patches (search-patches "wmctrl-64-fix.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

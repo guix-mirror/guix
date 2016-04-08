@@ -51,7 +51,7 @@
              (sha256
               (base32
                "1arkyizn5wbgvbh53aziv3s6lmd3wm9lqzkhxb3hijlp1y124hjg"))
-             (patches (list (search-patch "plotutils-libpng-jmpbuf.patch")))
+             (patches (search-patches "plotutils-libpng-jmpbuf.patch"))
              (modules '((guix build utils)))
              (snippet
               ;; Force the use of libXaw7 instead of libXaw.  When not doing
@@ -179,7 +179,7 @@ colors, styles, options and details.")
               (sha256
                (base32
                 "11f28vxw0ybhvl7vxmqcdwvw7y6gz55ykw9ybgzb2px6lsvgag7z"))
-              (patches (list (search-patch "asymptote-gsl2.patch")))))
+              (patches (search-patches "asymptote-gsl2.patch"))))
     (build-system gnu-build-system)
     ;; Note: The 'asy' binary retains a reference to docdir for use with its
     ;; "help" command in interactive mode, so adding a "doc" output is not

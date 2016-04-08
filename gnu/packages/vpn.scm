@@ -67,7 +67,7 @@ endpoints.")
                                 version ".tar.gz"))
             (sha256 (base32
                      "1128860lis89g1s21hqxvap2nq426c9j4bvgghncc1zj0ays7kj6"))
-            (patches (list (search-patch "vpnc-script.patch")))))
+            (patches (search-patches "vpnc-script.patch"))))
    (build-system gnu-build-system)
    (inputs `(("libgcrypt" ,libgcrypt)
              ("perl" ,perl)

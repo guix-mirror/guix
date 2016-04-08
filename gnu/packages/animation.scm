@@ -68,7 +68,7 @@ C++ @dfn{Standard Template Library} (STL).")
               (sha256
                (base32
                 "1d3z2r78j3rkff47q3wl0ami69y3l4nyi5r9zclymb8ar7mgkk9l"))
-              (patches (list (search-patch "synfig-build-fix.patch")))))
+              (patches (search-patches "synfig-build-fix.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

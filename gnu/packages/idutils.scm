@@ -35,8 +35,7 @@
              (sha256
               (base32
                "1hmai3422iaqnp34kkzxdnywl7n7pvlxp11vrw66ybxn9wxg90c1"))
-             (patches (list
-                       (search-patch "diffutils-gets-undeclared.patch")))))
+             (patches (search-patches "diffutils-gets-undeclared.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("emacs" ,emacs-no-x)))
     (home-page "http://www.gnu.org/software/idutils/")

@@ -176,7 +176,7 @@ many more.")
               (sha256
                (base32
                 "1izddjwbh1grs8080vmaix72z469qy29wrvkphgmqmcm0sv1by7c"))
-              (patches (map search-patch '("ilmbase-fix-tests.patch")))))
+              (patches (search-patches "ilmbase-fix-tests.patch"))))
     (build-system gnu-build-system)
     (home-page "http://www.openexr.com/")
     (synopsis "Utility C++ libraries for threads, maths, and exceptions")
@@ -204,7 +204,7 @@ exception-handling library.")
                '(substitute* (find-files "." "tmpDir\\.h")
                   (("\"/var/tmp/\"")
                    "\"/tmp/\"")))
-              (patches (list (search-patch "openexr-missing-samples.patch")))))
+              (patches (search-patches "openexr-missing-samples.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -245,7 +245,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
               (sha256
                (base32
                 "0mn7cz19mn8dcrhkq15h25gl20ammr1wz0j2j3c2vxs6ph7zn8jy"))
-              (patches (list (search-patch "openimageio-boost-1.60.patch")))))
+              (patches (search-patches "openimageio-boost-1.60.patch"))))
     (build-system cmake-build-system)
     ;; FIXME: To run all tests successfully, test image sets from multiple
     ;; third party sources have to be present.  For details see
@@ -385,7 +385,7 @@ and understanding different BRDFs (and other component functions).")
                                         version ".tar.gz")))
               (sha256
                (base32 "07wii4i824vy9qsvjsgqxppgqmfdxq0xa87i5yk53fijriadq7mb"))
-              (patches (list (search-patch "agg-am_c_prototype.patch")))))
+              (patches (search-patches "agg-am_c_prototype.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

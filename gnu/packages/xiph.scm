@@ -111,7 +111,7 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
              (sha256
               (base32
                "0q8wark9ribij57dciym5vdikg2464p8q2mgqvfb78ksjh4s8vgk"))
-             (patches (list (search-patch "libtheora-config-guess.patch")))))
+             (patches (search-patches "libtheora-config-guess.patch"))))
     (build-system gnu-build-system)
     (inputs `(("libvorbis" ,libvorbis)))
     ;; The .pc files refer to libogg.
@@ -267,7 +267,7 @@ Kate stream.")
             (sha256
              (base32
               "1g12bnh5ah08v529y72kfdz5lhvy75iaz7f9jskyby23m9dkk2d3"))
-            (patches (list (search-patch "vorbis-tools-CVE-2015-6749.patch")))))
+            (patches (search-patches "vorbis-tools-CVE-2015-6749.patch"))))
    (build-system gnu-build-system)
    (inputs `(("ao" ,ao)
              ("curl" ,curl)

@@ -140,10 +140,10 @@ maximum quality factor.")
                    version ".tar.gz"))
             (sha256 (base32
                      "136nf1rj9dp5jgv1p7z4dk0xy3wki1w0vfjbk82f645m0w4samsd"))
-            (patches (map search-patch
-                          '("libtiff-oob-accesses-in-decode.patch"
-                            "libtiff-oob-write-in-nextdecode.patch"
-                            "libtiff-CVE-2015-8665+CVE-2015-8683.patch")))))
+            (patches (search-patches
+                      "libtiff-oob-accesses-in-decode.patch"
+                      "libtiff-oob-write-in-nextdecode.patch"
+                      "libtiff-CVE-2015-8665+CVE-2015-8683.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                           ;1.3 MiB of HTML documentation
@@ -178,18 +178,18 @@ collection of tools for doing simple manipulations of TIFF images.")
         (sha256
          (base32 "1y3wba4q8pl7kr51212jwrsz1x6nslsx1gsjml1x0i8549lmqd2v"))
         (patches
-         (map search-patch '("libwmf-CAN-2004-0941.patch"
-                             "libwmf-CVE-2006-3376.patch"
-                             "libwmf-CVE-2007-0455.patch"
-                             "libwmf-CVE-2007-2756.patch"
-                             "libwmf-CVE-2007-3472.patch"
-                             "libwmf-CVE-2007-3473.patch"
-                             "libwmf-CVE-2007-3477.patch"
-                             "libwmf-CVE-2009-1364.patch"
-                             "libwmf-CVE-2009-3546.patch"
-                             "libwmf-CVE-2015-0848+CVE-2015-4588.patch"
-                             "libwmf-CVE-2015-4695.patch"
-                             "libwmf-CVE-2015-4696.patch")))))
+         (search-patches "libwmf-CAN-2004-0941.patch"
+                         "libwmf-CVE-2006-3376.patch"
+                         "libwmf-CVE-2007-0455.patch"
+                         "libwmf-CVE-2007-2756.patch"
+                         "libwmf-CVE-2007-3472.patch"
+                         "libwmf-CVE-2007-3473.patch"
+                         "libwmf-CVE-2007-3477.patch"
+                         "libwmf-CVE-2009-1364.patch"
+                         "libwmf-CVE-2009-3546.patch"
+                         "libwmf-CVE-2015-0848+CVE-2015-4588.patch"
+                         "libwmf-CVE-2015-4695.patch"
+                         "libwmf-CVE-2015-4696.patch"))))
 
     (build-system gnu-build-system)
     (inputs
@@ -291,7 +291,7 @@ arithmetic ops.")
                           version ".tar.gz"))
         (sha256
           (base32 "1ffhgmf2fqzk0h4k736pp06z7q5y4x41fg844bd6a9vgncq86bby"))
-        (patches (list (search-patch "jbig2dec-ignore-testtest.patch")))))
+        (patches (search-patches "jbig2dec-ignore-testtest.patch"))))
 
     (build-system gnu-build-system)
     (synopsis "Decoder of the JBIG2 image compression format")
@@ -320,8 +320,8 @@ work.")
                         version ".tar.gz"))
         (sha256
          (base32 "00zzm303zvv4ijzancrsb1cqbph3pgz0nky92k9qx3fq9y0vnchj"))
-        (patches (map search-patch '("openjpeg-use-after-free-fix.patch"
-                                     "openjpeg-CVE-2015-6581.patch")))))
+        (patches (search-patches "openjpeg-use-after-free-fix.patch"
+                                 "openjpeg-CVE-2015-6581.patch"))))
     (build-system cmake-build-system)
     (arguments
       ;; Trying to run `$ make check' results in a no rule fault.
@@ -357,8 +357,8 @@ error-resilience, a Java-viewer for j2k-images, ...")
                        version ".tar.gz"))
        (sha256
         (base32 "1c2xc3nl2mg511b63rk7hrckmy14681p1m44mzw3n1fyqnjm0b0z"))
-       (patches (map search-patch '("openjpeg-use-after-free-fix.patch"
-                                    "openjpeg-CVE-2015-6581.patch")))))))
+       (patches (search-patches "openjpeg-use-after-free-fix.patch"
+                                "openjpeg-CVE-2015-6581.patch"))))))
 
 (define-public openjpeg-1
   (package (inherit openjpeg)
@@ -520,7 +520,7 @@ supplies a generic doubly-linked list and some string functions.")
             (sha256
              (base32
               "12bz57asdcfsz3zr9i9nska0fb6h3z2aizy412qjqkixkginbz7v"))
-            (patches (list (search-patch "freeimage-CVE-2015-0852.patch")))))
+            (patches (search-patches "freeimage-CVE-2015-0852.patch"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases (alist-delete
@@ -673,7 +673,7 @@ channels.")
                 "1zd850nn7nvkkhasrv7kn17kzgslr5ry933v6db62s4lr0zzlbv8"))
               ;; Backported from upstream:
               ;; https://github.com/DentonW/DevIL/commit/724194d7a9a91221a564579f64bdd6f0abd64219.patch
-              (patches (list (search-patch "devil-fix-libpng.patch")))
+              (patches (search-patches "devil-fix-libpng.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; Fix old lcms include directives and lib flags.
@@ -723,21 +723,20 @@ convert, manipulate, filter and display a wide variety of image formats.")
               (sha256
                (base32
                 "154l7zk7yh3v8l2l6zm5s2alvd2fzkp6c9i18iajfbna5af5m43b"))
-              (patches
-                (list
-                  (search-patch "jasper-CVE-2007-2721.patch")
-                  (search-patch "jasper-CVE-2008-3520.patch")
-                  (search-patch "jasper-CVE-2008-3522.patch")
-                  (search-patch "jasper-CVE-2011-4516-and-CVE-2011-4517.patch")
-                  (search-patch "jasper-CVE-2014-8137.patch")
-                  (search-patch "jasper-CVE-2014-8138.patch")
-                  (search-patch "jasper-CVE-2014-8157.patch")
-                  (search-patch "jasper-CVE-2014-8158.patch")
-                  (search-patch "jasper-CVE-2014-9029.patch")
-                  (search-patch "jasper-CVE-2016-1577.patch")
-                  (search-patch "jasper-CVE-2016-1867.patch")
-                  (search-patch "jasper-CVE-2016-2089.patch")
-                  (search-patch "jasper-CVE-2016-2116.patch")))))
+              (patches (search-patches
+                        "jasper-CVE-2007-2721.patch"
+                        "jasper-CVE-2008-3520.patch"
+                        "jasper-CVE-2008-3522.patch"
+                        "jasper-CVE-2011-4516-and-CVE-2011-4517.patch"
+                        "jasper-CVE-2014-8137.patch"
+                        "jasper-CVE-2014-8138.patch"
+                        "jasper-CVE-2014-8157.patch"
+                        "jasper-CVE-2014-8158.patch"
+                        "jasper-CVE-2014-9029.patch"
+                        "jasper-CVE-2016-1577.patch"
+                        "jasper-CVE-2016-1867.patch"
+                        "jasper-CVE-2016-2089.patch"
+                        "jasper-CVE-2016-2116.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("unzip" ,unzip)))

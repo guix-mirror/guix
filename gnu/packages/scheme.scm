@@ -187,7 +187,7 @@ features an integrated Emacs-like editor and a large runtime library.")
              (sha256
               (base32
                "170q7nh08n4v20xl81fxb0xcdxphqqacfa643hsa8i2ar6pki04c"))
-             (patches (list (search-patch "bigloo-gc-shebangs.patch")))))
+             (patches (search-patches "bigloo-gc-shebangs.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -277,8 +277,8 @@ Scheme and C programs and between Scheme and Java programs.")
              (sha256
               (base32
                "1v2r4ga58kk1sx0frn8qa8ccmjpic9csqzpk499wc95y9c4b1wy3"))
-             (patches (list (search-patch "hop-bigloo-4.0b.patch")
-                            (search-patch "hop-linker-flags.patch")))))
+             (patches (search-patches "hop-bigloo-4.0b.patch"
+                                      "hop-linker-flags.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -374,7 +374,7 @@ language standard, and includes many enhancements and extensions.")
              (sha256
               (base32
                "1x4xfm3lyz2piqcw1h01vbs1iq89zq7wrsfjgh3fxnlm1slj2jcw"))
-             (patches (list (search-patch "scheme48-tests.patch")))))
+             (patches (search-patches "scheme48-tests.patch"))))
     (build-system gnu-build-system)
     (home-page "http://s48.org/")
     (synopsis "Scheme implementation using a bytecode interpreter")

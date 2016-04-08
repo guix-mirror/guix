@@ -554,7 +554,7 @@ is part of the GNOME accessibility project.")
             (sha256
              (base32
               "0mj6xn40py9r9lvzg633fal81xfwfm89d9mvz7jk4lmwk0g49imj"))
-            (patches (list (search-patch "gtk2-respect-GUIX_GTK2_PATH.patch")))))
+            (patches (search-patches "gtk2-respect-GUIX_GTK2_PATH.patch"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (propagated-inputs
@@ -615,7 +615,7 @@ application suites.")
             (sha256
              (base32
               "0lp1hn0qydxx03bianzzr0a4maqzsvylrkzr7c3p0050qihwbgjx"))
-            (patches (list (search-patch "gtk3-respect-GUIX_GTK3_PATH.patch")))))
+            (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"))))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
@@ -752,7 +752,7 @@ exceptions, macros, and a dynamic programming environment.")
               (sha256
                (base32
                 "136f236iw3yrrz6pkkp1ma9c5mrs5icqha6pnawinqpk892r3jh7"))
-              (patches (list (search-patch "guile-rsvg-pkgconfig.patch")))
+              (patches (search-patches "guile-rsvg-pkgconfig.patch"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* (find-files "." "Makefile\\.am")
@@ -791,7 +791,7 @@ images onto Cairo surfaces.")
               (sha256
                (base32
                 "1qam447m05sxxv6x8dlzg7qnyfc4dh8apjw1idpfhpns671gfr6m"))
-              (patches (list (search-patch "guile-present-coding.patch")))
+              (patches (search-patches "guile-present-coding.patch"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile.in"
@@ -977,7 +977,7 @@ extensive documentation, including API reference and a tutorial.")
       (sha256
        (base32
         "1gjkf8x6hyx1skq3hhwcbvwifxvrf9qxis5vx8x5igmmgs70g94s"))
-      (patches (list (search-patch "pycairo-wscript.patch")))))
+      (patches (search-patches "pycairo-wscript.patch"))))
     (build-system waf-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
