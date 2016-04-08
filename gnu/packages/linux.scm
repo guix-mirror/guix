@@ -1485,27 +1485,26 @@ system.")
                      "tty"))))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'build 'pre-build
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (let ((gzip  (assoc-ref %build-inputs "gzip"))
-                         (bzip2 (assoc-ref %build-inputs "bzip2")))
-                     (substitute* "src/libkeymap/findfile.c"
-                       (("gzip")
-                        (string-append gzip "/bin/gzip"))
-                       (("bzip2")
-                        (string-append bzip2 "/bin/bzip2")))))
-                 (alist-cons-after
-                  'install 'post-install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    ;; Make sure these programs find their comrades.
-                    (let* ((out (assoc-ref outputs "out"))
-                           (bin (string-append out "/bin")))
-                      (for-each (lambda (prog)
-                                  (wrap-program (string-append bin "/" prog)
-                                                `("PATH" ":" prefix (,bin))))
-                                '("unicode_start" "unicode_stop"))))
-                  %standard-phases))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gzip  (assoc-ref %build-inputs "gzip"))
+                   (bzip2 (assoc-ref %build-inputs "bzip2")))
+               (substitute* "src/libkeymap/findfile.c"
+                 (("gzip")
+                  (string-append gzip "/bin/gzip"))
+                 (("bzip2")
+                  (string-append bzip2 "/bin/bzip2"))))))
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure these programs find their comrades.
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (for-each (lambda (prog)
+                           (wrap-program (string-append bin "/" prog)
+                             `("PATH" ":" prefix (,bin))))
+                         '("unicode_start" "unicode_stop"))))))))
     (inputs `(("check" ,check)
               ("gzip" ,gzip)
               ("bzip2" ,bzip2)
