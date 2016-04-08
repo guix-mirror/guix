@@ -10,6 +10,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (guix build utils)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system r)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
@@ -930,6 +932,24 @@ sparse system of linear equations A x = b using Guassian elimination.")
     (name "mumps-metis-openmpi")
     (inputs
      (alist-delete "pt-scotch" (package-inputs mumps-openmpi)))))
+
+(define-public r-pracma
+  (package
+    (name "r-pracma")
+    (version "1.8.8")
+    (source (origin
+      (method url-fetch)
+      (uri (cran-uri "pracma" version))
+      (sha256
+        (base32 "0ans9l5rrb7a38gyi4qx4258sd5r5668vyrk02yzjpg9k3h8l165"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/pracma")
+    (synopsis "Practical numerical math functions")
+    (description "This package provides functions for numerical analysis and
+linear algebra, numerical optimization, differential equations, plus some
+special functions.  It uses Matlab function names where appropriate to simplify
+porting.")
+    (license license:gpl3+)))
 
 (define-public superlu
   (package
