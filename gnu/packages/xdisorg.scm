@@ -37,6 +37,7 @@
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages asciidoc)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
@@ -47,6 +48,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gtk)
@@ -714,6 +716,7 @@ the X.Org X Server version 1.7 and later (X11R7.5 or later).")
        ("libx11" ,libx11)
        ("libxcb" ,libxcb)
        ("libxxf86vm" ,libxxf86vm)
+       ("libjpeg" ,libjpeg)
        ("glib" ,glib)))                           ;for Geoclue2 support
     (home-page "https://github.com/jonls/redshift")
     (synopsis "Adjust the color temperature of your screen")
@@ -724,3 +727,69 @@ twilight and early morning, the color temperature transitions smoothly from
 night to daytime temperature to allow your eyes to slowly adapt.  At night the
 color temperature should be set to match the lamps in your room.")
     (license license:gpl3+)))
+
+(define-public xscreensaver
+  (package
+    (name "xscreensaver")
+    (version "5.34")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://www.jwz.org/xscreensaver/xscreensaver-"
+                       version ".tar.gz"))
+       (sha256
+        (base32
+         "09sy5v8bn62hiq4ib3jyvp8lipqcvn3rdsj74q25qgklpv27xzvg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ; no check target
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'adjust-gtk-resource-paths
+           (lambda _
+             (substitute* '("driver/Makefile.in" "po/Makefile.in.in")
+               (("@GTK_DATADIR@") "@datadir@")
+               (("@PO_DATADIR@") "@datadir@")))))
+       #:configure-flags '("--with-pam" "--with-proc-interrupts"
+                           "--without-readdisplay")
+       #:make-flags (list (string-append "AD_DIR="
+                                         (assoc-ref %outputs "out")
+                                         "/usr/lib/X11/app-defaults"))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxi" ,libxi)
+       ("libxt" ,libxt)
+       ("libxft" ,libxft)
+       ("libxmu" ,libxmu)
+       ("libxpm" ,libxpm)
+       ("libglade" ,libglade)
+       ("libxml2" ,libxml2)
+       ("libsm" ,libsm)
+       ("libjpeg" ,libjpeg)
+       ("linux-pam" ,linux-pam)
+       ("pango" ,pango)
+       ("gtk+" ,gtk+)
+       ("perl" ,perl)
+       ("cairo" ,cairo)
+       ("bc" ,bc)
+       ("libxrandr" ,libxrandr)
+       ("glu" ,glu)
+       ("glib" ,glib)))
+    (home-page "https://www.jwz.org/xscreensaver/")
+    (synopsis "Classic screen saver suite supporting screen locking")
+    (description
+     "xscreensaver is a popular screen saver collection with many entertaining
+demos.  It also acts as a nice screen locker.")
+    ;; xscreensaver doesn't have a single copyright file and instead relies on
+    ;; source comment headers, though most files have the same lax
+    ;; permissions.  To reduce complexity, we're pointing at Debian's
+    ;; breakdown of the copyright information.
+    (license (license:non-copyleft
+              (string-append
+               "http://metadata.ftp-master.debian.org/changelogs/"
+               "/main/x/xscreensaver/xscreensaver_5.34-2_copyright")))))
