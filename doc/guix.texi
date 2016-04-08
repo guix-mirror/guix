@@ -4057,8 +4057,9 @@ binaries are genuine.  @xref{Invoking guix challenge}, for more.
 
 Note that, currently, the differing build results are not kept around,
 so you will have to manually investigate in case of an error---e.g., by
-stashing one of the build results with @code{guix archive --export},
-then rebuilding, and finally comparing the two results.
+stashing one of the build results with @code{guix archive --export}
+(@pxref{Invoking guix archive}), then rebuilding, and finally comparing
+the two results.
 
 @item --no-build-hook
 Do not attempt to offload builds @i{via} the ``build hook'' of the daemon
