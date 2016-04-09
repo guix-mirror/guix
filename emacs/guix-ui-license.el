@@ -116,6 +116,7 @@ SEARCH-TYPE may be one of the following symbols: `all', `id', `name'."
   :sort-key '(name))
 
 (let ((map guix-license-list-mode-map))
+  (define-key map (kbd "e")   'guix-license-list-edit)
   (define-key map (kbd "RET") 'guix-license-list-show-packages))
 
 (defun guix-license-list-describe (ids)
@@ -128,6 +129,12 @@ SEARCH-TYPE may be one of the following symbols: `all', `id', `name'."
   "Display packages with the license at point."
   (interactive)
   (guix-packages-by-license (guix-list-current-id)))
+
+(defun guix-license-list-edit (&optional directory)
+  "Go to the location of the current license definition.
+See `guix-license-file' for the meaning of DIRECTORY."
+  (interactive (list (guix-read-directory)))
+  (guix-find-license-definition (guix-list-current-id) directory))
 
 
 ;;; Interactive commands
