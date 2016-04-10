@@ -382,7 +382,7 @@
                                    "export CPATH\n"
                                    all "\n"))))
                ,phases)))))
-     (propagated-inputs `(("linux-headers" ,(linux-libre-headers-boot0))))
+     (propagated-inputs `(("kernel-headers" ,(linux-libre-headers-boot0))))
      (native-inputs
       `(("texinfo" ,texinfo-boot0)
         ("perl" ,perl-boot0)))

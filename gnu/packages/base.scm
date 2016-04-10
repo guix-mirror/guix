@@ -479,7 +479,7 @@ store.")
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
    ;; users should automatically pull Linux headers as well.
-   (propagated-inputs `(("linux-headers" ,linux-libre-headers)))
+   (propagated-inputs `(("kernel-headers" ,linux-libre-headers)))
 
    (outputs '("out" "debug"))
 
@@ -519,7 +519,7 @@ store.")
                            ,version)
 
             (string-append "--with-headers="
-                           (assoc-ref %build-inputs "linux-headers")
+                           (assoc-ref %build-inputs "kernel-headers")
                            "/include")
 
             ;; This is the default for most architectures as of GNU libc 2.21,
