@@ -3,6 +3,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -277,7 +278,7 @@ standards.")
 (define-public icecat
   (package
     (name "icecat")
-    (version "38.6.0-gnu1")
+    (version "38.7.1-gnu1")
     (source
      (origin
       (method url-fetch)
@@ -286,29 +287,10 @@ standards.")
                           name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "0bd4k5cwr8ynscaxffvj2x3kgky3dmjq0qhpcb931l98bh0103lx"))
+        "1wdmd6hasra36g86ha1dw8sl7a5mvr7c4jbjx4zyg9629y5gqr8g"))
       (patches (map search-patch
                     '("icecat-avoid-bundled-includes.patch"
-                      "icecat-re-enable-DHE-cipher-suites.patch"
-                      "icecat-update-graphite2.patch"
-                      "icecat-update-graphite2-pt2.patch"
-                      "icecat-CVE-2015-4477.patch"
-                      "icecat-CVE-2015-7207.patch"
-                      "icecat-CVE-2016-1952-pt01.patch"
-                      "icecat-CVE-2016-1952-pt02.patch"
-                      "icecat-CVE-2016-1952-pt03.patch"
-                      "icecat-CVE-2016-1952-pt04.patch"
-                      "icecat-CVE-2016-1952-pt05.patch"
-                      "icecat-CVE-2016-1952-pt06.patch"
-                      "icecat-CVE-2016-1954.patch"
-                      "icecat-CVE-2016-1960.patch"
-                      "icecat-CVE-2016-1961.patch"
-                      "icecat-CVE-2016-1962.patch"
-                      "icecat-CVE-2016-1964.patch"
-                      "icecat-CVE-2016-1965.patch"
-                      "icecat-CVE-2016-1966.patch"
-                      "icecat-CVE-2016-1974.patch"
-                      "icecat-bug-1248851.patch")))
+                      "icecat-re-enable-DHE-cipher-suites.patch")))
       (modules '((guix build utils)))
       (snippet
        '(begin
