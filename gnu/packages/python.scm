@@ -6986,12 +6986,11 @@ the last py.test invocation.")
              (zero? (system* "py.test" "--genscript=runtests.py"))
              (zero? (system* "py.test")))))))
     (native-inputs
-     `(("unzip" ,unzip)))
-    (propagated-inputs
      `(("python-pytest" ,python-pytest)
        ("python-requests" ,python-requests)
-       ("python-six" ,python-six)
-       ("python-werkzeug" ,python-werkzeug)))
+       ("python-six" ,python-six)))
+    (inputs
+     `(("python-werkzeug" ,python-werkzeug)))
     (synopsis "Py.test plugin to test server connections locally")
     (description "Pytest-localserver is a plugin for the pytest testing
 framework which enables you to test server connections locally.")
