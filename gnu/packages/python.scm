@@ -541,17 +541,14 @@ making them easy to handle and incorporate into other protocols.")
 (define-public python-ccm
   (package
     (name "python-ccm")
-    (version "2.0.4.1")
+    (version "2.1.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/c/ccm/ccm-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "ccm" version))
        (sha256
         (base32
-         "199jw221albs2iv6xczczq88fxnh0aw8hzmys8qkbzkd99dssng9"))))
+         "177dfxsmk3k4cih6fh6v8d91bh4nqx7ns6pc07w7m7i3cvdx3c8n"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
