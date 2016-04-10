@@ -591,14 +591,14 @@ using Python 2.4 or higher and provides access to the Olson timezone database.")
 (define-public python-babel
   (package
     (name "python-babel")
-    (version "2.1.1")
+    (version "2.3.2")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "Babel" version))
       (sha256
        (base32
-        "0j2jgfzj1a2m39pm2qc36fzr7a6p5ybwndi0xdzhi2p8zw7dbdkz"))))
+        "0k43pi0p1dwpds2w0km3fw92wixzxv2vw7p09capxmjz5cfh23lw"))))
     (build-system python-build-system)
     (inputs
      `(("python-pytz" ,python-pytz)
