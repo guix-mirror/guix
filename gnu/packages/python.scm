@@ -951,27 +951,32 @@ datetime module, available in Python 2.3+.")
 (define-public python-parsedatetime
   (package
     (name "python-parsedatetime")
-    (version "1.5")
+    (version "2.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/p/"
-                          "parsedatetime/parsedatetime-" version ".tar.gz"))
+      (uri (pypi-uri "parsedatetime" version))
       (sha256
        (base32
-        "1as0mm4ql3z0324nc9bys2s1ngh507i317p16b79rx86wlmvx9ix"))))
+        "0bdgyw6y3v7bcxlx0p50s8drxsh5bb5cy2afccqr3j90amvpii8p"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
+     `(("python-nose" ,python-nose)
+       ("python-pyicu" ,python-pyicu)))
     (home-page "http://github.com/bear/parsedatetime/")
     (synopsis
      "Parse human-readable date/time text")
     (description
      "Parse human-readable date/time text.")
-    (license asl2.0)))
+    (license asl2.0)
+    (properties `((python2-variant . ,(delay python2-parsedatetime))))))
 
 (define-public python2-parsedatetime
-  (package-with-python2 python-parsedatetime))
+  (let ((base (package-with-python2 (strip-python2-variant python-parsedatetime))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
 
 (define-public python-pandas
   (package
