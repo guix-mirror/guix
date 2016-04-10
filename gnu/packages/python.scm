@@ -1017,16 +1017,16 @@ doing practical, real world data analysis in Python.")
 (define-public python-tzlocal
   (package
     (name "python-tzlocal")
-    (version "1.2")
+    (version "1.2.2")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "tzlocal" version))
       (sha256
        (base32
-        "12wsw2fl3adrqrwghasld57bhqdrzn0crblqrci1p5acd0ni53s3"))))
+        "0paj7vlsb0np8b5sp4bv64wxv7qk2piyp7xg29pkhdjwsbls9fnb"))))
     (build-system python-build-system)
-    (propagated-inputs `(("python-pytz" ,python-pytz)))
+    (inputs `(("python-pytz" ,python-pytz)))
     (home-page "https://github.com/regebro/tzlocal")
     (synopsis
      "Local timezone information for Python")
