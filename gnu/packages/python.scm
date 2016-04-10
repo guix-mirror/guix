@@ -6605,16 +6605,14 @@ timestamps.")
 (define-public python-werkzeug
   (package
     (name "python-werkzeug")
-    (version "0.11.2")
+    (version "0.11.5")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/W/Werkzeug"
-                           "/Werkzeug-" version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (pypi-uri "Werkzeug" version))
        (sha256
         (base32
-         "1gzwn1lkl90f3l1nzzxr7vjhm21qk8f837i8rvny5a209fcrhkzb"))))
+         "0r41xqp4cypzcgsf6zbspbqd272wnzf20igb4w4b5wzfhgqh9nxg"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-pytest" ,python-pytest)))
