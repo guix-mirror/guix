@@ -453,17 +453,14 @@ John the Ripper).")
 (define-public python-paramiko
   (package
     (name "python-paramiko")
-    (version "1.15.2")
+    (version "1.16.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/paramiko/paramiko-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "paramiko" version))
        (sha256
         (base32
-         "0mbfzm9zlrz6mla9xakrm8wkll3x035f9rj3c5pbgjzfldqscmjg"))))
+         "14k8z7ndc3zk5xivnm4d8lncchx475ll5izpf8vmfbq7rp9yp5rj"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
