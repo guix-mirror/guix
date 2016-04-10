@@ -2208,9 +2208,8 @@ installed with a newer @code{pip} or with wheel's own command line utility.")
                "0zsqrzlybf25xscgi7ja4s48y2abf9wvjkn47wh984qgs1fq2xy5"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
-    (propagated-inputs
-     `(("python-py" ,python-py)
+     `(("python-setuptools" ,python-setuptools)
+       ("python-py" ,python-py)
        ("python-pytest" ,python-pytest)
        ("python-pytest-cov" ,python-pytest-cov)
        ("python-wheel" ,python-wheel)))
