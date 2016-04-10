@@ -1597,9 +1597,7 @@ supports coverage of subprocesses.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/p/"
-                           "pytest-runner/pytest-runner-"
-                           version ".tar.gz"))
+       (uri (pypi-uri "pytest-runner" version))
        (sha256
         (base32
          "1nwcqx0l3fv52kv8526wy8ypzghbq96c96di318d98d3wh7a8xg7"))))
@@ -1617,14 +1615,22 @@ supports coverage of subprocesses.")
             #t)))))
     (native-inputs
      `(("python-pytest" ,python-pytest)
-       ("python-setuptools" ,python-setuptools)
        ("python-setuptools-scm" ,python-setuptools-scm)))
-    (home-page "https://bitbucket.org/pytest-dev/pytest-runner")
+    (home-page "https://github.com/pytest-dev/pytest-runner")
     (synopsis "Invoke py.test as a distutils command")
     (description
      "This package provides a @command{pytest-runner} command that
 @file{setup.py} files can use to run tests.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-pytest-runner))))))
+
+(define-public python2-pytest-runner
+  (let ((base (package-with-python2
+                (strip-python2-variant python-pytest-runner))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
 
 (define-public python2-pytest-runner
   (package-with-python2 python-pytest-runner))
