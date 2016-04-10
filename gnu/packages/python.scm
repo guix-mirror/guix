@@ -6957,8 +6957,11 @@ minimal and fast API targetting the following uses:
               (base32
                "1a873fihw4rhshc722j4h6j7g3nj7xpgsna9hhg3zn6ksknnhx5y"))))
     (build-system python-build-system)
-    (propagated-inputs
-     `(("python-execnet" ,python-execnet)))
+    (inputs
+     `(("python-apipkg" ,python-apipkg)
+       ("python-execnet" ,python-execnet)
+       ("python-py" ,python-py)
+       ("python-pytest" ,python-pytest)))
     (synopsis "Py.test plugin with mechanisms for caching across test runs")
     (description "The pytest-cache plugin provides tools to rerun failures from
 the last py.test invocation.")
