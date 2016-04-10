@@ -8766,6 +8766,43 @@ LDFLAGS and parse the output to build extensions with setup.py.")
 (define-public python2-pkgconfig
   (package-with-python2 python-pkgconfig))
 
+(define-public python-bz2file
+  (package
+    (name "python-bz2file")
+    (version "0.98")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bz2file" version))
+       (sha256
+        (base32
+         "126s53fkpx04f33a829yqqk8fj4png3qwg4m66cvlmhmwc8zihb4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; python setup.py test does not work as of 0.98
+         ;; but there is only the one test file
+         (replace 'check
+           (lambda _ (zero? (system* "python" "test_bz2file.py")))))))
+    (home-page "https://github.com/nvawda/bz2file")
+    (synopsis "Read and write bzip2-compressed files")
+    (description
+     "Bz2file is a Python library for reading and writing bzip2-compressed
+files.  It contains a drop-in replacement for the I/O interface in the
+standard library's @code{bz2} module, including features from the latest
+development version of CPython that are not available in older releases.")
+    (license asl2.0)
+    (properties `((python2-variant . ,(delay python2-bz2file))))))
+
+(define-public python2-bz2file
+  (let ((base (package-with-python2
+               (strip-python2-variant python-bz2file))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools))))))
+
 (define-public python-cysignals
   (package
     (name "python-cysignals")
