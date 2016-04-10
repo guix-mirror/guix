@@ -897,28 +897,31 @@ Python file, so it can be easily copied into your project.")
 (define-public python-dateutil-2
   (package
     (name "python-dateutil")
-    (version "2.4.2")
+    (version "2.5.2")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/p/"
-                          name "/" name "-" version ".tar.gz"))
+      (uri (pypi-uri "python-dateutil" version))
       (sha256
        (base32
-        "0ggbm2z72p0nwjqgvpw8s5bqzwayqiqv2iws0x2a605m3mf4959y"))))
+        "0jrfpcgvgya6hs45dhrd9yiqgdgz9qp9aa07zsw8gqgn8zphff86"))))
     (build-system python-build-system)
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-six" ,python-six)))
+     `(("python-six" ,python-six)))
     (home-page "http://labix.org/python-dateutil")
     (synopsis "Extensions to the standard datetime module")
     (description
      "The dateutil module provides powerful extensions to the standard
 datetime module, available in Python 2.3+.")
-    (license bsd-3)))
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-dateutil-2))))))
 
 (define-public python2-dateutil-2
-  (package-with-python2 python-dateutil-2))
+  (let ((base (package-with-python2 (strip-python2-variant python-dateutil-2))))
+    (package
+      (inherit base)
+      (inputs `(("python2-setuptools" ,python2-setuptools)
+                ,@(package-inputs base))))))
 
 (define-public python-dateutil
   (package
