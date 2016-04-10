@@ -567,14 +567,14 @@ Cassandra cluster on localhost.")
 (define-public python-pytz
   (package
     (name "python-pytz")
-    (version "2015.7")
+    (version "2016.3")
     (source
      (origin
       (method url-fetch)
-      (uri (pypi-uri "pytz" version))
+      (uri (pypi-uri "pytz" version ".tar.bz2"))
       (sha256
        (base32
-        "1spgdfp1ssya7v3kww7zp71xpj437skpqazcvqr3kr1p1brnw9lr"))))
+        "1mjmrkk4vc5xzppw7fm0pli1nnbj57cvqv7jjv5whcmccyhxz4y1"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; no test target
     (home-page "http://pythonhosted.org/pytz")
