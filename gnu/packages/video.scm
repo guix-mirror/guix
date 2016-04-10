@@ -1205,11 +1205,8 @@ and custom quantization matrices.")
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; tests rely on external web servers
-    (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
     (propagated-inputs
-     `(("python-requests" ,python-requests)
-       ("python-singledispatch" ,python-singledispatch)))
+     `(("python-requests" ,python-requests)))
     (synopsis "Internet video stream viewer")
     (description "Livestreamer is a command-line utility that extracts streams
 from various services and pipes them into a video playing application.")
