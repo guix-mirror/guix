@@ -809,7 +809,7 @@ projects while introducing many more.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2016.03.01")
+    (version "2016.04.06")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://youtube-dl.org/downloads/"
@@ -817,9 +817,8 @@ projects while introducing many more.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0w2dy54rnsi8fbzpnf07lpn3zzv5lhdfscanld4ai0rrrzmrl3zw"))))
+                "1kdrjwrn0x1wmvansvd2222gfqnld4zdihf2jwnz36112r1p8nhi"))))
     (build-system python-build-system)
-    (native-inputs `(("python-setuptools" ,python-setuptools)))
     (home-page "http://youtube-dl.org")
     (arguments
      ;; The problem here is that the directory for the man page and completion
