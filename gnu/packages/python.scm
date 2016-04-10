@@ -1649,10 +1649,10 @@ supports coverage of subprocesses.")
     (build-system python-build-system)
     (native-inputs
      `(("unzip" ,unzip)
-       ("python-setuptools" ,python-setuptools)
        ("python-setuptools-scm" ,python-setuptools-scm)))
-    (propagated-inputs
-     `(("python-execnet" ,python-execnet)
+    (inputs
+     `(("python-apipkg" ,python-apipkg)
+       ("python-execnet" ,python-execnet)
        ("python-pytest" ,python-pytest)
        ("python-py" ,python-py)))
     (home-page
@@ -1666,10 +1666,16 @@ to run tests repeatedly when failed, and the ability to run tests on multiple
 Python interpreters or platforms.  It uses rsync to copy the existing
 program code to a remote location, executes there, and then syncs the
 result back.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-pytest-xdist))))))
 
 (define-public python2-pytest-xdist
-  (package-with-python2 python-pytest-xdist))
+  (let ((base (package-with-python2
+                (strip-python2-variant python-pytest-xdist))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
 
 (define-public python-scripttest
   (package
