@@ -835,19 +835,17 @@ etc.).  The package is structured to make adding new modules easy.")
 (define-public python-keyring
   (package
     (name "python-keyring")
-    (version "5.7.1")
+    (version "8.7")
     (source
      (origin
       (method url-fetch)
       (uri (pypi-uri "keyring" version))
       (sha256
        (base32
-        "1h7a1r9ick7wdd0xb5p63413nvjadna2xawrsvmklsl5ddhm5wrx"))))
+        "0482rmi2x6p78wl2kz8qzyq21xz1sbbfwnv5x7dggar4vkwxhzfx"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-setuptools-scm" ,python-setuptools-scm)
-       ("python-mock" ,python-mock)))
+     `(("python-setuptools-scm" ,python-setuptools-scm)))
     (inputs
      `(("python-pycrypto" ,python-pycrypto)))
     (arguments
@@ -859,13 +857,15 @@ etc.).  The package is structured to make adding new modules easy.")
 service from python.  It can be used in any application that needs safe
 password storage.")
     ;; "MIT" and PSF dual license
-    (license x11)))
+    (license x11)
+    (properties `((python2-variant . ,(delay python2-keyring))))))
 
 (define-public python2-keyring
-  (let ((keyring (package-with-python2 python-keyring)))
-    (package (inherit keyring)
-      (inputs
-       `(("python2-pycrypto" ,python2-pycrypto))))))
+  (let ((base (package-with-python2 (strip-python2-variant python-keyring))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
 
 (define-public python-six
   (package
