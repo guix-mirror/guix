@@ -1562,30 +1562,33 @@ and many external plugins.")
 (define-public python-pytest-cov
   (package
     (name "python-pytest-cov")
-    (version "2.2.0")
+    (version "2.2.1")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "pytest-cov" version))
         (sha256
-          (base32
-           "1lf9jsmhqk5nc4w3kzwglmdzjvmi7ajvrsnwv826j3bn0wzx8c92"))))
+         (base32
+          "1yl4nbhzfgsxqlsyk4clafgp9x11zvgrkprm9i2p3fgkwx9jxcm8"))))
     (build-system python-build-system)
-    (propagated-inputs
+    (inputs
      `(("python-coverage" ,python-coverage)
        ("python-pytest" ,python-pytest)))
-    (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
     (home-page "https://github.com/pytest-dev/pytest-cov")
     (synopsis "Pytest plugin for measuring coverage")
     (description
      "Pytest-cov produces coverage reports.  It supports centralised testing and
 distributed testing in both @code{load} and @code{each} modes.  It also
 supports coverage of subprocesses.")
-  (license license:expat)))
+  (license license:expat)
+  (properties `((python2-variant . ,(delay python2-pytest-cov))))))
 
 (define-public python2-pytest-cov
-  (package-with-python2 python-pytest-cov))
+  (let ((base (package-with-python2 (strip-python2-variant python-pytest-cov))))
+    (package
+      (inherit base)
+      (inputs `(("python2-setuptools" ,python2-setuptools)
+                ,@(package-inputs base))))))
 
 (define-public python-pytest-runner
   (package
