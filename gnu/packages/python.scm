@@ -6920,7 +6920,7 @@ pure Python module that works on virtually all Python versions.")
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools-scm" ,python-setuptools-scm)))
-    (propagated-inputs
+    (inputs
      `(("python-apipkg" ,python-apipkg)))
     (synopsis "Rapid multi-Python deployment")
     (description "Execnet provides a share-nothing model with
