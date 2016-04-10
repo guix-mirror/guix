@@ -483,22 +483,18 @@ Python interface around SSH networking concepts.")
 (define-public python-httplib2
   (package
     (name "python-httplib2")
-    (version "0.9.1")
+    (version "0.9.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/h/httplib2/httplib2-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "httplib2" version))
        (sha256
         (base32
-         "1xc3clbrf77r0600kja71j7hk1218sjiq0gfmb8vjdajka8kjqxw"))))
+         "126rsryvw9vhbf3qmsfw9lf4l4xm2srmgs439lgma4cpag4s3ay3"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
-    (home-page
-     "https://github.com/jcgregorio/httplib2")
+    (home-page "https://github.com/jcgregorio/httplib2")
     (synopsis "Comprehensive HTTP client library")
     (description
      "A comprehensive HTTP client library supporting many features left out of
