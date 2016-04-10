@@ -1326,15 +1326,14 @@ backported for previous versions of Python from 2.4 to 3.3.")
 (define-public python-parse
   (package
     (name "python-parse")
-    (version "1.6.4")
+    (version "1.6.6")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/p/"
-                          "parse/parse-" version ".tar.gz"))
+      (uri (pypi-uri "parse" version))
       (sha256
        (base32
-        "0m30q64l6szl7s9mhvqy64w2fdhdn8lb91fmacjiwbv3479cmk57"))))
+        "0y31i3mwgv35qn0kzzjn9q8jqfdqmbi6sr6yfvn8rq4lqjm5lhvi"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
