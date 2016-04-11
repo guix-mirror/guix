@@ -52,13 +52,13 @@ clients.")
 (define-public vdirsyncer
   (package
     (name "vdirsyncer")
-    (version "0.9.2")
+    (version "0.9.3")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "vdirsyncer" version))
              (sha256
               (base32
-               "1g1107cz4sk41d2z6k6pn9n2fzd26m72j8aj33zn483vfvmyrc4q"))))
+               "1wjhzjfcvwz68j6wc5cmjsw69ggwcpfy7jp7z7q6fnwwp4dr98lc"))))
     (build-system python-build-system)
     (arguments
       `(#:phases (modify-phases %standard-phases
