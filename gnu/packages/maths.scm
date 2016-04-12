@@ -420,12 +420,19 @@ plotting engine by third-party applications like Octave.")
      `(("zlib" ,zlib)))
     (arguments
      `(#:phases
-        (alist-cons-before
-         'configure 'patch-configure
-         (lambda _
-           (substitute* "configure"
-             (("/bin/mv") "mv")))
-         %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-configure
+           (lambda _
+             (substitute* "configure"
+               (("/bin/mv") "mv"))))
+         (add-after 'install 'patch-references
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                   (zlib (assoc-ref inputs "zlib")))
+               (substitute* (find-files bin "h5p?cc")
+                 (("-lz" lib)
+                  (string-append "-L" zlib "/lib " lib)))
+               #t))))))
     (home-page "http://www.hdfgroup.org")
     (synopsis "Management suite for extremely large and complex data")
     (description "HDF5 is a suite that makes possible the management of
