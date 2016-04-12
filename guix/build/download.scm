@@ -530,7 +530,8 @@ Return the resulting target URI."
                  (put-bytevector p bv-or-port))))
          file))
       ((301                                       ; moved permanently
-        302)                                      ; found (redirection)
+        302                                       ; found (redirection)
+        307)                                      ; temporary redirection
        (let ((uri (resolve-uri-reference (response-location resp) uri)))
          (format #t "following redirection to `~a'...~%"
                  (uri->string uri))
