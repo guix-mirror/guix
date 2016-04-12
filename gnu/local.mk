@@ -643,6 +643,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/mupen64plus-ui-console-notice.patch	\
   gnu/packages/patches/mutt-store-references.patch		\
   gnu/packages/patches/net-tools-bitrot.patch			\
+  gnu/packages/patches/netcdf-config-date.patch			\
   gnu/packages/patches/ngircd-handle-zombies.patch		\
   gnu/packages/patches/ngircd-no-dns-in-tests.patch		\
   gnu/packages/patches/ninja-tests.patch			\

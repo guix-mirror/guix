@@ -55,6 +55,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages less)
@@ -488,6 +489,56 @@ extremely large and complex data collections.")
     (description "@code{h5check} is a validation tool for verifying that an
 HDF5 file is encoded according to the HDF File Format Specification.")
     (license (license:x11-style "file://COPYING"))))
+
+(define-public netcdf
+  (package
+    (name "netcdf")
+    (version "4.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "ftp://ftp.unidata.ucar.edu/pub/netcdf/"
+                           "netcdf-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0y6gdcplarwqqnrav2xg1xd6ih732rzzbmdw78v3rl5b8mwcnh0d"))
+       (patches (list (search-patch "netcdf-config-date.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("m4" ,m4)
+       ("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)))
+    (inputs
+     `(("hdf5" ,hdf5)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags '("--enable-doxygen" "--enable-dot")
+       #:parallel-tests? #f))           ;various race conditions
+    (home-page "http://www.unidata.ucar.edu/software/netcdf/")
+    (synopsis "Library for scientific data")
+    (description "NetCDF is an interface for scientific data access and a
+software library that provides an implementation of the interface.  The netCDF
+library defines a machine-independent format for representing scientific data.
+Together, the interface, library, and format support the creation, access, and
+sharing of scientific data.")
+    (license (license:x11-style "file://COPYRIGHT"))))
+
+(define-public netcdf-parallel-openmpi
+  (package (inherit netcdf)
+    (name "netcdf-parallel-openmpi")
+    (inputs
+     `(("mpi" ,openmpi)
+       ,@(alist-replace "hdf5" (list hdf5-parallel-openmpi)
+                        (package-inputs netcdf))))
+    ;; TODO: Replace pkg-config references in nc-config with absolute references
+    (arguments
+     (substitute-keyword-arguments (package-arguments netcdf)
+       ((#:configure-flags flags)
+        `(cons* "CC=mpicc" "CXX=mpicxx"
+                "--enable-parallel-tests"
+                ;; Shared libraries not supported with parallel IO.
+                "--disable-shared" "--with-pic"
+                ,flags))))))
 
 (define-public nlopt
   (package
