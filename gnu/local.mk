@@ -845,6 +845,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ratpoison-shell.patch			\
   %D%/packages/patches/readline-link-ncurses.patch		\
   %D%/packages/patches/readline-6.2-CVE-2014-2524.patch		\
+  %D%/packages/patches/readline-7.0-mingw.patch			\
   %D%/packages/patches/ripperx-missing-file.patch		\
   %D%/packages/patches/rpm-CVE-2014-8118.patch			\
   %D%/packages/patches/rsem-makefile.patch			\
