@@ -15,6 +15,7 @@
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,6 +58,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages enchant)
+  #:use-module (gnu packages game-development)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
@@ -2205,6 +2207,41 @@ and other secrets.  It communicates with the \"Secret Service\" using DBus.")
     (description
      "Mines (previously gnomine) is a puzzle game where you locate mines
 floating in an ocean using only your brain and a little bit of luck.")
+    (license license:gpl2+)))
+
+(define-public gnome-sudoku
+  (package
+    (name "gnome-sudoku")
+    (version "3.18.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1b60z22fjrjzsz0kfhv0kfhvigzn54wvh9s31zrlp7sx2h2dxvsf"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("xmllint" ,libxml2)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("json-glib" ,json-glib)
+       ("libgee" ,libgee)
+       ("librsvg" ,librsvg)
+       ("qqwing" ,qqwing)))
+    (home-page "https://wiki.gnome.org/Apps/Sudoku")
+    (synopsis "Japanese logic game")
+    (description
+     "Sudoku is a Japanese logic game that exploded in popularity in 2005.
+GNOME Sudoku is meant to have an interface as simple and unobstrusive as
+possible while still providing features that make playing difficult Sudoku
+more fun.")
     (license license:gpl2+)))
 
 (define-public gnome-terminal
