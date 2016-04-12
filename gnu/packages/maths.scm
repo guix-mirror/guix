@@ -2328,3 +2328,25 @@ problems.")
 solvers for the solution of large, sparse linear systems of equations on
 parallel computers.  It features parallel multigrid solvers for both
 structured and unstructured grid problems.")))
+
+(define-public matio
+  (package
+    (name "matio")
+    (version "1.5.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/matio/" version "/"
+                           "matio-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0y2qymgxank8wdiwc68ap8bxdzrhvyw86i29yh3xgn4z1njfd9ir"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("zlib" ,zlib)
+       ("hdf5" ,hdf5)))
+    (home-page "http://matio.sourceforge.net/")
+    (synopsis "Library for reading and writing MAT files")
+    (description "Matio is a library for reading and writing MAT files.  It
+supports compressed MAT files, as well as newer (version 7.3) MAT files.")
+    (license license:bsd-2)))
