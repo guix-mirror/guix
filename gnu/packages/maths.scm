@@ -469,6 +469,26 @@ extremely large and complex data collections.")
                #t))))))
     (synopsis "Management suite for data with parallel IO support")))
 
+(define-public h5check
+  (package
+    (name "h5check")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.hdfgroup.org/ftp/HDF5/tools/"
+                           "h5check/src/h5check-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gm76jbwhz9adbxgn14zx8cj33dmjdr2g5xcy0m9c2gakp8w59kj"))))
+    (build-system gnu-build-system)
+    (inputs `(("hdf5" ,hdf5)))                 ;h5cc for tests
+    (home-page "https://www.hdfgroup.org/products/hdf5_tools/h5check.html")
+    (synopsis "HDF5 format checker")
+    (description "@code{h5check} is a validation tool for verifying that an
+HDF5 file is encoded according to the HDF File Format Specification.")
+    (license (license:x11-style "file://COPYING"))))
+
 (define-public nlopt
   (package
     (name "nlopt")
