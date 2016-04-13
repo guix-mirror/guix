@@ -339,6 +339,7 @@ EXTRA_DIST =						\
   .dir-locals.el					\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
+  build-aux/hydra/evaluate.scm				\
   build-aux/hydra/gnu-system.scm			\
   build-aux/hydra/demo-os.scm				\
   build-aux/hydra/guix.scm				\
@@ -488,6 +489,14 @@ assert-binaries-available:
 assert-final-inputs-self-contained:
 	$(AM_V_at)$(top_builddir)/pre-inst-env "$(GUILE)"			\
 	  "$(top_srcdir)/build-aux/check-final-inputs-self-contained.scm"
+
+# Compute the Hydra jobs and write them in the target file.
+hydra-jobs.scm: $(GOBJECTS)
+	$(AM_V_at)$(MKDIR_P) "`dirname "$@"`"
+	$(AM_V_GEN)$(top_builddir)/pre-inst-env "$(GUILE)"		\
+	  "$(top_srcdir)/build-aux/hydra/evaluate.scm"			\
+	  "$(top_srcdir)/build-aux/hydra/gnu-system.scm" > "$@.tmp"
+	$(AT_V_at)mv "$@.tmp" "$@"
 
 .PHONY: sync-descriptions gen-ChangeLog gen-AUTHORS clean-go make-go
 .PHONY: assert-no-store-file-names assert-binaries-available
