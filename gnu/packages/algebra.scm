@@ -366,6 +366,36 @@ geometry and singularity theory.")
    (license license:gpl3)
    (home-page "http://www.singular.uni-kl.de/index.php")))
 
+(define-public gmp-ecm
+  (package
+   (name "gmp-ecm")
+   (version "7.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "https://gforge.inria.fr/frs/download.php/"
+                                "file/35642/ecm-"
+                                version ".tar.gz"))
+            (sha256 (base32
+                     "00jzzwqp49m01vwsr9z1w7bvm8lb69l3f62x7qr8sfz0xiczxnpm"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("gmp" ,gmp)))
+   (arguments
+    `(#:configure-flags '("--enable-shared"
+                          ;; Disable specific assembly routines, which depend
+                          ;; on the subarchitecture of the build machine,
+                          ;; and use gmp instead.
+                          "--disable-asm-redc")))
+   (synopsis "Integer factorization library using the elliptic curve method")
+   (description
+    "GMP-ECM factors integers using the elliptic curve method (ECM) as well
+as the P-1 and P+1 algorithms.  It provides a library and a stand-alone
+binary.")
+   ;; Most files are under lgpl3+, but some are under gpl3+ or gpl2+,
+   ;; so the combined work is under gpl3+.
+   (license license:gpl3+)
+   (home-page "http://ecm.gforge.inria.fr/")))
+
 (define-public bc
   (package
     (name "bc")
