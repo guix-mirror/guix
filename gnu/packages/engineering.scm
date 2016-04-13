@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +46,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)               ;FIXME: for pcb
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -124,13 +126,22 @@ plans and designs.")
         'check 'set-home
         (lambda _
           (setenv "HOME" (getenv "TMPDIR")))
-        %standard-phases)))
+        %standard-phases
+        )
+       #:configure-flags
+       (let ((pcb (assoc-ref %build-inputs "pcb")))
+         (list (string-append "--with-pcb-datadir=" pcb "/share")
+               (string-append "--with-pcb-lib-path="
+                              pcb "/share/pcb/pcblib-newlib:"
+                              pcb "/share/pcb/newlib")))))
     (inputs
      `(("glib" ,glib)
        ("gtk" ,gtk+-2)
        ("guile" ,guile-2.0)
        ("desktop-file-utils" ,desktop-file-utils)
-       ("shared-mime-info" ,shared-mime-info)))
+       ("shared-mime-info" ,shared-mime-info)
+       ("m4" ,m4)
+       ("pcb" ,pcb)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl))) ; for tests
