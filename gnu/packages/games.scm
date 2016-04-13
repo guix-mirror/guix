@@ -17,6 +17,7 @@
 ;;; Copyright © 2016 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
+;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,6 +62,7 @@
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
@@ -1857,6 +1859,74 @@ usable with any game controller that has at least 4 buttons, theming support,
 and a game metadata scraper.")
     (home-page "http://www.emulationstation.org")
     (license license:expat)))
+
+(define openttd-engine
+  (package
+    (name "openttd-engine")
+    (version "1.6.0")
+    (source
+     (origin (method url-fetch)
+             (uri (string-append "http://binaries.openttd.org/releases/"
+                                 version "/openttd-" version "-source.tar.xz"))
+             (sha256
+              (base32
+               "1cjf9gz7d0sn7893wv9d00q724sxv3d81bgb0c5f5ppz2ssyc4jc"))
+             (modules '((guix build utils)))
+             (snippet
+              ;; The DOS port contains proprietary software.
+              '(delete-file-recursively "os/dos"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f              ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         ;; The build process fails if the configure script is passed the
+         ;; option "--enable-fast-install".
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (lzo (assoc-ref inputs "lzo")))
+               (zero?
+                (system* "./configure"
+                         (string-append "--prefix=" out)
+                         ;; Provide the "lzo" path.
+                         (string-append "--with-liblzo2="
+                                        lzo "/lib/liblzo2.a")
+                         ;; Put the binary in 'bin' instead of 'games'.
+                         "--binary-dir=bin"))))))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("allegro" ,allegro-4)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("icu4c" ,icu4c)
+       ("libpng" ,libpng)
+       ("lzo" ,lzo)
+       ("sdl" ,sdl)
+       ("xz" ,xz)
+       ("zlib" ,zlib)))
+    (synopsis "Transportation economics simulator")
+    (description "OpenTTD is a game in which you transport goods and
+passengers by land, water and air.  It is a re-implementation of Transport
+Tycoon Deluxe with many enhancements including multiplayer mode,
+internationalization support, conditional orders and the ability to clone,
+autoreplace and autoupdate vehicles.")
+    (home-page "http://openttd.org/")
+    ;; This package is GPLv2, except for a few files located in
+    ;; "src/3rdparty/" which are under the 3-clause BSD, LGPLv2.1+ and Zlib
+    ;; licenses.  In addition, this software contains an in-game downloader
+    ;; from which the user may find non-functional data licensed under
+    ;; different terms.
+    (license (list license:bsd-3 license:gpl2 license:lgpl2.1+ license:zlib))))
+
+;; TODO Add 'openttd-opengfx' and 'openttd-openmsx' packages and make
+;; 'openttd' a wrapper around them.  The engine is playable by itself,
+;; but it asks a user to download graphics if it's not found.
+
+(define-public openttd
+  (package
+    (inherit openttd-engine)
+    (name "openttd")))
 
 (define-public pinball
   (package
