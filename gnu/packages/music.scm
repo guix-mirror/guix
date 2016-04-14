@@ -59,6 +59,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages image)
@@ -672,6 +673,46 @@ the sound and properties of the electromechanical organs and sound
 modification devices that brought world-wide fame to the names and products of
 Laurens Hammond and Don Leslie.")
     (license license:gpl2+)))
+
+(define-public beast
+  (package
+    (name "beast")
+    (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://testbit.eu/pub/dists/beast/beast-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1jzzmfwssklzw8fvvil04n8csc0zm99fnd9p2xa7c0xchg37lvhn"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("rapicorn" ,rapicorn)
+       ("guile" ,guile-1.8)
+       ("python" ,python-2)
+       ("cython" ,python2-cython)
+       ("libgnomecanvas" ,libgnomecanvas)
+       ("libogg" ,libogg)
+       ("libmad" ,libmad)
+       ("flac" ,flac)
+       ("alsa-lib" ,alsa-lib)
+       ("libvorbis" ,libvorbis)
+       ("gettext" ,gnu-gettext)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin")
+       ("perl" ,perl)
+       ("perl-xml-parser" ,perl-xml-parser)))
+    (home-page "https://testbit.eu/wiki/Beast_Home")
+    (synopsis "Music composition and modular synthesis environment")
+    (description
+     "Beast is a music composition and modular synthesis application.  It
+supports a wide range of standards in the field, such as MIDI, various audio
+file formats and LADSPA modules.  It allows for multitrack editing, real-time
+synthesis, 32bit audio rendering, precise timing down to sample granularity,
+on-demand and partial loading of wave files, on the fly decoding, stereo
+mixing, FFT scopes, MIDI automation and full scriptability in Scheme.")
+    (license license:gpl3+)))
 
 (define-public bristol
   (package
