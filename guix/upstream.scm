@@ -128,11 +128,11 @@ them matches."
        updaters))
 
 (define (package-update-path package updaters)
-  "Return an upstream source to update PACKAGE to, or #f if no update is
-needed or known."
+  "Return an upstream source to update PACKAGE, a <package> object, or #f if
+no update is needed or known."
   (match (lookup-updater package updaters)
     ((? procedure? latest-release)
-     (match (latest-release (package-name package))
+     (match (latest-release package)
        ((and source ($ <upstream-source> name version))
         (and (version>? version (package-version package))
              source))

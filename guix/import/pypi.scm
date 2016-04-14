@@ -40,7 +40,6 @@
   #:use-module (guix upstream)
   #:use-module (guix licenses)
   #:use-module (guix build-system python)
-  #:use-module (gnu packages)
   #:use-module (gnu packages python)
   #:export (pypi->guix-package
             %pypi-updater))
@@ -248,16 +247,15 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
            ((source-url ...)
             (any pypi-url? source-url))))))
 
-(define (latest-release guix-package)
-  "Return an <upstream-source> for the latest release of GUIX-PACKAGE."
+(define (latest-release package)
+  "Return an <upstream-source> for the latest release of PACKAGE."
   (guard (c ((missing-source-error? c) #f))
-    (let* ((pypi-name (guix-package->pypi-name
-                       (specification->package guix-package)))
+    (let* ((pypi-name (guix-package->pypi-name package))
            (metadata (pypi-fetch pypi-name))
            (version (assoc-ref* metadata "info" "version"))
            (url (assoc-ref (latest-source-release metadata) "url")))
       (upstream-source
-       (package guix-package)
+       (package (package-name package))
        (version version)
        (urls (list url))))))
 

@@ -33,7 +33,6 @@
   #:use-module (guix records)
   #:use-module (guix upstream)
   #:use-module (guix packages)
-  #:use-module (gnu packages)
   #:export (gnu-package-name
             gnu-package-mundane-name
             gnu-package-copyright-holder
@@ -435,7 +434,7 @@ of EXP otherwise."
   "Like 'latest-release', but ignore FTP errors that might occur when PACKAGE
 is not actually a GNU package, or not hosted on ftp.gnu.org, or not under that
 name (this is the case for \"emacs-auctex\", for instance.)"
-  (false-if-ftp-error (latest-release package)))
+  (false-if-ftp-error (latest-release (package-name package))))
 
 (define %package-name-rx
   ;; Regexp for a package name, e.g., "foo-X.Y".  Since TeXmacs uses
@@ -493,10 +492,10 @@ elpa.gnu.org, and all the GNOME packages."
       (even-minor-version? (or version name))))
 
   (false-if-ftp-error
-   (latest-ftp-release package
+   (latest-ftp-release (package-name package)
                        #:server "ftp.gnome.org"
                        #:directory (string-append "/pub/gnome/sources/"
-                                                  (match package
+                                                  (match (package-name package)
                                                     ("gconf" "GConf")
                                                     (x       x)))
 
@@ -528,10 +527,10 @@ elpa.gnu.org, and all the GNOME packages."
 
 (define (latest-xorg-release package)
   "Return the latest release of PACKAGE, the name of an X.org package."
-  (let ((uri (string->uri (origin-uri (package-source (specification->package package))))))
+  (let ((uri (string->uri (origin-uri (package-source package)))))
     (false-if-ftp-error
      (latest-ftp-release
-      package
+      (package-name package)
       #:server "ftp.freedesktop.org"
       #:directory
       (string-append "/pub/xorg/" (dirname (uri-path uri)))))))
