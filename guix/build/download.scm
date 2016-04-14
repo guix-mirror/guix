@@ -39,6 +39,7 @@
             maybe-expand-mirrors
             url-fetch
             byte-count->string
+            current-terminal-columns
             progress-proc
             uri-abbreviation
             store-path-abbreviation))
@@ -52,6 +53,10 @@
 (define %http-receive-buffer-size
   ;; Size of the HTTP receive buffer.
   65536)
+
+(define current-terminal-columns
+  ;; Number of columns of the terminal.
+  (make-parameter 80))
 
 (define (nearest-exact-integer x)
   "Given a real number X, return the nearest exact integer, with ties going to
@@ -166,9 +171,10 @@ used to shorten FILE for display."
                                          (byte-count->string throughput)
                                          (seconds->string elapsed)
                                          (progress-bar %) %)))
-                ;; TODO: Make this adapt to the actual terminal width.
                 (display "\r\x1b[K" log-port)
-                (display (string-pad-middle left right 80) log-port)
+                (display (string-pad-middle left right
+                                            (current-terminal-columns))
+                         log-port)
                 (flush-output-port log-port)
                 (cont))))
           (lambda (transferred cont)
@@ -182,9 +188,10 @@ used to shorten FILE for display."
                                          (byte-count->string throughput)
                                          (seconds->string elapsed)
                                          (byte-count->string transferred))))
-                ;; TODO: Make this adapt to the actual terminal width.
                 (display "\r\x1b[K" log-port)
-                (display (string-pad-middle left right 80) log-port)
+                (display (string-pad-middle left right
+                                            (current-terminal-columns))
+                         log-port)
                 (flush-output-port log-port)
                 (cont))))))))
 
