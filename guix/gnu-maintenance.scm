@@ -258,9 +258,13 @@ true."
               (lambda (match)
                 ;; Filter out unrelated files, like `guile-www-1.1.1'.
                 ;; Case-insensitive for things like "TeXmacs" vs. "texmacs".
+                ;; The "-src" suffix is for "freefont-src-20120503.tar.gz".
                 (and=> (match:substring match 1)
                        (lambda (name)
-                         (string-ci=? name project)))))
+                         (or (string-ci=? name project)
+                             (string-ci=? name
+                                          (string-append project
+                                                         "-src")))))))
        (not (regexp-exec %alpha-tarball-rx file))
        (let ((s (sans-extension file)))
          (regexp-exec %package-name-rx s))))
