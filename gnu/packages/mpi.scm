@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;;
@@ -41,15 +41,15 @@
 (define-public hwloc
   (package
     (name "hwloc")
-    (version "1.11.1")
+    (version "1.11.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.open-mpi.org/software/hwloc/v"
+              (uri (string-append "https://www.open-mpi.org/software/hwloc/v"
                                   (version-major+minor version)
                                   "/downloads/hwloc-" version ".tar.bz2"))
               (sha256
                (base32
-                "03vcr9f98z45xfkk34x376mfrwyi7ff4ay60gvn4v95sqihl0qa8"))))
+                "1y7c3ysiin0rw0sj6dbxkvjg92j4by36rykvf0vmh91q2rmrn0lc"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
@@ -79,7 +79,7 @@
                                 '("lib/pkgconfig/hwloc.pc" "lib/libhwloc.la"))
                 (("-lnuma" lib)
                  (string-append "-L" numa "/lib " lib)))))))))
-    (home-page "http://www.open-mpi.org/projects/hwloc/")
+    (home-page "https://www.open-mpi.org/projects/hwloc/")
     (synopsis "Abstraction of hardware architectures")
     (description
      "hwloc provides a portable abstraction (across OS,
