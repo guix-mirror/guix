@@ -463,10 +463,11 @@ providing the system administrator with some help in common tasks.")
                     (("build_kill=yes") "build_kill=no"))
                   #t))))
     (build-system gnu-build-system)
-    (outputs '("out"
-               "static"))      ; >2 MiB of static .a libraries
     (arguments
      `(#:configure-flags (list "--disable-use-tty-group"
+
+                               ;; Do not build .a files to save 2 MiB.
+                               "--disable-static"
 
                                ;; Install completions where our
                                ;; bash-completion package expects them.
@@ -492,19 +493,6 @@ providing the system administrator with some help in common tasks.")
                        (substitute* "tests/ts/misc/mcookie"
                          (("/etc/services")
                           (string-append net "/etc/services")))
-                       #t)))
-                  (add-after
-                   'install 'move-static-libraries
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let ((out    (assoc-ref outputs "out"))
-                           (static (assoc-ref outputs "static")))
-                       (mkdir-p (string-append static "/lib"))
-                       (with-directory-excursion out
-                         (for-each (lambda (file)
-                                     (rename-file file
-                                                  (string-append static "/"
-                                                                 file)))
-                                   (find-files "lib" "\\.a$")))
                        #t))))))
     (inputs `(("zlib" ,zlib)
               ("ncurses" ,ncurses)))
