@@ -31,7 +31,8 @@
   #:use-module (guix pki)
   #:use-module ((guix build utils) #:select (mkdir-p dump-port))
   #:use-module ((guix build download)
-                #:select (progress-proc uri-abbreviation
+                #:select (current-terminal-columns
+                          progress-proc uri-abbreviation
                           open-connection-for-uri
                           close-connection
                           store-path-abbreviation byte-count->string))
@@ -973,6 +974,14 @@ found."
      ;; daemon.
      '("http://hydra.gnu.org"))))
 
+(define (client-terminal-columns)
+  "Return the number of columns in the client's terminal, if it is known, or a
+default value."
+  (or (and=> (or (find-daemon-option "untrusted-terminal-columns")
+                 (find-daemon-option "terminal-columns"))
+             string->number)
+      80))
+
 (define (guix-substitute . args)
   "Implement the build daemon's substituter protocol."
   (mkdir-p %narinfo-cache-directory)
@@ -1003,9 +1012,12 @@ found."
                   (loop (read-line)))))))
        (("--substitute" store-path destination)
         ;; Download STORE-PATH and add store it as a Nar in file DESTINATION.
-        (process-substitution store-path destination
-                              #:cache-urls %cache-urls
-                              #:acl (current-acl)))
+        ;; Specify the number of columns of the terminal so the progress
+        ;; report displays nicely.
+        (parameterize ((current-terminal-columns (client-terminal-columns)))
+          (process-substitution store-path destination
+                                #:cache-urls %cache-urls
+                                #:acl (current-acl))))
        (("--version")
         (show-version-and-exit "guix substitute"))
        (("--help")
