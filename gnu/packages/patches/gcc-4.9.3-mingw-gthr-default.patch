@@ -1,0 +1,11 @@
+--- a/libgcc/config/i386/gthr-win32.h	2016-03-30 07:45:33.388684463 +0200
++++ b/libgcc/config/i386/gthr-win32.h	2016-03-30 15:51:24.123896436 +0200
+@@ -30,7 +30,7 @@
+
+ /* Make sure CONST_CAST2 (origin in system.h) is declared.  */
+ #ifndef CONST_CAST2
+-#define CONST_CAST2(TOTYPE,FROMTYPE,X) ((__extension__(union {FROMTYPE _q; TOTYPE _nq;})(X))._nq)
++#define CONST_CAST2(TOTYPE,FROMTYPE,X) ((TOTYPE)X)
+ #endif
+
+ /* Windows32 threads specific definitions. The windows32 threading model

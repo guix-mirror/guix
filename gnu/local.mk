@@ -248,6 +248,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/mc.scm				\
   %D%/packages/mcrypt.scm			\
   %D%/packages/messaging.scm			\
+  %D%/packages/mingw.scm			\
   %D%/packages/mg.scm				\
   %D%/packages/microcom.scm			\
   %D%/packages/mit-krb5.scm			\
@@ -554,6 +555,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
   %D%/packages/patches/gcc-strmov-store-file-names.patch	\
+  %D%/packages/patches/gcc-4.9.3-mingw-gthr-default.patch	\
   %D%/packages/patches/gcc-5.0-libvtv-runpath.patch		\
   %D%/packages/patches/gcc-6-arm-none-eabi-multilib.patch	\
   %D%/packages/patches/gcc-6-cross-environment-variables.patch	\
@@ -725,6 +727,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mesa-wayland-egl-symbols-check-mips.patch	\
   %D%/packages/patches/metabat-remove-compilation-date.patch	\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
+  %D%/packages/patches/mingw-w64-5.0rc2-gcc-4.9.3.patch		\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
   %D%/packages/patches/mplayer2-theora-fix.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
