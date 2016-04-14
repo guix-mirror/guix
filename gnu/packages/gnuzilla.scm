@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -508,4 +508,5 @@ standards.")
      "IceCat is the GNU version of the Firefox browser.  It is entirely free
 software, which does not recommend non-free plugins and addons.  It also
 features built-in privacy-protecting features.")
-    (license license:mpl2.0))) ; and others, see toolkit/content/license.html
+    (license license:mpl2.0)     ;and others, see toolkit/content/license.html
+    (properties '((ftp-directory . "/gnu/gnuzilla")))))

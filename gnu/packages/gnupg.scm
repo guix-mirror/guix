@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
@@ -65,7 +65,9 @@
 for all GnuPG components.  Among these are GPG, GPGSM, GPGME,
 GPG-Agent, libgcrypt, Libksba, DirMngr, Pinentry, SmartCard
 Daemon and possibly more in the future.")
-    (license license:lgpl2.0+)))
+    (license license:lgpl2.0+)
+    (properties '((ftp-server . "ftp.gnupg.org")
+                  (ftp-directory . "/gcrypt/libgpg-error")))))
 
 (define-public libgcrypt
   (package
@@ -99,7 +101,9 @@ Daemon and possibly more in the future.")
 standard cryptographic building blocks such as symmetric ciphers, hash
 algorithms, public key algorithms, large integer functions and random number
 generation.")
-    (license license:lgpl2.0+)))
+    (license license:lgpl2.0+)
+    (properties '((ftp-server . "ftp.gnupg.org")
+                  (ftp-directory . "/gcrypt/libgcrypt")))))
 
 (define-public libgcrypt-1.5
   (package (inherit libgcrypt)
@@ -136,7 +140,9 @@ generation.")
 protocol.  This protocol is used for IPC between most newer
 GnuPG components.  Both, server and client side functions are
 provided.")
-    (license license:lgpl2.0+)))
+    (license license:lgpl2.0+)
+    (properties '((ftp-server . "ftp.gnupg.org")
+                  (ftp-directory . "/gcrypt/libassuan")))))
 
 (define-public libksba
   (package
@@ -169,7 +175,9 @@ provided.")
      "KSBA (pronounced Kasbah) is a library to make X.509 certificates
 as well as the CMS easily accessible by other applications.  Both
 specifications are building blocks of S/MIME and TLS.")
-    (license license:gpl3+)))
+    (license license:gpl3+)
+    (properties '((ftp-server . "ftp.gnupg.org")
+                  (ftp-directory . "/gcrypt/libksba")))))
 
 (define-public npth
   (package
@@ -243,7 +251,9 @@ features powerful key management and the ability to access public key
 servers.  It includes several libraries: libassuan (IPC between GnuPG
 components), libgpg-error (centralized GnuPG error values), and
 libskba (working with X.509 certificates and CMS data).")
-    (license license:gpl3+)))
+    (license license:gpl3+)
+    (properties '((ftp-server . "ftp.gnupg.org")
+                  (ftp-directory . "/gcrypt/gnupg")))))
 
 (define-public gnupg-2.0
   (package (inherit gnupg)

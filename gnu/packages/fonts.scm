@@ -306,7 +306,9 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
      "The GNU Freefont project aims to provide a set of free outline
  (PostScript Type0, TrueType, OpenType...) fonts covering the ISO
 10646/Unicode UCS (Universal Character Set).")
-   (license license:gpl3+)))
+    (license license:gpl3+)
+    (properties '((upstream-name . "freefont")
+                  (ftp-directory . "/gnu/freefont")))))
 
 (define-public font-liberation
   (package

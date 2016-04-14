@@ -76,7 +76,8 @@ to facilitate using C++ design patterns even for very deeply embedded
 applications, such as for systems using uclibc along with posix threading
 support.")
    (license gpl3+)
-   (home-page "http://www.gnu.org/software/commoncpp")))
+   (home-page "http://www.gnu.org/software/commoncpp")
+   (properties '((ftp-directory . "/gnu/commoncpp")))))
 
 (define-public ccrtp
   (package

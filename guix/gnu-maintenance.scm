@@ -206,34 +206,12 @@ network to check in GNU's database."
 ;;; Latest release.
 ;;;
 
-(define (ftp-server/directory project)
-  "Return the FTP server and directory where PROJECT's tarball are
-stored."
-  (define quirks
-    '(("commoncpp2"   "ftp.gnu.org"   "/gnu/commoncpp")
-      ("ucommon"      "ftp.gnu.org"   "/gnu/commoncpp")
-      ("libzrtpcpp"   "ftp.gnu.org"   "/gnu/ccrtp")
-      ("libosip2"     "ftp.gnu.org"   "/gnu/osip")
-      ("libgcrypt"    "ftp.gnupg.org" "/gcrypt/libgcrypt")
-      ("libgpg-error" "ftp.gnupg.org" "/gcrypt/libgpg-error")
-      ("libassuan"    "ftp.gnupg.org" "/gcrypt/libassuan")
-      ("gnupg"        "ftp.gnupg.org" "/gcrypt/gnupg")
-      ("freefont-ttf" "ftp.gnu.org"   "/gnu/freefont")
-      ("gnu-ghostscript" "ftp.gnu.org"  "/gnu/ghostscript")
-      ("mit-scheme"   "ftp.gnu.org" "/gnu/mit-scheme/stable.pkg")
-      ("icecat"       "ftp.gnu.org" "/gnu/gnuzilla")
-      ("source-highlight" "ftp.gnu.org" "/gnu/src-highlite")
-      ("gnutls"       "ftp.gnutls.org" "/gcrypt/gnutls")
-
-      ;; FIXME: ftp.texmacs.org is currently outdated; texmacs.org refers to
-      ;; its own http URL instead.
-      ("TeXmacs"      "ftp.texmacs.org" "/TeXmacs/targz")))
-
-  (match (assoc project quirks)
-    ((_ server directory)
-     (values server directory))
-    (_
-     (values "ftp.gnu.org" (string-append "/gnu/" project)))))
+(define (ftp-server/directory package)
+  "Return the FTP server and directory where PACKAGE's tarball are stored."
+  (values (or (assoc-ref (package-properties package) 'ftp-server)
+              "ftp.gnu.org")
+          (or (assoc-ref (package-properties package) 'ftp-directory)
+              (string-append "/gnu/" (package-name package)))))
 
 (define (sans-extension tarball)
   "Return TARBALL without its .tar.* or .zip extension."
@@ -276,51 +254,53 @@ true."
                 (gnu-package-name->name+version (sans-extension tarball))))
     version))
 
-(define (releases project)
-  "Return the list of releases of PROJECT as a list of release name/directory
-pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). "
+(define* (releases project
+                   #:key
+                   (server "ftp.gnu.org")
+                   (directory (string-append "/gnu/" project)))
+  "Return the list of <upstream-release> of PROJECT as a list of release
+name/directory pairs."
   ;; TODO: Parse something like fencepost.gnu.org:/gd/gnuorg/packages-ftp.
-  (let-values (((server directory) (ftp-server/directory project)))
-    (define conn (ftp-open server))
+  (define conn (ftp-open server))
 
-    (let loop ((directories (list directory))
-               (result      '()))
-      (match directories
-        (()
-         (ftp-close conn)
-         (coalesce-sources result))
-        ((directory rest ...)
-         (let* ((files   (ftp-list conn directory))
-                (subdirs (filter-map (match-lambda
-                                       ((name 'directory . _) name)
-                                       (_ #f))
-                                     files)))
-           (define (file->url file)
-             (string-append "ftp://" server directory "/" file))
+  (let loop ((directories (list directory))
+             (result      '()))
+    (match directories
+      (()
+       (ftp-close conn)
+       (coalesce-sources result))
+      ((directory rest ...)
+       (let* ((files   (ftp-list conn directory))
+              (subdirs (filter-map (match-lambda
+                                     ((name 'directory . _) name)
+                                     (_ #f))
+                                   files)))
+         (define (file->url file)
+           (string-append "ftp://" server directory "/" file))
 
-           (define (file->source file)
-             (let ((url (file->url file)))
-               (upstream-source
-                (package project)
-                (version (tarball->version file))
-                (urls (list url))
-                (signature-urls (list (string-append url ".sig"))))))
+         (define (file->source file)
+           (let ((url (file->url file)))
+             (upstream-source
+              (package project)
+              (version (tarball->version file))
+              (urls (list url))
+              (signature-urls (list (string-append url ".sig"))))))
 
-           (loop (append (map (cut string-append directory "/" <>)
-                              subdirs)
-                         rest)
-                 (append
-                  ;; Filter out signatures, deltas, and files which
-                  ;; are potentially not releases of PROJECT--e.g.,
-                  ;; in /gnu/guile, filter out guile-oops and
-                  ;; guile-www; in mit-scheme, filter out binaries.
-                  (filter-map (match-lambda
-                                ((file 'file . _)
-                                 (and (release-file? project file)
-                                      (file->source file)))
-                                (_ #f))
-                              files)
-                  result))))))))
+         (loop (append (map (cut string-append directory "/" <>)
+                            subdirs)
+                       rest)
+               (append
+                ;; Filter out signatures, deltas, and files which
+                ;; are potentially not releases of PROJECT--e.g.,
+                ;; in /gnu/guile, filter out guile-oops and
+                ;; guile-www; in mit-scheme, filter out binaries.
+                (filter-map (match-lambda
+                              ((file 'file . _)
+                               (and (release-file? project file)
+                                    (file->source file)))
+                              (_ #f))
+                            files)
+                result)))))))
 
 (define* (latest-ftp-release project
                              #:key
@@ -412,15 +392,15 @@ return the corresponding signature URL, or #f it signatures are unavailable."
               (ftp-close conn)
               result))))))
 
-(define (latest-release package . rest)
+(define* (latest-release package
+                         #:key
+                         (server "ftp.gnu.org")
+                         (directory (string-append "/gnu/" package)))
   "Return the <upstream-source> for the latest version of PACKAGE or #f.
-PACKAGE is the name of a GNU package.  This procedure automatically uses the
-right FTP server and directory for PACKAGE."
-  (let-values (((server directory) (ftp-server/directory package)))
-    (apply latest-ftp-release package
-           #:server server
-           #:directory directory
-           rest)))
+PACKAGE must be the canonical name of a GNU package."
+  (latest-ftp-release package
+                      #:server server
+                      #:directory directory))
 
 (define-syntax-rule (false-if-ftp-error exp)
   "Return #f if an FTP error is raise while evaluating EXP; return the result
@@ -435,10 +415,17 @@ of EXP otherwise."
       #f)))
 
 (define (latest-release* package)
-  "Like 'latest-release', but ignore FTP errors that might occur when PACKAGE
-is not actually a GNU package, or not hosted on ftp.gnu.org, or not under that
-name (this is the case for \"emacs-auctex\", for instance.)"
-  (false-if-ftp-error (latest-release (package-name package))))
+  "Like 'latest-release', but (1) take a <package> object, and (2) ignore FTP
+errors that might occur when PACKAGE is not actually a GNU package, or not
+hosted on ftp.gnu.org, or not under that name (this is the case for
+\"emacs-auctex\", for instance.)"
+  (let-values (((server directory)
+                (ftp-server/directory package)))
+    (let ((name (or (assoc-ref (package-properties package) 'upstream-name)
+                    (package-name package))))
+      (false-if-ftp-error (latest-release name
+                                          #:server server
+                                          #:directory directory)))))
 
 (define %package-name-rx
   ;; Regexp for a package name, e.g., "foo-X.Y".  Since TeXmacs uses

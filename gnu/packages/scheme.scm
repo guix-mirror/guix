@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
@@ -174,7 +174,8 @@
      "GNU/MIT Scheme is an implementation of the Scheme programming
 language.  It provides an interpreter, a compiler and a debugger.  It also
 features an integrated Emacs-like editor and a large runtime library.")
-    (license gpl2+)))
+    (license gpl2+)
+    (properties '((ftp-directory . "/gnu/mit-scheme/stable.pkg")))))
 
 (define-public bigloo
   (package

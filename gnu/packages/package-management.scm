@@ -195,7 +195,8 @@ also a distribution thereof.  It includes a virtual machine image.  Besides
 the usual package management features, it also supports transactional
 upgrades and roll-backs, per-user profiles, and much more.  It is based on
 the Nix package manager.")
-    (license gpl3+)))
+    (license gpl3+)
+    (properties '((ftp-server . "alpha.gnu.org")))))
 
 (define guix-devel
   ;; Development version of Guix.
