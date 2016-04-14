@@ -7,7 +7,7 @@
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015 Omar Radwan <toxemicsquire4@gmail.com>
 ;;; Copyright © 2015 Pierre-Antoine Rault <par@rigelk.eu>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
@@ -987,7 +987,9 @@ datetime module, available in Python 2.3+.")
        (method url-fetch)
        (uri (pypi-uri "pandas" version))
        (sha256
-        (base32 "050qw0ap5bhyv5flp78x3lcq1dlminl3xaj6kbrm0jqmx0672xf9"))))
+        (base32 "050qw0ap5bhyv5flp78x3lcq1dlminl3xaj6kbrm0jqmx0672xf9"))
+       (patches (search-patches
+                 "python-pandas-fix-tslib-test-failure.patch"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)
