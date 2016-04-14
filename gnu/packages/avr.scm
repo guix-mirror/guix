@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2014, 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,11 @@
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages zip))
+
+(define-public avr-binutils
+  (package
+    (inherit (cross-binutils "avr"))
+    (name "avr-binutils")))
 
 (define-public avr-libc
   (package
