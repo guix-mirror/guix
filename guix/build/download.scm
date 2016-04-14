@@ -167,8 +167,8 @@ used to shorten FILE for display."
                                          (seconds->string elapsed)
                                          (progress-bar %) %)))
                 ;; TODO: Make this adapt to the actual terminal width.
+                (display "\r\x1b[K" log-port)
                 (display (string-pad-middle left right 80) log-port)
-                (display #\cr log-port)
                 (flush-output-port log-port)
                 (cont))))
           (lambda (transferred cont)
@@ -183,8 +183,8 @@ used to shorten FILE for display."
                                          (seconds->string elapsed)
                                          (byte-count->string transferred))))
                 ;; TODO: Make this adapt to the actual terminal width.
+                (display "\r\x1b[K" log-port)
                 (display (string-pad-middle left right 80) log-port)
-                (display #\cr log-port)
                 (flush-output-port log-port)
                 (cont))))))))
 
