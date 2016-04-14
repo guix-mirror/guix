@@ -82,7 +82,15 @@
             interface-address
             interface-netmask
             interface-broadcast-address
-            network-interfaces))
+            network-interfaces
+
+            window-size?
+            window-size-rows
+            window-size-columns
+            window-size-x-pixels
+            window-size-y-pixels
+            terminal-window-size
+            terminal-columns))
 
 ;;; Commentary:
 ;;;
@@ -852,5 +860,69 @@ network interface.  This is implemented using the 'getifaddrs' libc function."
 (define free-ifaddrs
   (let ((ptr (dynamic-func "freeifaddrs" (dynamic-link))))
     (pointer->procedure void ptr '(*))))
+
+
+;;;
+;;; Terminals.
+;;;
+
+(define-syntax TIOCGWINSZ                         ;<asm-generic/ioctls.h>
+  (identifier-syntax #x5413))
+
+(define-record-type <window-size>
+  (window-size rows columns x-pixels y-pixels)
+  window-size?
+  (rows     window-size-rows)
+  (columns  window-size-columns)
+  (x-pixels window-size-x-pixels)
+  (y-pixels window-size-y-pixels))
+
+(define-c-struct winsize                          ;<bits/ioctl-types.h>
+  window-size
+  read-winsize
+  write-winsize!
+  (rows          unsigned-short)
+  (columns       unsigned-short)
+  (x-pixels      unsigned-short)
+  (y-pixels      unsigned-short))
+
+(define winsize-struct
+  (list unsigned-short unsigned-short unsigned-short unsigned-short))
+
+(define* (terminal-window-size #:optional (port (current-output-port)))
+  "Return a <window-size> structure describing the terminal at PORT, or raise
+a 'system-error' if PORT is not backed by a terminal.  This procedure
+corresponds to the TIOCGWINSZ ioctl."
+  (let* ((size (make-c-struct winsize-struct '(0 0 0 0)))
+         (ret  (%ioctl (fileno port) TIOCGWINSZ size))
+         (err  (errno)))
+    (if (zero? ret)
+        (read-winsize (pointer->bytevector size (sizeof winsize-struct))
+                      0)
+        (throw 'system-error "terminal-window-size" "~A"
+               (list (strerror err))
+               (list err)))))
+
+(define* (terminal-columns #:optional (port (current-output-port)))
+  "Return the best approximation of the number of columns of the terminal at
+PORT, trying to guess a reasonable value if all else fails.  The result is
+always a positive integer."
+  (define (fall-back)
+    (match (and=> (getenv "COLUMNS") string->number)
+      (#f 80)
+      ((? number? columns)
+       (if (> columns 0) columns 80))))
+
+  (catch 'system-error
+    (lambda ()
+      (match (window-size-columns (terminal-window-size port))
+        ;; Things like Emacs shell-mode return 0, which is unreasonable.
+        (0 (fall-back))
+        ((? number? columns) columns)))
+    (lambda args
+      (let ((errno (system-error-errno args)))
+        (if (= errno ENOTTY)
+            (fall-back)
+            (apply throw args))))))
 
 ;;; syscalls.scm ends here

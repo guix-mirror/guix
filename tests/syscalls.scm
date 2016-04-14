@@ -244,4 +244,17 @@
              (#f #f)
              (lo (interface-address lo)))))))
 
+(test-equal "terminal-window-size ENOTTY"
+  ENOTTY
+  (call-with-input-file "/dev/null"
+    (lambda (port)
+      (catch 'system-error
+        (lambda ()
+          (terminal-window-size port))
+        (lambda args
+          (system-error-errno args))))))
+
+(test-assert "terminal-columns"
+  (> (terminal-columns) 0))
+
 (test-end)
