@@ -24,8 +24,10 @@
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages cross-base)
+  #:use-module (gnu packages flashing-tools)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages zip))
@@ -105,6 +107,28 @@ for use with GCC on Atmel AVR microcontrollers.")
     (license
      (license:non-copyleft "http://www.nongnu.org/avr-libc/LICENSE.txt"))))
 
+(define (avr-toolchain avr-gcc)
+  (package
+    (name "avr-toolchain")
+    (version (package-version avr-gcc))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments '(#:builder (mkdir %output)))
+    (propagated-inputs
+     `(("avrdude" ,avrdude)
+       ("binutils" ,avr-binutils)
+       ("gcc" ,avr-gcc)
+       ("libc" ,avr-libc)))
+    (synopsis "Complete GCC tool chain for AVR microcontroller development")
+    (description "This package provides a complete GCC tool chain for AVR
+microcontroller development.  This includes the GCC AVR cross compiler and
+avrdude for firmware flashing.  The supported programming languages are C and
+C++.")
+    (home-page (package-home-page avr-libc))
+    (license (package-license avr-gcc))))
+
+(define-public avr-toolchain-4.9 (avr-toolchain avr-gcc-4.9))
+(define-public avr-toolchain-5 (avr-toolchain avr-gcc-5))
 
 (define-public microscheme
   (package
