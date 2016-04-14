@@ -20,6 +20,7 @@
 
 (define-module (gnu packages avr)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
@@ -32,6 +33,35 @@
   (package
     (inherit (cross-binutils "avr"))
     (name "avr-binutils")))
+
+(define-public avr-gcc-4.9
+  (let ((xgcc (cross-gcc "avr" avr-binutils)))
+    (package
+      (inherit xgcc)
+      (name "avr-gcc")
+      (arguments
+       (substitute-keyword-arguments (package-arguments xgcc)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             ;; Without a working multilib build, the resulting GCC lacks
+             ;; support for nearly every AVR chip.
+             (add-after 'unpack 'fix-genmultilib
+               (lambda _
+                 ;; patch-shebang doesn't work here because there are actually
+                 ;; several scripts inside this script, each with a #!/bin/sh
+                 ;; that needs patching.
+                 (substitute* "gcc/genmultilib"
+                   (("#!/bin/sh") (string-append "#!" (which "sh"))))
+                 #t))))
+         ((#:configure-flags flags)
+          `(delete "--disable-multilib" ,flags))))
+      (native-search-paths
+       (list (search-path-specification
+              (variable "CROSS_CPATH")
+              (files '("avr/include")))
+             (search-path-specification
+              (variable "CROSS_LIBRARY_PATH")
+              (files '("avr/lib"))))))))
 
 (define-public avr-libc
   (package
