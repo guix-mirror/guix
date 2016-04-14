@@ -84,17 +84,28 @@
                 "0sd9qkvhmk9av4g1f8dsjwc309hf1g0731bhvicnjb3b3d42l1n3"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:out-of-source? #t
-       #:configure-flags '("--host=avr")))
-
-    (native-inputs `(("cross-binutils" ,(cross-binutils "avr"))
-                     ("cross-gcc" ,xgcc-avr)))
+     '(#:out-of-source? #t
+       #:configure-flags '("--host=avr")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'unpack 'fix-cpath
+           (lambda _
+             ;; C_INCLUDE_PATH poses issues for cross-building, leading to
+             ;; failures when building avr-libc on 64-bit systems.  Simply
+             ;; unsetting it allows the build to succeed because it doesn't
+             ;; try to use any of the native system's headers.
+             (unsetenv "C_INCLUDE_PATH")
+             #t)))))
+    (native-inputs `(("avr-binutils" ,avr-binutils)
+                     ("avr-gcc" ,avr-gcc-4.9)))
     (home-page "http://www.nongnu.org/avr-libc/")
     (synopsis "The AVR C Library")
     (description
      "AVR Libc is a project whose goal is to provide a high quality C library
 for use with GCC on Atmel AVR microcontrollers.")
-    (license (license:non-copyleft "http://www.nongnu.org/avr-libc/LICENSE.txt"))))
+    (license
+     (license:non-copyleft "http://www.nongnu.org/avr-libc/LICENSE.txt"))))
+
 
 (define-public microscheme
   (package
