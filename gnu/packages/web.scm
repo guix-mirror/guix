@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (guix cvs-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system r)
@@ -49,6 +51,8 @@
   #:use-module (gnu packages mit-krb5)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages base)
@@ -3208,3 +3212,41 @@ mangle the data format that you have into the one that you want with very
 little effort, and the program to do so is often shorter and simpler than
 you'd expect.")
     (license (list l:expat l:cc-by3.0))))
+
+(define-public uhttpmock
+  (package
+    (name "uhttpmock")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://tecnocode.co.uk/downloads/uhttpmock/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0vniyx341pnnmvxmqacc49k0g7h9a9nhknfslidrqmxj5lm1ini6"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'use-empty-ssl-cert-file
+           (lambda _
+             ;; Search for ca-certificates.crt files
+             ;; during the check phase.
+             (setenv "SSL_CERT_FILE" "/dev/null")
+             #t)))))
+    (native-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ;; For check phase.
+       ("glib-networking" ,glib-networking)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libsoup" ,libsoup)))
+    (home-page "https://gitlab.com/groups/uhttpmock")
+    (synopsis "Library for mocking web service APIs which use HTTP or HTTPS")
+    (description
+     "Uhttpmock is a project for mocking web service APIs which use HTTP or
+HTTPS.  It provides a library, libuhttpmock, which implements recording and
+playback of HTTP request/response traces.")
+    (license l:lgpl2.1+)))
