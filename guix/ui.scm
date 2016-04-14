@@ -34,6 +34,7 @@
   #:use-module (guix serialization)
   #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module ((guix licenses) #:select (license? license-name))
+  #:use-module ((guix build syscalls) #:select (terminal-columns))
   #:use-module (gnu system file-systems)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -816,8 +817,7 @@ converted to a space; sequences of more than one line break are preserved."
 ;;;
 
 (define %text-width
-  (make-parameter (or (and=> (getenv "WIDTH") string->number)
-                      80)))
+  (make-parameter (terminal-columns)))
 
 (set! (@@ (texinfo plain-text) wrap*)
       ;; XXX: Monkey patch this private procedure to let 'package->recutils'
