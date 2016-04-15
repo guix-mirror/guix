@@ -414,7 +414,8 @@ plotting engine by third-party applications like Octave.")
                           version "/src/hdf5-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "0sj8x0gfs5fb28gipnynb9wpkz113h8wq9sva9mxx66kv27xsdgw"))))
+       (base32 "0sj8x0gfs5fb28gipnynb9wpkz113h8wq9sva9mxx66kv27xsdgw"))
+      (patches (list (search-patch "hdf5-config-date.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)))
@@ -424,7 +425,8 @@ plotting engine by third-party applications like Octave.")
          (add-before 'configure 'patch-configure
            (lambda _
              (substitute* "configure"
-               (("/bin/mv") "mv"))))
+               (("/bin/mv") "mv"))
+             #t))
          (add-after 'install 'patch-references
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let ((bin (string-append (assoc-ref outputs "out") "/bin"))

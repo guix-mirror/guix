@@ -1,0 +1,21 @@
+Honor SOURCE_DATE_EPOCH when exporting configuration date.
+Autoconf-level patch submitted upstream on Wed Apr 13 17:03:23 UTC 2016
+
+--- a/configure
++++ b/configure
+@@ -27737,7 +28573,14 @@
+ 
+ 
+ ## Configuration date
+- CONFIG_DATE="`date`"
++ CONFIG_DATE="`date -u`"
++if test -n "$SOURCE_DATE_EPOCH"; then
++  CONFIG_DATE=`date -u -d "@$SOURCE_DATE_EPOCH" 2>/dev/null \
++               || date -u -r "$SOURCE_DATE_EPOCH" 2>/dev/null`
++  if test -z "$CONFIG_DATE"; then
++    as_fn_error $? "malformed SOURCE_DATE_EPOCH" "$LINENO" 5
++  fi
++fi
+ 
+ ## User doing the configuration
+  CONFIG_USER="`whoami`@`hostname`"

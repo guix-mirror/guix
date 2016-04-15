@@ -531,6 +531,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/gtk2-respect-GUIX_GTK2_PATH.patch	\
   gnu/packages/patches/gtk3-respect-GUIX_GTK3_PATH.patch	\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
+  gnu/packages/patches/hdf5-config-date.patch			\
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
   gnu/packages/patches/hop-linker-flags.patch			\
   gnu/packages/patches/hydra-automake-1.15.patch		\
