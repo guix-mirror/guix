@@ -44,12 +44,22 @@ SEARCH-TYPE may be one of the following symbols: `all', `id', `name'."
   (apply #'guix-list-get-display-entries
          'license search-type args))
 
+(defun guix-license-message (entries search-type &rest args)
+  "Display a message after showing license ENTRIES."
+  ;; Some objects in (guix licenses) module are procedures (e.g.,
+  ;; 'non-copyleft' or 'x11-style').  Such licenses cannot be "described".
+  (when (null entries)
+    (if (cdr args)
+        (message "Unknown licenses.")
+      (message "Unknown license."))))
+
 
 ;;; License 'info'
 
 (guix-info-define-interface license
   :buffer-name "*Guix License Info*"
   :get-entries-function 'guix-license-get-entries
+  :message-function 'guix-license-message
   :format '((name ignore (simple guix-info-heading))
             ignore
             guix-license-insert-packages-button
@@ -86,6 +96,7 @@ SEARCH-TYPE may be one of the following symbols: `all', `id', `name'."
   :buffer-name "*Guix Licenses*"
   :get-entries-function 'guix-license-get-entries
   :describe-function 'guix-license-list-describe
+  :message-function 'guix-license-message
   :format '((name nil 40 t)
             (url guix-list-get-url 50 t))
   :titles '((name . "License"))
