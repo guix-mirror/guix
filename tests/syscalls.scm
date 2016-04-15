@@ -257,4 +257,8 @@
 (test-assert "terminal-columns"
   (> (terminal-columns) 0))
 
+(test-assert "terminal-columns non-file port"
+  (> (terminal-columns (open-input-string "Join us now, share the software!"))
+     0))
+
 (test-end)

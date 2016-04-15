@@ -915,10 +915,12 @@ always a positive integer."
 
   (catch 'system-error
     (lambda ()
-      (match (window-size-columns (terminal-window-size port))
-        ;; Things like Emacs shell-mode return 0, which is unreasonable.
-        (0 (fall-back))
-        ((? number? columns) columns)))
+      (if (file-port? port)
+          (match (window-size-columns (terminal-window-size port))
+            ;; Things like Emacs shell-mode return 0, which is unreasonable.
+            (0 (fall-back))
+            ((? number? columns) columns))
+          (fall-back)))
     (lambda args
       (let ((errno (system-error-errno args)))
         (if (= errno ENOTTY)
