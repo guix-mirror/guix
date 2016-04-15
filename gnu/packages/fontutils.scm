@@ -520,7 +520,6 @@ definitions.")
              ("fontconfig"      ,fontconfig) ;dlopen'd
              ("freetype"        ,freetype)
              ("gettext"         ,gnu-gettext)
-             ("giflib"          ,giflib) ;needs giflib 4.*
              ("glib"            ,glib) ;needed for pango detection
              ("libICE"          ,libice)
              ("libSM"           ,libsm)
@@ -531,6 +530,7 @@ definitions.")
              ("libpng"          ,libpng)
              ("libspiro"        ,libspiro)
              ("libtiff"         ,libtiff)
+             ("libungif"        ,libungif)
              ("libuninameslist" ,libuninameslist)
              ("libxft"          ,libxft)
              ("libxml2"         ,libxml2)
@@ -560,7 +560,7 @@ definitions.")
                   ,(map (lambda (input)
                           (string-append (assoc-ref inputs input)
                                          "/lib"))
-                        '("libtiff" "libjpeg" "libpng" "giflib"
+                        '("libtiff" "libjpeg" "libpng" "libungif"
                           "libxml2" "zlib" "libspiro" "freetype"
                           "pango" "cairo" "fontconfig")))
                 ;; Checks for potrace program at runtime
