@@ -59,6 +59,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/boost.scm			\
   gnu/packages/bootstrap.scm			\
   gnu/packages/busybox.scm			\
+  gnu/packages/c.scm				\
   gnu/packages/calcurse.scm			\
   gnu/packages/ccache.scm			\
   gnu/packages/cdrom.scm			\
