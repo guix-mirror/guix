@@ -5809,7 +5809,7 @@ to report issues (and success stories!), and to join us in improving it.
 @cindex hardware support on GuixSD
 GNU@tie{}GuixSD focuses on respecting the user's computing freedom.  It
 builds around the kernel Linux-libre, which means that only hardware for
-which free software drivers and firmware exists is supported.  Nowadays,
+which free software drivers and firmware exist is supported.  Nowadays,
 a wide range of off-the-shelf hardware is supported on
 GNU/Linux-libre---from keyboards to graphics cards to scanners and
 Ethernet controllers.  Unfortunately, there are still areas where
@@ -5817,7 +5817,7 @@ hardware vendors deny users control over their own computing, and such
 hardware is not supported on GuixSD.
 
 @cindex WiFi, hardware support
-One of the main areas where free drivers or firmware is lacking is WiFi
+One of the main areas where free drivers or firmware are lacking is WiFi
 devices.  WiFi devices known to work include those using Atheros chips
 (AR9271 and AR7010), which corresponds to the @code{ath9k} Linux-libre
 driver, and for which free firmware exists and is available
@@ -5826,10 +5826,10 @@ out-of-the-box on GuixSD, as part of @var{%base-firmware}
 
 @cindex RYF, Respects Your Freedom
 The @uref{https://www.fsf.org/, Free Software Foundation} runs
-@uref{https://www.fsf.org/ryf, @dfn{Respect Your Freedom}} (RYF), a
+@uref{https://www.fsf.org/ryf, @dfn{Respects Your Freedom}} (RYF), a
 certification program for hardware products that respect your freedom
 and your privacy and ensure that you have control over your device.  We
-encourage you to check the list of RYF-certified hardware.
+encourage you to check the list of RYF-certified devices.
 
 Another useful resource is the @uref{https://www.h-node.org/, H-Node}
 web site.  It contains a catalog of hardware devices with information
