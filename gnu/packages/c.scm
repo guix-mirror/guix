@@ -21,9 +21,11 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages texinfo))
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages guile))
 
 (define-public tcc
   (package
@@ -63,3 +65,63 @@ written in C.  It supports ANSI C with GNU and extensions and most of the C99
 standard.")
     (home-page "http://www.tinycc.org/")
     (license license:lgpl2.1+)))
+
+(define-public tcc-wrapper
+  (package
+    (inherit tcc)
+    (name "tcc-wrapper")
+    (build-system trivial-build-system)
+    (native-inputs '())
+    (inputs `(("tcc" ,tcc)
+              ("guile" ,guile-2.0)))
+
+    ;; By default TCC does not honor any search path environment variable.
+    ;; This wrapper adds them.
+    ;;
+    ;; FIXME: TCC includes its own linker so our 'ld-wrapper' hack to set the
+    ;; RUNPATH is ineffective here.  We should modify TCC itself.
+    (native-search-paths
+     (list (search-path-specification
+            (variable "TCC_CPATH")
+            (files '("include")))
+           (search-path-specification
+            (variable "TCC_LIBRARY_PATH")
+            (files '("lib" "lib64")))))
+
+    (arguments
+     '(#:builder
+       (let* ((out   (assoc-ref %outputs "out"))
+              (bin   (string-append out "/bin"))
+              (tcc   (assoc-ref %build-inputs "tcc"))
+              (guile (assoc-ref %build-inputs "guile")))
+         (mkdir out)
+         (mkdir bin)
+         (call-with-output-file (string-append bin "/cc")
+           (lambda (port)
+             (format port "#!~a/bin/guile --no-auto-compile~%!#~%" guile)
+             (write
+              `(begin
+                 (use-modules (ice-9 match)
+                              (srfi srfi-26))
+
+                 (define (split path)
+                   (string-tokenize path (char-set-complement
+                                          (char-set #\:))))
+
+                 (apply execl ,(string-append tcc "/bin/tcc")
+                        ,(string-append tcc "/bin/tcc") ;argv[0]
+                        (append (cdr (command-line))
+                                (match (getenv "TCC_CPATH")
+                                  (#f '())
+                                  (str
+                                   (map (cut string-append "-I" <>)
+                                        (split str))))
+                                (match (getenv "TCC_LIBRARY_PATH")
+                                  (#f '())
+                                  (str
+                                   (map (cut string-append "-L" <>)
+                                        (split str)))))))
+              port)
+             (chmod port #o777)))
+         #t)))
+    (synopsis "Wrapper providing the 'cc' command for TCC")))
