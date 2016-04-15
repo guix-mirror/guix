@@ -81,6 +81,7 @@
     (cond ((string=? arch "i686") "i386")
           ((string-prefix? "mips" arch) "mips")
           ((string-prefix? "arm" arch) "arm")
+          ((string-prefix? "aarch64" arch) "arm64")
           (else arch))))
 
 (define (linux-libre-urls version)
