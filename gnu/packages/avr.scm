@@ -73,15 +73,14 @@
 (define-public avr-libc
   (package
     (name "avr-libc")
-    (version "1.8.1")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://savannah//avr-libc/avr-libc-"
-                    version ".tar.bz2"))
+              (uri (string-append "mirror://savannah//avr-libc/avr-libc-"
+                                  version ".tar.bz2"))
               (sha256
                (base32
-                "0sd9qkvhmk9av4g1f8dsjwc309hf1g0731bhvicnjb3b3d42l1n3"))))
+                "15svr2fx8j6prql2il2fc0ppwlv50rpmyckaxx38d3gxxv97zpdj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:out-of-source? #t
