@@ -126,7 +126,8 @@ a server that supports the SSH-2 protocol.")
                          (string-append "http://ftp2.fr.openbsd.org/pub/OpenBSD/OpenSSH/portable/"
                                         tail))))
             (sha256 (base32
-                     "132lh9aanb0wkisji1d6cmsxi520m8nh7c7i9wi6m1s3l38q29x7"))))
+                     "132lh9aanb0wkisji1d6cmsxi520m8nh7c7i9wi6m1s3l38q29x7"))
+            (patches (search-patches "openssh-CVE-2015-8325.patch"))))
    (build-system gnu-build-system)
    (inputs `(("groff" ,groff)
              ("openssl" ,openssl)

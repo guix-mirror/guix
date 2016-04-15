@@ -633,6 +633,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/openimageio-boost-1.60.patch		\
   gnu/packages/patches/openjpeg-CVE-2015-6581.patch		\
   gnu/packages/patches/openjpeg-use-after-free-fix.patch	\
+  gnu/packages/patches/openssh-CVE-2015-8325.patch		\
   gnu/packages/patches/openssl-runpath.patch			\
   gnu/packages/patches/openssl-c-rehash-in.patch		\
   gnu/packages/patches/orpheus-cast-errors-and-includes.patch	\
