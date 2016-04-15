@@ -26,6 +26,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages cross-base)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages zip))
 
@@ -62,6 +63,12 @@
              (search-path-specification
               (variable "CROSS_LIBRARY_PATH")
               (files '("avr/lib"))))))))
+
+(define-public avr-gcc-5
+  (package
+    (inherit avr-gcc-4.9)
+    (version (package-version gcc-5))
+    (source (package-source gcc-5))))
 
 (define-public avr-libc
   (package
