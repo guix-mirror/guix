@@ -542,21 +542,6 @@ definitions.")
     '(#:tests? #f
       #:phases
       (modify-phases %standard-phases
-        (add-before 'configure 'patch-configure
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let ((libxml2 (assoc-ref inputs "libxml2"))
-                  (cairo   (assoc-ref inputs "cairo"))
-                  (pango   (assoc-ref inputs "pango")))
-              (substitute* "configure"
-                ;; configure looks for a directory to be present to determine
-                ;; whether libxml2 is available, rather than checking for the
-                ;; library or headers.  Point it to the correct directory.
-                (("/usr/include/libxml2")
-                 (string-append libxml2 "/include/libxml2"))
-                ;; Similary, the search directories for cairo and pango are
-                ;; hard-coded.
-                (("gww_prefix in.*") (string-append "gww_prefix in "
-                                                   cairo " " pango "\n"))))))
         (add-after 'build 'build-contrib
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out"))
