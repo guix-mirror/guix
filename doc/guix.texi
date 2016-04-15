@@ -1377,12 +1377,6 @@ variables for their search paths (see explanation of
 @code{--search-paths} below).  Any missing or possibly incorrect
 environment variable definitions are reported here.
 
-@c XXX: keep me up-to-date
-Finally, when installing a GNU package, the tool reports the
-availability of a newer upstream version.  In the future, it may provide
-the option of installing directly from the upstream version, even if
-that version is not yet in the distribution.
-
 @item --install-from-expression=@var{exp}
 @itemx -e @var{exp}
 Install the package @var{exp} evaluates to.
