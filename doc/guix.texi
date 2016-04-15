@@ -6227,7 +6227,7 @@ version:
 (operating-system
   ;; ...
   (packages (append (map specification->package
-                         '("tcpdump" "htop" "gnupg-2.0"))
+                         '("tcpdump" "htop" "gnupg@@2.0"))
                     %base-packages)))
 @end lisp
 
