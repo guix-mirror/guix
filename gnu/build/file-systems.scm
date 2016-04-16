@@ -167,22 +167,26 @@ if DEVICE does not contain an ext2 file system."
                      (loop (cons name parts))
                      (loop parts))))))))))
 
-(define (read-ext2-superblock* device)
-  "Like 'read-ext2-superblock', but return #f when DEVICE does not exist
-instead of throwing an exception."
-  (catch 'system-error
-    (lambda ()
-      (read-ext2-superblock device))
-    (lambda args
-      ;; When running on the hand-made /dev,
-      ;; 'disk-partitions' could return partitions for which
-      ;; we have no /dev node.  Handle that gracefully.
-      (if (= ENOENT (system-error-errno args))
-          (begin
-            (format (current-error-port)
-                    "warning: device '~a' not found~%" device)
-            #f)
-          (apply throw args)))))
+(define (ENOENT-safe proc)
+  "Wrap the one-argument PROC such that ENOENT errors are caught and lead to a
+warning and #f as the result."
+  (lambda (device)
+    (catch 'system-error
+      (lambda ()
+        (proc device))
+      (lambda args
+        ;; When running on the hand-made /dev,
+        ;; 'disk-partitions' could return partitions for which
+        ;; we have no /dev node.  Handle that gracefully.
+        (if (= ENOENT (system-error-errno args))
+            (begin
+              (format (current-error-port)
+                      "warning: device '~a' not found~%" device)
+              #f)
+            (apply throw args))))))
+
+(define read-ext2-superblock*
+  (ENOENT-safe read-ext2-superblock))
 
 (define (partition-predicate field =)
   "Return a predicate that returns true if the FIELD of an ext2 superblock is
