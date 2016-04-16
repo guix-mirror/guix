@@ -775,7 +775,7 @@ is subjective.")
                           (string-append "PREFIX="
                                          (assoc-ref %outputs "out"))
                           (string-append "SWT_PATH="
-                                         (assoc-ref %build-inputs "swt")
+                                         (assoc-ref %build-inputs "java-swt")
                                          "/share/java/swt.jar"))
        #:tests? #f ;no "check" target
        #:parallel-build? #f ;not supported
@@ -790,11 +790,11 @@ is subjective.")
                (string-append "GCJFLAGS=-fsource=1.4 -fPIC " rest))
               (("PROPERTIES\\?=")
                (string-append "PROPERTIES?= -Dswt.library.path="
-                              (assoc-ref inputs "swt") "/lib"))
+                              (assoc-ref inputs "java-swt") "/lib"))
               (("\\$\\(GCJ\\) -o") "$(GCJ) $(LDFLAGS) -o"))
             #t)))))
     (inputs
-     `(("swt" ,swt)))
+     `(("java-swt" ,java-swt)))
     (native-inputs
      `(("gcj" ,gcj)
        ("pkg-config" ,pkg-config)))

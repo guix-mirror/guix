@@ -51,9 +51,9 @@
   #:use-module (gnu packages texinfo)
   #:use-module ((srfi srfi-1) #:select (fold alist-delete)))
 
-(define-public swt
+(define-public java-swt
   (package
-    (name "swt")
+    (name "java-swt")
     (version "4.4.2")
     (source (origin
               (method url-fetch)

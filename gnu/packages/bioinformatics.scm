@@ -2144,9 +2144,9 @@ HMMs).")
 from high-throughput sequencing assays.")
     (license license:gpl3+)))
 
-(define-public htsjdk
+(define-public java-htsjdk
   (package
-    (name "htsjdk")
+    (name "java-htsjdk")
     (version "1.129")
     (source (origin
               (method url-fetch)
@@ -3081,9 +3081,9 @@ any particular back-end implementation, and supports use of multiple back-ends
 simultaneously.")
     (license license:public-domain)))
 
-(define-public ngs-java
+(define-public java-ngs
   (package (inherit ngs-sdk)
-    (name "ngs-java")
+    (name "java-ngs")
     (arguments
      `(,@(substitute-keyword-arguments
              `(#:modules ((guix build gnu-build-system)
@@ -3146,7 +3146,7 @@ simultaneously.")
                     (string-append "--with-ngs-sdk-prefix="
                                    (assoc-ref inputs "ngs-sdk"))
                     (string-append "--with-ngs-java-prefix="
-                                   (assoc-ref inputs "ngs-java"))
+                                   (assoc-ref inputs "java-ngs"))
                     (string-append "--with-hdf5-prefix="
                                    (assoc-ref inputs "hdf5"))))))
         (alist-cons-after
@@ -3172,7 +3172,7 @@ simultaneously.")
     (inputs
      `(("libxml2" ,libxml2)
        ("ngs-sdk" ,ngs-sdk)
-       ("ngs-java" ,ngs-java)
+       ("java-ngs" ,java-ngs)
        ("libmagic" ,file)
        ("hdf5" ,hdf5)))
     (native-inputs `(("perl" ,perl)))
