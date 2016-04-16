@@ -18,6 +18,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5311,3 +5312,38 @@ style of the Arc GTK theme.  Icons missing from the Arc theme are provided by
 the Moka icon theme.")
     (home-page "https://github.com/horst3180/arc-icon-theme")
     (license license:gpl3+)))
+
+(define-public folks
+  (package
+    (name "folks")
+    (version "0.11.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1f51albxgfqxbax57i3pcgv2fx7i419xaapzdvldas6gw100ma1m"))))
+    (build-system glib-or-gtk-build-system)
+    (inputs
+     `(("bdb" ,bdb)
+       ("dbus-glib" ,dbus-glib)
+       ("evolution-data-server" ,evolution-data-server)
+       ("glib" ,glib)
+       ("libgee" ,libgee)
+       ("telepathy-glib" ,telepathy-glib)))
+    (native-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (synopsis "Library to aggregate data about people")
+    (description "Libfolks is a library that aggregates information about people
+from multiple sources (e.g., Telepathy connection managers for IM contacts,
+Evolution Data Server for local contacts, libsocialweb for web service contacts,
+etc.) to create metacontacts.  It's written in Vala, which generates C code when
+compiled.")
+    (home-page "https://wiki.gnome.org/Projects/Folks")
+    (license license:lgpl2.1+)))
