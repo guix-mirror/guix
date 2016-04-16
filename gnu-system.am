@@ -220,6 +220,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/mail.scm				\
   gnu/packages/make-bootstrap.scm		\
   gnu/packages/markdown.scm			\
+  gnu/packages/marst.scm			\
   gnu/packages/mate.scm             \
   gnu/packages/maths.scm			\
   gnu/packages/mc.scm				\
