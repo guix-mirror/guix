@@ -226,6 +226,7 @@ Packaging Guidelines
 * Synopses and Descriptions::   Helping users find the right package.
 * Python Modules::              Taming the snake.
 * Perl Modules::                Little pearls.
+* Java Packages::               Coffee break.
 * Fonts::                       Fond of fonts.
 
 Contributing
@@ -10776,6 +10777,7 @@ needed is to review and apply the patch.
 * Synopses and Descriptions::   Helping users find the right package.
 * Python Modules::              Taming the snake.
 * Perl Modules::                Little pearls.
+* Java Packages::               Coffee break.
 * Fonts::                       Fond of fonts.
 @end menu
 
@@ -11015,6 +11017,25 @@ Modules containing several classes keep their lowercase upstream name and
 are also prepended by @code{perl-}.  Such modules tend to have the word
 @code{perl} somewhere in their name, which gets dropped in favor of the
 prefix.  For instance, @code{libwww-perl} becomes @code{perl-libwww}.
+
+
+@node Java Packages
+@subsection Java Packages
+
+Java programs standing for themselves are named as any other package,
+using the lowercase upstream name.
+
+To avoid confusion and naming clashes with other programming languages,
+it is desirable that the name of a package for a Java package is
+prefixed with @code{java-}.  If a project already contains the word
+@code{java}, we drop this; for instance, the package @code{ngsjava} is
+packaged under the name @code{java-ngs}.
+
+For Java packages containing a single class or a small class hierarchy,
+we use the lowercase class name, replace all occurrences of @code{.} by
+dashes and prepend the prefix @code{java-}.  So the class
+@code{apache.commons.cli} becomes package
+@code{java-apache-commons-cli}.
 
 
 @node Fonts
