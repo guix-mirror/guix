@@ -69,21 +69,19 @@
   (shepherd-service-type
    'device-mapping
    (match-lambda
-     ((target open close)
+     (($ <mapped-device> source target
+                         ($ <mapped-device-type> open close))
       (shepherd-service
        (provision (list (symbol-append 'device-mapping- (string->symbol target))))
        (requirement '(udev))
        (documentation "Map a device node using Linux's device mapper.")
-       (start #~(lambda () #$open))
-       (stop #~(lambda _ (not #$close)))
+       (start #~(lambda () #$(open source target)))
+       (stop #~(lambda _ (not #$(close source target))))
        (respawn? #f))))))
 
-(define (device-mapping-service target open close)
-  "Return a service that maps device @var{target}, a string such as
-@code{\"home\"} (meaning @code{/dev/mapper/home}).  Evaluate @var{open}, a
-gexp, to open it, and evaluate @var{close} to close it."
-  (service device-mapping-service-type
-           (list target open close)))
+(define (device-mapping-service mapped-device)
+  "Return a service that sets up @var{mapped-device}."
+  (service device-mapping-service-type mapped-device))
 
 
 ;;;

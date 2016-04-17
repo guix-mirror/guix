@@ -233,15 +233,7 @@ from the initrd."
 
 (define (device-mapping-services os)
   "Return the list of device-mapping services for OS as a list."
-  (map (lambda (md)
-         (let* ((source (mapped-device-source md))
-                (target (mapped-device-target md))
-                (type   (mapped-device-type md))
-                (open   (mapped-device-kind-open type))
-                (close  (mapped-device-kind-close type)))
-           (device-mapping-service target
-                                   (open source target)
-                                   (close source target))))
+  (map device-mapping-service
        (operating-system-user-mapped-devices os)))
 
 (define (swap-services os)
