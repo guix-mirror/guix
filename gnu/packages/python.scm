@@ -8258,13 +8258,13 @@ introspection of @code{zope.interface} instances in code.")
 (define-public python-vobject
   (package
     (name "python-vobject")
-    (version "0.9.1")
+    (version "0.9.2")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "vobject" version))
               (sha256
                (base32
-                "1cwzjnrdr9yg2x21wbf3kf59ibnchvj33mygd69yzi178a9gs9gz"))))
+                "1qfnwlx8qwkgr6nf5wvl6ff1r3kll53dh3z6nyp173nmlhhhqccb"))))
     (build-system python-build-system)
     (inputs
      `(("python-dateutil-2" ,python-dateutil-2)
