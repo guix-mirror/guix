@@ -43,7 +43,6 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages firmware)
-  #:autoload   (gnu packages cryptsetup) (cryptsetup)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu services base)
@@ -102,9 +101,7 @@
             local-host-aliases
             %setuid-programs
             %base-packages
-            %base-firmware
-
-            luks-device-mapping))
+            %base-firmware))
 
 ;;; Commentary:
 ;;;
@@ -176,24 +173,6 @@
 ;;;
 ;;; Services.
 ;;;
-
-(define (open-luks-device source target)
-  "Return a gexp that maps SOURCE to TARGET as a LUKS device, using
-'cryptsetup'."
-  #~(zero? (system* (string-append #$cryptsetup "/sbin/cryptsetup")
-                    "open" "--type" "luks"
-                    #$source #$target)))
-
-(define (close-luks-device source target)
-  "Return a gexp that closes TARGET, a LUKS device."
-  #~(zero? (system* (string-append #$cryptsetup "/sbin/cryptsetup")
-                    "close" #$target)))
-
-(define luks-device-mapping
-  ;; The type of LUKS mapped devices.
-  (mapped-device-kind
-   (open open-luks-device)
-   (close close-luks-device)))
 
 (define (other-file-system-services os)
   "Return file system services for the file systems of OS that are not marked

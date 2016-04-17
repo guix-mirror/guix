@@ -17,7 +17,9 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu system mapped-devices)
+  #:use-module (guix gexp)
   #:use-module (guix records)
+  #:autoload   (gnu packages cryptsetup) (cryptsetup)
   #:export (mapped-device
             mapped-device?
             mapped-device-source
@@ -27,7 +29,9 @@
             mapped-device-kind
             mapped-device-kind?
             mapped-device-kind-open
-            mapped-device-kind-close))
+            mapped-device-kind-close
+
+            luks-device-mapping))
 
 ;;; Commentary:
 ;;;
@@ -49,5 +53,28 @@
   (open      mapped-device-kind-open)             ;source target -> gexp
   (close     mapped-device-kind-close             ;source target -> gexp
              (default (const #~(const #f)))))
+
+
+;;;
+;;; Common device mappings.
+;;;
+
+(define (open-luks-device source target)
+  "Return a gexp that maps SOURCE to TARGET as a LUKS device, using
+'cryptsetup'."
+  #~(zero? (system* (string-append #$cryptsetup "/sbin/cryptsetup")
+                    "open" "--type" "luks"
+                    #$source #$target)))
+
+(define (close-luks-device source target)
+  "Return a gexp that closes TARGET, a LUKS device."
+  #~(zero? (system* (string-append #$cryptsetup "/sbin/cryptsetup")
+                    "close" #$target)))
+
+(define luks-device-mapping
+  ;; The type of LUKS mapped devices.
+  (mapped-device-kind
+   (open open-luks-device)
+   (close close-luks-device)))
 
 ;;; mapped-devices.scm ends here
