@@ -9,6 +9,7 @@
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -731,3 +732,26 @@ similar in speed to deflate but offers denser compression.  This package
 provides encoder and a decoder libraries: libbrotlienc and libbrotlidec,
 respectively, based on the reference implementation from Google.")
       (license license:expat))))
+
+(define-public cabextract
+ (package
+   (name "cabextract")
+   (version "1.6")
+   (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://cabextract.org.uk/cabextract-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ysmmz25fjghq7mxb2anyyvr1ljxqxzi4piwjhk0sdamcnsn3rnf"))))
+    (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--with-external-libmspack")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libmspack" ,libmspack)))
+    (home-page "http://www.cabextract.org.uk/")
+    (synopsis "Tool to unpack Cabinet archives")
+    (description "Extracts files out of Microsoft Cabinet (.cab) archives")
+    ;; Some source files specify gpl2+, lgpl2+, however COPYING is gpl3.
+    (license license:gpl3+)))
