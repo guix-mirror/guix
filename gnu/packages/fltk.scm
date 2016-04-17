@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,7 @@
     `(("libjpeg" ,libjpeg-8)     ;jpeg_read_header argument error in libjpeg-9
       ("libpng" ,libpng)
       ("libx11" ,libx11)
+      ("libxft" ,libxft)
       ("mesa" ,mesa)
       ("zlib" ,zlib)))
     (arguments
