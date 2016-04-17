@@ -19,7 +19,10 @@
 (define-module (gnu system mapped-devices)
   #:use-module (guix gexp)
   #:use-module (guix records)
+  #:use-module (gnu services)
+  #:use-module (gnu services shepherd)
   #:autoload   (gnu packages cryptsetup) (cryptsetup)
+  #:use-module (ice-9 match)
   #:export (mapped-device
             mapped-device?
             mapped-device-source
@@ -30,6 +33,9 @@
             mapped-device-kind?
             mapped-device-kind-open
             mapped-device-kind-close
+
+            device-mapping-service-type
+            device-mapping-service
 
             luks-device-mapping))
 
@@ -53,6 +59,31 @@
   (open      mapped-device-kind-open)             ;source target -> gexp
   (close     mapped-device-kind-close             ;source target -> gexp
              (default (const #~(const #f)))))
+
+
+;;;
+;;; Device mapping as a Shepherd service.
+;;;
+
+(define device-mapping-service-type
+  (shepherd-service-type
+   'device-mapping
+   (match-lambda
+     ((target open close)
+      (shepherd-service
+       (provision (list (symbol-append 'device-mapping- (string->symbol target))))
+       (requirement '(udev))
+       (documentation "Map a device node using Linux's device mapper.")
+       (start #~(lambda () #$open))
+       (stop #~(lambda _ (not #$close)))
+       (respawn? #f))))))
+
+(define (device-mapping-service target open close)
+  "Return a service that maps device @var{target}, a string such as
+@code{\"home\"} (meaning @code{/dev/mapper/home}).  Evaluate @var{open}, a
+gexp, to open it, and evaluate @var{close} to close it."
+  (service device-mapping-service-type
+           (list target open close)))
 
 
 ;;;

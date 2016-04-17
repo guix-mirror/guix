@@ -48,7 +48,6 @@
             root-file-system-service
             file-system-service
             user-unmount-service
-            device-mapping-service
             swap-service
             user-processes-service
             session-environment-service
@@ -1174,26 +1173,6 @@ item of @var{packages}."
 extra rules from the packages listed in @var{rules}."
   (service udev-service-type
            (udev-configuration (udev udev) (rules rules))))
-
-(define device-mapping-service-type
-  (shepherd-service-type
-   'device-mapping
-   (match-lambda
-     ((target open close)
-      (shepherd-service
-       (provision (list (symbol-append 'device-mapping- (string->symbol target))))
-       (requirement '(udev))
-       (documentation "Map a device node using Linux's device mapper.")
-       (start #~(lambda () #$open))
-       (stop #~(lambda _ (not #$close)))
-       (respawn? #f))))))
-
-(define (device-mapping-service target open close)
-  "Return a service that maps device @var{target}, a string such as
-@code{\"home\"} (meaning @code{/dev/mapper/home}).  Evaluate @var{open}, a
-gexp, to open it, and evaluate @var{close} to close it."
-  (service device-mapping-service-type
-           (list target open close)))
 
 (define swap-service-type
   (shepherd-service-type
