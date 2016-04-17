@@ -62,6 +62,7 @@
   #:use-module (gnu packages ocr)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages popt)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
@@ -1382,3 +1383,33 @@ present in modern GPUs.")
     (description "Vdpauinfo is a tool to query the capabilities of a VDPAU
 implementation.")
     (license (license:x11-style "file://COPYING"))))
+
+(define-public recordmydesktop
+  (package
+    (name "recordmydesktop")
+    (version "0.3.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/" name "/" name "/"
+                                  version "/recordmydesktop-" version ".tar.gz"))
+              (sha256
+               (base32
+                "133kkl5j0r877d41bzj7kj0vf3xm8x80yyx2n8nqxrva304f58ik"))))
+    (build-system gnu-build-system)
+    (inputs `(("popt" ,popt)
+              ("zlib" ,zlib)
+              ("libx11" ,libx11)
+              ("libice" ,libice)
+              ("libsm" ,libsm)
+              ("libxfixes" ,libxfixes)
+              ("libxdamage" ,libxdamage)
+              ("libxext" ,libxext)
+              ("libvorbis" ,libvorbis)
+              ("libtheora" ,libtheora)))
+    (home-page "http://recordmydesktop.sourceforge.net/")
+    (synopsis "Desktop session video recorder")
+    (description
+     "recordMyDesktop is a command-line tool that captures the activity in
+your graphical desktop and encodes it as a video.  This is a useful tool for
+making @dfn{screencasts}.")
+    (license license:gpl2+)))
