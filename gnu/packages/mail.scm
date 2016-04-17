@@ -1164,13 +1164,13 @@ maintained.")
 (define-public khard
   (package
     (name "khard")
-    (version "0.8.1")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "098gs94qmnspdfn6ar8lycx7dbsz9bcff90aps0cmn47mw7llch0"))))
+                "0y83rji4f270hbb41m4jpr0z3yzvpvbsl32mpg9d38hlydw8fk1s"))))
     (build-system python-build-system)
     (arguments
       `(#:python ,python-2 ; only python-2 is supported.
