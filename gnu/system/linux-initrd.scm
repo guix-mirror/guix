@@ -32,6 +32,7 @@
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
   #:use-module (gnu system file-systems)
+  #:use-module (gnu system mapped-devices)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)

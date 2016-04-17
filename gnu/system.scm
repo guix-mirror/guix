@@ -54,6 +54,7 @@
   #:use-module (gnu system pam)
   #:use-module (gnu system linux-initrd)
   #:use-module (gnu system file-systems)
+  #:use-module (gnu system mapped-devices)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)

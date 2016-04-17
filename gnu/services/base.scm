@@ -27,6 +27,7 @@
   #:use-module (gnu system pam)
   #:use-module (gnu system shadow)                ; 'user-account', etc.
   #:use-module (gnu system file-systems)          ; 'file-system', etc.
+  #:use-module (gnu system mapped-devices)
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
                 #:select (eudev kbd e2fsprogs lvm2 fuse alsa-utils crda gpm))

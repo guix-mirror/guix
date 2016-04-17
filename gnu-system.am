@@ -383,6 +383,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/system/linux-container.scm		\
   gnu/system/linux-initrd.scm			\
   gnu/system/locale.scm				\
+  gnu/system/mapped-devices.scm			\
   gnu/system/nss.scm				\
   gnu/system/pam.scm				\
   gnu/system/shadow.scm				\

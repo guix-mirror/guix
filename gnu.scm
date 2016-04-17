@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Joshua S. Grant <jgrant@parenthetical.io>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -32,6 +32,7 @@
   (begin
     (define %public-modules
       '((gnu system)
+        (gnu system mapped-devices)
         (gnu system file-systems)
         (gnu system grub)                         ; 'grub-configuration'
         (gnu system pam)
