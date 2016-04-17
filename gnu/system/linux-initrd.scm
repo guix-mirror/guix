@@ -229,7 +229,14 @@ loaded at boot time in the order in which they appear."
          (use-modules (gnu build linux-boot)
                       (guix build utils)
                       (guix build bournish)   ;add the 'bournish' meta-command
-                      (srfi srfi-26))
+                      (srfi srfi-26)
+
+                      ;; FIXME: The following modules are for
+                      ;; LUKS-DEVICE-MAPPING.  We should instead propagate
+                      ;; this info via gexps.
+                      ((gnu build file-systems)
+                       #:select (find-partition-by-luks-uuid))
+                      (rnrs bytevectors))
 
          (with-output-to-port (%make-void-port "w")
            (lambda ()

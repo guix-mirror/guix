@@ -6688,13 +6688,29 @@ Mapped devices are declared using the @code{mapped-device} form:
   (type luks-device-mapping))
 @end example
 
-@noindent
+Or, better yet, like this:
+
+@example
+(mapped-device
+  (source (uuid "cb67fc72-0d54-4c88-9d4b-b225f30b0f44"))
+  (target "home")
+  (type luks-device-mapping))
+@end example
+
 @cindex disk encryption
 @cindex LUKS
 This example specifies a mapping from @file{/dev/sda3} to
 @file{/dev/mapper/home} using LUKS---the
 @url{http://code.google.com/p/cryptsetup,Linux Unified Key Setup}, a
-standard mechanism for disk encryption.  The @file{/dev/mapper/home}
+standard mechanism for disk encryption.  In the second example, the UUID
+(unique identifier) is the LUKS UUID returned for the device by a
+command like:
+
+@example
+cryptsetup luksUUID /dev/sdx9
+@end example
+
+The @file{/dev/mapper/home}
 device can then be used as the @code{device} of a @code{file-system}
 declaration (@pxref{File Systems}).  The @code{mapped-device} form is
 detailed below.

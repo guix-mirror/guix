@@ -22,6 +22,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:autoload   (gnu packages cryptsetup) (cryptsetup)
+  #:use-module (srfi srfi-1)
   #:use-module (ice-9 match)
   #:export (mapped-device
             mapped-device?
@@ -77,7 +78,16 @@
        (documentation "Map a device node using Linux's device mapper.")
        (start #~(lambda () #$(open source target)))
        (stop #~(lambda _ (not #$(close source target))))
-       (respawn? #f))))))
+       (respawn? #f)
+
+       ;; Add the modules needed by LUKS-DEVICE-MAPPING.
+       ;; FIXME: This info should be propagated via gexps.
+       (modules `((rnrs bytevectors)              ;bytevector?
+                  ((gnu build file-systems)
+                   #:select (find-partition-by-luks-uuid))
+                  ,@%default-modules))
+       (imported-modules `((gnu build file-systems)
+                           ,@%default-imported-modules)))))))
 
 (define (device-mapping-service mapped-device)
   "Return a service that sets up @var{mapped-device}."
@@ -91,9 +101,20 @@
 (define (open-luks-device source target)
   "Return a gexp that maps SOURCE to TARGET as a LUKS device, using
 'cryptsetup'."
-  #~(zero? (system* (string-append #$cryptsetup "/sbin/cryptsetup")
-                    "open" "--type" "luks"
-                    #$source #$target)))
+  #~(let ((source #$source))
+      (zero? (system* (string-append #$cryptsetup "/sbin/cryptsetup")
+                      "open" "--type" "luks"
+
+                      ;; Note: We cannot use the "UUID=source" syntax here
+                      ;; because 'cryptsetup' implements it by searching the
+                      ;; udev-populated /dev/disk/by-id directory but udev may
+                      ;; be unavailable at the time we run this.
+                      (if (bytevector? source)
+                          (or (find-partition-by-luks-uuid source)
+                              (error "LUKS partition not found" source))
+                          source)
+
+                      #$target))))
 
 (define (close-luks-device source target)
   "Return a gexp that closes TARGET, a LUKS device."
