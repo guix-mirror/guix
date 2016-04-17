@@ -577,7 +577,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
     (license license:gpl2+)))
 
 (define-public icedtea-7
-  (let* ((version "2.6.4")
+  (let* ((version "2.6.5")
          (drop (lambda (name hash)
                  (origin
                    (method url-fetch)
@@ -594,7 +594,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                       version ".tar.xz"))
                 (sha256
                  (base32
-                  "0r31h8nlsrbfdkgbjbb7phwgcwglc9siznzrr40lqnm9xrgkc2nj"))
+                  "1xskigsa1i8hycbagb0f6idyb16x8dkixcdyaacsw4dvjr230lp7"))
                 (modules '((guix build utils)))
                 (snippet
                  '(substitute* "Makefile.in"
@@ -669,6 +669,8 @@ build process and its dependencies, whereas Make uses Makefile format.")
                       (setenv "CC" "gcc")
                       (setenv "CPATH"
                               (string-append gcjinclude ":"
+                                             (assoc-ref inputs "libxcomposite")
+                                             "/include/X11/extensions" ":"
                                              (assoc-ref inputs "libxrender")
                                              "/include/X11/extensions" ":"
                                              (assoc-ref inputs "libxtst")
@@ -719,26 +721,29 @@ build process and its dependencies, whereas Make uses Makefile format.")
       (native-inputs
        `(("openjdk-src"
           ,(drop "openjdk"
-                 "1qjjf71nq80ac2d08hbaa8589d31vk313z3rkirnwq5df8cyf0mv"))
+                 "1nxb8b0p1v57ix8gp22ifg9vg0p0lhr59g5vi74f7abg3almcvy6"))
          ("corba-drop"
           ,(drop "corba"
-                 "025warxhjal3nr7w1xyd16k0f32fwkchifpaslzyidsga3hgmfr6"))
+                 "0zz7gz8fq7qnifzm2jgir2i6rcp0d2h32lcxvlfs24w5szynjya2"))
          ("jaxp-drop"
           ,(drop "jaxp"
-                 "0qiz6swb78w9c0mf88pf0gflgm5rp9k0l6fv6sdl7dki691b0z09"))
+                 "0ym3bcril6507bpbw5mkkw0zmfg3s1nkbsvs2lg0c1q8kyyf3dbv"))
          ("jaxws-drop"
           ,(drop "jaxws"
-                 "18fz4gl4fdlcmqvh1mlpd9h0gj0qizpfa7njkax97aysmsm08xns"))
+                 "1l16x4dwhgfpnk32xbigb1kzkvgj0b6zzhdg4rpkywa7gvg9lxaf"))
          ("jdk-drop"
           ,(drop "jdk"
-                 "0qsx5d9pgwlz9vbpapw4jwpajqc6rwk1150cjb33i4n3z709jccx"))
+                 "1fi18ji83d0dqzg35kcm4bksg2z3fbg772p05wgw4rhh7dai0f6d"))
          ("langtools-drop"
           ,(drop "langtools"
-                 "1k6plx96smf86z303gb30hncssa8f40qdryzsdv349iwqwacxc7r"))
+                 "1nbqg8sw7z7f3bhxng0xdp8vl2nc5wqz0xii1j566qdgc1n6fv3c"))
          ("hotspot-drop"
           ,(drop "hotspot"
-                 "0r9ffzyf5vxs8wg732szqcil0ksc8lcxzihdv3viz7d67dy42irp"))
+                 "1z0w8h1jjvxlqzlrwasy323fygx90if09rvqjk4ymaqhzcr35623"))
          ,@(fold alist-delete (package-native-inputs icedtea-6)
-                 '("openjdk6-src")))))))
+                 '("openjdk6-src"))))
+      (inputs
+       `(("libxcomposite" ,libxcomposite)
+         ,@(package-inputs icedtea-6))))))
 
 (define-public icedtea icedtea-7)
