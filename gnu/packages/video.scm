@@ -536,6 +536,26 @@ convert and stream audio and video.  It includes the libavcodec
 audio/video codec library.")
     (license license:gpl2+)))
 
+(define-public ffmpeg-2.8
+  (package
+    (inherit ffmpeg)
+    (version "2.8.6")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1yh7dvm7zwdlsspdaq524s5qaggma5md9h95qc4kvb5dmyyyvg15"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments ffmpeg)
+       ((#:configure-flags flags)
+        `(map (lambda (flag)
+                (if (string=? flag "--disable-mipsdsp")
+                    "--disable-mipsdspr1"
+                    flag))
+              ,flags))))))
+
 (define-public vlc
   (package
     (name "vlc")
