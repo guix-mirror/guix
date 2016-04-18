@@ -603,6 +603,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/libwmf-CVE-2015-4695.patch		\
   gnu/packages/patches/libwmf-CVE-2015-4696.patch		\
   gnu/packages/patches/libxslt-CVE-2015-7995.patch		\
+  gnu/packages/patches/libxslt-generated-ids.patch		\
+  gnu/packages/patches/libxslt-remove-date-timestamps.patch	\
   gnu/packages/patches/lirc-localstatedir.patch			\
   gnu/packages/patches/libpthread-glibc-preparation.patch	\
   gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\

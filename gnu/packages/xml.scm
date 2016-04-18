@@ -7,6 +7,7 @@
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
+;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -131,7 +132,9 @@ project (but it is usable outside of the Gnome platform).")
              (sha256
               (base32
                "13029baw9kkyjgr7q3jccw2mz38amq7mmpr5p3bh775qawd1bisz"))
-             (patches (search-patches "libxslt-CVE-2015-7995.patch"))))
+             (patches (search-patches "libxslt-generated-ids.patch"
+                                      "libxslt-remove-date-timestamps.patch"
+                                      "libxslt-CVE-2015-7995.patch"))))
     (build-system gnu-build-system)
     (home-page "http://xmlsoft.org/XSLT/index.html")
     (synopsis "C library for applying XSLT stylesheets to XML documents")

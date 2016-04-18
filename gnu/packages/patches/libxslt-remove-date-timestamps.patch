@@ -1,0 +1,66 @@
+Use deterministic SOURCE_DATE_EPOCH for embedded timestamps in generated documentation.
+
+Written by Eduard Sanou.
+
+https://bugzilla.gnome.org/show_bug.cgi?id=758148
+
+--- libxslt-1.1.28.orig/libexslt/date.c
++++ libxslt-1.1.28/libexslt/date.c
+@@ -46,6 +46,7 @@
+ #include "exslt.h"
+ 
+ #include <string.h>
++#include <errno.h>
+ 
+ #ifdef HAVE_MATH_H
+ #include <math.h>
+@@ -747,21 +748,46 @@ static exsltDateValPtr
+ exsltDateCurrent (void)
+ {
+     struct tm localTm, gmTm;
++    struct tm *tb = NULL;
+     time_t secs;
+     int local_s, gm_s;
+     exsltDateValPtr ret;
++    char *source_date_epoch;
+ 
+     ret = exsltDateCreateDate(XS_DATETIME);
+     if (ret == NULL)
+         return NULL;
+ 
+-    /* get current time */
+     secs    = time(NULL);
++    /*
++     * Allow the date and time to be set externally by an exported
++     * environment variable to enable reproducible builds.
++     */
++    source_date_epoch = getenv("SOURCE_DATE_EPOCH");
++    if (source_date_epoch) {
++	errno = 0;
++	secs = (time_t) strtol (source_date_epoch, NULL, 10);
++	if (errno == 0) {
++	    tb = gmtime(&secs);
++	    if (tb == NULL) {
++	    /* SOURCE_DATE_EPOCH is not a valid date */
++		return NULL;
++	    } else {
++		localTm = *tb;
++	    }
++	} else {
++	    /* SOURCE_DATE_EPOCH is not a valid number */
++	    return NULL;
++	}
++    } else {
++	/* get current time */
+ #if HAVE_LOCALTIME_R
+-    localtime_r(&secs, &localTm);
++	localtime_r(&secs, &localTm);
+ #else
+-    localTm = *localtime(&secs);
++	localTm = *localtime(&secs);
+ #endif
++    }
++
+ 
+     /* get real year, not years since 1900 */
+     ret->value.date.year = localTm.tm_year + 1900;
