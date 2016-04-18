@@ -3528,14 +3528,14 @@ subprocess.")
 (define-public ruby-bio-commandeer
   (package
     (name "ruby-bio-commandeer")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "bio-commandeer" version))
        (sha256
         (base32
-         "061jxa6km92qfwzl058r2gp8gfcsbyr7m643nw1pxvmjdswaf6ly"))))
+         "0lin6l99ldqqjc90l9ihcrv882c4xgbgqm16jqkdy6jf955jd9a8"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
