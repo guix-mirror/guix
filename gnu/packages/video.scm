@@ -619,7 +619,30 @@ audio/video codec library.")
        `("--disable-a52" ; FIXME: reenable once available
          ,(string-append "LDFLAGS=-Wl,-rpath -Wl,"
                          (assoc-ref %build-inputs "ffmpeg")
-                         "/lib")))) ; needed for the tests
+                         "/lib"))                 ;needed for the tests
+
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'regenerate-plugin-cache
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The 'install-exec-hook' rule in the top-level Makefile.am
+             ;; generates 'lib/vlc/plugins/plugins.dat', a plugin cache, using
+             ;; 'vlc-cache-gen'.  This file includes the mtime of the plugins
+             ;; it references.  Thus, we first reset the timestamps of all
+             ;; these files, and then regenerate the cache such that the
+             ;; mtimes it includes are always zero instead of being dependent
+             ;; on the build time.
+             (let* ((out       (assoc-ref outputs "out"))
+                    (pkglibdir (string-append out "/lib/vlc"))
+                    (plugindir (string-append pkglibdir "/plugins"))
+                    (cachegen  (string-append pkglibdir "/vlc-cache-gen")))
+               ;; TODO: Factorize 'reset-timestamps'.
+               (for-each (lambda (file)
+                           (let ((s (lstat file)))
+                             (unless (eq? (stat:type s) 'symlink)
+                               (utime file 0 0 0 0))))
+                         (find-files plugindir))
+               (zero? (system* cachegen plugindir))))))))
     (home-page "https://www.videolan.org/")
     (synopsis "Audio and video framework")
     (description "VLC is a cross-platform multimedia player and framework
