@@ -567,7 +567,14 @@ audio/video codec library.")
                    version "/vlc-" version ".tar.xz"))
              (sha256
               (base32
-               "1jqzrzrpw6932lbkf863xk8cfmn4z2ngbxz7w8ggmh4f6xz9sgal"))))
+               "1jqzrzrpw6932lbkf863xk8cfmn4z2ngbxz7w8ggmh4f6xz9sgal"))
+             (modules '((guix build utils)))
+             (snippet
+              ;; There are two occurrences where __DATE__ and __TIME__ are
+              ;; used to capture the build time and show it to the user.
+              '(substitute* (find-files "." "help\\.c(pp)?$")
+                 (("__DATE__") "\"2016\"")
+                 (("__TIME__") "\"00:00\"")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("git" ,git) ; needed for a test
