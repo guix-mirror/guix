@@ -808,7 +808,8 @@ elements after E."
 (define (cache-directory)
   "Return the cache directory for Guix, by default ~/.cache/guix."
   (or (getenv "XDG_CONFIG_HOME")
-      (and=> (getenv "HOME")
+      (and=> (or (getenv "HOME")
+                 (passwd:dir (getpwuid (getuid))))
              (cut string-append <> "/.cache/guix"))))
 
 (define (readlink* file)
