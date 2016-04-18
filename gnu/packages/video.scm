@@ -578,7 +578,7 @@ audio/video codec library.")
        ("avahi" ,avahi)
        ("dbus" ,dbus)
        ("flac" ,flac)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-2.8)               ;fails to build against ffmpeg 3.0
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("gnutls" ,gnutls)
