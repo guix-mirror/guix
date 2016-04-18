@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <tobias.geerinckx.rice@gmail.com>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
+;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2103,6 +2104,26 @@ which is used to enable and disable wireless networking devices, typically
 WLAN, Bluetooth and mobile broadband.")
     (license (license:non-copyleft "file://COPYING"
                                    "See COPYING in the distribution."))))
+
+(define-public acpi
+  (package
+    (name "acpi")
+    (version "1.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/acpiclient/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "01ahldvf0gc29dmbd5zi4rrnrw2i1ajnf30sx2vyaski3jv099fp"))))
+    (build-system gnu-build-system)
+    (home-page "http://acpiclient.sourceforge.net")
+    (synopsis "Display information on ACPI devices")
+    (description "@code{acpi} attempts to replicate the functionality of the
+\"old\" @code{apm} command on ACPI systems, including battery and thermal
+information.  It does not support ACPI suspending, only displays information
+about ACPI devices.")
+    (license license:gpl2+)))
 
 (define-public acpid
   (package
