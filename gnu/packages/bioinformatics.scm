@@ -987,8 +987,9 @@ high-throughput sequencing data – with an emphasis on simplicity.")
   (let ((base (package-with-python2 (strip-python2-variant python-plastid))))
     (package
       (inherit base)
-      (native-inputs `(("python2-setuptools" ,python2-setuptools)
-                       ,@(package-native-inputs base))))))
+      ;; setuptools is required at runtime
+      (propagated-inputs `(("python2-setuptools" ,python2-setuptools)
+                           ,@(package-propagated-inputs base))))))
 
 (define-public cd-hit
   (package
