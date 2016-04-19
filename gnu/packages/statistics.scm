@@ -98,7 +98,7 @@ be output in text, PostScript, PDF or HTML.")
 (define-public r
   (package
     (name "r")
-    (version "3.2.3")
+    (version "3.2.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -106,7 +106,7 @@ be output in text, PostScript, PDF or HTML.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1hdnv77ralzcx5k5b88jq1r8l6zqnywpq00g2qs949rqh63psfxr"))))
+                "1dc0iybjk9kr1nghz3fpir6mb9hb9rnrz9bgh00w5pg5vir5cx30"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
