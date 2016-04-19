@@ -6040,6 +6040,15 @@ partition):
 mount /dev/sda1 /mnt
 @end example
 
+Finally, if you plan to use one or more swap partitions (@pxref{Memory
+Concepts, swap space,, libc, The GNU C Library Reference Manual}), make
+sure to initialize them with @command{mkswap}.  Assuming you have one
+swap partition on @file{/dev/sda2}, you would run:
+
+@example
+mkswap /dev/sda2
+@end example
+
 @node Proceeding with the Installation
 @subsection Proceeding with the Installation
 
