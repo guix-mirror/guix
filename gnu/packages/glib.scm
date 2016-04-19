@@ -205,7 +205,11 @@ shared NFS home directories.")
                       (;; XXX: proven to be unreliable.  See:
                        ;;  <https://bugs.debian.org/756273>
                        ;;  <http://bugs.gnu.org/18445>
-                       "/gapplication/quit"))
+                       "/gapplication/quit"
+
+                       ;; XXX: fails randomly for unknown reason. See:
+                       ;;  <https://lists.gnu.org/archive/html/guix-devel/2016-04/msg00215.html>
+                       "/gapplication/local-actions"))
 
                      ("gio/tests/contenttype.c"
                       (;; XXX: requires shared-mime-info.
