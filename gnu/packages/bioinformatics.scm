@@ -3957,13 +3957,13 @@ BLAST, KEGG, GenBank, MEDLINE and GO.")
 (define-public r-acsnminer
   (package
     (name "r-acsnminer")
-    (version "0.15.11")
+    (version "0.16.01.29")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "ACSNMineR" version))
               (sha256
                (base32
-                "1dl4drhjyazwm9wxlm8yfppwvvj4h6jxwmz8kfw5bxpb3jdnsqvy"))))
+                "1b1243wkncanm1blkqzicjgzb576vzcg4iwinsgn2xqr7f264amf"))))
     (properties `((upstream-name . "ACSNMineR")))
     (build-system r-build-system)
     (propagated-inputs
