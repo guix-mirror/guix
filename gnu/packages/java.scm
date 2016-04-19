@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -745,5 +745,87 @@ build process and its dependencies, whereas Make uses Makefile format.")
       (inputs
        `(("libxcomposite" ,libxcomposite)
          ,@(package-inputs icedtea-6))))))
+
+(define-public icedtea-8
+  (let* ((version "3.0.0")
+         (drop (lambda (name hash)
+                 (origin
+                   (method url-fetch)
+                   (uri (string-append
+                         "http://icedtea.classpath.org/download/drops/"
+                         "/icedtea8/" version "/" name ".tar.xz"))
+                   (sha256 (base32 hash))))))
+    (package (inherit icedtea-7)
+      (version "3.0.0")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append
+                      "http://icedtea.wildebeest.org/download/source/icedtea-"
+                      version ".tar.xz"))
+                (sha256
+                 (base32
+                  "1a99hvx5d0dcinlixgy0wzv2f7jnzi8jp7hcrf2pd7dqndlxsyll"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(substitute* "Makefile.am"
+                    ;; do not leak information about the build host
+                    (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
+                     "DISTRIBUTION_ID=\"\\\"guix\\\"\"")))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments icedtea-7)
+         ((#:configure-flags flags)
+          `(let ((jdk (assoc-ref %build-inputs "jdk")))
+             `(;;"--disable-bootstrap"
+               "--enable-bootstrap"
+               "--enable-nss"
+               "--disable-downloading"
+               "--disable-tests"      ;they are run in the check phase instead
+               "--with-openjdk-src-dir=./openjdk.src"
+               ,(string-append "--with-jdk-home=" jdk))))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'fix-x11-extension-include-path)
+             (delete 'patch-paths)
+             (delete 'set-additional-paths)
+             (delete 'patch-patches)
+             (replace 'install
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let ((doc (string-append (assoc-ref outputs "doc")
+                                           "/share/doc/icedtea"))
+                       (jre (assoc-ref outputs "out"))
+                       (jdk (assoc-ref outputs "jdk")))
+                   (copy-recursively "openjdk.build/docs" doc)
+                   (copy-recursively "openjdk.build/images/j2re-image" jre)
+                   (copy-recursively "openjdk.build/images/j2sdk-image" jdk)
+                   #t)))))))
+      (native-inputs
+       `(("jdk" ,icedtea-7 "jdk")
+         ("openjdk-src"
+          ,(drop "openjdk"
+                 "0cchcrkj3pbjw3r6w08d8fkcjp98fyqp15bv88ljakjcsxrjc0sv"))
+         ("corba-drop"
+          ,(drop "corba"
+                 "1k5khy8g0bk8yas81infh4l8rradpslzs0bblri0aqn9s3aq0x6p"))
+         ("jaxp-drop"
+          ,(drop "jaxp"
+                 "1s167lwh1bxkjmbcyk1pb9r919hfbjgh2shig3d1qmj24r2fbk2c"))
+         ("jaxws-drop"
+          ,(drop "jaxws"
+                 "0xphl8127in0634401f8v3b42mh14v1zdzd7ar10h9m5m84hcmgg"))
+         ("jdk-drop"
+          ,(drop "jdk"
+                 "1kdi5v0vf7swkh2r4isdibw8zzsp34d1aa1sbxl5ljc9lfmbhx7s"))
+         ("langtools-drop"
+          ,(drop "langtools"
+                 "11pa0sr4yi0nnfwhz25410zimc3jm367cvrhg5jm0xc5rykydq70"))
+         ("hotspot-drop"
+          ,(drop "hotspot"
+                 "1my0g9snpd6619y82b4m96wc7ncvf1hw5yqrbh3n1pjgm2k7ywbn"))
+         ("nashorn-drop"
+          ,(drop "nashorn"
+                 "1h12a61q3bw8zabhpp6aawfg3pwixjcya64595rj07sid619vidl"))
+         ,@(fold alist-delete (package-native-inputs icedtea-7)
+                 '("gcj" "openjdk-src" "corba-drop" "jaxp-drop" "jaxws-drop"
+                   "jdk-drop" "langtools-drop" "hotspot-drop")))))))
 
 (define-public icedtea icedtea-7)
