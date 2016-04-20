@@ -981,7 +981,9 @@ found."
 default value."
   (or (and=> (or (find-daemon-option "untrusted-terminal-columns")
                  (find-daemon-option "terminal-columns"))
-             string->number)
+             (lambda (str)
+               (let ((number (string->number str)))
+                 (and number (max 20 (- number 1))))))
       80))
 
 (define (guix-substitute . args)
