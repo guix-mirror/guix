@@ -1159,6 +1159,16 @@ for Chinese languages:
 guix package -i font-adobe-source-han-sans:cn
 @end example
 
+@subsection X.509 Certificates
+
+The @code{nss-certs} package provides X.509 certificates, which allow
+programs to authenticate Web servers accessed over HTTPS.
+
+When using Guix on a foreign distro, you can install this package and
+define the relevant environment variables so that packages know where to
+look for certificates.  @pxref{X.509 Certificates}, for detailed
+information.
+
 @subsection Emacs Packages
 
 When you install Emacs packages with Guix, the elisp files may be placed
@@ -9359,14 +9369,22 @@ explicitly add it.  The @file{/etc/ssl/certs} directory, which is where
 most applications and libraries look for certificates by default, points
 to the certificates installed globally.
 
-Unprivileged users can also install their own certificate package in
+Unprivileged users, including users of Guix on a foreign distro,
+can also install their own certificate package in
 their profile.  A number of environment variables need to be defined so
 that applications and libraries know where to find them.  Namely, the
 OpenSSL library honors the @code{SSL_CERT_DIR} and @code{SSL_CERT_FILE}
 variables.  Some applications add their own environment variables; for
 instance, the Git version control system honors the certificate bundle
-pointed to by the @code{GIT_SSL_CAINFO} environment variable.
+pointed to by the @code{GIT_SSL_CAINFO} environment variable.  Thus, you
+would typically run something like:
 
+@example
+$ guix package -i nss-certs
+$ export SSL_CERT_DIR="$HOME/.guix-profile/etc/ssl/certs"
+$ export SSL_CERT_FILE="$HOME/.guix-profile/etc/ssl/certs/ca-certificates.crt"
+$ export GIT_SSL_CAINFO="$SSL_CERT_FILE"
+@end example
 
 @node Name Service Switch
 @subsection Name Service Switch
