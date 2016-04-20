@@ -863,6 +863,25 @@ New styles can also be created easily.  This package was inspired by the
 \"chalk\" JavaScript project.")
     (license license:expat)))
 
+(define-public r-praise
+  (package
+    (name "r-praise")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "praise" version))
+       (sha256
+        (base32
+         "1gfyypnvmih97p2r0php9qa39grzqpsdbq5g0fdsbpq5zms5w0sw"))))
+    (build-system r-build-system)
+    (home-page "https://github.com/gaborcsardi/praise")
+    (synopsis "Functions to praise users")
+    (description
+     "This package provides template functions to assist in building friendly
+R packages that praise their users.")
+    (license license:expat)))
+
 (define-public r-testthat
   (package
     (name "r-testthat")
