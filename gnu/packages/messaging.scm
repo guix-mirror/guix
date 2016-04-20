@@ -94,13 +94,13 @@ keys, no previous conversation is compromised.")
 (define-public bitlbee
   (package
     (name "bitlbee")
-    (version "3.4.1")
+    (version "3.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://get.bitlbee.org/src/bitlbee-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "1qf0ypa9ba5jvsnpg9slmaran16hcc5fnfzbb1sdch1hjhchn2jh"))))
+               (base32 "0mza8lnfwibmklz8hdzg4f7p83hblf4h6fbf7d732kzpvra5bj39"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("check" ,check)))
