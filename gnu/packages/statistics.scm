@@ -769,13 +769,13 @@ generation in R using Literate Programming techniques.")
 (define-public r-microbenchmark
   (package
     (name "r-microbenchmark")
-    (version "1.4-2")
+    (version "1.4-2.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "microbenchmark" version))
               (sha256
                (base32
-                "05yxvdnkxr2ll94h6f2m5sn3gg7vrlm9nbdxgmj2g8cp8gfxpfkg"))))
+                "0qn5r1a6qidghcisc2hpbdmj62pnixc3zz6p4ipk8mvakf0hdsvg"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-ggplot2" ,r-ggplot2)))
