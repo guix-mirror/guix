@@ -2470,23 +2470,26 @@ It uses and relies on grid graphics and formal (S4) classes and methods.")
 (define-public r-plotly
   (package
     (name "r-plotly")
-    (version "2.0.3")
+    (version "3.4.13")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "plotly" version))
               (sha256
                (base32
-                "16pqycns8qf0y1j21n009qf242lv0izwyidlx40zv88izxhg1vs0"))))
+                "1pfl9w35iwin8a1hfwcihajyps2ngjbyrmvi61b9lspcdbk39lf8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
        ("r-digest" ,r-digest)
        ("r-ggplot2" ,r-ggplot2)
+       ("r-hexbin" ,r-hexbin)
        ("r-htmlwidgets" ,r-htmlwidgets)
        ("r-httr" ,r-httr)
        ("r-jsonlite" ,r-jsonlite)
        ("r-magrittr" ,r-magrittr)
        ("r-plyr" ,r-plyr)
+       ("r-scales" ,r-scales)
+       ("r-tidyr" ,r-tidyr)
        ("r-viridis" ,r-viridis)))
     (home-page "https://plot.ly/r")
     (synopsis "Create interactive web graphics")
