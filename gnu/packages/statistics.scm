@@ -828,13 +828,13 @@ understand the language at a deeper level.")
 (define-public r-memoise
   (package
     (name "r-memoise")
-    (version "0.2.1")
+    (version "1.0.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "memoise" version))
               (sha256
                (base32
-                "19wm4b3kq6xva43kga3xydnl7ybl5mq7b4y2fczgzzjz63jd75y4"))))
+                "0sq2dhpvxy17v1baj256r0jnygdy3m5a8x4zh6vhv29957qnq6zx"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)))
