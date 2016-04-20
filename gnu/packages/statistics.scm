@@ -1345,6 +1345,35 @@ module, Java Server Pages, and Python's psp module.")
 collation, and NAMESPACE files.")
     (license license:gpl2+)))
 
+(define-public r-openssl
+  (package
+    (name "r-openssl")
+    (version "0.9.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "openssl" version))
+       (sha256
+        (base32
+         "1dbsaciz39zvsmcyxkmpfm5yxzrpw2iv2nb86525wn80q0cyv0cb"))))
+    (build-system r-build-system)
+    (inputs
+     `(("openssl" ,openssl)))
+    (home-page "https://github.com/jeroenooms/openssl")
+    (synopsis "Toolkit for encryption, signatures and certificates")
+    (description
+     "This package provides R bindings to OpenSSL libssl and libcrypto, plus
+custom SSH pubkey parsers.  It supports RSA, DSA and NIST curves P-256, P-384
+and P-521.  Cryptographic signatures can either be created and verified
+manually or via x509 certificates.  AES block cipher is used in CBC mode for
+symmetric encryption; RSA for asymmetric (public key) encryption.  High-level
+envelope functions combine RSA and AES for encrypting arbitrary sized data.
+Other utilities include key generators, hash functions (md5, sha1, sha256,
+etc), base64 encoder, a secure random number generator, and @code{bignum} math
+methods for manually performing crypto calculations on large multibyte
+integers.")
+    (license license:expat)))
+
 (define-public r-httr
   (package
     (name "r-httr")
