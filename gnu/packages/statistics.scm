@@ -414,14 +414,14 @@ designed by Cynthia Brewer as described at http://colorbrewer2.org")
 (define-public r-stringi
   (package
     (name "r-stringi")
-    (version "0.5-5")
+    (version "1.0-1")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "stringi" version))
        (sha256
         (base32
-         "183wrrjhpgl1wbnn9lhghyvhz7l2mc64mpcmzplckal7y9j7pmhw"))))
+         "1ld38536sswyywp6pyys3v8vkngbk5cksrhdxp8jyr6bz7qf8j77"))))
     (build-system r-build-system)
     (inputs `(("icu4c" ,icu4c)))
     (native-inputs `(("pkg-config" ,pkg-config)))
