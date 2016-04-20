@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -529,7 +530,7 @@ http:://json.org specification.  These are the main features:
            (setenv "GUILE_AUTO_COMPILE" "0")
            (for-each (lambda (file)
                        (let* ((dest-file (string-append module-dir "/"
-                                                        file ".scm"))
+                                                        file))
                               (go-file (match (string-split file #\.)
                                          ((base _)
                                           (string-append module-dir "/"
