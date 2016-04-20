@@ -1,7 +1,7 @@
 ;;; guix-config.el --- Compile-time configuration of Guix.
 
 ;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
-;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -19,6 +19,12 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Code:
+
+(defconst guix-config-name "@PACKAGE_NAME@"
+  "Guix full name.")
+
+(defconst guix-config-version "@PACKAGE_VERSION@"
+  "Guix version.")
 
 (defconst guix-config-emacs-interface-directory
   (replace-regexp-in-string "${prefix}" "@prefix@" "@emacsuidir@"))
