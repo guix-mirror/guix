@@ -534,7 +534,10 @@ encoding conversion errors."
                             (substitute-urls #f)
 
                             ;; Number of columns in the client's terminal.
-                            (terminal-columns (terminal-columns)))
+                            (terminal-columns (terminal-columns))
+
+                            ;; Locale of the client.
+                            (locale (false-if-exception (setlocale LC_ALL))))
   ;; Must be called after `open-connection'.
 
   (define socket
@@ -573,6 +576,9 @@ encoding conversion errors."
                      ,@(if terminal-columns
                            `(("terminal-columns"
                               . ,(number->string terminal-columns)))
+                           '())
+                     ,@(if locale
+                           `(("locale" . ,locale))
                            '()))))
         (send (string-pairs pairs))))
     (let loop ((done? (process-stderr server)))

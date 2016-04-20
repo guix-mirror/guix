@@ -1000,6 +1000,13 @@ default value."
   (newline)
   (force-output (current-output-port))
 
+  ;; Attempt to install the client's locale, mostly so that messages are
+  ;; suitably translated.
+  (match (or (find-daemon-option "untrusted-locale")
+             (find-daemon-option "locale"))
+    (#f     #f)
+    (locale (false-if-exception (setlocale LC_ALL locale))))
+
   (with-networking
    (with-error-handling                           ; for signature errors
      (match args
