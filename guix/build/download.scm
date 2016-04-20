@@ -202,13 +202,18 @@ abbreviation of URI showing the scheme, host, and basename of the file."
     (uri->string uri))
 
   (define (elide-path)
-    (let ((path (uri-path uri)))
-      (string-append (symbol->string (uri-scheme uri)) "://"
+    (let* ((path   (uri-path uri))
+           (base   (basename path))
+           (prefix (string-append (symbol->string (uri-scheme uri)) "://"
 
-                     ;; `file' URIs have no host part.
-                     (or (uri-host uri) "")
+                                  ;; `file' URIs have no host part.
+                                  (or (uri-host uri) "")
 
-                     (string-append "/.../" (basename path)))))
+                                  (string-append "/" (ellipsis) "/"))))
+      (if (> (+ (string-length prefix) (string-length base)) max-length)
+          (string-append prefix (ellipsis)
+                         (string-drop base (quotient (string-length base) 2)))
+          (string-append prefix base))))
 
   (if (> (string-length uri-as-string) max-length)
       (let ((short (elide-path)))
