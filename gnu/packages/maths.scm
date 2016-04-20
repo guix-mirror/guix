@@ -5,7 +5,7 @@
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -1484,14 +1484,14 @@ full text searching.")
 (define-public armadillo
   (package
     (name "armadillo")
-    (version "6.400.3")
+    (version "6.700.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/arma/armadillo-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0bsgrmldlx77w5x26n3axj1hg6iw6csyw0dwl1flrbdwl51f9701"))))
+                "0dsdjcps5l2nhg0455rrc708inffarzj7n435vj4sm9lxwf21wg9"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ;no test target
     (inputs
