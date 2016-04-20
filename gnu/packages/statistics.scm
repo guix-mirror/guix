@@ -2442,6 +2442,29 @@ that reshape did.  In particular, built-in methods only work for data frames,
 and tidyr provides no margins or aggregation.")
     (license license:expat)))
 
+(define-public r-hexbin
+  (package
+    (name "r-hexbin")
+    (version "1.27.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "hexbin" version))
+       (sha256
+        (base32
+         "0xi6fbf1fvyn2gffr052n3viibqzpr3603sgi4xaminbzja4syjh"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://github.com/edzer/hexbin")
+    (synopsis "Hexagonal binning routines")
+    (description
+     "This package provides binning and plotting functions for hexagonal bins.
+It uses and relies on grid graphics and formal (S4) classes and methods.")
+    (license license:gpl2+)))
+
 (define-public r-plotly
   (package
     (name "r-plotly")
