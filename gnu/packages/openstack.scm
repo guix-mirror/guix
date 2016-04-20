@@ -137,16 +137,16 @@ guidelines}.")
 (define-public python-mox3
   (package
     (name "python-mox3")
-    (version "0.13.0")
+    (version "0.14.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mox3" version))
         (sha256
           (base32
-           "0hj57374r239cj1zbzpxw7mj0yfblz55jdfrc2p1h8j7xng0319j"))))
+           "0njmh40i1lg5mzn9hc2ax83adj6dli455j6xifilrw27c4wlkjzx"))))
     (build-system python-build-system)
-    (inputs
+    (native-inputs
       `(("python-fixtures" ,python-fixtures)
         ("python-pbr" ,python-pbr)
         ("python-setuptools" ,python-setuptools)
@@ -156,10 +156,13 @@ guidelines}.")
     (synopsis "Mock object framework for Python")
     (description
       "Mox3 is an unofficial port of the Google mox framework
-(http://code.google.com/p/pymox/) to Python 3. It was meant to be as compatible
-with mox as possible, but small enhancements have been made. The library was
+(http://code.google.com/p/pymox/) to Python 3.  It was meant to be as compatible
+with mox as possible, but small enhancements have been made.  The library was
 tested on Python version 3.2, 2.7 and 2.6.")
     (license asl2.0)))
+
+(define-public python2-mox3
+  (package-with-python2 python-mox3))
 
 (define-public python-os-client-config
   (package
@@ -196,9 +199,6 @@ tested on Python version 3.2, 2.7 and 2.6.")
 
 (define-public python2-os-client-config
   (package-with-python2 python-os-client-config))
-
-(define-public python2-mox3
-  (package-with-python2 python-mox3))
 
 (define-public python-os-testr
   (package
