@@ -42,6 +42,7 @@
             current-terminal-columns
             progress-proc
             uri-abbreviation
+            nar-uri-abbreviation
             store-path-abbreviation))
 
 ;;; Commentary:
@@ -221,6 +222,17 @@ abbreviation of URI showing the scheme, host, and basename of the file."
             short
             uri-as-string))
       uri-as-string))
+
+(define (nar-uri-abbreviation uri)
+  "Abbreviate URI, which is assumed to be the URI of a nar as served by Hydra
+and 'guix publish', something like
+\"http://example.org/nar/1ldrllwbna0aw5z8kpci4fsvbd2w8cw4-texlive-bin-2015\"."
+  (let* ((uri  (if (string? uri) (string->uri uri) uri))
+         (path (basename (uri-path uri))))
+    (if (and (> (string-length path) 33)
+             (char=? (string-ref path 32) #\-))
+        (string-drop path 33)
+        path)))
 
 (define (ftp-fetch uri file)
   "Fetch data from URI and write it to FILE.  Return FILE on success."

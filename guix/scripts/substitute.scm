@@ -32,7 +32,7 @@
   #:use-module ((guix build utils) #:select (mkdir-p dump-port))
   #:use-module ((guix build download)
                 #:select (current-terminal-columns
-                          progress-proc uri-abbreviation
+                          progress-proc uri-abbreviation nar-uri-abbreviation
                           open-connection-for-uri
                           close-connection
                           store-path-abbreviation byte-count->string))
@@ -896,11 +896,11 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
                           (dl-size  (or download-size
                                         (and (equal? comp "none")
                                              (narinfo-size narinfo))))
-                          (progress (progress-proc (uri-abbreviation uri)
+                          (progress (progress-proc (uri->string uri)
                                                    dl-size
                                                    (current-error-port)
                                                    #:abbreviation
-                                                   store-path-abbreviation)))
+                                                   nar-uri-abbreviation)))
                      (progress-report-port progress raw)))
                   ((input pids)
                    (decompressed-port (and=> (narinfo-compression narinfo)
