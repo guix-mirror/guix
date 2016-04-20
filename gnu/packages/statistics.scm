@@ -914,21 +914,14 @@ flexible and easy to set up.")
 (define-public r-r6
   (package
     (name "r-r6")
-    (version "2.1.1")
+    (version "2.1.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R6" version))
               (sha256
                (base32
-                "16qq35bgxgswf989yvsqkb6fv7srpf8n8dv2s2c0z9n6zgmwq66m"))))
+                "0yad91i9p4r8bbz6nq8zny39y767n9an7ak5p275ynx8km6v3yqv"))))
     (build-system r-build-system)
-    (propagated-inputs
-     `(("r-knitr" ,r-knitr)
-       ("r-microbenchmark" ,r-microbenchmark)
-       ("r-pryr" ,r-pryr)
-       ("r-testthat" ,r-testthat)
-       ("r-ggplot2" ,r-ggplot2)
-       ("r-scales" ,r-scales)))
     (home-page "https://github.com/wch/R6/")
     (synopsis "Classes with reference semantics in R")
     (description
