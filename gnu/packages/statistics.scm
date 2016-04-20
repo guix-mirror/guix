@@ -2413,6 +2413,35 @@ black-and-white.  They are also designed to be perceived by readers with the
 most common form of color blindness.")
     (license license:x11)))
 
+(define-public r-tidyr
+  (package
+    (name "r-tidyr")
+    (version "0.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "tidyr" version))
+       (sha256
+        (base32
+         "0xp6lyr2l4ix2mrilx4qmca7wm5qmbhvi24m4nf7qsgwp54gnv2h"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-dplyr" ,r-dplyr)
+       ("r-lazyeval" ,r-lazyeval)
+       ("r-magrittr" ,r-magrittr)
+       ("r-rcpp" ,r-rcpp)
+       ("r-stringi" ,r-stringi)))
+    (home-page "https://github.com/hadley/tidyr")
+    (synopsis "Tidy data with `spread()` and `gather()` functions")
+    (description
+     "tidyr is a reframing of the reshape2 package designed to accompany the
+tidy data framework, and to work hand-in-hand with magrittr and dplyr to build
+a solid pipeline for data analysis.  It is designed specifically for tidying
+data, not the general reshaping that reshape2 does, or the general aggregation
+that reshape did.  In particular, built-in methods only work for data frames,
+and tidyr provides no margins or aggregation.")
+    (license license:expat)))
+
 (define-public r-plotly
   (package
     (name "r-plotly")
