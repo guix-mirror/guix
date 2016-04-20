@@ -2371,13 +2371,13 @@ vignettes.")
 (define-public r-matrixstats
   (package
     (name "r-matrixstats")
-    (version "0.15.0")
+    (version "0.50.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "matrixStats" version))
               (sha256
                (base32
-                "1068k85s6rlwfzlszw790c2rndydvrsw7rpck6k6z17896m8drfa"))))
+                "08l32abp7dfnsc49ca4hzznh934y60n5z01x5ga2ixky5961s57c"))))
     (properties `((upstream-name . "matrixStats")))
     (build-system r-build-system)
     (native-inputs
