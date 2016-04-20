@@ -1512,14 +1512,14 @@ associated functions (eg. contiguous and non-contiguous submatrix views).")
 
 (define-public armadillo-for-rcpparmadillo
   (package (inherit armadillo)
-    (version "6.200.2")
+    (version "6.700.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/arma/armadillo-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1f69rlqhnf2wv8khyn2a8vi6gx1i72qgfy8b9b760ssk85dcl763"))))))
+                "1vnhifa7d0aij3kv5bxf6m91d99h3y2fyj48jrx7jcvwyb1q5wwq"))))))
 
 (define-public muparser
   (package
