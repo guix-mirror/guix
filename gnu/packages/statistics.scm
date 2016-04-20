@@ -1732,13 +1732,13 @@ grobs.")
 (define-public r-gridextra
   (package
     (name "r-gridextra")
-    (version "2.0.0")
+    (version "2.2.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "gridExtra" version))
               (sha256
                (base32
-                "19yyrfd37c5hxlavb9lca9l26wjhc80rlqhgmfj9k3xhbvvpdp17"))))
+                "0638ihwl00j76ivaxxhxvi8z573lwy1jym3srr78mx6dbdd4bzj4"))))
     (properties `((upstream-name . "gridExtra")))
     (build-system r-build-system)
     (propagated-inputs
