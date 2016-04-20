@@ -274,6 +274,13 @@ host name without trailing dot."
 
     (set-session-transport-fd! session (fileno port))
     (set-session-default-priority! session)
+
+    ;; The "%COMPAT" bit allows us to work around firewall issues (info
+    ;; "(gnutls) Priority Strings"); see <http://bugs.gnu.org/23311>.
+    ;; Explicitly disable SSLv3, which is insecure:
+    ;; <https://tools.ietf.org/html/rfc7568>.
+    (set-session-priorities! session "NORMAL:%COMPAT:-VERS-SSL3.0")
+
     (set-session-credentials! session (make-certificate-credentials))
 
     ;; Uncomment the following lines in case of debugging emergency.
