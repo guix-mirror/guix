@@ -400,8 +400,10 @@ or is signed by an unauthorized key."
             (when verbose?
               ;; Visually separate substitutions with a newline.
               (format (current-error-port)
-                      "~%Found valid signature for ~a~%From ~a~%"
-                      (narinfo-path narinfo)
+                      (_ "~%Found valid signature for ~a~%")
+                      (narinfo-path narinfo))
+              (format (current-error-port)
+                      (_ "From ~a~%")
                       (uri->string (narinfo-uri narinfo)))))
           narinfo))))
 
