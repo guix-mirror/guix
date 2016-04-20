@@ -1329,13 +1329,13 @@ module, Java Server Pages, and Python's psp module.")
 (define-public r-roxygen2
   (package
     (name "r-roxygen2")
-    (version "5.0.0")
+    (version "5.0.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "roxygen2" version))
               (sha256
                (base32
-                "0xjdphjs7l1v71lylmqgp76cbcxzvm9z1a40jgkdwvz072nn08vr"))))
+                "19gblyrrn29msbpawcb1hn5m1rshiqwxy0lby0vf92rm13fmsxcz"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-brew" ,r-brew)
