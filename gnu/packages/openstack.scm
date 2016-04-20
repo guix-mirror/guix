@@ -266,20 +266,21 @@ portions of your testing code.")
 (define-public python-stevedore
   (package
     (name "python-stevedore")
-    (version "1.10.0")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "stevedore" version))
        (sha256
          (base32
-          "17vpffcnk56sj86d2n3vz5bprcc9bswilgd0awnm7jp073pqkmpm"))))
+          "0999zvawaapzg6givjhn7vjscdwblcs73wf28wq1wb4g5mbb5phv"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-six" ,python-six)))
     (inputs
-      `(("python-pbr" ,python-pbr)
-        ("python-setuptools" ,python-setuptools)
+      `(("python-pbr" ,python-pbr)))
+    (native-inputs
+      `(("python-setuptools" ,python-setuptools)
         ;; Tests
         ("python-docutils" ,python-docutils)
         ("python-mock" ,python-mock)
@@ -289,9 +290,9 @@ portions of your testing code.")
     (synopsis "Manage dynamic plugins for Python applications")
     (description
       "Python makes loading code dynamically easy, allowing you to configure
-and extend your application by discovering and loading extensions (“plugins”)
+and extend your application by discovering and loading extensions (\"plugins\")
 at runtime.  Many applications implement their own library for doing this,
-using __import__ or importlib.  stevedore avoids creating yet another extension
+using __import__ or importlib.  Stevedore avoids creating yet another extension
 mechanism by building on top of setuptools entry points.  The code for managing
 entry points tends to be repetitive, though, so stevedore provides manager
 classes for implementing common patterns for using dynamically loaded
