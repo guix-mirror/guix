@@ -2292,13 +2292,13 @@ maintenance for package developers.")
 (define-public r-r-utils
   (package
     (name "r-r-utils")
-    (version "2.1.0")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R.utils" version))
               (sha256
                (base32
-                "03pi6pkcsq65fv7cn4x74cj050dc8x5d4xyg930p6f7flk788xaz"))))
+                "0f4z7ka1wb7bgxc5wyqihqxsnqwgyyzbglwvfwmx0gn8i0wzi647"))))
     (properties `((upstream-name . "R.utils")))
     (build-system r-build-system)
     (propagated-inputs
