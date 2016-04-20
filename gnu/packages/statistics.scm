@@ -1378,18 +1378,19 @@ integers.")
 (define-public r-httr
   (package
     (name "r-httr")
-    (version "1.0.0")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "httr" version))
               (sha256
                (base32
-                "1yprw8p4g8026jhravgg1hdwj1g51cpdgycyr5a58jwm4i5f79cq"))))
+                "08sq34pknsfcy8lm06nydi12mbaxpqpgb025ahr33v9d3g0wvh6p"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-curl" ,r-curl)
        ("r-digest" ,r-digest)
        ("r-jsonlite" ,r-jsonlite)
+       ("r-openssl" ,r-openssl)
        ("r-mime" ,r-mime)
        ("r-r6" ,r-r6)
        ("r-stringr" ,r-stringr)))
