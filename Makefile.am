@@ -27,7 +27,7 @@ nodist_noinst_SCRIPTS =				\
   pre-inst-env					\
   test-env
 
-include gnu-system.am
+include gnu/local.mk
 
 MODULES =					\
   guix/base32.scm				\
@@ -416,11 +416,11 @@ install-data-hook: set-bootstrap-executable-permissions
 SUBDIRS = po/guix po/packages
 BUILT_SOURCES =
 
-include doc.am
+include doc/local.mk
 
 if BUILD_DAEMON
 
-include daemon.am
+include nix/local.mk
 
 endif BUILD_DAEMON
 
@@ -437,7 +437,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
 
 dist_emacsui_DATA = emacs/guix-main.scm
 nodist_emacsui_DATA = emacs/guix-helper.scm
-include emacs.am
+include emacs/local.mk
 
 # The self-contained tarball.
 guix-binary.%.tar.xz:
