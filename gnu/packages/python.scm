@@ -5716,6 +5716,63 @@ printing of sub-tables by specifying a row range.")
 (define-public python2-prettytable
   (package-with-python2 python-prettytable))
 
+(define-public python-tables
+  (package
+    (name "python-tables")
+    (version "3.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tables" version))
+       (sha256
+        (base32
+         "117s6w7s3yxafpmf3zz3svana7xfrsviw01va1xp7h8ylx8v6r1m"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; FIXME: python-build-system does not pass configure-flags to "build"
+       ;; or "check", so we must override the build and check phases.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-gcc
+           (lambda _
+             (substitute* "setup.py"
+               (("compiler = new_compiler\\(\\)" line)
+                (string-append line
+                               "\ncompiler.set_executables(compiler='gcc',"
+                               "compiler_so='gcc',"
+                               "linker_exe='gcc',"
+                               "linker_so='gcc -shared')")))
+             #t))
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero? (system* "python" "setup.py" "build"
+                             (string-append "--hdf5="
+                                            (assoc-ref inputs "hdf5"))))))
+         (replace 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero? (system* "python" "setup.py" "check"
+                             (string-append "--hdf5="
+                                            (assoc-ref inputs "hdf5")))))))))
+    (propagated-inputs
+     `(("python-numexpr" ,python-numexpr)
+       ("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-cython" ,python-cython)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("hdf5" ,hdf5)
+       ("bzip2" ,bzip2)
+       ("zlib" ,zlib)))
+    (home-page "http://www.pytables.org/")
+    (synopsis "Hierarchical datasets for Python")
+    (description "PyTables is a package for managing hierarchical datasets and
+designed to efficently cope with extremely large amounts of data.")
+    (license bsd-3)))
+
+(define-public python2-tables
+  (package-with-python2 python-tables))
+
 (define-public python-pyasn1
   (package
     (name "python-pyasn1")
