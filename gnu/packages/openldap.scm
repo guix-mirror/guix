@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
 
 (define-public openldap
   (package
+   (replacement openldap-2.4.44)
    (name "openldap")
    (version "2.4.42")
    (source (origin
@@ -76,3 +78,24 @@
     "OpenLDAP is a free implementation of the Lightweight Directory Access Protocol.")
    (license openldap2.8)
    (home-page "http://www.openldap.org/")))
+
+(define openldap-2.4.44
+  (package
+    (inherit openldap)
+    (replacement #f)
+    (source
+      (let ((version "2.4.44"))
+        (origin
+          (method url-fetch)
+          (uri (list (string-append
+                      "ftp://mirror.switch.ch/mirror/OpenLDAP/"
+                      "openldap-release/openldap-" version ".tgz")
+                     (string-append
+                      "ftp://ftp.OpenLDAP.org/pub/OpenLDAP/"
+                      "openldap-release/openldap-" version ".tgz")
+                     (string-append
+                      "ftp://ftp.dti.ad.jp/pub/net/OpenLDAP/"
+                      "openldap-release/openldap-" version ".tgz")))
+          (sha256
+           (base32
+            "0044p20hx07fwgw2mbwj1fkx04615hhs1qyx4mawj2bhqvrnppnp")))))))
