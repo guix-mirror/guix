@@ -900,3 +900,39 @@ class/interface/method definitions from source files complete with JavaDoc
 @code{@tags}.  It is designed to be used by active code generators or
 documentation tools.")
     (license license:asl2.0)))
+
+(define-public java-jarjar
+  (package
+    (name "java-jarjar")
+    (version "1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://storage.googleapis.com/google-code-archive-downloads/v2/"
+                    "code.google.com/jarjar/jarjar-src-" version ".zip"))
+              (sha256
+               (base32
+                "1v8irhni9cndcw1l1wxqgry013s2kpj0qqn57lj2ji28xjq8ndjl"))))
+    (build-system ant-build-system)
+    (arguments
+     `(;; Tests require junit, which ultimately depends on this package.
+       #:tests? #f
+       #:build-target "jar"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((target (string-append (assoc-ref outputs "out")
+                                          "/share/java")))
+               (install-file (string-append "dist/jarjar-" ,version ".jar")
+                             target))
+             #t)))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://code.google.com/archive/p/jarjar/")
+    (synopsis "Repackage Java libraries")
+    (description
+     "Jar Jar Links is a utility that makes it easy to repackage Java
+libraries and embed them into your own distribution.  Jar Jar Links includes
+an Ant task that extends the built-in @code{jar} task.")
+    (license license:asl2.0)))
