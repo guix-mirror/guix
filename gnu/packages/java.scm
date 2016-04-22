@@ -1017,3 +1017,35 @@ constraints or predicates) allowing @code{match} rules to be defined
 declaratively, to be used in other frameworks.  Typical scenarios include
 testing frameworks, mocking libraries and UI validation rules.")
     (license license:bsd-2)))
+
+(define-public java-junit
+  (package
+    (name "java-junit")
+    (version "4.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/junit-team/junit/"
+                                  "archive/r" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "090dn5v1vs0b3acyaqc0gjf6p8lmd2h24wfzsbq7sly6b214anws"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled jar archives.
+                  (delete-file-recursively "lib")
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:jar-name "junit.jar"))
+    (inputs
+     `(("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://junit.org/")
+    (synopsis "Test framework for Java")
+    (description
+     "JUnit is a simple framework to write repeatable tests for Java projects.
+JUnit provides assertions for testing expected results, test fixtures for
+sharing common test data, and test runners for running tests.")
+    (license license:epl1.0)))
