@@ -859,3 +859,44 @@ build process and its dependencies, whereas Make uses Makefile format.")
 compression in pure Java.  Single-threaded streamed compression and
 decompression and random access decompression have been fully implemented.")
    (license license:public-domain)))
+
+;; java-hamcrest-core uses qdox version 1.12.  We package this version instead
+;; of the latest release.
+(define-public java-qdox-1.12
+  (package
+    (name "java-qdox")
+    (version "1.12.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/"
+                                  "com/thoughtworks/qdox/qdox/" version
+                                  "/qdox-" version "-sources.jar"))
+              (sha256
+               (base32
+                "0hlfbqq2avf5s26wxkksqmkdyk6zp9ggqn37c468m96mjv0n9xfl"))))
+    (build-system ant-build-system)
+    (arguments
+     `(;; Tests require junit
+       #:tests? #f
+       #:jar-name "qdox.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (mkdir "src")
+             (with-directory-excursion "src"
+               (zero? (system* "jar" "-xf" source)))))
+         ;; At this point we don't have junit, so we must remove the API
+         ;; tests.
+         (add-after 'unpack 'delete-tests
+           (lambda _
+             (delete-file-recursively "src/com/thoughtworks/qdox/junit")
+             #t)))))
+    (home-page "http://qdox.codehaus.org/")
+    (synopsis "Parse definitions from Java source files")
+    (description
+     "QDox is a high speed, small footprint parser for extracting
+class/interface/method definitions from source files complete with JavaDoc
+@code{@tags}.  It is designed to be used by active code generators or
+documentation tools.")
+    (license license:asl2.0)))
