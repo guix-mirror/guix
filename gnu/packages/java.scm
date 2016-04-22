@@ -936,3 +936,84 @@ documentation tools.")
 libraries and embed them into your own distribution.  Jar Jar Links includes
 an Ant task that extends the built-in @code{jar} task.")
     (license license:asl2.0)))
+
+(define-public java-hamcrest-core
+  (package
+    (name "java-hamcrest-core")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hamcrest.googlecode.com/files/"
+                                  "hamcrest-" version ".tgz"))
+              (sha256
+               (base32
+                "1hi0jv0zrgsf4l25aizxrgvxpsrmdklsmvw0jzwz7zv9s108whn6"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled jar archives.
+                  (for-each delete-file (find-files "." "\\.jar$"))
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; Tests require junit
+       #:make-flags (list (string-append "-Dversion=" ,version))
+       #:build-target "core"
+       #:phases
+       (modify-phases %standard-phases
+         ;; Disable unit tests, because they require junit, which requires
+         ;; hamcrest-core.  We also give a fixed value to the "Built-Date"
+         ;; attribute from the manifest for reproducibility.
+         (add-before 'configure 'patch-build.xml
+           (lambda _
+             (substitute* "build.xml"
+               (("unit-test, ") "")
+               (("\\$\\{build.timestamp\\}") "guix"))
+             #t))
+         ;; Java's "getMethods()" returns methods in an unpredictable order.
+         ;; To make the output of the generated code deterministic we must
+         ;; sort the array of methods.
+         (add-after 'unpack 'make-method-order-deterministic
+           (lambda _
+             (substitute* "hamcrest-generator/src/main/java/org/hamcrest/generator/ReflectiveFactoryReader.java"
+               (("import java\\.util\\.Iterator;" line)
+                (string-append line "\n"
+                               "import java.util.Arrays; import java.util.Comparator;"))
+               (("allMethods = cls\\.getMethods\\(\\);" line)
+                (string-append "_" line
+                               "
+private Method[] getSortedMethods() {
+  Arrays.sort(_allMethods, new Comparator<Method>() {
+    @Override
+    public int compare(Method a, Method b) {
+      return a.toString().compareTo(b.toString());
+    }
+  });
+  return _allMethods;
+}
+
+private Method[] allMethods = getSortedMethods();")))))
+         (add-before 'build 'do-not-use-bundled-qdox
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build.xml"
+               (("lib/generator/qdox-1.12.jar")
+                (string-append (assoc-ref inputs "java-qdox-1.12")
+                               "/share/java/qdox.jar")))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file (string-append "build/hamcrest-core-"
+                                          ,version ".jar")
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/java")))))))
+    (native-inputs
+     `(("java-qdox-1.12" ,java-qdox-1.12)
+       ("java-jarjar" ,java-jarjar)))
+    (home-page "http://hamcrest.org/")
+    (synopsis "Library of matchers for building test expressions")
+    (description
+     "This package provides a library of matcher objects (also known as
+constraints or predicates) allowing @code{match} rules to be defined
+declaratively, to be used in other frameworks.  Typical scenarios include
+testing frameworks, mocking libraries and UI validation rules.")
+    (license license:bsd-2)))
