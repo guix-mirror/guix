@@ -136,14 +136,14 @@ HTML/CSS applications to full-fledged web browsers.")
 (define-public webkitgtk-2.4
   (package (inherit webkitgtk)
     (name "webkitgtk")
-    (version "2.4.10")
+    (version "2.4.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.webkitgtk.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0566yx5lxi40g0wpvmwbc8y76akd7zph7flrjdp2vv3z1nra9z9k"))))
+                "1xsvnvyvlywwyf6m9ainpsg87jkxjmd37q6zgz9cxb7v3c2ym2jq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
