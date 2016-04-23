@@ -63,7 +63,7 @@
 (define-public atk
   (package
    (name "atk")
-   (version "2.20.0")
+   (version "2.18.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -71,7 +71,7 @@
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1w1q29yfxcq67j7fyqrfm0l0n1vy4zn539c0sf4ga9d0qkv50fj9"))))
+              "0ay9s137x49f0akx658p7kznz0rdapfrd8ym54q0hlgrggblhv6f"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (arguments
@@ -95,14 +95,14 @@ tools have full access to view and control running applications.")
 (define-public cairo
   (package
    (name "cairo")
-   (version "1.14.6")
+   (version "1.14.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://cairographics.org/releases/cairo-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0lmjlzmghmr27y615px9hkm552x7ap6pmq9mfbzr6smp8y2b6g31"))))
+              "1sycbq0agbwmg1bj9lhkgsf0glmblaf2jrdy9g6vxfxivncxj6f9"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("fontconfig" ,fontconfig)
@@ -147,7 +147,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "1.2.4")
+   (version "1.0.6")
    (source (origin
              (method url-fetch)
              (uri (string-append "https://www.freedesktop.org/software/"
@@ -155,7 +155,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "14g4kpph8hgplkm954daxiymxx0vicfq7b7svvdsx54g5bqvv7a4"))))
+               "09ivk5m4y09ar4zi9r6db7gp234cy05h0ach7w22g9kqvkxsf5pn"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "bin")) ; 160K, only hb-view depend on cairo
@@ -185,7 +185,7 @@ affine transformation (scale, rotation, shear, etc.).")
 (define-public pango
   (package
    (name "pango")
-   (version "1.40.0")
+   (version "1.38.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/pango/"
@@ -193,7 +193,7 @@ affine transformation (scale, rotation, shear, etc.).")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "12qwa748wyady16xxdq5rqz9gki1kksj8m5bcv80gjqlydfrh5ys"))))
+              "1dsf45m51i4rcyvh5wlxxrjfhvn5b67d5ckjc6vdcxbddjgmc80k"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("cairo" ,cairo)
@@ -339,7 +339,7 @@ printing and other features typical of a source code editor.")
 (define-public gtksourceview
  (package
    (name "gtksourceview")
-   (version "3.20.1")
+   (version "3.18.2")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -347,7 +347,7 @@ printing and other features typical of a source code editor.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0k4cmq94181l39di9z4agampg4za6bvimkvcjm3qlxmsxb09ab9j"))))
+               "1cmplnqbyd1js5bkpi9cfc3gljilyxg5nngwh4i3mq9r02gmmxv0"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -387,7 +387,7 @@ highlighting and other features typical of a source code editor.")
 (define-public gdk-pixbuf
   (package
    (name "gdk-pixbuf")
-   (version "2.34.0")
+   (version "2.32.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -395,7 +395,7 @@ highlighting and other features typical of a source code editor.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0yc8indbl3hf18z6x6kjg59xp9sngm1d8vmz4c7bs6g27qw5npnm"))))
+              "0cfh87aqyqbfcwpbv1ihgmgfcn66il5q2n8yjyl8gxkjmkqp2rrb"))))
    (build-system gnu-build-system)
    (arguments
     '(#:configure-flags '("--with-x11")
@@ -415,12 +415,9 @@ highlighting and other features typical of a source code editor.")
              ;; (gdk-pixbuf-error-quark, 0)
              (("pixbuf-jpeg\\$\\(EXEEXT\\) ") ""))
            #t)))))
-   (propagated-inputs
-    `(;; Required by gdk-pixbuf-2.0.pc
-      ("glib" ,glib)
-      ("libpng" ,libpng)
-      ;; Used for testing and required at runtime.
-      ("shared-mime-info" ,shared-mime-info)))
+   (propagated-inputs ; required by gdk-pixbuf-2.0.pc
+    `(("glib" ,glib)
+      ("libpng" ,libpng)))
    (inputs
     `(("libjpeg" ,libjpeg)
       ("libtiff" ,libtiff)
@@ -468,7 +465,7 @@ in the GNOME project.")
 (define-public at-spi2-core
   (package
    (name "at-spi2-core")
-   (version "2.20.0")
+   (version "2.18.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -476,7 +473,7 @@ in the GNOME project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "16v09iwnd3895fshsvsci836dar21c8y9w8zn882jn4fq2vrzi6w"))))
+              "1kq17w4fm51d49vzmglkxqdm6s0yvjvrpgw78r2hajf69jz5bmap"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (arguments
@@ -513,7 +510,7 @@ is part of the GNOME accessibility project.")
 (define-public at-spi2-atk
   (package
    (name "at-spi2-atk")
-   (version "2.20.0")
+   (version "2.18.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -521,7 +518,7 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1lis9zj4r3d5ff3chs0r93gjkbp0wgflfx35gbax47cgdqmi8jx2"))))
+              "0bf1g5cj84rmx7p1q547vwbc0hlpcs2wrxnmv96lckfkhs9mzcf4"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
@@ -548,7 +545,7 @@ is part of the GNOME accessibility project.")
 (define-public gtk+-2
   (package
    (name "gtk+")
-   (version "2.24.30")
+   (version "2.24.28")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -556,14 +553,13 @@ is part of the GNOME accessibility project.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0l6aqk86aw5w132ygy6hv6nlxvd1h6xg7c85qbm60p6mnv1ww58d"))
-            (patches (search-patches "gtk2-respect-GUIX_GTK2_PATH.patch"
-                                     "gtk2-theme-paths.patch"))))
+              "0mj6xn40py9r9lvzg633fal81xfwfm89d9mvz7jk4lmwk0g49imj"))
+            (patches (search-patches "gtk2-respect-GUIX_GTK2_PATH.patch"))))
    (build-system gnu-build-system)
    (outputs '("out" "doc"))
    (propagated-inputs
     `(("atk" ,atk)
-      ("gdk-pixbuf" ,gdk-pixbuf+svg)
+      ("gdk-pixbuf" ,gdk-pixbuf)
       ("pango" ,pango)))
    (inputs
     `(("cups" ,cups)
@@ -610,7 +606,7 @@ application suites.")
 (define-public gtk+
   (package (inherit gtk+-2)
    (name "gtk+")
-   (version "3.20.2")
+   (version "3.18.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
@@ -618,12 +614,12 @@ application suites.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "1xv97zrngf47hyrxz7rfrdl5xpv4y61rkmipyi300pm5iq3d3c8s"))
+              "0lp1hn0qydxx03bianzzr0a4maqzsvylrkzr7c3p0050qihwbgjx"))
             (patches (search-patches "gtk3-respect-GUIX_GTK3_PATH.patch"))))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
-      ("gdk-pixbuf" ,gdk-pixbuf+svg)
+      ("gdk-pixbuf" ,gdk-pixbuf)
       ("libepoxy" ,libepoxy)
       ("libxcursor" ,libxcursor)
       ("libxi" ,libxi)
@@ -631,7 +627,8 @@ application suites.")
       ("libxdamage" ,libxdamage)
       ("pango" ,pango)))
    (inputs
-    `(("libxml2" ,libxml2)
+    `(("librsvg" ,librsvg)                        ;for gtk-encode-symbolic-svg
+      ("libxml2" ,libxml2)
       ;; XXX: colord depends on mozjs (through polkit), which fails on
       ;;      on non-intel systems now.
       ;;("colord" ,colord)
@@ -666,7 +663,18 @@ application suites.")
            (("SUBDIRS = gdk gtk a11y css reftests")
             "SUBDIRS = gdk"))
          #t)
-       %standard-phases)))
+       (alist-cons-after
+        'install 'wrap-gtk-encode-symbolic-svg
+        ;; By using GdkPixbuf, gtk-encode-symbolic-svg needs to know
+        ;; librsvg's loaders.cache to handle SVG files.
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let* ((out (assoc-ref outputs "out"))
+                 (prog (string-append out "/bin/gtk-encode-symbolic-svg"))
+                 (librsvg (assoc-ref inputs "librsvg"))
+                 (loaders.cache (find-files librsvg "^loaders\\.cache$")))
+            (wrap-program prog
+              `("GDK_PIXBUF_MODULE_FILE" = ,loaders.cache))))
+        %standard-phases))))
    (native-search-paths
     (list (search-path-specification
            (variable "GUIX_GTK3_PATH")
@@ -856,7 +864,7 @@ library.")
 (define-public pangomm
   (package
     (name "pangomm")
-    (version "2.40.0")
+    (version "2.38.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -864,7 +872,7 @@ library.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "03fpqdjp7plybf4zsgszbm8yhgl28vmajzfpmaqcsmyfvjlszl3x"))))
+               "12xwjvqfxhqblcv7641k0l6r8n3qifnrx8w9571izn1nbd81iyzg"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
@@ -905,7 +913,7 @@ toolkit.")
 (define-public gtkmm
   (package
     (name "gtkmm")
-    (version "3.20.0")
+    (version "3.18.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -913,7 +921,7 @@ toolkit.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "12h2kd22iayvjfhmgjccm33igrbvqdj7hym31fsa1y0dhwzmf8gh"))))
+               "0sxq700invkjpksn790gbnl8px8751kvgwn39663jx7dv89s37w2"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("glib" ,glib "bin")))      ;for 'glib-compile-resources'

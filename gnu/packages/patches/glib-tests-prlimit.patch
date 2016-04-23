@@ -1,0 +1,14 @@
+prlimit(2) returns ENOSYS on Linux 2.6.32-5-xen-amd64 as found on
+hydra.gnu.org, and strace(1) doesn't recognize it.
+
+--- glib-2.34.3/glib/tests/thread.c	2012-11-20 15:27:12.000000000 +0100
++++ glib-2.34.3/glib/tests/thread.c	2013-03-27 14:48:31.000000000 +0100
+@@ -130,7 +130,7 @@ test_thread3 (void)
+ static void
+ test_thread4 (void)
+ {
+-#ifdef HAVE_PRLIMIT
++#if 0
+   struct rlimit ol, nl;
+   GThread *thread;
+   GError *error;

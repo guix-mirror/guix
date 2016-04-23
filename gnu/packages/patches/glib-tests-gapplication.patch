@@ -1,0 +1,28 @@
+This test has proven to be unreliable, often leading to things like this
+in gapplication.log:
+
+  PASS: gapplication 3 /gapplication/properties
+  Failed to register: The connection is closed
+  **
+  GLib-GIO:ERROR:gapplication.c:564:test_quit: assertion failed: (activated)
+  ok 4 /gapplication/app-id
+  PASS: gapplication 4 /gapplication/app-id
+  ../../tap-test: line 5: 24133 Aborted                 $1 -k --tap
+  # GLib-GIO:ERROR:gapplication.c:564:test_quit: assertion failed: (activated)
+  cleaning up pid 24154
+  ERROR: gapplication - missing test plan
+  ERROR: gapplication - exited with status 134 (terminated by signal 6?)
+
+See <https://bugs.debian.org/756273> and <http://bugs.gnu.org/18445>.
+
+
+--- glib-2.40.2/gio/tests/gapplication.c	2014-12-03 22:34:44.566667649 +0100
++++ glib-2.40.2/gio/tests/gapplication.c	2014-12-03 22:34:45.346674179 +0100
+@@ -685,7 +685,6 @@ main (int argc, char **argv)
+ /*  g_test_add_func ("/gapplication/non-unique", test_nonunique); */
+   g_test_add_func ("/gapplication/properties", properties);
+   g_test_add_func ("/gapplication/app-id", appid);
+-  g_test_add_func ("/gapplication/quit", test_quit);
+   g_test_add_func ("/gapplication/local-actions", test_local_actions);
+ /*  g_test_add_func ("/gapplication/remote-actions", test_remote_actions); */
+   g_test_add_func ("/gapplication/local-command-line", test_local_command_line);

@@ -35,7 +35,6 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
-  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -60,7 +59,7 @@
 (define dbus
   (package
     (name "dbus")
-    (version "1.10.8")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -68,7 +67,7 @@
                     version ".tar.gz"))
               (sha256
                (base32
-                "0560y3hxpgh346w6avcrcz79c8ansmn771y5xpcvvlr6m8mx5wxs"))
+                "0jwj7wlrhq5y0fwfh8k2d9rgdpfax06lj8698g6iqbwrzd2rgyqx"))
               (patches (search-patches "dbus-helper-search-path.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -130,7 +129,7 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.48.0")
+   (version "2.46.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
@@ -138,14 +137,16 @@ shared NFS home directories.")
                                 name "-" version ".tar.xz"))
             (sha256
              (base32
-              "0d3w2hblrw7vvpx60l1kbvb830ygn3v8zhwdz65cc5593j9ycjvl"))
-            (patches (search-patches "glib-tests-timer.patch"))))
+              "1yzxr1ip3l0m9ydk5nq32piq70c9f17p5f0jyvlsghzbaawh67ss"))
+            (patches (search-patches "glib-tests-homedir.patch"
+                                     "glib-tests-desktop.patch"
+                                     "glib-tests-prlimit.patch"
+                                     "glib-tests-timer.patch"
+                                     "glib-tests-gapplication.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
               "bin"           ; glib-mkenums, gtester, etc.; depends on Python
               "doc"))         ; 20 MiB of GTK-Doc reference
-   (propagated-inputs
-    `(("pcre" ,pcre))) ; in the Requires.private field of glib-2.0.pc
    (inputs
     `(("coreutils" ,coreutils)
       ("libffi" ,libffi)
@@ -159,87 +160,29 @@ shared NFS home directories.")
       ("perl" ,perl)                              ; needed by GIO tests
       ("bash" ,bash)))
    (arguments
-    '(#:phases
-      (modify-phases %standard-phases
-        (add-before 'build 'pre-build
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            ;; For tests/gdatetime.c.
-            (setenv "TZDIR"
-                    (string-append (assoc-ref inputs "tzdata")
-                                   "/share/zoneinfo"))
+    '(#:phases (alist-cons-before
+                'build 'pre-build
+                (lambda* (#:key inputs outputs #:allow-other-keys)
+                  ;; For tests/gdatetime.c.
+                  (setenv "TZDIR"
+                          (string-append (assoc-ref inputs "tzdata")
+                                         "/share/zoneinfo"))
 
-            ;; Some tests want write access there.
-            (setenv "HOME" (getcwd))
-            (setenv "XDG_CACHE_HOME" (getcwd))
+                  ;; Some tests want write access there.
+                  (setenv "XDG_CACHE_HOME" (getcwd))
 
-            (substitute* '("glib/gspawn.c"
-                           "glib/tests/utils.c"
-                           "tests/spawn-test.c")
-              (("/bin/sh")
-               (string-append (assoc-ref inputs "bash") "/bin/sh")))))
-        (add-before 'check 'disable-failing-tests
-          (lambda _
-            (let ((disable
-                   (lambda (test-file test-paths)
-                     (define pattern+procs
-                       (map (lambda (test-path)
-                              (cons
-                               ;; XXX: only works for single line statements.
-                               (format #f "g_test_add_func.*\"~a\".*" test-path)
-                               (const "")))
-                            test-paths))
-                     (substitute test-file pattern+procs)))
-                  (failing-tests
-                   '(("glib/tests/thread.c"
-                      (;; prlimit(2) returns ENOSYS on Linux 2.6.32-5-xen-amd64
-                       ;; as found on hydra.gnu.org, and strace(1) doesn't
-                       ;; recognize it.
-                       "/thread/thread4"))
+                  (substitute* '("glib/gspawn.c"
+                                 "glib/tests/utils.c"
+                                 "tests/spawn-test.c")
+                    (("/bin/sh")
+                     (string-append (assoc-ref inputs "bash") "/bin/sh")))
 
-                     ("glib/tests/timer.c"
-                      (;; fails if compiler optimizations are enabled, which they
-                       ;; are by default.
-                       "/timer/stop"))
-
-                     ("gio/tests/gapplication.c"
-                      (;; XXX: proven to be unreliable.  See:
-                       ;;  <https://bugs.debian.org/756273>
-                       ;;  <http://bugs.gnu.org/18445>
-                       "/gapplication/quit"
-
-                       ;; XXX: fails randomly for unknown reason. See:
-                       ;;  <https://lists.gnu.org/archive/html/guix-devel/2016-04/msg00215.html>
-                       "/gapplication/local-actions"))
-
-                     ("gio/tests/contenttype.c"
-                      (;; XXX: requires shared-mime-info.
-                       "/contenttype/guess"
-                       "/contenttype/subtype"
-                       "/contenttype/list"
-                       "/contenttype/icon"
-                       "/contenttype/symbolic-icon"
-                       "/contenttype/tree"))
-
-                     ("gio/tests/appinfo.c"
-                      (;; XXX: requires update-desktop-database.
-                       "/appinfo/associations"))
-
-                     ("gio/tests/desktop-app-info.c"
-                      (;; XXX: requires update-desktop-database.
-                       "/desktop-app-info/delete"
-                       "/desktop-app-info/default"
-                       "/desktop-app-info/fallback"
-                       "/desktop-app-info/lastused"
-                       "/desktop-app-info/search"))
-
-                     ("gio/tests/gdbus-peer.c"
-                      (;; Requires /etc/machine-id.
-                       "/gdbus/codegen-peer-to-peer"))
-
-                     ("gio/tests/gdbus-unix-addresses.c"
-                      (;; Requires /etc/machine-id.
-                       "/gdbus/x11-autolaunch")))))
-              (and-map (lambda (x) (apply disable x)) failing-tests)))))
+                  ;; Disable a test that requires dbus.
+                  (substitute* "gio/tests/gdbus-serialization.c"
+                    (("g_test_add_func \
+\\(\"/gdbus/message-serialize/double-array\", test_double_array\\);" all)
+                     (string-append "/* " all " */"))))
+                %standard-phases)
 
       ;; Note: `--docdir' and `--htmldir' are not honored, so work around it.
       #:configure-flags (list (string-append "--with-html-dir="
@@ -275,14 +218,14 @@ dynamic loading, and an object system.")
 (define gobject-introspection
   (package
     (name "gobject-introspection")
-    (version "1.48.0")
+    (version "1.46.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/"
                    "gobject-introspection/" (version-major+minor version)
                    "/gobject-introspection-" version ".tar.xz"))
              (sha256
-              (base32 "0xsqwxhfqzr79av89mg766kxpb2i41bd0vwspk01xjdzrnn5l9zs"))
+              (base32 "0cs27r18fga44ypp8icy62fwx6nh70r1bvhi4lzfn4w85cybsn36"))
              (modules '((guix build utils)))
              (snippet
               '(substitute* "tools/g-ir-tool-template.in"
@@ -294,6 +237,7 @@ dynamic loading, and an object system.")
     (build-system gnu-build-system)
     (inputs
      `(("bison" ,bison)
+       ("cairo" ,cairo)
        ("flex" ,flex)
        ("glib" ,glib)
        ("python-2" ,python-2)))
@@ -451,7 +395,7 @@ by GDBus included in Glib.")
 (define libsigc++
   (package
     (name "libsigc++")
-    (version "2.8.0")
+    (version "2.6.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/libsigc++/"
@@ -459,7 +403,7 @@ by GDBus included in Glib.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0lcnzzdq6718znfshs1hflpwqq6awbzwdyp4kv5lfaf54z880jbp"))))
+               "06xyvxaaxh3nbpjg86gcq5zcc2qnpx354wcfrqlhbndkq5kj2vqq"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("m4" ,m4)))
@@ -478,7 +422,7 @@ has an ease of use unmatched by other C++ callback libraries.")
 (define glibmm
   (package
     (name "glibmm")
-    (version "2.48.1")
+    (version "2.46.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/glibmm/"
@@ -486,7 +430,7 @@ has an ease of use unmatched by other C++ callback libraries.")
                                  "/glibmm-" version ".tar.xz"))
              (sha256
               (base32
-               "1pvw2mrm03p51p03179rb6fk9p42iykkwj1jcdv7jr265xymy8nw"))))
+               "1kw65mlabwdjw86jybxslncbnnx40hcx4z6xpq9i4ymjvsnm91n7"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-cons-before
@@ -559,7 +503,7 @@ useful for C++.")
 (define-public python-pygobject
   (package
     (name "python-pygobject")
-    (version "3.20.0")
+    (version "3.18.0")
     (source
      (origin
        (method url-fetch)
@@ -568,7 +512,7 @@ useful for C++.")
                            "/pygobject-" version ".tar.xz"))
        (sha256
         (base32
-         "0ikzh3l7g1gjh8jj8vg6mdvrb25svp63gxcam4m0i404yh0lgari"))))
+         "1jbd2m39vcjh5h3m33l0317ziq8dxfzi40r6hrfcs4rp5l8s2fqw"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)
