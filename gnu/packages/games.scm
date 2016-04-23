@@ -18,6 +18,7 @@
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
+;;; Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages games)
+  #:use-module (ice-9 match)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -2094,3 +2096,148 @@ is attributed to Albert Einstein.")
 the chat server psyced with the specific config located at
 http://lavachat.symlynx.com/unix/")
     (license license:gpl2+)))
+
+(define-public redeclipse
+  (let ((data-sources
+         '(("acerspyro"   "0gxxr6nbac918b49x1cp72nw951hqm5m4iyi2shb1612ly384w8q")
+           ("actors"      "1jq9q82m6nx07nwpb5cnpdcwa33jrcgg0j2yir8zk6zpnxdmp0il")
+           ("appleflap"   "1cn41c6xs68l88rmphqh4rlsh6h04xnkkvklxdpqpvvr4zlsmi85")
+           ("blendbrush"  "0wjbgnniirl9arv274m8mpdqbbq7d09g0pq1z9dl56sazmbk5yy0")
+           ("caustics"    "0gxv1pqhi6c27mqi9mwqyfnzv9rq5sva1vgxhb9ljh231rmkdc15")
+           ("crosshairs"  "0vlyhd10mly2qnjpwvss9ani7dg3v2njpf7457ilx7fk9a3hlbkk")
+           ("elyvisions"  "0s0l77rd9fd09imvj05pwcz4bqrn3j8qsw8prv5pi5bqa50mbn19")
+           ("fonts"       "0apn8j9lf43nmnidq1f0azhrr1n896g7si4djbix1bwll6ild0mq")
+           ("freezurbern" "0y60s3g8v8bl2m6pk2yr9fzl67ymv821x6l2f9hszzydlcjwlscn")
+           ("john"        "1lmwn0r7qpyac2qrnkv9llhsbyzqpgr27hxq2qn1rfbq12fja0ld")
+           ("jojo"        "0sh3ricqlqw868a0mz2n9iw7lhp650pysd2wkcdizhcmw2hlayx9")
+           ("jwin"        "1r459jhxx64j3vdw886ypkm6zg0yg6cr2qark54i1zdskjhp762k")
+           ("luckystrike" "08xq87crcz0jq45q1g6p8h4xrm1bcqzd019zp7n0f9c3p9j6al91")
+           ("maps"        "1f0hqh8mbd4nzqi4hja4k5f380nszhx8igajg5ini4p9cp39x9vi")
+           ("mayhem"      "1hn9jp64aiz8k6p2nxyg82h2nc8fadgghzhrm26y7i4bz9xwxacm")
+           ("mikeplus64"  "1kj2zznxykgm3f1h1fvd8xzim5f292lyh96l2gj5km1nynzjmaap")
+           ("misc"        "1phmzjs5rmika3568b7jb6ywbsi40r711rhg8cbsflllcp7hdidf")
+           ("nobiax"      "08in9c24m2pq7x371q10ny4q3l1l3zb8m029iypy2lx9gr99i7hm")
+           ("particles"   "0wcd3s6vhrjknffnfqrcpkcqk1r01f1fiz6q7n4srhpdv3i4d6vm")
+           ("philipk"     "1s0kmap8iv5sddanrhycblskj3ywvz9xg2m11f6vnfy108palkga")
+           ("projectiles" "0xdhrs9rsncd1f88s5igdbfksli7h0irg5jdbj6p2a3rgdzb3gnj")
+           ("props"       "1sbh3a94pmzic78bil0dvdh4fd8s6gh52f77jdram3w0gwv79x3r")
+           ("skyboxes"    "0hy95a6ps0fk4cq8j6pjipk8rnsjna9bm0ly2l373gbshlfg6zgi")
+           ("sounds"      "1pnyd7acm19sj1k1cy9hq3n3dnzzaiak7j5f0h7fikiybq5rdk7b")
+           ("textures"    "0gxfnc4xm0kp3pd7lhd4yy1dqq00g727h21l64nyiw2b2d6n1755")
+           ("torley"      "1cri5mf8ls8mvpn1x1p9hacyg9ibilaiz07gqv2hl2q8ww5xc1s6")
+           ("trak"        "0xyk5z59kn9ym9n5fdcrwhqig6gjcjgnrgi9rqbbai713w9vpsbq")
+           ("ulukai"      "0ziv9c4inmza40mas1w9dp048y6f646x00bs7kqv33hd1snbg3v3")
+           ("unnamed"     "0hm291k9azilnp0m04zhm52vml1rhxk1z4l74v66spbikr6s2zdx")
+           ("vanities"    "1qbc2v67kdrlvq10miw3dfmg3j9w9bq1hgqrzjcbph0l4gra1ndw")
+           ("vegetation"  "13928yw0wflcj620cmp8rqwplaw8508f3j4zi32vxida1ksz6xn0")
+           ("weapons"     "1ghn6nfcnd5lyl8dnj22csldvf9hrb32wjzpab4sjjz3iyv0zmr3")
+           ("wicked"      "0q9badvg6ix5rhl05s83kw2v6a49jpnbkqk4ls89qahaddfagi8g"))))
+    (package
+      (name "redeclipse")
+      (version "1.5.3")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://github.com/red-eclipse/base"
+                                    "/archive/v" version ".tar.gz"))
+                (file-name (string-append name "-" version ".tar.gz"))
+                (sha256
+                 (base32
+                  "1y0jv5lz69zisiw8sd5z9a9v21zc83by1sx9b7dly78ngif4gc4l"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f            ; no check target
+         #:make-flags (list "CC=gcc" "-Csrc"
+                            (string-append "INSTDIR="
+                                           (assoc-ref %outputs "out") "/bin"))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'unpack-data
+             (lambda* (#:key inputs #:allow-other-keys)
+               (delete-file-recursively "data")
+               (mkdir "data")
+               (for-each (lambda (name)
+                           (system* "tar" "-xvf"
+                                    (assoc-ref inputs name)
+                                    "-Cdata"
+                                    "--transform"
+                                    (string-append "s/"
+                                                   name "-1.5.3/"
+                                                   name "/")))
+                         (list ,@(map car data-sources)))
+               #t))
+           (delete 'configure)  ; no configure script
+           (add-after 'set-paths 'set-sdl-paths
+             (lambda* (#:key inputs #:allow-other-keys)
+               (setenv "CPATH"
+                       (string-append (assoc-ref inputs "sdl-union")
+                                      "/include/SDL"))
+               #t))
+           (add-after 'install 'copy-data
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (copy-recursively "config"
+                                   (string-append out "/config"))
+                 (copy-recursively "data"
+                                   (string-append out "/data")))
+               #t))
+           (add-after 'copy-data 'wrap-program
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (with-directory-excursion bin
+                   (rename-file "redeclipse_linux"
+                                ".redeclipse_linux-real")
+                   (rename-file "redeclipse_server_linux"
+                                ".redeclipse_server_linux-real")
+                   (call-with-output-file "redeclipse_linux"
+                     (lambda (port)
+                       (format port "#!~a/bin/sh
+# Run the thing from its home, otherwise it just bails out.
+cd \"~a\"
+exec -a \"$0\" ~a/.redeclipse_linux-real~%"
+                               (assoc-ref inputs "bash") ;implicit input
+                               (string-append out)
+                               (string-append bin))))
+                   (call-with-output-file "redeclipse_server_linux"
+                     (lambda (port)
+                       (format port "#!~a/bin/sh
+# Run the thing from its home, otherwise it just bails out.
+cd \"~a\"
+exec -a \"$0\" ~a/.redeclipse_server_linux-real~%"
+                               (assoc-ref inputs "bash") ;implicit input
+                               (string-append out)
+                               (string-append bin))))
+                   (chmod "redeclipse_linux" #o555)
+                   (chmod "redeclipse_server_linux" #o555)))
+               #t)))))
+      (native-inputs `(("pkg-config" ,pkg-config)))
+      (inputs
+       `(("curl" ,curl)
+         ("glu" ,glu)
+         ("sdl-union" ,(sdl-union))
+         ;; Create origin records for the many separate data packages.
+         ,@(map (match-lambda
+                  ((name hash)
+                   (list name
+                         (origin
+                           (method url-fetch)
+                           (uri (string-append
+                                 "https://github.com/red-eclipse/"
+                                 name "/archive/v" version ".tar.gz"))
+                           (sha256 (base32 hash))
+                           (file-name (string-append name "-" version
+                                                     ".tar.gz"))))))
+                data-sources)))
+      (home-page "http://redeclipse.net/")
+      (synopsis "Arena shooter derived from the Cube 2 engine")
+      (description
+       "Red Eclipse is an arena shooter, created from the Cube2 engine.
+Offering an innovative parkour system and distinct but all potent weapons,
+Red Eclipse provides fast paced and accessible gameplay.")
+      ;; The engine is under Zlib; data files are covered by the other
+      ;; licenses.  More details at <http://redeclipse.net/wiki/License>.
+      (license (list license:expat
+                     license:zlib
+                     license:cc-by-sa3.0
+                     license:cc-by3.0
+                     license:cc0)))))
