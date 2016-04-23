@@ -1446,6 +1446,40 @@ accessing bigWig files.")
       (native-inputs
        `(("python-setuptools" ,python2-setuptools))))))
 
+(define-public python-dendropy
+  (package
+    (name "python-dendropy")
+    (version "4.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "DendroPy" version))
+       (sha256
+        (base32
+         "1jfz7gp18wph311w1yygbvjanb3n5mdqal439bb6myw41dwb5m63"))
+       ;; There are two known test failures that will be fixed in the next
+       ;; release after 4.1.0.
+       ;; https://github.com/jeetsukumaran/DendroPy/issues/48
+       (patches (search-patches
+                 "python-dendropy-exclude-failing-tests.patch"))))
+    (build-system python-build-system)
+    (home-page "http://packages.python.org/DendroPy/")
+    (synopsis "Library for phylogenetics and phylogenetic computing")
+    (description
+     "DendroPy is a library for phylogenetics and phylogenetic computing: reading,
+writing, simulation, processing and manipulation of phylogenetic
+trees (phylogenies) and characters.")
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-dendropy))))))
+
+(define-public python2-dendropy
+  (let ((base (package-with-python2 (strip-python2-variant python-dendropy))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
+
+
 (define-public deeptools
   (package
     (name "deeptools")
