@@ -2902,7 +2902,7 @@ distribution, coverage uniformity, strand specificity, etc.")
 (define-public samtools
   (package
     (name "samtools")
-    (version "1.3")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
@@ -2911,7 +2911,7 @@ distribution, coverage uniformity, strand specificity, etc.")
                        version "/samtools-" version ".tar.bz2"))
        (sha256
         (base32
-         "03mnf0mhbfwhqlqfslrhfnw68s3g0fs1as354i9a584mqw1l1smy"))))
+         "0znnnxc467jbf1as2dpskrjhfh8mbll760j6w6rdkwlwbqsp8gbc"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 ftw)
