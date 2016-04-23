@@ -2355,7 +2355,7 @@ output devices.")
 (define-public geoclue
   (package
     (name "geoclue")
-    (version "2.4.3")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
@@ -2364,7 +2364,7 @@ output devices.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "0pk07k65dlw37nz8z5spksivsv5nh96xmbi336rf2yfxf2ldpadd"))
+         "0inlqx0zar498fhi9hh92p2g4kp8qy3zdl4z3vw6bjwp9w6xx454"))
        (patches (search-patches "geoclue-config.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
@@ -2385,8 +2385,7 @@ output devices.")
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (inputs
-     `(("avahi" ,avahi)
-       ("glib" ,glib)
+     `(("glib" ,glib)
        ("json-glib" ,json-glib)
        ("libsoup" ,libsoup)))
     (home-page "http://freedesktop.org/wiki/Software/GeoClue/")
