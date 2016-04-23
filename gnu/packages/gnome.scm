@@ -3917,12 +3917,6 @@ configuration program to choose applications starting on login.")
           (lambda _
             ;; For the missing /etc/machine-id.
             (setenv "DBUS_FATAL_WARNINGS" "0")
-
-            ;; XXX: fails with:
-            ;;   Failed to convert UTF-8 string to JS string: ...
-            ;; TODO: actually fix it.
-            (substitute* "installed-tests/js/testEverythingBasic.js"
-              ((".*test_utf8_inout.*") ""))
             #t)))))
     (native-inputs
      `(("glib:bin" ,glib "bin")       ; for glib-compile-resources
