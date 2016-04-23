@@ -337,13 +337,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.4
   (package
     (inherit linux-libre)
-    (version "4.4.7")
+    (version "4.4.8")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "031wh2k204zvshira28bf33sk1bbk19ilgqmkvkwjp6spk5wmvpq"))))
+                "0zyhdy01gjglgmlrmpqa1sdnm0z91mzwspbksj6zvcamczb8ml53"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))
