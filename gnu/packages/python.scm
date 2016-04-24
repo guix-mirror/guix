@@ -2364,8 +2364,7 @@ somewhat intelligeble.")
                 "1bfrj70vdjxjw74khbyh6f0dksv7p5rh2346jnlrffyacd3gwjzg"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-coverage" ,python-coverage)
+     `(("python-coverage" ,python-coverage)
        ("python-nose" ,python-nose)
        ("python-mock" ,python-mock)))
     (inputs
@@ -2377,17 +2376,16 @@ somewhat intelligeble.")
     (description
      "Oauthlib is a generic, spec-compliant, thorough implementation of the
 OAuth request-signing logic.")
-    (license bsd-3)))
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-oauthlib))))))
 
 (define-public python2-oauthlib
-  (let ((base (package-with-python2 python-oauthlib)))
+  (let ((base (package-with-python2 (strip-python2-variant python-oauthlib))))
     (package
       (inherit base)
-      (inputs
-       `(("python2-unittest2" ,python2-unittest2)
-         ("python2-cryptography" ,python2-cryptography)
-         ,@(alist-delete "python-cryptography"
-	                 (package-inputs base)))))))
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ("python2-unittest2" ,python2-unittest2)
+                       ,@(package-native-inputs base))))))
 
 (define-public python-itsdangerous
   (package
