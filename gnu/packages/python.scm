@@ -2772,9 +2772,7 @@ interested parties to subscribe to events, or \"signals\".")
         (base32
          "1hn94rb4q3zmcq16in055xikal4dba5hfx3zznq7warllcgc9f8k"))))
     (build-system python-build-system)
-    (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
-    (propagated-inputs
+    (inputs
      `(("python-feedgenerator" ,python-feedgenerator)
        ("python-jinja2" ,python-jinja2)
        ("python-pygments" ,python-pygments)
