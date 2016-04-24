@@ -712,14 +712,14 @@ Guile's foreign function interface.")
 (define-public haunt
   (package
     (name "haunt")
-    (version "0.1")
+    (version "0.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://files.dthompson.us/haunt/haunt-"
+              (uri (string-append "https://files.dthompson.us/haunt/haunt-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "15q1qwjnay7k90ppqrzqsmikvwyj61mjvf1zahyd9gm4vi2fgb3x"))))
+                "1id83n8fs7jxys1d8jy70vylg8gzcvlw1y7hb41y3qxv5zi4671m"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((ice-9 match) (ice-9 ftw)
@@ -743,8 +743,13 @@ Guile's foreign function interface.")
                                `("GUILE_LOAD_COMPILED_PATH" ":" prefix
                                  (,modules)))
                              #t)))))))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
     (inputs
      `(("guile" ,guile-2.0)))
+    (propagated-inputs
+     `(("guile-reader" ,guile-reader)))
     (synopsis "Functional static site generator")
     (description "Haunt is a static site generator written in Guile
 Scheme.  Haunt features a functional build system and an extensible
