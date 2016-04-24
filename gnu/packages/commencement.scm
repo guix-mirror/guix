@@ -170,6 +170,26 @@
                     ,cf)))))
      (inputs %boot0-inputs))))
 
+(define libstdc++-boot0
+  ;; GCC's libcc1 is always built as a shared library (the top-level
+  ;; 'Makefile.def' forcefully adds --enable-shared) and thus needs to refer
+  ;; to libstdc++.so.  We cannot build libstdc++-5.3 because it relies on
+  ;; C++14 features missing in our bootstrap compiler.
+  (let ((lib (package-with-bootstrap-guile (make-libstdc++ gcc-4.9))))
+    (package
+      (inherit lib)
+      (name "libstdc++-boot0")
+      (arguments
+       `(#:guile ,%bootstrap-guile
+         #:implicit-inputs? #f
+
+         ;; XXX: libstdc++.so NEEDs ld.so for some reason.
+         #:validate-runpath? #f
+
+         ,@(package-arguments lib)))
+      (inputs %boot0-inputs)
+      (native-inputs '()))))
+
 (define gcc-boot0
   (package-with-bootstrap-guile
    (package (inherit gcc)
@@ -255,14 +275,13 @@
                ("mpc-source" ,(package-source mpc))
                ("binutils-cross" ,binutils-boot0)
 
+               ;; The libstdc++ that libcc1 links against.
+               ("libstdc++" ,libstdc++-boot0)
+
                ;; Call it differently so that the builder can check whether
                ;; the "libc" input is #f.
                ("libc-native" ,@(assoc-ref %boot0-inputs "libc"))
-               ,@(alist-delete "libc" %boot0-inputs)))
-
-     ;; No need for Texinfo at this stage.
-     (native-inputs (alist-delete "texinfo"
-                                  (package-native-inputs gcc))))))
+               ,@(alist-delete "libc" %boot0-inputs))))))
 
 (define perl-boot0
   (let ((perl (package
@@ -882,9 +901,9 @@ and binaries, plus debugging symbols in the 'debug' output), and Binutils.")
   (gcc-toolchain gcc-4.8))
 
 (define-public gcc-toolchain-4.9
-  (gcc-toolchain gcc-final))
+  (gcc-toolchain gcc-4.9))
 
 (define-public gcc-toolchain-5
-  (gcc-toolchain gcc-5))
+  (gcc-toolchain gcc-final))
 
 ;;; commencement.scm ends here

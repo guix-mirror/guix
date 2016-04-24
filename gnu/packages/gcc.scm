@@ -352,14 +352,16 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "1ny4smkp5bzs3cp8ss7pl6lk8yss0d9m4av1mvdp72r1x695akxq"))
-              (patches (list (search-patch "gcc-5.0-libvtv-runpath.patch")))))
+              (patches (list (search-patch "gcc-5.0-libvtv-runpath.patch")
+                             (search-patch
+                              "gcc-libiberty-printf-decl.patch")))))
 
     ;; GCC 5 ships with .info files, so no need for Texinfo.
     (native-inputs '())))
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions accordingly.
-(define-public gcc gcc-4.9)
+(define-public gcc gcc-5)
 
 (define-public (make-libstdc++ gcc)
   "Return a libstdc++ package based on GCC.  The primary use case is when
