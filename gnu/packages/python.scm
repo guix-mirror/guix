@@ -2698,31 +2698,20 @@ sources.")
 (define-public python-feedgenerator
   (package
     (name "python-feedgenerator")
-    (version "20150710.97185b7")
+    (version "1.8")
     (source
-     ;; Using the git checkout for now because license file not added till
-     ;; https://github.com/dmdm/feedgenerator-py3k/commit/97185b7566c240c4bf5ed80db7d6c271204dab39
      (origin
-       (method git-fetch)
-       (uri (git-reference
-             (url "https://github.com/dmdm/feedgenerator-py3k.git")
-             (commit "97185b7566c240c4bf5ed80db7d6c271204dab39")))
+       (method url-fetch)
+       (uri (pypi-uri "feedgenerator" version))
        (sha256
         (base32
-         "0dbd6apij5j1923ib905x0srgcyls4wlabqlwp4dzkwmksvnrr2a"))))
-    (arguments
-     `(;; With standard flags, the install phase attempts to create a zip'd
-       ;; egg file, and fails with an error: 'ZIP does not support timestamps
-       ;; before 1980'
-       #:configure-flags '("--single-version-externally-managed"
-                           "--record=feedgenerator.txt")))
+         "0mkimp1fpdan4p3882vzcws4l594k71ich4g0wq97jbra7p602n0"))))
     (build-system python-build-system)
-    (inputs
+    (native-inputs
      `(("python-setuptools" ,python-setuptools)
        ("python-pytz" ,python-pytz)
        ("python-six" ,python-six)))
-    (home-page
-     "https://github.com/dmdm/feedgenerator-py3k.git")
+    (home-page "https://github.com/getpelican/feedgenerator")
     (synopsis
      "Standalone version of Django's Atom/RSS feed generator")
     (description
