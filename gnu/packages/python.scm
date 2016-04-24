@@ -2401,17 +2401,21 @@ OAuth request-signing logic.")
         (base32
          "06856q6x675ly542ig0plbqcyab6ksfzijlyf1hzhgg3sgwgrcyb"))))
     (build-system python-build-system)
-    (inputs
-     `(("python-setuptools" ,python-setuptools)))
     (home-page "http://github.com/mitsuhiko/itsdangerous")
     (synopsis "Python library for passing data to/from untrusted environments")
     (description
      "Itsdangerous provides various helpers to pass trusted data to untrusted
 environments and back.")
-    (license bsd-3)))
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-itsdangerous))))))
 
 (define-public python2-itsdangerous
-  (package-with-python2 python-itsdangerous))
+  (let ((base (package-with-python2
+                (strip-python2-variant python-itsdangerous))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
 
 (define-public python-pyyaml
   (package
