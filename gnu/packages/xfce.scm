@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Florian Paul Schmidt <mista.tapas@gmx.net>
+;;; Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -755,4 +756,35 @@ scaling, etc).  In addition, xfce4-power-manager provides a set of
 freedesktop-compliant DBus interfaces to inform other applications about current
 power level so that they can adjust their power consumption, and it provides the
 inhibit interface which allows applications to prevent automatic sleep.")
+    (license gpl2+)))
+
+(define-public ristretto
+  (package
+    (name "ristretto")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/apps/ristretto/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0a7kwhx51fd2kqh7l7kp13wcn39d2fjkwnn9rfd1k9ydrqj56qki"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("libexif" ,libexif)
+       ("libxfce4ui" ,libxfce4ui)
+       ("librsvg" ,librsvg)
+       ("tumbler" ,tumbler)))
+    (home-page "http://docs.xfce.org/apps/ristretto/start")
+    (synopsis "Fast and lightweight picture-viewer")
+    (description
+     "The Ristretto Image Viewer is an application that can be used to view,
+and scroll through images.  It can be used to run a slideshow of images, open
+images with other applications like an image-editor or configure an image as
+the desktop wallpaper.")
     (license gpl2+)))
