@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
@@ -153,7 +153,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 ("libelf" ,libelf)
                 ("zlib" ,zlib)))
 
-      ;; GCC is one of the few packages that doesn't ship .info files.
+      ;; GCC < 5 is one of the few packages that doesn't ship .info files.
       (native-inputs `(("texinfo" ,texinfo)))
 
       (arguments
@@ -352,7 +352,10 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "1ny4smkp5bzs3cp8ss7pl6lk8yss0d9m4av1mvdp72r1x695akxq"))
-              (patches (list (search-patch "gcc-5.0-libvtv-runpath.patch")))))))
+              (patches (list (search-patch "gcc-5.0-libvtv-runpath.patch")))))
+
+    ;; GCC 5 ships with .info files, so no need for Texinfo.
+    (native-inputs '())))
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions accordingly.
