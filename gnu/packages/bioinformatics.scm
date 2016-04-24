@@ -380,6 +380,55 @@ pybedtools extends BEDTools by offering feature-level manipulations from with
 Python.")
     (license license:gpl2+)))
 
+(define-public python-biom-format
+  (package
+   (name "python-biom-format")
+   (version "2.1.5")
+   (source
+    (origin
+     (method url-fetch)
+     ;; Use GitHub as source because PyPI distribution does not contain
+     ;; test data: https://github.com/biocore/biom-format/issues/693
+     (uri (string-append "https://github.com/biocore/biom-format/archive/"
+                         version ".tar.gz"))
+     (file-name (string-append name "-" version ".tar.gz"))
+     (sha256
+      (base32
+       "1n25w3p1rixbpac8iysmzcja6m4ip5r6sz19l8y6wlwi49hxn278"))))
+   (build-system python-build-system)
+   (inputs
+    `(("python-numpy" ,python-numpy)
+      ("python-scipy" ,python-scipy)
+      ("python-future" ,python-future)
+      ("python-click" ,python-click)
+      ("python-h5py" ,python-h5py)))
+   (home-page "http://www.biom-format.org")
+   (synopsis "Biological Observation Matrix (BIOM) format utilities")
+   (description
+    "The BIOM file format is designed to be a general-use format for
+representing counts of observations e.g. operational taxonomic units, KEGG
+orthology groups or lipid types, in one or more biological samples
+e.g. microbiome samples, genomes, metagenomes.")
+   (license license:bsd-3)
+   (properties `((python2-variant . ,(delay python2-biom-format))))))
+
+(define-public python2-biom-format
+  (let ((base (package-with-python2 (strip-python2-variant python-biom-format))))
+    (package
+      (inherit base)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           ;; Do not require the unmaintained pyqi library.
+           (add-after 'unpack 'remove-pyqi
+             (lambda _
+               (substitute* "setup.py"
+                 (("install_requires.append\\(\"pyqi\"\\)") "pass"))
+               #t)))
+         ,@(package-arguments base)))
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
+
 (define-public bioperl-minimal
   (let* ((inputs `(("perl-module-build" ,perl-module-build)
                    ("perl-data-stag" ,perl-data-stag)
