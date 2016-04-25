@@ -1974,6 +1974,15 @@ suffix, such as @code{MiB} for mebibytes and @code{GB} for gigabytes
 
 When @var{min} is omitted, collect all the garbage.
 
+@item --free-space=@var{free}
+@itemx -F @var{free}
+Collect garbage until @var{free} space is available under
+@file{/gnu/store}, if possible; @var{free} denotes storage space, such
+as @code{500MiB}, as described above.
+
+When @var{free} or more is already available in @file{/gnu/store}, do
+nothing and exit immediately.
+
 @item --delete
 @itemx -d
 Attempt to delete all the store files and directories specified as

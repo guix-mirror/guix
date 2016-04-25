@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +20,7 @@
   #:use-module (guix ui)
   #:use-module (guix scripts)
   #:use-module (guix store)
+  #:autoload   (guix build syscalls) (statfs)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
@@ -42,6 +43,8 @@ Invoke the garbage collector.\n"))
   (display (_ "
   -C, --collect-garbage[=MIN]
                          collect at least MIN bytes of garbage"))
+  (display (_ "
+  -F, --free-space=FREE  attempt to reach FREE available space in the store"))
   (display (_ "
   -d, --delete           attempt to delete PATHS"))
   (display (_ "
@@ -96,6 +99,9 @@ Invoke the garbage collector.\n"))
                             (leave (_ "invalid amount of storage: ~a~%")
                                    arg))))
                      (#f result)))))
+        (option '(#\F "free-space") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'free-space (size->number arg) result)))
         (option '(#\d "delete") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'action 'delete
@@ -175,6 +181,18 @@ Invoke the garbage collector.\n"))
                         (cut match:substring <> 1)))
         file))
 
+  (define (ensure-free-space store space)
+    ;; Attempt to have at least SPACE bytes available in STORE.
+    (let* ((fs    (statfs (%store-prefix)))
+           (free  (* (file-system-block-size fs)
+                     (file-system-blocks-available fs))))
+      (if (> free space)
+          (info (_ "already ~h bytes available on ~a, nothing to do~%")
+                free (%store-prefix))
+          (let ((to-free (- space free)))
+            (info (_ "freeing ~h bytes~%") to-free)
+            (collect-garbage store to-free)))))
+
   (with-error-handling
     (let* ((opts  (parse-options))
            (store (open-connection))
@@ -197,10 +215,15 @@ Invoke the garbage collector.\n"))
       (case (assoc-ref opts 'action)
         ((collect-garbage)
          (assert-no-extra-arguments)
-         (let ((min-freed (assoc-ref opts 'min-freed)))
-           (if min-freed
-               (collect-garbage store min-freed)
-               (collect-garbage store))))
+         (let ((min-freed  (assoc-ref opts 'min-freed))
+               (free-space (assoc-ref opts 'free-space)))
+           (cond
+            (free-space
+             (ensure-free-space store free-space))
+            (min-freed
+             (collect-garbage store min-freed))
+            (else
+             (collect-garbage store)))))
         ((delete)
          (delete-paths store (map direct-store-path paths)))
         ((list-references)
