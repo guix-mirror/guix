@@ -46,7 +46,7 @@ index 92b8d54..618a751 100644
 -deps :
 -	$(MAKE) -C $(BROTLI)/dec
 -	$(MAKE) -C $(BROTLI)/enc
-+$(EXECUTABLES) : $(EXE_OBJS)
++$(EXECUTABLES) : $(EXE_OBJS) $(OBJS)
 +	$(CXX) $(LDFLAGS) $(OBJS) $(SRCDIR)/$@.o -o $@ $(BROTLI_LIBS) $(LIBS)
  
  clean :
