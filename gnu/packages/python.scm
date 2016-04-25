@@ -3419,22 +3419,26 @@ toolkits.")
 (define-public python2-pysnptools
   (package
     (name "python2-pysnptools")
-    (version "0.3.5")
+    (version "0.3.9")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pysnptools" version ".zip"))
        (sha256
         (base32
-         "15f4j4w5q603i7mlphb5r6mb1mn33pqg81595fpjp158140yqx7b"))))
+         "1wybggjzz8zw7aav4pjsg2h22xp17a1lghrprza1pxwlm7wf96y2"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2)) ; only Python 2.7 is supported
     (propagated-inputs
      `(("python2-numpy" ,python2-numpy)
        ("python2-scipy" ,python2-scipy)
-       ("python2-pandas" ,python2-pandas)
+       ("python2-pytz" ,python2-pytz)
        ("python2-cython" ,python2-cython)))
+    (inputs
+     `(("python2-dateutil-2" ,python2-dateutil-2)
+       ("python2-pandas" ,python2-pandas)
+       ("python2-six" ,python2-six)))
     (native-inputs
      `(("unzip" ,unzip)
        ("python2-setuptools" ,python2-setuptools)))
