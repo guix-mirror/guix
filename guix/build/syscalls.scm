@@ -47,6 +47,20 @@
             mount-points
             swapon
             swapoff
+
+            file-system?
+            file-system-type
+            file-system-block-size
+            file-system-block-count
+            file-system-blocks-free
+            file-system-blocks-available
+            file-system-file-count
+            file-system-free-file-nodes
+            file-system-identifier
+            file-system-maximum-name-length
+            file-system-fragment-size
+            statfs
+
             processes
             mkdtemp!
             pivot-root
@@ -456,6 +470,63 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
                  (list tmpl (strerror err))
                  (list err)))
         (pointer->string result)))))
+
+
+(define-record-type <file-system>
+  (file-system type block-size blocks blocks-free
+               blocks-available files free-files identifier
+               name-length fragment-size
+               spare0 spare1 spare2)
+  file-system?
+  (type              file-system-type)
+  (block-size        file-system-block-size)
+  (blocks            file-system-block-count)
+  (blocks-free       file-system-blocks-free)
+  (blocks-available  file-system-blocks-available)
+  (files             file-system-file-count)
+  (free-files        file-system-free-file-nodes)
+  (identifier        file-system-identifier)
+  (name-length       file-system-maximum-name-length)
+  (fragment-size     file-system-fragment-size)
+  (spare0            file-system--spare0)
+  (spare1            file-system--spare1)
+  (spare2            file-system--spare2))
+
+(define-syntax fsword                             ;fsword_t
+  (identifier-syntax long))
+
+(define-c-struct %statfs
+  sizeof-statfs                                   ;slightly overestimated
+  file-system
+  read-statfs
+  write-statfs!
+  (type             fsword)
+  (block-size       fsword)
+  (blocks           uint64)
+  (blocks-free      uint64)
+  (blocks-available uint64)
+  (files            uint64)
+  (free-files       uint64)
+  (identifier       uint64)                       ;really "int[2]"
+  (name-length      fsword)
+  (fragment-size    fsword)
+  (spare0           int128)                       ;really "fsword[4]"
+  (spare1           int128)
+  (spare2           int64))                     ;XXX: to match array alignment
+
+(define statfs
+  (let ((proc (syscall->procedure int "statfs" '(* *))))
+    (lambda (file)
+      "Return a <file-system> data structure describing the file system
+mounted at FILE."
+      (let* ((stat (make-bytevector sizeof-statfs))
+             (ret  (proc (string->pointer file) (bytevector->pointer stat)))
+             (err  (errno)))
+        (if (zero? ret)
+            (read-statfs stat 0)
+            (throw 'system-error "statfs" "~A: ~A"
+                   (list file (strerror err))
+                   (list err)))))))
 
 
 ;;;

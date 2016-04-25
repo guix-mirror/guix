@@ -78,6 +78,21 @@
            (rmdir dir)
            #t))))
 
+(test-equal "statfs, ENOENT"
+  ENOENT
+  (catch 'system-error
+    (lambda ()
+      (statfs "/does-not-exist"))
+    (compose system-error-errno list)))
+
+(test-assert "statfs"
+  (let ((fs (statfs "/")))
+    (and (file-system? fs)
+         (> (file-system-block-size fs) 0)
+         (>= (file-system-blocks-available fs) 0)
+         (>= (file-system-blocks-free fs)
+             (file-system-blocks-available fs)))))
+
 (define (user-namespace pid)
   (string-append "/proc/" (number->string pid) "/ns/user"))
 
