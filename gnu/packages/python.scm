@@ -5304,23 +5304,20 @@ pseudo terminal (pty), and interact with both the process and its pty.")
 (define-public python-terminado
   (package
     (name "python-terminado")
-    (version "0.5")
+    (version "0.6")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/t/terminado/terminado-"
-             version ".tar.gz"))
+       (uri (pypi-uri "terminado" version))
        (sha256
         (base32
-         "1dkmp1n8dj5v1jl9mfrq8lwyc7dsfrvcmz2bgkpg315sy7pr7s33"))))
+         "09h1kwi86g5mrk14s4pgbhshd602zry29lnpxamcqz864kva22rc"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-tornado" ,python-tornado)
        ("python-ptyprocess" ,python-ptyprocess)))
-    (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-nose" ,python-nose)))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
     (arguments
      `(#:phases
        (modify-phases %standard-phases
@@ -5331,17 +5328,19 @@ pseudo terminal (pty), and interact with both the process and its pty.")
     (synopsis "Terminals served to term.js using Tornado websockets")
     (description "This package provides a Tornado websocket backend for the
 term.js Javascript terminal emulator library.")
-    (license bsd-2)))
+    (license bsd-2)
+    (properties `((python2-variant . ,(delay python2-terminado))))))
 
 (define-public python2-terminado
-  (let ((terminado (package-with-python2 python-terminado)))
+  (let ((terminado (package-with-python2 (strip-python2-variant python-terminado))))
     (package (inherit terminado)
-             (propagated-inputs
-              `(("python2-tornado" ,python2-tornado)
-                ("python2-backport-ssl-match-hostname"
-                 ,python2-backport-ssl-match-hostname)
-                ,@(alist-delete "python-tornado"
-                                (package-propagated-inputs terminado)))))))
+      (propagated-inputs
+       `(("python2-backport-ssl-match-hostname"
+          ,python2-backport-ssl-match-hostname)
+          ,@(package-propagated-inputs terminado)))
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs terminado))))))
 
 (define-public python-fonttools
   (package
