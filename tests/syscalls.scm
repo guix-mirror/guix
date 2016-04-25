@@ -259,15 +259,16 @@
              (#f #f)
              (lo (interface-address lo)))))))
 
-(test-equal "terminal-window-size ENOTTY"
-  ENOTTY
+(test-assert "terminal-window-size ENOTTY"
   (call-with-input-file "/dev/null"
     (lambda (port)
       (catch 'system-error
         (lambda ()
           (terminal-window-size port))
         (lambda args
-          (system-error-errno args))))))
+          ;; Accept EINVAL, which some old Linux versions might return.
+          (memv (system-error-errno args)
+                (list ENOTTY EINVAL)))))))
 
 (test-assert "terminal-columns"
   (> (terminal-columns) 0))

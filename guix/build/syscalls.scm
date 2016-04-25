@@ -1034,7 +1034,10 @@ always a positive integer."
           (fall-back)))
     (lambda args
       (let ((errno (system-error-errno args)))
-        (if (= errno ENOTTY)
+        ;; ENOTTY is what we're after but 2012-and-earlier Linux versions
+        ;; would return EINVAL instead in some cases:
+        ;; <https://bugs.ruby-lang.org/issues/10494>.
+        (if (or (= errno ENOTTY) (= errno EINVAL))
             (fall-back)
             (apply throw args))))))
 
