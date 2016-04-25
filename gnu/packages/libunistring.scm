@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,8 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (gnu packages base))
 
 (define-public libunistring
   (package
@@ -35,7 +37,7 @@
             (sha256
              (base32
               "0ixxmgpgh2v8ifm6hbwsjxl023myk3dfnj7wnvmqjivza31fw9cn"))))
-   (propagated-inputs '())                  ; FIXME: add libiconv when !glibc
+   (propagated-inputs (libiconv-if-needed))
    (build-system gnu-build-system)
    (arguments
     ;; Work around parallel build issue whereby C files may be compiled before
