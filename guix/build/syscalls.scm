@@ -101,6 +101,112 @@
 ;;;
 ;;; Code:
 
+
+;;;
+;;; Packed structures.
+;;;
+
+(define-syntax sizeof*
+  ;; XXX: This duplicates 'compile-time-value'.
+  (syntax-rules (int128)
+    ((_ int128)
+     16)
+    ((_ type)
+     (let-syntax ((v (lambda (s)
+                       (let ((val (sizeof type)))
+                         (syntax-case s ()
+                           (_ val))))))
+       v))))
+
+(define-syntax alignof*
+  ;; XXX: This duplicates 'compile-time-value'.
+  (syntax-rules (int128)
+    ((_ int128)
+     16)
+    ((_ type)
+     (let-syntax ((v (lambda (s)
+                       (let ((val (alignof type)))
+                         (syntax-case s ()
+                           (_ val))))))
+       v))))
+
+(define-syntax align                             ;as found in (system foreign)
+  (syntax-rules (~)
+    "Add to OFFSET whatever it takes to get proper alignment for TYPE."
+    ((_ offset (type ~ endianness))
+     (align offset type))
+    ((_ offset type)
+     (1+ (logior (1- offset) (1- (alignof* type)))))))
+
+(define-syntax type-size
+  (syntax-rules (~)
+    ((_ (type ~ order))
+     (sizeof* type))
+    ((_ type)
+     (sizeof* type))))
+
+(define-syntax write-type
+  (syntax-rules (~)
+    ((_ bv offset (type ~ order) value)
+     (bytevector-uint-set! bv offset value
+                           (endianness order) (sizeof* type)))
+    ((_ bv offset type value)
+     (bytevector-uint-set! bv offset value
+                           (native-endianness) (sizeof* type)))))
+
+(define-syntax write-types
+  (syntax-rules ()
+    ((_ bv offset () ())
+     #t)
+    ((_ bv offset (type0 types ...) (field0 fields ...))
+     (begin
+       (write-type bv (align offset type0) type0 field0)
+       (write-types bv
+                    (+ (align offset type0) (type-size type0))
+                    (types ...) (fields ...))))))
+
+(define-syntax read-type
+  (syntax-rules (~ quote *)
+    ((_ bv offset '*)
+     (make-pointer (bytevector-uint-ref bv offset
+                                        (native-endianness)
+                                        (sizeof* '*))))
+    ((_ bv offset (type ~ order))
+     (bytevector-uint-ref bv offset
+                          (endianness order) (sizeof* type)))
+    ((_ bv offset type)
+     (bytevector-uint-ref bv offset
+                          (native-endianness) (sizeof* type)))))
+
+(define-syntax read-types
+  (syntax-rules ()
+    ((_ return bv offset () (values ...))
+     (return values ...))
+    ((_ return bv offset (type0 types ...) (values ...))
+     (read-types return
+                 bv
+                 (+ (align offset type0) (type-size type0))
+                 (types ...)
+                 (values ... (read-type bv
+                                        (align offset type0)
+                                        type0))))))
+
+(define-syntax define-c-struct
+  (syntax-rules ()
+    "Define READ as a deserializer and WRITE! as a serializer for the C
+structure with the given TYPES.  READ uses WRAP-FIELDS to return its value."
+    ((_ name wrap-fields read write! (fields types) ...)
+     (begin
+       (define (write! bv offset fields ...)
+         (write-types bv offset (types ...) (fields ...)))
+       (define (read bv offset)
+         (read-types wrap-fields bv offset (types ...) ()))))))
+
+
+;;;
+;;; FFI.
+;;;
+
 (define %libc-errno-pointer
   ;; Glibc's 'errno' pointer.
   (let ((errno-loc (dynamic-func "__errno_location" (dynamic-link))))
@@ -158,6 +264,11 @@ the returned procedure is called."
       (lambda _
         (error (format #f "~a: syscall->procedure failed: ~s"
                        name args))))))
+
+
+;;;
+;;; File systems.
+;;;
 
 (define (augment-mtab source target type options)
   "Augment /etc/mtab with information about the given mount point."
@@ -322,6 +433,11 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
                  (list err)))
         (pointer->string result)))))
 
+
+;;;
+;;; Containers.
+;;;
+
 ;; Linux clone flags, from linux/sched.h
 (define CLONE_CHILD_CLEARTID #x00200000)
 (define CLONE_CHILD_SETTID   #x01000000)
@@ -394,107 +510,6 @@ system to PUT-OLD."
           (throw 'system-error "pivot_root" "~S ~S: ~A"
                  (list new-root put-old (strerror err))
                  (list err)))))))
-
-
-;;;
-;;; Packed structures.
-;;;
-
-(define-syntax sizeof*
-  ;; XXX: This duplicates 'compile-time-value'.
-  (syntax-rules (int128)
-    ((_ int128)
-     16)
-    ((_ type)
-     (let-syntax ((v (lambda (s)
-                       (let ((val (sizeof type)))
-                         (syntax-case s ()
-                           (_ val))))))
-       v))))
-
-(define-syntax alignof*
-  ;; XXX: This duplicates 'compile-time-value'.
-  (syntax-rules (int128)
-    ((_ int128)
-     16)
-    ((_ type)
-     (let-syntax ((v (lambda (s)
-                       (let ((val (alignof type)))
-                         (syntax-case s ()
-                           (_ val))))))
-       v))))
-
-(define-syntax align                             ;as found in (system foreign)
-  (syntax-rules (~)
-    "Add to OFFSET whatever it takes to get proper alignment for TYPE."
-    ((_ offset (type ~ endianness))
-     (align offset type))
-    ((_ offset type)
-     (1+ (logior (1- offset) (1- (alignof* type)))))))
-
-(define-syntax type-size
-  (syntax-rules (~)
-    ((_ (type ~ order))
-     (sizeof* type))
-    ((_ type)
-     (sizeof* type))))
-
-(define-syntax write-type
-  (syntax-rules (~)
-    ((_ bv offset (type ~ order) value)
-     (bytevector-uint-set! bv offset value
-                           (endianness order) (sizeof* type)))
-    ((_ bv offset type value)
-     (bytevector-uint-set! bv offset value
-                           (native-endianness) (sizeof* type)))))
-
-(define-syntax write-types
-  (syntax-rules ()
-    ((_ bv offset () ())
-     #t)
-    ((_ bv offset (type0 types ...) (field0 fields ...))
-     (begin
-       (write-type bv (align offset type0) type0 field0)
-       (write-types bv
-                    (+ (align offset type0) (type-size type0))
-                    (types ...) (fields ...))))))
-
-(define-syntax read-type
-  (syntax-rules (~ quote *)
-    ((_ bv offset '*)
-     (make-pointer (bytevector-uint-ref bv offset
-                                        (native-endianness)
-                                        (sizeof* '*))))
-    ((_ bv offset (type ~ order))
-     (bytevector-uint-ref bv offset
-                          (endianness order) (sizeof* type)))
-    ((_ bv offset type)
-     (bytevector-uint-ref bv offset
-                          (native-endianness) (sizeof* type)))))
-
-(define-syntax read-types
-  (syntax-rules ()
-    ((_ return bv offset () (values ...))
-     (return values ...))
-    ((_ return bv offset (type0 types ...) (values ...))
-     (read-types return
-                 bv
-                 (+ (align offset type0) (type-size type0))
-                 (types ...)
-                 (values ... (read-type bv
-                                        (align offset type0)
-                                        type0))))))
-
-(define-syntax define-c-struct
-  (syntax-rules ()
-    "Define READ as a deserializer and WRITE! as a serializer for the C
-structure with the given TYPES.  READ uses WRAP-FIELDS to return its value."
-    ((_ name wrap-fields read write! (fields types) ...)
-     (begin
-       (define (write! bv offset fields ...)
-         (write-types bv offset (types ...) (fields ...)))
-       (define (read bv offset)
-         (read-types wrap-fields bv offset (types ...) ()))))))
 
 
 ;;;
