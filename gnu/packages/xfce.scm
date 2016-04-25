@@ -789,3 +789,29 @@ and scroll through images.  It can be used to run a slideshow of images, open
 images with other applications like an image-editor or configure an image as
 the desktop wallpaper.")
     (license gpl2+)))
+
+(define-public xfce4-taskmanager
+  (package
+    (name "xfce4-taskmanager")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/apps/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1jwywmkkkmz7406m1jq40w6apiav25cznafhigbgpjv6z5hv27if"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libwnck" ,libwnck-2)
+       ("gtk+" ,gtk+-2)))
+    (home-page "http://goodies.xfce.org/projects/applications/xfce4-taskmanager")
+    (synopsis "Easy to use task manager")
+    (description
+     "This is a task manager for the Xfce desktop.  It displays the CPU and
+memory usage graphically, and it can display processes as a tree.")
+    (license gpl2+)))
