@@ -199,7 +199,7 @@ structure with the given TYPES.  READ uses WRAP-FIELDS to return its value."
      (begin
        (define (write! bv offset fields ...)
          (write-types bv offset (types ...) (fields ...)))
-       (define (read bv offset)
+       (define* (read bv #:optional (offset 0))
          (read-types wrap-fields bv offset (types ...) ()))))))
 
 
@@ -858,8 +858,7 @@ return the list of resulting <interface> objects."
              (result '()))
     (if (null-pointer? ptr)
         (reverse result)
-        (match (read-ifaddrs (pointer->bytevector ptr %sizeof-ifaddrs)
-                             0)
+        (match (read-ifaddrs (pointer->bytevector ptr %sizeof-ifaddrs))
           ((ifaddr . ptr)
            (loop ptr (cons ifaddr result)))))))
 
@@ -921,8 +920,7 @@ corresponds to the TIOCGWINSZ ioctl."
          (ret  (%ioctl (fileno port) TIOCGWINSZ size))
          (err  (errno)))
     (if (zero? ret)
-        (read-winsize (pointer->bytevector size (sizeof winsize-struct))
-                      0)
+        (read-winsize (pointer->bytevector size (sizeof winsize-struct)))
         (throw 'system-error "terminal-window-size" "~A"
                (list (strerror err))
                (list err)))))
