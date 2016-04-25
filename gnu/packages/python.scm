@@ -4910,11 +4910,10 @@ It is written entirely in Python.")
        (sha256
         (base32 "1gzgwayl6hmc9jfcl88bni4jcsk2jcca9dn1rvrfsvnijcjx7hn9"))))
     (build-system python-build-system)
-    (inputs
-     `(("python-certifi" ,python-certifi)))
     (native-inputs
-     `(("python-backports-abc" ,python-backports-abc)
-       ("python-setuptools" ,python-setuptools)))
+     `(("python-certifi" ,python-certifi)))
+    (inputs
+     `(("python-backports-abc" ,python-backports-abc)))
     (home-page "http://www.tornadoweb.org/")
     (synopsis "Python web framework and asynchronous networking library")
     (description
@@ -4923,16 +4922,20 @@ originally developed at FriendFeed.  By using non-blocking network I/O,
 Tornado can scale to tens of thousands of open connections, making it ideal
 for long polling, WebSockets, and other applications that require a long-lived
 connection to each user.")
-    (license asl2.0)))
+    (license asl2.0)
+    (properties `((python2-variant . ,(delay python2-tornado))))))
 
 (define-public python2-tornado
-  (let ((tornado (package-with-python2 python-tornado)))
+  (let ((tornado (package-with-python2 (strip-python2-variant python-tornado))))
     (package (inherit tornado)
       (inputs
        `(("python2-backport-ssl-match-hostname"
           ,python2-backport-ssl-match-hostname)
-         ("python2-singledispatch", python2-singledispatch)
-         ,@(package-inputs tornado))))))
+         ("python2-singledispatch" ,python2-singledispatch)
+          ,@(package-inputs tornado)))
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs tornado))))))
 
 ;; the python- version can be removed with python-3.5
 (define-public python-backports-abc
