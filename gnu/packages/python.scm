@@ -4752,22 +4752,18 @@ Python style, together with a fast and comfortable execution environment.")
 (define-public python-seaborn
   (package
     (name "python-seaborn")
-    (version "0.5.1")
+    (version "0.7.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/s/seaborn/seaborn-"
-             version ".tar.gz"))
+       (uri (pypi-uri "seaborn" version))
        (sha256
-        (base32 "1236abw18ijjglmv60q85ckqrvgf5qyy4zlq7nz5aqfg6q87z3wc"))))
+        (base32 "0ibi3xsfm2kysph61mnfy0pf8d5rkgxgrdb0z9nbizgcgdsb5a0m"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-pandas" ,python-pandas)
        ("python-matplotlib" ,python-matplotlib)
        ("python-scipy" ,python-scipy)))
-    (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
     (home-page "http://stanford.edu/~mwaskom/software/seaborn/")
     (synopsis "Statistical data visualization")
     (description
@@ -4775,16 +4771,17 @@ Python style, together with a fast and comfortable execution environment.")
 graphics in Python.  It is built on top of matplotlib and tightly integrated
 with the PyData stack, including support for numpy and pandas data structures
 and statistical routines from scipy and statsmodels.")
-    (license bsd-3)))
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-seaborn))))))
 
 (define-public python2-seaborn
-  (let ((seaborn (package-with-python2 python-seaborn)))
-    (package (inherit seaborn)
-      (propagated-inputs
-       `(("python2-pytz" ,python2-pytz)
-         ("python2-pandas" ,python2-pandas)
-         ("python2-matplotlib" ,python2-matplotlib)
-         ("python2-scipy" ,python2-scipy))))))
+  (let ((base (package-with-python2 (strip-python2-variant python-seaborn))))
+    (package
+      (inherit base)
+      (propagated-inputs `(("python2-pytz" ,python2-pytz)
+                           ,@(package-propagated-inputs base)))
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
 
 (define-public python-sympy
   (package
