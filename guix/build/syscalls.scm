@@ -145,6 +145,27 @@
     ((_ type)
      (sizeof* type))))
 
+(define-syntax struct-alignment
+  (syntax-rules ()
+    "Compute the alignment for the aggregate made of TYPES at OFFSET.  The
+result is the alignment of the \"most strictly aligned component\"."
+    ((_ offset types ...)
+     (max (align offset types) ...))))
+
+(define-syntax struct-size
+  (syntax-rules ()
+    "Return the size in bytes of the structure made of TYPES."
+    ((_ offset (types-processed ...))
+     ;; The SysV ABI P.S. says: "Aggregates (structures and arrays) and unions
+     ;; assume the alignment of their most strictly aligned component."  As an
+     ;; example, a struct such as "int32, int16" has size 8, not 6.
+     (1+ (logior (1- offset)
+                 (1- (struct-alignment offset types-processed ...)))))
+    ((_ offset (types-processed ...) type0 types ...)
+     (struct-size (+ (type-size type0) (align offset type0))
+                  (type0 types-processed ...)
+                  types ...))))
+
 (define-syntax write-type
   (syntax-rules (~)
     ((_ bv offset (type ~ order) value)
@@ -193,10 +214,13 @@
 
 (define-syntax define-c-struct
   (syntax-rules ()
-    "Define READ as a deserializer and WRITE! as a serializer for the C
-structure with the given TYPES.  READ uses WRAP-FIELDS to return its value."
-    ((_ name wrap-fields read write! (fields types) ...)
+    "Define SIZE as the size in bytes of the C structure made of FIELDS.  READ
+as a deserializer and WRITE! as a serializer for the C structure with the
+given TYPES.  READ uses WRAP-FIELDS to return its value."
+    ((_ name size wrap-fields read write! (fields types) ...)
      (begin
+       (define size
+         (struct-size 0 () types ...))
        (define (write! bv offset fields ...)
          (write-types bv offset (types ...) (fields ...)))
        (define* (read bv #:optional (offset 0))
@@ -559,6 +583,7 @@ system to PUT-OLD."
       32))
 
 (define-c-struct sockaddr-in                      ;<linux/in.h>
+  sizeof-sockaddrin
   (lambda (family port address)
     (make-socket-address family address port))
   read-sockaddr-in
@@ -568,6 +593,7 @@ system to PUT-OLD."
   (address   (int32 ~ big)))
 
 (define-c-struct sockaddr-in6                     ;<linux/in6.h>
+  sizeof-sockaddr-in6
   (lambda (family port flowinfo address scopeid)
     (make-socket-address family address port flowinfo scopeid))
   read-sockaddr-in6
@@ -832,6 +858,7 @@ an <interface> object, and whose cdr is the pointer NEXT."
         next))
 
 (define-c-struct ifaddrs                          ;<ifaddrs.h>
+  %sizeof-ifaddrs
   values->interface
   read-ifaddrs
   write-ifaddrs!
@@ -842,14 +869,6 @@ an <interface> object, and whose cdr is the pointer NEXT."
   (netmask       '*)
   (broadcastaddr '*)
   (data          '*))
-
-(define-syntax %struct-ifaddrs-type
-  (identifier-syntax
-   `(* * ,unsigned-int * * * *)))
-
-(define-syntax %sizeof-ifaddrs
-  (identifier-syntax
-   (sizeof* %struct-ifaddrs-type)))
 
 (define (unfold-interface-list ptr)
   "Call 'read-ifaddrs' on PTR and all its 'next' fields, recursively, and
@@ -901,6 +920,7 @@ network interface.  This is implemented using the 'getifaddrs' libc function."
   (y-pixels window-size-y-pixels))
 
 (define-c-struct winsize                          ;<bits/ioctl-types.h>
+  sizeof-winsize
   window-size
   read-winsize
   write-winsize!
@@ -909,18 +929,16 @@ network interface.  This is implemented using the 'getifaddrs' libc function."
   (x-pixels      unsigned-short)
   (y-pixels      unsigned-short))
 
-(define winsize-struct
-  (list unsigned-short unsigned-short unsigned-short unsigned-short))
-
 (define* (terminal-window-size #:optional (port (current-output-port)))
   "Return a <window-size> structure describing the terminal at PORT, or raise
 a 'system-error' if PORT is not backed by a terminal.  This procedure
 corresponds to the TIOCGWINSZ ioctl."
-  (let* ((size (make-c-struct winsize-struct '(0 0 0 0)))
-         (ret  (%ioctl (fileno port) TIOCGWINSZ size))
+  (let* ((size (make-bytevector sizeof-winsize))
+         (ret  (%ioctl (fileno port) TIOCGWINSZ
+                       (bytevector->pointer size)))
          (err  (errno)))
     (if (zero? ret)
-        (read-winsize (pointer->bytevector size (sizeof winsize-struct)))
+        (read-winsize size)
         (throw 'system-error "terminal-window-size" "~A"
                (list (strerror err))
                (list err)))))
