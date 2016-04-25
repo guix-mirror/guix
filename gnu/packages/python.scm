@@ -4877,16 +4877,14 @@ It is written entirely in Python.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/s/singledispatch/"
-             "singledispatch-" version ".tar.gz"))
+       (uri (pypi-uri "singledispatch" version))
        (sha256
         (base32
          "171b7ip0hsq5qm83np40h3phlr36ym18w0lay0a8v08kvy3sy1jv"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
-    (propagated-inputs
+    (inputs
      `(("python-six" ,python-six)))
     (home-page
      "http://docs.python.org/3/library/functools.html#functools.singledispatch")
