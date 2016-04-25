@@ -992,8 +992,9 @@ datetime module, available in Python 2.3+.")
                  "python-pandas-fix-tslib-test-failure.patch"))))
     (build-system python-build-system)
     (propagated-inputs
-     `(("python-numpy" ,python-numpy)
-       ("python-pytz" ,python-pytz)
+     `(("python-numpy" ,python-numpy)))
+    (inputs
+     `(("python-pytz" ,python-pytz)
        ("python-dateutil" ,python-dateutil-2)))
     (native-inputs
      `(("python-nose" ,python-nose)
