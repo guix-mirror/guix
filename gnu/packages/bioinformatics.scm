@@ -5074,3 +5074,31 @@ negative binomial distribution to model the read counts among the samples in
 the same group, and look for consistent differences between ChIP and control
 group or two ChIP groups run under different conditions.")
     (license license:gpl3+)))
+
+(define-public filevercmp
+  (let ((commit "1a9b779b93d0b244040274794d402106907b71b7"))
+    (package
+      (name "filevercmp")
+      (version (string-append "0-1." (string-take commit 7)))
+      (source (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/ekg/filevercmp/archive/"
+                            commit ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32 "0yp5jswf5j2pqc6517x277s4s6h1ss99v57kxw9gy0jkfl3yh450"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; There are no tests to run.
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure) ; There is no configure phase.
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+                 (install-file "filevercmp" bin)))))))
+      (home-page "https://github.com/ekg/filevercmp")
+      (synopsis "This program compares version strings")
+      (description "This program compares version strings.  It intends to be a
+replacement for strverscmp.")
+      (license license:gpl3+))))
