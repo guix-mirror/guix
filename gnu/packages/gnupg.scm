@@ -571,14 +571,14 @@ including tools for signing keys, keyring analysis, and party preparation.
 (define-public pinentry
   (package
     (name "pinentry")
-    (version "0.9.6")
+    (version "0.9.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/pinentry/pinentry-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0rhyw1vk28kgasjp22myf7m2q8kycw82d65pr9kgh93z17lj849a"))))
+                "1cp7wjqr6nx31mdclr61s2h84ijqjl0ph99kgj4vyawpjj1j1633"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)
@@ -588,7 +588,7 @@ including tools for signing keys, keyring analysis, and party preparation.
        ("glib" ,glib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://gnupg.org/aegypten2/")
+    (home-page "https://gnupg.org/aegypten2/")
     (synopsis "GnuPG's interface to passphrase input")
     (description
      "Pinentry provides a console and a GTK+ GUI that allows users to
