@@ -54,16 +54,16 @@
 (define-public java-swt
   (package
     (name "java-swt")
-    (version "4.4.2")
+    (version "4.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://ftp-stud.fht-esslingen.de/pub/Mirrors/"
                     "eclipse/eclipse/downloads/drops4/R-" version
-                    "-201502041700/swt-" version "-gtk-linux-x86.zip"))
+                    "-201506032000/swt-" version "-gtk-linux-x86.zip"))
               (sha256
                (base32
-                "0lzyqr8k2zm5s8fmnrx5kxpslxfs0i73y26fwfms483x45izzwj8"))))
+                "03mhzraikcs4fsz7d3h5af9pw1bbcfd6dglsvbk2ciwimy9zj30q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("-f" "make_linux.mak")
