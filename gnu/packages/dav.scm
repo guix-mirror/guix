@@ -52,13 +52,16 @@ clients.")
 (define-public vdirsyncer
   (package
     (name "vdirsyncer")
-    (version "0.9.3")
+    (version "0.10.0")
     (source (origin
              (method url-fetch)
-             (uri (pypi-uri "vdirsyncer" version))
+             (uri (string-append "https://pypi.python.org/packages/0b/fb/"
+                                 "c42223e1e9169e4770194e62143d431755724b080d8cb"
+                                 "77f14705b634815/"
+                                 "vdirsyncer-" version ".tar.gz"))
              (sha256
               (base32
-               "1wjhzjfcvwz68j6wc5cmjsw69ggwcpfy7jp7z7q6fnwwp4dr98lc"))))
+               "1gf86sbd6w0w4zayh9r3irlp5jwrzbjikjc0vs5zkdpa5c199f78"))))
     (build-system python-build-system)
     (arguments
       `(#:phases (modify-phases %standard-phases
@@ -100,7 +103,6 @@ clients.")
        ("python-click" ,python-click)
        ("python-click-log" ,python-click-log)
        ("python-click-threading" ,python-click-threading)
-       ("python-lxml" ,python-lxml)
        ("python-requests-toolbelt" ,python-requests-toolbelt)))
     (synopsis "Synchronize calendars and contacts")
     (description "Vdirsyncer synchronizes your calendars and addressbooks
