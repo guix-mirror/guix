@@ -31,6 +31,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pth)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
@@ -605,6 +606,17 @@ including tools for signing keys, keyring analysis, and party preparation.
        ,@(package-inputs pinentry-tty)))
     (description
      "Pinentry provides a console and a GTK+ GUI that allows users to enter a
+passphrase when @code{gpg} or @code{gpg2} is run and needs it.")))
+
+(define-public pinentry-qt
+  (package
+    (inherit pinentry-tty)
+    (name "pinentry-qt")
+    (inputs
+     `(("qt" ,qt)
+       ,@(package-inputs pinentry-tty)))
+  (description
+   "Pinentry provides a console and a Qt GUI that allows users to enter a
 passphrase when @code{gpg} or @code{gpg2} is run and needs it.")))
 
 (define-public pinentry
