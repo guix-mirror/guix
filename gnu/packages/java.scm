@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages attr)
@@ -829,3 +831,31 @@ build process and its dependencies, whereas Make uses Makefile format.")
                    "jdk-drop" "langtools-drop" "hotspot-drop")))))))
 
 (define-public icedtea icedtea-7)
+
+(define-public java-xz
+  (package
+   (name "java-xz")
+   (version "1.5")
+   (source (origin
+     (method url-fetch)
+     (uri (string-append "http://tukaani.org/xz/xz-java-" version ".zip"))
+     (sha256
+      (base32
+       "0x6vn9dp9kxk83x2fp3394n95dk8fx9yg8jns9371iqsn0vy8ih1"))))
+   (build-system ant-build-system)
+   (arguments
+    `(#:tests? #f ; There are no tests to run.
+      #:jar-name ,(string-append "xz-" version  ".jar")
+      #:phases
+      (modify-phases %standard-phases
+        ;; The unpack phase enters the "maven" directory by accident.
+        (add-after 'unpack 'chdir
+          (lambda _ (chdir "..") #t)))))
+   (native-inputs
+    `(("unzip" ,unzip)))
+   (home-page "http://tukaani.org/xz/java.html")
+   (synopsis "Implementation of XZ data compression in pure Java")
+   (description "This library aims to be a complete implementation of XZ data
+compression in pure Java.  Single-threaded streamed compression and
+decompression and random access decompression have been fully implemented.")
+   (license license:public-domain)))
