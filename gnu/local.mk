@@ -403,6 +403,7 @@ GNU_SYSTEM_MODULES =				\
 
 patchdir = $(guilemoduledir)/gnu/packages/patches
 dist_patch_DATA =						\
+  gnu/packages/patches/4store-fix-buildsystem.patch		\
   gnu/packages/patches/abiword-explictly-cast-bools.patch	\
   gnu/packages/patches/abiword-wmf-version-lookup-fix.patch	\
   gnu/packages/patches/acl-hurd-path-max.patch			\
