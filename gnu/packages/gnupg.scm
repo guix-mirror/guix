@@ -568,9 +568,9 @@ including tools for signing keys, keyring analysis, and party preparation.
    (license license:gpl2)
    (home-page "http://pgp-tools.alioth.debian.org/")))
 
-(define-public pinentry-gtk2
+(define-public pinentry-tty
   (package
-    (name "pinentry-gtk2")
+    (name "pinentry-tty")
     (version "0.9.7")
     (source (origin
               (method url-fetch)
@@ -580,20 +580,32 @@ including tools for signing keys, keyring analysis, and party preparation.
                (base32
                 "1cp7wjqr6nx31mdclr61s2h84ijqjl0ph99kgj4vyawpjj1j1633"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-pinentry-tty")))
     (inputs
      `(("ncurses" ,ncurses)
        ("libassuan" ,libassuan)
-       ("libsecret" ,libsecret "out")
-       ("gtk+" ,gtk+-2)
-       ("glib" ,glib)))
+       ("libsecret" ,libsecret "out")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://gnupg.org/aegypten2/")
     (synopsis "GnuPG's interface to passphrase input")
     (description
-     "Pinentry provides a console and a GTK+ GUI that allows users to
-enter a passphrase when `gpg' or `gpg2' is run and needs it.")
+     "Pinentry provides a console that allows users to enter a passphrase when
+@code{gpg} or @code{gpg2} is run and needs it.")
     (license license:gpl2+)))
+
+(define-public pinentry-gtk2
+  (package
+    (inherit pinentry-tty)
+    (name "pinentry-gtk2")
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("glib" ,glib)
+       ,@(package-inputs pinentry-tty)))
+    (description
+     "Pinentry provides a console and a GTK+ GUI that allows users to enter a
+passphrase when @code{gpg} or @code{gpg2} is run and needs it.")))
 
 (define-public pinentry
   (package (inherit pinentry-gtk2)
