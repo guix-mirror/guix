@@ -481,12 +481,12 @@ assert-no-store-file-names:
 	fi
 
 # Make sure hydra.gnu.org has the important binaries.
-assert-binaries-available:
+assert-binaries-available: $(GOBJECTS)
 	$(AM_V_at)$(top_builddir)/pre-inst-env "$(GUILE)"			\
 	  "$(top_srcdir)/build-aux/check-available-binaries.scm"
 
 # Make sure the final inputs don't refer to bootstrap tools.
-assert-final-inputs-self-contained:
+assert-final-inputs-self-contained: $(GOBJECTS)
 	$(AM_V_at)$(top_builddir)/pre-inst-env "$(GUILE)"			\
 	  "$(top_srcdir)/build-aux/check-final-inputs-self-contained.scm"
 
