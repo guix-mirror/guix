@@ -689,6 +689,34 @@ your own lessons.")
 Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
     (license license:gpl3+)))
 
+(define-public synthv1
+  (package
+    (name "synthv1")
+    (version "0.7.4")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "mirror://sourceforge/synthv1/synthv1-"
+                              version ".tar.gz"))
+              (sha256
+               (base32
+                "16n0v4jk0ilirq84rrildvdwqxgxav78rk58ilhl622v5n893c7w"))))
+    (build-system gnu-build-system)
+    ;; There are no tests.
+    (arguments `(#:tests? #f))
+    (inputs
+     `(("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("alsa-lib" ,alsa-lib)
+       ("liblo" ,liblo)
+       ("qt" ,qt)))
+    (home-page "http://synthv1.sourceforge.net")
+    (synopsis "Polyphonic subtractive synthesizer")
+    (description
+     "Synthv1 is an old-school subtractive polyphonic synthesizer with four
+oscillators and stereo effects.")
+    (license license:gpl2+)))
+
 (define-public setbfree
   (package
     (name "setbfree")
