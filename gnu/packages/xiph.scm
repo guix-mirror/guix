@@ -176,23 +176,26 @@ stereo encoding, and voice activity detection.")
      "Libao is a cross-platform audio library that allows programs to
 output audio using a simple API on a wide variety of platforms.
 It currently supports:
-Null output (handy for testing without a sound device),
-WAV files,
-AU files,
-RAW files,
-OSS (Open Sound System, used on Linux and FreeBSD),
-ALSA (Advanced Linux Sound Architecture),
-aRts (Analog RealTime Synth, used by KDE),
-PulseAudio (next generation GNOME sound server),
-esd (EsounD or Enlightened Sound Daemon),
-Mac OS X,
-Windows (98 and later),
-AIX,
-Sun/NetBSD/OpenBSD,
-IRIX,
-NAS (Network Audio Server),
-RoarAudio (Modern, multi-OS, networked Sound System),
-OpenBSD's sndio.")
+@itemize
+@item Null output (handy for testing without a sound device),
+@item WAV files,
+@item AU files,
+@item RAW files,
+@item OSS (Open Sound System, used on Linux and FreeBSD),
+@item ALSA (Advanced Linux Sound Architecture),
+@item aRts (Analog RealTime Synth, used by KDE),
+@item PulseAudio (next generation GNOME sound server),
+@item esd (EsounD or Enlightened Sound Daemon),
+@item Mac OS X,
+@item Windows (98 and later),
+@item AIX,
+@item Sun/NetBSD/OpenBSD,
+@item IRIX,
+@item NAS (Network Audio Server),
+@item RoarAudio (Modern, multi-OS, networked Sound System),
+@item OpenBSD's sndio.
+@end itemize
+")
     (license license:gpl2+)
     (home-page "http://www.xiph.org/ao/")))
 
