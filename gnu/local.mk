@@ -479,6 +479,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/fltk-shared-lib-defines.patch		\
   gnu/packages/patches/fltk-xfont-on-demand.patch		\
   gnu/packages/patches/fontforge-svg-modtime.patch		\
+  gnu/packages/patches/fossil-test-fixes.patch			\
   gnu/packages/patches/freeimage-CVE-2015-0852.patch		\
   gnu/packages/patches/gawk-fts-test.patch			\
   gnu/packages/patches/gawk-shell.patch				\

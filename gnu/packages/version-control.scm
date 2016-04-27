@@ -5,7 +5,7 @@
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
@@ -29,7 +29,7 @@
   #:use-module ((guix licenses)
                 #:select (asl2.0 bsd-2
                           gpl1+ gpl2 gpl2+ gpl3+ lgpl2.1
-                          x11-style))
+                          public-domain x11-style))
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -38,7 +38,6 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial)
-  #:use-module (guix build utils)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages asciidoc)
@@ -1125,3 +1124,78 @@ Mercurial, Bazaar, Darcs, CVS, Fossil, and Veracity.")
      "This package allows you to use your hubic account as a \"special
 repository\" with git-annex.")
     (license gpl3+)))
+
+(define-public fossil
+  (package
+    (name "fossil")
+    (version "1.34")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Upstream source affected by
+       ;; http://debbugs.gnu.org/cgi/bugreport.cgi?bug=20962
+       (uri (string-append
+             "https://web.archive.org/web/20160402202958/"
+             "https://www.fossil-scm.org/download/fossil-src-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "17x4vgjcfihwmq195qg32irp50panvjqfpvhqydfvv4ghwzbi9jk"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Commit 0a2ebe57 on 2015-08-03 18:35:53 changed output formatting
+           ;; for some commands, but affected tests were not updated.  Use
+           ;; substitute here, which is more concise than patching.
+           (substitute* "test/clean.test"
+             (("NEW ") "NEW    "))
+           (substitute* '("test/revert.test" "test/mv-rm.test")
+             (("REVERTED:") "REVERT  ")
+             (("DELETE:")   "DELETE  ")
+             (("UNMANAGE:") "UNMANAGE "))
+           ;; Fix use of __DATE__ and __TIME__
+           (substitute* "src/main.c"
+             (("Compiled on %s %s") "Compiled")
+             (("__DATE__, __TIME__, ") ""))
+           #t))
+       (patches (list (search-patch "fossil-test-fixes.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("tcl" ,tcl)                     ;for configuration only
+       ("which" ,which)                 ;for tests only
+       ("ed" ,ed)))                     ;ditto
+    (inputs
+     `(("openssl" ,openssl)
+       ("zlib" ,zlib)
+       ("sqlite" ,sqlite)))
+    (arguments
+     `(#:configure-flags (list "--with-openssl=auto"
+                               "--disable-internal-sqlite")
+       #:test-target "test"
+       #:phases (modify-phases %standard-phases
+                  (replace 'configure
+                    (lambda* (#:key outputs (configure-flags '())
+                                    #:allow-other-keys)
+                      ;; The 'configure' script is not an autoconf script and
+                      ;; chokes on unrecognized options.
+                      (zero? (apply system*
+                                    "./configure"
+                                    (string-append "--prefix="
+                                                   (assoc-ref outputs "out"))
+                                    configure-flags))))
+                  (add-before 'check 'test-setup
+                    (lambda _
+                      (setenv "USER" "guix")
+                      (setenv "TZ" "UTC")
+                      ;; Fixing the th1 test would require many backports, so
+                      ;; just disable for now.
+                      (delete-file "test/th1.test")
+                      #t)))))
+    (home-page "https://fossil-scm.org")
+    (synopsis "Software configuration management system")
+    (description
+     "Fossil is a distributed source control management system which supports
+access and administration over HTTP CGI or via a built-in HTTP server.  It has
+a built-in wiki, built-in file browsing, built-in tickets system, etc.")
+    (license (list public-domain        ;src/miniz.c, src/shell.c
+                   bsd-2))))
