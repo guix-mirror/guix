@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -683,8 +683,8 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
               ("binutils-tarball" ,%binutils-bootstrap-tarball)
               ("glibc-tarball" ,%glibc-bootstrap-tarball)
               ("coreutils&co-tarball" ,%bootstrap-binaries-tarball)))
-    (synopsis #f)
-    (description #f)
+    (synopsis "Tarballs containing all the bootstrap binaries")
+    (description synopsis)
     (home-page #f)
     (license gpl3+)))
 

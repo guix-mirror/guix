@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -125,7 +125,7 @@ successful, or false to signal an error."
        ("tarball" ,(bootstrap-origin (source (%current-system))))))
     (source #f)
     (synopsis description)
-    (description #f)
+    (description description)
     (home-page #f)
     (license gpl3+)))
 
@@ -411,7 +411,7 @@ $out/bin/guile --version~%"
                          (base32
                           "0k97a3whzx3apsi9n2cbsrr79ad6lh00klxph9hw4fqyp1abkdsg")))))))))
     (synopsis "Bootstrap binaries and headers of the GNU C Library")
-    (description #f)
+    (description synopsis)
     (home-page #f)
     (license lgpl2.1+)))
 
@@ -496,7 +496,7 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
             (variable "LIBRARY_PATH")
             (files '("lib" "lib64")))))
     (synopsis "Bootstrap binaries of the GNU Compiler Collection")
-    (description #f)
+    (description synopsis)
     (home-page #f)
     (license gpl3+)))
 
