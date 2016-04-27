@@ -916,13 +916,26 @@ toolkit.")
                "12h2kd22iayvjfhmgjccm33igrbvqdj7hym31fsa1y0dhwzmf8gh"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("glib" ,glib "bin")))      ;for 'glib-compile-resources'
+                     ("glib" ,glib "bin")        ;for 'glib-compile-resources'
+                     ("xorg-server" ,xorg-server)))
     (propagated-inputs
      `(("pangomm" ,pangomm)
        ("cairomm" ,cairomm)
        ("atkmm" ,atkmm)
        ("gtk+" ,gtk+)
        ("glibmm" ,glibmm)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'check 'run-xvfb
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((xorg-server (assoc-ref inputs "xorg-server")))
+                        ;; Tests such as 'object_move/test' require a running
+                        ;; X server.
+                        (system (string-append xorg-server "/bin/Xvfb :1 &"))
+                        (setenv "DISPLAY" ":1")
+                        ;; Don't fail because of the missing /etc/machine-id.
+                        (setenv "DBUS_FATAL_WARNINGS" "0")
+                        #t))))))
     (home-page "http://gtkmm.org/")
     (synopsis
      "C++ interface to the GTK+ graphical user interface library")
