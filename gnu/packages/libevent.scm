@@ -89,7 +89,7 @@ programs.")
 (define-public libuv
   (package
     (name "libuv")
-    (version "1.8.0")
+    (version "1.9.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libuv/libuv/archive/v"
@@ -97,7 +97,7 @@ programs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1plwz98ljdi161gxhl4wgj7llnx611rxpb6y38kcp59wcxf1lvlh"))))
+                "1sx5lahhg2w92y6mgyg7c7nrx2biyyxd5yiqkmq8n4w01lm2gf7q"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
