@@ -5380,16 +5380,16 @@ from an XML-based format.")
 (define-public python-ly
   (package
     (name "python-ly")
-    (version "0.9.3")
+    (version "0.9.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/p/python-ly/python-ly-"
-             version ".tar.gz"))
+       (uri (string-append "https://pypi.python.org/packages/57/4f/"
+                           "889579244947368f28eda66b782331b1e75f83fd72e63f9ece93cd7a18f9"
+                           "/python-ly-" version ".tar.gz"))
        (sha256
         (base32
-         "1y6ananq8fia4y4m5id6gvsrm68bzpzd1y46pfzvawic0wjg2l0l"))))
+         "0g6n288l83sfwavxh1aryi0aqvsr3sp7v6f903mckwqa4scpky62"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
