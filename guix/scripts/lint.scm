@@ -187,13 +187,17 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
                       'description))))
 
   (let ((description (package-description package)))
-    (when (string? description)
-      (check-not-empty description)
-      ;; Use raw description for this because Texinfo rendering automatically
-      ;; fixes end of sentence space.
-      (check-end-of-sentence-space description)
-      (and=> (check-texinfo-markup description)
-             check-proper-start))))
+    (if (string? description)
+        (begin
+          (check-not-empty description)
+          ;; Use raw description for this because Texinfo rendering
+          ;; automatically fixes end of sentence space.
+          (check-end-of-sentence-space description)
+          (and=> (check-texinfo-markup description)
+                 check-proper-start))
+        (emit-warning package
+                      (format #f (_ "invalid description: ~s") description)
+                      'description))))
 
 (define (check-inputs-should-be-native package)
   ;; Emit a warning if some inputs of PACKAGE are likely to belong to its
@@ -262,14 +266,19 @@ the synopsis")
                     (_ "synopsis should not start with the package name")
                     'synopsis)))
 
- (let ((synopsis (package-synopsis package)))
-   (when (string? synopsis)
-     (check-not-empty synopsis)
-     (check-proper-start synopsis)
-     (check-final-period synopsis)
-     (check-start-article synopsis)
-     (check-start-with-package-name synopsis)
-     (check-synopsis-length synopsis))))
+  (define checks
+    (list check-not-empty check-proper-start check-final-period
+          check-start-article check-start-with-package-name
+          check-synopsis-length))
+
+  (match (package-synopsis package)
+    ((? string? synopsis)
+     (for-each (lambda (proc)
+                 (proc synopsis))
+               checks))
+    (invalid
+     (emit-warning package (format #f (_ "invalid synopsis: ~s") invalid)
+                   'synopsis))))
 
 (define* (probe-uri uri #:key timeout)
   "Probe URI, a URI object, and return two values: a symbol denoting the
@@ -459,12 +468,14 @@ descriptions maintained upstream."
                (official-gnu-packages*))
     (#f                                   ;not a GNU package, so nothing to do
      #t)
-    (descriptor                           ;a genuine GNU package
+    (descriptor                                   ;a genuine GNU package
      (let ((upstream   (gnu-package-doc-summary descriptor))
            (downstream (package-synopsis package))
            (loc        (or (package-field-location package 'synopsis)
                            (package-location package))))
-       (unless (and upstream (string=? upstream downstream))
+       (when (and upstream
+                  (or (not (string? downstream))
+                      (not (string=? upstream downstream))))
          (format (guix-warning-port)
                  (_ "~a: ~a: proposed synopsis: ~s~%")
                  (location->string loc) (package-full-name package)
@@ -475,8 +486,9 @@ descriptions maintained upstream."
            (loc        (or (package-field-location package 'description)
                            (package-location package))))
        (when (and upstream
-                  (not (string=? (fill-paragraph upstream 100)
-                                 (fill-paragraph downstream 100))))
+                  (or (not (string? downstream))
+                      (not (string=? (fill-paragraph upstream 100)
+                                     (fill-paragraph downstream 100)))))
          (format (guix-warning-port)
                  (_ "~a: ~a: proposed description:~%     \"~a\"~%")
                  (location->string loc) (package-full-name package)
