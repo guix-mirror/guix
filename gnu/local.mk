@@ -490,11 +490,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/ghostscript-CVE-2015-3228.patch		\
   gnu/packages/patches/ghostscript-runpath.patch		\
   gnu/packages/patches/glib-networking-ssl-cert-file.patch	\
-  gnu/packages/patches/glib-tests-desktop.patch			\
-  gnu/packages/patches/glib-tests-homedir.patch			\
-  gnu/packages/patches/glib-tests-prlimit.patch			\
   gnu/packages/patches/glib-tests-timer.patch			\
-  gnu/packages/patches/glib-tests-gapplication.patch		\
   gnu/packages/patches/glibc-CVE-2015-7547.patch		\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-hurd-extern-inline.patch		\
@@ -522,6 +518,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/guile-relocatable.patch			\
   gnu/packages/patches/guile-rsvg-pkgconfig.patch		\
   gnu/packages/patches/gtk2-respect-GUIX_GTK2_PATH.patch	\
+  gnu/packages/patches/gtk2-theme-paths.patch			\
   gnu/packages/patches/gtk3-respect-GUIX_GTK3_PATH.patch	\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
