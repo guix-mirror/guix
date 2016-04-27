@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -237,7 +237,7 @@ Challenge the substitutes for PACKAGE... provided by one or more servers.\n"))
                                   (issues (discrepancies items urls)))
                (for-each summarize-discrepancy issues)
                (unless (null? issues)
-                 (exit 1))
+                 (exit 2))
                (return (null? issues)))
              #:system system)))))))
 

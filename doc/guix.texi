@@ -5609,7 +5609,8 @@ guix challenge @var{options} [@var{packages}@dots{}]
 When a difference is found between the hash of a locally-built item and
 that of a server-provided substitute, or among substitutes provided by
 different servers, the command displays it as in the example above and
-exits with a non-zero return code.
+its exit code is 2 (other non-zero exit codes denote other kinds of
+errors.)
 
 The one option that matters is:
 
