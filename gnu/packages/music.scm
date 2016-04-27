@@ -1053,7 +1053,7 @@ instrument or MIDI file player.")
 (define-public zynaddsubfx
   (package
     (name "zynaddsubfx")
-    (version "2.5.3")
+    (version "2.5.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1061,7 +1061,7 @@ instrument or MIDI file player.")
                     version "/zynaddsubfx-" version ".tar.bz2"))
               (sha256
                (base32
-                "04da54p19p7f5wm6vm7abbjbsil1qf7n5f4adj01jm6b0wqigvgb"))))
+                "16llaa2wg2gbgjhwp3632b2vx9jvanj4csv7d41k233ms6d1sjq1"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
