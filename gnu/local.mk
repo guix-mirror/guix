@@ -683,6 +683,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/poppler-CVE-2015-8868.patch		\
   gnu/packages/patches/portaudio-audacity-compat.patch		\
   gnu/packages/patches/procmail-ambiguous-getline-debian.patch  \
+  gnu/packages/patches/procps-non-linux.patch			\
   gnu/packages/patches/pt-scotch-build-parallelism.patch	\
   gnu/packages/patches/pulseaudio-fix-mult-test.patch		\
   gnu/packages/patches/pulseaudio-longer-test-timeout.patch	\

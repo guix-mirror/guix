@@ -535,7 +535,9 @@ block devices, UUIDs, TTYs, and many other tools.")
                                   "procps-ng-" version ".tar.xz"))
               (sha256
                (base32
-                "1va4n0mpsq327ca9dqp4hnrpgs6821rp0f2m0jyc1bfjl9lk2jg9"))))
+                "1va4n0mpsq327ca9dqp4hnrpgs6821rp0f2m0jyc1bfjl9lk2jg9"))
+              (patches
+               (list (search-patch "procps-non-linux.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:modules ((guix build utils)
