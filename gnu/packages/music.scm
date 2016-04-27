@@ -692,16 +692,16 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
 (define-public setbfree
   (package
     (name "setbfree")
-    (version "0.8.0")
+    (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append
-                "https://github.com/pantherb/setBfree/releases/download/v"
-                version "/setbfree-" version ".tar.gz"))
+               (string-append "https://github.com/pantherb/setBfree/archive/v"
+                              version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "045bgp7qsigpbrhk7qvgvliwiy26sajifwn7f2jvk90ckfqnlw4b"))))
+                "0hj0rqk5yd4fzs7bwy6a6nhqgrmcggkjcr4il76rxy92r7nwabf3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
