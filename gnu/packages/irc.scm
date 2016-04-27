@@ -52,7 +52,7 @@
 (define-public quassel
   (package
     (name "quassel")
-    (version "0.12.3")
+    (version "0.12.4")
     (source
       (origin
         (method url-fetch)
@@ -60,7 +60,7 @@
                             version ".tar.bz2"))
         (sha256
          (base32
-          "0d6lwf6qblj1ia5j9mjy112zrmpbbg9mmxgscbgxiqychldyjgjd"))))
+          "0ka456fb8ha3w7g74xlzfg6w4azxjjxgrhl4aqpbwg3lnd6fbr4k"))))
     (build-system cmake-build-system)
     (arguments
       ;; The three binaries are not mutually exlusive, and are all built
