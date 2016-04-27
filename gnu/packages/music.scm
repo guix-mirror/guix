@@ -988,6 +988,40 @@ projects.")
 using a system-independent interface.")
     (license license:expat)))
 
+(define-public python-pyportmidi
+  (package
+    (name "python-pyportmidi")
+    (version (package-version portmidi))
+    (source (package-source portmidi))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-dir
+           (lambda _ (chdir "pm_python") #t))
+         (add-after 'enter-dir 'fix-setup.py
+           (lambda _
+             (substitute* "setup.py"
+               ;; Use Python 3 syntax
+               (("print (\".*\")" _ text)
+                (string-append "print(" text ")\n"))
+               ;; TODO.txt and CHANGES.txt don't exist
+               (("CHANGES =.*") "CHANGES = \"\"\n")
+               (("TODO =.*") "TODO = \"\"\n"))
+             #t)))))
+    (inputs
+     `(("portmidi" ,portmidi)
+       ("alsa-lib" ,alsa-lib)
+       ("python-cython" ,python-cython)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://portmedia.sourceforge.net/portmidi/")
+    (synopsis "Python bindings to PortMidi")
+    (description
+     "This package provides Python bindings to the PortMidi library.")
+    (license license:expat)))
+
 (define-public frescobaldi
   (package
     (name "frescobaldi")
