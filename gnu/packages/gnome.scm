@@ -3960,7 +3960,8 @@ javascript engine and the GObject introspection framework.")
                 "1i0x1jd9x1vpv8lwdlzwf0ml8jxh3b3l6nlg6pbnfjw47w3y6iws"))))
     (build-system glib-or-gtk-build-system)
     (arguments
-     `(#:phases
+     `(#:configure-flags '("--disable-spell") ; XXX: gspell not packaged yet
+       #:phases
        (modify-phases %standard-phases
          (add-after
           'install 'wrap-gedit
@@ -3987,7 +3988,6 @@ javascript engine and the GObject introspection framework.")
        ("gtksourceview" ,gtksourceview)
        ("libpeas" ,libpeas)
        ("libxml2" ,libxml2)
-       ("enchant" ,enchant)
        ("iso-codes" ,iso-codes)
        ("python-pygobject" ,python-pygobject)
        ("python" ,python)
