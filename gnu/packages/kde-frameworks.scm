@@ -27,7 +27,7 @@
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xorg))
 
-(define kde-frameworks-version "5.19.0")
+(define kde-frameworks-version "5.21.0")
 
 (define-public extra-cmake-modules
   (package
@@ -41,7 +41,7 @@
                             name "-" version ".tar.xz"))
         (sha256
          (base32
-          "1dl3hhbara7iswb5wsc5dp17ar3ljw5f0nrncl8vry9smaz2zl63"))))
+          "1kbc5fkcbz9vkg0jpz10vsfgwajlrsmbl0vrbls5qvrdgbgrwlm3"))))
     ;; The package looks for Qt5LinguistTools provided by Qt, but apparently
     ;; compiles without it; it might be needed for building the
     ;; documentation, which requires the additional Sphinx package.
@@ -66,7 +66,7 @@ common build settings used in software produced by the KDE community.")
                             name "-" version ".tar.xz"))
         (sha256
          (base32
-          "115xs34r74j9zcsw69glnh8w59iyh764n3gniawwrk23c6yb8fch"))))
+          "13lfwpw5a4in0mp5y8d15jg6xhhrka2qmw73wrdzcvj22n6ldzzi"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -104,7 +104,7 @@ lower level classes for interaction with the X Windowing System.")
                             name "5-"version ".tar.xz"))
         (sha256
          (base32
-          "09vfwcyidj3bl0qr4sq78bkc69zp9x8dwp8bsay5y05q8591dkg0"))))
+          "00qh1h3xx392hh73zdlknc1j9i2sck9ys74a9ffkf6an4rl0hws5"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
