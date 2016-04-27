@@ -36,14 +36,14 @@
 (define-public node
   (package
     (name "node")
-    (version "5.10.0")
+    (version "6.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nodejs.org/dist/v" version
                                   "/node-v" version ".tar.gz"))
               (sha256
                (base32
-                "0avn25j04q172ri8mksrryyg4g95k7x2pqzsbmp1nr6ybfpvkblg"))))
+                "0cpw7ng193jgfbw2g1fd0kcglmjjkbj4xb89g00z8zz0lj0nvdbd"))))
     (build-system gnu-build-system)
     (arguments
      ;; TODO: Package http_parser and add --shared-http-parser.
