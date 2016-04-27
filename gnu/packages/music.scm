@@ -958,6 +958,36 @@ programming methods as well as for realizing complex systems for large-scale
 projects.")
     (license license:bsd-3)))
 
+(define-public portmidi
+  (package
+    (name "portmidi")
+    (version "217")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/portmedia/portmidi/"
+                                  version "/portmidi-src-" version ".zip"))
+              (sha256
+               (base32
+                "03rfsk7z6rdahq2ihy5k13qjzgx757f75yqka88v3gc0pn9ais88"))
+              (patches (list (search-patch "portmidi-modular-build.patch")))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; tests cannot be linked
+       #:configure-flags
+       (list "-DPORTMIDI_ENABLE_JAVA=Off"
+             "-DCMAKE_BUILD_TYPE=Release"    ; needed to have PMALSA set
+             "-DPORTMIDI_ENABLE_TEST=Off"))) ; tests fail linking
+    (inputs
+     `(("alsa-lib" ,alsa-lib)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://portmedia.sourceforge.net/portmidi/")
+    (synopsis "Library for MIDI I/O")
+    (description
+     "PortMidi is a library supporting real-time input and output of MIDI data
+using a system-independent interface.")
+    (license license:expat)))
+
 (define-public frescobaldi
   (package
     (name "frescobaldi")
