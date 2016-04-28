@@ -4123,7 +4123,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
 (define-public evolution-data-server
   (package
     (name "evolution-data-server")
-    (version "3.20.0")
+    (version "3.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4131,7 +4131,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0jsgzahaha6bxrm15da7c32m8ksnmx9rfm7xdx99lbxhsm7yiwh5"))))
+                "0lsbhzacr2bs90z8sx44vf403r0h2yqsy4l2svrh5hjnassgdyqx"))))
     (build-system gnu-build-system)
     (arguments
      '(;; XXX: fails with:
@@ -4143,6 +4143,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
              (nspr (assoc-ref %build-inputs "nspr")))
          (list "--disable-uoa"    ; disable Ubuntu Online Accounts support
                "--disable-google" ; disable Google Contacts support
+               "--disable-google-auth" ; disable Google authentication
                (string-append "--with-nspr-includes=" nspr "/include/nspr")
                (string-append "--with-nss-includes=" nss "/include/nss")
                (string-append "--with-nss-libs=" nss "/lib/nss")))
