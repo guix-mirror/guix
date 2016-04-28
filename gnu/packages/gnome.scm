@@ -4342,7 +4342,7 @@ services.")
 (define-public network-manager-applet
   (package
     (name "network-manager-applet")
-    (version "1.0.10")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -4350,7 +4350,7 @@ services.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1szh5jyijxm6z55irkp5s44pwah0nikss40mx7pvpk38m8zaqidh"))))
+                "0dhvk3dvy6djn6blpkv46dn6yfh28wsh6mpl0v53qxfip97j8kwk"))))
     (build-system glib-or-gtk-build-system)
     (arguments '(#:configure-flags '("--disable-migration")))
     (native-inputs
