@@ -4224,7 +4224,7 @@ users.")
 (define-public network-manager
   (package
     (name "network-manager")
-    (version "1.0.12")
+    (version "1.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/NetworkManager/"
@@ -4232,7 +4232,7 @@ users.")
                                   "NetworkManager-" version ".tar.xz"))
               (sha256
                (base32
-                "17jan0g5jzp8mrpklyacwdgnnw016m1c5pc4az5im6qhc260yirs"))))
+                "101axwk3bc1pm9m98vwrnxyjna6w0qgzaskgivldq69xz8qcyiz9"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc")) ; 8 MiB of gtk-doc HTML
@@ -4262,7 +4262,8 @@ users.")
              ;; cope with being already in the Guix build jail as that jail
              ;; lacks some features that they would like to proxy over (like
              ;; a /sys mount).
-             (substitute* '("src/platform/Makefile.in")
+             (substitute* '("src/platform/Makefile.in"
+                            "src/devices/Makefile.in")
                (("SUBDIRS = tests") ""))
              (substitute* '("src/tests/Makefile.in")
                (("\ttest-route-manager-linux") "\t")
@@ -4277,7 +4278,8 @@ users.")
            (lambda _
              (zero? (system* "make"
                              "sysconfdir=/tmp"
-                             "localstatedir=/tmp"
+                             "rundir=/tmp"
+                             "statedir=/tmp"
                              "install")))))))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for gdbus-codegen
@@ -4299,6 +4301,7 @@ users.")
        ("libndp" ,libndp)
        ("libnl" ,libnl)
        ("libsoup" ,libsoup)
+       ("modem-manager" ,modem-manager)
        ("polkit" ,polkit)
        ("ppp" ,ppp)
        ("readline" ,readline)
