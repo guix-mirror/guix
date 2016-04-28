@@ -41,25 +41,12 @@
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2                    ;uses the Python 2 'print' syntax
-       #:phases (modify-phases %standard-phases
-                  (add-after 'install 'wrap
-                             (lambda* (#:key inputs outputs #:allow-other-keys)
-                               (let* ((out  (assoc-ref outputs "out"))
-                                      (bin  (string-append out "/bin"))
-                                      (rsvg (assoc-ref inputs "librsvg"))
-                                      (pixbuf (find-files
-                                               rsvg "^loaders\\.cache$")))
-                                 ;; Allow key-mon to load SVGs.
-                                 (wrap-program (string-append bin "/key-mon")
-                                   `("GDK_PIXBUF_MODULE_FILE" ":"
-                                     prefix ,pixbuf))))))
        #:tests? #f))                         ;no tests
     (native-inputs
      `(("python2-setuptools" ,python2-setuptools)))
     (inputs
      `(("python2-xlib" ,python2-xlib)
        ("python2-pygtk" ,python2-pygtk)
-       ("librsvg" ,librsvg)
        ("python2-rsvg" ,python2-rsvg)))
     (home-page "http://code.google.com/p/key-mon")
     (synopsis "Show keyboard and mouse status")

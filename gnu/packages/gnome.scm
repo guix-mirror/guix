@@ -880,7 +880,7 @@ dealing with different structured file formats.")
     (arguments
      `(#:phases
        (alist-cons-before
-        'configure 'augment-gir-search-path
+        'configure 'pre-configure
         (lambda* (#:key inputs #:allow-other-keys)
           (substitute* "gdk-pixbuf-loader/Makefile.in"
             ;; By default the gdk-pixbuf loader is installed under
@@ -889,24 +889,10 @@ dealing with different structured file formats.")
              (string-append "gdk_pixbuf_moduledir = "
                             "$(prefix)/lib/gdk-pixbuf-2.0/2.10.0/"
                              "loaders\n"))
-            ;; Likewise, create a separate 'loaders.cache' file.
+            ;; Drop the 'loaders.cache' file, it's in gdk-pixbuf+svg.
             (("gdk_pixbuf_cache_file = .*$")
-             "gdk_pixbuf_cache_file = $(gdk_pixbuf_moduledir).cache\n")))
-        (alist-cons-after
-         'install 'generate-full-cache
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let ((loaders-directory
-                  (string-append (assoc-ref outputs "out")
-                                 "/lib/gdk-pixbuf-2.0/2.10.0/loaders")))
-             (zero?
-              (system
-               (string-append
-                "gdk-pixbuf-query-loaders "
-                loaders-directory "/libpixbufloader-svg.so "
-                (string-join (find-files (assoc-ref inputs "gdk-pixbuf")
-                                         "libpixbufloader-.*\\.so") " ")
-                "> " loaders-directory ".cache")))))
-         %standard-phases))))
+             "gdk_pixbuf_cache_file = $(TMPDIR)/loaders.cache\n")))
+        %standard-phases)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
@@ -1627,18 +1613,6 @@ engineering.")
      `(("intltool" ,intltool)
        ("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)))
-    (arguments
-     `(#:phases
-       (alist-cons-before
-        'build 'use-full-cache
-        ;; Use librsvg's loaders.cache instead of the one provided by
-        ;; gdk-pixbuf because the latter does not include support for SVG
-        ;; files.
-        (lambda* (#:key inputs #:allow-other-keys)
-          (setenv "GDK_PIXBUF_MODULE_FILE"
-                  (car (find-files (assoc-ref inputs "librsvg")
-                                   "loaders\\.cache"))))
-        %standard-phases)))
     (home-page "https://launchpad.net/gnome-themes-standard")
     (synopsis "Default GNOME 3 themes")
     (description
