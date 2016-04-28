@@ -3819,7 +3819,7 @@ such as gzip tarballs.")
 (define-public gnome-session
   (package
     (name "gnome-session")
-    (version "3.20.0")
+    (version "3.20.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3827,7 +3827,7 @@ such as gzip tarballs.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0d0v60lmvr8wbrswfpc4f4jg2dhxj6nkgv7wnwdf2zifk8vp5zv6"))))
+                "04w90gyl0kdx5vwmdcgfdk3qr9xhip00vgpgzci151agqwyzbs9a"))))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
@@ -3845,6 +3845,8 @@ such as gzip tarballs.")
              (substitute* "gnome-session/main.c"
                (("#ifdef HAVE_SYSTEMD") "#if 0"))
              (substitute* "gnome-session/gsm-manager.c"
+               (("#ifdef HAVE_SYSTEMD") "#if 0"))
+             (substitute* "gnome-session/gsm-autostart-app.c"
                (("#ifdef HAVE_SYSTEMD") "#if 0"))
              #t))
          (add-after 'install 'wrap-gnome-session
