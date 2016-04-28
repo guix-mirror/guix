@@ -2017,7 +2017,7 @@ library.")
 (define-public rest
   (package
     (name "rest")
-    (version "0.7.93")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/rest/"
@@ -2025,7 +2025,7 @@ library.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "05mj10hhiik23ai8w4wkk5vhsp7hcv24bih5q3fl82ilam268467"))))
+                "0iznvzhab1jq9z3nwy97dh2pid9azwkqm7kkxwx0f5ql1hh9pf77"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tests require internet connection
