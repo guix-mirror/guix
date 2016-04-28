@@ -47,7 +47,8 @@
       (sha256
        (base32
         "15qd7lkz5d5ynz70xhxhigpz3wns39v9xcf7ggkl0792syc8sfgq"))
-      (patches (search-patches "fltk-shared-lib-defines.patch"))))
+      (patches (search-patches "fltk-shared-lib-defines.patch"
+                               "fltk-xfont-on-demand.patch"))))
    (build-system gnu-build-system)
    (inputs
     `(("libjpeg" ,libjpeg-8)     ;jpeg_read_header argument error in libjpeg-9
