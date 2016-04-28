@@ -530,6 +530,15 @@ dist_patch_DATA =						\
   gnu/packages/patches/hydra-disable-darcs-test.patch		\
   gnu/packages/patches/icecat-avoid-bundled-includes.patch	\
   gnu/packages/patches/icecat-re-enable-DHE-cipher-suites.patch	\
+  gnu/packages/patches/icecat-update-bundled-graphite2.patch	\
+  gnu/packages/patches/icecat-CVE-2016-2805.patch		\
+  gnu/packages/patches/icecat-CVE-2016-2807-pt1.patch		\
+  gnu/packages/patches/icecat-CVE-2016-2807-pt2.patch		\
+  gnu/packages/patches/icecat-CVE-2016-2807-pt3.patch		\
+  gnu/packages/patches/icecat-CVE-2016-2807-pt4.patch		\
+  gnu/packages/patches/icecat-CVE-2016-2807-pt5.patch		\
+  gnu/packages/patches/icecat-CVE-2016-2808.patch		\
+  gnu/packages/patches/icecat-CVE-2016-2814.patch		\
   gnu/packages/patches/icu4c-CVE-2014-6585.patch		\
   gnu/packages/patches/icu4c-CVE-2015-1270.patch		\
   gnu/packages/patches/icu4c-CVE-2015-4760.patch		\

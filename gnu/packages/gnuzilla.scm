@@ -299,7 +299,16 @@ standards.")
         "1wdmd6hasra36g86ha1dw8sl7a5mvr7c4jbjx4zyg9629y5gqr8g"))
       (patches (search-patches
                 "icecat-avoid-bundled-includes.patch"
-                "icecat-re-enable-DHE-cipher-suites.patch"))
+                "icecat-re-enable-DHE-cipher-suites.patch"
+                "icecat-update-bundled-graphite2.patch"
+                "icecat-CVE-2016-2805.patch"
+                "icecat-CVE-2016-2807-pt1.patch"
+                "icecat-CVE-2016-2807-pt2.patch"
+                "icecat-CVE-2016-2807-pt3.patch"
+                "icecat-CVE-2016-2807-pt4.patch"
+                "icecat-CVE-2016-2807-pt5.patch"
+                "icecat-CVE-2016-2808.patch"
+                "icecat-CVE-2016-2814.patch"))
       (modules '((guix build utils)))
       (snippet
        '(begin
