@@ -644,7 +644,8 @@ from ~s: ~a (~s)~%")
     (()
      #t)
     ((vulnerabilities ...)
-     (let* ((patches   (filter-map patch-file-name
+     (let* ((package   (or (package-replacement package) package))
+            (patches   (filter-map patch-file-name
                                    (or (and=> (package-source package)
                                               origin-patches)
                                        '())))
