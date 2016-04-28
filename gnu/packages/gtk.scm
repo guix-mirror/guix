@@ -339,7 +339,7 @@ printing and other features typical of a source code editor.")
 (define-public gtksourceview
  (package
    (name "gtksourceview")
-   (version "3.20.1")
+   (version "3.20.2")
    (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnome/sources/" name "/"
@@ -347,7 +347,7 @@ printing and other features typical of a source code editor.")
                                  name "-" version ".tar.xz"))
              (sha256
               (base32
-               "0k4cmq94181l39di9z4agampg4za6bvimkvcjm3qlxmsxb09ab9j"))))
+               "03vxirdbjpgjrkl5ph0p9b1saq17xxr4kvhz1ijpg40a9jf3ci4y"))))
    (build-system gnu-build-system)
    (arguments
     '(#:phases
