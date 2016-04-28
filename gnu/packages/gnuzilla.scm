@@ -178,7 +178,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.21.1")
+    (version "3.23")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -189,7 +189,7 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0knr99yc8sba2ga6x1gwhg9gr1dmgcl344g3bmxm8c364i2vpxns"))
+                "1kqidv91icq96m9m8zx50n7px08km2l88458rkgyjwcn3kiq7cwl"))
               ;; Create nss.pc and nss-config.
               (patches (search-patches "nss-pkgconfig.patch"))))
     (build-system gnu-build-system)
@@ -251,7 +251,16 @@ in the Mozilla clients.")
               ;; Install other files.
               (copy-recursively "dist/public/nss" inc)
               (copy-recursively (string-append obj "/bin") bin)
-              (copy-recursively (string-append obj "/lib") lib)))
+              (copy-recursively (string-append obj "/lib") lib)
+
+              ;; FIXME: libgtest1.so is installed in the above step, and it's
+              ;; (unnecessarily) linked with several NSS libraries, but
+              ;; without the needed rpaths, causing the 'validate-runpath'
+              ;; phase to fail.  Here we simply delete libgtest1.so, since it
+              ;; seems to be used only during the tests.
+              (delete-file (string-append lib "/libgtest1.so"))
+
+              #t))
           %standard-phases)))))
     (inputs
      `(("sqlite" ,sqlite)
