@@ -8078,8 +8078,10 @@ Python 2.4 and 2.5, and will draw its fixes/improvements from python-trunk.")
     (build-system python-build-system)
     (native-inputs
      `(("python-nose" ,python-nose)))
-    (propagated-inputs
+    (inputs
      `(("python-pytz" ,python-pytz)
+       ("python-amqp" ,python-amqp)
+       ("python-anyjson" ,python-anyjson)
        ("python-billiard" ,python-billiard)
        ("python-kombu" ,python-kombu)))
     (home-page "http://celeryproject.org")
