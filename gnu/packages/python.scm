@@ -7212,9 +7212,7 @@ Python at your fingertips, in Lisp form.")
     (build-system python-build-system)
     (arguments
      `(#:test-target "check"))
-    (native-inputs
-     `(("python-setuptools" ,python-setuptools)))
-    (propagated-inputs
+    (inputs
      `(("python-requests" ,python-requests)))
     (home-page "https://github.com/litl/rauth")
     (synopsis "Python library for OAuth 1.0/a, 2.0, and Ofly")
@@ -7222,15 +7220,16 @@ Python at your fingertips, in Lisp form.")
      "Rauth is a Python library for OAuth 1.0/a, 2.0, and Ofly.  It also
 provides service wrappers for convenient connection initialization and
 authenticated session objects providing things like keep-alive.")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-rauth))))))
 
 (define-public python2-rauth
-  (let ((rauth (package-with-python2 python-rauth)))
-    (package (inherit rauth)
-      (propagated-inputs `(("python2-requests" ,python2-requests)))
-      (native-inputs
-       `(("python2-unittest2" ,python2-unittest2)
-         ,@(package-native-inputs rauth))))))
+  (let ((base (package-with-python2 (strip-python2-variant python-rauth))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ("python2-unittest2" ,python2-unittest2)
+                       ,@(package-native-inputs base))))))
 
 (define-public python2-functools32
   (package
