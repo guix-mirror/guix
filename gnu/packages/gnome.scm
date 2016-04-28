@@ -1724,7 +1724,7 @@ libraries written in C.")
 (define-public vte
   (package
     (name "vte")
-    (version "0.44.0")
+    (version "0.44.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -1732,7 +1732,7 @@ libraries written in C.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1ahjxysiv38q91gfq2wddcbvndlggfr8ynls25m42pw83akv38wk"))))
+                "0kjxzqcwqxky0l7bl8ydn9hl6fm1f0k2pl91wbbhyq4z6d4dabbi"))))
     (build-system gnu-build-system)
     (arguments
      ;; XXX: fails to compile tests with the default flags.
