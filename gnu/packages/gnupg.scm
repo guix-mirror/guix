@@ -568,9 +568,9 @@ including tools for signing keys, keyring analysis, and party preparation.
    (license license:gpl2)
    (home-page "http://pgp-tools.alioth.debian.org/")))
 
-(define-public pinentry
+(define-public pinentry-gtk2
   (package
-    (name "pinentry")
+    (name "pinentry-gtk2")
     (version "0.9.7")
     (source (origin
               (method url-fetch)
@@ -594,6 +594,10 @@ including tools for signing keys, keyring analysis, and party preparation.
      "Pinentry provides a console and a GTK+ GUI that allows users to
 enter a passphrase when `gpg' or `gpg2' is run and needs it.")
     (license license:gpl2+)))
+
+(define-public pinentry
+  (package (inherit pinentry-gtk2)
+    (name "pinentry")))
 
 (define-public paperkey
   (package
