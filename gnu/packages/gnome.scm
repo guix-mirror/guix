@@ -709,11 +709,11 @@ some form of information without getting in the user's way.")
         "09jy2rwwgp0xx7cnypxl56m7zzxnj3j4v58xqjxjasf3chn88jdz"))))
     (build-system gnu-build-system)
     (inputs
-     `(("atk" ,atk)
-       ("gdk-pixbuf" ,gdk-pixbuf)
-       ("glib" ,glib)
-       ("gtk+" ,gtk+)
-       ("pango" ,pango)))
+     `(("gtk+" ,gtk+)
+       ("glade" ,glade3)
+       ("libxml2" ,libxml2) ; XXX: required by gladeui-2.0.pc
+       ("python" ,python)
+       ("python-pygobject" ,python-pygobject)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib:bin" ,glib "bin")
