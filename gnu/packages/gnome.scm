@@ -3944,9 +3944,12 @@ javascript engine and the GObject introspection framework.")
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((out               (assoc-ref outputs "out"))
                   (gtksourceview     (assoc-ref inputs "gtksourceview"))
-                  (gi-typelib-path   (getenv "GI_TYPELIB_PATH")))
+                  (gi-typelib-path   (getenv "GI_TYPELIB_PATH"))
+                  (python-path       (getenv "PYTHONPATH")))
               (wrap-program (string-append out "/bin/gedit")
+                ;; For plugins.
                 `("GI_TYPELIB_PATH" ":" prefix (,gi-typelib-path))
+                `("PYTHONPATH" ":" prefix (,python-path))
                 ;; For language-specs.
                 `("XDG_DATA_DIRS" ":" prefix (,(string-append gtksourceview
                                                               "/share")))))
