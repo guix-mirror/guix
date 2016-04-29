@@ -3,6 +3,7 @@
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -566,14 +567,14 @@ cosine/ sine transforms or DCT/DST).")
 (define-public eigen
   (package
     (name "eigen")
-    (version "3.2.7")
+    (version "3.2.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/eigen/eigen/get/"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0gigbjjdlw2q0gvcnyiwc6in314a647rkidk6977bwiwn88im3p5"))
+                "0mby6my1djsg8681fcvlaq0i4kd17fja9qn5f713j3xpfbb66akj"))
               (file-name (string-append name "-" version ".tar.bz2"))
               (modules '((guix build utils)))
               (snippet
