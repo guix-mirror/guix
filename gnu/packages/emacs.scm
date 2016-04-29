@@ -7,6 +7,7 @@
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -259,6 +260,36 @@ Geiser.  A bundle of Elisp shims orchestrates the dialog between the Scheme
 implementation, Emacs and, ultimately, the schemer, giving them access to live
 metadata.")
     (license license:bsd-3)))
+
+(define-public geiser-next
+  ;; Geiser's upcoming version supports guile-next, and 0.8.1 does not.
+  ;; When the next Geiser release comes out, we can remove this.
+  (let ((commit "2e335695fc1a4a0b520b50deb761b958194cbec4"))
+    (package
+      (inherit geiser)
+      (name "geiser-next")
+      (version (string-append "0.8.1-1"
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://git.sv.gnu.org/geiser.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "00rmpn8zncq1fiah5m12l26z0s28bh7ql63kxdvksqdgfrisnmgf"))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("texinfo" ,texinfo)
+         ,@(package-native-inputs geiser)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments geiser)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'autogen
+               (lambda _
+                 (zero? (system* "sh" "autogen.sh")))))))))))
 
 (define-public paredit
   (package
