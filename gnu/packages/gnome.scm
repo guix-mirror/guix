@@ -2996,7 +2996,7 @@ for application developers.")
 (define-public grilo-plugins
   (package
     (name "grilo-plugins")
-    (version "0.2.17")
+    (version "0.3.1")
     (source
      (origin
        (method url-fetch)
@@ -3005,7 +3005,7 @@ for application developers.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "109pf4sz320jiqs1nzszpj2flkwrgwfsm64kza24mxnxih4njxik"))))
+         "1akd7q6pqnkcnayrdfjb0qx5w5yyl06kxzwhqp2gxm4y1b208pb0"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")     ; for glib-mkenums and glib-genmarshal
@@ -3014,6 +3014,7 @@ for application developers.")
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("grilo" ,grilo)
+       ("nettle" ,nettle) ; XXX: required by libgrlpls-0.3.la
        ("glib" ,glib)
        ("libxml2" ,libxml2)
        ("sqlite" ,sqlite)
