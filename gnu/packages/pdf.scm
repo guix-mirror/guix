@@ -53,6 +53,7 @@
   (package
    (name "poppler")
    (version "0.37.0")
+   (replacement poppler/fixed)
    (source (origin
             (method url-fetch)
             (uri (string-append "https://poppler.freedesktop.org/poppler-"
@@ -103,6 +104,13 @@
     "Poppler is a PDF rendering library based on the xpdf-3.0 code base.")
    (license license:gpl2+)
    (home-page "http://poppler.freedesktop.org/")))
+
+(define poppler/fixed
+  (package
+    (inherit poppler)
+    (source (origin
+              (inherit (package-source poppler))
+              (patches (search-patches "poppler-CVE-2015-8868.patch"))))))
 
 (define-public poppler-qt4
   (package (inherit poppler)
