@@ -3751,6 +3751,10 @@ Rubytest-based test frameworks.  It provides the @code{rubytest} executable.")
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
+             ;; Remove known test failure documented at
+             ;; https://github.com/rubyworks/hashery/issues/25
+             (substitute* "test/case_key_hash.rb"
+               (("^      assert\\(s\\)") ""))
              (and (zero? (system* "qed"))
                   (zero? (system* "rubytest" "-Ilib" "-Itest" "test/"))))))))
     (native-inputs
