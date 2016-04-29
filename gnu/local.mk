@@ -723,6 +723,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/readline-link-ncurses.patch		\
   gnu/packages/patches/ripperx-missing-file.patch		\
   gnu/packages/patches/rsem-makefile.patch			\
+  gnu/packages/patches/ruby-symlinkfix.patch                    \
   gnu/packages/patches/sed-hurd-path-max.patch			\
   gnu/packages/patches/scheme48-tests.patch			\
   gnu/packages/patches/scotch-test-threading.patch		\
