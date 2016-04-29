@@ -2945,7 +2945,7 @@ as possible!")
 (define-public grilo
   (package
     (name "grilo")
-    (version "0.2.15")
+    (version "0.3.0")
     (source
      (origin
        (method url-fetch)
@@ -2954,7 +2954,7 @@ as possible!")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "05b8sqfmywg45b9frya6xmw5l3c8vf5a1nhy51nyfs0a4n1japbg"))))
+         "0q5wcvnckpfks48hy0gvlfdmvqm67vnblm3912rssmkgc1ysil8z"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin")         ; for glib-mkenums and glib-genmarshal
