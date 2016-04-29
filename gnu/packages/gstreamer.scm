@@ -244,6 +244,9 @@ for the GStreamer multimedia library.")
             ;; XXX FIXME: Try removing this for version > 1.8.0.
             (substitute* "tests/check/elements/rtprtx.c"
               (("tcase_add_test \\(tc_chain, test_push_forward_seq\\);" all)
+               (string-append "/* " all " */"))
+              (("tcase_add_test \
+\\(tc_chain, test_rtxreceive_data_reconstruction\\);" all)
                (string-append "/* " all " */")))
             (substitute* "tests/check/elements/splitmux.c"
               (("tcase_add_test \\(tc_chain, test_splitmuxsink\\);" all)
