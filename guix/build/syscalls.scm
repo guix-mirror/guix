@@ -515,7 +515,7 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
   (spare1           int128))
 
 (define statfs
-  (let ((proc (syscall->procedure int "statfs" '(* *))))
+  (let ((proc (syscall->procedure int "statfs64" '(* *))))
     (lambda (file)
       "Return a <file-system> data structure describing the file system
 mounted at FILE."
@@ -523,7 +523,7 @@ mounted at FILE."
              (ret  (proc (string->pointer file) (bytevector->pointer stat)))
              (err  (errno)))
         (if (zero? ret)
-            (read-statfs stat 0)
+            (read-statfs stat)
             (throw 'system-error "statfs" "~A: ~A"
                    (list file (strerror err))
                    (list err)))))))
