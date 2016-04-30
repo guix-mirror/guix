@@ -415,7 +415,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/alsa-lib-mips-atomic-fix.patch		\
   gnu/packages/patches/apr-skip-getservbyname-test.patch	\
   gnu/packages/patches/arb-ldconfig.patch			\
-  gnu/packages/patches/asymptote-gsl2.patch			\
   gnu/packages/patches/ath9k-htc-firmware-binutils.patch	\
   gnu/packages/patches/ath9k-htc-firmware-gcc.patch		\
   gnu/packages/patches/ath9k-htc-firmware-objcopy.patch		\
