@@ -642,6 +642,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/nvi-assume-preserve-path.patch		\
   gnu/packages/patches/nvi-dbpagesize-binpower.patch		\
   gnu/packages/patches/nvi-db4.patch				\
+  gnu/packages/patches/ocaml-CVE-2015-8869.patch		\
   gnu/packages/patches/ocaml-findlib-make-install.patch	\
   gnu/packages/patches/openexr-missing-samples.patch		\
   gnu/packages/patches/openimageio-boost-1.60.patch		\
