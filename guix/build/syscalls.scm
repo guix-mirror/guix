@@ -59,6 +59,7 @@
             file-system-identifier
             file-system-maximum-name-length
             file-system-fragment-size
+            file-system-mount-flags
             statfs
 
             processes
@@ -475,8 +476,7 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
 (define-record-type <file-system>
   (file-system type block-size blocks blocks-free
                blocks-available files free-files identifier
-               name-length fragment-size
-               spare0 spare1 spare2)
+               name-length fragment-size mount-flags spare0 spare1)
   file-system?
   (type              file-system-type)
   (block-size        file-system-block-size)
@@ -488,14 +488,14 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
   (identifier        file-system-identifier)
   (name-length       file-system-maximum-name-length)
   (fragment-size     file-system-fragment-size)
+  (mount-flags       file-system-mount-flags)
   (spare0            file-system--spare0)
-  (spare1            file-system--spare1)
-  (spare2            file-system--spare2))
+  (spare1            file-system--spare1))
 
 (define-syntax fsword                             ;fsword_t
   (identifier-syntax long))
 
-(define-c-struct %statfs
+(define-c-struct %statfs                          ;<bits/statfs.h>
   sizeof-statfs                                   ;slightly overestimated
   file-system
   read-statfs
@@ -510,9 +510,9 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
   (identifier       uint64)                       ;really "int[2]"
   (name-length      fsword)
   (fragment-size    fsword)
+  (mount-flags      fsword)
   (spare0           int128)                       ;really "fsword[4]"
-  (spare1           int128)
-  (spare2           int64))                     ;XXX: to match array alignment
+  (spare1           int128))
 
 (define statfs
   (let ((proc (syscall->procedure int "statfs" '(* *))))
