@@ -2882,7 +2882,7 @@ such as OpenStreetMap, OpenCycleMap, OpenAerialMap, and Maps for free.")
 (define-public gom
   (package
     (name "gom")
-    (version "0.3.1")
+    (version "0.3.2")
     (source
      (origin
        (method url-fetch)
@@ -2891,7 +2891,7 @@ such as OpenStreetMap, OpenCycleMap, OpenAerialMap, and Maps for free.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1x9qgviszzh59d009jd13k0pdxzv9w4dmwp3wszbsk3qxr3fnlbr"))))
+         "1zaqqwwkyiswib3v1v8wafpbifpbpak0nn2kp13pizzn9bwz1s5w"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("intltool" ,intltool)
