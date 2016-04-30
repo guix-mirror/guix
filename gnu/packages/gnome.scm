@@ -3593,7 +3593,8 @@ to format Docbook and Mallard documents.")
     (propagated-inputs
      `(("dconf" ,dconf)))
     (inputs
-     `(("libxslt" ,libxslt)
+     `(("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("libxslt" ,libxslt)
        ("sqlite" ,sqlite)
        ("webkitgtk" ,webkitgtk)
        ("yelp-xsl" ,yelp-xsl)))
