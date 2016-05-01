@@ -176,7 +176,7 @@ stereo encoding, and voice activity detection.")
      "Libao is a cross-platform audio library that allows programs to
 output audio using a simple API on a wide variety of platforms.
 It currently supports:
-@itemize
+@enumerate
 @item Null output (handy for testing without a sound device),
 @item WAV files,
 @item AU files,
@@ -194,7 +194,7 @@ It currently supports:
 @item NAS (Network Audio Server),
 @item RoarAudio (Modern, multi-OS, networked Sound System),
 @item OpenBSD's sndio.
-@end itemize
+@end enumerate
 ")
     (license license:gpl2+)
     (home-page "http://www.xiph.org/ao/")))
