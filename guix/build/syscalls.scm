@@ -123,9 +123,11 @@
 
 (define-syntax sizeof*
   ;; XXX: This duplicates 'compile-time-value'.
-  (syntax-rules (int128)
+  (syntax-rules (int128 array)
     ((_ int128)
      16)
+    ((_ (array type n))
+     (* (sizeof* type) n))
     ((_ type)
      (let-syntax ((v (lambda (s)
                        (let ((val (sizeof type)))
@@ -135,9 +137,11 @@
 
 (define-syntax alignof*
   ;; XXX: This duplicates 'compile-time-value'.
-  (syntax-rules (int128)
+  (syntax-rules (int128 array)
     ((_ int128)
      16)
+    ((_ (array type n))
+     (alignof* type))
     ((_ type)
      (let-syntax ((v (lambda (s)
                        (let ((val (alignof type)))
@@ -182,10 +186,19 @@ result is the alignment of the \"most strictly aligned component\"."
                   types ...))))
 
 (define-syntax write-type
-  (syntax-rules (~)
+  (syntax-rules (~ array)
     ((_ bv offset (type ~ order) value)
      (bytevector-uint-set! bv offset value
                            (endianness order) (sizeof* type)))
+    ((_ bv offset (array type n) value)
+     (let loop ((i 0)
+                (value value)
+                (o offset))
+       (unless (= i n)
+         (match value
+           ((head . tail)
+            (write-type bv o type head)
+            (loop (+ 1 i) tail (+ o (sizeof* type))))))))
     ((_ bv offset type value)
      (bytevector-uint-set! bv offset value
                            (native-endianness) (sizeof* type)))))
@@ -202,7 +215,7 @@ result is the alignment of the \"most strictly aligned component\"."
                     (types ...) (fields ...))))))
 
 (define-syntax read-type
-  (syntax-rules (~ quote *)
+  (syntax-rules (~ array quote *)
     ((_ bv offset '*)
      (make-pointer (bytevector-uint-ref bv offset
                                         (native-endianness)
@@ -210,6 +223,12 @@ result is the alignment of the \"most strictly aligned component\"."
     ((_ bv offset (type ~ order))
      (bytevector-uint-ref bv offset
                           (endianness order) (sizeof* type)))
+    ((_ bv offset (array type n))
+     (unfold (lambda (i) (= i n))
+             (lambda (i)
+               (read-type bv (+ offset (* i (sizeof* type))) type))
+             1+
+             0))
     ((_ bv offset type)
      (bytevector-uint-ref bv offset
                           (native-endianness) (sizeof* type)))))
@@ -476,7 +495,7 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
 (define-record-type <file-system>
   (file-system type block-size blocks blocks-free
                blocks-available files free-files identifier
-               name-length fragment-size mount-flags spare0 spare1)
+               name-length fragment-size mount-flags spare)
   file-system?
   (type              file-system-type)
   (block-size        file-system-block-size)
@@ -489,8 +508,7 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
   (name-length       file-system-maximum-name-length)
   (fragment-size     file-system-fragment-size)
   (mount-flags       file-system-mount-flags)
-  (spare0            file-system--spare0)
-  (spare1            file-system--spare1))
+  (spare             file-system--spare))
 
 (define-syntax fsword                             ;fsword_t
   (identifier-syntax long))
@@ -507,12 +525,11 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
   (blocks-available uint64)
   (files            uint64)
   (free-files       uint64)
-  (identifier       uint64)                       ;really "int[2]"
+  (identifier       (array int 2))
   (name-length      fsword)
   (fragment-size    fsword)
   (mount-flags      fsword)
-  (spare0           int128)                       ;really "fsword[4]"
-  (spare1           int128))
+  (spare            (array fsword 4)))
 
 (define statfs
   (let ((proc (syscall->procedure int "statfs64" '(* *))))
