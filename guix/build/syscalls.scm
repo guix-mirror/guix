@@ -100,6 +100,22 @@
             interface-broadcast-address
             network-interfaces
 
+            termios?
+            termios-input-flags
+            termios-output-flags
+            termios-control-flags
+            termios-local-flags
+            termios-line-discipline
+            termios-control-chars
+            termios-input-speed
+            termios-output-speed
+            local-flags
+            TCSANOW
+            TCSADRAIN
+            TCSAFLUSH
+            tcgetattr
+            tcsetattr
+
             window-size?
             window-size-rows
             window-size-columns
@@ -995,6 +1011,121 @@ network interface.  This is implemented using the 'getifaddrs' libc function."
 ;;;
 ;;; Terminals.
 ;;;
+
+(define-syntax bits->symbols-body
+  (syntax-rules ()
+    ((_ bits () ())
+     '())
+    ((_ bits (name names ...) (value values ...))
+     (let ((result (bits->symbols-body bits (names ...) (values ...))))
+       (if (zero? (logand bits value))
+           result
+           (cons 'name result))))))
+
+(define-syntax define-bits
+  (syntax-rules (define)
+    "Define the given numerical constants under CONSTRUCTOR, such that
+ (CONSTRUCTOR NAME) returns VALUE.  Define BITS->SYMBOLS as a procedure that,
+given an integer, returns the list of names of the constants that are or'd."
+    ((_ constructor bits->symbols (define names values) ...)
+     (begin
+       (define-syntax constructor
+         (syntax-rules (names ...)
+           ((_ names) values) ...
+           ((_ several (... ...))
+            (logior (constructor several) (... ...)))))
+       (define (bits->symbols bits)
+         (bits->symbols-body bits (names ...) (values ...)))
+       (define names values) ...))))
+
+;; 'local-flags' bits from <bits/termios.h>
+(define-bits local-flags
+  local-flags->symbols
+ (define ISIG #o0000001)
+ (define ICANON #o0000002)
+ (define XCASE #o0000004)
+ (define ECHO #o0000010)
+ (define ECHOE #o0000020)
+ (define ECHOK #o0000040)
+ (define ECHONL #o0000100)
+ (define NOFLSH #o0000200)
+ (define TOSTOP #o0000400)
+ (define ECHOCTL #o0001000)
+ (define ECHOPRT #o0002000)
+ (define ECHOKE #o0004000)
+ (define FLUSHO #o0010000)
+ (define PENDIN #o0040000)
+ (define IEXTEN #o0100000)
+ (define EXTPROC #o0200000))
+
+;; "Actions" values for 'tcsetattr'.
+(define TCSANOW  0)
+(define TCSADRAIN 1)
+(define TCSAFLUSH 2)
+
+(define-record-type <termios>
+  (termios input-flags output-flags control-flags local-flags
+           line-discipline control-chars
+           input-speed output-speed)
+  termios?
+  (input-flags      termios-input-flags)
+  (output-flags     termios-output-flags)
+  (control-flags    termios-control-flags)
+  (local-flags      termios-local-flags)
+  (line-discipline  termios-line-discipline)
+  (control-chars    termios-control-chars)
+  (input-speed      termios-input-speed)
+  (output-speed     termios-output-speed))
+
+(define-c-struct %termios                         ;<bits/termios.h>
+  sizeof-termios
+  termios
+  read-termios
+  write-termios!
+  (input-flags      unsigned-int)
+  (output-flags     unsigned-int)
+  (control-flags    unsigned-int)
+  (local-flags      unsigned-int)
+  (line-discipline  uint8)
+  (control-chars    (array uint8 32))
+  (input-speed      unsigned-int)
+  (output-speed     unsigned-int))
+
+(define tcgetattr
+  (let ((proc (syscall->procedure int "tcgetattr" (list int '*))))
+    (lambda (fd)
+      "Return the <termios> structure for the tty at FD."
+      (let* ((bv  (make-bytevector sizeof-termios))
+             (ret (proc fd (bytevector->pointer bv)))
+             (err (errno)))
+        (if (zero? ret)
+            (read-termios bv)
+            (throw 'system-error "tcgetattr" "~A"
+                   (list (strerror err))
+                   (list err)))))))
+
+(define tcsetattr
+  (let ((proc (syscall->procedure int "tcsetattr" (list int int '*))))
+    (lambda (fd actions termios)
+      "Use TERMIOS for the tty at FD.  ACTIONS is one of 'TCSANOW',
+'TCSADRAIN', or 'TCSAFLUSH'; see tcsetattr(3) for details."
+      (define bv
+        (make-bytevector sizeof-termios))
+
+      (let-syntax ((match/write (syntax-rules ()
+                                  ((_ fields ...)
+                                   (match termios
+                                     (($ <termios> fields ...)
+                                      (write-termios! bv 0 fields ...)))))))
+        (match/write input-flags output-flags control-flags local-flags
+                     line-discipline control-chars input-speed output-speed))
+
+      (let ((ret (proc fd actions (bytevector->pointer bv)))
+            (err (errno)))
+        (unless (zero? ret)
+          (throw 'system-error "tcgetattr" "~A"
+                 (list (strerror err))
+                 (list err)))))))
 
 (define-syntax TIOCGWINSZ                         ;<asm-generic/ioctls.h>
   (identifier-syntax #x5413))

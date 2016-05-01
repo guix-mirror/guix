@@ -259,6 +259,31 @@
              (#f #f)
              (lo (interface-address lo)))))))
 
+(test-equal "tcgetattr ENOTTY"
+  ENOTTY
+  (catch 'system-error
+    (lambda ()
+      (call-with-input-file "/dev/null"
+        (lambda (port)
+          (tcgetattr (fileno port)))))
+    (compose system-error-errno list)))
+
+(test-skip (if (and (file-exists? "/proc/self/fd/0")
+                    (string-prefix? "/dev/pts/" (readlink "/proc/self/fd/0")))
+               0
+               2))
+
+(test-assert "tcgetattr"
+  (let ((termios (tcgetattr 0)))
+    (and (termios? termios)
+         (> (termios-input-speed termios) 0)
+         (> (termios-output-speed termios) 0))))
+
+(test-assert "tcsetattr"
+  (let ((first (tcgetattr 0)))
+    (tcsetattr 0 TCSANOW first)
+    (equal? first (tcgetattr 0))))
+
 (test-assert "terminal-window-size ENOTTY"
   (call-with-input-file "/dev/null"
     (lambda (port)
