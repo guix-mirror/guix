@@ -212,6 +212,7 @@ required structures.")
                                       "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
+              "doc"                               ;1.5MiB of man3 pages
               "static"))                          ;6MiB of .a files
    (native-inputs `(("perl" ,perl)))
    (arguments
@@ -281,6 +282,20 @@ required structures.")
                           (install-file file slib)
                           (delete-file file))
                         (find-files lib "\\.a$"))
+              #t)))
+        (add-after 'install 'move-man3-pages
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Move section 3 man pages to "doc".
+            (let* ((out    (assoc-ref outputs "out"))
+                   (man3   (string-append out "/share/man/man3"))
+                   (doc    (assoc-ref outputs "doc"))
+                   (target (string-append doc "/share/man/man3")))
+              (mkdir-p target)
+              (for-each (lambda (file)
+                          (rename-file file
+                                       (string-append target "/"
+                                                      (basename file))))
+                        (find-files man3))
               #t)))
         (add-before
          'patch-source-shebangs 'patch-tests
