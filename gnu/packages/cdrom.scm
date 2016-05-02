@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,10 +25,13 @@
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:select (lgpl2.1+ gpl2 gpl2+ gpl3+))
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages man)
@@ -230,16 +234,20 @@ capacity is user-selectable.")
 (define-public libcue
   (package
     (name "libcue")
-    (version "1.4.0")
+    (version "2.1.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://github.com/lipnitsk/libcue/releases/"
-                                 "download/v" version "/libcue-"
-                                 version ".tar.bz2"))
+             (uri (string-append
+                   "https://github.com/lipnitsk/libcue/archive/v"
+                   version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "17kjd7rjz1bvfn44n3n2bjb7a1ywd0yc0g4sqp5ihf9b5bn7cwlb"))))
-    (build-system gnu-build-system)
+               "1fradl3dx0pyy9rn1a0gak9gzgg40wax61f2s00zks7rwl0xv398"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)))
     (home-page "https://github.com/lipnitsk/libcue")
     (synopsis "C library to parse cue sheets")
     (description "Libcue is a C library to parse so-called @dfn{cue sheets}
