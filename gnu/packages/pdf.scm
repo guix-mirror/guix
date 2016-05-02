@@ -471,27 +471,38 @@ and examining the file structure (pdfshow).")
             (uri (string-append "mirror://sourceforge/qpdf/qpdf-"
                                 version ".tar.gz"))
             (sha256 (base32
-                     "1lq1v7xghvl6p4hgrwbps3a13ad6lh4ib3myimb83hxgsgd4n5nm"))))
+                     "1lq1v7xghvl6p4hgrwbps3a13ad6lh4ib3myimb83hxgsgd4n5nm"))
+            (modules '((guix build utils)))
+            (snippet
+             ;; Replace shebang with the bi-lingual shell/Perl trick to remove
+             ;; dependency on Perl.
+             '(substitute* "qpdf/fix-qdf"
+                (("#!/usr/bin/env perl")
+                 "\
+eval '(exit $?0)' && eval 'exec perl -wS \"$0\" ${1+\"$@\"}'
+  & eval 'exec perl -wS \"$0\" $argv:q'
+    if 0;\n")))))
    (build-system gnu-build-system)
    (arguments
-      '(#:phases (alist-cons-before
-                  'configure 'patch-paths
-                  (lambda _
-                    (substitute* "make/libtool.mk"
-                      (("SHELL=/bin/bash")
-                       (string-append "SHELL=" (which "bash"))))
-                    (substitute* (append
-                                  '("qtest/bin/qtest-driver")
-                                  (find-files "." "\\.test"))
-                      (("/usr/bin/env") (which "env"))))
-                  %standard-phases)))
+    `(#:disallowed-references (,perl)
+      #:phases (alist-cons-before
+                'configure 'patch-paths
+                (lambda _
+                  (substitute* "make/libtool.mk"
+                    (("SHELL=/bin/bash")
+                     (string-append "SHELL=" (which "bash"))))
+                  (substitute* (append
+                                '("qtest/bin/qtest-driver")
+                                (find-files "." "\\.test"))
+                    (("/usr/bin/env") (which "env"))))
+                %standard-phases)))
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    `(("pkg-config" ,pkg-config)
+      ("perl" ,perl)))
    (propagated-inputs
     `(("pcre" ,pcre)))
    (inputs
-    `(("zlib" ,zlib)
-      ("perl" ,perl)))
+    `(("zlib" ,zlib)))
    (synopsis "Command-line tools and library for transforming PDF files")
    (description
     "QPDF is a command-line program that does structural, content-preserving
