@@ -752,10 +752,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/ttfautohint-source-date-epoch.patch	\
   gnu/packages/patches/tophat-build-with-later-seqan.patch	\
   gnu/packages/patches/torsocks-dns-test.patch			\
-  gnu/packages/patches/tvtime-gcc41.patch			\
-  gnu/packages/patches/tvtime-pngoutput.patch			\
-  gnu/packages/patches/tvtime-videodev2.patch			\
-  gnu/packages/patches/tvtime-xmltv.patch			\
   gnu/packages/patches/unzip-CVE-2014-8139.patch		\
   gnu/packages/patches/unzip-CVE-2014-8140.patch		\
   gnu/packages/patches/unzip-CVE-2014-8141.patch		\
