@@ -831,6 +831,13 @@ mixing, FFT scopes, MIDI automation and full scriptability in Scheme.")
                             (string-prefix? "i686" system)))
                (substitute* "bristol/Makefile.in"
                  (("-msse -mfpmath=sse") "")))
+             #t))
+         ;; We know that Bristol has been linked with JACK and we don't have
+         ;; ldd, so we can just skip this check.
+         (add-after 'unpack 'do-not-grep-for-jack
+           (lambda _
+             (substitute* "bin/startBristol.in"
+               (("ldd `which bristol` | grep jack") "echo guix"))
              #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
