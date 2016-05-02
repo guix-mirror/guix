@@ -211,6 +211,8 @@ required structures.")
              (patches (search-patches "openssl-runpath.patch"
                                       "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
+   (outputs '("out"
+              "static"))                          ;6MiB of .a files
    (native-inputs `(("perl" ,perl)))
    (arguments
     `(#:disallowed-references (,perl)
@@ -267,6 +269,19 @@ required structures.")
                        (find-files (string-append out "/lib")
                                    "\\.so"))
              #t)))
+        (add-after 'install 'move-static-libraries
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Move static libraries to the "static" output.
+            (let* ((out    (assoc-ref outputs "out"))
+                   (lib    (string-append out "/lib"))
+                   (static (assoc-ref outputs "static"))
+                   (slib   (string-append static "/lib")))
+              (mkdir-p slib)
+              (for-each (lambda (file)
+                          (install-file file slib)
+                          (delete-file file))
+                        (find-files lib "\\.a$"))
+              #t)))
         (add-before
          'patch-source-shebangs 'patch-tests
          (lambda* (#:key inputs native-inputs #:allow-other-keys)
