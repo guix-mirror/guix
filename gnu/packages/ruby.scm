@@ -3737,24 +3737,20 @@ Rubytest-based test frameworks.  It provides the @code{rubytest} executable.")
 (define-public ruby-hashery
   (package
     (name "ruby-hashery")
-    (version "2.1.1")
+    (version "2.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "hashery" version))
        (sha256
         (base32
-         "0xawbljsjarl9l7700bka672ixwznzwih4s9i38p1y9mp8hyx54g"))))
+         "0qj8815bf7q6q7llm5rzdz279gzmpqmqqicxnzv066a020iwqffj"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (replace 'check
            (lambda _
-             ;; Remove known test failure documented at
-             ;; https://github.com/rubyworks/hashery/issues/25
-             (substitute* "test/case_key_hash.rb"
-               (("^      assert\\(s\\)") ""))
              (and (zero? (system* "qed"))
                   (zero? (system* "rubytest" "-Ilib" "-Itest" "test/"))))))))
     (native-inputs
