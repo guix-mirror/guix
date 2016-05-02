@@ -45,8 +45,9 @@
               "1pvra19ljkr5ky35y2iywjnsckrs9ch2anrf5b0dc91hw8v2vq5r"))
             (patches (list (search-patch "pcre-CVE-2016-3191.patch")))))
    (build-system gnu-build-system)
-   (outputs '("out"
-              "doc"))                             ;1.8 MiB of HTML
+   (outputs '("out"           ;library & headers
+              "bin"           ;depends on Readline (adds 20MiB to the closure)
+              "doc"))         ;1.8 MiB of HTML
    (inputs `(("bzip2" ,bzip2)
              ("readline" ,readline)
              ("zlib" ,zlib)))
