@@ -78,6 +78,21 @@
            (rmdir dir)
            #t))))
 
+(test-equal "statfs, ENOENT"
+  ENOENT
+  (catch 'system-error
+    (lambda ()
+      (statfs "/does-not-exist"))
+    (compose system-error-errno list)))
+
+(test-assert "statfs"
+  (let ((fs (statfs "/")))
+    (and (file-system? fs)
+         (> (file-system-block-size fs) 0)
+         (>= (file-system-blocks-available fs) 0)
+         (>= (file-system-blocks-free fs)
+             (file-system-blocks-available fs)))))
+
 (define (user-namespace pid)
   (string-append "/proc/" (number->string pid) "/ns/user"))
 
@@ -243,5 +258,48 @@
                         loopbacks)
              (#f #f)
              (lo (interface-address lo)))))))
+
+(test-equal "tcgetattr ENOTTY"
+  ENOTTY
+  (catch 'system-error
+    (lambda ()
+      (call-with-input-file "/dev/null"
+        (lambda (port)
+          (tcgetattr (fileno port)))))
+    (compose system-error-errno list)))
+
+(test-skip (if (and (file-exists? "/proc/self/fd/0")
+                    (string-prefix? "/dev/pts/" (readlink "/proc/self/fd/0")))
+               0
+               2))
+
+(test-assert "tcgetattr"
+  (let ((termios (tcgetattr 0)))
+    (and (termios? termios)
+         (> (termios-input-speed termios) 0)
+         (> (termios-output-speed termios) 0))))
+
+(test-assert "tcsetattr"
+  (let ((first (tcgetattr 0)))
+    (tcsetattr 0 TCSANOW first)
+    (equal? first (tcgetattr 0))))
+
+(test-assert "terminal-window-size ENOTTY"
+  (call-with-input-file "/dev/null"
+    (lambda (port)
+      (catch 'system-error
+        (lambda ()
+          (terminal-window-size port))
+        (lambda args
+          ;; Accept EINVAL, which some old Linux versions might return.
+          (memv (system-error-errno args)
+                (list ENOTTY EINVAL)))))))
+
+(test-assert "terminal-columns"
+  (> (terminal-columns) 0))
+
+(test-assert "terminal-columns non-file port"
+  (> (terminal-columns (open-input-string "Join us now, share the software!"))
+     0))
 
 (test-end)

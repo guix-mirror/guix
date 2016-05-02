@@ -39,8 +39,7 @@
               (sha256
                (base32
                 "0w50szymyqvx8g0vkwrvnv17grqxva6x1z9dm9m3i99zg2hr232p"))
-              (patches
-               (list (search-patch "elfutils-tests-ptrace.patch")))))
+              (patches (search-patches "elfutils-tests-ptrace.patch"))))
     (build-system gnu-build-system)
 
     ;; Separate programs because that's usually not what elfutils users want,
@@ -108,7 +107,7 @@ addr2line, and more.")
              (sha256
               (base32
                "1rqpg84wrd3fa16wa9vqdvasnc05yz49w207cz1l0wrl4k8q97y9"))
-             (patches (list (search-patch "patchelf-page-size.patch")))))
+             (patches (search-patches "patchelf-page-size.patch"))))
     (build-system gnu-build-system)
 
     ;; XXX: The upstream 'patchelf' doesn't support ARM.  The only available

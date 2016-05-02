@@ -59,6 +59,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages graphics)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages image)
@@ -85,11 +86,78 @@
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
+  #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages zip)
   #:use-module ((srfi srfi-1) #:select (last)))
+
+(define-public aria-maestosa
+  (package
+    (name "aria-maestosa")
+    (version "1.4.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/ariamaestosa/ariamaestosa/"
+                                  version "/AriaSrc-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0gf9z96z83jiabxhpl856j15vl9flfgs6x1r0r6hc7g2xvwag0vy"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f  ;no tests
+       #:phases
+       ;; TODO: Add scons-build-system and use it here.
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-after 'unpack 'scons-propagate-environment
+           (lambda _
+             ;; By design, SCons does not, by default, propagate
+             ;; environment variables to subprocesses.  See:
+             ;; <http://comments.gmane.org/gmane.linux.distributions.nixos/4969>
+             ;; Here, we modify the SConstruct file to arrange for
+             ;; environment variables to be propagated.
+             (substitute* "SConstruct"
+               (("env = Environment\\(\\)")
+                "env = Environment(ENV=os.environ)")
+               ;; Scons errors out when copying subdirectories from Resources,
+               ;; so we move them instead.
+               (("Copy") "Move")
+               ;; We move the "score" and "Documentation" directories at once,
+               ;; so we have to ignore files contained therein.
+               (("if \".svn\" in file" line)
+                (string-append line
+                               " or \"score/\" in file"
+                               " or \"Documentation/\" in file")))
+             #t))
+         (replace 'build (lambda _ (zero? (system* "scons"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (and
+                (zero? (system* "scons"
+                                (string-append "prefix=" out)
+                                "install"))
+                ;; Fix directory permissions
+                (begin
+                  (chmod (string-append out "/share/Aria/Documentation") #o555)
+                  (chmod (string-append out "/share/Aria/score") #o555)
+                  #t))))))))
+    (inputs
+     `(("wxwidgets" ,wxwidgets)
+       ("glib" ,glib)
+       ("alsa-lib" ,alsa-lib)))
+    (native-inputs
+     `(("scons" ,scons)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://ariamaestosa.sourceforge.net/")
+    (synopsis "MIDI sequencer and editor")
+    (description
+     "Aria Maestosa is a MIDI sequencer and editor.  It lets you compose, edit
+and play MIDI files with a few clicks in a user-friendly interface offering
+score, keyboard, guitar, drum and controller views.")
+    (license license:gpl3+)))
 
 (define-public cmus
   (package
@@ -621,19 +689,47 @@ your own lessons.")
 Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
     (license license:gpl3+)))
 
-(define-public setbfree
+(define-public synthv1
   (package
-    (name "setbfree")
-    (version "0.8.0")
+    (name "synthv1")
+    (version "0.7.4")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append
-                "https://github.com/pantherb/setBfree/releases/download/v"
-                version "/setbfree-" version ".tar.gz"))
+               (string-append "mirror://sourceforge/synthv1/synthv1-"
+                              version ".tar.gz"))
               (sha256
                (base32
-                "045bgp7qsigpbrhk7qvgvliwiy26sajifwn7f2jvk90ckfqnlw4b"))))
+                "16n0v4jk0ilirq84rrildvdwqxgxav78rk58ilhl622v5n893c7w"))))
+    (build-system gnu-build-system)
+    ;; There are no tests.
+    (arguments `(#:tests? #f))
+    (inputs
+     `(("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("alsa-lib" ,alsa-lib)
+       ("liblo" ,liblo)
+       ("qt" ,qt)))
+    (home-page "http://synthv1.sourceforge.net")
+    (synopsis "Polyphonic subtractive synthesizer")
+    (description
+     "Synthv1 is an old-school subtractive polyphonic synthesizer with four
+oscillators and stereo effects.")
+    (license license:gpl2+)))
+
+(define-public setbfree
+  (package
+    (name "setbfree")
+    (version "0.8.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "https://github.com/pantherb/setBfree/archive/v"
+                              version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0hj0rqk5yd4fzs7bwy6a6nhqgrmcggkjcr4il76rxy92r7nwabf3"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -672,6 +768,46 @@ the sound and properties of the electromechanical organs and sound
 modification devices that brought world-wide fame to the names and products of
 Laurens Hammond and Don Leslie.")
     (license license:gpl2+)))
+
+(define-public beast
+  (package
+    (name "beast")
+    (version "0.10.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://testbit.eu/pub/dists/beast/beast-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1jzzmfwssklzw8fvvil04n8csc0zm99fnd9p2xa7c0xchg37lvhn"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("rapicorn" ,rapicorn)
+       ("guile" ,guile-1.8)
+       ("python" ,python-2)
+       ("cython" ,python2-cython)
+       ("libgnomecanvas" ,libgnomecanvas)
+       ("libogg" ,libogg)
+       ("libmad" ,libmad)
+       ("flac" ,flac)
+       ("alsa-lib" ,alsa-lib)
+       ("libvorbis" ,libvorbis)
+       ("gettext" ,gnu-gettext)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin")
+       ("perl" ,perl)
+       ("perl-xml-parser" ,perl-xml-parser)))
+    (home-page "https://testbit.eu/wiki/Beast_Home")
+    (synopsis "Music composition and modular synthesis environment")
+    (description
+     "Beast is a music composition and modular synthesis application.  It
+supports a wide range of standards in the field, such as MIDI, various audio
+file formats and LADSPA modules.  It allows for multitrack editing, real-time
+synthesis, 32bit audio rendering, precise timing down to sample granularity,
+on-demand and partial loading of wave files, on the fly decoding, stereo
+mixing, FFT scopes, MIDI automation and full scriptability in Scheme.")
+    (license license:gpl3+)))
 
 (define-public bristol
   (package
@@ -734,7 +870,7 @@ is subjective.")
                           (string-append "PREFIX="
                                          (assoc-ref %outputs "out"))
                           (string-append "SWT_PATH="
-                                         (assoc-ref %build-inputs "swt")
+                                         (assoc-ref %build-inputs "java-swt")
                                          "/share/java/swt.jar"))
        #:tests? #f ;no "check" target
        #:parallel-build? #f ;not supported
@@ -749,11 +885,11 @@ is subjective.")
                (string-append "GCJFLAGS=-fsource=1.4 -fPIC " rest))
               (("PROPERTIES\\?=")
                (string-append "PROPERTIES?= -Dswt.library.path="
-                              (assoc-ref inputs "swt") "/lib"))
+                              (assoc-ref inputs "java-swt") "/lib"))
               (("\\$\\(GCJ\\) -o") "$(GCJ) $(LDFLAGS) -o"))
             #t)))))
     (inputs
-     `(("swt" ,swt)))
+     `(("java-swt" ,java-swt)))
     (native-inputs
      `(("gcj" ,gcj)
        ("pkg-config" ,pkg-config)))
@@ -825,7 +961,7 @@ projects.")
 (define-public frescobaldi
   (package
     (name "frescobaldi")
-    (version "2.18.2")
+    (version "2.19.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -833,7 +969,7 @@ projects.")
                     version "/frescobaldi-" version ".tar.gz"))
               (sha256
                (base32
-                "1yns7nq2a2hz5rv4xjp21bgcdi1xj6fq48lqjrld7ypqqi5nfjp5"))))
+                "1rnk8i8dlshzx16n2qxcsqcs7kywgyazzyzw2vy4vp2gsm9vs9ml"))))
     (build-system python-build-system)
     (inputs
      `(("lilypond" ,lilypond)
@@ -945,7 +1081,7 @@ instrument or MIDI file player.")
 (define-public zynaddsubfx
   (package
     (name "zynaddsubfx")
-    (version "2.5.3")
+    (version "2.5.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -953,7 +1089,7 @@ instrument or MIDI file player.")
                     version "/zynaddsubfx-" version ".tar.bz2"))
               (sha256
                (base32
-                "04da54p19p7f5wm6vm7abbjbsil1qf7n5f4adj01jm6b0wqigvgb"))))
+                "16llaa2wg2gbgjhwp3632b2vx9jvanj4csv7d41k233ms6d1sjq1"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
@@ -1055,7 +1191,7 @@ improves on support for JACK features, such as JACK MIDI.")
                           version ".tar.gz"))
       (sha256
        (base32 "1dhphsya41rv8z6yqcv9l6fwbslsds4zh1y56zizi39nd996d40v"))
-      (patches (list (search-patch "cursynth-wave-rand.patch")))))
+      (patches (search-patches "cursynth-wave-rand.patch"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     ;; TODO: See https://github.com/iyoko/cursynth/issues/4 which currently
@@ -1073,14 +1209,14 @@ computer's keyboard.")
 (define-public qtractor
   (package
     (name "qtractor")
-    (version "0.7.5")
+    (version "0.7.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://downloads.sourceforge.net/qtractor/"
                                   "qtractor-" version ".tar.gz"))
               (sha256
                (base32
-                "0drqzp1rbqmqiwdzc9n3307y8rm882fha3awy5qlvir5ma2mwl80"))))
+                "0q8kvy1ynlg64v1w7jxix1rpq0lp2ixgb2y8cbbwxd2b28r3r2vl"))))
     (build-system gnu-build-system)
     (arguments `(#:tests? #f)) ; no "check" target
     (inputs

@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <tobias.geerinckx.rice@gmail.com>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
+;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -81,6 +82,7 @@
     (cond ((string=? arch "i686") "i386")
           ((string-prefix? "mips" arch) "mips")
           ((string-prefix? "arm" arch) "arm")
+          ((string-prefix? "aarch64" arch) "arm64")
           (else arch))))
 
 (define (linux-libre-urls version)
@@ -170,8 +172,7 @@
              (sha256
               (base32
                "0jxnz9ahfic79rp93l5wxcbgh4pkv85mwnjlbv1gz3jawv5cvwp1"))
-             (patches
-              (list (search-patch "module-init-tools-moduledir.patch")))))
+             (patches (search-patches "module-init-tools-moduledir.patch"))))
     (build-system gnu-build-system)
     (arguments
      ;; FIXME: The upstream tarball lacks man pages, and building them would
@@ -221,7 +222,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
     (search-path %load-path file)))
 
 (define-public linux-libre
-  (let* ((version "4.5")
+  (let* ((version "4.5.2")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Avoid introducing timestamps
@@ -299,7 +300,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "0km863vwy557flpygkr869yshpjs1v11ni78p8k9p9nm31ai6yn3"))))
+               "0mw8n5pms33k3m3aamlryahrcbhfnqbzvkglgw3j4dhaja3hwr7n"))))
     (build-system gnu-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
@@ -336,13 +337,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.4
   (package
     (inherit linux-libre)
-    (version "4.4.6")
+    (version "4.4.8")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "0sf623knc4j23p96r0w1ng725kj45ra50bwix01z5nvl5aqpnsrp"))))
+                "0zyhdy01gjglgmlrmpqa1sdnm0z91mzwspbksj6zvcamczb8ml53"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))
@@ -353,13 +354,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.1
   (package
     (inherit linux-libre)
-    (version "4.1.20")
+    (version "4.1.22")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "0vwk6jh57djbwr29xvlgaf14409bq9vmwf6r6nq9jdl6dizfd110"))))
+                "0bn6qba7q4i3yn3zx2p56gawnb2gczrf4vyrjggirj4d60gvng7y"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))
@@ -453,7 +454,7 @@ providing the system administrator with some help in common tasks.")
               (sha256
                (base32
                 "1ivdx1bhjbakf77agm9dn3wyxia1wgz9lzxgd61zqxw3xzih9gzw"))
-              (patches (list (search-patch "util-linux-tests.patch")))
+              (patches (search-patches "util-linux-tests.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; We take the 'logger' program from GNU Inetutils and 'kill'
@@ -610,7 +611,7 @@ slabtop, and skill.")
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("texinfo" ,texinfo)))     ;for the libext2fs Info manual
     (arguments
-     '(;; util-linux is not the preferred source for some of the libraries and
+     '(;; util-linux is the preferred source for some of the libraries and
        ;; commands, so disable them (see, e.g.,
        ;; <http://git.buildroot.net/buildroot/commit/?id=e1ffc2f791b33633>.)
        #:configure-flags '("--disable-libblkid"
@@ -820,7 +821,7 @@ intercept and print the system calls executed by the program.")
              (sha256
               (base32
                "0fx057746dj7rjdi0jnvx2m9b0y1lgdkh1hks87d8w32xyihf3k9"))
-             (patches (list (search-patch "alsa-lib-mips-atomic-fix.patch")))))
+             (patches (search-patches "alsa-lib-mips-atomic-fix.patch"))))
     (build-system gnu-build-system)
     (home-page "http://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
@@ -981,8 +982,7 @@ manpages.")
              (sha256
               (base32
                "0yvxrzk0mzmspr7sa34hm1anw6sif39gyn85w4c5ywfn8inxvr3s"))
-             (patches
-              (list (search-patch "net-tools-bitrot.patch")))))
+             (patches (search-patches "net-tools-bitrot.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:modules ((guix build gnu-build-system)
@@ -1477,14 +1477,14 @@ system.")
 (define-public kbd
   (package
     (name "kbd")
-    (version "2.0.2")
+    (version "2.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/utils/kbd/kbd-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "04mrms12nm5sas0nxs94yrr3hz7gmqhnmfgb9ff34bh1jszxmzcx"))
+                "0ppv953gn2zylcagr4z6zg5y2x93dxrml29plypg6xgbq3hrv2bs"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -1498,27 +1498,26 @@ system.")
                      "tty"))))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'build 'pre-build
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (let ((gzip  (assoc-ref %build-inputs "gzip"))
-                         (bzip2 (assoc-ref %build-inputs "bzip2")))
-                     (substitute* "src/libkeymap/findfile.c"
-                       (("gzip")
-                        (string-append gzip "/bin/gzip"))
-                       (("bzip2")
-                        (string-append bzip2 "/bin/bzip2")))))
-                 (alist-cons-after
-                  'install 'post-install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    ;; Make sure these programs find their comrades.
-                    (let* ((out (assoc-ref outputs "out"))
-                           (bin (string-append out "/bin")))
-                      (for-each (lambda (prog)
-                                  (wrap-program (string-append bin "/" prog)
-                                                `("PATH" ":" prefix (,bin))))
-                                '("unicode_start" "unicode_stop"))))
-                  %standard-phases))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'pre-build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((gzip  (assoc-ref %build-inputs "gzip"))
+                   (bzip2 (assoc-ref %build-inputs "bzip2")))
+               (substitute* "src/libkeymap/findfile.c"
+                 (("gzip")
+                  (string-append gzip "/bin/gzip"))
+                 (("bzip2")
+                  (string-append bzip2 "/bin/bzip2"))))))
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure these programs find their comrades.
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (for-each (lambda (prog)
+                           (wrap-program (string-append bin "/" prog)
+                             `("PATH" ":" prefix (,bin))))
+                         '("unicode_start" "unicode_stop"))))))))
     (inputs `(("check" ,check)
               ("gzip" ,gzip)
               ("bzip2" ,bzip2)
@@ -1564,7 +1563,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
               (sha256
                (base32
                 "1yid3a9b64a60ybj66fk2ysrq5klnl0ijl4g624cl16y8404g9rv"))
-              (patches (list (search-patch "kmod-module-directory.patch")))))
+              (patches (search-patches "kmod-module-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -1609,7 +1608,7 @@ from the module-init-tools project.")
               (sha256
                (base32
                 "0akg9gcc3c2p56xbhlvbybqavcprly5q0bvk655zwl6d62j8an7p"))
-              (patches (list (search-patch "eudev-rules-directory.patch")))))
+              (patches (search-patches "eudev-rules-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -1743,7 +1742,7 @@ interface.")
               (sha256
                (base32
                 "1gydiqgb08d9gbx4l6gv98zg3pljc984m50hmn3ysxcbkxkvkz23"))
-              (patches (list (search-patch "crda-optional-gcrypt.patch")))))
+              (patches (search-patches "crda-optional-gcrypt.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -1861,7 +1860,7 @@ country-specific regulations for the wireless spectrum.")
               (sha256
                (base32
                 "1ksgrynxgrq590nb2fwxrl1gwzisjkqlyg3ljfd1al0ibrk6mbjx"))
-              (patches (list (search-patch "lm-sensors-hwmon-attrs.patch")))))
+              (patches (search-patches "lm-sensors-hwmon-attrs.patch"))))
     (build-system gnu-build-system)
     (inputs `(("rrdtool" ,rrdtool)
               ("perl" ,perl)
@@ -2118,6 +2117,26 @@ WLAN, Bluetooth and mobile broadband.")
     (license (license:non-copyleft "file://COPYING"
                                    "See COPYING in the distribution."))))
 
+(define-public acpi
+  (package
+    (name "acpi")
+    (version "1.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/acpiclient/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "01ahldvf0gc29dmbd5zi4rrnrw2i1ajnf30sx2vyaski3jv099fp"))))
+    (build-system gnu-build-system)
+    (home-page "http://acpiclient.sourceforge.net")
+    (synopsis "Display information on ACPI devices")
+    (description "@code{acpi} attempts to replicate the functionality of the
+\"old\" @code{apm} command on ACPI systems, including battery and thermal
+information.  It does not support ACPI suspending, only displays information
+about ACPI devices.")
+    (license license:gpl2+)))
+
 (define-public acpid
   (package
     (name "acpid")
@@ -2201,7 +2220,7 @@ also contains the libsysfs library.")
          version ".tar.gz"))
        (sha256
         (base32 "0qfqv7nqmjfr3p0bwrdlxkiqwqr7vmx053cadaa548ybqbghxmvm"))
-       (patches (list (search-patch "cpufrequtils-fix-aclocal.patch")))))
+       (patches (search-patches "cpufrequtils-fix-aclocal.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("sysfsutils" ,sysfsutils-1)))
@@ -2298,7 +2317,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
               (sha256
                (base32
                 "132vdvh3myjgcjn6i9w90ck16ddjxjcszklzkyvr4f5ifqd7wfhg"))
-              (patches (list (search-patch "mdadm-gcc-4.9-fix.patch")))))
+              (patches (search-patches "mdadm-gcc-4.9-fix.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("udev" ,eudev)))
@@ -2499,7 +2518,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.4.1")
+    (version "4.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2507,7 +2526,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1z5882zx9jx02vyg067siws0irsl8pg37myx17hr4imn9ypf6r4r"))))
+                "1znf2zhb56zbmdjk3lq107678xwsqwc5gczspypmc5i31qnppy7f"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of binaries in "out" (~16MiB!)

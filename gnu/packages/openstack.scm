@@ -137,16 +137,16 @@ guidelines}.")
 (define-public python-mox3
   (package
     (name "python-mox3")
-    (version "0.13.0")
+    (version "0.14.0")
     (source
       (origin
         (method url-fetch)
         (uri (pypi-uri "mox3" version))
         (sha256
           (base32
-           "0hj57374r239cj1zbzpxw7mj0yfblz55jdfrc2p1h8j7xng0319j"))))
+           "0njmh40i1lg5mzn9hc2ax83adj6dli455j6xifilrw27c4wlkjzx"))))
     (build-system python-build-system)
-    (inputs
+    (native-inputs
       `(("python-fixtures" ,python-fixtures)
         ("python-pbr" ,python-pbr)
         ("python-setuptools" ,python-setuptools)
@@ -156,10 +156,13 @@ guidelines}.")
     (synopsis "Mock object framework for Python")
     (description
       "Mox3 is an unofficial port of the Google mox framework
-(http://code.google.com/p/pymox/) to Python 3. It was meant to be as compatible
-with mox as possible, but small enhancements have been made. The library was
+(http://code.google.com/p/pymox/) to Python 3.  It was meant to be as compatible
+with mox as possible, but small enhancements have been made.  The library was
 tested on Python version 3.2, 2.7 and 2.6.")
     (license asl2.0)))
+
+(define-public python2-mox3
+  (package-with-python2 python-mox3))
 
 (define-public python-os-client-config
   (package
@@ -196,9 +199,6 @@ tested on Python version 3.2, 2.7 and 2.6.")
 
 (define-public python2-os-client-config
   (package-with-python2 python-os-client-config))
-
-(define-public python2-mox3
-  (package-with-python2 python-mox3))
 
 (define-public python-os-testr
   (package
@@ -266,20 +266,21 @@ portions of your testing code.")
 (define-public python-stevedore
   (package
     (name "python-stevedore")
-    (version "1.10.0")
+    (version "1.12.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "stevedore" version))
        (sha256
          (base32
-          "17vpffcnk56sj86d2n3vz5bprcc9bswilgd0awnm7jp073pqkmpm"))))
+          "0999zvawaapzg6givjhn7vjscdwblcs73wf28wq1wb4g5mbb5phv"))))
     (build-system python-build-system)
     (propagated-inputs
       `(("python-six" ,python-six)))
     (inputs
-      `(("python-pbr" ,python-pbr)
-        ("python-setuptools" ,python-setuptools)
+      `(("python-pbr" ,python-pbr)))
+    (native-inputs
+      `(("python-setuptools" ,python-setuptools)
         ;; Tests
         ("python-docutils" ,python-docutils)
         ("python-mock" ,python-mock)
@@ -289,9 +290,9 @@ portions of your testing code.")
     (synopsis "Manage dynamic plugins for Python applications")
     (description
       "Python makes loading code dynamically easy, allowing you to configure
-and extend your application by discovering and loading extensions (“plugins”)
+and extend your application by discovering and loading extensions (\"plugins\")
 at runtime.  Many applications implement their own library for doing this,
-using __import__ or importlib.  stevedore avoids creating yet another extension
+using __import__ or importlib.  Stevedore avoids creating yet another extension
 mechanism by building on top of setuptools entry points.  The code for managing
 entry points tends to be repetitive, though, so stevedore provides manager
 classes for implementing common patterns for using dynamically loaded

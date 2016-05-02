@@ -138,6 +138,14 @@ requests."
 (define-syntax-rule (with-warnings body ...)
   (call-with-warnings (lambda () body ...)))
 
+(test-assert "description: not a string"
+  (->bool
+   (string-contains (with-warnings
+                      (let ((pkg (dummy-package "x"
+                                   (description 'foobar))))
+                        (check-description-style pkg)))
+                    "invalid description")))
+
 (test-assert "description: not empty"
   (->bool
    (string-contains (with-warnings
@@ -190,6 +198,14 @@ requests."
                   (description
                    "E.g. Foo, i.e. Bar resp. Baz (a.k.a. DVD)."))))
        (check-description-style pkg)))))
+
+(test-assert "synopsis: not a string"
+  (->bool
+   (string-contains (with-warnings
+                      (let ((pkg (dummy-package "x"
+                                   (synopsis #f))))
+                        (check-synopsis-style pkg)))
+                    "invalid synopsis")))
 
 (test-assert "synopsis: not empty"
   (->bool
@@ -542,6 +558,25 @@ requests."
                             (dummy-origin
                              (patches
                               (list "/a/b/pi-CVE-2015-1234.patch"))))))))))
+
+(test-assert "cve: patched vulnerability in replacement"
+  (mock ((guix scripts lint) package-vulnerabilities
+         (lambda (package)
+           (list (make-struct (@@ (guix cve) <vulnerability>) 0
+                              "CVE-2015-1234"
+                              (list (cons (package-name package)
+                                          (package-version package)))))))
+        (string-null?
+         (with-warnings
+           (check-vulnerabilities
+            (dummy-package
+             "pi" (version "3.14") (source (dummy-origin))
+             (replacement (dummy-package
+                           "pi" (version "3.14")
+                           (source
+                            (dummy-origin
+                             (patches
+                              (list "/a/b/pi-CVE-2015-1234.patch"))))))))))))
 
 (test-assert "formatting: lonely parentheses"
   (string-contains

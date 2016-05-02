@@ -164,7 +164,7 @@ files.")
              (sha256
               (base32
                "1pv4zrajm46za0f6lv162iqffih57a8ly4pc69f7y0gfyigb8p80"))
-             (patches (list (search-patch "cdparanoia-fpic.patch")))
+             (patches (search-patches "cdparanoia-fpic.patch"))
              (modules '((guix build utils)))
              (snippet
               ;; Make libraries respect LDFLAGS.

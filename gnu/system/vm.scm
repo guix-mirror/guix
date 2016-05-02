@@ -425,7 +425,7 @@ environment with the store shared with the host.  MAPPINGS is a list of
           os
           #:key
           full-boot?
-          (disk-image-size (* (if full-boot? 500 15) (expt 2 20))))
+          (disk-image-size (* (if full-boot? 500 30) (expt 2 20))))
   "Return a derivation that builds a QEMU image of OS that shares its store
 with the host.
 
@@ -480,7 +480,7 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
                                                 (mappings '())
                                                 full-boot?
                                                 (disk-image-size
-                                                 (* (if full-boot? 500 15)
+                                                 (* (if full-boot? 500 30)
                                                     (expt 2 20))))
   "Return a derivation that builds a script to run a virtual machine image of
 OS that shares its store with the host.

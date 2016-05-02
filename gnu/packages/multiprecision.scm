@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,8 +40,7 @@
             (sha256
              (base32
               "12b9s4jn48gbar6dbs5qrlmljdmnq43xy3ji9yjzic0mwp6dmnk8"))
-            (patches (map search-patch
-                          '("gmp-faulty-test.patch")))))
+            (patches (search-patches "gmp-faulty-test.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)))
    (outputs '("out" "debug"))
@@ -74,9 +74,8 @@ cryptography and computational algebra.")
               (sha256
                (base32
                 "0r5pp27cy7ch3dg5v0rsny8bib1zfvrza6027g2mp5f6v8pd6mli"))
-              (patches (map search-patch
-                            '("gmp-arm-asm-nothumb.patch"
-                              "gmp-faulty-test.patch")))))))
+              (patches (search-patches "gmp-arm-asm-nothumb.patch"
+                                       "gmp-faulty-test.patch"))))))
 
 (define-public mpfr
   (package
@@ -119,3 +118,28 @@ floating-point computations with correct rounding.")
 It supports arbitrarily high precision and it correctly rounds the results.")
    (license lgpl3+)
    (home-page "http://mpc.multiprecision.org/")))
+
+(define-public mpfi
+  (package
+    (name "mpfi")
+    (version "1.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://gforge.inria.fr/frs/download.php/"
+                                  "file/30130/mpfi-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1g2q6i7dqx40p4gw11da6jgfcbzmm26wxc69fwv8zpcdyg32a9za"))))
+    (build-system gnu-build-system)
+    (propagated-inputs `(("gmp" ,gmp)   ; <mpfi.h> refers to both
+                         ("mpfr" ,mpfr)))
+    (synopsis "C library for arbitrary precision interval arithmetic")
+    (description "MPFI is intended to be a portable library written in C for
+arbitrary precision interval arithmetic with intervals represented using MPFR
+reliable floating-point numbers.  It is based on the GNU MP library and on the
+MPFR library.  The purpose of an arbitrary precision interval arithmetic is on
+the one hand to get guaranteed results, thanks to interval computation, and on
+the other hand to obtain accurate results, thanks to multiple precision
+arithmetic.")
+    (license lgpl2.1+)
+    (home-page "https://perso.ens-lyon.fr/nathalie.revol/software.html")))

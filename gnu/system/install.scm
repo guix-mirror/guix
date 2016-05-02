@@ -255,7 +255,7 @@ Welcome to the installation of the Guix System Distribution!
 
 There is NO WARRANTY, to the extent permitted by law.  In particular, you may
 LOSE ALL YOUR DATA as a side effect of the installation process.  Furthermore,
-it is alpha software, so it may BREAK IN UNEXPECTED WAYS.
+it is 'beta' software, so it may contain bugs.
 
 You have been warned.  Thanks for being so brave.
 ")))

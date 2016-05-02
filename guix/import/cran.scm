@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +32,6 @@
   #:use-module ((guix build-system r) #:select (cran-uri bioconductor-uri))
   #:use-module (guix upstream)
   #:use-module (guix packages)
-  #:use-module (gnu packages)
   #:export (cran->guix-package
             bioconductor->guix-package
             %cran-updater
@@ -240,7 +239,7 @@ s-expression corresponding to that package, or #f on failure."
   "Return an <upstream-source> for the latest release of PACKAGE."
 
   (define upstream-name
-    (package->upstream-name (specification->package package)))
+    (package->upstream-name package))
 
   (define meta
     (fetch-description %cran-url upstream-name))
@@ -249,7 +248,7 @@ s-expression corresponding to that package, or #f on failure."
        (let ((version (assoc-ref meta "Version")))
          ;; CRAN does not provide signatures.
          (upstream-source
-          (package package)
+          (package (package-name package))
           (version version)
           (urls (cran-uri upstream-name version))))))
 
@@ -257,7 +256,7 @@ s-expression corresponding to that package, or #f on failure."
   "Return an <upstream-source> for the latest release of PACKAGE."
 
   (define upstream-name
-    (package->upstream-name (specification->package package)))
+    (package->upstream-name package))
 
   (define meta
     (fetch-description %bioconductor-svn-url upstream-name))
@@ -266,7 +265,7 @@ s-expression corresponding to that package, or #f on failure."
        (let ((version (assoc-ref meta "Version")))
          ;; Bioconductor does not provide signatures.
          (upstream-source
-          (package package)
+          (package (package-name package))
           (version version)
           (urls (bioconductor-uri upstream-name version))))))
 

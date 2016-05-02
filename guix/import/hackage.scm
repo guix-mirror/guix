@@ -23,7 +23,6 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-1)
-  #:use-module (gnu packages)
   #:use-module ((guix download) #:select (download-to-store url-fetch))
   #:use-module ((guix utils) #:select (package-name->name+version
                                        canonical-newline-port))
@@ -269,10 +268,9 @@ respectively."
            ((source-url ...)
             (any haskell-url? source-url))))))
 
-(define (latest-release guix-package)
-  "Return an <upstream-source> for the latest release of GUIX-PACKAGE."
-  (let* ((hackage-name (guix-package->hackage-name
-                        (specification->package guix-package)))
+(define (latest-release package)
+  "Return an <upstream-source> for the latest release of PACKAGE."
+  (let* ((hackage-name (guix-package->hackage-name package))
          (cabal-meta (hackage-fetch hackage-name)))
     (match cabal-meta
       (#f
@@ -283,7 +281,7 @@ respectively."
       ((_ *** ("version" (version)))
        (let ((url (hackage-source-url hackage-name version)))
          (upstream-source
-          (package guix-package)
+          (package (package-name package))
           (version version)
           (urls (list url))))))))
 

@@ -46,7 +46,7 @@
 (define-public ruby
   (package
     (name "ruby")
-    (version "2.3.0")
+    (version "2.3.1")
     (source
      (origin
        (method url-fetch)
@@ -55,8 +55,9 @@
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "15s0dsb5ynf3d2w5gzawnszq5594fqvapv2y7a0qw16przq5l4kh"))
+         "0f3395q7pd2hrl2gv26bib80038sjawxgmhl9zn22fjs9m9va9b7"))
        (modules '((guix build utils)))
+       (patches (search-patches "ruby-symlinkfix.patch"))
        (snippet `(begin
                    ;; Remove bundled libffi
                    (delete-file-recursively
@@ -102,7 +103,7 @@ a focus on simplicity and productivity.")
 
 (define-public ruby-2.2
   (package (inherit ruby)
-    (version "2.2.4")
+    (version "2.2.5")
     (source
      (origin
        (method url-fetch)
@@ -111,13 +112,7 @@ a focus on simplicity and productivity.")
                            "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "0g3ps4q3iz7wj9m45n8xyxzw8nh29ljdqb87b0f6i0p3853gz2yj"))
-       (modules '((guix build utils)))
-       (snippet `(begin
-                   ;; Remove bundled libffi
-                   (delete-file-recursively
-                    (string-append "ext/fiddle/libffi-3.2.1"))
-                   #t))))))
+         "1mw7bzw76g5w37cwhb57r6gxcl2vn9lfrlyf4h4xms3qlnhflvzq"))))))
 
 (define-public ruby-2.1
   (package (inherit ruby)
@@ -3528,14 +3523,14 @@ subprocess.")
 (define-public ruby-bio-commandeer
   (package
     (name "ruby-bio-commandeer")
-    (version "0.1.2")
+    (version "0.1.3")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "bio-commandeer" version))
        (sha256
         (base32
-         "061jxa6km92qfwzl058r2gp8gfcsbyr7m643nw1pxvmjdswaf6ly"))))
+         "0lin6l99ldqqjc90l9ihcrv882c4xgbgqm16jqkdy6jf955jd9a8"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -3742,14 +3737,14 @@ Rubytest-based test frameworks.  It provides the @code{rubytest} executable.")
 (define-public ruby-hashery
   (package
     (name "ruby-hashery")
-    (version "2.1.1")
+    (version "2.1.2")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "hashery" version))
        (sha256
         (base32
-         "0xawbljsjarl9l7700bka672ixwznzwih4s9i38p1y9mp8hyx54g"))))
+         "0qj8815bf7q6q7llm5rzdz279gzmpqmqqicxnzv066a020iwqffj"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases

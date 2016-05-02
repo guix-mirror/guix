@@ -40,6 +40,7 @@ ELFILES =					\
   emacs/guix-init.el				\
   emacs/guix-license.el				\
   emacs/guix-list.el				\
+  emacs/guix-location.el			\
   emacs/guix-messages.el			\
   emacs/guix-pcomplete.el			\
   emacs/guix-popup.el				\
@@ -47,6 +48,8 @@ ELFILES =					\
   emacs/guix-profiles.el			\
   emacs/guix-read.el				\
   emacs/guix-ui.el				\
+  emacs/guix-ui-license.el			\
+  emacs/guix-ui-location.el			\
   emacs/guix-ui-package.el			\
   emacs/guix-ui-generation.el			\
   emacs/guix-ui-system-generation.el		\

@@ -22,6 +22,7 @@
   #:use-module (guix serialization)
   #:use-module (guix monads)
   #:autoload   (guix base32) (bytevector->base32-string)
+  #:autoload   (guix build syscalls) (terminal-columns)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
@@ -530,7 +531,13 @@ encoding conversion errors."
                             ;; the daemon's settings are used.  Otherwise, it
                             ;; overrides the daemons settings; see 'guix
                             ;; substitute'.
-                            (substitute-urls #f))
+                            (substitute-urls #f)
+
+                            ;; Number of columns in the client's terminal.
+                            (terminal-columns (terminal-columns))
+
+                            ;; Locale of the client.
+                            (locale (false-if-exception (setlocale LC_ALL))))
   ;; Must be called after `open-connection'.
 
   (define socket
@@ -565,6 +572,13 @@ encoding conversion errors."
                      ,@(if rounds
                            `(("build-repeat"
                               . ,(number->string (max 0 (1- rounds)))))
+                           '())
+                     ,@(if terminal-columns
+                           `(("terminal-columns"
+                              . ,(number->string terminal-columns)))
+                           '())
+                     ,@(if locale
+                           `(("locale" . ,locale))
                            '()))))
         (send (string-pairs pairs))))
     (let loop ((done? (process-stderr server)))

@@ -292,3 +292,39 @@ as existing hashing techniques, with provably negligible risk of collisions.")
 characteristic of this library is that different character encoding for every
 regular expression object can be specified.")
     (license license:bsd-2)))
+
+(define-public antiword
+  (package
+    (name "antiword")
+    (version "0.37")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.winfield.demon.nl/linux"
+                                  "/antiword-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1b7mi1l20jhj09kyh0bq14qzz8vdhhyf35gzwsq43mn6rc7h0b4f"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests
+       #:make-flags
+       (list "-f" "Makefile.Linux"
+             (string-append "GLOBAL_INSTALL_DIR="
+                            (assoc-ref %outputs "out") "/bin")
+             (string-append "GLOBAL_RESOURCES_DIR="
+                            (assoc-ref %outputs "out") "/share/antiword"))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key make-flags #:allow-other-keys)
+             (zero? (apply system* "make" `("global_install" ,@make-flags))))))))
+    (home-page "http://www.winfield.demon.nl/")
+    (synopsis "Microsoft Word document reader")
+    (description "Antiword is an application for displaying Microsoft Word
+documents.  It can also convert the document to PostScript or XML.  Only
+documents made by MS Word version 2 and version 6 or later are supported.  The
+name comes from: \"The antidote against people who send Microsoft Word files
+to everybody, because they believe that everybody runs Windows and therefore
+runs Word\".")
+    (license license:gpl2+)))

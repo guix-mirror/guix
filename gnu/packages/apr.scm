@@ -39,7 +39,7 @@
               (base32
                "0ypn51xblix5ys9xy7da3ngdydip0qqh9rdq8nz54w9aq8lys0vx"))
              (patches
-              (list (search-patch "apr-skip-getservbyname-test.patch")))
+              (search-patches "apr-skip-getservbyname-test.patch"))
              (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (arguments

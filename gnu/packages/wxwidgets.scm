@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages xorg))
 
 (define-public wxwidgets
@@ -45,7 +47,6 @@
        (sha256
         (base32 "0paq27brw4lv8kspxh9iklpa415mxi8zc117vbbbhfjgapf7js1l"))))
     (build-system glib-or-gtk-build-system)
-    ;; TODO: add WebKit
     (inputs
      `(("glu" ,glu)
        ;; XXX gstreamer-0.10 builds fail
@@ -56,12 +57,17 @@
        ("libsm" ,libsm)
        ("libtiff" ,libtiff)
        ("mesa" ,mesa)
+       ("webkitgtk" ,webkitgtk-2.4)
        ("sdl" ,sdl)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
      '(#:configure-flags
-       '("--with-regex=sys" "--with-libmspack" "--with-sdl")
+       '("--with-regex=sys" "--with-libmspack"
+         "--with-sdl"
+         "--enable-webview"
+         "--enable-webkit"
+         "--enable-webviewwebkit")
        #:make-flags
        (list (string-append "LDFLAGS=-Wl,-rpath="
                             (assoc-ref %outputs "out") "/lib"))

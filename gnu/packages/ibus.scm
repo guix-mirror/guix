@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,10 +25,12 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
+  #:use-module (gnu packages anthy)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
@@ -204,4 +207,55 @@ ZhuYin (Bopomofo) input method based on libpinyin for IBus.")
      "The libpinyin C++ library provides algorithms needed for sentence-based
 Chinese pinyin input methods.")
     (home-page "https://github.com/libpinyin/libpinyin")
+    (license gpl2+)))
+
+(define-public ibus-anthy
+  (package
+    (name "ibus-anthy")
+    (version "1.5.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/ibus/ibus-anthy/releases/download/"
+                    version "/ibus-anthy-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1aj7vnfky7izl23xyjky78z3qas3q72l3kr8dnql2lnivsrb8q1y"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       ;; Use absolute exec path in the anthy.xml.
+       (list (string-append "--libexecdir=" %output "/libexec"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (for-each
+                (lambda (prog)
+                  (wrap-program (string-append out "/libexec/" prog)
+                    `("PYTHONPATH" ":" prefix
+                      (,(getenv "PYTHONPATH")))
+                    `("GI_TYPELIB_PATH" ":" prefix
+                      (,(getenv "GI_TYPELIB_PATH")
+                       ,(string-append out "/lib/girepository-1.0")))))
+                '("ibus-engine-anthy" "ibus-setup-anthy"))
+               #t))))))
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python)))
+    (inputs
+     `(("anthy" ,anthy)
+       ("gtk+" ,gtk+)
+       ("ibus" ,ibus)
+       ("gobject-introspection" ,gobject-introspection)
+       ("python-pygobject" ,python-pygobject)))
+    (synopsis "Anthy Japanese language input method for IBus")
+    (description "IBus-Anthy is an engine for the input bus \"IBus\").  It
+adds the Anthy Japanese language input method to IBus.  Because most graphical
+applications allow text input via IBus, installing this package will enable
+Japanese language input in most graphical applications.")
+    (home-page "https://github.com/fujiwarat/ibus-anthy")
     (license gpl2+)))

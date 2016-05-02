@@ -40,6 +40,10 @@
       ,(lambda (_ entries licenses)
          (apply #'guix-message-packages-by-license
                 entries 'package licenses)))
+     (location
+      ,(lambda (_ entries locations)
+         (apply #'guix-message-packages-by-location
+                entries 'package locations)))
      (regexp
       (0 "No packages matching '%s'." val)
       (1 "A single package matching '%s'." val)
@@ -72,6 +76,10 @@
       ,(lambda (_ entries licenses)
          (apply #'guix-message-packages-by-license
                 entries 'output licenses)))
+     (location
+      ,(lambda (_ entries locations)
+         (apply #'guix-message-packages-by-location
+                entries 'output locations)))
      (regexp
       (0 "No package outputs matching '%s'." val)
       (1 "A single package output matching '%s'." val)
@@ -172,6 +180,13 @@ Try \"M-x guix-search-by-name\"."
   (let* ((count (length entries))
          (str-beg (guix-message-string-entries count entry-type))
          (str-end (format "with license '%s'" license)))
+    (message "%s %s." str-beg str-end)))
+
+(defun guix-message-packages-by-location (entries entry-type location)
+  "Display a message for packages or outputs searched by LOCATION."
+  (let* ((count   (length entries))
+         (str-beg (guix-message-string-entries count entry-type))
+         (str-end (format "placed in '%s'" location)))
     (message "%s %s." str-beg str-end)))
 
 (defun guix-message-generations-by-time (profile entries times)

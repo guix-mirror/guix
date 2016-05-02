@@ -31,6 +31,7 @@
   (package
    (name "pcre")
    (version "8.38")
+   (replacement pcre-fixed)
    (source (origin
             (method url-fetch)
             (uri (list
@@ -68,10 +69,17 @@ POSIX regular expression API.")
    (license license:bsd-3)
    (home-page "http://www.pcre.org/")))
 
+(define pcre-fixed                                ;for CVE-2016-3191
+  (package
+    (inherit pcre)
+    (source (origin
+              (inherit (package-source pcre))
+              (patches (search-patches "pcre-CVE-2016-3191.patch"))))))
+
 (define-public pcre2
   (package
     (name "pcre2")
-    (version "10.20")
+    (version "10.21")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/pcre/pcre2/"
@@ -79,7 +87,7 @@ POSIX regular expression API.")
 
               (sha256
                (base32
-                "0yj8mm9ll9zj3v47rvmmqmr1ybxk72rr2lym3rymdsf905qjhbik"))))
+                "1q6lrj9b08l1q39vxipb0fi88x6ybvkr6439h8bjb9r8jd81fsn6"))))
    (build-system gnu-build-system)
    (inputs `(("bzip2" ,bzip2)
              ("readline" ,readline)

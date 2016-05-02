@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
+;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,8 +77,8 @@
              (sha256
               (base32
                "0kn3rzm91qiswi0cql89kbv6mqn27rwsyjfb8xmwy9m5s8fxfiyx"))
-             (patches (list (search-patch "emacs-exec-path.patch")
-                            (search-patch "emacs-source-date-epoch.patch")))))
+             (patches (search-patches "emacs-exec-path.patch"
+                                      "emacs-source-date-epoch.patch"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -300,7 +301,7 @@ when typing parentheses directly or commenting out code line by line.")
 (define-public git-modes
   (package
     (name "git-modes")
-    (version "1.2.1")
+    (version "1.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -309,7 +310,7 @@ when typing parentheses directly or commenting out code line by line.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "088wyddh8y0yw77i0hx449n9zg4wzyc90h63wlmxba1ijg4dzm0p"))))
+                "0gb9c18jib8rpm14vig9774104lwmd8353ps0259m861syf6664d"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)
@@ -345,7 +346,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
 (define-public emacs-with-editor
   (package
     (name "emacs-with-editor")
-    (version "2.5.0")
+    (version "2.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -354,7 +355,7 @@ configuration files, such as .gitattributes, .gitignore, and .git/config.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "19gb381z61l2icg5v5pymgi1a11g3zdp5aysl2j5fh7fxxg4d4c0"))))
+                "1lqm0msc9lzb05ys96bsx8bf2y1qrw27dh5h6qz8lf5i4cbhflw2"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)))
@@ -370,7 +371,7 @@ on stdout instead of using a socket as the Emacsclient does.")
 (define-public magit
   (package
     (name "magit")
-    (version "2.6.0")
+    (version "2.6.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -378,7 +379,7 @@ on stdout instead of using a socket as the Emacsclient does.")
                    version "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "04km5j6118yqz7h3dyfd4ijjd6w3pb76pjlaj25wh1bchf1yilir"))))
+               "0im1jrqw29g5anrrjflj6b2gpyqkvpghnq8zvywxyhmjwzar4rn7"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-no-x)))
@@ -1300,7 +1301,7 @@ on context.")
           (base32
            "141wn9l0m33w0g3dqmx8nxbfdny1r5xbr6ak61rsz21bk0qafs7x"))
          (patches
-          (list (search-patch "emacs-scheme-complete-scheme-r5rs-info.patch")))))
+          (search-patches "emacs-scheme-complete-scheme-r5rs-info.patch"))))
       (build-system emacs-build-system)
       (home-page "https://github.com/ashinn/scheme-complete")
       (synopsis "Smart tab completion for Scheme in Emacs")
@@ -1377,8 +1378,7 @@ identifiers in the MIT-Scheme documentation.")
        (file-name (string-append name "-" version ".el"))
        (method uncompressed-file-fetch)
        (uri "https://staff.fnwi.uva.nl/c.dominik/Tools/constants/constants.el")
-       (patches
-        (list (search-patch "emacs-constants-lisp-like.patch")))
+       (patches (search-patches "emacs-constants-lisp-like.patch"))
        (sha256
         (base32
          "14q094aphsjhq8gklv7i5a7byl0ygz63cv3n6b5p8ji2jy0mnnw3"))))
@@ -1499,3 +1499,55 @@ without modifier keys.  It's similar to Vim's separation of commands and
 insertion mode.  When enabled all keys are implicitly prefixed with
 @samp{C-} (among other helpful shortcuts).")
       (license license:gpl3+))))
+
+(define-public emacs-rfcview
+  (package
+    (name "emacs-rfcview")
+    (version "0.13")
+    (home-page "http://www.loveshack.ukfsn.org/emacs")
+    (source (origin
+              (method uncompressed-file-fetch)
+              (uri "http://www.loveshack.ukfsn.org/emacs/rfcview.el")
+              (sha256
+               (base32
+                "0ympj5rxig383zl2jf0pzdsa80nnq0dpvjiriq0ivfi98fj7kxbz"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("emacs" ,emacs-no-x)))
+    (synopsis "Prettify Request for Comments (RFC) documents")
+    (description "The Internet Engineering Task Force (IETF) and the Internet
+Society (ISOC) publish various Internet-related protocols and specifications
+as \"Request for Comments\" (RFC) documents and Internet Standard (STD)
+documents.  RFCs and STDs are published in a simple text form.  This package
+provides an Emacs major mode, rfcview-mode, which makes it more pleasant to
+read these documents in Emacs.  It prettifies the text and adds
+hyperlinks/menus for easier navigation.  It also provides functions for
+browsing the index of RFC documents and fetching them from remote servers or
+local directories.")
+    (license license:gpl3+)))
+
+(define-public emacs-ffap-rfc-space
+  (package
+    (name "emacs-ffap-rfc-space")
+    (version "12")
+    (home-page "http://user42.tuxfamily.org/ffap-rfc-space/index.html")
+    (source (origin
+              (method uncompressed-file-fetch)
+              (uri "http://download.tuxfamily.org/user42/ffap-rfc-space.el")
+              (sha256
+               (base32
+                "1iv61dv57a73mdps7rn6zmgz7nqh14v0ninidyrasy45b1nv6gck"))))
+    (build-system emacs-build-system)
+    (native-inputs
+     `(("emacs" ,emacs-no-x)))
+    (synopsis "Make ffap recognize an RFC with a space before its number")
+    (description "The Internet Engineering Task Force (IETF) and the
+Internet Society (ISOC) publish various Internet-related protocols and
+specifications as \"Request for Comments\" (RFC) documents.  The
+built-in Emacs module \"ffap\" (Find File at Point) has the ability to
+recognize names at point which look like \"RFC1234\" and \"RFC-1234\"
+and load the appropriate RFC from a remote server.  However, it fails
+to recognize a name like \"RFC 1234\".  This package enhances ffap so
+that it correctly finds RFCs even when a space appears before the
+number.")
+    (license license:gpl3+)))

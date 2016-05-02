@@ -406,7 +406,15 @@ host file systems to mount inside the container."
                                             (file-system-mapping
                                              (source file)
                                              (target file)
-                                             (writable? #f))))
+                                             ;; XXX: On some GNU/Linux
+                                             ;; systems, /etc/resolv.conf is a
+                                             ;; symlink to a file in a tmpfs
+                                             ;; which, for an unknown reason,
+                                             ;; cannot be bind mounted
+                                             ;; read-only within the
+                                             ;; container.
+                                             (writable?
+                                              (string=? "/etc/resolv.conf")))))
                                      %network-configuration-files)
                          '())
                      ;; Mappings for the union closure of all inputs.

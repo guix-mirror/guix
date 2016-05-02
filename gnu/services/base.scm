@@ -27,6 +27,7 @@
   #:use-module (gnu system pam)
   #:use-module (gnu system shadow)                ; 'user-account', etc.
   #:use-module (gnu system file-systems)          ; 'file-system', etc.
+  #:use-module (gnu system mapped-devices)
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
                 #:select (eudev kbd e2fsprogs lvm2 fuse alsa-utils crda gpm))
@@ -47,7 +48,6 @@
             root-file-system-service
             file-system-service
             user-unmount-service
-            device-mapping-service
             swap-service
             user-processes-service
             session-environment-service
@@ -494,18 +494,18 @@ strings or string-valued gexps."
 (define console-keymap-service-type
   (shepherd-service-type
    'console-keymap
-   (lambda (file)
+   (lambda (files)
      (shepherd-service
       (documentation (string-append "Load console keymap (loadkeys)."))
       (provision '(console-keymap))
       (start #~(lambda _
                  (zero? (system* (string-append #$kbd "/bin/loadkeys")
-                                 #$file))))
+                                 #$@files))))
       (respawn? #f)))))
 
-(define (console-keymap-service file)
-  "Return a service to load console keymap from @var{file}."
-  (service console-keymap-service-type file))
+(define (console-keymap-service . files)
+  "Return a service to load console keymaps from @var{files}."
+  (service console-keymap-service-type files))
 
 (define console-font-service-type
   (shepherd-service-type
@@ -1173,26 +1173,6 @@ item of @var{packages}."
 extra rules from the packages listed in @var{rules}."
   (service udev-service-type
            (udev-configuration (udev udev) (rules rules))))
-
-(define device-mapping-service-type
-  (shepherd-service-type
-   'device-mapping
-   (match-lambda
-     ((target open close)
-      (shepherd-service
-       (provision (list (symbol-append 'device-mapping- (string->symbol target))))
-       (requirement '(udev))
-       (documentation "Map a device node using Linux's device mapper.")
-       (start #~(lambda () #$open))
-       (stop #~(lambda _ (not #$close)))
-       (respawn? #f))))))
-
-(define (device-mapping-service target open close)
-  "Return a service that maps device @var{target}, a string such as
-@code{\"home\"} (meaning @code{/dev/mapper/home}).  Evaluate @var{open}, a
-gexp, to open it, and evaluate @var{close} to close it."
-  (service device-mapping-service-type
-           (list target open close)))
 
 (define swap-service-type
   (shepherd-service-type

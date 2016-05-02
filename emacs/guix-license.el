@@ -23,14 +23,15 @@
 
 ;;; Code:
 
-(require 'guix-buffer)
-(require 'guix-list)
-(require 'guix-info)
 (require 'guix-read)
 (require 'guix-backend)
 (require 'guix-guile)
 
-(guix-define-entry-type license)
+(defun guix-license-file (&optional directory)
+  "Return name of the file with license definitions.
+DIRECTORY is a directory with Guix source (`guix-directory' by default)."
+  (expand-file-name "guix/licenses.scm"
+                    (or directory guix-directory)))
 
 (defun guix-lookup-license-url (license)
   "Return URL of a LICENSE."
@@ -38,92 +39,26 @@
                        'lookup-license-uri license))
       (error "Hm, I don't know URL of '%s' license" license)))
 
-(defun guix-license-get-entries (search-type &rest args)
-  "Receive 'license' entries.
-SEARCH-TYPE may be one of the following symbols: `all', `id', `name'."
-  (guix-eval-read
-   (apply #'guix-make-guile-expression
-          'license-entries search-type args)))
-
-(defun guix-license-get-display (search-type &rest args)
-  "Search for licenses and show results."
-  (apply #'guix-list-get-display-entries
-         'license search-type args))
-
-
-;;; License 'info'
-
-(guix-info-define-interface license
-  :buffer-name "*Guix License Info*"
-  :get-entries-function 'guix-license-get-entries
-  :format '((name ignore (simple guix-info-heading))
-            ignore
-            guix-license-insert-packages-button
-            (url ignore (simple guix-url))
-            guix-license-insert-comment)
-  :titles '((url . "URL")))
-
-(declare-function guix-packages-by-license "guix-ui-package")
-
-(defun guix-license-insert-packages-button (entry)
-  "Insert button to display packages by license ENTRY."
-  (guix-info-insert-action-button
-   "Packages"
-   (lambda (btn)
-     (guix-packages-by-license (button-get btn 'license)))
-   "Show packages with this license"
-   'license (guix-entry-value entry 'name)))
-
-(defun guix-license-insert-comment (entry)
-  "Insert 'comment' of a license ENTRY."
-  (let ((comment (guix-entry-value entry 'comment)))
-    (if (and comment
-             (string-match-p "^http" comment))
-        (guix-info-insert-value-simple comment 'guix-url)
-      (guix-info-insert-title-simple
-       (guix-info-param-title 'license 'comment))
-      (guix-info-insert-value-indent comment))))
-
-
-;;; License 'list'
-
-(guix-list-define-interface license
-  :buffer-name "*Guix Licenses*"
-  :get-entries-function 'guix-license-get-entries
-  :describe-function 'guix-license-list-describe
-  :format '((name nil 40 t)
-            (url guix-list-get-url 50 t))
-  :titles '((name . "License"))
-  :sort-key '(name))
-
-(let ((map guix-license-list-mode-map))
-  (define-key map (kbd "RET") 'guix-license-list-show-packages))
-
-(defun guix-license-list-describe (ids)
-  "Describe licenses with IDS (list of identifiers)."
-  (guix-buffer-display-entries
-   (guix-entries-by-ids ids (guix-buffer-current-entries))
-   'info 'license (cl-list* 'id ids) 'add))
-
-(defun guix-license-list-show-packages ()
-  "Display packages with the license at point."
-  (interactive)
-  (guix-packages-by-license (guix-list-current-id)))
-
-
-;;; Interactive commands
+;;;###autoload
+(defun guix-find-license-definition (license &optional directory)
+  "Open licenses file from DIRECTORY and move to the LICENSE definition.
+See `guix-license-file' for the meaning of DIRECTORY.
+Interactively, with prefix argument, prompt for DIRECTORY."
+  (interactive
+   (list (guix-read-license-name)
+         (guix-read-directory)))
+  (find-file (guix-license-file directory))
+  (goto-char (point-min))
+  (when (re-search-forward (concat "\"" (regexp-quote license) "\"")
+                           nil t)
+    (beginning-of-defun)
+    (recenter 1)))
 
 ;;;###autoload
 (defun guix-browse-license-url (license)
   "Browse URL of a LICENSE."
   (interactive (list (guix-read-license-name)))
   (browse-url (guix-lookup-license-url license)))
-
-;;;###autoload
-(defun guix-licenses ()
-  "Display licenses of the Guix packages."
-  (interactive)
-  (guix-license-get-display 'all))
 
 (provide 'guix-license)
 

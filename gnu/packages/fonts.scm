@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
+;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -306,7 +307,9 @@ sans-serif designed for on-screen reading.  It is used by GNOME@tie{}3.")
      "The GNU Freefont project aims to provide a set of free outline
  (PostScript Type0, TrueType, OpenType...) fonts covering the ISO
 10646/Unicode UCS (Universal Character Set).")
-   (license license:gpl3+)))
+    (license license:gpl3+)
+    (properties '((upstream-name . "freefont")
+                  (ftp-directory . "/gnu/freefont")))))
 
 (define-public font-liberation
   (package
@@ -759,3 +762,49 @@ It contains the following fonts and styles:
 @item UnGungseo: cursive, brush-stroke.
 @end enumerate\n")
     (license license:gpl2+)))
+
+(define-public font-fantasque-sans
+  (package
+    (name "font-fantasque-sans")
+    (version "1.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/belluzj/fantasque-sans/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07fpy53k2x2nz5q61swkab6cfk9gw2kc4x4brsj6zjgbm16fap85"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("ttfautohint" ,ttfautohint)
+       ("woff-tools" ,woff-tools)
+       ("fontforge" ,fontforge)
+       ("woff2" ,woff2)
+       ("ttf2eot" ,ttf2eot)))
+    (arguments
+     `(#:tests? #f                 ;test target intended for visual inspection
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)   ;no configuration
+                  (replace 'install
+                    ;; 'make install' wants to install to ~/.fonts, install to
+                    ;; output instead.
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (font-dir (string-append out "/share/fonts"))
+                             (truetype-dir (string-append font-dir "/truetype"))
+                             (opentype-dir (string-append font-dir "/opentype"))
+                             (webfonts-dir (string-append font-dir "/webfonts")))
+                        (copy-recursively "OTF" opentype-dir)
+                        (for-each (lambda (f) (install-file f truetype-dir))
+                                  (find-files "." "\\.ttf$"))
+                        (copy-recursively "Webfonts" webfonts-dir)
+                        #t))))))
+    (synopsis "Font family with a monospaced variant for programmers")
+    (description
+     "Fantasque Sans Mono is a programming font designed with functionality in
+mind.  The font includes a bold version and a good italic version with new
+glyph designs, not just an added slant.")
+    (home-page "https://fontlibrary.org/en/font/fantasque-sans-mono")
+    (license license:silofl1.1)))

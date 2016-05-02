@@ -32,8 +32,10 @@
   #:export (disk-partitions
             partition-label-predicate
             partition-uuid-predicate
+            partition-luks-uuid-predicate
             find-partition-by-label
             find-partition-by-uuid
+            find-partition-by-luks-uuid
             canonicalize-device-spec
 
             uuid->string
@@ -78,6 +80,11 @@
 (define (bind-mount source target)
   "Bind-mount SOURCE at TARGET."
   (mount source target "" MS_BIND))
+
+
+;;;
+;;; Ext2 file systems.
+;;;
 
 (define-syntax %ext2-endianness
   ;; Endianness of ext2 file systems.
@@ -136,6 +143,63 @@ if DEVICE does not contain an ext2 file system."
           #f
           (list->string (map integer->char bytes))))))
 
+
+;;;
+;;; LUKS encrypted devices.
+;;;
+
+;; The LUKS header format is described in "LUKS On-Disk Format Specification":
+;; <http://wiki.cryptsetup.googlecode.com/git/LUKS-standard/>.  We follow
+;; version 1.2.1 of this document.
+
+(define-syntax %luks-endianness
+  ;; Endianness of LUKS headers.
+  (identifier-syntax (endianness big)))
+
+(define-syntax %luks-header-size
+  ;; Size in bytes of the LUKS header, including key slots.
+  (identifier-syntax 592))
+
+(define %luks-magic
+  ;; The 'LUKS_MAGIC' constant.
+  (u8-list->bytevector (append (map char->integer (string->list "LUKS"))
+                               (list #xba #xbe))))
+
+(define (sub-bytevector bv start size)
+  "Return a copy of the SIZE bytes of BV starting from offset START."
+  (let ((result (make-bytevector size)))
+    (bytevector-copy! bv start result 0 size)
+    result))
+
+(define (read-luks-header file)
+  "Read a LUKS header from FILE.  Return the raw header on success, and #f if
+not valid header was found."
+  (call-with-input-file file
+    (lambda (port)
+      (let ((header (make-bytevector %luks-header-size)))
+        (match (get-bytevector-n! port header 0 (bytevector-length header))
+          ((? eof-object?)
+           #f)
+          ((? number? len)
+           (and (= len (bytevector-length header))
+                (let ((magic   (sub-bytevector header 0 6)) ;XXX: inefficient
+                      (version (bytevector-u16-ref header 6 %luks-endianness)))
+                  (and (bytevector=? magic %luks-magic)
+                       (= version 1)
+                       header)))))))))
+
+(define (luks-header-uuid header)
+  "Return the LUKS UUID from HEADER, as a 16-byte bytevector."
+  ;; 40 bytes are reserved for the UUID, but in practice, it contains the 36
+  ;; bytes of its ASCII representation.
+  (let ((uuid (sub-bytevector header 168 36)))
+    (string->uuid (utf8->string uuid))))
+
+
+;;;
+;;; Partition lookup.
+;;;
+
 (define (disk-partitions)
   "Return the list of device names corresponding to valid disk partitions."
   (define (partition? major minor)
@@ -167,42 +231,53 @@ if DEVICE does not contain an ext2 file system."
                      (loop (cons name parts))
                      (loop parts))))))))))
 
-(define (read-ext2-superblock* device)
-  "Like 'read-ext2-superblock', but return #f when DEVICE does not exist
-instead of throwing an exception."
-  (catch 'system-error
-    (lambda ()
-      (read-ext2-superblock device))
-    (lambda args
-      ;; When running on the hand-made /dev,
-      ;; 'disk-partitions' could return partitions for which
-      ;; we have no /dev node.  Handle that gracefully.
-      (if (= ENOENT (system-error-errno args))
-          (begin
-            (format (current-error-port)
-                    "warning: device '~a' not found~%" device)
-            #f)
-          (apply throw args)))))
+(define (ENOENT-safe proc)
+  "Wrap the one-argument PROC such that ENOENT errors are caught and lead to a
+warning and #f as the result."
+  (lambda (device)
+    (catch 'system-error
+      (lambda ()
+        (proc device))
+      (lambda args
+        ;; When running on the hand-made /dev,
+        ;; 'disk-partitions' could return partitions for which
+        ;; we have no /dev node.  Handle that gracefully.
+        (if (= ENOENT (system-error-errno args))
+            (begin
+              (format (current-error-port)
+                      "warning: device '~a' not found~%" device)
+              #f)
+            (apply throw args))))))
 
-(define (partition-predicate field =)
-  "Return a predicate that returns true if the FIELD of an ext2 superblock is
-= to the given value."
-  (lambda (expected)
-    "Return a procedure that, when applied to a partition name such as \"sda1\",
+(define (partition-predicate read field =)
+  "Return a predicate that returns true if the FIELD of partition header that
+was READ is = to the given value."
+  (let ((read (ENOENT-safe read)))
+    (lambda (expected)
+      "Return a procedure that, when applied to a partition name such as \"sda1\",
 returns #t if that partition's volume name is LABEL."
-    (lambda (part)
-      (let* ((device (string-append "/dev/" part))
-             (sblock (read-ext2-superblock* device)))
-        (and sblock
-             (let ((actual (field sblock)))
-               (and actual
-                    (= actual expected))))))))
+      (lambda (part)
+        (let* ((device (string-append "/dev/" part))
+               (sblock (read device)))
+          (and sblock
+               (let ((actual (field sblock)))
+                 (and actual
+                      (= actual expected)))))))))
 
 (define partition-label-predicate
-  (partition-predicate ext2-superblock-volume-name string=?))
+  (partition-predicate read-ext2-superblock
+                       ext2-superblock-volume-name
+                       string=?))
 
 (define partition-uuid-predicate
-  (partition-predicate ext2-superblock-uuid bytevector=?))
+  (partition-predicate read-ext2-superblock
+                       ext2-superblock-uuid
+                       bytevector=?))
+
+(define partition-luks-uuid-predicate
+  (partition-predicate read-luks-header
+                       luks-header-uuid
+                       bytevector=?))
 
 (define (find-partition-by-label label)
   "Return the first partition found whose volume name is LABEL, or #f if none
@@ -215,6 +290,13 @@ were found."
   "Return the first partition whose unique identifier is UUID (a bytevector),
 or #f if none was found."
   (and=> (find (partition-uuid-predicate uuid)
+               (disk-partitions))
+         (cut string-append "/dev/" <>)))
+
+(define (find-partition-by-luks-uuid uuid)
+  "Return the first LUKS partition whose unique identifier is UUID (a bytevector),
+or #f if none was found."
+  (and=> (find (partition-luks-uuid-predicate uuid)
                (disk-partitions))
          (cut string-append "/dev/" <>)))
 

@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Florian Paul Schmidt <mista.tapas@gmx.net>
+;;; Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -272,7 +273,7 @@ management D-Bus specification.")
               (sha256
                (base32
                 "1c4p3ckghvsad1sj5v8wmar5mh9cbhail9mmhad2f9pwwb10z4ih"))
-              (patches (list (search-patch "xfce4-panel-plugins.patch")))))
+              (patches (search-patches "xfce4-panel-plugins.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-gtk3")))
@@ -467,7 +468,7 @@ your system in categories, so you can quickly find and launch them.")
                 "01kvbd09c06j20n155hracsgrq06rlmfgdywffjsvlwpn19m9j38"))
               (patches
                ;; See: https://bugzilla.xfce.org/show_bug.cgi?id=12282
-               (list (search-patch "xfce4-session-fix-xflock4.patch")))
+               (search-patches "xfce4-session-fix-xflock4.patch"))
               (modules '((guix build utils)))
               (snippet
                '(begin
@@ -510,8 +511,7 @@ allows you to shutdown the computer from Xfce.")
               (sha256
                (base32
                 "108za1cmjslwzkdl76x9kwxkq8z734kg9nz8rxk057f10pqwxgh4"))
-              (patches
-               (list (search-patch "xfce4-settings-defaults.patch")))))
+              (patches (search-patches "xfce4-settings-defaults.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -699,6 +699,7 @@ on your desktop.")
        ("gnome-icon-theme"     ,gnome-icon-theme)
        ("gtk-xfce-engine"      ,gtk-xfce-engine)
        ("hicolor-icon-theme"   ,hicolor-icon-theme)
+       ("ristretto"            ,ristretto)
        ("shared-mime-info"     ,shared-mime-info)
        ("thunar"               ,thunar)
        ("thunar-volman"        ,thunar-volman)
@@ -756,4 +757,61 @@ scaling, etc).  In addition, xfce4-power-manager provides a set of
 freedesktop-compliant DBus interfaces to inform other applications about current
 power level so that they can adjust their power consumption, and it provides the
 inhibit interface which allows applications to prevent automatic sleep.")
+    (license gpl2+)))
+
+(define-public ristretto
+  (package
+    (name "ristretto")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/apps/ristretto/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0a7kwhx51fd2kqh7l7kp13wcn39d2fjkwnn9rfd1k9ydrqj56qki"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("desktop-file-utils" ,desktop-file-utils)
+       ("libexif" ,libexif)
+       ("libxfce4ui" ,libxfce4ui)
+       ("librsvg" ,librsvg)
+       ("tumbler" ,tumbler)))
+    (home-page "http://docs.xfce.org/apps/ristretto/start")
+    (synopsis "Fast and lightweight picture-viewer")
+    (description
+     "The Ristretto Image Viewer is an application that can be used to view,
+and scroll through images.  It can be used to run a slideshow of images, open
+images with other applications like an image-editor or configure an image as
+the desktop wallpaper.")
+    (license gpl2+)))
+
+(define-public xfce4-taskmanager
+  (package
+    (name "xfce4-taskmanager")
+    (version "1.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/apps/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1jwywmkkkmz7406m1jq40w6apiav25cznafhigbgpjv6z5hv27if"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libwnck" ,libwnck-2)
+       ("gtk+" ,gtk+-2)))
+    (home-page "http://goodies.xfce.org/projects/applications/xfce4-taskmanager")
+    (synopsis "Easy to use task manager")
+    (description
+     "This is a task manager for the Xfce desktop.  It displays the CPU and
+memory usage graphically, and it can display processes as a tree.")
     (license gpl2+)))

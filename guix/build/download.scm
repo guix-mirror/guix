@@ -39,8 +39,10 @@
             maybe-expand-mirrors
             url-fetch
             byte-count->string
+            current-terminal-columns
             progress-proc
             uri-abbreviation
+            nar-uri-abbreviation
             store-path-abbreviation))
 
 ;;; Commentary:
@@ -52,6 +54,10 @@
 (define %http-receive-buffer-size
   ;; Size of the HTTP receive buffer.
   65536)
+
+(define current-terminal-columns
+  ;; Number of columns of the terminal.
+  (make-parameter 80))
 
 (define (nearest-exact-integer x)
   "Given a real number X, return the nearest exact integer, with ties going to
@@ -166,9 +172,10 @@ used to shorten FILE for display."
                                          (byte-count->string throughput)
                                          (seconds->string elapsed)
                                          (progress-bar %) %)))
-                ;; TODO: Make this adapt to the actual terminal width.
-                (display (string-pad-middle left right 80) log-port)
-                (display #\cr log-port)
+                (display "\r\x1b[K" log-port)
+                (display (string-pad-middle left right
+                                            (current-terminal-columns))
+                         log-port)
                 (flush-output-port log-port)
                 (cont))))
           (lambda (transferred cont)
@@ -182,9 +189,10 @@ used to shorten FILE for display."
                                          (byte-count->string throughput)
                                          (seconds->string elapsed)
                                          (byte-count->string transferred))))
-                ;; TODO: Make this adapt to the actual terminal width.
-                (display (string-pad-middle left right 80) log-port)
-                (display #\cr log-port)
+                (display "\r\x1b[K" log-port)
+                (display (string-pad-middle left right
+                                            (current-terminal-columns))
+                         log-port)
                 (flush-output-port log-port)
                 (cont))))))))
 
@@ -195,13 +203,18 @@ abbreviation of URI showing the scheme, host, and basename of the file."
     (uri->string uri))
 
   (define (elide-path)
-    (let ((path (uri-path uri)))
-      (string-append (symbol->string (uri-scheme uri)) "://"
+    (let* ((path   (uri-path uri))
+           (base   (basename path))
+           (prefix (string-append (symbol->string (uri-scheme uri)) "://"
 
-                     ;; `file' URIs have no host part.
-                     (or (uri-host uri) "")
+                                  ;; `file' URIs have no host part.
+                                  (or (uri-host uri) "")
 
-                     (string-append "/.../" (basename path)))))
+                                  (string-append "/" (ellipsis) "/"))))
+      (if (> (+ (string-length prefix) (string-length base)) max-length)
+          (string-append prefix (ellipsis)
+                         (string-drop base (quotient (string-length base) 2)))
+          (string-append prefix base))))
 
   (if (> (string-length uri-as-string) max-length)
       (let ((short (elide-path)))
@@ -209,6 +222,17 @@ abbreviation of URI showing the scheme, host, and basename of the file."
             short
             uri-as-string))
       uri-as-string))
+
+(define (nar-uri-abbreviation uri)
+  "Abbreviate URI, which is assumed to be the URI of a nar as served by Hydra
+and 'guix publish', something like
+\"http://example.org/nar/1ldrllwbna0aw5z8kpci4fsvbd2w8cw4-texlive-bin-2015\"."
+  (let* ((uri  (if (string? uri) (string->uri uri) uri))
+         (path (basename (uri-path uri))))
+    (if (and (> (string-length path) 33)
+             (char=? (string-ref path 32) #\-))
+        (string-drop path 33)
+        path)))
 
 (define (ftp-fetch uri file)
   "Fetch data from URI and write it to FILE.  Return FILE on success."
@@ -267,6 +291,13 @@ host name without trailing dot."
 
     (set-session-transport-fd! session (fileno port))
     (set-session-default-priority! session)
+
+    ;; The "%COMPAT" bit allows us to work around firewall issues (info
+    ;; "(gnutls) Priority Strings"); see <http://bugs.gnu.org/23311>.
+    ;; Explicitly disable SSLv3, which is insecure:
+    ;; <https://tools.ietf.org/html/rfc7568>.
+    (set-session-priorities! session "NORMAL:%COMPAT:-VERS-SSL3.0")
+
     (set-session-credentials! session (make-certificate-credentials))
 
     ;; Uncomment the following lines in case of debugging emergency.
@@ -530,7 +561,8 @@ Return the resulting target URI."
                  (put-bytevector p bv-or-port))))
          file))
       ((301                                       ; moved permanently
-        302)                                      ; found (redirection)
+        302                                       ; found (redirection)
+        307)                                      ; temporary redirection
        (let ((uri (resolve-uri-reference (response-location resp) uri)))
          (format #t "following redirection to `~a'...~%"
                  (uri->string uri))

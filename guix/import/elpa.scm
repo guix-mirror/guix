@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -239,13 +239,11 @@ type '<elpa-package>'."
 ;;;
 
 (define (latest-release package)
-  "Return an <upstream-release> for the latest release of PACKAGE.  PACKAGE
-may be a Guix package name such as \"emacs-debbugs\" or an upstream name such
-as \"debbugs\"."
+  "Return an <upstream-release> for the latest release of PACKAGE."
   (define name
-    (if (string-prefix? "emacs-" package)
-        (string-drop package 6)
-        package))
+    (if (string-prefix? "emacs-" (package-name package))
+        (string-drop (package-name package) 6)
+        (package-name package)))
 
   (let* ((repo    'gnu)
          (info    (elpa-package-info name repo))
@@ -256,7 +254,7 @@ as \"debbugs\"."
                     ((_ raw-version reqs synopsis kind . rest)
                      (package-source-url kind name version repo)))))
     (upstream-source
-     (package package)
+     (package (package-name package))
      (version version)
      (urls (list url))
      (signature-urls (list (string-append url ".sig"))))))

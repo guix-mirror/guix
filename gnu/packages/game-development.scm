@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -406,4 +407,36 @@ etc.")
 games.  In addition to basic pixel editing features, Aseprite can assist in
 the creation of animations, tiled graphics, texture atlases, and more.")
     (home-page "http://www.aseprite.org/")
+    (license license:gpl2+)))
+
+(define-public qqwing
+  (package
+    (name "qqwing")
+    (version "1.3.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://qqwing.com/"
+                    name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0bw0papyqjg22z6irf36gs54y8236wa37b6gyn2h1spy65n76lqp"))))
+    (build-system gnu-build-system)
+    (native-inputs
+      `(("pkg-config" ,pkg-config)))
+    (home-page "https://qqwing.com/")
+    (synopsis "Sudoku puzzle solver and generator")
+    (description
+     "QQWing is a Sudoku puzzle generator and solver.
+It offers the following features:
+@enumerate
+@item Can solve 1000 puzzles in 1 second and generate 1000 puzzles in 25 seconds.
+@item Uses logic.  Uses as many solve techniques as possible when solving
+  puzzles rather than guessing.
+@item Rates puzzles.  Most generators don't give an indication of the difficulty
+  of a Sudoku puzzle.  QQwing does.
+@item Can print solve instructions for any puzzle.
+@item Customizable output style, including a CSV style that is easy to
+  import into a database.
+@end enumerate")
     (license license:gpl2+)))

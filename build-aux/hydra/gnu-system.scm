@@ -71,19 +71,20 @@
 (define* (package->alist store package system
                          #:optional (package-derivation package-derivation))
   "Convert PACKAGE to an alist suitable for Hydra."
-  `((derivation . ,(derivation-file-name
-                    (package-derivation store package system
-                                        #:graft? #f)))
-    (description . ,(package-synopsis package))
-    (long-description . ,(package-description package))
-    (license . ,(package-license package))
-    (home-page . ,(package-home-page package))
-    (maintainers . ("bug-guix@gnu.org"))
-    (max-silent-time . ,(or (assoc-ref (package-properties package)
-                                       'max-silent-time)
-                            3600))                ; 1 hour by default
-    (timeout . ,(or (assoc-ref (package-properties package) 'timeout)
-                    72000)))) ; 20 hours by default
+  (parameterize ((%graft? #f))
+    `((derivation . ,(derivation-file-name
+                      (package-derivation store package system
+                                          #:graft? #f)))
+      (description . ,(package-synopsis package))
+      (long-description . ,(package-description package))
+      (license . ,(package-license package))
+      (home-page . ,(package-home-page package))
+      (maintainers . ("bug-guix@gnu.org"))
+      (max-silent-time . ,(or (assoc-ref (package-properties package)
+                                         'max-silent-time)
+                              3600))              ;1 hour by default
+      (timeout . ,(or (assoc-ref (package-properties package) 'timeout)
+                      72000)))))                  ;20 hours by default
 
 (define (package-job store job-name package system)
   "Return a job called JOB-NAME that builds PACKAGE on SYSTEM."
@@ -142,7 +143,9 @@ system.")
   (define (->job name drv)
     (let ((name (symbol-append name (string->symbol ".")
                                (string->symbol system))))
-      `(,name . ,(cut ->alist drv))))
+      `(,name . ,(lambda ()
+                   (parameterize ((%graft? #f))
+                     (->alist drv))))))
 
   (define MiB
     (expt 2 20))
@@ -178,7 +181,9 @@ all its dependencies, and ready to be installed on non-GuixSD distributions.")
   (define (->job name drv)
     (let ((name (symbol-append name (string->symbol ".")
                                (string->symbol system))))
-      `(,name . ,(cut ->alist drv))))
+      `(,name . ,(lambda ()
+                   (parameterize ((%graft? #f))
+                     (->alist drv))))))
 
   ;; XXX: Add a job for the stable Guix?
   (list (->job 'binary-tarball

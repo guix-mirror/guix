@@ -133,7 +133,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.11")
+    (version "5.7.12")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -145,7 +145,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                           name "-" version ".tar.gz")))
              (sha256
               (base32
-               "03hzd2ikabxhh5ch2yvml2nks2wpv3qbkqmx3520in6khypwgy2l"))))
+               "11qwbid666fspq143ymi86yva2b01lybaqh26k92rciasav3r11j"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -810,14 +810,14 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "3.0.4")
+    (version "3.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "1kqjc4qrasadgnl3cg71x3g5qpw2rilyk4pwl151698rb2nr0pm3"))))
+                "08vzfdr67gp3lvk770qpax2c5g2sx8hn6p64jn3jddrvxb2939xj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tests related to master/slave and replication fail

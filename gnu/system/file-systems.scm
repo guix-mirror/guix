@@ -54,17 +54,6 @@
             %base-file-systems
             %container-file-systems
 
-            mapped-device
-            mapped-device?
-            mapped-device-source
-            mapped-device-target
-            mapped-device-type
-
-            mapped-device-kind
-            mapped-device-kind?
-            mapped-device-kind-open
-            mapped-device-kind-close
-
             <file-system-mapping>
             file-system-mapping
             file-system-mapping?
@@ -292,26 +281,6 @@ initrd code."
      (needed-for-boot? #t)
      (create-mount-point? #t)
      (check? #f))))
-
-
-
-;;;
-;;; Mapped devices, for Linux's device-mapper.
-;;;
-
-(define-record-type* <mapped-device> mapped-device
-  make-mapped-device
-  mapped-device?
-  (source    mapped-device-source)                ;string
-  (target    mapped-device-target)                ;string
-  (type      mapped-device-type))                 ;<mapped-device-kind>
-
-(define-record-type* <mapped-device-type> mapped-device-kind
-  make-mapped-device-kind
-  mapped-device-kind?
-  (open      mapped-device-kind-open)             ;source target -> gexp
-  (close     mapped-device-kind-close             ;source target -> gexp
-             (default (const #~(const #f)))))
 
 
 ;;;

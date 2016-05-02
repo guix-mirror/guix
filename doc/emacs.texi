@@ -10,6 +10,7 @@ Guix convenient and fun.
 * Initial Setup: Emacs Initial Setup.	Preparing @file{~/.emacs}.
 * Package Management: Emacs Package Management.	Managing packages and generations.
 * Licenses: Emacs Licenses.		Interface for licenses of Guix packages.
+* Package Source Locations: Emacs Package Locations.	Interface for package location files.
 * Popup Interface: Emacs Popup Interface.	Magit-like interface for guix commands.
 * Prettify Mode: Emacs Prettify.	Abbreviating @file{/gnu/store/@dots{}} file names.
 * Build Log Mode: Emacs Build Log.	Highlighting Guix build logs.
@@ -160,6 +161,11 @@ Display package(s) with the specified name.
 @item M-x guix-packages-by-license
 Display package(s) with the specified license.
 
+@item M-x guix-packages-by-location
+Display package(s) located in the specified file.  These files usually
+have the following form: @file{gnu/packages/emacs.scm}, but don't type
+them manually!  Press @key{TAB} to complete the file name.
+
 @item M-x guix-search-by-regexp
 Search for packages by a specified regexp.  By default ``name'',
 ``synopsis'' and ``description'' of the packages will be searched.  This
@@ -216,30 +222,6 @@ With @kbd{C-u}, make it verbose.
 
 Once @command{guix pull} has succeeded, the Guix REPL is restared.  This
 allows you to keep using the Emacs interface with the updated Guix.
-
-Finally, there is an Emacs variant of @command{guix edit} command
-(@pxref{Invoking guix edit}):
-
-@table @kbd
-@item M-x guix-edit
-As with @kbd{M-x guix-packages-by-name}, you can press @key{TAB} to
-complete a package name.
-@end table
-
-If you are contributing to Guix, you may find it useful for @kbd{M-x
-guix-edit} to open package files from your git directory.  This can be
-done by setting @code{guix-directory} variable.  For example, after
-this:
-
-@example
-(setq guix-directory "~/src/guix")
-@end example
-
-@kbd{M-x guix-edit guix} opens
-@file{~/src/guix/gnu/packages/package-management.scm} file.
-
-Also you can use @kbd{C-u} prefix argument to specify a directory just
-for the current @kbd{M-x guix-edit} command.
 
 
 @node Emacs General info
@@ -562,7 +544,55 @@ Display a list of available licenses.  You can press @kbd{@key{RET}}
 there to display packages with this license in the same way as @kbd{M-x
 guix-packages-by-license} would do (@pxref{Emacs Commands}).
 
+@item M-x guix-find-license-definition
+Open @file{@dots{}/guix/licenses.scm} and move to the specified license.
+
 @end table
+
+
+@node Emacs Package Locations
+@section Package Source Locations
+
+As you know, package definitions are placed in Guile files, also known
+as @dfn{package locations}.  The following commands should help you not
+get lost in these locations:
+
+@table @kbd
+
+@item M-x guix-locations
+Display a list of package locations.  You can press @key{RET} there to
+display packages placed in the current location in the same way as
+@kbd{M-x guix-packages-by-location} would do (@pxref{Emacs Commands}).
+Note that when the point is on a location button, @key{RET} will open
+this location file.
+
+@item M-x guix-find-location
+Open the given package definition source file (press @key{TAB} to choose
+a location from a completion list).
+
+@item M-x guix-edit
+Find location of a specified package.  This is an Emacs analog of
+@command{guix edit} command (@pxref{Invoking guix edit}).  As with
+@kbd{M-x guix-packages-by-name}, you can press @key{TAB} to complete a
+package name.
+
+@end table
+
+If you are contributing to Guix, you may find it useful for @kbd{M-x
+guix-find-location} and @kbd{M-x guix-edit} to open locations from your
+Git checkout.  This can be done by setting @code{guix-directory}
+variable.  For example, after this:
+
+@example
+(setq guix-directory "~/src/guix")
+@end example
+
+@kbd{M-x guix-edit guix} opens
+@file{~/src/guix/gnu/packages/package-management.scm} file.
+
+Also you can use @kbd{C-u} prefix argument to specify a directory just
+for the current @kbd{M-x guix-find-location} or @kbd{M-x guix-edit}
+command.
 
 
 @node Emacs Popup Interface

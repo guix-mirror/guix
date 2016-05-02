@@ -27,7 +27,7 @@ nodist_noinst_SCRIPTS =				\
   pre-inst-env					\
   test-env
 
-include gnu-system.am
+include gnu/local.mk
 
 MODULES =					\
   guix/base32.scm				\
@@ -339,6 +339,7 @@ EXTRA_DIST =						\
   .dir-locals.el					\
   build-aux/build-self.scm				\
   build-aux/compile-all.scm				\
+  build-aux/hydra/evaluate.scm				\
   build-aux/hydra/gnu-system.scm			\
   build-aux/hydra/demo-os.scm				\
   build-aux/hydra/guix.scm				\
@@ -415,11 +416,11 @@ install-data-hook: set-bootstrap-executable-permissions
 SUBDIRS = po/guix po/packages
 BUILT_SOURCES =
 
-include doc.am
+include doc/local.mk
 
 if BUILD_DAEMON
 
-include daemon.am
+include nix/local.mk
 
 endif BUILD_DAEMON
 
@@ -436,7 +437,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
 
 dist_emacsui_DATA = emacs/guix-main.scm
 nodist_emacsui_DATA = emacs/guix-helper.scm
-include emacs.am
+include emacs/local.mk
 
 # The self-contained tarball.
 guix-binary.%.tar.xz:
@@ -480,14 +481,22 @@ assert-no-store-file-names:
 	fi
 
 # Make sure hydra.gnu.org has the important binaries.
-assert-binaries-available:
+assert-binaries-available: $(GOBJECTS)
 	$(AM_V_at)$(top_builddir)/pre-inst-env "$(GUILE)"			\
 	  "$(top_srcdir)/build-aux/check-available-binaries.scm"
 
 # Make sure the final inputs don't refer to bootstrap tools.
-assert-final-inputs-self-contained:
+assert-final-inputs-self-contained: $(GOBJECTS)
 	$(AM_V_at)$(top_builddir)/pre-inst-env "$(GUILE)"			\
 	  "$(top_srcdir)/build-aux/check-final-inputs-self-contained.scm"
+
+# Compute the Hydra jobs and write them in the target file.
+hydra-jobs.scm: $(GOBJECTS)
+	$(AM_V_at)$(MKDIR_P) "`dirname "$@"`"
+	$(AM_V_GEN)$(top_builddir)/pre-inst-env "$(GUILE)"		\
+	  "$(top_srcdir)/build-aux/hydra/evaluate.scm"			\
+	  "$(top_srcdir)/build-aux/hydra/gnu-system.scm" > "$@.tmp"
+	$(AT_V_at)mv "$@.tmp" "$@"
 
 .PHONY: sync-descriptions gen-ChangeLog gen-AUTHORS clean-go make-go
 .PHONY: assert-no-store-file-names assert-binaries-available

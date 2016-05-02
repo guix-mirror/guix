@@ -46,7 +46,7 @@
                (sha256
                 (base32
                  "0hzxr9jxqqx5sxsv9vmlxdnvlr9vi4ih1avjb869hbs6p5qn1fjn"))
-               (patches (list (search-patch "readline-link-ncurses.patch")))
+               (patches (search-patches "readline-link-ncurses.patch"))
                (patch-flags '("-p0"))))
       (build-system gnu-build-system)
       (propagated-inputs `(("ncurses" ,ncurses)))

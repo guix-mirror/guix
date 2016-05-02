@@ -44,7 +44,7 @@
               (sha256
                (base32
                 "1s9pc4yls2s1gcg2ar4q75nym2z5v6lxq36bl6lq26br00nj2mas"))
-              (patches (list (search-patch "flashrom-use-libftdi1.patch")))))
+              (patches (search-patches "flashrom-use-libftdi1.patch"))))
     (build-system gnu-build-system)
     (inputs `(("dmidecode" ,dmidecode)
               ("pciutils" ,pciutils)
@@ -88,7 +88,7 @@ programmer devices.")
       (sha256
        (base32
         "0frxg0q09nrm95z7ymzddx7ysl77ilfbdix1m81d9jjpiv5bm64y"))
-      (patches (list (search-patch "avrdude-fix-libusb.patch")))))
+      (patches (search-patches "avrdude-fix-libusb.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("libelf" ,libelf)
@@ -117,7 +117,7 @@ technique (ISP).")
       (sha256
        (base32
         "15gr99y1z9vbvhrkd25zqhnzhg6zjmaam3vfjzf2mazd39mx7d0x"))
-      (patches (list (search-patch "dfu-programmer-fix-libusb.patch")))))
+      (patches (search-patches "dfu-programmer-fix-libusb.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

@@ -25,7 +25,7 @@
 (define-public abduco
   (package
    (name "abduco")
-   (version "0.5")
+   (version "0.6")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -33,7 +33,7 @@
                   version ".tar.gz"))
             (sha256
              (base32
-              "11phry5wnvwm9ckij5gxbrjfgdz3x38vpnm505q5ldc88im248mz"))))
+              "1x1m58ckwsprljgmdy93mvgjyg9x3cqrzdf3mysp0mx97zhhj2f9"))))
    (build-system gnu-build-system)
    (arguments
     `(#:make-flags (list "CC=gcc"

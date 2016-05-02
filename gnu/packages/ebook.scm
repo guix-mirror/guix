@@ -50,7 +50,7 @@
              (sha256
                (base32
                 "18zzb4x3z0d7fjh1x5439bs62dmgsi4c1pg3qyr7h5gp1i5xcj9l"))
-             (patches (list (search-patch "chmlib-inttypes.patch")))))
+             (patches (search-patches "chmlib-inttypes.patch"))))
     (build-system gnu-build-system)
     (home-page "http://www.jedrea.com/chmlib/")
     (synopsis "Library for CHM files")
@@ -77,8 +77,8 @@
           '(begin
             (delete-file-recursively "src/unrar")
             (delete-file "src/odf/thumbnail.py")))
-        (patches (list (search-patch "calibre-drop-unrar.patch")
-                       (search-patch "calibre-no-updates-dialog.patch")))))
+        (patches (search-patches "calibre-drop-unrar.patch"
+                                 "calibre-no-updates-dialog.patch"))))
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

@@ -64,7 +64,7 @@
       ;; his pleasure.
       (patch-flags '("-p0"))
       (patches
-       (list (search-patch "libcanberra-sound-theme-freedesktop.patch")))))
+       (search-patches "libcanberra-sound-theme-freedesktop.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)

@@ -3,6 +3,8 @@
 # Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
+# Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
+# Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
 #
 # This file is part of GNU Guix.
 #
@@ -35,6 +37,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/algebra.scm			\
   gnu/packages/aidc.scm				\
   gnu/packages/animation.scm			\
+  gnu/packages/anthy.scm			\
   gnu/packages/apl.scm				\
   gnu/packages/apr.scm				\
   gnu/packages/asciidoc.scm			\
@@ -57,6 +60,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/boost.scm			\
   gnu/packages/bootstrap.scm			\
   gnu/packages/busybox.scm			\
+  gnu/packages/c.scm				\
   gnu/packages/calcurse.scm			\
   gnu/packages/ccache.scm			\
   gnu/packages/cdrom.scm			\
@@ -87,6 +91,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/dejagnu.scm			\
   gnu/packages/dico.scm				\
   gnu/packages/dictionaries.scm			\
+  gnu/packages/dillo.scm			\
   gnu/packages/disk.scm				\
   gnu/packages/djvu.scm				\
   gnu/packages/dns.scm				\
@@ -217,6 +222,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/mail.scm				\
   gnu/packages/make-bootstrap.scm		\
   gnu/packages/markdown.scm			\
+  gnu/packages/marst.scm			\
   gnu/packages/mate.scm             \
   gnu/packages/maths.scm			\
   gnu/packages/mc.scm				\
@@ -379,6 +385,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/system/linux-container.scm		\
   gnu/system/linux-initrd.scm			\
   gnu/system/locale.scm				\
+  gnu/system/mapped-devices.scm			\
   gnu/system/nss.scm				\
   gnu/system/pam.scm				\
   gnu/system/shadow.scm				\
@@ -397,10 +404,6 @@ GNU_SYSTEM_MODULES =				\
 patchdir = $(guilemoduledir)/gnu/packages/patches
 dist_patch_DATA =						\
   gnu/packages/patches/abiword-explictly-cast-bools.patch	\
-  gnu/packages/patches/abiword-link-plugins-against-backend.patch	\
-  gnu/packages/patches/abiword-no-include-glib-internal-headers.patch	\
-  gnu/packages/patches/abiword-pass-no-undefined-to-linker.patch	\
-  gnu/packages/patches/abiword-use-proper-png-api.patch		\
   gnu/packages/patches/abiword-wmf-version-lookup-fix.patch	\
   gnu/packages/patches/acl-hurd-path-max.patch			\
   gnu/packages/patches/aegis-constness-error.patch         	\
@@ -412,7 +415,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/alsa-lib-mips-atomic-fix.patch		\
   gnu/packages/patches/apr-skip-getservbyname-test.patch	\
   gnu/packages/patches/arb-ldconfig.patch			\
-  gnu/packages/patches/asymptote-gsl2.patch			\
   gnu/packages/patches/ath9k-htc-firmware-binutils.patch	\
   gnu/packages/patches/ath9k-htc-firmware-gcc.patch		\
   gnu/packages/patches/ath9k-htc-firmware-objcopy.patch		\
@@ -473,6 +475,9 @@ dist_patch_DATA =						\
   gnu/packages/patches/flashrom-use-libftdi1.patch		\
   gnu/packages/patches/flint-ldconfig.patch			\
   gnu/packages/patches/fltk-shared-lib-defines.patch		\
+  gnu/packages/patches/fltk-xfont-on-demand.patch		\
+  gnu/packages/patches/fontforge-svg-modtime.patch		\
+  gnu/packages/patches/fossil-test-fixes.patch			\
   gnu/packages/patches/freeimage-CVE-2015-0852.patch		\
   gnu/packages/patches/gawk-fts-test.patch			\
   gnu/packages/patches/gawk-shell.patch				\
@@ -522,31 +527,22 @@ dist_patch_DATA =						\
   gnu/packages/patches/hydra-automake-1.15.patch		\
   gnu/packages/patches/hydra-disable-darcs-test.patch		\
   gnu/packages/patches/icecat-avoid-bundled-includes.patch	\
-  gnu/packages/patches/icecat-update-graphite2.patch		\
-  gnu/packages/patches/icecat-update-graphite2-pt2.patch	\
   gnu/packages/patches/icecat-re-enable-DHE-cipher-suites.patch	\
-  gnu/packages/patches/icecat-CVE-2015-4477.patch		\
-  gnu/packages/patches/icecat-CVE-2015-7207.patch		\
-  gnu/packages/patches/icecat-CVE-2016-1952-pt01.patch		\
-  gnu/packages/patches/icecat-CVE-2016-1952-pt02.patch		\
-  gnu/packages/patches/icecat-CVE-2016-1952-pt03.patch		\
-  gnu/packages/patches/icecat-CVE-2016-1952-pt04.patch		\
-  gnu/packages/patches/icecat-CVE-2016-1952-pt05.patch		\
-  gnu/packages/patches/icecat-CVE-2016-1952-pt06.patch		\
-  gnu/packages/patches/icecat-CVE-2016-1954.patch		\
-  gnu/packages/patches/icecat-CVE-2016-1960.patch		\
-  gnu/packages/patches/icecat-CVE-2016-1961.patch		\
-  gnu/packages/patches/icecat-CVE-2016-1962.patch		\
-  gnu/packages/patches/icecat-CVE-2016-1964.patch		\
-  gnu/packages/patches/icecat-CVE-2016-1965.patch		\
-  gnu/packages/patches/icecat-CVE-2016-1966.patch		\
-  gnu/packages/patches/icecat-CVE-2016-1974.patch		\
-  gnu/packages/patches/icecat-bug-1248851.patch			\
+  gnu/packages/patches/icecat-update-bundled-graphite2.patch	\
+  gnu/packages/patches/icecat-CVE-2016-2805.patch		\
+  gnu/packages/patches/icecat-CVE-2016-2807-pt1.patch		\
+  gnu/packages/patches/icecat-CVE-2016-2807-pt2.patch		\
+  gnu/packages/patches/icecat-CVE-2016-2807-pt3.patch		\
+  gnu/packages/patches/icecat-CVE-2016-2807-pt4.patch		\
+  gnu/packages/patches/icecat-CVE-2016-2807-pt5.patch		\
+  gnu/packages/patches/icecat-CVE-2016-2808.patch		\
+  gnu/packages/patches/icecat-CVE-2016-2814.patch		\
   gnu/packages/patches/icu4c-CVE-2014-6585.patch		\
   gnu/packages/patches/icu4c-CVE-2015-1270.patch		\
   gnu/packages/patches/icu4c-CVE-2015-4760.patch		\
   gnu/packages/patches/ilmbase-fix-tests.patch			\
   gnu/packages/patches/imagemagick-test-segv.patch		\
+  gnu/packages/patches/imlib2-CVE-2016-4024.patch		\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jasper-CVE-2007-2721.patch		\
   gnu/packages/patches/jasper-CVE-2008-3520.patch		\
@@ -649,6 +645,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/openimageio-boost-1.60.patch		\
   gnu/packages/patches/openjpeg-CVE-2015-6581.patch		\
   gnu/packages/patches/openjpeg-use-after-free-fix.patch	\
+  gnu/packages/patches/openssh-CVE-2015-8325.patch		\
   gnu/packages/patches/openssl-runpath.patch			\
   gnu/packages/patches/openssl-c-rehash-in.patch		\
   gnu/packages/patches/orpheus-cast-errors-and-includes.patch	\
@@ -681,6 +678,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/plink-1.07-unclobber-i.patch		\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/polkit-drop-test.patch			\
+  gnu/packages/patches/poppler-CVE-2015-8868.patch		\
   gnu/packages/patches/portaudio-audacity-compat.patch		\
   gnu/packages/patches/procmail-ambiguous-getline-debian.patch  \
   gnu/packages/patches/pt-scotch-build-parallelism.patch	\
@@ -705,6 +703,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/python-paste-remove-website-test.patch	\
   gnu/packages/patches/python-paste-remove-timing-test.patch	\
   gnu/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
+  gnu/packages/patches/python-pandas-fix-tslib-test-failure.patch \
   gnu/packages/patches/qemu-CVE-2015-8558.patch			\
   gnu/packages/patches/qemu-CVE-2015-8567.patch			\
   gnu/packages/patches/qemu-CVE-2015-8613.patch			\
@@ -722,6 +721,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/readline-link-ncurses.patch		\
   gnu/packages/patches/ripperx-missing-file.patch		\
   gnu/packages/patches/rsem-makefile.patch			\
+  gnu/packages/patches/ruby-symlinkfix.patch                    \
   gnu/packages/patches/sed-hurd-path-max.patch			\
   gnu/packages/patches/scheme48-tests.patch			\
   gnu/packages/patches/scotch-test-threading.patch		\
@@ -746,6 +746,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/tidy-CVE-2015-5522+5523.patch		\
   gnu/packages/patches/tinyxml-use-stl.patch			\
   gnu/packages/patches/tk-find-library.patch			\
+  gnu/packages/patches/ttf2eot-cstddef.patch			\
+  gnu/packages/patches/ttfautohint-source-date-epoch.patch	\
   gnu/packages/patches/tophat-build-with-later-seqan.patch	\
   gnu/packages/patches/torsocks-dns-test.patch			\
   gnu/packages/patches/tvtime-gcc41.patch			\
@@ -782,6 +784,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/wicd-urwid-1.3.patch			\
   gnu/packages/patches/wicd-wpa2-ttls.patch			\
   gnu/packages/patches/wmctrl-64-fix.patch			\
+  gnu/packages/patches/woff2-libbrotli.patch			\
   gnu/packages/patches/wpa-supplicant-CVE-2015-5310.patch	\
   gnu/packages/patches/wpa-supplicant-CVE-2015-5314.patch	\
   gnu/packages/patches/wpa-supplicant-CVE-2015-5315.patch	\

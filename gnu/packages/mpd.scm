@@ -42,7 +42,6 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages autotools)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages video)
@@ -181,7 +180,7 @@ terminal using ncurses.")
 (define-public ncmpcpp
   (package
     (name "ncmpcpp")
-    (version "0.7.3")
+    (version "0.7.4")
     (source (origin
               (method url-fetch)
               (uri
@@ -189,7 +188,7 @@ terminal using ncurses.")
                               version ".tar.bz2"))
               (sha256
                (base32
-                "04mj6r0whikliblxfbz92pibwcd7a3ywkryf01a89zd4bi1jk2rc"))))
+                "0qqy3w2vw3i9rxz0z8n0plmwwfv6gzrxip86l894l1xbvzqja16p"))))
     (build-system gnu-build-system)
     (inputs `(("libmpdclient" ,libmpdclient)
               ("boost"  ,boost)
@@ -198,19 +197,10 @@ terminal using ncurses.")
               ("taglib" ,taglib)
               ("icu4c" ,icu4c)))
     (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ("automake" ,automake)
-       ("autoconf" ,autoconf)
-       ("libtool" ,libtool)))
+     `(("pkg-config" ,pkg-config)))
     (arguments
      '(#:configure-flags
-       '("BOOST_LIB_SUFFIX=" "--with-taglib")
-       #:phases
-       (modify-phases %standard-phases
-        (add-after 'unpack 'autogen
-         (lambda _
-           (setenv "NOCONFIGURE" "true")
-           (zero? (system* "sh" "autogen.sh")))))))
+       '("BOOST_LIB_SUFFIX=" "--with-taglib")))
     (synopsis "Featureful ncurses based MPD client inspired by ncmpc")
     (description "Ncmpcpp is an mpd client with a UI very similar to ncmpc,
 but it provides new useful features such as support for regular expressions

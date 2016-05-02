@@ -71,8 +71,7 @@
               (sha256
                (base32
                 "1x8rliydhbibmzwdbyr7pd7n87m2jmxnqkpvaalnf4154hj1hfwb"))
-              (patches
-               (list (search-patch "libotr-test-auth-fix.patch")))))
+              (patches (search-patches "libotr-test-auth-fix.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgcrypt" ,libgcrypt)))  ; libotr headers include gcrypt.h
@@ -138,14 +137,14 @@ identi.ca and status.net).")
 (define-public hexchat
   (package
     (name "hexchat")
-    (version "2.10.1")
+    (version "2.12.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://dl.hexchat.net/hexchat/hexchat-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1ag9rmfisv0hsbk05jq4f1rnap7kwg90vgbmkr9zklkh6imfxk7z"))))
+                "17fncwza5r80z9r6j1lrh7h375hp4w6pay08zgnfc3qca6bjy1y2"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("intltool" ,intltool)))
@@ -180,8 +179,8 @@ dictionaries.  HexChat can be extended with multiple addons.")
               (sha256
                (base32
                 "17k3g9qd9d010czk5846qxvzkmw4fihv8l6m2a2287crbxm3xhd4"))
-              (patches (list (search-patch "ngircd-no-dns-in-tests.patch")
-                             (search-patch "ngircd-handle-zombies.patch")))))
+              (patches (search-patches "ngircd-no-dns-in-tests.patch"
+                                       "ngircd-handle-zombies.patch"))))
     (build-system gnu-build-system)
     ;; Needed for the test suite.
     (native-inputs `(("procps" ,procps)
@@ -246,7 +245,7 @@ supports IPv6, SSL-protected connections as well as PAM for authentication.")
        (sha256
         (base32
          "01s0q30qrjlzj7kkz6f8lvrwsdd55a9yjh2xjjwyyxzw849j3bpj"))
-       (patches (list (search-patch "pidgin-add-search-path.patch")))))
+       (patches (search-patches "pidgin-add-search-path.patch"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)

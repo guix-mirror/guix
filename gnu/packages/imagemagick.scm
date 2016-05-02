@@ -48,7 +48,7 @@
              (sha256
               (base32
                "159afhqrj22jlz745ccbgnkdiwvn8pjcc96jic0iv9ms7gqxwln5"))
-             (patches (list (search-patch "imagemagick-test-segv.patch")))))
+             (patches (search-patches "imagemagick-test-segv.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-frozenpaths")

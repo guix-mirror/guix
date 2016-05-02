@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Marek Benc <merkur32@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages enchant)
@@ -41,7 +43,7 @@
 (define-public abiword
   (package
     (name "abiword")
-    (version "2.8.6")
+    (version "3.0.1")
     (source
       (origin
         (method url-fetch)
@@ -49,15 +51,10 @@
           (string-append "http://abisource.org/downloads/" name "/" version
                          "/source/" name "-" version ".tar.gz"))
         (sha256
-          (base32 "059sd2apxdmcacc4pll880i7vm18h0kyjsq299m1mz3c7ak8k46r"))
+          (base32 "1ik591rx15nn3n1297cwykl8wvrlgj78i528id9wbidgy3xzd570"))
         (patches
-          (list
-            (search-patch "abiword-wmf-version-lookup-fix.patch")
-            (search-patch "abiword-no-include-glib-internal-headers.patch")
-            (search-patch "abiword-explictly-cast-bools.patch")
-            (search-patch "abiword-use-proper-png-api.patch")
-            (search-patch "abiword-pass-no-undefined-to-linker.patch")
-            (search-patch "abiword-link-plugins-against-backend.patch")))))
+         (search-patches "abiword-wmf-version-lookup-fix.patch"
+                         "abiword-explictly-cast-bools.patch"))))
 
     (build-system gnu-build-system)
     (arguments                   ;; NOTE: rsvg is disabled, since Abiword
@@ -65,22 +62,31 @@
         (list
           "--enable-clipart"     ;; TODO: The following plugins have unresolved
           "--enable-templates"   ;; dependencies: aiksaurus, grammar, wpg, gda,
-          (string-append         ;; wordperfect, psion, mathview, goffice.
+          (string-append         ;; wordperfect, psion, mathview.
             "--enable-plugins="
               "applix " "babelfish " "bmp " "clarisworks " "collab " "command "
-              "docbook " "eml " "freetranslation " "garble " "gdict " "gimp "
-              "google " "hancom " "hrtext " "iscii " "kword " "latex "
-              "loadbindings " "mht " "mif " "mswrite " "opendocument "
+              "docbook " "eml " "epub " "freetranslation " "garble " "gdict "
+              "gimp " "goffice " "google " "hancom " "hrtext " "iscii " "kword "
+              "latex " "loadbindings " "mht " "mif " "mswrite " "opendocument "
               "openwriter " "openxml " "opml " "ots " "paint " "passepartout "
               "pdb " "pdf " "presentation " "s5 " "sdw " "t602 " "urldict "
-              "wikipedia " "wmf " "wml " "xslfo"))))
+              "wikipedia " "wmf " "wml " "xslfo"))
+        ;; tests fail with: Gtk-CRITICAL **: gtk_settings_get_for_screen:
+        ;;                  assertion 'GDK_IS_SCREEN (screen)' failed
+        ;;                  GLib-GObject-CRITICAL **: g_object_get_qdata:
+        ;;                  assertion 'G_IS_OBJECT (object)' failed
+        ;; Manually starting the X server before the test phase did not help
+        ;; the tests to pass.
+        #:tests? #f))
     (inputs
       `(("boost" ,boost)
         ("enchant" ,enchant)
         ("fontconfig" ,fontconfig)
         ("fribidi" ,fribidi)
         ("glib" ,glib)
-        ("gtk+" ,gtk+-2)
+        ("goffice" ,goffice)
+        ("gtk+" ,gtk+)
+        ("libchamplain" ,libchamplain)
         ("libglade" ,libglade)
         ("libgsf" ,libgsf)
         ("libjpeg" ,libjpeg)
@@ -88,14 +94,17 @@
         ("librsvg" ,librsvg)
         ("libwmf" ,libwmf)
         ("libxml2" ,libxml2)
+        ("libxslt" ,libxslt)
         ("ots" ,ots)
         ("popt" ,popt)
         ("readline" ,readline)
+        ("telepathy" ,telepathy-glib)
         ("wv" ,wv)
         ("zlib" ,zlib)))
     (native-inputs
       `(("intltool" ,intltool)
         ("glib:bin" ,glib "bin")
+        ("libtool" ,libtool)
         ("pkg-config" ,pkg-config)))
     (home-page "http://abisource.org/")
     (synopsis "Word processing program")

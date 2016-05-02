@@ -2,7 +2,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -28,11 +28,13 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages xiph))
 
 (define-public libusb
@@ -87,6 +89,49 @@ devices on various operating systems.")
 version of libusb to run with newer libusb.")
     (license lgpl2.1+)))
 
+(define-public python-pyusb
+  (package
+    (name "python-pyusb")
+    (version "1.0.0rc1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "pyusb" version))
+       (sha256
+        (base32
+         "07cjq11qhngzjd746k7688s6y2x7lpj669fxqfsiy985rg0jsn7j"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f  ;no tests
+       #:modules ((srfi srfi-26)
+                  (guix build utils)
+                  (guix build python-build-system))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-libusb-reference
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "usb/libloader.py"
+               (("lib = locate_library\\(candidates, find_library\\)")
+                (string-append
+                 "lib = \""
+                 (car (find-files (assoc-ref inputs "libusb")
+                                  (lambda (file stat)
+                                    (and ((file-name-predicate
+                                           "^libusb-.*\\.so\\..*") file stat)
+                                         (not (symbolic-link? file))))))
+                 "\"")))
+             #t)))))
+    (inputs
+     `(("libusb" ,libusb)))
+    (home-page "http://walac.github.io/pyusb/")
+    (synopsis "Python bindings to the libusb library")
+    (description
+     "PyUSB aims to be an easy to use Python module to access USB devices.")
+    (license bsd-3)))
+
+(define-public python2-pyusb
+  (package-with-python2 python-pyusb))
+
 (define-public libmtp
   (package
     (name "libmtp")
@@ -98,7 +143,7 @@ version of libusb to run with newer libusb.")
              (sha256
                (base32
                 "12dinqic0ljnhrwx3rc61jc7q24ybr0mckc2ya5kh1s1np0d7w93"))
-             (patches (list (search-patch "libmtp-devices.patch")))))
+             (patches (search-patches "libmtp-devices.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

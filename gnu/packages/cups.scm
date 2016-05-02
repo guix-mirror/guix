@@ -1,7 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,10 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages libusb)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages scanner)
   #:use-module (gnu packages image)
   #:use-module (gnu packages fonts) ;font-dejavu
   #:use-module (gnu packages fontutils)
@@ -297,3 +302,113 @@ device-specific programs to convert and print many types of files.")
        ("gnutls" ,gnutls)
        ("cups-filters" ,cups-filters)
        ("zlib"  ,zlib)))))
+
+(define-public hplip
+  (package
+    (name "hplip")
+    (version "3.16.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/hplip/"
+                                  "hplip-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1501qdnkjp1ybgagy5188fmf6cgmj5555ygjl3543nlbwcp31lj2"))))
+    (build-system gnu-build-system)
+    (home-page "http://hplipopensource.com/")
+    (synopsis "HP Printer Drivers")
+    (description "Hewlett-Packard Printer Drivers and PPDs.")
+
+    ;; The 'COPYING' file lists directories where each of these 3 licenses
+    ;; applies.
+    (license (list license:gpl2+ license:bsd-3 license:expat))
+
+    ;; TODO install apparmor profile files eventually.
+    (arguments
+     `(#:configure-flags
+       `("--disable-network-build"
+         ,(string-append "--prefix=" (assoc-ref %outputs "out"))
+         ,(string-append "--sysconfdir=" (assoc-ref %outputs "out") "/etc")
+         ;; Disable until mime.types merging works (FIXME).
+         "--disable-fax-build"
+         "--enable-hpcups-install"
+         "--enable-new-hpcups"
+         "--enable-cups_ppd_install"
+         "--enable-cups_drv_install"
+         ;; TODO add foomatic drv install eventually.
+         ;; TODO --enable-policykit eventually.
+         ,(string-append "--with-cupsfilterdir="
+                         (assoc-ref %outputs "out") "/lib/cups/filter")
+         ,(string-append "--with-cupsbackenddir="
+                         (assoc-ref %outputs "out") "/lib/cups/backend")
+         ,(string-append "--with-icondir="
+                         (assoc-ref %outputs "out") "/share/applications")
+         ,(string-append "--with-systraydir="
+                         (assoc-ref %outputs "out") "/etc/xdg"))
+
+       #:imported-modules ((guix build python-build-system)
+                           ,@%gnu-build-system-modules)
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  ((guix build python-build-system) #:prefix python:))
+
+       #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-hard-coded-file-names
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out"))
+                            ;; FIXME: use merged ppds (I think actually only
+                            ;; drvs need to be merged).
+                            (cupsdir (assoc-ref inputs "cups-minimal")))
+                        (substitute* "base/g.py"
+                          (("'/usr/share;[^']*'")
+                           (string-append "'" cupsdir "/share'"))
+                          (("'/etc/hp/hplip.conf'")
+                           (string-append "'" out
+                                          "/etc/hp/hplip.conf" "'")))
+
+                        (substitute* "Makefile.in"
+                          (("[[:blank:]]check-plugin\\.py[[:blank:]]") " ")
+                          ;; FIXME Use beginning-of-word in regexp.
+                          (("[[:blank:]]plugin\\.py[[:blank:]]") " ")
+                          (("/usr/include/libusb-1.0")
+                           (string-append (assoc-ref inputs "libusb")
+                                          "/include/libusb-1.0"))
+                          (("^\tinstall-dist_hplip_stateDATA")
+                           ;; Remove dependencies on
+                           ;; 'install-dist_hplip_stateDATA' so we don't bail
+                           ;; out while trying to create /var/lib/hplip.
+                           "\t")
+                          (("hplip_confdir = /etc/hp")
+                           ;; This is only used for installing the default config.
+                           (string-append "hplip_confdir = " out
+                                          "/etc/hp"))
+                          (("halpredir = /usr/share/hal/fdi/preprobe/10osvendor")
+                           ;; Note: We don't use hal.
+                           (string-append "halpredir = " out
+                                          "/share/hal/fdi/preprobe/10osvendor"))
+                          (("rulesdir = /etc/udev/rules.d")
+                           ;; udev rules will be merged by base service.
+                           (string-append "rulesdir = " out
+                                          "/lib/udev/rules.d"))
+                          (("rulessystemdir = /usr/lib/systemd/system")
+                           ;; We don't use systemd.
+                           (string-append "rulessystemdir = " out
+                                          "/lib/systemd/system"))
+                          (("/etc/sane.d")
+                           (string-append out "/etc/sane.d"))))))
+
+                  ;; Wrap bin/* so that the Python libs are found.
+                  (add-after 'install 'wrap-binaries
+                    (assoc-ref python:%standard-phases 'wrap)))))
+
+    ;; Python3 support is available starting from hplip@3.15.2.
+    (inputs `(("libjpeg" ,libjpeg)
+              ("cups-minimal" ,cups-minimal)
+              ("libusb" ,libusb)
+              ("sane-backends" ,sane-backends)
+              ("dbus" ,dbus)
+              ("python-wrapper" ,python-wrapper)
+              ("python" ,python)
+              ;; TODO: Make hp-setup find python-dbus.
+              ("python-dbus" ,python-dbus)))
+    (native-inputs `(("pkg-config" ,pkg-config)))))

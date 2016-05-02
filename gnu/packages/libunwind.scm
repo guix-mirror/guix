@@ -35,7 +35,7 @@
              (sha256
               (base32
                "16nhx2pahh9d62mvszc88q226q5lwjankij276fxwrm8wb50zzlx"))
-             (patches (list (search-patch "libunwind-CVE-2015-3239.patch")))))
+             (patches (search-patches "libunwind-CVE-2015-3239.patch"))))
     (build-system gnu-build-system)
     (arguments
      ;; FIXME: As of glibc 2.17, we get 3 out of 34 test failures.

@@ -62,6 +62,12 @@
   "Return a list of names of available licenses."
   (guix-eval-read (guix-make-guile-expression 'license-names)))
 
+(guix-memoized-defun guix-package-locations ()
+  "Return a list of available package locations."
+  (sort (guix-eval-read (guix-make-guile-expression
+                         'package-location-files))
+        #'string<))
+
 
 ;;; Readers
 
@@ -130,6 +136,11 @@
  :completions-getter guix-license-names
  :single-reader guix-read-license-name
  :single-prompt "License: ")
+
+(guix-define-readers
+ :completions-getter guix-package-locations
+ :single-reader guix-read-package-location
+ :single-prompt "Location: ")
 
 (provide 'guix-read)
 

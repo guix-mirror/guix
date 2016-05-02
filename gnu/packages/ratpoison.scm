@@ -51,7 +51,7 @@
              (sha256
               (base32
                "1w502z55vv7zs45l80nsllqh9fvfwjfdfi11xy1qikhzdmirains"))
-             (patches (list (search-patch "ratpoison-shell.patch")))))
+             (patches (search-patches "ratpoison-shell.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

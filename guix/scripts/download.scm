@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +24,8 @@
   #:use-module (guix utils)
   #:use-module (guix base32)
   #:use-module (guix download)
+  #:use-module ((guix build download) #:select (current-terminal-columns))
+  #:use-module ((guix build syscalls) #:select (terminal-columns))
   #:use-module (web uri)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -115,8 +117,10 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
                      (add-to-store store (basename (uri-path uri))
                                    #f "sha256" (uri-path uri)))
                     (else
-                     (download-to-store store (uri->string uri)
-                                        (basename (uri-path uri))))))
+                     (parameterize ((current-terminal-columns
+                                     (terminal-columns)))
+                       (download-to-store store (uri->string uri)
+                                          (basename (uri-path uri)))))))
            (hash  (call-with-input-file
                       (or path
                           (leave (_ "~a: download failed~%")

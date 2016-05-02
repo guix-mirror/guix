@@ -60,7 +60,7 @@
              (sha256
               (base32
                "005d993xcac8236fpvd1iawkz4wqjybkpn8dbwaliqz5jfkidlyn"))
-             (patches (list (search-patch "sdl-libx11-1.6.patch")))))
+             (patches (search-patches "sdl-libx11-1.6.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(;; Explicitly link against shared libraries instead of dlopening them.

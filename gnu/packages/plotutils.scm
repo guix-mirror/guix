@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,7 +52,7 @@
              (sha256
               (base32
                "1arkyizn5wbgvbh53aziv3s6lmd3wm9lqzkhxb3hijlp1y124hjg"))
-             (patches (list (search-patch "plotutils-libpng-jmpbuf.patch")))
+             (patches (search-patches "plotutils-libpng-jmpbuf.patch"))
              (modules '((guix build utils)))
              (snippet
               ;; Force the use of libXaw7 instead of libXaw.  When not doing
@@ -171,15 +172,14 @@ colors, styles, options and details.")
 (define-public asymptote
   (package
     (name "asymptote")
-    (version "2.35")
+    (version "2.37")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/asymptote/"
                                   version "/asymptote-" version ".src.tgz"))
               (sha256
                (base32
-                "11f28vxw0ybhvl7vxmqcdwvw7y6gz55ykw9ybgzb2px6lsvgag7z"))
-              (patches (list (search-patch "asymptote-gsl2.patch")))))
+                "16nh02m52mk9a53i8wc6l9vg710gnzr3lfbypcbvamghvaj0458i"))))
     (build-system gnu-build-system)
     ;; Note: The 'asy' binary retains a reference to docdir for use with its
     ;; "help" command in interactive mode, so adding a "doc" output is not
@@ -206,13 +206,19 @@ colors, styles, options and details.")
              (string-append "--with-context="
                             (assoc-ref %outputs "out")
                             "/share/texmf/tex/context/third"))
-       #:phases (modify-phases %standard-phases
-                  (add-before 'build 'patch-pdf-viewer
-                    (lambda _
-                      ;; Default to a free pdf viewer
-                      (substitute* "settings.cc"
-                        (("defaultPDFViewer=\"acroread\"")
-                         "defaultPDFViewer=\"gv\"")))))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-pdf-viewer
+           (lambda _
+             ;; Default to a free pdf viewer
+             (substitute* "settings.cc"
+               (("defaultPDFViewer=\"acroread\"")
+                "defaultPDFViewer=\"gv\""))))
+         (add-before 'check 'set-HOME
+           ;; Some tests require write access to $HOME, otherwise leading to
+           ;; "failed to create directory /homeless-shelter/.asy" error.
+           (lambda _
+             (setenv "HOME" "/tmp"))))))
     (home-page "http://asymptote.sourceforge.net")
     (synopsis "Script-based vector graphics language")
     (description

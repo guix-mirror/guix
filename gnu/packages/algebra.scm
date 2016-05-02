@@ -1,7 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,12 +24,21 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages fltk)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages tcsh)
   #:use-module (gnu packages texlive)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -188,6 +199,68 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
    (license license:gpl2)
    (home-page "http://pari.math.u-bordeaux.fr/")))
 
+(define-public giac-xcas
+  (package
+    (name "giac-xcas")
+    (version "1.2.2-41")
+    (source (origin
+              (method url-fetch)
+              ;; "~parisse/giac" is not used because the maintainer regularly
+              ;; overwrites the release tarball there, introducing a checksum
+              ;; mismatch every time.  See
+              ;; <https://www-fourier.ujf-grenoble.fr/~parisse/debian/dists/stable/main/source/README>
+              (uri (string-append "https://www-fourier.ujf-grenoble.fr/"
+                                  "~parisse/debian/dists/stable/main/"
+                                  "source/giac_" version ".tar.gz"))
+              (sha256
+               (base32
+                "061a0p5l1qlb9iqk7n7yznhv2f3hvll1hrzjbhn81bf31f2wj6sq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-bin-cp
+           (lambda _
+             ;; Some Makefiles contain hard-coded "/bin/cp".
+             (substitute* (find-files "doc" "^Makefile")
+               (("/bin/cp") (which "cp")))
+             #t))
+         (add-after 'unpack 'disable-broken-test
+           (lambda _
+             ;; Disable failing test.  Actually, the results are correct but
+             ;; a sorting discrepancy prevents the test from being validated.
+             (substitute* "check/Makefile.in"
+               (("chk_fhan16") ""))
+             #t)))))
+    (inputs
+     `(("fltk" ,fltk)
+       ("gmp" ,gmp)
+       ("gsl" ,gsl)
+       ("lapack" ,lapack)
+       ("libao" ,ao)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("libxinerama" ,libxinerama)
+       ("libxft" ,libxft)
+       ("libxt" ,libxt)
+       ("mesa" ,mesa)
+       ("mpfi" ,mpfi)
+       ("mpfr" ,mpfr)
+       ("ntl" ,ntl)
+       ("perl" ,perl)
+       ("pari-gp" ,pari-gp)
+       ("tcsh" ,tcsh)
+       ("texlive" ,texlive-minimal)))
+    (native-inputs `(("readline" ,readline)))
+    (home-page "https://www-fourier.ujf-grenoble.fr/~parisse/giac.html")
+    (synopsis "Computer algebra system")
+    (description
+     "Giac/Xcas is a computer algebra system.  It has a compatibility mode for
+maple, mupad and the TI89.  It is available as a standalone program (graphic
+or text interfaces) or as a C++ library.")
+    (license license:gpl3+)))
+
 (define-public flint
   (package
    (name "flint")
@@ -199,7 +272,7 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
                   version ".tar.gz"))
             (sha256 (base32
                      "11syazv1a8rrnac3wj3hnyhhflpqcmq02q8pqk2m6g2k6h0gxwfb"))
-            (patches (map search-patch '("flint-ldconfig.patch")))))
+            (patches (search-patches "flint-ldconfig.patch"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("gmp" ,gmp)
@@ -248,7 +321,7 @@ fast arithmetic.")
             (sha256
               (base32
                 "04hhcpshfkcq9fr4hixbhpps50yf9drk62xgkvlcaj5kb4nyrx7l"))
-            (patches (map search-patch '("arb-ldconfig.patch")))))
+            (patches (search-patches "arb-ldconfig.patch"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("flint" ,flint))) ; flint.h is included by arf.h
@@ -321,6 +394,76 @@ for manipulating signed, arbitrary length integers, and for vectors,
 matrices, and polynomials over the integers and over finite fields.")
    (license license:gpl2+)
    (home-page "http://shoup.net/ntl/")))
+
+(define-public singular
+  (package
+   (name "singular")
+   (version "4.0.3")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "http://www.mathematik.uni-kl.de/ftp/pub/"
+                                "Math/Singular/SOURCES/"
+                                (string-join (string-split version #\.) "-")
+                                "/singular-" version ".tar.gz"))
+            (sha256 (base32
+                     "0viidy2fz62rln9p0s9qfs7fnm55c6fw1agydd1py26gxylp1ksc"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("doxygen" ,doxygen)
+      ("graphviz" ,graphviz)
+      ("perl" ,perl)))
+   (inputs
+    `(("cddlib" ,cddlib)
+      ("gmp" ,gmp)
+      ("flint" ,flint)
+      ("mpfr" ,mpfr)
+      ("ntl" ,ntl)
+      ("python" ,python-2)
+      ("readline" ,readline)))
+   (arguments
+    `(#:configure-flags
+      (list (string-append "--with-ntl="
+                           (assoc-ref %build-inputs "ntl")))))
+   (synopsis "Computer algebra system for polynomial computations")
+   (description
+    "Singular is a computer algebra system for polynomial computations,
+with special emphasis on commutative and non-commutative algebra, algebraic
+geometry and singularity theory.")
+   ;; Singular itself is dual licensed gpl2 or gpl3, but some of the
+   ;; libraries with which it links are licensed under lgpl3+, so the
+   ;; combined work becomes gpl3. See COPYING in the source code.
+   (license license:gpl3)
+   (home-page "http://www.singular.uni-kl.de/index.php")))
+
+(define-public gmp-ecm
+  (package
+   (name "gmp-ecm")
+   (version "7.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "https://gforge.inria.fr/frs/download.php/"
+                                "file/35642/ecm-"
+                                version ".tar.gz"))
+            (sha256 (base32
+                     "00jzzwqp49m01vwsr9z1w7bvm8lb69l3f62x7qr8sfz0xiczxnpm"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("gmp" ,gmp)))
+   (arguments
+    `(#:configure-flags '("--enable-shared"
+                          ;; Disable specific assembly routines, which depend
+                          ;; on the subarchitecture of the build machine,
+                          ;; and use gmp instead.
+                          "--disable-asm-redc")))
+   (synopsis "Integer factorization library using the elliptic curve method")
+   (description
+    "GMP-ECM factors integers using the elliptic curve method (ECM) as well
+as the P-1 and P+1 algorithms.  It provides a library and a stand-alone
+binary.")
+   ;; Most files are under lgpl3+, but some are under gpl3+ or gpl2+,
+   ;; so the combined work is under gpl3+.
+   (license license:gpl3+)
+   (home-page "http://ecm.gforge.inria.fr/")))
 
 (define-public bc
   (package
@@ -424,14 +567,14 @@ cosine/ sine transforms or DCT/DST).")
 (define-public eigen
   (package
     (name "eigen")
-    (version "3.2.7")
+    (version "3.2.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://bitbucket.org/eigen/eigen/get/"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0gigbjjdlw2q0gvcnyiwc6in314a647rkidk6977bwiwn88im3p5"))
+                "0mby6my1djsg8681fcvlaq0i4kd17fja9qn5f713j3xpfbb66akj"))
               (file-name (string-append name "-" version ".tar.bz2"))
               (modules '((guix build utils)))
               (snippet

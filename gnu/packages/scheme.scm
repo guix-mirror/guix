@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
@@ -174,7 +174,8 @@
      "GNU/MIT Scheme is an implementation of the Scheme programming
 language.  It provides an interpreter, a compiler and a debugger.  It also
 features an integrated Emacs-like editor and a large runtime library.")
-    (license gpl2+)))
+    (license gpl2+)
+    (properties '((ftp-directory . "/gnu/mit-scheme/stable.pkg")))))
 
 (define-public bigloo
   (package
@@ -187,7 +188,7 @@ features an integrated Emacs-like editor and a large runtime library.")
              (sha256
               (base32
                "170q7nh08n4v20xl81fxb0xcdxphqqacfa643hsa8i2ar6pki04c"))
-             (patches (list (search-patch "bigloo-gc-shebangs.patch")))))
+             (patches (search-patches "bigloo-gc-shebangs.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -277,8 +278,8 @@ Scheme and C programs and between Scheme and Java programs.")
              (sha256
               (base32
                "1v2r4ga58kk1sx0frn8qa8ccmjpic9csqzpk499wc95y9c4b1wy3"))
-             (patches (list (search-patch "hop-bigloo-4.0b.patch")
-                            (search-patch "hop-linker-flags.patch")))))
+             (patches (search-patches "hop-bigloo-4.0b.patch"
+                                      "hop-linker-flags.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -374,7 +375,7 @@ language standard, and includes many enhancements and extensions.")
              (sha256
               (base32
                "1x4xfm3lyz2piqcw1h01vbs1iq89zq7wrsfjgh3fxnlm1slj2jcw"))
-             (patches (list (search-patch "scheme48-tests.patch")))))
+             (patches (search-patches "scheme48-tests.patch"))))
     (build-system gnu-build-system)
     (home-page "http://s48.org/")
     (synopsis "Scheme implementation using a bytecode interpreter")

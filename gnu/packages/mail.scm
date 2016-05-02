@@ -92,7 +92,7 @@
              (sha256
               (base32
                "0szbqa12zqzldqyw97lxqax3ja2adis83i7brdfsxmrfw68iaf65"))
-             (patches (list (search-patch "m4-gets-undeclared.patch")))))
+             (patches (search-patches "m4-gets-undeclared.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(;; TODO: Add `--with-sql'.
@@ -185,7 +185,7 @@ aliasing facilities to work just as they would on normal mail.")
              (sha256
               (base32
                "06bc2drbgalkk68rzg7hq2v5m5qgjxff5357wg0419dpi8ivdbr9"))
-             (patches (list (search-patch "mutt-store-references.patch")))))
+             (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
@@ -302,11 +302,21 @@ and corrections.  It is based on a Bayesian filter.")
                 "0462mal2fxvavxhwjk1a6vsnspx07yniifa687dwg46aplqznin4"))))
     (build-system python-build-system)
     (native-inputs `(("python" ,python-2)))
+    (inputs `(("python2-pysqlite" ,python2-pysqlite)))
     (arguments
      ;; The setup.py script expects python-2.
      `(#:python ,python-2
       ;; Tests require a modifiable IMAP account.
-       #:tests? #f))
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-binary
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin/offlineimap")))
+               (wrap-program bin
+                 `("PYTHONPATH" ":" prefix (,(getenv "PYTHONPATH"))))
+               #t))))))
     (home-page "http://www.offlineimap.org")
     (synopsis "Sync emails between two repositories")
     (description
@@ -1119,9 +1129,7 @@ deliver it in various ways.")
        ;; The following patch fixes an ambiguous definition of
        ;; getline() in formail.c.  The patch is provided by Debian as
        ;; patch 24.
-       (patches
-        (list
-         (search-patch "procmail-ambiguous-getline-debian.patch")))))
+       (patches (search-patches "procmail-ambiguous-getline-debian.patch"))))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'configure
@@ -1156,13 +1164,13 @@ maintained.")
 (define-public khard
   (package
     (name "khard")
-    (version "0.8.1")
+    (version "0.9.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "098gs94qmnspdfn6ar8lycx7dbsz9bcff90aps0cmn47mw7llch0"))))
+                "0y83rji4f270hbb41m4jpr0z3yzvpvbsl32mpg9d38hlydw8fk1s"))))
     (build-system python-build-system)
     (arguments
       `(#:python ,python-2 ; only python-2 is supported.

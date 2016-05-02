@@ -1514,7 +1514,7 @@ treat it as part of their software base when porting.")
             "0dn694mk56x6hdk6y9ylx4f128h5jcin278gnw2gb807rf3ygc1h"))
         ;; See https://bugs.freedesktop.org/show_bug.cgi?id=47792;
         ;; should become obsolete with the next release.
-        (patches (list (search-patch "luit-posix.patch")))))
+        (patches (search-patches "luit-posix.patch"))))
     (build-system gnu-build-system)
     (inputs
       `(("libfontenc" ,libfontenc)))
@@ -2577,7 +2577,7 @@ as USB mice.")
         (sha256
           (base32
            "07p5vdsj2ckxb6wh02s61akcv4qfg6s1d5ld3jn3lfaayd3f1466"))
-        (patches (list (search-patch "xf86-video-ark-remove-mibstore.patch")))))
+        (patches (search-patches "xf86-video-ark-remove-mibstore.patch"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2603,7 +2603,7 @@ as USB mice.")
 ;;         (sha256
 ;;           (base32
 ;;            "1q64z8qqa0ix3cymqiwk1s3sphd1fvvz30lvyxhgkgciygz6dm69"))
-;;         (patches (list (search-patch "xf86-video-ast-remove-mibstore.patch")))))
+;;         (patches (search-patches "xf86-video-ast-remove-mibstore.patch"))))
 ;;     (build-system gnu-build-system)
 ;;     (inputs `(("xorg-server" ,xorg-server)))
 ;;     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2711,7 +2711,7 @@ framebuffer device.")
         (sha256
           (base32
            "1s59kdj573v38sb14xfhp1l926aypbhy11vaz36y72x6calfkv6n"))
-        (patches (list (search-patch "xf86-video-geode-glibc-2.20.patch")))))
+        (patches (search-patches "xf86-video-geode-glibc-2.20.patch"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2770,8 +2770,7 @@ compositing.  Both support Xv overlay and dynamic rotation with XRandR.")
         (sha256
           (base32
            "08a2aark2yn9irws9c78d9q44dichr03i9zbk61jgr54ncxqhzv5"))
-        (patches (list
-                  (search-patch "xf86-video-glint-remove-mibstore.patch")))))
+        (patches (search-patches "xf86-video-glint-remove-mibstore.patch"))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
@@ -2798,8 +2797,7 @@ X server.")
         (sha256
           (base32
            "171b8lbxr56w3isph947dnw7x87hc46v6m3mcxdcz44gk167x0pq"))
-        (patches (list
-                  (search-patch "xf86-video-i128-remove-mibstore.patch")))))
+        (patches (search-patches "xf86-video-i128-remove-mibstore.patch"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -2870,7 +2868,7 @@ It supports a variety of Intel graphics chipsets.")
         (sha256
           (base32
            "07xlf5nsjm0x18ij5gyy4lf8hwpl10i8chi3skpqjh84drdri61y"))
-        (patches (list (search-patch "xf86-video-mach64-glibc-2.20.patch")))))
+        (patches (search-patches "xf86-video-mach64-glibc-2.20.patch"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xf86driproto" ,xf86driproto)
@@ -3005,7 +3003,7 @@ kernel mode setting (KMS).")
         (sha256
           (base32
            "1gqh1khc4zalip5hh2nksgs7i3piqq18nncgmsx9qvzi05azd5c3"))
-        (patches (list (search-patch "xf86-video-nv-remove-mibstore.patch")))))
+        (patches (search-patches "xf86-video-nv-remove-mibstore.patch"))))
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -3057,8 +3055,7 @@ graphics cards.")
         (sha256
           (base32
            "1v8j4i1r268n4fc5gq54zg1x50j0rhw71f3lba7411mcblg2z7p4"))
-        (patches (list
-                  (search-patch "xf86-video-openchrome-glibc-2.20.patch")))))
+        (patches (search-patches "xf86-video-openchrome-glibc-2.20.patch"))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxext" ,libxext)
@@ -3272,7 +3269,7 @@ This driver supports SiS chipsets of 300/315/330/340 series.")
         (sha256
           (base32
            "0cb161lvdgi6qnf1sfz722qn38q7kgakcvj7b45ba3i0020828r0"))
-        (patches (list (search-patch "xf86-video-tga-remove-mibstore.patch")))))
+        (patches (search-patches "xf86-video-tga-remove-mibstore.patch"))))
     (build-system gnu-build-system)
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
@@ -3887,7 +3884,7 @@ protocol.")
         (sha256
           (base32
             "0y649an3jqfq9klkp9y5gj20xb78fw6g193f5mnzpl0hbz6fbc5p"))
-        (patches (list (search-patch "xmodmap-asprintf.patch")))))
+        (patches (search-patches "xmodmap-asprintf.patch"))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)

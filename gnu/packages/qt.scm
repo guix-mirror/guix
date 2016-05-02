@@ -252,8 +252,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "183fca7n7439nlhxyg1z7aky0izgbyll3iwakw4gwivy16aj5272"))
-             (patches (map search-patch
-                           '("qt4-ldflags.patch")))
+             (patches (search-patches "qt4-ldflags.patch"))
              (modules '((guix build utils)))
              (snippet
               ;; Remove webkit module, which is not built.
@@ -440,7 +439,7 @@ module provides support functions to the automatically generated code.")
         (sha256
          (base32
           "056qmkv02wdcfblqdaxiswrgn4wa88sz22i1x58dpb1iniavplfd"))
-       (patches (list (search-patch "pyqt-configure.patch")))))
+       (patches (search-patches "pyqt-configure.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python-sip" ,python-sip)

@@ -46,8 +46,9 @@
              (available (substitutable-paths store total))
              (missing   (lset-difference string=? total available)))
         (if (null? missing)
-            (format (current-error-port) "~a packages found substitutable~%"
-                    (length total))
+            (format (current-error-port)
+                    "~a packages found substitutable on~{ ~a~}~%"
+                    (length total) %hydra-supported-systems)
             (format (current-error-port)
                     "~a packages are not substitutable:~%~{  ~a~%~}~%"
                     (length missing) missing))

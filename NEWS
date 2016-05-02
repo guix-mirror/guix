@@ -10,6 +10,12 @@ Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 
 Please send Guix bug reports to bug-guix@gnu.org.
 
+* Changes in 0.11.0 (since 0.10.0)
+
+** Package management
+
+*** New Emacs interface for package locations: M-x guix-locations
+
 * Changes in 0.10.0 (since 0.9.0)
 
 ** Community

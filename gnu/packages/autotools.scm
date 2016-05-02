@@ -195,9 +195,8 @@ output is indexed in many ways to simplify browsing.")
               (base32
                "0dl6vfi2lzz8alnklwxzfz624b95hb1ipjvd3mk177flmddcf24r"))
              (patches
-              (map search-patch
-                   '("automake-regexp-syntax.patch"
-                     "automake-skip-amhello-tests.patch")))))
+              (search-patches "automake-regexp-syntax.patch"
+                              "automake-skip-amhello-tests.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,(autoconf-wrapper))
@@ -273,8 +272,7 @@ Makefile, simplifying the entire process for the developer.")
               (sha256
                (base32
                 "0vxj52zm709125gwv9qqlw02silj8bnjnh4y07arrz60r31ai1vw"))
-              (patches
-               (list (search-patch "libtool-skip-tests2.patch")))))
+              (patches (search-patches "libtool-skip-tests2.patch"))))
     (build-system gnu-build-system)
     (propagated-inputs `(("m4" ,m4)))
     (native-inputs `(("m4" ,m4)

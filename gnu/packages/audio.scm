@@ -333,7 +333,7 @@ tools (analyzer, mono/stereo tools, crossovers).")
               (sha256
                (base32
                 "0a1sni6lr7qpwywpggbkp0ia3h9bwwgf9i87gsag8ra2h30v82hd"))
-              (patches (list (search-patch "csound-header-ordering.patch")))))
+              (patches (search-patches "csound-header-ordering.patch"))))
     (build-system cmake-build-system)
     (arguments
      ;; Work around this error on x86_64 with libc 2.22+:
@@ -862,15 +862,15 @@ patches that can be used with softsynths such as Timidity and WildMidi.")
 (define-public guitarix
   (package
     (name "guitarix")
-    (version "0.34.0")
+    (version "0.35.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
                    "mirror://sourceforge/guitarix/guitarix2-"
-                   version ".tar.bz2"))
+                   version ".tar.xz"))
              (sha256
               (base32
-               "0pamaq8iybsaglq6y1m1rlmz4wgbs2r6m24bj7x4fwg4grjvzjl8"))))
+               "10hijqrrl8xil46kgsac10ysfxysisxlibm2rz133zyig5n63jdw"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no "check" target
@@ -2064,7 +2064,7 @@ portions of LAME.")
              ".tgz"))
        (sha256
         (base32 "0mwddk4qzybaf85wqfhxqlf0c5im9il8z03rd4n127k8y2jj9q4g"))
-       (patches (list (search-patch "portaudio-audacity-compat.patch")))))
+       (patches (search-patches "portaudio-audacity-compat.patch"))))
     (build-system gnu-build-system)
     (inputs
      ;; TODO: Add ASIHPI.
@@ -2096,14 +2096,14 @@ interface.")
 (define-public qsynth
   (package
     (name "qsynth")
-    (version "0.4.0")
+    (version "0.4.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://sourceforge/qsynth/qsynth-" version ".tar.gz"))
        (sha256
-        (base32 "1chc89v9hcjw3k4rvzakl8g56wv24kh48fzv1gfs4iv8vhyl3j4x"))))
+        (base32 "034p6mbwrjnxd9b6h20cidxi4ilkk3cgpjp154j0jzjs1ipf7x2h"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f)) ; no "check" phase

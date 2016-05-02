@@ -40,7 +40,7 @@
               (sha256
                (base32
                 "1a4z9kwgx1iqqzvv64si34m60gj34p7lp6rrcrb59s7ka5wa476q"))
-              (patches (list (search-patch "tcsh-fix-autotest.patch")))
+              (patches (search-patches "tcsh-fix-autotest.patch"))
               (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (inputs

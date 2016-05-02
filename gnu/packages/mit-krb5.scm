@@ -40,10 +40,10 @@
                (base32
                 "1gpscn78lv48dxccxq9ncyj53w9l2a15xmngjfa1wylvmn7g0jjx"))
               (patches
-               (map search-patch '("mit-krb5-init-context-null-spnego.patch"
-                                   "mit-krb5-CVE-2015-8629.patch"
-                                   "mit-krb5-CVE-2015-8630.patch"
-                                   "mit-krb5-CVE-2015-8631.patch")))))
+               (search-patches "mit-krb5-init-context-null-spnego.patch"
+                               "mit-krb5-CVE-2015-8629.patch"
+                               "mit-krb5-CVE-2015-8630.patch"
+                               "mit-krb5-CVE-2015-8631.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("bison" ,bison)

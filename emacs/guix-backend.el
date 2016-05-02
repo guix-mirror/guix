@@ -82,7 +82,7 @@ If you have a slow system, try to increase this time."
   :type 'string
   :group 'guix-repl)
 
-(defcustom guix-after-start-repl-hook ()
+(defcustom guix-after-start-repl-hook '(guix-set-directory)
   "Hook called after Guix REPL is started."
   :type 'hook
   :group 'guix-repl)
@@ -335,6 +335,28 @@ If INTERNAL is non-nil (interactively with prefix), switch to the
 additional internal REPL if it exists."
   (interactive "P")
   (geiser-repl--switch-to-buffer (guix-get-repl-buffer internal)))
+
+
+;;; Guix directory
+
+(defvar guix-directory nil
+  "Default directory with Guix source.
+If it is not set by a user, it is set after starting Guile REPL.
+This directory is used to define package locations.")
+
+(defun guix-read-directory ()
+  "Return `guix-directory' or prompt for it.
+This function is intended for using in `interactive' forms."
+  (if current-prefix-arg
+      (read-directory-name "Directory with Guix modules: "
+                           guix-directory)
+    guix-directory))
+
+(defun guix-set-directory ()
+  "Set `guix-directory' if needed."
+  (or guix-directory
+      (setq guix-directory
+            (guix-eval-read "%guix-dir"))))
 
 
 ;;; Evaluating expressions

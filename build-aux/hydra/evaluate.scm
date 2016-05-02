@@ -1,0 +1,98 @@
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;;
+;;; This file is part of GNU Guix.
+;;;
+;;; GNU Guix is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Guix is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; This program replicates the behavior of Hydra's 'hydra-eval-guile-job'.
+;;; It evaluates the Hydra job defined by the program passed as its first
+;;; arguments and outputs an sexp of the jobs on standard output.
+
+(use-modules (guix store)
+             (srfi srfi-19)
+             (ice-9 match)
+             (ice-9 pretty-print)
+             (ice-9 format))
+
+(define %user-module
+  ;; Hydra user module.
+  (let ((m (make-module)))
+    (beautify-user-module! m)
+    m))
+
+(define (call-with-time thunk kont)
+  "Call THUNK and pass KONT the elapsed time followed by THUNK's return
+values."
+  (let* ((start  (current-time time-monotonic))
+         (result (call-with-values thunk list))
+         (end    (current-time time-monotonic)))
+    (apply kont (time-difference end start) result)))
+
+(define (call-with-time-display thunk)
+  "Call THUNK and write to the current output port its duration."
+  (call-with-time thunk
+    (lambda (time . results)
+      (format #t "~,3f seconds~%"
+              (+ (time-second time)
+                 (/ (time-nanosecond time) 1e9)))
+      (apply values results))))
+
+
+;; Without further ado...
+(match (command-line)
+  ((command file)
+   ;; Load FILE, a Scheme file that defines Hydra jobs.
+   (let ((port (current-output-port)))
+     (save-module-excursion
+      (lambda ()
+        (set-current-module %user-module)
+        (primitive-load file)))
+
+     (with-store store
+       ;; Make sure we don't resort to substitutes.
+       (set-build-options store
+                          #:use-substitutes? #f
+                          #:substitute-urls '())
+
+       ;; Grafts can trigger early builds.  We do not want that to happen
+       ;; during evaluation, so use a sledgehammer to catch such problems.
+       (set! build-things
+         (lambda (store . args)
+           (format (current-error-port)
+                   "error: trying to build things during evaluation!~%")
+           (format (current-error-port)
+                   "'build-things' arguments: ~s~%" args)
+           (exit 1)))
+
+       ;; Call the entry point of FILE and print the resulting job sexp.
+       (pretty-print
+        (match ((module-ref %user-module 'hydra-jobs) store '())
+          (((names . thunks) ...)
+           (map (lambda (job thunk)
+                  (format (current-error-port) "evaluating '~a'... " job)
+                  (force-output (current-error-port))
+                  (cons job (call-with-time-display thunk)))
+                names thunks)))
+        port))))
+  ((command _ ...)
+   (format (current-error-port) "Usage: ~a FILE
+Evaluate the Hydra jobs defined in FILE.~%"
+           command)
+   (exit 1)))
+
+;;; Local Variables:
+;;; eval: (put 'call-with-time 'scheme-indent-function 1)
+;;; End:
+

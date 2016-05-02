@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
+  #:use-module (guix build-system ant)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages attr)
@@ -51,19 +53,19 @@
   #:use-module (gnu packages texinfo)
   #:use-module ((srfi srfi-1) #:select (fold alist-delete)))
 
-(define-public swt
+(define-public java-swt
   (package
-    (name "swt")
-    (version "4.4.2")
+    (name "java-swt")
+    (version "4.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://ftp-stud.fht-esslingen.de/pub/Mirrors/"
                     "eclipse/eclipse/downloads/drops4/R-" version
-                    "-201502041700/swt-" version "-gtk-linux-x86.zip"))
+                    "-201506032000/swt-" version "-gtk-linux-x86.zip"))
               (sha256
                (base32
-                "0lzyqr8k2zm5s8fmnrx5kxpslxfs0i73y26fwfms483x45izzwj8"))))
+                "03mhzraikcs4fsz7d3h5af9pw1bbcfd6dglsvbk2ciwimy9zj30q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags '("-f" "make_linux.mak")
@@ -577,7 +579,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
     (license license:gpl2+)))
 
 (define-public icedtea-7
-  (let* ((version "2.6.4")
+  (let* ((version "2.6.6")
          (drop (lambda (name hash)
                  (origin
                    (method url-fetch)
@@ -594,7 +596,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                       version ".tar.xz"))
                 (sha256
                  (base32
-                  "0r31h8nlsrbfdkgbjbb7phwgcwglc9siznzrr40lqnm9xrgkc2nj"))
+                  "0jjldnig382yqvzzsflilcz897v2lwnw4n57sggdjn318d29g53r"))
                 (modules '((guix build utils)))
                 (snippet
                  '(substitute* "Makefile.in"
@@ -669,6 +671,8 @@ build process and its dependencies, whereas Make uses Makefile format.")
                       (setenv "CC" "gcc")
                       (setenv "CPATH"
                               (string-append gcjinclude ":"
+                                             (assoc-ref inputs "libxcomposite")
+                                             "/include/X11/extensions" ":"
                                              (assoc-ref inputs "libxrender")
                                              "/include/X11/extensions" ":"
                                              (assoc-ref inputs "libxtst")
@@ -719,26 +723,139 @@ build process and its dependencies, whereas Make uses Makefile format.")
       (native-inputs
        `(("openjdk-src"
           ,(drop "openjdk"
-                 "1qjjf71nq80ac2d08hbaa8589d31vk313z3rkirnwq5df8cyf0mv"))
+                 "1wxd5kbsmd4gdiz78iq7pq9hp0l6m946pd1pvaj750lkrgk17y14"))
          ("corba-drop"
           ,(drop "corba"
-                 "025warxhjal3nr7w1xyd16k0f32fwkchifpaslzyidsga3hgmfr6"))
+                 "0bba7drdpbggzgn7cnqv10myxa3bygaq2hkclgrmsijhl6bnr26f"))
          ("jaxp-drop"
           ,(drop "jaxp"
-                 "0qiz6swb78w9c0mf88pf0gflgm5rp9k0l6fv6sdl7dki691b0z09"))
+                 "0c1d4yjaxzh9fi9bx50yi2psb9f475bfivivf6c31smgaihb97k7"))
          ("jaxws-drop"
           ,(drop "jaxws"
-                 "18fz4gl4fdlcmqvh1mlpd9h0gj0qizpfa7njkax97aysmsm08xns"))
+                 "0662wzws45jwzwfc4pgizxdywz737vflkj9w3hw1xlgljs017bzr"))
          ("jdk-drop"
           ,(drop "jdk"
-                 "0qsx5d9pgwlz9vbpapw4jwpajqc6rwk1150cjb33i4n3z709jccx"))
+                 "17qaf5mdijsn6jzyxv7rgn9g5mazkva6p8lcy7zq06yvfb595ahv"))
          ("langtools-drop"
           ,(drop "langtools"
-                 "1k6plx96smf86z303gb30hncssa8f40qdryzsdv349iwqwacxc7r"))
+                 "1wv34cyba1f4wynjkwf765agf4ifc04717ac7b3bpiagggp2rfsl"))
          ("hotspot-drop"
           ,(drop "hotspot"
-                 "0r9ffzyf5vxs8wg732szqcil0ksc8lcxzihdv3viz7d67dy42irp"))
+                 "1hhd5q2g7mnw3pqqv72labki5zv09vgc3hp3xig4x8r4yzzg9s54"))
          ,@(fold alist-delete (package-native-inputs icedtea-6)
-                 '("openjdk6-src")))))))
+                 '("openjdk6-src"))))
+      (inputs
+       `(("libxcomposite" ,libxcomposite)
+         ,@(package-inputs icedtea-6))))))
+
+(define-public icedtea-8
+  (let* ((version "3.0.1")
+         (drop (lambda (name hash)
+                 (origin
+                   (method url-fetch)
+                   (uri (string-append
+                         "http://icedtea.classpath.org/download/drops/"
+                         "/icedtea8/" version "/" name ".tar.xz"))
+                   (sha256 (base32 hash))))))
+    (package (inherit icedtea-7)
+      (version "3.0.1")
+      (source (origin
+                (method url-fetch)
+                (uri (string-append
+                      "http://icedtea.wildebeest.org/download/source/icedtea-"
+                      version ".tar.xz"))
+                (sha256
+                 (base32
+                  "1wislw090zx955rf9sppimdzqf044mpj96xp54vljv6yw46y6v1l"))
+                (modules '((guix build utils)))
+                (snippet
+                 '(substitute* "Makefile.am"
+                    ;; do not leak information about the build host
+                    (("DISTRIBUTION_ID=\"\\$\\(DIST_ID\\)\"")
+                     "DISTRIBUTION_ID=\"\\\"guix\\\"\"")))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments icedtea-7)
+         ((#:configure-flags flags)
+          `(let ((jdk (assoc-ref %build-inputs "jdk")))
+             `(;;"--disable-bootstrap"
+               "--enable-bootstrap"
+               "--enable-nss"
+               "--disable-downloading"
+               "--disable-tests"      ;they are run in the check phase instead
+               "--with-openjdk-src-dir=./openjdk.src"
+               ,(string-append "--with-jdk-home=" jdk))))
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (delete 'fix-x11-extension-include-path)
+             (delete 'patch-paths)
+             (delete 'set-additional-paths)
+             (delete 'patch-patches)
+             (replace 'install
+               (lambda* (#:key outputs #:allow-other-keys)
+                 (let ((doc (string-append (assoc-ref outputs "doc")
+                                           "/share/doc/icedtea"))
+                       (jre (assoc-ref outputs "out"))
+                       (jdk (assoc-ref outputs "jdk")))
+                   (copy-recursively "openjdk.build/docs" doc)
+                   (copy-recursively "openjdk.build/images/j2re-image" jre)
+                   (copy-recursively "openjdk.build/images/j2sdk-image" jdk)
+                   #t)))))))
+      (native-inputs
+       `(("jdk" ,icedtea-7 "jdk")
+         ("openjdk-src"
+          ,(drop "openjdk"
+                 "1141wfz6vz889f5naj7zdbyw42ibw0ixvkd808lfcrwxlgznyxlb"))
+         ("corba-drop"
+          ,(drop "corba"
+                 "0l3fmfw88hf8709z033az1x6wzmcb0jnakj2br1r721zw01i0da2"))
+         ("jaxp-drop"
+          ,(drop "jaxp"
+                 "1i1pvyrdkk3w8vcnk6kfcbsjkfpbbrcywiypdl39bf2ishixbaf0"))
+         ("jaxws-drop"
+          ,(drop "jaxws"
+                 "0f1kglci65zsfy8ygw5w2zza7v1280znihvls4kraz06dgsc2y73"))
+         ("jdk-drop"
+          ,(drop "jdk"
+                 "1pcwb1kjd1ph4jbv07icgk0fb8jqnck2y24qjfd7dzg7gm45c1am"))
+         ("langtools-drop"
+          ,(drop "langtools"
+                 "1jjil9s244wp0blj1qkzk7sy7y1jrxb4wq18c1rj2q2pa88n00i6"))
+         ("hotspot-drop"
+          ,(drop "hotspot"
+                 "1pl0cz1gja6z5zbywni1x1pj4qkh745fpj55fcmj4lpfj2p98my1"))
+         ("nashorn-drop"
+          ,(drop "nashorn"
+                 "1p0ynm2caraq1sal38qrrf42yah7j14c9vfwdv6h5h4rliahs177"))
+         ,@(fold alist-delete (package-native-inputs icedtea-7)
+                 '("gcj" "openjdk-src" "corba-drop" "jaxp-drop" "jaxws-drop"
+                   "jdk-drop" "langtools-drop" "hotspot-drop")))))))
 
 (define-public icedtea icedtea-7)
+
+(define-public java-xz
+  (package
+   (name "java-xz")
+   (version "1.5")
+   (source (origin
+     (method url-fetch)
+     (uri (string-append "http://tukaani.org/xz/xz-java-" version ".zip"))
+     (sha256
+      (base32
+       "0x6vn9dp9kxk83x2fp3394n95dk8fx9yg8jns9371iqsn0vy8ih1"))))
+   (build-system ant-build-system)
+   (arguments
+    `(#:tests? #f ; There are no tests to run.
+      #:jar-name ,(string-append "xz-" version  ".jar")
+      #:phases
+      (modify-phases %standard-phases
+        ;; The unpack phase enters the "maven" directory by accident.
+        (add-after 'unpack 'chdir
+          (lambda _ (chdir "..") #t)))))
+   (native-inputs
+    `(("unzip" ,unzip)))
+   (home-page "http://tukaani.org/xz/java.html")
+   (synopsis "Implementation of XZ data compression in pure Java")
+   (description "This library aims to be a complete implementation of XZ data
+compression in pure Java.  Single-threaded streamed compression and
+decompression and random access decompression have been fully implemented.")
+   (license license:public-domain)))

@@ -633,8 +633,7 @@ to the other.")
               (sha256
                (base32
                 "02abg1lsnwvjg3igdyb8qjgr5kv1nbwl4gaf8mdinzfii5p82721"))
-              (patches
-               (list (search-patch "ocaml-findlib-make-install.patch")))))
+              (patches (search-patches "ocaml-findlib-make-install.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("camlp4" ,camlp4)

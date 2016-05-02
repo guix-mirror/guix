@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
@@ -31,9 +31,13 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages haskell)
   #:use-module (gnu packages image)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)  ;libsndfile, libsamplerate
@@ -41,13 +45,19 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages image)
   #:use-module (gnu packages jemalloc)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
 (define-public blender
@@ -108,7 +118,7 @@
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
        ("libtiff" ,libtiff)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg-2.8" ,ffmpeg-2.8) ;<https://lists.gnu.org/archive/html/guix-devel/2016-04/msg01019.html>
        ("fftw" ,fftw)
        ("jack" ,jack-1)
        ("libsndfile" ,libsndfile)
@@ -176,7 +186,7 @@ many more.")
               (sha256
                (base32
                 "1izddjwbh1grs8080vmaix72z469qy29wrvkphgmqmcm0sv1by7c"))
-              (patches (map search-patch '("ilmbase-fix-tests.patch")))))
+              (patches (search-patches "ilmbase-fix-tests.patch"))))
     (build-system gnu-build-system)
     (home-page "http://www.openexr.com/")
     (synopsis "Utility C++ libraries for threads, maths, and exceptions")
@@ -204,7 +214,7 @@ exception-handling library.")
                '(substitute* (find-files "." "tmpDir\\.h")
                   (("\"/var/tmp/\"")
                    "\"/tmp/\"")))
-              (patches (list (search-patch "openexr-missing-samples.patch")))))
+              (patches (search-patches "openexr-missing-samples.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -245,7 +255,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
               (sha256
                (base32
                 "0mn7cz19mn8dcrhkq15h25gl20ammr1wz0j2j3c2vxs6ph7zn8jy"))
-              (patches (list (search-patch "openimageio-boost-1.60.patch")))))
+              (patches (search-patches "openimageio-boost-1.60.patch"))))
     (build-system cmake-build-system)
     ;; FIXME: To run all tests successfully, test image sets from multiple
     ;; third party sources have to be present.  For details see
@@ -271,6 +281,59 @@ on formats and functionality used in professional, large-scale animation and
 visual effects work for film.")
     (home-page "http://www.openimageio.org")
     (license license:bsd-3)))
+
+(define-public rapicorn
+  (package
+    (name "rapicorn")
+    (version "16.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://testbit.eu/pub/dists/rapicorn/"
+                                  "rapicorn-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1y51yjrpsihas1jy905m9p3r8iiyhq6bwi2690c564i5dnix1f9d"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; FIXME: At least "testrcore1" fails.
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'replace-/bin/ls
+           (lambda _
+             (substitute* (cons "Makefile.decl"
+                                (find-files "." "^Makefile\\.in$"))
+               (("/bin/ls") (which "ls")))
+             #t)))))
+    ;; These libraries are listed in the "Required" section of the pkg-config
+    ;; file.
+    (propagated-inputs
+     `(("librsvg" ,librsvg)
+       ("cairo" ,cairo)
+       ("pango" ,pango)
+       ("libxml2" ,libxml2)))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("libpng" ,libpng-1.2)
+       ("readline" ,readline)
+       ("libcroco" ,libcroco)
+       ("python" ,python-2)
+       ("cython" ,python2-cython)))
+    (native-inputs
+     `(("pandoc" ,ghc-pandoc)
+       ("bison" ,bison)
+       ("flex" ,flex)
+       ("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://rapicorn.org")
+    (synopsis "Toolkit for rapid development of user interfaces")
+    (description
+     "Rapicorn is a toolkit for rapid development of user interfaces in C++
+and Python.  The user interface is designed in a declarative markup language
+and is connected to the programming logic using data bindings and commands.")
+    (license license:mpl2.0)))
 
 (define-public ctl
   (package
@@ -385,7 +448,7 @@ and understanding different BRDFs (and other component functions).")
                                         version ".tar.gz")))
               (sha256
                (base32 "07wii4i824vy9qsvjsgqxppgqmfdxq0xa87i5yk53fijriadq7mb"))
-              (patches (list (search-patch "agg-am_c_prototype.patch")))))
+              (patches (search-patches "agg-am_c_prototype.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

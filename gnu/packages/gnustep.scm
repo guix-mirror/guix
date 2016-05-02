@@ -127,3 +127,92 @@ of battery life remain, battery life remaining (with both a percentage and a
 graph), and battery status (high - green, low - yellow, or critical - red).")
     (license gpl2)))
 
+(define-public wmnd
+  (package
+    (name "wmnd")
+    (version "0.4.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.thregr.org/~wavexx/software/wmnd/releases/"
+                    name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1amkbiwgr31gwkcp7wrjsr7aj1kns8bpmjpv70n86wb8v9mpm828"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxpm" ,libxpm)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.thregr.org/~wavexx/software/wmnd/")
+    (synopsis "Network interface monitor")
+    (description
+     "WMND is a dockapp for monitoring network interfaces under WindowMaker and
+other compatible window managers.")
+    (license gpl2+)))
+
+(define-public wmcpuload
+  (package
+    (name "wmcpuload")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://debian/pool/main/w/wmcpuload/"
+                    name "_" version ".orig.tar.gz"))
+              (sha256
+               (base32
+                "0irlns4cvxy2mnicx75bya166hdxq7h8bphds3ligijcl9fzgs6n"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxpm" ,libxpm)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://windowmaker.org/dockapps/?name=wmcpuload")
+    (synopsis "Monitor CPU usage")
+    (description
+     "Wmcpuload displays the current CPU usage, expressed as a percentile and a
+chart, and has an LCD look-alike user interface.  The back-light may be turned
+on and off by clicking the mouse button over the application.  If the CPU usage
+hits a certain threshold, an alarm-mode will alert you by turning back-light
+on.")
+    (license gpl2+)))
+
+(define-public wmclock
+  (package
+    (name "wmclock")
+    (version "1.0.16")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://debian/pool/main/w/wmclock/"
+                    name "_" version ".orig.tar.gz"))
+              (sha256
+               (base32
+                "1lx276ba8r2yydhmwj1g586jdqg695ad89ng36fr3mb067gvb2rz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoconf
+           (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+    ;; wmclock requires autoreconf to generate its configure script.
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxpm" ,libxpm)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://windowmaker.org/dockapps/?name=wmclock")
+    (synopsis "Display the date and time")
+    (description
+     "wmclock is an applet for Window Maker which displays the date and time in
+a dockable tile.  It features multiple language support, 24h or 12h time
+display, and can run a user-specified program on mouse click.")
+    (license gpl2+)))

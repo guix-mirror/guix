@@ -195,14 +195,15 @@ also a distribution thereof.  It includes a virtual machine image.  Besides
 the usual package management features, it also supports transactional
 upgrades and roll-backs, per-user profiles, and much more.  It is based on
 the Nix package manager.")
-    (license gpl3+)))
+    (license gpl3+)
+    (properties '((ftp-server . "alpha.gnu.org")))))
 
 (define guix-devel
   ;; Development version of Guix.
   ;;
   ;; Note: use a very short commit id; with a longer one, the limit on
   ;; hash-bang lines would be exceeded while running the tests.
-  (let ((commit "761139354798303c605964b896c250a01486b00a"))
+  (let ((commit "80627f51f0238b9450745f4e642172d059ca5bb5"))
     (package (inherit guix-0.10.0)
       (version (string-append "0.10.0-0." (string-take commit 4)))
       (source (origin
@@ -212,7 +213,7 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "1wvy9kms3v6k7cybw6489mqk161lv8d03qgmmxbmdgiwjmjxbzbn"))
+                  "102gdbx5imx0zab7i5dwa1z9j1diblinaaja09dp3q30770iyxj9"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.10.0)

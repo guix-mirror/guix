@@ -39,7 +39,7 @@
               (sha256
                (base32
                 "19c6ldjsdnk1md66q3nb035ja1xj217k8iabhxpsb8rs10a6kwi6"))
-              (patches (list (search-patch "lirc-localstatedir.patch")))))
+              (patches (search-patches "lirc-localstatedir.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))

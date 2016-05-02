@@ -191,7 +191,8 @@ their syntactic role.  It supports over 150 different languages and it can
 output to 8 different formats, including HTML, LaTeX and ODF.  It can also
 output to ANSI color escape sequences, so that highlighted source code can be
 seen in a terminal.")
-    (license gpl3+)))
+    (license gpl3+)
+    (properties '((ftp-directory . "/gnu/src-highlite")))))
 
 (define-public astyle
   (package

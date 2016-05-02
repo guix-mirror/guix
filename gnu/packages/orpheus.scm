@@ -40,7 +40,7 @@
       (sha256
        (base32
         "1xbgxq8fybwhm51nw9hvvrgi873qzkc2qvmy15d2m2hw2yqa99hq"))
-      (patches (list (search-patch "orpheus-cast-errors-and-includes.patch")))))
+      (patches (search-patches "orpheus-cast-errors-and-includes.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("ncurses" ,ncurses)

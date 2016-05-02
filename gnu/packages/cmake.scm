@@ -46,7 +46,7 @@
              (sha256
               (base32
                "1yly38mpk2s08b4rglp9xcw5pxalk0whp9hrcg7j8qpxlkc3mj4j"))
-             (patches (list (search-patch "cmake-fix-tests.patch")))))
+             (patches (search-patches "cmake-fix-tests.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"

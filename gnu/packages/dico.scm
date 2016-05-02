@@ -43,9 +43,8 @@
              (sha256
               (base32
                "04pjks075x20d19l623mj50bw64g8i41s63z4kzzqcbg9qg96x64"))
-             (patches (map search-patch
-                           '("cpio-gets-undeclared.patch"
-                             "dico-libtool-deterministic.patch")))))
+             (patches (search-patches "cpio-gets-undeclared.patch"
+                                      "dico-libtool-deterministic.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--with-guile-site-dir=" %output

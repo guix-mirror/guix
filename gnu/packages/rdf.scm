@@ -89,9 +89,8 @@ HTML and JSON.")
              (sha256
               (base32
                "1arffdwivig88kkx685pldr784njm0249k0rb1f1plwavlrw9zfx"))
-             (patches (list
-                       (search-patch "clucene-pkgconfig.patch")
-                       (search-patch "clucene-contribs-lib.patch")))))
+             (patches (search-patches "clucene-pkgconfig.patch"
+                                      "clucene-contribs-lib.patch"))))
     (build-system cmake-build-system)
     (inputs
      `(("boost" ,boost) ; could also use bundled copy
@@ -311,7 +310,7 @@ ideal (e.g. in LV2 implementations or embedded applications).")
               ".tar.gz"))
         (patches
           ;; The patch has no effect under Python 3.
-          (list (search-patch "python2-rdflib-drop-sparqlwrapper.patch")))
+          (search-patches "python2-rdflib-drop-sparqlwrapper.patch"))
         (sha256
           (base32
             "0kvaf332cqbi47rqzlpdx4mbkvw12mkrzkj8n9l19wk713d4py9w"))))

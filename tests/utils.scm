@@ -333,6 +333,19 @@
                "This is a journey\r\nInto the sound\r\nA journey ...\n")))
     (get-string-all (canonical-newline-port port))))
 
+
+(test-equal "edit-expression"
+  "(display \"GNU Guix\")\n(newline)\n"
+  (begin
+    (call-with-output-file temp-file
+      (lambda (port)
+        (display "(display \"xiuG UNG\")\n(newline)\n" port)))
+    (edit-expression `((filename . ,temp-file)
+                       (line     . 0)
+                       (column   . 9))
+                     string-reverse)
+    (call-with-input-file temp-file get-string-all)))
+
 (test-end)
 
 (false-if-exception (delete-file temp-file))

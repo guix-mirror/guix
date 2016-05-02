@@ -41,7 +41,7 @@
              (sha256
               (base32
                "0j5b5ld6bjyh3qhd2nw0jb84znq0wqai7fsrdzg7bpg24jdp2wl3"))
-             (patches (list (search-patch "avahi-localstatedir.patch")))))
+             (patches (search-patches "avahi-localstatedir.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-distro=none"

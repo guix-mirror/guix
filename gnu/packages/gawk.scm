@@ -36,7 +36,7 @@
                                 ".tar.xz"))
             (sha256
              (base32 "09d6pmx6h3i2glafm0jd1v1iyrs03vcyv2rkz12jisii3vlmbkz3"))
-            (patches (list (search-patch "gawk-fts-test.patch")))))
+            (patches (search-patches "gawk-fts-test.patch"))))
    (build-system gnu-build-system)
    (arguments
     `(#:parallel-tests? #f                ; test suite fails in parallel

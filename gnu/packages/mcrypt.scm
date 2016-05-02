@@ -90,7 +90,7 @@ XTEA, 3WAY, TWOFISH, BLOWFISH, ARCFOUR, WAKE and more.")
       (sha256
        (base32
         "1w7yiljan8gf1ibiypi6hm3r363imm3sxl1j8hapjdq3m591qljn"))
-      (patches (list (search-patch "mhash-keygen-test-segfault.patch")))))
+      (patches (search-patches "mhash-keygen-test-segfault.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("perl" ,perl)))                 ;for tests

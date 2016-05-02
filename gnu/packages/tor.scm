@@ -80,7 +80,7 @@ applications based on the TCP protocol.")
                (base32
                 "0an2q5ail9z414riyjbkjkm29504hy778j914baz2gn5hlv2cfak"))
               (file-name (string-append name "-" version "-checkout"))
-              (patches (list (search-patch "torsocks-dns-test.patch")))))
+              (patches (search-patches "torsocks-dns-test.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases

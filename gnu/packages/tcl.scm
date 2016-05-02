@@ -45,7 +45,7 @@
               (sha256
                (base32
                 "13cwa4bc85ylf5gfj9vk182lvgy60qni3f7gbxghq78wk16djvly"))
-              (patches (list (search-patch "tcl-mkindex-deterministic.patch")))))
+              (patches (search-patches "tcl-mkindex-deterministic.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-before
@@ -143,7 +143,7 @@ X11 GUIs.")
              (sha256
               (base32
                "1h96vp15zl5xz0d4qp6wjyrchqmrmdm3q5k22wkw9jaxbvw9vy88"))
-             (patches (list (search-patch "tk-find-library.patch")))))
+             (patches (search-patches "tk-find-library.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (modify-phases %standard-phases
@@ -257,7 +257,7 @@ utility functions and modules all written in high-level Tcl.")
               (sha256
                (base32
                 "0ffb4aw63inig3aql33g4pk0kjk14dv238anp1scwjdjh1k6n4gl"))
-              (patches (list (search-patch "tclxml-3.2-install.patch")))))
+              (patches (search-patches "tclxml-3.2-install.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("tcl" ,tcl)

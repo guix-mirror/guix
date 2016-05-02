@@ -65,7 +65,21 @@
 for transmitting machine-neutral encodings of data objects in computer
 networking, allowing for formal validation of data according to some
 specifications.")
+    (replacement libtasn1/fixed)
     (license license:lgpl2.0+)))
+
+(define libtasn1/fixed                            ;for CVE-2016-4008
+  (package
+    (inherit libtasn1)
+    (source
+     (let ((version "4.8"))
+       (origin
+         (method url-fetch)
+         (uri (string-append "mirror://gnu/libtasn1/libtasn1-"
+                             version ".tar.gz"))
+         (sha256
+          (base32
+           "04y5m29pqmvkfdbppmsdifyx89v8xclxzklpfc7a1fkr9p4jz07s")))))))
 
 (define-public p11-kit
   (package
@@ -176,7 +190,9 @@ living in the same process.")
 and DTLS protocols.  It is provided in the form of a C library to support the
 protocols, as well as to parse and write X.5009, PKCS 12, OpenPGP and other
 required structures.")
-    (license license:lgpl2.1+)))
+    (license license:lgpl2.1+)
+    (properties '((ftp-server . "ftp.gnutls.org")
+                  (ftp-directory . "/gcrypt/gnutls")))))
 
 (define-public openssl
   (package
@@ -192,9 +208,8 @@ required structures.")
              (sha256
               (base32
                "0cxajjayi859czi545ddafi24m9nwsnjsw4q82zrmqvwj2rv315p"))
-             (patches (map search-patch
-                           '("openssl-runpath.patch"
-                             "openssl-c-rehash-in.patch")))))
+             (patches (search-patches "openssl-runpath.patch"
+                                      "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (arguments
@@ -326,13 +341,13 @@ security, and applying best practice development processes.")
 (define-public python-acme
   (package
     (name "python-acme")
-    (version "0.4.2")
+    (version "0.5.0")
     (source (origin
       (method url-fetch)
       (uri (pypi-uri "acme" version))
       (sha256
         (base32
-         "1dh0qlsi309b37wa0nw0h2gvs94yk12lc4mhr3rb9c4h46m0hn8a"))))
+         "1g8scfkhs3l06588h73py81xb1gvkkdzaxanl21whcvdclycc186"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -385,13 +400,13 @@ security, and applying best practice development processes.")
 (define-public letsencrypt
   (package
     (name "letsencrypt")
-    (version "0.4.2")
+    (version "0.5.0")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "letsencrypt" version))
               (sha256
                (base32
-                "1rjbblj60w7jwc5y04sy6fbxcynvakvazikg1pdmhyic5jmj9bg3"))))
+                "0nnijs26kkw07yylszc97p3jw09y98j54xihjp0rprrbp1q2p2p3"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2

@@ -64,4 +64,9 @@
       (apply guix-main (command-line))))
 
   (maybe-augment-load-paths!)
+
+  ;; XXX: It would be more convenient to change it to:
+  ;;   (exit (run-guix-main))
+  ;; but since the 'guix' command is not updated by 'guix pull', we cannot
+  ;; really do it now.
   (run-guix-main))

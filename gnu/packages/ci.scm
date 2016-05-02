@@ -52,10 +52,10 @@
                 (sha256
                  (base32
                   "08vc76xb7f42hh65j7qvjf58hw36aki5ml343170pq94vk75b1nh"))
-                (patches (map search-patch
-                              '("hydra-automake-1.15.patch"
-                                ;; TODO: Remove once we have a darcs input
-                                "hydra-disable-darcs-test.patch")))))
+                (patches (search-patches
+                          "hydra-automake-1.15.patch"
+                          ;; TODO: Remove once we have a darcs input
+                          "hydra-disable-darcs-test.patch"))))
       (build-system gnu-build-system)
       (native-inputs
        `(("unzip" ,unzip)

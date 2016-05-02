@@ -48,8 +48,7 @@
       (sha256
        (base32
         "0g5df00cj4nczrmr4k791l7la0sq2wnf8rn981fsrz1f3d2yix4i"))
-      (patches
-       (list (search-patch "patchutils-xfail-gendiff-tests.patch")))))
+      (patches (search-patches "patchutils-xfail-gendiff-tests.patch"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (arguments
@@ -178,24 +177,25 @@ refreshed, and more.")
     (license gpl2+)))
 
 (define-public patches
-  (let ((commit "26d7dbc"))
+  (let ((commit "ef1b8a7d954b82ed4af3a08fd63d2085d19090ef"))
     (package
       (name "patches")
-      (version (string-append "0.0." commit))
+      (home-page "https://github.com/stefanha/patches")
+      (version (string-append "0.0-1." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
-                      (url "https://github.com/aliguori/patches")
+                      (url home-page)
                       (commit commit)))
                 (sha256
                  (base32
-                  "1bah6y84nlii5yif189ns28dz1m9vmsyw66jyk2vr5yf0njf7mzh"))))
+                  "11rdmhv0l1s8nqb20ywmw2zqizczch2p62qf9apyx5wqgxlnjshk"))
+                (file-name (string-append name "-"version "-checkout"))))
       (build-system python-build-system)
       (inputs `(("python-notmuch" ,python2-notmuch)))
       (arguments
        `(#:tests? #f                             ;no "test" target
-                  #:python ,python-2))           ;not compatible with Python 3
-      (home-page "https://github.com/aliguori/patches")
+         #:python ,python-2))                    ;not compatible with Python 3
       (synopsis "Patch tracking tool")
       (description
        "'Patches' is a patch-tracking tool initially written for the QEMU

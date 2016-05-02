@@ -47,7 +47,7 @@
          "mirror://sourceforge/audacity/audacity-minsrc-" version ".tar.xz"))
        (sha256
         (base32 "1cs2w3fwqylpqmfwkvlgdx5lhclpckfil7pqibl37qlbnf4qvndh"))
-       (patches (list (search-patch "audacity-fix-ffmpeg-binding.patch")))))
+       (patches (search-patches "audacity-fix-ffmpeg-binding.patch"))))
     (build-system gnu-build-system)
     (inputs
      ;; TODO: Add portSMF and libwidgetextra once they're packaged.  In-tree

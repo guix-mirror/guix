@@ -1,6 +1,6 @@
 ;;; guix-ui-package.el --- Interface for displaying packages  -*- lexical-binding: t -*-
 
-;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
+;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 
 ;; This file is part of GNU Guix.
 
@@ -38,6 +38,7 @@
 (require 'guix-hydra-build)
 (require 'guix-read)
 (require 'guix-license)
+(require 'guix-location)
 (require 'guix-profiles)
 
 (guix-ui-define-entry-type package)
@@ -222,7 +223,7 @@ ENTRIES is a list of package entries to get info about packages."
             ignore
             (outputs simple guix-package-info-insert-outputs)
             (source simple guix-package-info-insert-source)
-            (location format (format guix-package-location))
+            (location simple guix-package-info-insert-location)
             (home-url format (format guix-url))
             (license format (format guix-package-license))
             (systems format guix-package-info-insert-systems)
@@ -345,9 +346,13 @@ formatted with this string, an action button is inserted.")
 (define-button-type 'guix-package-license
   :supertype 'guix
   'face 'guix-package-info-license
-  'help-echo "Browse license URL"
+  'help-echo "Display license info"
   'action (lambda (btn)
-            (guix-browse-license-url (button-label btn))))
+            (require 'guix-ui-license)
+            (guix-buffer-get-display-entries
+             'info 'license
+             (list 'name (button-label btn))
+             'add)))
 
 (define-button-type 'guix-package-name
   :supertype 'guix
@@ -381,6 +386,22 @@ formatted with this string, an action button is inserted.")
            (guix-entry-value entry 'version))
    'guix-package-heading
    'spec (guix-package-entry->name-specification entry)))
+
+(defun guix-package-info-insert-location (location &optional _)
+  "Insert package LOCATION at point."
+  (if (null location)
+      (guix-format-insert nil)
+    (let ((location-file (car (split-string location ":"))))
+      (guix-info-insert-value-indent location 'guix-package-location)
+      (guix-info-insert-indent)
+      (guix-info-insert-action-button
+       "Packages"
+       (lambda (btn)
+         (guix-package-get-display (guix-ui-current-profile)
+                                   'location
+                                   (button-get btn 'location)))
+       (format "Display packages from location '%s'" location-file)
+       'location location-file))))
 
 (defun guix-package-info-insert-systems (systems entry)
   "Insert supported package SYSTEMS at point."
@@ -797,7 +818,7 @@ for all ARGS."
             (source simple guix-package-info-insert-source)
             (path simple (indent guix-file))
             (dependencies simple (indent guix-file))
-            (location format (format guix-package-location))
+            (location simple guix-package-info-insert-location)
             (home-url format (format guix-url))
             (license format (format guix-package-license))
             (systems format guix-package-info-insert-systems)
@@ -968,6 +989,16 @@ Interactively with prefix, prompt for PROFILE."
    (list (guix-read-license-name)
          (guix-ui-read-profile)))
   (guix-package-get-display profile 'license license))
+
+;;;###autoload
+(defun guix-packages-by-location (location &optional profile)
+  "Display Guix packages placed in LOCATION file.
+If PROFILE is nil, use `guix-current-profile'.
+Interactively with prefix, prompt for PROFILE."
+  (interactive
+   (list (guix-read-package-location)
+         (guix-ui-read-profile)))
+  (guix-package-get-display profile 'location location))
 
 ;;;###autoload
 (defun guix-search-by-regexp (regexp &optional params profile)

@@ -32,7 +32,6 @@
   #:use-module (guix licenses)
   #:use-module (guix base32)
   #:use-module (guix build-system ruby)
-  #:use-module (gnu packages)
   #:export (gem->guix-package
             %gem-updater))
 
@@ -171,15 +170,14 @@ package on RubyGems."
            ((source-url ...)
             (any rubygems-url? source-url))))))
 
-(define (latest-release guix-package)
-  "Return an <upstream-source> for the latest release of GUIX-PACKAGE."
-  (let* ((gem-name (guix-package->gem-name
-                    (specification->package guix-package)))
+(define (latest-release package)
+  "Return an <upstream-source> for the latest release of PACKAGE."
+  (let* ((gem-name (guix-package->gem-name package))
          (metadata (rubygems-fetch gem-name))
          (version (assoc-ref metadata "version"))
          (url (rubygems-uri gem-name version)))
     (upstream-source
-     (package guix-package)
+     (package (package-name package))
      (version version)
      (urls (list url)))))
 

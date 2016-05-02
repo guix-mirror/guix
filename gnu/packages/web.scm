@@ -3,13 +3,14 @@
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,7 @@
   #:use-module (guix cvs-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system r)
@@ -49,6 +51,8 @@
   #:use-module (gnu packages mit-krb5)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages base)
@@ -402,7 +406,7 @@ UTS#46.")
               (sha256
                (base32
                 "14dsnmirjcrvwsffqp3as70qr6bbfaig2fv3zvs5g7005jrsbvpb"))
-              (patches (list (search-patch "tidy-CVE-2015-5522+5523.patch")))))
+              (patches (search-patches "tidy-CVE-2015-5522+5523.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
@@ -605,8 +609,8 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
                            version ".tar.bz2"))
        (sha256
         (base32 "14155g48gamcv5s0828bzij6vr14nqmbndwq8j8f9g6vcph0nl70"))
-       (patches (map search-patch '("serf-comment-style-fix.patch"
-                                    "serf-deflate-buckets-test-fix.patch")))
+       (patches (search-patches "serf-comment-style-fix.patch"
+                                "serf-deflate-buckets-test-fix.patch"))
        (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -1718,8 +1722,8 @@ which can be used to parse directory listings.")
       (sha256
        (base32
         "1b6pbh7f76fb5sa4f0lhx085xy55pprz5v7z7li7pqiyw7i4f4bf"))
-      (patches (list
-                (search-patch "perl-finance-quote-unuse-mozilla-ca.patch")))))
+      (patches (search-patches
+                "perl-finance-quote-unuse-mozilla-ca.patch"))))
    (build-system perl-build-system)
    (propagated-inputs
     `(("perl-cgi" ,perl-cgi)
@@ -2288,9 +2292,8 @@ and IPv6 sockets, intended as a replacement for IO::Socket::INET.")
               (sha256
                (base32
                 "1mph52lw6x5v44wf8mw00llzi8pp6k5c4jnrnrvlacrlfv260jb8"))
-              (patches
-               (list
-                (search-patch "perl-io-socket-ssl-openssl-1.0.2f-fix.patch")))))
+              (patches (search-patches
+                        "perl-io-socket-ssl-openssl-1.0.2f-fix.patch"))))
     (build-system perl-build-system)
     (propagated-inputs `(("perl-net-ssleay" ,perl-net-ssleay)))
     (synopsis "Nearly transparent SSL encapsulation for IO::Socket::INET")
@@ -2418,8 +2421,8 @@ and retry a few times.")
        (sha256
         (base32
          "10dcsq4s2kc9cb1vccx17r187c81drirc3s1hbxh3rb8489kg2b2"))
-       (patches (list
-                 (search-patch "perl-net-amazon-s3-moose-warning.patch")))))
+       (patches (search-patches
+                 "perl-net-amazon-s3-moose-warning.patch"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-libwww" ,perl-libwww)
@@ -2961,13 +2964,13 @@ particularly easy to create complete web applications using httpuv alone.")
 (define-public r-jsonlite
   (package
     (name "r-jsonlite")
-    (version "0.9.17")
+    (version "0.9.19")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "jsonlite" version))
               (sha256
                (base32
-                "07s11m8z43dh5pyci5rpjqj5js69q8prjar42qhhxbvdmcrjk4z7"))))
+                "1hbdraj3xv2l2gs9f205j8z054ycy0bfdvwdhvpa9qlji588sz7g"))))
     (build-system r-build-system)
     (home-page "http://arxiv.org/abs/1403.2805")
     (synopsis "Robust, high performance JSON parser and generator for R")
@@ -2985,13 +2988,13 @@ in systems and applications.")
 (define-public r-servr
   (package
     (name "r-servr")
-    (version "0.2")
+    (version "0.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "servr" version))
               (sha256
                (base32
-                "0gah99snaj8lk5zfzbxi3jwvpnlff9diz9gqv4qalfxpmb7fp6lc"))))
+                "1fkqf5ynd1g0932qwv5nr70bw42m8vxpc9rhi0qxmdamwqcw8qjn"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-httpuv" ,r-httpuv)
@@ -3010,16 +3013,17 @@ directory.")
 (define-public r-htmltools
   (package
     (name "r-htmltools")
-    (version "0.2.6")
+    (version "0.3.5")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmltools" version))
               (sha256
                (base32
-                "1gp6f6388xy3cvnb08q08vraidjp740gfxlafdd19m2s04v5hncz"))))
+                "0j9bf80grd6gwh7116m575pycv87c0wcwkxsz3gzzfs4aw3pxyr9"))))
     (build-system r-build-system)
     (propagated-inputs
-     `(("r-digest" ,r-digest)))
+     `(("r-digest" ,r-digest)
+       ("r-rcpp" ,r-rcpp)))
     (home-page "http://cran.r-project.org/web/packages/htmltools")
     (synopsis "R tools for HTML")
     (description
@@ -3029,13 +3033,13 @@ directory.")
 (define-public r-htmlwidgets
   (package
     (name "r-htmlwidgets")
-    (version "0.5")
+    (version "0.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "htmlwidgets" version))
               (sha256
                (base32
-                "1d583kk7g29r4sq0y1scri7fs48z6q17c051nyjywcvnpy4lvi8j"))))
+                "1sljs7zajzj1lsrrvqv7anpma4plzs79mqwmw7b2c5d7mn9py8lw"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-htmltools" ,r-htmltools)
@@ -3052,13 +3056,13 @@ applications.")
 (define-public r-curl
   (package
     (name "r-curl")
-    (version "0.9.3")
+    (version "0.9.7")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "curl" version))
               (sha256
                (base32
-                "02p9s1jlk8dcbvn71ivn4xnrqh9dwqyhgn4s1fzcfmnmfxhl5gld"))))
+                "1p24bcaf1wbfdi1r9ibyyp0l0zp4kzs4g3srv8vikz93hycm1qa6"))))
     (build-system r-build-system)
     (inputs
      `(("libcurl" ,curl)))
@@ -3208,3 +3212,41 @@ mangle the data format that you have into the one that you want with very
 little effort, and the program to do so is often shorter and simpler than
 you'd expect.")
     (license (list l:expat l:cc-by3.0))))
+
+(define-public uhttpmock
+  (package
+    (name "uhttpmock")
+    (version "0.5.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://tecnocode.co.uk/downloads/uhttpmock/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0vniyx341pnnmvxmqacc49k0g7h9a9nhknfslidrqmxj5lm1ini6"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'use-empty-ssl-cert-file
+           (lambda _
+             ;; Search for ca-certificates.crt files
+             ;; during the check phase.
+             (setenv "SSL_CERT_FILE" "/dev/null")
+             #t)))))
+    (native-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ;; For check phase.
+       ("glib-networking" ,glib-networking)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libsoup" ,libsoup)))
+    (home-page "https://gitlab.com/groups/uhttpmock")
+    (synopsis "Library for mocking web service APIs which use HTTP or HTTPS")
+    (description
+     "Uhttpmock is a project for mocking web service APIs which use HTTP or
+HTTPS.  It provides a library, libuhttpmock, which implements recording and
+playback of HTTP request/response traces.")
+    (license l:lgpl2.1+)))

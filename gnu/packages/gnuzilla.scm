@@ -1,8 +1,9 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -143,7 +144,7 @@ in C/C++.")
 (define-public nspr
   (package
     (name "nspr")
-    (version "4.10.10")
+    (version "4.12")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -151,7 +152,7 @@ in C/C++.")
                    version "/src/nspr-" version ".tar.gz"))
              (sha256
               (base32
-               "01ria9wk6329hxqsy75p9dkxiqkq4nkz0jjzll7hslih3jbi8dil"))))
+               "1pk98bmc5xzbl62q5wf2d6mryf0v95z6rsmxz27nclwiaqg0mcg0"))))
     (build-system gnu-build-system)
     (native-inputs
       `(("perl" ,perl)))
@@ -177,7 +178,7 @@ in the Mozilla clients.")
 (define-public nss
   (package
     (name "nss")
-    (version "3.21.1")
+    (version "3.23")
     (source (origin
               (method url-fetch)
               (uri (let ((version-with-underscores
@@ -188,9 +189,9 @@ in the Mozilla clients.")
                       "nss-" version ".tar.gz")))
               (sha256
                (base32
-                "0knr99yc8sba2ga6x1gwhg9gr1dmgcl344g3bmxm8c364i2vpxns"))
+                "1kqidv91icq96m9m8zx50n7px08km2l88458rkgyjwcn3kiq7cwl"))
               ;; Create nss.pc and nss-config.
-              (patches (list (search-patch "nss-pkgconfig.patch")))))
+              (patches (search-patches "nss-pkgconfig.patch"))))
     (build-system gnu-build-system)
     (outputs '("out" "bin"))
     (arguments
@@ -250,7 +251,16 @@ in the Mozilla clients.")
               ;; Install other files.
               (copy-recursively "dist/public/nss" inc)
               (copy-recursively (string-append obj "/bin") bin)
-              (copy-recursively (string-append obj "/lib") lib)))
+              (copy-recursively (string-append obj "/lib") lib)
+
+              ;; FIXME: libgtest1.so is installed in the above step, and it's
+              ;; (unnecessarily) linked with several NSS libraries, but
+              ;; without the needed rpaths, causing the 'validate-runpath'
+              ;; phase to fail.  Here we simply delete libgtest1.so, since it
+              ;; seems to be used only during the tests.
+              (delete-file (string-append lib "/libgtest1.so"))
+
+              #t))
           %standard-phases)))))
     (inputs
      `(("sqlite" ,sqlite)
@@ -277,7 +287,7 @@ standards.")
 (define-public icecat
   (package
     (name "icecat")
-    (version "38.6.0-gnu1")
+    (version "38.7.1-gnu1")
     (source
      (origin
       (method url-fetch)
@@ -286,29 +296,19 @@ standards.")
                           name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "0bd4k5cwr8ynscaxffvj2x3kgky3dmjq0qhpcb931l98bh0103lx"))
-      (patches (map search-patch
-                    '("icecat-avoid-bundled-includes.patch"
-                      "icecat-re-enable-DHE-cipher-suites.patch"
-                      "icecat-update-graphite2.patch"
-                      "icecat-update-graphite2-pt2.patch"
-                      "icecat-CVE-2015-4477.patch"
-                      "icecat-CVE-2015-7207.patch"
-                      "icecat-CVE-2016-1952-pt01.patch"
-                      "icecat-CVE-2016-1952-pt02.patch"
-                      "icecat-CVE-2016-1952-pt03.patch"
-                      "icecat-CVE-2016-1952-pt04.patch"
-                      "icecat-CVE-2016-1952-pt05.patch"
-                      "icecat-CVE-2016-1952-pt06.patch"
-                      "icecat-CVE-2016-1954.patch"
-                      "icecat-CVE-2016-1960.patch"
-                      "icecat-CVE-2016-1961.patch"
-                      "icecat-CVE-2016-1962.patch"
-                      "icecat-CVE-2016-1964.patch"
-                      "icecat-CVE-2016-1965.patch"
-                      "icecat-CVE-2016-1966.patch"
-                      "icecat-CVE-2016-1974.patch"
-                      "icecat-bug-1248851.patch")))
+        "1wdmd6hasra36g86ha1dw8sl7a5mvr7c4jbjx4zyg9629y5gqr8g"))
+      (patches (search-patches
+                "icecat-avoid-bundled-includes.patch"
+                "icecat-re-enable-DHE-cipher-suites.patch"
+                "icecat-update-bundled-graphite2.patch"
+                "icecat-CVE-2016-2805.patch"
+                "icecat-CVE-2016-2807-pt1.patch"
+                "icecat-CVE-2016-2807-pt2.patch"
+                "icecat-CVE-2016-2807-pt3.patch"
+                "icecat-CVE-2016-2807-pt4.patch"
+                "icecat-CVE-2016-2807-pt5.patch"
+                "icecat-CVE-2016-2808.patch"
+                "icecat-CVE-2016-2814.patch"))
       (modules '((guix build utils)))
       (snippet
        '(begin
@@ -526,4 +526,5 @@ standards.")
      "IceCat is the GNU version of the Firefox browser.  It is entirely free
 software, which does not recommend non-free plugins and addons.  It also
 features built-in privacy-protecting features.")
-    (license license:mpl2.0))) ; and others, see toolkit/content/license.html
+    (license license:mpl2.0)     ;and others, see toolkit/content/license.html
+    (properties '((ftp-directory . "/gnu/gnuzilla")))))

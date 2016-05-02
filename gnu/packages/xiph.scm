@@ -111,7 +111,7 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
              (sha256
               (base32
                "0q8wark9ribij57dciym5vdikg2464p8q2mgqvfb78ksjh4s8vgk"))
-             (patches (list (search-patch "libtheora-config-guess.patch")))))
+             (patches (search-patches "libtheora-config-guess.patch"))))
     (build-system gnu-build-system)
     (inputs `(("libvorbis" ,libvorbis)))
     ;; The .pc files refer to libogg.
@@ -176,23 +176,26 @@ stereo encoding, and voice activity detection.")
      "Libao is a cross-platform audio library that allows programs to
 output audio using a simple API on a wide variety of platforms.
 It currently supports:
-Null output (handy for testing without a sound device),
-WAV files,
-AU files,
-RAW files,
-OSS (Open Sound System, used on Linux and FreeBSD),
-ALSA (Advanced Linux Sound Architecture),
-aRts (Analog RealTime Synth, used by KDE),
-PulseAudio (next generation GNOME sound server),
-esd (EsounD or Enlightened Sound Daemon),
-Mac OS X,
-Windows (98 and later),
-AIX,
-Sun/NetBSD/OpenBSD,
-IRIX,
-NAS (Network Audio Server),
-RoarAudio (Modern, multi-OS, networked Sound System),
-OpenBSD's sndio.")
+@enumerate
+@item Null output (handy for testing without a sound device),
+@item WAV files,
+@item AU files,
+@item RAW files,
+@item OSS (Open Sound System, used on Linux and FreeBSD),
+@item ALSA (Advanced Linux Sound Architecture),
+@item aRts (Analog RealTime Synth, used by KDE),
+@item PulseAudio (next generation GNOME sound server),
+@item esd (EsounD or Enlightened Sound Daemon),
+@item Mac OS X,
+@item Windows (98 and later),
+@item AIX,
+@item Sun/NetBSD/OpenBSD,
+@item IRIX,
+@item NAS (Network Audio Server),
+@item RoarAudio (Modern, multi-OS, networked Sound System),
+@item OpenBSD's sndio.
+@end enumerate
+")
     (license license:gpl2+)
     (home-page "http://www.xiph.org/ao/")))
 
@@ -267,7 +270,7 @@ Kate stream.")
             (sha256
              (base32
               "1g12bnh5ah08v529y72kfdz5lhvy75iaz7f9jskyby23m9dkk2d3"))
-            (patches (list (search-patch "vorbis-tools-CVE-2015-6749.patch")))))
+            (patches (search-patches "vorbis-tools-CVE-2015-6749.patch"))))
    (build-system gnu-build-system)
    (inputs `(("ao" ,ao)
              ("curl" ,curl)

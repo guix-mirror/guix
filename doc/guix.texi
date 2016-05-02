@@ -118,6 +118,7 @@ Emacs Interface
 * Initial Setup: Emacs Initial Setup.	Preparing @file{~/.emacs}.
 * Package Management: Emacs Package Management.	Managing packages and generations.
 * Licenses: Emacs Licenses.		Interface for licenses of Guix packages.
+* Package Source Locations: Emacs Package Locations.	Interface for package location files.
 * Popup Interface: Emacs Popup Interface.	Magit-like interface for guix commands.
 * Prettify Mode: Emacs Prettify.	Abbreviating @file{/gnu/store/@dots{}} file names.
 * Build Log Mode: Emacs Build Log.	Highlighting Guix build logs.
@@ -225,6 +226,7 @@ Packaging Guidelines
 * Synopses and Descriptions::   Helping users find the right package.
 * Python Modules::              Taming the snake.
 * Perl Modules::                Little pearls.
+* Java Packages::               Coffee break.
 * Fonts::                       Fond of fonts.
 
 Contributing
@@ -1157,6 +1159,16 @@ for Chinese languages:
 guix package -i font-adobe-source-han-sans:cn
 @end example
 
+@subsection X.509 Certificates
+
+The @code{nss-certs} package provides X.509 certificates, which allow
+programs to authenticate Web servers accessed over HTTPS.
+
+When using Guix on a foreign distro, you can install this package and
+define the relevant environment variables so that packages know where to
+look for certificates.  @pxref{X.509 Certificates}, for detailed
+information.
+
 @subsection Emacs Packages
 
 When you install Emacs packages with Guix, the elisp files may be placed
@@ -1376,12 +1388,6 @@ Besides, packages sometimes rely on the definition of environment
 variables for their search paths (see explanation of
 @code{--search-paths} below).  Any missing or possibly incorrect
 environment variable definitions are reported here.
-
-@c XXX: keep me up-to-date
-Finally, when installing a GNU package, the tool reports the
-availability of a newer upstream version.  In the future, it may provide
-the option of installing directly from the upstream version, even if
-that version is not yet in the distribution.
 
 @item --install-from-expression=@var{exp}
 @itemx -e @var{exp}
@@ -1967,6 +1973,15 @@ suffix, such as @code{MiB} for mebibytes and @code{GB} for gigabytes
 (@pxref{Block size, size specifications,, coreutils, GNU Coreutils}).
 
 When @var{min} is omitted, collect all the garbage.
+
+@item --free-space=@var{free}
+@itemx -F @var{free}
+Collect garbage until @var{free} space is available under
+@file{/gnu/store}, if possible; @var{free} denotes storage space, such
+as @code{500MiB}, as described above.
+
+When @var{free} or more is already available in @file{/gnu/store}, do
+nothing and exit immediately.
 
 @item --delete
 @itemx -d
@@ -4057,8 +4072,9 @@ binaries are genuine.  @xref{Invoking guix challenge}, for more.
 
 Note that, currently, the differing build results are not kept around,
 so you will have to manually investigate in case of an error---e.g., by
-stashing one of the build results with @code{guix archive --export},
-then rebuilding, and finally comparing the two results.
+stashing one of the build results with @code{guix archive --export}
+(@pxref{Invoking guix archive}), then rebuilding, and finally comparing
+the two results.
 
 @item --no-build-hook
 Do not attempt to offload builds @i{via} the ``build hook'' of the daemon
@@ -4365,12 +4381,12 @@ facilitates the life of packagers by pointing their editor at the source
 file containing the definition of the specified packages.  For instance:
 
 @example
-guix edit gcc-4.8 vim
+guix edit gcc@@4.9 vim
 @end example
 
 @noindent
 launches the program specified in the @code{VISUAL} or in the
-@code{EDITOR} environment variable to edit the recipe of GCC@tie{}4.8.4
+@code{EDITOR} environment variable to edit the recipe of GCC@tie{}4.9.3
 and that of Vim.
 
 If you are using Emacs, note that the Emacs user interface provides the
@@ -5511,21 +5527,21 @@ any given store item.
 The command output looks like this:
 
 @smallexample
-$ guix challenge --substitute-urls="http://hydra.gnu.org http://guix.example.org"
-updating list of substitutes from 'http://hydra.gnu.org'... 100.0%
-updating list of substitutes from 'http://guix.example.org'... 100.0%
+$ guix challenge --substitute-urls="https://hydra.gnu.org https://guix.example.org"
+updating list of substitutes from 'https://hydra.gnu.org'... 100.0%
+updating list of substitutes from 'https://guix.example.org'... 100.0%
 /gnu/store/@dots{}-openssl-1.0.2d contents differ:
   local hash: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
-  http://hydra.gnu.org/nar/@dots{}-openssl-1.0.2d: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
-  http://guix.example.org/nar/@dots{}-openssl-1.0.2d: 1zy4fmaaqcnjrzzajkdn3f5gmjk754b43qkq47llbyak9z0qjyim
+  https://hydra.gnu.org/nar/@dots{}-openssl-1.0.2d: 0725l22r5jnzazaacncwsvp9kgf42266ayyp814v7djxs7nk963q
+  https://guix.example.org/nar/@dots{}-openssl-1.0.2d: 1zy4fmaaqcnjrzzajkdn3f5gmjk754b43qkq47llbyak9z0qjyim
 /gnu/store/@dots{}-git-2.5.0 contents differ:
   local hash: 00p3bmryhjxrhpn2gxs2fy0a15lnip05l97205pgbk5ra395hyha
-  http://hydra.gnu.org/nar/@dots{}-git-2.5.0: 069nb85bv4d4a6slrwjdy8v1cn4cwspm3kdbmyb81d6zckj3nq9f
-  http://guix.example.org/nar/@dots{}-git-2.5.0: 0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73
+  https://hydra.gnu.org/nar/@dots{}-git-2.5.0: 069nb85bv4d4a6slrwjdy8v1cn4cwspm3kdbmyb81d6zckj3nq9f
+  https://guix.example.org/nar/@dots{}-git-2.5.0: 0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73
 /gnu/store/@dots{}-pius-2.1.1 contents differ:
   local hash: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
-  http://hydra.gnu.org/nar/@dots{}-pius-2.1.1: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
-  http://guix.example.org/nar/@dots{}-pius-2.1.1: 1cy25x1a4fzq5rk0pmvc8xhwyffnqz95h2bpvqsz2mpvlbccy0gs
+  https://hydra.gnu.org/nar/@dots{}-pius-2.1.1: 0k4v3m9z1zp8xzzizb7d8kjj72f9172xv078sq4wl73vnq9ig3ax
+  https://guix.example.org/nar/@dots{}-pius-2.1.1: 1cy25x1a4fzq5rk0pmvc8xhwyffnqz95h2bpvqsz2mpvlbccy0gs
 @end smallexample
 
 @noindent
@@ -5544,14 +5560,14 @@ various things that Guix does not fully control, in spite of building
 packages in isolated environments (@pxref{Features}).  Most common
 sources of non-determinism include the addition of timestamps in build
 results, the inclusion of random numbers, and directory listings sorted
-by inode number.  See @uref{http://reproducible.debian.net/howto/}, for
+by inode number.  See @uref{https://reproducible-builds.org/docs/}, for
 more information.
 
 To find out what is wrong with this Git binary, we can do something along
 these lines (@pxref{Invoking guix archive}):
 
 @example
-$ wget -q -O - http://hydra.gnu.org/nar/@dots{}-git-2.5.0 \
+$ wget -q -O - https://hydra.gnu.org/nar/@dots{}-git-2.5.0 \
    | guix archive -x /tmp/git
 $ diff -ur --no-dereference /gnu/store/@dots{}-git.2.5.0 /tmp/git
 @end example
@@ -5561,7 +5577,7 @@ local build, and the files resulting from the build on
 @code{hydra.gnu.org} (@pxref{Overview, Comparing and Merging Files,,
 diffutils, Comparing and Merging Files}).  The @command{diff} command
 works great for text files.  When binary files differ, a better option
-is @uref{http://diffoscope.org/, Diffoscope}, a tool that helps
+is @uref{https://diffoscope.org/, Diffoscope}, a tool that helps
 visualize differences for all kinds of files.
 
 Once you have done that work, you can tell whether the differences are due
@@ -5582,13 +5598,19 @@ $ guix challenge @var{package}
 
 @noindent
 where @var{package} is a package specification such as
-@code{guile-2.0} or @code{glibc:debug}.
+@code{guile@@2.0} or @code{glibc:debug}.
 
 The general syntax is:
 
 @example
 guix challenge @var{options} [@var{packages}@dots{}]
 @end example
+
+When a difference is found between the hash of a locally-built item and
+that of a server-provided substitute, or among substitutes provided by
+different servers, the command displays it as in the example above and
+its exit code is 2 (other non-zero exit codes denote other kinds of
+errors.)
 
 The one option that matters is:
 
@@ -5809,7 +5831,7 @@ to report issues (and success stories!), and to join us in improving it.
 @cindex hardware support on GuixSD
 GNU@tie{}GuixSD focuses on respecting the user's computing freedom.  It
 builds around the kernel Linux-libre, which means that only hardware for
-which free software drivers and firmware exists is supported.  Nowadays,
+which free software drivers and firmware exist is supported.  Nowadays,
 a wide range of off-the-shelf hardware is supported on
 GNU/Linux-libre---from keyboards to graphics cards to scanners and
 Ethernet controllers.  Unfortunately, there are still areas where
@@ -5817,7 +5839,7 @@ hardware vendors deny users control over their own computing, and such
 hardware is not supported on GuixSD.
 
 @cindex WiFi, hardware support
-One of the main areas where free drivers or firmware is lacking is WiFi
+One of the main areas where free drivers or firmware are lacking is WiFi
 devices.  WiFi devices known to work include those using Atheros chips
 (AR9271 and AR7010), which corresponds to the @code{ath9k} Linux-libre
 driver, and for which free firmware exists and is available
@@ -5826,10 +5848,10 @@ out-of-the-box on GuixSD, as part of @var{%base-firmware}
 
 @cindex RYF, Respects Your Freedom
 The @uref{https://www.fsf.org/, Free Software Foundation} runs
-@uref{https://www.fsf.org/ryf, @dfn{Respect Your Freedom}} (RYF), a
+@uref{https://www.fsf.org/ryf, @dfn{Respects Your Freedom}} (RYF), a
 certification program for hardware products that respect your freedom
 and your privacy and ensure that you have control over your device.  We
-encourage you to check the list of RYF-certified hardware.
+encourage you to check the list of RYF-certified devices.
 
 Another useful resource is the @uref{https://www.h-node.org/, H-Node}
 web site.  It contains a catalog of hardware devices with information
@@ -6039,6 +6061,15 @@ partition):
 mount /dev/sda1 /mnt
 @end example
 
+Finally, if you plan to use one or more swap partitions (@pxref{Memory
+Concepts, swap space,, libc, The GNU C Library Reference Manual}), make
+sure to initialize them with @command{mkswap}.  Assuming you have one
+swap partition on @file{/dev/sda2}, you would run:
+
+@example
+mkswap /dev/sda2
+@end example
+
 @node Proceeding with the Installation
 @subsection Proceeding with the Installation
 
@@ -6227,7 +6258,7 @@ version:
 (operating-system
   ;; ...
   (packages (append (map specification->package
-                         '("tcpdump" "htop" "gnupg-2.0"))
+                         '("tcpdump" "htop" "gnupg@@2.0"))
                     %base-packages)))
 @end lisp
 
@@ -6426,15 +6457,17 @@ For example, @code{'("/dev/sda3")}.
 List of user accounts and groups.  @xref{User Accounts}.
 
 @item @code{skeletons} (default: @code{(default-skeletons)})
-A monadic list of pairs of target file name and files.  These are the
-files that will be used as skeletons as new accounts are created.
+A list target file name/file-like object tuples (@pxref{G-Expressions,
+file-like objects}).  These are the skeleton files that will be added to
+the home directory of newly-created user accounts.
 
 For instance, a valid value may look like this:
 
 @example
-(mlet %store-monad ((bashrc (text-file "bashrc" "\
-     export PATH=$HOME/.guix-profile/bin")))
-  (return `((".bashrc" ,bashrc))))
+`((".bashrc" ,(plain-file "bashrc" "echo Hello\n"))
+  (".guile" ,(plain-file "guile"
+                         "(use-modules (ice-9 readline))
+                          (activate-readline)")))
 @end example
 
 @item @code{issue} (default: @var{%default-issue})
@@ -6686,13 +6719,29 @@ Mapped devices are declared using the @code{mapped-device} form:
   (type luks-device-mapping))
 @end example
 
-@noindent
+Or, better yet, like this:
+
+@example
+(mapped-device
+  (source (uuid "cb67fc72-0d54-4c88-9d4b-b225f30b0f44"))
+  (target "home")
+  (type luks-device-mapping))
+@end example
+
 @cindex disk encryption
 @cindex LUKS
 This example specifies a mapping from @file{/dev/sda3} to
 @file{/dev/mapper/home} using LUKS---the
 @url{http://code.google.com/p/cryptsetup,Linux Unified Key Setup}, a
-standard mechanism for disk encryption.  The @file{/dev/mapper/home}
+standard mechanism for disk encryption.  In the second example, the UUID
+(unique identifier) is the LUKS UUID returned for the device by a
+command like:
+
+@example
+cryptsetup luksUUID /dev/sdx9
+@end example
+
+The @file{/dev/mapper/home}
 device can then be used as the @code{device} of a @code{file-system}
 declaration (@pxref{File Systems}).  The @code{mapped-device} form is
 detailed below.
@@ -7260,10 +7309,25 @@ Return a service that runs the Guix build daemon according to
 Run @var{udev}, which populates the @file{/dev} directory dynamically.
 @end deffn
 
-@deffn {Scheme Procedure} console-keymap-service @var{file}
+@deffn {Scheme Procedure} console-keymap-service @var{files} ...
 @cindex keyboard layout
-Return a service to load console keymap from @var{file} using
-@command{loadkeys} command.
+Return a service to load console keymaps from @var{files} using
+@command{loadkeys} command.  Most likely, you want to load some default
+keymap, which can be done like this:
+
+@example
+(console-keymap-service "dvorak")
+@end example
+
+Or, for example, for a Swedish keyboard, you may need to combine
+the following keymaps:
+@example
+(console-keymap-service "se-lat6" "se-fi-lat6")
+@end example
+
+Also you can specify a full file name (or file names) of your keymap(s).
+See @code{man loadkeys} for details.
+
 @end deffn
 
 @deffn {Scheme Procedure} gpm-service-type [#:gpm @var{gpm}] @
@@ -9315,14 +9379,22 @@ explicitly add it.  The @file{/etc/ssl/certs} directory, which is where
 most applications and libraries look for certificates by default, points
 to the certificates installed globally.
 
-Unprivileged users can also install their own certificate package in
+Unprivileged users, including users of Guix on a foreign distro,
+can also install their own certificate package in
 their profile.  A number of environment variables need to be defined so
 that applications and libraries know where to find them.  Namely, the
 OpenSSL library honors the @code{SSL_CERT_DIR} and @code{SSL_CERT_FILE}
 variables.  Some applications add their own environment variables; for
 instance, the Git version control system honors the certificate bundle
-pointed to by the @code{GIT_SSL_CAINFO} environment variable.
+pointed to by the @code{GIT_SSL_CAINFO} environment variable.  Thus, you
+would typically run something like:
 
+@example
+$ guix package -i nss-certs
+$ export SSL_CERT_DIR="$HOME/.guix-profile/etc/ssl/certs"
+$ export SSL_CERT_FILE="$HOME/.guix-profile/etc/ssl/certs/ca-certificates.crt"
+$ export GIT_SSL_CAINFO="$SSL_CERT_FILE"
+@end example
 
 @node Name Service Switch
 @subsection Name Service Switch
@@ -10733,6 +10805,7 @@ needed is to review and apply the patch.
 * Synopses and Descriptions::   Helping users find the right package.
 * Python Modules::              Taming the snake.
 * Perl Modules::                Little pearls.
+* Java Packages::               Coffee break.
 * Fonts::                       Fond of fonts.
 @end menu
 
@@ -10974,6 +11047,25 @@ are also prepended by @code{perl-}.  Such modules tend to have the word
 prefix.  For instance, @code{libwww-perl} becomes @code{perl-libwww}.
 
 
+@node Java Packages
+@subsection Java Packages
+
+Java programs standing for themselves are named as any other package,
+using the lowercase upstream name.
+
+To avoid confusion and naming clashes with other programming languages,
+it is desirable that the name of a package for a Java package is
+prefixed with @code{java-}.  If a project already contains the word
+@code{java}, we drop this; for instance, the package @code{ngsjava} is
+packaged under the name @code{java-ngs}.
+
+For Java packages containing a single class or a small class hierarchy,
+we use the lowercase class name, replace all occurrences of @code{.} by
+dashes and prepend the prefix @code{java-}.  So the class
+@code{apache.commons.cli} becomes package
+@code{java-apache-commons-cli}.
+
+
 @node Fonts
 @subsection Fonts
 
@@ -11204,7 +11296,7 @@ to be updated to refer to these binaries on the target platform.  That
 is, the hashes and URLs of the bootstrap tarballs for the new platform
 must be added alongside those of the currently supported platforms.  The
 bootstrap Guile tarball is treated specially: it is expected to be
-available locally, and @file{gnu-system.am} has rules do download it for
+available locally, and @file{gnu/local.mk} has rules do download it for
 the supported architectures; a rule for the new platform must be added
 as well.
 
