@@ -213,7 +213,8 @@ required structures.")
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (arguments
-    `(#:parallel-build? #f
+    `(#:disallowed-references (,perl)
+      #:parallel-build? #f
       #:parallel-tests? #f
       #:test-target "test"
 
