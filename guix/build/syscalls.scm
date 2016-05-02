@@ -110,9 +110,7 @@
             termios-input-speed
             termios-output-speed
             local-flags
-            TCSANOW
-            TCSADRAIN
-            TCSAFLUSH
+            tcsetattr-action
             tcgetattr
             tcsetattr
 
@@ -1059,9 +1057,11 @@ given an integer, returns the list of names of the constants that are or'd."
  (define EXTPROC #o0200000))
 
 ;; "Actions" values for 'tcsetattr'.
-(define TCSANOW  0)
-(define TCSADRAIN 1)
-(define TCSAFLUSH 2)
+(define-bits tcsetattr-action
+  %unused-tcsetattr-action->symbols
+  (define TCSANOW  0)
+  (define TCSADRAIN 1)
+  (define TCSAFLUSH 2))
 
 (define-record-type <termios>
   (termios input-flags output-flags control-flags local-flags
@@ -1107,8 +1107,8 @@ given an integer, returns the list of names of the constants that are or'd."
 (define tcsetattr
   (let ((proc (syscall->procedure int "tcsetattr" (list int int '*))))
     (lambda (fd actions termios)
-      "Use TERMIOS for the tty at FD.  ACTIONS is one of 'TCSANOW',
-'TCSADRAIN', or 'TCSAFLUSH'; see tcsetattr(3) for details."
+      "Use TERMIOS for the tty at FD.  ACTIONS is one of of the values
+produced by 'tcsetattr-action'; see tcsetattr(3) for details."
       (define bv
         (make-bytevector sizeof-termios))
 

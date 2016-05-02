@@ -281,7 +281,7 @@
 
 (test-assert "tcsetattr"
   (let ((first (tcgetattr 0)))
-    (tcsetattr 0 TCSANOW first)
+    (tcsetattr 0 (tcsetattr-action TCSANOW) first)
     (equal? first (tcgetattr 0))))
 
 (test-assert "terminal-window-size ENOTTY"
