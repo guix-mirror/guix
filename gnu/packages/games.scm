@@ -2133,7 +2133,7 @@ http://lavachat.symlynx.com/unix/")
            ("weapons"     "1ghn6nfcnd5lyl8dnj22csldvf9hrb32wjzpab4sjjz3iyv0zmr3")
            ("wicked"      "0q9badvg6ix5rhl05s83kw2v6a49jpnbkqk4ls89qahaddfagi8g"))))
     (package
-      (name "redeclipse")
+      (name "red-eclipse")
       (version "1.5.3")
       (source (origin
                 (method url-fetch)
