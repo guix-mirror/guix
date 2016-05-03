@@ -253,6 +253,24 @@ purposes for which more comprehensive (and widely tested) libraries such as
 OpenSSL should be used.")
     (license license:gpl2+)))
 
+(define-public r-estimability
+  (package
+    (name "r-estimability")
+    (version "1.1-1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "estimability" version))
+              (sha256
+               (base32
+                "049adh8i0ad0m0qln2ylqdxcs5v2q9zfignn2a50r5f93ip2ay6w"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/estimability")
+    (synopsis "Tools for assessing estimability of linear predictions")
+    (description "Provides tools for determining estimability of linear
+functions of regression coefficients, and 'epredict' methods that handle
+non-estimable cases correctly.")
+    (license license:gpl2+)))
+
 (define-public r-gtable
   (package
     (name "r-gtable")
