@@ -794,6 +794,11 @@ dist_patch_DATA =						\
   gnu/packages/patches/wpa-supplicant-CVE-2015-5314.patch	\
   gnu/packages/patches/wpa-supplicant-CVE-2015-5315.patch	\
   gnu/packages/patches/wpa-supplicant-CVE-2015-5316.patch	\
+  gnu/packages/patches/wpa-supplicant-CVE-2016-4476.patch	\
+  gnu/packages/patches/wpa-supplicant-CVE-2016-4477-pt1.patch	\
+  gnu/packages/patches/wpa-supplicant-CVE-2016-4477-pt2.patch	\
+  gnu/packages/patches/wpa-supplicant-CVE-2016-4477-pt3.patch	\
+  gnu/packages/patches/wpa-supplicant-CVE-2016-4477-pt4.patch	\
   gnu/packages/patches/xdotool-fix-makefile.patch               \
   gnu/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-ast-remove-mibstore.patch	\
