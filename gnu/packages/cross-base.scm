@@ -199,8 +199,8 @@ may be either a libc package or #f.)"
                                 "OBJCPLUS_INCLUDE_PATH"
                                 "LIBRARY_PATH"))
                     #t))
-                ,phases))
-          (else phases)))))))
+                ,phases)
+              phases)))))))
 
 (define (cross-gcc-patches target)
   "Return GCC patches needed for TARGET."
