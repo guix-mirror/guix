@@ -825,6 +825,13 @@ mixing, FFT scopes, MIDI automation and full scriptability in Scheme.")
                             (string-prefix? "i686" system)))
                (substitute* "bristol/Makefile.in"
                  (("-msse -mfpmath=sse") "")))
+             #t))
+         ;; We know that Bristol has been linked with JACK and we don't have
+         ;; ldd, so we can just skip this check.
+         (add-after 'unpack 'do-not-grep-for-jack
+           (lambda _
+             (substitute* "bin/startBristol.in"
+               (("ldd `which bristol` | grep jack") "echo guix"))
              #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -952,6 +959,70 @@ programming methods as well as for realizing complex systems for large-scale
 projects.")
     (license license:bsd-3)))
 
+(define-public portmidi
+  (package
+    (name "portmidi")
+    (version "217")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/portmedia/portmidi/"
+                                  version "/portmidi-src-" version ".zip"))
+              (sha256
+               (base32
+                "03rfsk7z6rdahq2ihy5k13qjzgx757f75yqka88v3gc0pn9ais88"))
+              (patches (list (search-patch "portmidi-modular-build.patch")))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; tests cannot be linked
+       #:configure-flags
+       (list "-DPORTMIDI_ENABLE_JAVA=Off"
+             "-DCMAKE_BUILD_TYPE=Release"    ; needed to have PMALSA set
+             "-DPORTMIDI_ENABLE_TEST=Off"))) ; tests fail linking
+    (inputs
+     `(("alsa-lib" ,alsa-lib)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://portmedia.sourceforge.net/portmidi/")
+    (synopsis "Library for MIDI I/O")
+    (description
+     "PortMidi is a library supporting real-time input and output of MIDI data
+using a system-independent interface.")
+    (license license:expat)))
+
+(define-public python-pyportmidi
+  (package
+    (name "python-pyportmidi")
+    (version (package-version portmidi))
+    (source (package-source portmidi))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-dir
+           (lambda _ (chdir "pm_python") #t))
+         (add-after 'enter-dir 'fix-setup.py
+           (lambda _
+             (substitute* "setup.py"
+               ;; Use Python 3 syntax
+               (("print (\".*\")" _ text)
+                (string-append "print(" text ")\n"))
+               ;; TODO.txt and CHANGES.txt don't exist
+               (("CHANGES =.*") "CHANGES = \"\"\n")
+               (("TODO =.*") "TODO = \"\"\n"))
+             #t)))))
+    (inputs
+     `(("portmidi" ,portmidi)
+       ("alsa-lib" ,alsa-lib)
+       ("python-cython" ,python-cython)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://portmedia.sourceforge.net/portmidi/")
+    (synopsis "Python bindings to PortMidi")
+    (description
+     "This package provides Python bindings to the PortMidi library.")
+    (license license:expat)))
+
 (define-public frescobaldi
   (package
     (name "frescobaldi")
@@ -967,8 +1038,10 @@ projects.")
     (build-system python-build-system)
     (inputs
      `(("lilypond" ,lilypond)
+       ("portmidi" ,portmidi)
        ("python-pyqt-4" ,python-pyqt-4)
        ("python-ly" ,python-ly)
+       ("python-pyportmidi" ,python-pyportmidi)
        ("poppler" ,poppler)
        ("python-poppler-qt4" ,python-poppler-qt4)
        ("python-sip" ,python-sip)))

@@ -403,6 +403,7 @@ GNU_SYSTEM_MODULES =				\
 
 patchdir = $(guilemoduledir)/gnu/packages/patches
 dist_patch_DATA =						\
+  gnu/packages/patches/4store-fix-buildsystem.patch		\
   gnu/packages/patches/abiword-explictly-cast-bools.patch	\
   gnu/packages/patches/abiword-wmf-version-lookup-fix.patch	\
   gnu/packages/patches/acl-hurd-path-max.patch			\
@@ -640,6 +641,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/nvi-assume-preserve-path.patch		\
   gnu/packages/patches/nvi-dbpagesize-binpower.patch		\
   gnu/packages/patches/nvi-db4.patch				\
+  gnu/packages/patches/ocaml-CVE-2015-8869.patch		\
   gnu/packages/patches/ocaml-findlib-make-install.patch	\
   gnu/packages/patches/openexr-missing-samples.patch		\
   gnu/packages/patches/openimageio-boost-1.60.patch		\
@@ -678,7 +680,9 @@ dist_patch_DATA =						\
   gnu/packages/patches/plink-1.07-unclobber-i.patch		\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/polkit-drop-test.patch			\
+  gnu/packages/patches/poppler-CVE-2015-8868.patch		\
   gnu/packages/patches/portaudio-audacity-compat.patch		\
+  gnu/packages/patches/portmidi-modular-build.patch		\
   gnu/packages/patches/procmail-ambiguous-getline-debian.patch  \
   gnu/packages/patches/pt-scotch-build-parallelism.patch	\
   gnu/packages/patches/pulseaudio-fix-mult-test.patch		\
@@ -788,6 +792,11 @@ dist_patch_DATA =						\
   gnu/packages/patches/wpa-supplicant-CVE-2015-5314.patch	\
   gnu/packages/patches/wpa-supplicant-CVE-2015-5315.patch	\
   gnu/packages/patches/wpa-supplicant-CVE-2015-5316.patch	\
+  gnu/packages/patches/wpa-supplicant-CVE-2016-4476.patch	\
+  gnu/packages/patches/wpa-supplicant-CVE-2016-4477-pt1.patch	\
+  gnu/packages/patches/wpa-supplicant-CVE-2016-4477-pt2.patch	\
+  gnu/packages/patches/wpa-supplicant-CVE-2016-4477-pt3.patch	\
+  gnu/packages/patches/wpa-supplicant-CVE-2016-4477-pt4.patch	\
   gnu/packages/patches/xdotool-fix-makefile.patch               \
   gnu/packages/patches/xf86-video-ark-remove-mibstore.patch	\
   gnu/packages/patches/xf86-video-ast-remove-mibstore.patch	\

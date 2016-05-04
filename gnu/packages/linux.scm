@@ -1203,11 +1203,31 @@ devices.  It replaces 'iwconfig', which is deprecated.")
         (base32
          "0nlwazxbnn0k6q5f5b09wdhw0f194lpzkp3l7vxansqhfczmcyx8"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; TODO: Patch some hardcoded "wlan0" in calibrate/calibrate.cpp to
+         ;; allow calibrating the network interface in GuixSD.
+         (add-after 'unpack 'patch-absolute-file-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((kmod (assoc-ref inputs "kmod")))
+               (substitute* (find-files "src" "\\.cpp$")
+                 ;; Give the right 'modprobe' file name so that essential
+                 ;; modules such as msr.ko can be loaded.
+                 (("/sbin/modprobe") (string-append kmod "/bin/modprobe"))
+                 ;; These programs are only needed to calibrate, so using
+                 ;; relative file names avoids adding extra inputs.  When they
+                 ;; are missing powertop gracefully handles it.
+                 (("/usr/bin/hcitool") "hcitool")
+                 (("/usr/bin/xset") "xset")
+                 (("/usr/sbin/hciconfig") "hciconfig"))
+               #t))))))
     (inputs
-     `(("zlib" ,zlib)
-       ("pciutils" ,pciutils)
+     `(("kmod" ,kmod)
+       ("libnl" ,libnl)
        ("ncurses" ,ncurses)
-       ("libnl" ,libnl)))
+       ("pciutils" ,pciutils)
+       ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://01.org/powertop/")

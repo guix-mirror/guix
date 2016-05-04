@@ -874,7 +874,12 @@ commands and their arguments.")
                (search-patches "wpa-supplicant-CVE-2015-5310.patch"
                                "wpa-supplicant-CVE-2015-5314.patch"
                                "wpa-supplicant-CVE-2015-5315.patch"
-                               "wpa-supplicant-CVE-2015-5316.patch"))))
+                               "wpa-supplicant-CVE-2015-5316.patch"
+                               "wpa-supplicant-CVE-2016-4476.patch"
+                               "wpa-supplicant-CVE-2016-4477-pt1.patch"
+                               "wpa-supplicant-CVE-2016-4477-pt2.patch"
+                               "wpa-supplicant-CVE-2016-4477-pt3.patch"
+                               "wpa-supplicant-CVE-2016-4477-pt4.patch"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace

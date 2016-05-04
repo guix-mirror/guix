@@ -2097,7 +2097,7 @@ the chat server psyced with the specific config located at
 http://lavachat.symlynx.com/unix/")
     (license license:gpl2+)))
 
-(define-public redeclipse
+(define-public red-eclipse
   (let ((data-sources
          '(("acerspyro"   "0gxxr6nbac918b49x1cp72nw951hqm5m4iyi2shb1612ly384w8q")
            ("actors"      "1jq9q82m6nx07nwpb5cnpdcwa33jrcgg0j2yir8zk6zpnxdmp0il")
@@ -2133,7 +2133,7 @@ http://lavachat.symlynx.com/unix/")
            ("weapons"     "1ghn6nfcnd5lyl8dnj22csldvf9hrb32wjzpab4sjjz3iyv0zmr3")
            ("wicked"      "0q9badvg6ix5rhl05s83kw2v6a49jpnbkqk4ls89qahaddfagi8g"))))
     (package
-      (name "redeclipse")
+      (name "red-eclipse")
       (version "1.5.3")
       (source (origin
                 (method url-fetch)

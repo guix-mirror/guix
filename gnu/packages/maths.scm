@@ -59,6 +59,7 @@
   #:use-module (gnu packages less)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages m4)
@@ -429,6 +430,44 @@ plotting engine by third-party applications like Octave.")
 extremely large and complex data collections.")
     (license (license:x11-style
               "http://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
+
+(define-public nlopt
+  (package
+    (name "nlopt")
+    (version "2.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ab-initio.mit.edu/nlopt/nlopt-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32 "12cfkkhcdf4zmb6h7y6qvvdvqjs2xf9sjpa3rl3bq76px4yn76c0"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; Shared libraries are not built by default.  They are required to
+       ;; build the Guile, Octave, and Python bindings.
+       #:configure-flags '("--enable-shared")
+
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-libnlopt-file-name
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure the Scheme module refers to the library by its
+             ;; absolute file name (we cannot do that from a snippet
+             ;; because the expansion of @libdir@ contains
+             ;; ${exec_prefix}.)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "swig/nlopt.scm.in"
+                 (("libnlopt")
+                  (string-append out "/lib/libnlopt")))
+               #t))))))
+    (inputs `(("guile" ,guile-2.0)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "http://ab-initio.mit.edu/wiki/")
+    (synopsis "Library for nonlinear optimization")
+    (description "NLopt is a library for nonlinear optimization, providing a
+common interface for a number of different free optimization routines available
+online as well as original implementations of various other algorithms.")
+    (license license:lgpl2.1+)))
 
 
 ;; For a fully featured Octave, users  are strongly recommended also to install

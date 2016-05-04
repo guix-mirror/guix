@@ -1,0 +1,56 @@
+This patch sets a fixed version to avoid needing Git and the .git/ folder.
+It also removes the creation of "/var/lib/4store", which is not available
+during the install phase in GNU Guix.
+
+Patch by Roel Janssen <roel@gnu.org>
+*** a/configure.ac	Wed Feb  4 19:05:24 2015
+--- b/configure.ac	Wed Mar 23 11:20:38 2016
+***************
+*** 2,13 ****
+  # Process this file with autoconf to produce a configure script.
+
+  AC_PREREQ([2.50])
+! AC_INIT([4store], m4_esyscmd([./version.sh .version]), [http://4store.org/support/], [4store])
+  AC_CONFIG_SRCDIR([src/backend/backend-intl.h])
+! AM_INIT_AUTOMAKE([1.7 std-options -Wall])
+  AC_CONFIG_HEADERS(4store-config.h)
+
+  # Checks for programs.
+  AC_PROG_LIBTOOL
+  AC_PROG_AWK
+  AC_PROG_CC
+--- 2,14 ----
+  # Process this file with autoconf to produce a configure script.
+
+  AC_PREREQ([2.50])
+! AC_INIT([4store], [1.1.6], [http://4store.org/support/], [4store])
+  AC_CONFIG_SRCDIR([src/backend/backend-intl.h])
+! AM_INIT_AUTOMAKE([1.7 std-options foreign -Wall])
+  AC_CONFIG_HEADERS(4store-config.h)
+
+  # Checks for programs.
++ AM_PROG_AR
+  AC_PROG_LIBTOOL
+  AC_PROG_AWK
+  AC_PROG_CC
+
+*** a/src/utilities/Makefile.am	Wed Feb  4 19:05:24 2015
+--- b/src/utilities/Makefile.am	Wed Mar 23 14:05:56 2016
+***************
+*** 13,20 ****
+  noinst_PROGRAMS = lex-file-verify 4s-rid
+
+  install-data-local: 
+! 	mkdir -p $(DESTDIR)@FS_STORE_ROOT@
+! 	chmod 1777 $(DESTDIR)@FS_STORE_ROOT@
+
+  4s_backend_destroy_SOURCES = backend-destroy.c
+  4s_backend_destroy_LDADD = ../common/lib4sintl.a
+--- 13,19 ----
+  noinst_PROGRAMS = lex-file-verify 4s-rid
+
+  install-data-local: 
+! 	echo "Please create the following directory: " $(DESTDIR)@FS_STORE_ROOT@
+
+  4s_backend_destroy_SOURCES = backend-destroy.c
+  4s_backend_destroy_LDADD = ../common/lib4sintl.a

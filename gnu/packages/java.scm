@@ -859,3 +859,193 @@ build process and its dependencies, whereas Make uses Makefile format.")
 compression in pure Java.  Single-threaded streamed compression and
 decompression and random access decompression have been fully implemented.")
    (license license:public-domain)))
+
+;; java-hamcrest-core uses qdox version 1.12.  We package this version instead
+;; of the latest release.
+(define-public java-qdox-1.12
+  (package
+    (name "java-qdox")
+    (version "1.12.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://central.maven.org/maven2/"
+                                  "com/thoughtworks/qdox/qdox/" version
+                                  "/qdox-" version "-sources.jar"))
+              (sha256
+               (base32
+                "0hlfbqq2avf5s26wxkksqmkdyk6zp9ggqn37c468m96mjv0n9xfl"))))
+    (build-system ant-build-system)
+    (arguments
+     `(;; Tests require junit
+       #:tests? #f
+       #:jar-name "qdox.jar"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (mkdir "src")
+             (with-directory-excursion "src"
+               (zero? (system* "jar" "-xf" source)))))
+         ;; At this point we don't have junit, so we must remove the API
+         ;; tests.
+         (add-after 'unpack 'delete-tests
+           (lambda _
+             (delete-file-recursively "src/com/thoughtworks/qdox/junit")
+             #t)))))
+    (home-page "http://qdox.codehaus.org/")
+    (synopsis "Parse definitions from Java source files")
+    (description
+     "QDox is a high speed, small footprint parser for extracting
+class/interface/method definitions from source files complete with JavaDoc
+@code{@tags}.  It is designed to be used by active code generators or
+documentation tools.")
+    (license license:asl2.0)))
+
+(define-public java-jarjar
+  (package
+    (name "java-jarjar")
+    (version "1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://storage.googleapis.com/google-code-archive-downloads/v2/"
+                    "code.google.com/jarjar/jarjar-src-" version ".zip"))
+              (sha256
+               (base32
+                "1v8irhni9cndcw1l1wxqgry013s2kpj0qqn57lj2ji28xjq8ndjl"))))
+    (build-system ant-build-system)
+    (arguments
+     `(;; Tests require junit, which ultimately depends on this package.
+       #:tests? #f
+       #:build-target "jar"
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((target (string-append (assoc-ref outputs "out")
+                                          "/share/java")))
+               (install-file (string-append "dist/jarjar-" ,version ".jar")
+                             target))
+             #t)))))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "https://code.google.com/archive/p/jarjar/")
+    (synopsis "Repackage Java libraries")
+    (description
+     "Jar Jar Links is a utility that makes it easy to repackage Java
+libraries and embed them into your own distribution.  Jar Jar Links includes
+an Ant task that extends the built-in @code{jar} task.")
+    (license license:asl2.0)))
+
+(define-public java-hamcrest-core
+  (package
+    (name "java-hamcrest-core")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://hamcrest.googlecode.com/files/"
+                                  "hamcrest-" version ".tgz"))
+              (sha256
+               (base32
+                "1hi0jv0zrgsf4l25aizxrgvxpsrmdklsmvw0jzwz7zv9s108whn6"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled jar archives.
+                  (for-each delete-file (find-files "." "\\.jar$"))
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; Tests require junit
+       #:make-flags (list (string-append "-Dversion=" ,version))
+       #:build-target "core"
+       #:phases
+       (modify-phases %standard-phases
+         ;; Disable unit tests, because they require junit, which requires
+         ;; hamcrest-core.  We also give a fixed value to the "Built-Date"
+         ;; attribute from the manifest for reproducibility.
+         (add-before 'configure 'patch-build.xml
+           (lambda _
+             (substitute* "build.xml"
+               (("unit-test, ") "")
+               (("\\$\\{build.timestamp\\}") "guix"))
+             #t))
+         ;; Java's "getMethods()" returns methods in an unpredictable order.
+         ;; To make the output of the generated code deterministic we must
+         ;; sort the array of methods.
+         (add-after 'unpack 'make-method-order-deterministic
+           (lambda _
+             (substitute* "hamcrest-generator/src/main/java/org/hamcrest/generator/ReflectiveFactoryReader.java"
+               (("import java\\.util\\.Iterator;" line)
+                (string-append line "\n"
+                               "import java.util.Arrays; import java.util.Comparator;"))
+               (("allMethods = cls\\.getMethods\\(\\);" line)
+                (string-append "_" line
+                               "
+private Method[] getSortedMethods() {
+  Arrays.sort(_allMethods, new Comparator<Method>() {
+    @Override
+    public int compare(Method a, Method b) {
+      return a.toString().compareTo(b.toString());
+    }
+  });
+  return _allMethods;
+}
+
+private Method[] allMethods = getSortedMethods();")))))
+         (add-before 'build 'do-not-use-bundled-qdox
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "build.xml"
+               (("lib/generator/qdox-1.12.jar")
+                (string-append (assoc-ref inputs "java-qdox-1.12")
+                               "/share/java/qdox.jar")))
+             #t))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file (string-append "build/hamcrest-core-"
+                                          ,version ".jar")
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/java")))))))
+    (native-inputs
+     `(("java-qdox-1.12" ,java-qdox-1.12)
+       ("java-jarjar" ,java-jarjar)))
+    (home-page "http://hamcrest.org/")
+    (synopsis "Library of matchers for building test expressions")
+    (description
+     "This package provides a library of matcher objects (also known as
+constraints or predicates) allowing @code{match} rules to be defined
+declaratively, to be used in other frameworks.  Typical scenarios include
+testing frameworks, mocking libraries and UI validation rules.")
+    (license license:bsd-2)))
+
+(define-public java-junit
+  (package
+    (name "java-junit")
+    (version "4.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/junit-team/junit/"
+                                  "archive/r" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "090dn5v1vs0b3acyaqc0gjf6p8lmd2h24wfzsbq7sly6b214anws"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Delete bundled jar archives.
+                  (delete-file-recursively "lib")
+                  #t))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:jar-name "junit.jar"))
+    (inputs
+     `(("java-hamcrest-core" ,java-hamcrest-core)))
+    (home-page "http://junit.org/")
+    (synopsis "Test framework for Java")
+    (description
+     "JUnit is a simple framework to write repeatable tests for Java projects.
+JUnit provides assertions for testing expected results, test fixtures for
+sharing common test data, and test runners for running tests.")
+    (license license:epl1.0)))
