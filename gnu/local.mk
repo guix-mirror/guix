@@ -398,7 +398,10 @@ GNU_SYSTEM_MODULES =				\
   gnu/build/linux-container.scm			\
   gnu/build/linux-initrd.scm			\
   gnu/build/linux-modules.scm			\
-  gnu/build/vm.scm
+  gnu/build/marionette.scm			\
+  gnu/build/vm.scm				\
+						\
+  gnu/tests.scm
 
 
 patchdir = $(guilemoduledir)/gnu/packages/patches
