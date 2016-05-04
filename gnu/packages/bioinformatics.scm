@@ -1535,14 +1535,14 @@ data and settings.")
 (define-public edirect
   (package
     (name "edirect")
-    (version "3.50")
+    (version "4.10")
     (source (origin
               (method url-fetch)
-              ;; Note: older versions are not retained.
-              (uri "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/edirect.tar.gz")
+              (uri (string-append "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/"
+                                  "versions/2016-05-03/edirect.tar.gz"))
               (sha256
                (base32
-                "1cr3gzcs3flmgnnbj5iz93vh9w0fca1ilzi2q82cl63ln3mwvpz0"))))
+                "15zsprak5yh8c1yrz4r1knmb5s8qcmdid4xdhkh3lqcv64l60hli"))))
     (build-system perl-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
