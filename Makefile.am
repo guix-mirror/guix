@@ -330,6 +330,13 @@ check-local:
 
 endif !CAN_RUN_TESTS
 
+check-system: $(GOBJECTS)
+	$(AM_V_at)echo "Running system tests..."
+	$(AM_V_at)$(top_builddir)/pre-inst-env			\
+	   $(GUILE) --no-auto-compile				\
+	   -e '(@@ (run-system-tests) run-system-tests)'	\
+	   $(top_srcdir)/build-aux/run-system-tests.scm
+
 # Public key used to sign substitutes from hydra.gnu.org.
 dist_pkgdata_DATA = hydra.gnu.org.pub
 

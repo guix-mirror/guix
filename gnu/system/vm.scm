@@ -58,6 +58,7 @@
 
   #:export (expression->derivation-in-linux-vm
             qemu-image
+            virtualized-operating-system
             system-qemu-image
 
             system-qemu-image/shared-store

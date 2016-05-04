@@ -401,7 +401,8 @@ GNU_SYSTEM_MODULES =				\
   gnu/build/marionette.scm			\
   gnu/build/vm.scm				\
 						\
-  gnu/tests.scm
+  gnu/tests.scm					\
+  gnu/tests/base.scm
 
 
 patchdir = $(guilemoduledir)/gnu/packages/patches
