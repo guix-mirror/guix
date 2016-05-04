@@ -85,7 +85,6 @@
             fold2
             fold-tree
             fold-tree-leaves
-            split
             cache-directory
             readlink*
             edit-expression
@@ -787,23 +786,6 @@ are connected to NODE in the tree, or '() or #f if NODE is a leaf node."
        ((or () #f) (proc node result))
        (else result)))
    init children roots))
-
-(define (split lst e)
-  "Return two values, a list containing the elements of the list LST that
-appear before the first occurence of the object E and a list containing the
-elements after E."
-  (define (same? x)
-    (equal? e x))
-
-  (let loop ((rest lst)
-             (acc '()))
-    (match rest
-      (()
-       (values lst '()))
-      (((? same?) . tail)
-       (values (reverse acc) tail))
-      ((head . tail)
-       (loop tail (cons head acc))))))
 
 (define (cache-directory)
   "Return the cache directory for Guix, by default ~/.cache/guix."
