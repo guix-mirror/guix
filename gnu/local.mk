@@ -544,7 +544,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/icu4c-CVE-2015-1270.patch		\
   gnu/packages/patches/icu4c-CVE-2015-4760.patch		\
   gnu/packages/patches/ilmbase-fix-tests.patch			\
-  gnu/packages/patches/imagemagick-test-segv.patch		\
   gnu/packages/patches/imlib2-CVE-2016-4024.patch		\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jasper-CVE-2007-2721.patch		\
