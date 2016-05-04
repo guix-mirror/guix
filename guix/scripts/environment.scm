@@ -25,7 +25,6 @@
   #:use-module (guix packages)
   #:use-module (guix profiles)
   #:use-module (guix search-paths)
-  #:use-module (guix utils)
   #:use-module (guix build utils)
   #:use-module (guix monads)
   #:use-module ((guix gexp) #:select (lower-inputs))
@@ -499,12 +498,13 @@ Otherwise, return the derivation for the Bash package."
 
   ;; The '--' token is used to separate the command to run from the rest of
   ;; the operands.
-  (let-values (((args command) (split args "--")))
+  (let-values (((args command) (break (cut string=? "--" <>) args)))
     (let ((opts (parse-command-line args %options (list %default-options)
                                     #:argument-handler handle-argument)))
-      (if (null? command)
-          opts
-          (alist-cons 'exec command opts)))))
+      (match command
+        (() opts)
+        (("--") opts)
+        (("--" command ...) (alist-cons 'exec command opts))))))
 
 (define (assert-container-features)
   "Check if containers can be created and exit with an informative error
