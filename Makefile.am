@@ -361,6 +361,7 @@ EXTRA_DIST =						\
   build-aux/make-binary-tarball.scm			\
   build-aux/generate-authors.scm			\
   build-aux/test-driver.scm				\
+  build-aux/run-system-tests.scm			\
   srfi/srfi-37.scm.in					\
   srfi/srfi-64.scm					\
   srfi/srfi-64.upstream.scm				\
