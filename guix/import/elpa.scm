@@ -35,8 +35,8 @@
   #:use-module (guix base32)
   #:use-module (guix upstream)
   #:use-module (guix packages)
-  #:use-module ((guix utils) #:select (call-with-temporary-output-file
-                                       memoize))
+  #:use-module ((guix combinators) #:select (memoize))
+  #:use-module ((guix utils) #:select (call-with-temporary-output-file))
   #:export (elpa->guix-package
             %elpa-updater))
 

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -30,6 +30,7 @@
   #:use-module (guix http-client)
   #:use-module (guix ftp-client)
   #:use-module (guix utils)
+  #:use-module (guix combinators)
   #:use-module (guix records)
   #:use-module (guix upstream)
   #:use-module (guix packages)

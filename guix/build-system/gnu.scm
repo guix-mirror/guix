@@ -19,6 +19,7 @@
 (define-module (guix build-system gnu)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix combinators)
   #:use-module (guix derivations)
   #:use-module (guix search-paths)
   #:use-module (guix build-system)

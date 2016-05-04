@@ -21,6 +21,7 @@
 (define-module (guix build-system python)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix combinators)
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix search-paths)

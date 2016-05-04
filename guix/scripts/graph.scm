@@ -21,7 +21,7 @@
   #:use-module (guix graph)
   #:use-module (guix grafts)
   #:use-module (guix scripts)
-  #:use-module (guix utils)
+  #:use-module (guix combinators)
   #:use-module (guix packages)
   #:use-module (guix monads)
   #:use-module (guix store)

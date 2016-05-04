@@ -38,6 +38,7 @@ MODULES =					\
   guix/hash.scm					\
   guix/pk-crypto.scm				\
   guix/pki.scm					\
+  guix/combinators.scm				\
   guix/utils.scm				\
   guix/sets.scm					\
   guix/download.scm				\
@@ -231,6 +232,7 @@ SCM_TESTS =					\
   tests/ui.scm					\
   tests/records.scm				\
   tests/upstream.scm				\
+  tests/combinators.scm				\
   tests/utils.scm				\
   tests/build-utils.scm				\
   tests/packages.scm				\
