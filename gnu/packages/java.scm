@@ -897,7 +897,7 @@ decompression and random access decompression have been fully implemented.")
     (description
      "QDox is a high speed, small footprint parser for extracting
 class/interface/method definitions from source files complete with JavaDoc
-@code{@tags}.  It is designed to be used by active code generators or
+@code{@@tags}.  It is designed to be used by active code generators or
 documentation tools.")
     (license license:asl2.0)))
 
