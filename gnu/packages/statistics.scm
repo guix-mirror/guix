@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1238,6 +1239,27 @@ inference for statistical models.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs stats))))))
+
+(define-public r-coda
+  (package
+    (name "r-coda")
+    (version "0.18-1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "coda" version))
+              (sha256
+               (base32
+                "03sc780734zj2kqcm8lkyvf76fql0jbfhkblpn8l58zmb6cqi958"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
+    (home-page "http://cran.r-project.org/web/packages/coda")
+    (synopsis "This is a package for Output Analysis and Diagnostics for MCMC")
+    (description "This package provides functions for summarizing and plotting
+the output from Markov Chain Monte Carlo (MCMC) simulations, as well as
+diagnostic tests of convergence to the equilibrium distribution of the Markov
+chain.")
+    (license license:gpl2+)))
 
 (define-public r-xml2
   (package
