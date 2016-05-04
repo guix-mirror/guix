@@ -82,6 +82,8 @@
             operating-system-file-systems
             operating-system-store-file-system
             operating-system-activation-script
+            operating-system-user-accounts
+            operating-system-shepherd-service-names
 
             operating-system-derivation
             operating-system-profile
@@ -577,6 +579,22 @@ hardware-related operations as necessary when booting a Linux container."
          (boot     (fold-services services #:target-type boot-service-type)))
     ;; BOOT is the script as a monadic value.
     (service-parameters boot)))
+
+(define (operating-system-user-accounts os)
+  "Return the list of user accounts of OS."
+  (let* ((services (operating-system-services os))
+         (account  (fold-services services
+                                  #:target-type account-service-type)))
+    (filter user-account?
+            (service-parameters account))))
+
+(define (operating-system-shepherd-service-names os)
+  "Return the list of Shepherd service names for OS."
+  (append-map shepherd-service-provision
+              (service-parameters
+               (fold-services (operating-system-services os)
+                              #:target-type
+                              shepherd-root-service-type))))
 
 (define* (operating-system-derivation os #:key container?)
   "Return a derivation that builds OS."
