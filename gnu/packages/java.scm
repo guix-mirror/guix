@@ -66,48 +66,41 @@
               (sha256
                (base32
                 "03mhzraikcs4fsz7d3h5af9pw1bbcfd6dglsvbk2ciwimy9zj30q"))))
-    (build-system gnu-build-system)
+    (build-system ant-build-system)
     (arguments
-     `(#:make-flags '("-f" "make_linux.mak")
+     `(#:jar-name "swt.jar"
        #:tests? #f ; no "check" target
        #:phases
-       (alist-replace
-        'unpack
-        (lambda _
-          (and (mkdir "swt")
-               (zero? (system* "unzip" (assoc-ref %build-inputs "source") "-d" "swt"))
-               (chdir "swt")
-               (mkdir "src")
-               (zero? (system* "unzip" "src.zip" "-d" "src"))
-               (chdir "src")))
-        (alist-replace
-         'build
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
-             (setenv "JAVA_HOME" (assoc-ref inputs "jdk"))
-
-             ;; Build shared libraries.  Users of SWT have to set the system
-             ;; property swt.library.path to the "lib" directory of this
-             ;; package output.
-             (mkdir-p lib)
-             (setenv "OUTPUT_DIR" lib)
-             (zero? (system* "bash" "build.sh"))
-
-             ;; build jar
-             (mkdir "build")
-             (for-each (lambda (file)
-                         (format #t "Compiling ~s\n" file)
-                         (system* "javac" "-d" "build" file))
-                       (find-files "." "\\.java"))
-             (zero? (system* "jar" "cvf" "swt.jar" "-C" "build" "."))))
-         (alist-cons-after
-          'install 'install-java-files
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((java (string-append (assoc-ref outputs "out")
-                                       "/share/java")))
-              (install-file "swt.jar" java)
-              #t))
-          (alist-delete 'configure %standard-phases))))))
+       (modify-phases %standard-phases
+         (replace 'unpack
+           (lambda* (#:key source #:allow-other-keys)
+             (and (mkdir "swt")
+                  (zero? (system* "unzip" source "-d" "swt"))
+                  (chdir "swt")
+                  (mkdir "src")
+                  (zero? (system* "unzip" "src.zip" "-d" "src")))))
+         ;; The classpath contains invalid icecat jars.  Since we don't need
+         ;; anything other than the JDK on the classpath, we can simply unset
+         ;; it.
+         (add-after 'configure 'unset-classpath
+           (lambda _ (unsetenv "CLASSPATH") #t))
+         (add-before 'build 'build-native
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+               ;; Build shared libraries.  Users of SWT have to set the system
+               ;; property swt.library.path to the "lib" directory of this
+               ;; package output.
+               (mkdir-p lib)
+               (setenv "OUTPUT_DIR" lib)
+               (with-directory-excursion "src"
+                 (zero? (system* "bash" "build.sh"))))))
+         (add-after 'install 'install-native
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((lib (string-append (assoc-ref outputs "out") "/lib")))
+               (for-each (lambda (file)
+                           (install-file file lib))
+                         (find-files "." "\\.so$"))
+               #t))))))
     (inputs
      `(("xulrunner" ,icecat)
        ("gtk" ,gtk+-2)
@@ -117,8 +110,7 @@
        ("glu" ,glu)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("unzip" ,unzip)
-       ("jdk" ,icedtea "jdk")))
+       ("unzip" ,unzip)))
     (home-page "https://www.eclipse.org/swt/")
     (synopsis "Widget toolkit for Java")
     (description
