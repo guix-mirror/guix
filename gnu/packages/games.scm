@@ -19,6 +19,7 @@
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
+;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1021,14 +1022,14 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.12.4")
+    (version "1.12.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "19qyylylaljhk45lk2ja0xp7cx9iy4hx07l65zkg20a2v9h50lmz"))))
+                "07d8ms9ayswg2g530p0zwmz3d77zv68l6nmc718iq9sbv90av6jr"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no check target
