@@ -324,8 +324,8 @@ data types.")
                   (lambda (old new)
                     (symlink (string-append python old)
                              (string-append bin "/" new)))
-                  '("python3" "pydoc3" "idle3")
-                  '("python"  "pydoc"  "idle"))))))
+                  '("python3" "pydoc3" "idle3" "pip3" "python3-config")
+                  '("python"  "pydoc"  "idle" "pip" "python-config"))))))
     (synopsis "Wrapper for the Python 3 commands")
     (description
      "This package provides wrappers for the commands of Python@tie{}3.x such
