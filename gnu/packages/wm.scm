@@ -148,7 +148,7 @@ commands would.")
     (version "4.12")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://i3wm.org/downloads/i3-"
+              (uri (string-append "https://i3wm.org/downloads/i3-"
                                   version ".tar.bz2"))
               (sha256
                (base32
@@ -182,7 +182,7 @@ commands would.")
      `(("which" ,which)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://i3wm.org/")
+    (home-page "https://i3wm.org/")
     (synopsis "Improved tiling window manager")
     (description "A tiling window manager, completely written
 from scratch.  i3 is primarily targeted at advanced users and
