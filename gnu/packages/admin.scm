@@ -486,9 +486,9 @@ connection alive.")
 (define-public isc-dhcp
   (let* ((bind-major-version "9")
          (bind-minor-version "9")
-         (bind-patch-version "8")
-         (bind-release-type "-P")
-         (bind-release-version "4")
+         (bind-patch-version "9")
+         (bind-release-type "")         ; for patch release, use "-P"
+         (bind-release-version "")      ; for patch release, e.g. "4"
          (bind-version (string-append bind-major-version
                                       "."
                                       bind-minor-version
@@ -498,14 +498,14 @@ connection alive.")
                                       bind-release-version)))
     (package
       (name "isc-dhcp")
-      (version "4.3.3-P1")
+      (version "4.3.4")
       (source (origin
                 (method url-fetch)
                 (uri (string-append "http://ftp.isc.org/isc/dhcp/"
                                     version "/dhcp-" version ".tar.gz"))
                 (sha256
                  (base32
-                  "08crcsmg4dm2v533aq3883ik8mf4vvvd6r998r4vrgx1zxnqj7n1"))))
+                  "0zk0imll6bfyp9p4ndn8h6s4ifijnw5bhixswifr5rnk7pp5l4gm"))))
       (build-system gnu-build-system)
       (arguments
        `(#:parallel-build? #f
@@ -604,7 +604,7 @@ connection alive.")
                                         "/bind-" bind-version ".tar.gz"))
                     (sha256
                      (base32
-                      "1wl9kl0630dc1qjrf7fnp8cscagfm5qgmisi0zhr1p6iwi9bil2y"))))
+                      "0w8qqm6p2y6x57j2l0a3278g173wd84dsr4py9z00191f3wra74q"))))
 
                 ;; When cross-compiling, we need the cross Coreutils and sed.
                 ;; Otherwise just use those from %FINAL-INPUTS.
