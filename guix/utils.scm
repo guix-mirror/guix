@@ -34,7 +34,7 @@
   #:use-module ((rnrs bytevectors) #:select (bytevector-u8-set!))
   #:use-module (guix combinators)
   #:use-module ((guix build utils) #:select (dump-port))
-  #:use-module ((guix build syscalls) #:select (errno mkdtemp!))
+  #:use-module ((guix build syscalls) #:select (mkdtemp!))
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
   #:autoload   (ice-9 popen)  (open-pipe*)
@@ -47,7 +47,6 @@
   #:export (bytevector->base16-string
             base16-string->bytevector
 
-            fcntl-flock
             strip-keyword-arguments
             default-keyword-arguments
             substitute-keyword-arguments
@@ -337,78 +336,6 @@ This procedure returns #t on success."
             (when (not (eof-object? post-bv))
               (put-bytevector out post-bv))
             #t))))))
-
-
-;;;
-;;; Advisory file locking.
-;;;
-
-(define %struct-flock
-  ;; 'struct flock' from <fcntl.h>.
-  (list short                                     ; l_type
-        short                                     ; l_whence
-        size_t                                    ; l_start
-        size_t                                    ; l_len
-        int))                                     ; l_pid
-
-(define F_SETLKW
-  ;; On Linux-based systems, this is usually 7, but not always
-  ;; (exceptions include SPARC.)  On GNU/Hurd, it's 9.
-  (compile-time-value
-   (cond ((string-contains %host-type "sparc") 9) ; sparc-*-linux-gnu
-         ((string-contains %host-type "linux") 7) ; *-linux-gnu
-         (else 9))))                              ; *-gnu*
-
-(define F_SETLK
-  ;; Likewise: GNU/Hurd and SPARC use 8, while the others typically use 6.
-  (compile-time-value
-   (cond ((string-contains %host-type "sparc") 8) ; sparc-*-linux-gnu
-         ((string-contains %host-type "linux") 6) ; *-linux-gnu
-         (else 8))))                              ; *-gnu*
-
-(define F_xxLCK
-  ;; The F_RDLCK, F_WRLCK, and F_UNLCK constants.
-  (compile-time-value
-   (cond ((string-contains %host-type "sparc") #(1 2 3))    ; sparc-*-linux-gnu
-         ((string-contains %host-type "hppa")  #(1 2 3))    ; hppa-*-linux-gnu
-         ((string-contains %host-type "linux") #(0 1 2))    ; *-linux-gnu
-         (else                                 #(1 2 3))))) ; *-gnu*
-
-(define fcntl-flock
-  (let* ((ptr  (dynamic-func "fcntl" (dynamic-link)))
-         (proc (pointer->procedure int ptr `(,int ,int *))))
-    (lambda* (fd-or-port operation #:key (wait? #t))
-      "Perform locking OPERATION on the file beneath FD-OR-PORT.  OPERATION
-must be a symbol, one of 'read-lock, 'write-lock, or 'unlock.  When WAIT? is
-true, block until the lock is acquired; otherwise, thrown an 'flock-error'
-exception if it's already taken."
-      (define (operation->int op)
-        (case op
-          ((read-lock)  (vector-ref F_xxLCK 0))
-          ((write-lock) (vector-ref F_xxLCK 1))
-          ((unlock)     (vector-ref F_xxLCK 2))
-          (else         (error "invalid fcntl-flock operation" op))))
-
-      (define fd
-        (if (port? fd-or-port)
-            (fileno fd-or-port)
-            fd-or-port))
-
-      ;; XXX: 'fcntl' is a vararg function, but here we happily use the
-      ;; standard ABI; crossing fingers.
-      (let ((err (proc fd
-                       (if wait?
-                           F_SETLKW               ; lock & wait
-                           F_SETLK)               ; non-blocking attempt
-                       (make-c-struct %struct-flock
-                                      (list (operation->int operation)
-                                            SEEK_SET
-                                            0 0   ; whole file
-                                            0)))))
-        (or (zero? err)
-
-            ;; Presumably we got EAGAIN or so.
-            (throw 'flock-error (errno)))))))
 
 
 ;;;
