@@ -111,7 +111,7 @@ the leaves of a full binary tree.")
     (version "2.9")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://i3wm.org/i3status/i3status-"
+              (uri (string-append "https://i3wm.org/i3status/i3status-"
                                   version ".tar.bz2"))
               (sha256
                (base32
@@ -131,7 +131,7 @@ the leaves of a full binary tree.")
        ("wireless-tools" ,wireless-tools)
        ("libcap" ,libcap)
        ("asciidoc" ,asciidoc)))
-    (home-page "http://i3wm.org/i3status/")
+    (home-page "https://i3wm.org/i3status/")
     (synopsis "Status bar for i3bar, dzen2, xmobar or similar programs")
     (description "i3status is a small program for generating a status bar for
 i3bar, dzen2, xmobar or similar programs.  It is designed to be very efficient
