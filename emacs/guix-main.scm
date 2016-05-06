@@ -32,14 +32,6 @@
 ;; still "name-version" string.  So ‘id’ package parameter in the code
 ;; below is either an object-address number or a full-name string.
 
-;; To speed-up the process of getting information, the following
-;; auxiliary variables are used:
-;;
-;; - `%packages' - VHash of "package address"/"package" pairs.
-;;
-;; - `%package-table' - Hash table of
-;;   "name+version key"/"list of packages" pairs.
-
 ;;; Code:
 
 (use-modules
@@ -100,38 +92,6 @@ return two values: name and version.  For example, for SPEC
     (if output
         (string-append full-name ":" output)
         full-name)))
-
-(define name+version->key cons)
-(define key->name+version car+cdr)
-
-(define %package-vhash
-  (delay
-    (fold-packages (lambda (pkg res)
-                     (vhash-consq (object-address pkg) pkg res))
-                   vlist-null)))
-
-(define (package-vhash)
-  "Return vhash of 'package ID (address)'/'package' pairs."
-  (force %package-vhash))
-
-(define %package-table
-  (delay
-    (let ((table (make-hash-table (vlist-length (package-vhash)))))
-      (vlist-for-each
-       (lambda (elem)
-         (match elem
-           ((address . pkg)
-            (let* ((key (name+version->key (package-name pkg)
-                                           (package-version pkg)))
-                   (ref (hash-ref table key)))
-              (hash-set! table key
-                         (if ref (cons pkg ref) (list pkg)))))))
-       (package-vhash))
-      table)))
-
-(define (package-table)
-  "Return hash table of 'name+version key'/'list of packages' pairs."
-  (force %package-table))
 
 (define (manifest-entry->name+version+output entry)
   (values
@@ -340,15 +300,30 @@ Example:
 
 ;;; Finding packages.
 
-(define (package-by-address address)
-  (match (vhash-assq address (package-vhash))
-    ((_ . package) package)
-    (_ #f)))
+(define package-by-address
+  (let ((table (delay (fold-packages
+                       (lambda (package table)
+                         (vhash-consq (object-address package)
+                                      package table))
+                       vlist-null))))
+    (lambda (address)
+      "Return package by its object ADDRESS."
+      (match (vhash-assq address (force table))
+        ((_ . package) package)
+        (_ #f)))))
 
-(define (packages-by-name+version name version)
-  (or (hash-ref (package-table)
-                (name+version->key name version))
-      '()))
+(define packages-by-name+version
+  (let ((table (delay (fold-packages
+                       (lambda (package table)
+                         (let ((file (location-file
+                                      (package-location package))))
+                           (vhash-cons (cons (package-name package)
+                                             (package-version package))
+                                       package table)))
+                       vlist-null))))
+    (lambda (name version)
+      "Return packages matching NAME and VERSION."
+      (vhash-fold* cons '() (cons name version) (force table)))))
 
 (define (packages-by-full-name full-name)
   (call-with-values
