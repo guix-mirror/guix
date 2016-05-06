@@ -643,13 +643,16 @@ system to PUT-OLD."
 ;;; Advisory file locking.
 ;;;
 
-(define %struct-flock
-  ;; 'struct flock' from <fcntl.h>.
-  (list short                                     ; l_type
-        short                                     ; l_whence
-        size_t                                    ; l_start
-        size_t                                    ; l_len
-        int))                                     ; l_pid
+(define-c-struct %struct-flock                    ;<fcntl.h>
+  sizeof-flock
+  list
+  read-flock
+  write-flock!
+  (type   short)
+  (whence short)
+  (start  size_t)
+  (length size_t)
+  (pid    int))
 
 (define F_SETLKW
   ;; On Linux-based systems, this is usually 7, but not always
@@ -690,21 +693,25 @@ exception if it's already taken."
             (fileno fd-or-port)
             fd-or-port))
 
+      (define bv
+        (make-bytevector sizeof-flock))
+
+      (write-flock! bv 0
+                    (operation->int operation) SEEK_SET
+                    0 0                           ;whole file
+                    0)
+
       ;; XXX: 'fcntl' is a vararg function, but here we happily use the
       ;; standard ABI; crossing fingers.
-      (let ((err (proc fd
+      (let ((ret (proc fd
                        (if wait?
                            F_SETLKW               ; lock & wait
                            F_SETLK)               ; non-blocking attempt
-                       (make-c-struct %struct-flock
-                                      (list (operation->int operation)
-                                            SEEK_SET
-                                            0 0   ; whole file
-                                            0)))))
-        (or (zero? err)
-
-            ;; Presumably we got EAGAIN or so.
-            (throw 'flock-error (errno)))))))
+                       (bytevector->pointer bv)))
+            (err (errno)))
+        (unless (zero? ret)
+          ;; Presumably we got EAGAIN or so.
+          (throw 'flock-error err))))))
 
 
 ;;;
