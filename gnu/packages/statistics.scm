@@ -99,7 +99,7 @@ be output in text, PostScript, PDF or HTML.")
 (define-public r
   (package
     (name "r")
-    (version "3.2.5")
+    (version "3.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -107,7 +107,7 @@ be output in text, PostScript, PDF or HTML.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1dc0iybjk9kr1nghz3fpir6mb9hb9rnrz9bgh00w5pg5vir5cx30"))))
+                "1r0i0cqs3p0vrpiwq0zg5kbrmja9rmaijyzf9f23v6d5n5ab2mlj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -121,10 +121,14 @@ be output in text, PostScript, PDF or HTML.")
           ;; Set default pager to "cat", because otherwise it is "false",
           ;; making "help()" print nothing at all.
           (lambda _ (setenv "PAGER" "cat") #t))
-         (add-before
-          'check 'set-timezone
+         (add-before 'check 'set-timezone
           ;; Some tests require the timezone to be set.
-          (lambda _ (setenv "TZ" "UTC") #t))
+          (lambda* (#:key inputs #:allow-other-keys)
+            (setenv "TZ" "UTC")
+            (setenv "TZDIR"
+                    (string-append (assoc-ref inputs "tzdata")
+                                   "/share/zoneinfo"))
+            #t))
          (add-after 'build 'make-info
           (lambda _ (zero? (system* "make" "info"))))
          (add-after 'build 'install-info
@@ -161,6 +165,8 @@ be output in text, PostScript, PDF or HTML.")
        ("xz" ,xz)))
     (inputs
      `(("cairo" ,cairo)
+       ("curl" ,curl)
+       ("tzdata" ,tzdata)
        ("gfortran" ,gfortran)
        ("icu4c" ,icu4c)
        ("libjpeg" ,libjpeg)
