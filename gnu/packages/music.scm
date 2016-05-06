@@ -45,8 +45,10 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fonts)
@@ -84,6 +86,7 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages wxwidgets)
@@ -1547,3 +1550,44 @@ for improved Amiga ProTracker 2/3 compatibility.")
     (home-page "http://milkytracker.org/")
     ;; 'src/milkyplay' is under Modified BSD, the rest is under GPL3 or later.
     (license (list license:bsd-3 license:gpl3+))))
+
+(define-public moc
+  (package
+    (name "moc")
+    (version "2.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ftp.daper.net/pub/soft/"
+                                  name "/stable/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1wn4za08z64bhsgfhr9c0crfyvy8c3b6a337wx7gz19am5srqh8v"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("curl" ,curl)
+       ("faad2" ,faad2)
+       ("ffmpeg" ,ffmpeg)
+       ("file" ,file)
+       ("jack" ,jack-1)
+       ("libid3tag" ,libid3tag)
+       ("libltdl" ,libltdl)
+       ("libmodplug" ,libmodplug)
+       ("libmpcdec" ,libmpcdec)
+       ("libmad" ,libmad)
+       ("ncurses" ,ncurses)
+       ("openssl" ,openssl)
+       ("sasl" ,cyrus-sasl)
+       ("speex" ,speex)
+       ("taglib" ,taglib)
+       ("wavpack" ,wavpack)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Console audio player designed to be powerful and easy to use")
+    (description
+     "Music on Console is a console audio player that supports many file
+formats, including most audio formats recognized by FFMpeg.")
+    (home-page "http://moc.daper.net")
+    (license license:gpl2+)))
