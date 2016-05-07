@@ -2439,6 +2439,25 @@ things.  RSP is ideal for self-contained scientific reports and R package
 vignettes.")
     (license license:lgpl2.1+)))
 
+(define-public r-mvtnorm
+  (package
+    (name "r-mvtnorm")
+    (version "1.0-5")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "mvtnorm" version))
+              (sha256
+               (base32
+                "1pc1mi2h063gh4a40009xk5j6pf5bm4274i5kycln38dixsry3yh"))))
+    (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://mvtnorm.R-forge.R-project.org")
+    (synopsis "Package for multivariate normal and t-distributions")
+    (description "This package can compute multivariate normal and
+t-probabilities, quantiles, random deviates and densities.")
+    (license license:gpl2)))
+
 (define-public r-matrixstats
   (package
     (name "r-matrixstats")
