@@ -1266,14 +1266,15 @@ from various services and pipes them into a video playing application.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "0.9.8")
+    (version "6.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/mlt/mlt/mlt-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://github.com/mltframework/mlt/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0rmrkj7z9g3nr4099f3ff0r14l3ixcfnlx2cdbkqa6pxin0pv9bz"))))
+                "1zwzfgxrcbwkxnkiwv0a1rzxdnnaly90yyarl9wdw84nx11ffbnx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -1299,11 +1300,12 @@ from various services and pipes them into a video playing application.")
        ("jack" ,jack-1)
        ("ladspa" ,ladspa)
        ("libsamplerate" ,libsamplerate)
+       ("pulseaudio" ,pulseaudio)
        ("sdl" ,sdl)
        ("sox" ,sox)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.mltframework.org/")
+    (home-page "https://www.mltframework.org/")
     (synopsis "Author, manage, and run multitrack audio/video compositions")
     (description
      "MLT is a multimedia framework, designed and developed for television
