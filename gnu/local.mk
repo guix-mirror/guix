@@ -73,6 +73,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/compression.scm			\
   gnu/packages/conkeror.scm			\
   gnu/packages/conky.scm			\
+  gnu/packages/connman.scm			\
   gnu/packages/cook.scm				\
   gnu/packages/cpio.scm				\
   gnu/packages/cppi.scm				\
@@ -398,7 +399,11 @@ GNU_SYSTEM_MODULES =				\
   gnu/build/linux-container.scm			\
   gnu/build/linux-initrd.scm			\
   gnu/build/linux-modules.scm			\
-  gnu/build/vm.scm
+  gnu/build/marionette.scm			\
+  gnu/build/vm.scm				\
+						\
+  gnu/tests.scm					\
+  gnu/tests/base.scm
 
 
 patchdir = $(guilemoduledir)/gnu/packages/patches
@@ -503,7 +508,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/gmp-arm-asm-nothumb.patch		\
   gnu/packages/patches/gmp-faulty-test.patch			\
   gnu/packages/patches/gnucash-price-quotes-perl.patch		\
-  gnu/packages/patches/gnupg-simple-query-ignore-status-messages.patch \
   gnu/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   gnu/packages/patches/gobject-introspection-cc.patch		\
   gnu/packages/patches/gobject-introspection-girepository.patch	\
@@ -541,8 +545,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/icu4c-CVE-2015-1270.patch		\
   gnu/packages/patches/icu4c-CVE-2015-4760.patch		\
   gnu/packages/patches/ilmbase-fix-tests.patch			\
-  gnu/packages/patches/imagemagick-test-segv.patch		\
-  gnu/packages/patches/imlib2-CVE-2016-4024.patch		\
   gnu/packages/patches/inkscape-drop-wait-for-targets.patch	\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jasper-CVE-2007-2721.patch		\
@@ -753,10 +755,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/ttfautohint-source-date-epoch.patch	\
   gnu/packages/patches/tophat-build-with-later-seqan.patch	\
   gnu/packages/patches/torsocks-dns-test.patch			\
-  gnu/packages/patches/tvtime-gcc41.patch			\
-  gnu/packages/patches/tvtime-pngoutput.patch			\
-  gnu/packages/patches/tvtime-videodev2.patch			\
-  gnu/packages/patches/tvtime-xmltv.patch			\
   gnu/packages/patches/unzip-CVE-2014-8139.patch		\
   gnu/packages/patches/unzip-CVE-2014-8140.patch		\
   gnu/packages/patches/unzip-CVE-2014-8141.patch		\

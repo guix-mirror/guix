@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -166,9 +167,9 @@ fi
 # Adjust the prompt depending on whether we're in 'guix environment'.
 if [ -n \"$GUIX_ENVIRONMENT\" ]
 then
-    export PS1='\\u@\\h \\w [env]\\$ '
+    PS1='\\u@\\h \\w [env]\\$ '
 else
-    export PS1='\\u@\\h \\w\\$ '
+    PS1='\\u@\\h \\w\\$ '
 fi
 alias ls='ls -p --color'
 alias ll='ls -l'\n"))

@@ -21,6 +21,7 @@
   #:use-module (guix ui)
   #:use-module ((guix store) #:hide (close-connection))
   #:use-module (guix utils)
+  #:use-module (guix combinators)
   #:use-module (guix config)
   #:use-module (guix records)
   #:use-module (guix serialization)

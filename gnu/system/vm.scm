@@ -58,6 +58,7 @@
 
   #:export (expression->derivation-in-linux-vm
             qemu-image
+            virtualized-operating-system
             system-qemu-image
 
             system-qemu-image/shared-store
@@ -468,7 +469,7 @@ with '-virtfs' options for the host file systems listed in SHARED-FS."
      " -no-reboot -net nic,model=virtio \
   " #$@(map virtfs-option shared-fs) " \
   -net user \
-  -serial stdio -vga std \
+  -vga std \
   -drive file=" #$image
   ",if=virtio,cache=writeback,werror=report,readonly \
   -m 256"))

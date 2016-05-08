@@ -30,6 +30,7 @@
   #:use-module (guix packages)
   #:use-module (guix profiles)
   #:use-module (guix derivations)
+  #:use-module (guix combinators)
   #:use-module (guix build-system)
   #:use-module (guix serialization)
   #:use-module ((guix build utils) #:select (mkdir-p))

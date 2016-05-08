@@ -19,6 +19,7 @@
 (define-module (guix scripts archive)
   #:use-module (guix config)
   #:use-module (guix utils)
+  #:use-module (guix combinators)
   #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module ((guix serialization) #:select (restore-file))
   #:use-module (guix store)

@@ -52,6 +52,7 @@
  (srfi srfi-19)
  (srfi srfi-26)
  (guix)
+ (guix combinators)
  (guix git-download)
  (guix packages)
  (guix profiles)

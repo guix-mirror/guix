@@ -4,6 +4,7 @@
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -98,7 +99,7 @@ be output in text, PostScript, PDF or HTML.")
 (define-public r
   (package
     (name "r")
-    (version "3.2.5")
+    (version "3.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cran/src/base/R-"
@@ -106,7 +107,7 @@ be output in text, PostScript, PDF or HTML.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1dc0iybjk9kr1nghz3fpir6mb9hb9rnrz9bgh00w5pg5vir5cx30"))))
+                "1r0i0cqs3p0vrpiwq0zg5kbrmja9rmaijyzf9f23v6d5n5ab2mlj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
@@ -120,10 +121,14 @@ be output in text, PostScript, PDF or HTML.")
           ;; Set default pager to "cat", because otherwise it is "false",
           ;; making "help()" print nothing at all.
           (lambda _ (setenv "PAGER" "cat") #t))
-         (add-before
-          'check 'set-timezone
+         (add-before 'check 'set-timezone
           ;; Some tests require the timezone to be set.
-          (lambda _ (setenv "TZ" "UTC") #t))
+          (lambda* (#:key inputs #:allow-other-keys)
+            (setenv "TZ" "UTC")
+            (setenv "TZDIR"
+                    (string-append (assoc-ref inputs "tzdata")
+                                   "/share/zoneinfo"))
+            #t))
          (add-after 'build 'make-info
           (lambda _ (zero? (system* "make" "info"))))
          (add-after 'build 'install-info
@@ -160,6 +165,8 @@ be output in text, PostScript, PDF or HTML.")
        ("xz" ,xz)))
     (inputs
      `(("cairo" ,cairo)
+       ("curl" ,curl)
+       ("tzdata" ,tzdata)
        ("gfortran" ,gfortran)
        ("icu4c" ,icu4c)
        ("libjpeg" ,libjpeg)
@@ -250,6 +257,24 @@ message authentication code.
 Please note that this package is not meant to be deployed for cryptographic
 purposes for which more comprehensive (and widely tested) libraries such as
 OpenSSL should be used.")
+    (license license:gpl2+)))
+
+(define-public r-estimability
+  (package
+    (name "r-estimability")
+    (version "1.1-1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "estimability" version))
+              (sha256
+               (base32
+                "049adh8i0ad0m0qln2ylqdxcs5v2q9zfignn2a50r5f93ip2ay6w"))))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/estimability")
+    (synopsis "Tools for assessing estimability of linear predictions")
+    (description "Provides tools for determining estimability of linear
+functions of regression coefficients, and 'epredict' methods that handle
+non-estimable cases correctly.")
     (license license:gpl2+)))
 
 (define-public r-gtable
@@ -1238,6 +1263,27 @@ inference for statistical models.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs stats))))))
+
+(define-public r-coda
+  (package
+    (name "r-coda")
+    (version "0.18-1")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "coda" version))
+              (sha256
+               (base32
+                "03sc780734zj2kqcm8lkyvf76fql0jbfhkblpn8l58zmb6cqi958"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
+    (home-page "http://cran.r-project.org/web/packages/coda")
+    (synopsis "This is a package for Output Analysis and Diagnostics for MCMC")
+    (description "This package provides functions for summarizing and plotting
+the output from Markov Chain Monte Carlo (MCMC) simulations, as well as
+diagnostic tests of convergence to the equilibrium distribution of the Markov
+chain.")
+    (license license:gpl2+)))
 
 (define-public r-xml2
   (package
@@ -2392,6 +2438,25 @@ static and dynamic contents of external files (local or online) among other
 things.  RSP is ideal for self-contained scientific reports and R package
 vignettes.")
     (license license:lgpl2.1+)))
+
+(define-public r-mvtnorm
+  (package
+    (name "r-mvtnorm")
+    (version "1.0-5")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "mvtnorm" version))
+              (sha256
+               (base32
+                "1pc1mi2h063gh4a40009xk5j6pf5bm4274i5kycln38dixsry3yh"))))
+    (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://mvtnorm.R-forge.R-project.org")
+    (synopsis "Package for multivariate normal and t-distributions")
+    (description "This package can compute multivariate normal and
+t-probabilities, quantiles, random deviates and densities.")
+    (license license:gpl2)))
 
 (define-public r-matrixstats
   (package

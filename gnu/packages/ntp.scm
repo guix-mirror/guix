@@ -38,7 +38,7 @@
 (define-public ntp
   (package
    (name "ntp")
-   (version "4.2.8p6")
+   (version "4.2.8p7")
    (source (origin
 	    (method url-fetch)
 	    (uri (string-append
@@ -47,7 +47,7 @@
                   "/ntp-" version ".tar.gz"))
 	    (sha256
 	     (base32
-              "0j509gd0snj8dq15rhfv2v4wisfaabya1gmgqslk1kisawf0wgaq"))
+              "1p100856h17nb0kpnppy70nja57hbcc95h7shhxvw6mhl030rll1"))
             (modules '((guix build utils)))
             (snippet
              '(begin

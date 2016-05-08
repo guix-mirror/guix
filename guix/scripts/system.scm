@@ -236,6 +236,72 @@ BODY..., and restore them."
       (with-monad %store-monad
         (return #f)))))
 
+(define-syntax-rule (with-shepherd-error-handling body ...)
+  (warn-on-system-error
+   (guard (c ((shepherd-error? c)
+              (report-shepherd-error c)))
+     body ...)))
+
+(define (report-shepherd-error error)
+  "Report ERROR, a '&shepherd-error' error condition object."
+  (cond ((service-not-found-error? error)
+         (report-error (_ "service '~a' could not be found~%")
+                       (service-not-found-error-service error)))
+        ((action-not-found-error? error)
+         (report-error (_ "service '~a' does not have an action '~a'~%")
+                       (action-not-found-error-service error)
+                       (action-not-found-error-action error)))
+        ((action-exception-error? error)
+         (report-error (_ "exception caught while executing '~a' \
+on service '~a':~%")
+                       (action-exception-error-action error)
+                       (action-exception-error-service error))
+         (print-exception (current-error-port) #f
+                          (action-exception-error-key error)
+                          (action-exception-error-arguments error)))
+        ((unknown-shepherd-error? error)
+         (report-error (_ "something went wrong: ~s~%")
+                       (unknown-shepherd-error-sexp error)))
+        ((shepherd-error? error)
+         (report-error (_ "shepherd error~%")))
+        ((not error)                              ;not an error
+         #t)))
+
+(define (call-with-service-upgrade-info new-services mproc)
+  "Call MPROC, a monadic procedure in %STORE-MONAD, passing it the list of
+names of services to load (upgrade), and the list of names of services to
+unload."
+  (define (essential? service)
+    (memq service '(root shepherd)))
+
+  (define new-service-names
+    (map (compose first shepherd-service-provision)
+         new-services))
+
+  (let-values (((running stopped) (current-services)))
+    (if (and running stopped)
+        (let* ((to-load
+                ;; Only load services that are either new or currently stopped.
+                (remove (lambda (service)
+                          (memq (first (shepherd-service-provision service))
+                                running))
+                        new-services))
+               (to-unload
+                ;; Unload services that are (1) no longer required, or (2) are
+                ;; in TO-LOAD.
+                (remove essential?
+                        (append (remove (lambda (service)
+                                          (memq service new-service-names))
+                                        (append running stopped))
+                                (filter (lambda (service)
+                                          (memq service stopped))
+                                        (map shepherd-service-canonical-name
+                                             to-load))))))
+          (mproc to-load to-unload))
+        (with-monad %store-monad
+          (warning (_ "failed to obtain list of shepherd services~%"))
+          (return #f)))))
+
 (define (upgrade-shepherd-services os)
   "Upgrade the Shepherd (PID 1) by unloading obsolete services and loading new
 services specified in OS and not currently running.
@@ -243,59 +309,35 @@ services specified in OS and not currently running.
 This is currently very conservative in that it does not stop or unload any
 running service.  Unloading or stopping the wrong service ('udev', say) could
 bring the system down."
-  (define (essential? service)
-    (memq service '(root shepherd)))
-
   (define new-services
     (service-parameters
      (fold-services (operating-system-services os)
                     #:target-type shepherd-root-service-type)))
 
-  (define new-service-names
-    (map (compose first shepherd-service-provision)
-         new-services))
+  ;; Arrange to simply emit a warning if the service upgrade fails.
+  (with-shepherd-error-handling
+   (call-with-service-upgrade-info new-services
+     (lambda (to-load to-unload)
+        (for-each (lambda (unload)
+                    (info (_ "unloading service '~a'...~%") unload)
+                    (unload-service unload))
+                  to-unload)
 
-  ;; Arrange to simply emit a warning if we cannot connect to the shepherd.
-  (warn-on-system-error
-   (let-values (((running stopped) (current-services)))
-     (define to-load
-       ;; Only load services that are either new or currently stopped.
-       (remove (lambda (service)
-                 (memq (first (shepherd-service-provision service))
-                       running))
-               new-services))
-     (define to-unload
-       ;; Unload services that are (1) no longer required, or (2) are in
-       ;; TO-LOAD.
-       (remove essential?
-               (append (remove (lambda (service)
-                                 (memq service new-service-names))
-                               (append running stopped))
-                       (filter (lambda (service)
-                                 (memq service stopped))
-                               (map shepherd-service-canonical-name
-                                    to-load)))))
+        (with-monad %store-monad
+          (munless (null? to-load)
+            (let ((to-load-names  (map shepherd-service-canonical-name to-load))
+                  (to-start       (filter shepherd-service-auto-start? to-load)))
+              (info (_ "loading new services:~{ ~a~}...~%") to-load-names)
+              (mlet %store-monad ((files (mapm %store-monad shepherd-service-file
+                                               to-load)))
+                ;; Here we assume that FILES are exactly those that were computed
+                ;; as part of the derivation that built OS, which is normally the
+                ;; case.
+                (load-services (map derivation->output-path files))
 
-     (for-each (lambda (unload)
-                 (info (_ "unloading service '~a'...~%") unload)
-                 (unload-service unload))
-               to-unload)
-
-     (with-monad %store-monad
-       (munless (null? to-load)
-         (let ((to-load-names  (map shepherd-service-canonical-name to-load))
-               (to-start       (filter shepherd-service-auto-start? to-load)))
-           (info (_ "loading new services:~{ ~a~}...~%") to-load-names)
-           (mlet %store-monad ((files (mapm %store-monad shepherd-service-file
-                                            to-load)))
-             ;; Here we assume that FILES are exactly those that were computed
-             ;; as part of the derivation that built OS, which is normally the
-             ;; case.
-             (load-services (map derivation->output-path files))
-
-             (for-each start-service
-                       (map shepherd-service-canonical-name to-start))
-             (return #t))))))))
+                (for-each start-service
+                          (map shepherd-service-canonical-name to-start))
+                (return #t)))))))))
 
 (define* (switch-to-system os
                            #:optional (profile %system-profile))
@@ -838,5 +880,9 @@ argument list and OPTS is the option alist."
            (command  (assoc-ref opts 'action)))
       (parameterize ((%graft? (assoc-ref opts 'graft?)))
         (process-command command args opts)))))
+
+;;; Local Variables:
+;;; eval: (put 'call-with-service-upgrade-info 'scheme-indent-function 1)
+;;; End:
 
 ;;; system.scm ends here

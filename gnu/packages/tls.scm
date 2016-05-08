@@ -321,15 +321,16 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.3.3")
+    (version "2.3.4")
     (source
      (origin
       (method url-fetch)
       (uri (string-append
              "http://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-"
              version ".tar.gz"))
-      (sha256 (base32
-               "1a8anm8nsfyxds03csk738m2cmzjbsb867my1rz5ij3w31k32wvn"))))
+      (sha256
+       (base32
+        "1ag65pbvdikqj5y1w780jicl3ngi9ld2332ki6794y0gcar3a4bs"))))
     (build-system gnu-build-system)
     (native-search-paths
       ;; FIXME: These two variables must designate a single file or directory
