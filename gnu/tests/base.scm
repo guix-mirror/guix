@@ -128,17 +128,13 @@ info --version")
             "root\n"
             (begin
               (marionette-control "sendkey ctrl-alt-f1" marionette)
-              ;; Wait for the 'term-tty1' service to be running
+              ;; Wait for the 'term-tty1' service to be running (using
+              ;; 'start-service' is the simplest and most reliable way to do
+              ;; that.)
               (marionette-eval
                '(begin
                   (use-modules (gnu services herd))
-
-                  (let loop ((i 0))
-                    (when (> i 10)
-                      (error "terminal service not running" (current-services)))
-                    (unless (memq 'term-tty1 (current-services))
-                      (sleep 1)
-                      (loop (+ i 1)))))
+                  (start-service 'term-tty1))
                marionette)
 
               ;; Now we can type.
