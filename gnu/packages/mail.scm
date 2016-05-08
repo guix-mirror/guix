@@ -367,7 +367,16 @@ repository and Maildir/IMAP as LOCAL repository.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'autoreconf
+         (add-after 'unpack 'patch-configure.ac
+           ;; By default, elisp code goes to "share/emacs/site-lisp/mu4e",
+           ;; so our Emacs package can't find it.  Setting "--with-lispdir"
+           ;; configure flag doesn't help because "mu4e" will be added to
+           ;; the lispdir anyway, so we have to modify "configure.ac".
+           (lambda _
+             (substitute* "configure.ac"
+               (("^ +lispdir=.*") ""))
+             #t))
+         (add-after 'patch-configure.ac 'autoreconf
            (lambda _
              (zero? (system* "autoreconf" "-vi"))))
          (add-before 'check 'check-tz-setup
