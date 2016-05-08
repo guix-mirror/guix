@@ -326,19 +326,10 @@ can read the same mailbox from multiple computers.  It supports IMAP as REMOTE
 repository and Maildir/IMAP as LOCAL repository.")
     (license gpl2+)))
 
-(define %mu-gtester-patch
-  ;; Ensure tests have unique names, to placate GLib 2.6's gtester.
-  (origin
-    (method url-fetch)
-    (uri "https://github.com/djcb/mu/commit/b44039ed.patch")
-    (sha256
-     (base32
-      "165hryqqhx3wah8a4f5jaq465azx1pm9r4jid7880pys9gd88qlv"))))
-
 (define-public mu
   (package
     (name "mu")
-    (version "0.9.13")
+    (version "0.9.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/archive/v"
@@ -346,8 +337,7 @@ repository and Maildir/IMAP as LOCAL repository.")
               (file-name (string-append "mu-" version ".tar.gz"))
               (sha256
                (base32
-                "0wj33pma8xgjvn2akk7khzbycwn4c9sshxvzdph9dnpy7gyqxj51"))
-              (patches (list %mu-gtester-patch))))
+                "0p7hqri1r1x6750x138cc29mh81kdav2dcim26y58s8an206h25g"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
