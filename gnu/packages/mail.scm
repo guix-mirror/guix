@@ -365,7 +365,12 @@ repository and Maildir/IMAP as LOCAL repository.")
        ("gmime" ,gmime)
        ("tzdata" ,tzdata)))             ;for mu/test/test-mu-query.c
     (arguments
-     '(#:phases
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-utils))
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'patch-configure.ac
            ;; By default, elisp code goes to "share/emacs/site-lisp/mu4e",
@@ -385,6 +390,13 @@ repository and Maildir/IMAP as LOCAL repository.")
              (setenv "TZDIR"
                      (string-append (assoc-ref inputs "tzdata")
                                     "/share/zoneinfo"))
+             #t))
+         (add-after 'install 'install-emacs-autoloads
+           (lambda* (#:key outputs #:allow-other-keys)
+             (emacs-generate-autoloads
+              "mu4e"
+              (string-append (assoc-ref outputs "out")
+                             "/share/emacs/site-lisp"))
              #t)))))
     (home-page "http://www.djcbsoftware.nl/code/mu/")
     (synopsis "Quickly find emails")
