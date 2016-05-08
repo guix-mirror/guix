@@ -2968,6 +2968,7 @@ GNOME Games, but it may be used by others.")
        ("xmllint" ,libxml2)))
     (inputs
      `(("gtk+" ,gtk+)
+       ("libgames-support" ,libgames-support)
        ("librsvg" ,librsvg)))
     (home-page "https://wiki.gnome.org/Apps/Klotski")
     (synopsis "Sliding block puzzles")
