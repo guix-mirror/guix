@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
+;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -364,18 +365,18 @@ repository and Maildir/IMAP as LOCAL repository.")
        ("gmime" ,gmime)
        ("tzdata" ,tzdata)))             ;for mu/test/test-mu-query.c
     (arguments
-     '(#:phases (alist-cons-after
-                 'unpack 'autoreconf
-                 (lambda _
-                   (zero? (system* "autoreconf" "-vi")))
-                 (alist-cons-before
-                   'check 'check-tz-setup
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     ;; For mu/test/test-mu-query.c
-                     (setenv "TZDIR"
-                             (string-append (assoc-ref inputs "tzdata")
-                                            "/share/zoneinfo")))
-                   %standard-phases))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-vi"))))
+         (add-before 'check 'check-tz-setup
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; For mu/test/test-mu-query.c
+             (setenv "TZDIR"
+                     (string-append (assoc-ref inputs "tzdata")
+                                    "/share/zoneinfo"))
+             #t)))))
     (home-page "http://www.djcbsoftware.nl/code/mu/")
     (synopsis "Quickly find emails")
     (description
