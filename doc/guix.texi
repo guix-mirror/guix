@@ -375,7 +375,7 @@ If that command fails because you do not have the required public key,
 then run this command to import it:
 
 @example
-$ gpg --keyserver keys.gnupg.net --recv-keys 3D9AEBB5
+$ gpg --keyserver keys.gnupg.net --recv-keys 090B11993D9AEBB5
 @end example
 
 @noindent
