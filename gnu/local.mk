@@ -682,7 +682,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/plink-1.07-unclobber-i.patch		\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/polkit-drop-test.patch			\
-  gnu/packages/patches/poppler-CVE-2015-8868.patch		\
   gnu/packages/patches/portaudio-audacity-compat.patch		\
   gnu/packages/patches/portmidi-modular-build.patch		\
   gnu/packages/patches/procmail-ambiguous-getline-debian.patch  \
