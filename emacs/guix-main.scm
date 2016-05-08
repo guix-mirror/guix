@@ -953,6 +953,17 @@ GENERATIONS is a list of generation numbers."
                ((package _ ...) package)))
          (compose location->string package-location)))
 
+(define (package-store-path package-id)
+  "Return a list of store directories of outputs of package PACKAGE-ID."
+  (match (package-by-id package-id)
+    (#f '())
+    (package
+      (with-store store
+        (map (match-lambda
+               ((_ . drv)
+                (derivation-output-path drv)))
+             (derivation-outputs (package-derivation store package)))))))
+
 (define (package-source-derivation->store-path derivation)
   "Return a store path of the package source DERIVATION."
   (match (derivation-outputs derivation)

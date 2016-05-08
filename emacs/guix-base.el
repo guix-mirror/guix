@@ -207,6 +207,13 @@ Ask a user with PROMPT for continuing an operation."
    (guix-make-guile-expression
     'package-source-path package-id)))
 
+(defun guix-package-store-path (package-id)
+  "Return a list of store directories of outputs of package PACKAGE-ID."
+  (message "Calculating the package derivation ...")
+  (guix-eval-read
+   (guix-make-guile-expression
+    'package-store-path package-id)))
+
 (defvar guix-after-source-download-hook nil
   "Hook run after successful performing a 'source-download' operation.")
 

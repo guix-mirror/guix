@@ -222,6 +222,7 @@ ENTRIES is a list of package entries to get info about packages."
             (description ignore (simple guix-package-info-description))
             ignore
             (outputs simple guix-package-info-insert-outputs)
+            guix-package-info-insert-misc
             (source simple guix-package-info-insert-source)
             (location simple guix-package-info-insert-location)
             (home-url format (format guix-url))
@@ -309,9 +310,15 @@ ENTRIES is a list of package entries to get info about packages."
   "Face used if a package is obsolete."
   :group 'guix-package-info-faces)
 
+(defcustom guix-package-info-auto-find-package t
+  "If non-nil, open store directory after pressing \"Show\" package button.
+If nil, just display the store directory (or directories) without finding."
+  :type 'boolean
+  :group 'guix-package-info)
+
 (defcustom guix-package-info-auto-find-source nil
-  "If non-nil, find a source file after pressing a \"Show\" button.
-If nil, just display the source file path without finding."
+  "If non-nil, open source file after pressing \"Show\" source button.
+If nil, just display the source file name without finding."
   :type 'boolean
   :group 'guix-package-info)
 
@@ -520,6 +527,50 @@ ENTRY is an alist with package info."
      'id (or (guix-entry-value entry 'package-id)
              (guix-entry-id entry))
      'output output)))
+
+(defun guix-package-info-show-store-path (entry-id package-id)
+  "Show store directories of the package outputs in the current buffer.
+ENTRY-ID is an ID of the current entry (package or output).
+PACKAGE-ID is an ID of the package which store path to show."
+  (let* ((entries (guix-buffer-current-entries))
+         (entry   (guix-entry-by-id entry-id entries))
+         (dirs    (guix-package-store-path package-id)))
+    (or dirs
+        (error "Couldn't define store directory of the package"))
+    (let* ((new-entry (cons (cons 'store-path dirs)
+                            entry))
+           (new-entries (guix-replace-entry entry-id new-entry entries)))
+      (setf (guix-buffer-item-entries guix-buffer-item)
+            new-entries)
+      (guix-buffer-redisplay-goto-button)
+      (let ((dir (car dirs)))
+        (if (file-exists-p dir)
+            (if guix-package-info-auto-find-package
+                (find-file dir)
+              (message nil))
+          (message "'%s' does not exist.\nTry to build this package."
+                   dir))))))
+
+(defun guix-package-info-insert-misc (entry)
+  "Insert various buttons and other info for package ENTRY at point."
+  (if (guix-entry-value entry 'obsolete)
+      (guix-format-insert nil)
+    (let* ((entry-id   (guix-entry-id entry))
+           (package-id (or (guix-entry-value entry 'package-id)
+                           entry-id))
+           (store-path (guix-entry-value entry 'store-path)))
+      (guix-info-insert-title-simple "Package")
+      (if store-path
+          (guix-info-insert-value-indent store-path 'guix-file)
+        (guix-info-insert-action-button
+         "Show"
+         (lambda (btn)
+           (guix-package-info-show-store-path
+            (button-get btn 'entry-id)
+            (button-get btn 'package-id)))
+         "Show the store directory of the current package"
+         'entry-id entry-id
+         'package-id package-id)))))
 
 (defun guix-package-info-show-source (entry-id package-id)
   "Show file name of a package source in the current info buffer.
@@ -817,6 +868,7 @@ for all ARGS."
             (version format guix-output-info-insert-version)
             (output format guix-output-info-insert-output)
             (synopsis simple (indent guix-package-info-synopsis))
+            guix-package-info-insert-misc
             (source simple guix-package-info-insert-source)
             (path simple (indent guix-file))
             (dependencies simple (indent guix-file))
