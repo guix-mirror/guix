@@ -135,20 +135,17 @@ filters for the PDF-centric printing workflow introduced by OpenPrinting.")
        ;; cups-filters package.
        #:tests? #f
        #:phases
-       (alist-cons-before
-        'configure
-        'patch-makedefs
-        (lambda _
-          (substitute* "Makedefs.in"
-            (("INITDIR.*=.*@INITDIR@") "INITDIR = @prefix@/@INITDIR@")
-            (("/bin/sh") (which "sh"))))
-        (alist-cons-before
-         'build
-         'patch-tests
-         (lambda _
-           (substitute* "test/ippserver.c"
-             (("#  else /\\* HAVE_AVAHI \\*/") "#elif defined(HAVE_AVAHI)")))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-makedefs
+           (lambda _
+             (substitute* "Makedefs.in"
+               (("INITDIR.*=.*@INITDIR@") "INITDIR = @prefix@/@INITDIR@")
+               (("/bin/sh") (which "sh")))))
+         (add-before 'build 'patch-tests
+           (lambda _
+             (substitute* "test/ippserver.c"
+               (("#  else /\\* HAVE_AVAHI \\*/")
+                "#elif defined(HAVE_AVAHI)")))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
