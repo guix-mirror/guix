@@ -113,6 +113,9 @@ and provides interfaces to the traditional file format.")
                       (string-append "CONFIG_SHELL=" (which "bash"))
                       (string-append "SHELL=" (which "bash"))
 
+                      ;; Remove 7 MiB of .a files.
+                      "--disable-static"
+
                       ;; The compatibility mode is needed by some packages,
                       ;; notably iproute2.
                       "--enable-compat185"
