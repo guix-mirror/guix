@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,27 +55,14 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "2.5.0")
+    (version "2.5.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://wiki.qemu-project.org/download/qemu-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1m3j6xl7msrniidkvr5pw9d44yba5m7hm42xz8xy77v105s8hhrl"))
-             (patches (search-patches
-                       "qemu-virtio-9p-use-accessor-to-get-thread-pool.patch"
-                       "qemu-CVE-2015-8558.patch"
-                       "qemu-CVE-2015-8567.patch"
-                       "qemu-CVE-2016-1922.patch"
-                       "qemu-CVE-2015-8613.patch"
-                       "qemu-CVE-2015-8701.patch"
-                       "qemu-CVE-2015-8743.patch"
-                       "qemu-CVE-2016-1568.patch"
-                       "qemu-CVE-2015-8619.patch"
-                       "qemu-CVE-2016-1981.patch"
-                       "qemu-usb-ehci-oob-read.patch"
-                       "qemu-CVE-2016-2197.patch"))))
+               "0b2xa8604absdmzpcyjs7fix19y5blqmgflnwjzsp1mp7g1m51q2"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace

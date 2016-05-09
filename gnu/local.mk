@@ -711,18 +711,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/python-paste-remove-timing-test.patch	\
   gnu/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   gnu/packages/patches/python-pandas-fix-tslib-test-failure.patch \
-  gnu/packages/patches/qemu-CVE-2015-8558.patch			\
-  gnu/packages/patches/qemu-CVE-2015-8567.patch			\
-  gnu/packages/patches/qemu-CVE-2015-8613.patch			\
-  gnu/packages/patches/qemu-CVE-2015-8619.patch			\
-  gnu/packages/patches/qemu-CVE-2015-8701.patch			\
-  gnu/packages/patches/qemu-CVE-2015-8743.patch			\
-  gnu/packages/patches/qemu-CVE-2016-1568.patch			\
-  gnu/packages/patches/qemu-CVE-2016-1922.patch			\
-  gnu/packages/patches/qemu-CVE-2016-1981.patch			\
-  gnu/packages/patches/qemu-CVE-2016-2197.patch			\
-  gnu/packages/patches/qemu-usb-ehci-oob-read.patch		\
-  gnu/packages/patches/qemu-virtio-9p-use-accessor-to-get-thread-pool.patch \
   gnu/packages/patches/qt4-ldflags.patch			\
   gnu/packages/patches/ratpoison-shell.patch			\
   gnu/packages/patches/readline-link-ncurses.patch		\
