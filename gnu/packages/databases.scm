@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
@@ -95,6 +95,7 @@ and provides interfaces to the traditional file format.")
                "doc"))                           ; 94 MiB of HTML docs
     (arguments
      '(#:tests? #f                            ; no check target available
+       #:disallowed-references ("doc")
        #:phases
        (alist-replace
         'configure
