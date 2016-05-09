@@ -173,12 +173,15 @@ printing, and psresize, for adjusting page sizes.")
                      (substitute* "base/gscdef.c"
                        (("GS_DOCDIR")
                         "\"~/.guix-profile/share/doc/ghostscript\""))))
-        (add-after 'build 'build-so
-                   (lambda _
-                     (zero? (system* "make" "so"))))
-        (add-after 'install 'install-so
-                   (lambda _
-                     (zero? (system* "make" "install-so")))))))
+        (replace 'build
+          (lambda _
+            ;; Build 'libgs.so', but don't build the statically-linked 'gs'
+            ;; binary (saves 18 MiB).
+            (zero? (system* "make" "so" "-j"
+                            (number->string (parallel-job-count))))))
+        (replace 'install
+          (lambda _
+            (zero? (system* "make" "soinstall")))))))
    (synopsis "PostScript and PDF interpreter")
    (description
     "Ghostscript is an interpreter for the PostScript language and the PDF
