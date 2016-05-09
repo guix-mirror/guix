@@ -7331,7 +7331,7 @@ See @code{man loadkeys} for details.
 
 @end deffn
 
-@deffn {Scheme Procedure} gpm-service-type [#:gpm @var{gpm}] @
+@deffn {Scheme Procedure} gpm-service [#:gpm @var{gpm}] @
           [#:options]
 Run @var{gpm}, the general-purpose mouse daemon, with the given
 command-line @var{options}.  GPM allows users to use the mouse in the console,
