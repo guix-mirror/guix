@@ -2,7 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -156,7 +156,8 @@ printing, and psresize, for adjusting page sizes.")
         ("python" ,python-wrapper)
         ("tcl" ,tcl)))
    (arguments
-    `(#:phases
+    `(#:disallowed-references ("doc")
+      #:phases
       (modify-phases %standard-phases
         (add-after 'configure 'patch-config-files
                    (lambda _
