@@ -379,17 +379,17 @@ many readers as needed).")
                                (string-append "--with-guilesitedir="
                                               (assoc-ref %outputs "out")
                                               "/share/guile/site/2.0"))
-       #:phases (alist-cons-after
-                 'install 'post-install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let* ((out   (assoc-ref outputs "out"))
-                          (dir   (string-append out "/share/guile/site/"))
-                          (files (find-files dir ".scm")))
-                     (substitute* files
-                       (("\"libguile-ncurses\"")
-                        (format #f "\"~a/lib/libguile-ncurses\""
-                                out)))))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out   (assoc-ref outputs "out"))
+                    (dir   (string-append out "/share/guile/site/"))
+                    (files (find-files dir ".scm")))
+               (substitute* files
+                 (("\"libguile-ncurses\"")
+                  (format #f "\"~a/lib/libguile-ncurses\""
+                          out)))))))))
     (home-page "http://www.gnu.org/software/guile-ncurses/")
     (synopsis "Guile bindings to ncurses")
     (description
