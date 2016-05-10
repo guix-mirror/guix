@@ -4601,13 +4601,13 @@ information about the latest version of the Gene Ontologies.")
 (define-public r-topgo
   (package
     (name "r-topgo")
-    (version "2.22.0")
+    (version "2.24.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "topGO" version))
               (sha256
                (base32
-                "029j9nb39b8l9xlzsp83pmjr8ap247aia387yzaa1yyw8klapdaf"))))
+                "1p4vsl32qhjw15yv9ym01ni63gjg73jaghlf17wc4zfn3iaz2zar"))))
     (properties
      `((upstream-name . "topGO")))
     (build-system r-build-system)
@@ -4616,6 +4616,7 @@ information about the latest version of the Gene Ontologies.")
        ("r-biobase" ,r-biobase)
        ("r-biocgenerics" ,r-biocgenerics)
        ("r-go-db" ,r-go-db)
+       ("r-matrixstats" ,r-matrixstats)
        ("r-graph" ,r-graph)
        ("r-sparsem" ,r-sparsem)))
     (home-page "http://bioconductor.org/packages/topGO")
