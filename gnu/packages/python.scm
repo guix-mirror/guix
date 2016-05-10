@@ -223,6 +223,15 @@
                                                               file))))))
                        (call-with-output-file "__init__.py" (const #t))
                        #t)))))))
+          (add-before 'strip 'make-libraries-writable
+            (lambda* (#:key outputs #:allow-other-keys)
+              ;; Make .so files writable so they can be stripped.
+              (let ((out (assoc-ref outputs "out")))
+                (for-each (lambda (file)
+                            (chmod file #o755))
+                          (find-files (string-append out "/lib")
+                                      "\\.so"))
+                #t)))
           (add-after 'install 'move-tk-inter
             (lambda* (#:key outputs #:allow-other-keys)
               ;; When Tkinter support is built move it to a separate output so
