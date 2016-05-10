@@ -201,6 +201,28 @@
                           (utime file circa-1980 circa-1980)
                           #t))
                #t)))
+          (add-after 'install 'remove-tests
+            ;; Remove 25 MiB of unneeded unit tests.  Keep test_support.*
+            ;; because these files are used by some libraries out there.
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out")))
+                (match (scandir (string-append out "/lib")
+                                (lambda (name)
+                                  (string-prefix? "python" name)))
+                  ((pythonX.Y)
+                   (let ((testdir (string-append out "/lib/" pythonX.Y
+                                                 "/test")))
+                     (with-directory-excursion testdir
+                       (for-each delete-file-recursively
+                                 (scandir testdir
+                                          (match-lambda
+                                            ((or "." "..") #f)
+                                            (file
+                                             (not
+                                              (string-prefix? "test_support."
+                                                              file))))))
+                       (call-with-output-file "__init__.py" (const #t))
+                       #t)))))))
           (add-after 'install 'move-tk-inter
             (lambda* (#:key outputs #:allow-other-keys)
               ;; When Tkinter support is built move it to a separate output so
