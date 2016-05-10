@@ -86,6 +86,17 @@ INPUTS."
                          (find-files dir "\\.*jar$")))
                       inputs)) ":"))
 
+(define* (unpack #:key source #:allow-other-keys)
+  "Unpack the jar archive SOURCE.  When SOURCE is not a jar archive fall back
+to the default GNU unpack strategy."
+  (if (string-suffix? ".jar" source)
+      (begin
+        (mkdir "src")
+        (with-directory-excursion "src"
+          (zero? (system* "jar" "-xf" source))))
+      ;; Use GNU unpack strategy for things that aren't jar archives.
+      ((assq-ref gnu:%standard-phases 'unpack) #:source source)))
+
 (define* (configure #:key inputs outputs (jar-name #f)
                     #:allow-other-keys)
   (when jar-name
@@ -151,6 +162,7 @@ repack them.  This is necessary to ensure that archives are reproducible."
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
+    (replace 'unpack unpack)
     (replace 'configure configure)
     (replace 'build build)
     (replace 'check check)
