@@ -267,7 +267,7 @@ s-expression corresponding to that package, or #f on failure."
          (upstream-source
           (package (package-name package))
           (version version)
-          (urls (bioconductor-uri upstream-name version))))))
+          (urls (list (bioconductor-uri upstream-name version)))))))
 
 (define (cran-package? package)
   "Return true if PACKAGE is an R package from CRAN."
