@@ -4174,13 +4174,13 @@ coding changes and predict coding outcomes.")
 (define-public r-xvector
   (package
     (name "r-xvector")
-    (version "0.10.0")
+    (version "0.12.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "XVector" version))
               (sha256
                (base32
-                "0havwyr6xqk7w0rmbwfj9jq1djz7wzdz7w39adhklwzwz9l4ih3a"))))
+                "0c9cqjcxxks3an4wiq167h2grxlfyazajn7bmxhbk42zifp8vmqp"))))
     (properties
      `((upstream-name . "XVector")))
     (build-system r-build-system)
