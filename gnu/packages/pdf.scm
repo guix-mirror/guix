@@ -89,7 +89,10 @@
     `(#:tests? #f ; no test data provided with the tarball
       #:configure-flags
       '("--enable-xpdf-headers" ; to install header files
-        "--enable-zlib")
+        "--enable-zlib"
+
+        ;; Saves 8 MiB of .a files.
+        "--disable-static")
       #:phases
       (alist-cons-before
        'configure 'setenv
