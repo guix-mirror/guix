@@ -323,7 +323,7 @@ SMPTE 314M.")
 (define-public libva
   (package
     (name "libva")
-    (version "1.7.0")
+    (version "1.6.1")
     (source
      (origin
        (method url-fetch)
@@ -331,7 +331,7 @@ SMPTE 314M.")
              "https://www.freedesktop.org/software/vaapi/releases/libva/libva-"
              version".tar.bz2"))
        (sha256
-        (base32 "0py9igf4kicj7ji22bjawkpd6my013qpg0s4ir2np9l1rk5vr2d6"))))
+        (base32 "0bjfb5s8dk3lql843l91ffxzlq47isqks5sj19cxh7j3nhzw58kz"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -362,7 +362,7 @@ SMPTE 314M.")
        #:make-flags
        (list (string-append "dummy_drv_video_ladir="
                             (assoc-ref %outputs "out") "/lib/dri"))))
-    (home-page "https://www.freedesktop.org/wiki/Software/vaapi/")
+    (home-page "http://www.freedesktop.org/wiki/Software/vaapi/")
     (synopsis "Video acceleration library")
     (description "The main motivation for VA-API (Video Acceleration API) is
 to enable hardware accelerated video decode/encode at various
