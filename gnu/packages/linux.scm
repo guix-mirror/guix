@@ -2622,15 +2622,20 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
        `("-DUSE_ATASMART:BOOL=ON")
        #:phases
        (modify-phases %standard-phases
-         ;; Install scripts for various foreign init systems.
+         ;; Install scripts for various foreign init systems. Also fix
+         ;; hard-coded path for daemon.
          (add-after 'install 'install-rc-scripts
            (lambda* (#:key outputs #:allow-other-keys)
-             (for-each (cute install-file <>
-                             (string-append (assoc-ref outputs "out")
-                                            "/share/thinkfan"))
-                       (find-files (string-append "../thinkfan-" ,version
-                                                  "/rcscripts")
-                                   ".*"))
+             (let ((out (assoc-ref outputs "out"))
+                   (files (find-files
+                           (string-append "../thinkfan-" ,version "/rcscripts")
+                           ".*")))
+               (substitute* files
+                 (("/usr/sbin/(\\$NAME|thinkfan)" _ name)
+                  (string-append out "/sbin/" name)))
+               (for-each (cute install-file <>
+                               (string-append out "/share/thinkfan"))
+                         files))
              #t)))))
     (inputs
      `(("libatasmart" ,libatasmart)))
