@@ -4210,13 +4210,13 @@ coding changes and predict coding outcomes.")
 (define-public r-genomicranges
   (package
     (name "r-genomicranges")
-    (version "1.22.4")
+    (version "1.24.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicRanges" version))
               (sha256
                (base32
-                "02df5683nrpn9d10ws8jz9b55nr9055hh882xp2i154xdddir0k0"))))
+                "1iyzg1npl3rnnslwq3h759vf0xhshnn5v801rnlj6bnxzhn9yaqh"))))
     (properties
      `((upstream-name . "GenomicRanges")))
     (build-system r-build-system)
