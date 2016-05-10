@@ -4439,13 +4439,13 @@ samples.")
 (define-public r-genomicalignments
   (package
     (name "r-genomicalignments")
-    (version "1.6.3")
+    (version "1.8.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicAlignments" version))
               (sha256
                (base32
-                "02b9j1pfd39bkvb623k5k0ziq9rpw093hifqw65vb954dwj29jhd"))))
+                "1y4qgqxq8dax9swgl59m6i7ggjpqrjllgx87b9vwls3z0nf1i6xj"))))
     (properties
      `((upstream-name . "GenomicAlignments")))
     (build-system r-build-system)
