@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
+;;; Copyright © 2016 Eraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -362,14 +363,14 @@ many readers as needed).")
 (define-public guile-ncurses
   (package
     (name "guile-ncurses")
-    (version "1.6")
+    (version "1.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/guile-ncurses/guile-ncurses-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0wmk681zzi1wxw543r2s2r84ndnzxp69kr7pc01aw4l55hg7jn73"))))
+               "153vv75gb7l62sp3666rc97i63rnaqbx2rjar7d9b5w81fhwv4r5"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("guile" ,guile-2.0)))
@@ -378,10 +379,6 @@ many readers as needed).")
                                (string-append "--with-guilesitedir="
                                               (assoc-ref %outputs "out")
                                               "/share/guile/site/2.0"))
-
-       ;; Work around <http://bugs.gnu.org/21677>.
-       #:make-flags '("XFAIL_TESTS=curses_034_util.test")
-
        #:phases (alist-cons-after
                  'install 'post-install
                  (lambda* (#:key outputs #:allow-other-keys)
