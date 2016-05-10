@@ -4038,13 +4038,13 @@ packages.")
 (define-public r-dnacopy
   (package
     (name "r-dnacopy")
-    (version "1.44.0")
+    (version "1.46.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "DNAcopy" version))
               (sha256
                (base32
-                "1c1px4rbr36xx929hp59k7ca9k5ab66qmn8k63fk13278ncm6h66"))))
+                "0vwv2mndfjpcjp4sybg75abc7xnx8zyw8zjk717k6xh8c33ymcip"))))
     (properties
      `((upstream-name . "DNAcopy")))
     (build-system r-build-system)
