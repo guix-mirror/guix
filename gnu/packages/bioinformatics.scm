@@ -4060,13 +4060,13 @@ abnormal copy number.")
 (define-public r-s4vectors
   (package
     (name "r-s4vectors")
-    (version "0.8.11")
+    (version "0.10.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "S4Vectors" version))
               (sha256
                (base32
-                "12iibcs63m9iy7f45wgjcqsna2dnqwckphk682389grshz0g4x66"))))
+                "1mi6lf6pnb9l657igy0vj4yz03yawbr2jhk22l757fzbjc7n9q3b"))))
     (properties
      `((upstream-name . "S4Vectors")))
     (build-system r-build-system)
