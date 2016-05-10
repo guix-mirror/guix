@@ -4142,13 +4142,13 @@ names in their natural, rather than lexicographic, order.")
 (define-public r-variantannotation
   (package
     (name "r-variantannotation")
-    (version "1.16.4")
+    (version "1.18.0")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "VariantAnnotation" version))
               (sha256
                (base32
-                "1z42j3p9b8h725inq8n0230llsdbav3gwcxy1nliypzfkxbzahsb"))))
+                "1mjm5kav0mjymcj3ha1jnw9snym39w5vc2zkl25dpg78nl00nwar"))))
     (properties
      `((upstream-name . "VariantAnnotation")))
     (inputs
