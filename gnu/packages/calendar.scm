@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,11 +48,23 @@
                 "14lmjj63zyx88rf1z71l0v9ms4c2vpdhmixksjjxgywp5p2f7708"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f)) ; test suite appears broken
+     '(#:tests? #f ; test suite appears broken
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-paths
+           (lambda _
+             (let ((tzdata (assoc-ref %build-inputs "tzdata")))
+               (substitute* "src/libical/icaltz-util.c"
+                 (("char \\*search_paths \\[\\] =.*$")
+                  (string-append
+                   "char *search_paths [] = "
+                   "{\"" tzdata "/share/zoneinfo\"};\n"))))
+             #t)))))
     (native-inputs
      `(("perl" ,perl)))
     (inputs
-     `(("icu4c" ,icu4c)))
+     `(("icu4c" ,icu4c)
+       ("tzdata" ,tzdata)))
     (home-page "https://libical.github.io/libical/")
     (synopsis "iCalendar protocols and data formats implementation")
     (description
