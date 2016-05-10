@@ -2915,6 +2915,45 @@ and contributes the Eclipse default text editor.")
 development tools.")
     (license license:epl1.0)))
 
+(define-public java-log4j-api
+  (package
+    (name "java-log4j-api")
+    (version "2.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://apache/logging/log4j/" version
+                                  "/apache-log4j-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "0j5p9gik0jysh37nlrckqbky12isy95cpwg2gv5fas1rcdqbraxd"))))
+    (build-system ant-build-system)
+    (arguments
+     `(#:tests? #f ; tests require unpackaged software
+       #:jar-name "log4j-api.jar"
+       #:make-flags
+       (list (string-append "-Ddist.dir=" (assoc-ref %outputs "out")
+                            "/share/java"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-dir
+           (lambda _ (chdir "log4j-api") #t))
+         ;; FIXME: The tests require additional software that has not been
+         ;; packaged yet, such as
+         ;; * org.apache.maven
+         ;; * org.apache.felix
+         (add-after 'enter-dir 'delete-tests
+           (lambda _ (delete-file-recursively "src/test") #t)))))
+    (inputs
+     `(("java-osgi-core" ,java-osgi-core)
+       ("java-hamcrest-core" ,java-hamcrest-core)
+       ("java-junit" ,java-junit)))
+    (home-page "http://logging.apache.org/log4j/2.x/")
+    (synopsis "API module of the Log4j logging framework for Java")
+    (description
+     "This package provides the API module of the Log4j logging framework for
+Java.")
+    (license license:asl2.0)))
+
 (define-public java-commons-cli
   (package
     (name "java-commons-cli")
