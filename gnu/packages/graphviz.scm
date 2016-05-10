@@ -25,6 +25,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages image)
   #:use-module (gnu packages autotools)
@@ -32,6 +33,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gd)
+  #:use-module (gnu packages swig)
   #:use-module ((guix licenses) #:select (lgpl2.0+ epl1.0)))
 
 (define-public graphviz
@@ -69,12 +71,26 @@
                              (rename-file (string-append out "/share/graphviz/doc")
                                           (string-append doc "/share/graphviz/doc"))
                              #t))
-                 %standard-phases))))
+                  (alist-cons-after
+                   'move-docs 'move-guile-bindings
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let* ((out (assoc-ref outputs "out"))
+                            (lib (string-append out "/lib"))
+                            (extdir (string-append lib
+                                                   "/guile/2.0/extensions")))
+                       (mkdir-p extdir)
+                       (rename-file (string-append
+                                     lib "/graphviz/guile/libgv_guile.so")
+                                    (string-append extdir
+                                                   "/libgv_guile.so"))))
+                   %standard-phases)))))
     (inputs
      `(("libXrender" ,libxrender)
        ("libX11" ,libx11)
        ("gts" ,gts)
        ("gd" ,gd)                                 ; FIXME: Our GD is too old
+       ("guile" ,guile-2.0)                       ;Guile bindings
+       ("swig" ,swig)
        ("pango" ,pango)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
