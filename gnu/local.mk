@@ -108,6 +108,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/enchant.scm			\
   gnu/packages/engineering.scm			\
   gnu/packages/enlightenment.scm		\
+  gnu/packages/entr.scm				\
   gnu/packages/fcitx.scm			\
   gnu/packages/feh.scm                          \
   gnu/packages/figlet.scm			\
