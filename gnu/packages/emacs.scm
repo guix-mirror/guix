@@ -275,8 +275,8 @@ editor (without an X toolkit)" )
                                            "/share/emacs/site-lisp/"
                                            "geiser-autoloads.el")))
                  %standard-phases)))
-    (inputs `(("guile" ,guile-2.0)
-              ("emacs" ,emacs-no-x)))
+    (inputs `(("guile" ,guile-2.0)))
+    (native-inputs `(("emacs" ,emacs-no-x)))
     (home-page "http://nongnu.org/geiser/")
     (synopsis "Collection of Emacs modes for Guile and Racket hacking")
     (description
@@ -330,7 +330,7 @@ metadata.")
                (base32
                 "0pp3n8q6kc70blqsaw0zlzp6bc327dpgdrjr0cnh7hqg1lras7ka"))))
     (build-system trivial-build-system)
-    (inputs `(("emacs" ,emacs-no-x)))
+    (native-inputs `(("emacs" ,emacs-no-x)))
     (arguments
      `(#:modules ((guix build utils)
                   (guix build emacs-utils))
@@ -568,9 +568,9 @@ support for Git-SVN.")
                     version ".tar.gz"))
               (sha256
                (base32 "1kxc2yj8vb122dv91r68h7c5ladcryx963fr16plfhg71fv7f9av"))))
-    (inputs `(("emacs" ,emacs-no-x)))
     (native-inputs
-     `(("texinfo" ,texinfo)))
+     `(("emacs" ,emacs-no-x)
+       ("texinfo" ,texinfo)))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "EMACS="
@@ -709,10 +709,10 @@ provides an optional IDE-like error list.")
               (base32
                "0zfxmq86pwk64yv0426gnjrvhjrgrjqn08sdcdhmmjmfpmqvm79y"))))
     (build-system gnu-build-system)
-    (native-inputs `(("autoconf" ,autoconf)))
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("emacs" ,emacs-no-x)))
     (inputs `(("w3m" ,w3m)
-              ("imagemagick" ,imagemagick)
-              ("emacs" ,emacs-no-x)))
+              ("imagemagick" ,imagemagick)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -781,8 +781,8 @@ provides an optional IDE-like error list.")
              (sha256
               (base32 "10byvyv9dk0ib55gfqm7bcpxmx2qbih1jd03gmihrppr2mn52nff"))))
     (build-system gnu-build-system)
-    (inputs `(("wget" ,wget)
-              ("emacs" ,emacs-no-x)))
+    (inputs `(("wget" ,wget)))
+    (native-inputs `(("emacs" ,emacs-no-x)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
