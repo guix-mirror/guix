@@ -754,6 +754,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/ttfautohint-source-date-epoch.patch	\
   gnu/packages/patches/tophat-build-with-later-seqan.patch	\
   gnu/packages/patches/torsocks-dns-test.patch			\
+  gnu/packages/patches/totem-debug-format-fix.patch		\
   gnu/packages/patches/unzip-CVE-2014-8139.patch		\
   gnu/packages/patches/unzip-CVE-2014-8140.patch		\
   gnu/packages/patches/unzip-CVE-2014-8141.patch		\

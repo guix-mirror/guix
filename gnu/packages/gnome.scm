@@ -3095,7 +3095,8 @@ for application developers.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "09swnhp46cyy2svqx02fzy555pjgc61lyjw56v9rz1mfc41lh8kg"))))
+         "09swnhp46cyy2svqx02fzy555pjgc61lyjw56v9rz1mfc41lh8kg"))
+       (patches (search-patches "totem-debug-format-fix.patch"))))
     (build-system glib-or-gtk-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
