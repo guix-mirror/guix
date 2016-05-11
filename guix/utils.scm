@@ -44,6 +44,7 @@
   #:use-module (ice-9 format)
   #:use-module ((ice-9 iconv) #:select (bytevector->string))
   #:use-module (system foreign)
+  #:re-export (memoize)         ; for backwards compatibility
   #:export (bytevector->base16-string
             base16-string->bytevector
 

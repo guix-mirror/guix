@@ -93,6 +93,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages fribidi)
+  #:use-module (gnu packages xdisorg)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)

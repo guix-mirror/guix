@@ -44,6 +44,9 @@
       ,(lambda (_ entries locations)
          (apply #'guix-message-packages-by-location
                 entries 'package locations)))
+     (from-file
+      (0 "No package in file '%s'." val)
+      (1 "Package from file '%s'." val))
      (regexp
       (0 "No packages matching '%s'." val)
       (1 "A single package matching '%s'." val)
@@ -80,6 +83,10 @@
       ,(lambda (_ entries locations)
          (apply #'guix-message-packages-by-location
                 entries 'output locations)))
+     (from-file
+      (0 "No package in file '%s'." val)
+      (1 "Package from file '%s'." val)
+      (many "Package outputs from file '%s'." val))
      (regexp
       (0 "No package outputs matching '%s'." val)
       (1 "A single package output matching '%s'." val)

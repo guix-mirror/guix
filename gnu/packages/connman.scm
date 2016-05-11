@@ -40,7 +40,7 @@
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "mirror://kernel.org/pub/linux/network/connman/"
+        (uri (string-append "mirror://kernel.org/linux/network/connman/"
                             name "-" version ".tar.xz"))
     (sha256
      (base32

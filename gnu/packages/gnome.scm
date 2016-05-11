@@ -93,7 +93,6 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages geeqie)
   #:use-module (gnu packages gl)
-  #:use-module (gnu packages qt)  ; for libxkbcommon
   #:use-module (gnu packages compression)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages tls)

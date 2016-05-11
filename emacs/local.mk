@@ -20,6 +20,7 @@
 AUTOLOADS = emacs/guix-autoloads.el
 
 ELFILES =					\
+  emacs/guix-about.el				\
   emacs/guix-backend.el				\
   emacs/guix-base.el				\
   emacs/guix-build-log.el			\

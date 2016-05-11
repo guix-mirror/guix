@@ -54,8 +54,8 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages qt)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages bison))
 
 ;; packages outside the x.org system proper
 
@@ -121,6 +121,44 @@ program.")
 can also be used for copying files, as an alternative to sftp/scp, thus
 avoiding password prompts when X11 forwarding has already been setup.")
     (license license:gpl2+)))
+
+(define-public libxkbcommon
+  (package
+    (name "libxkbcommon")
+    (version "0.5.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://xkbcommon.org/download/" name "-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "176ii5dn2wh74q48sd8ac37ljlvgvp5f506glr96z6ibfhj7igch"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxcb" ,libxcb)
+       ("xkeyboard-config" ,xkeyboard-config)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-xkb-config-root="
+                            (assoc-ref %build-inputs "xkeyboard-config")
+                            "/share/X11/xkb")
+             (string-append "--with-x-locale-root="
+                            (assoc-ref %build-inputs "libx11")
+                            "/share/X11/locale"))))
+    (home-page "http://xkbcommon.org/")
+    (synopsis "Library to handle keyboard descriptions")
+    (description "Xkbcommon is a library to handle keyboard descriptions,
+including loading them from disk, parsing them and handling their
+state.  It is mainly meant for client toolkits, window systems, and other
+system applications; currently that includes Wayland, kmscon, GTK+, Qt,
+Clutter, and more.  Despite the name, it is not currently used by anything
+X11 (yet).")
+    (license (license:x11-style "file://COPYING"
+                                "See 'COPYING' in the distribution."))))
 
 (define-public xdotool
   (package
