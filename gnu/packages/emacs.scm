@@ -178,9 +178,24 @@ large Lisp programs.  It has full Unicode support for nearly all human
 languages.")
     (license license:gpl3+)))
 
-(define-public emacs-no-x
+(define-public emacs-minimal
   ;; This is the version that you should use as an input to packages that just
   ;; need to byte-compile .el files.
+  (package (inherit emacs)
+    (name "emacs-minimal")
+    (synopsis "The extensible text editor (used only for byte-compilation)")
+    (build-system gnu-build-system)
+    (arguments
+     (substitute-keyword-arguments (package-arguments emacs)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'install-site-start)))))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))))
+
+(define-public emacs-no-x
   (package (inherit emacs)
     (name "emacs-no-x")
     (synopsis "The extensible, customizable, self-documenting text
