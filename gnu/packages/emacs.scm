@@ -1017,6 +1017,9 @@ as a library for other Emacs packages.")
         (base32
          "1pmki8hdjjikxlvip3pzi350bln3gcimr27yjf0xfwjvnp5hh9nc"))))
     (build-system emacs-build-system)
+    ;; We use 'emacs' because AUCTeX requires dbus at compile time
+    ;; ('emacs-minimal' does not provide dbus).
+    (arguments `(#:emacs ,emacs))
     (native-inputs
      `(("perl" ,perl)))
     (home-page "http://www.gnu.org/software/auctex/")
