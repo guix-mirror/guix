@@ -152,7 +152,7 @@
 
                        #t))))))
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("emacs" ,emacs-no-x)))      ;for guix.el
+                     ("emacs" ,emacs-minimal)))   ;for guix.el
     (inputs
      (let ((boot-guile (lambda (arch hash)
                          (origin

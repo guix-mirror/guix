@@ -189,7 +189,7 @@ colors, styles, options and details.")
      `(("gs" ,ghostscript)              ;For tests
        ("texinfo" ,texinfo)             ;For generating documentation
        ("texlive" ,texlive)             ;For tests and documentation
-       ("emacs" ,emacs-no-x)
+       ("emacs" ,emacs-minimal)
        ("perl" ,perl)))
     (inputs
      `(("fftw" ,fftw)

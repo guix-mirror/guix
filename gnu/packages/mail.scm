@@ -344,7 +344,7 @@ repository and Maildir/IMAP as LOCAL repository.")
        ("glib" ,glib "bin")             ; for gtester
        ("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("emacs" ,emacs-no-x)
+       ("emacs" ,emacs-minimal)
        ("libtool" ,libtool)
        ("texinfo" ,texinfo)))
     ;; TODO: Add webkit and gtk to build the mug GUI.

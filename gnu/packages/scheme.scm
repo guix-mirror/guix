@@ -576,7 +576,7 @@ threads.")
       (build-system gnu-build-system)
       (inputs
        `(("mit-scheme" ,mit-scheme)
-         ("emacs" ,emacs-no-x)))
+         ("emacs" ,emacs-minimal)))
       (arguments
        `(#:tests? #f ;; no tests-suite
          #:modules ((guix build gnu-build-system)

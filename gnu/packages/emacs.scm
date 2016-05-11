@@ -276,7 +276,7 @@ editor (without an X toolkit)" )
                                            "geiser-autoloads.el")))
                  %standard-phases)))
     (inputs `(("guile" ,guile-2.0)))
-    (native-inputs `(("emacs" ,emacs-no-x)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
     (home-page "http://nongnu.org/geiser/")
     (synopsis "Collection of Emacs modes for Guile and Racket hacking")
     (description
@@ -330,7 +330,7 @@ metadata.")
                (base32
                 "0pp3n8q6kc70blqsaw0zlzp6bc327dpgdrjr0cnh7hqg1lras7ka"))))
     (build-system trivial-build-system)
-    (native-inputs `(("emacs" ,emacs-no-x)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
     (arguments
      `(#:modules ((guix build utils)
                   (guix build emacs-utils))
@@ -401,7 +401,7 @@ when typing parentheses directly or commenting out code line by line.")
                                       (lisp (string-append
                                              out "/share/emacs/site-lisp/")))
                                  (emacs-generate-autoloads ,name lisp)))))))
-    (native-inputs `(("emacs" ,emacs-no-x)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
     (home-page "https://github.com/magit/git-modes")
     (synopsis "Emacs major modes for Git configuration files")
     (description
@@ -448,7 +448,7 @@ on stdout instead of using a socket as the Emacsclient does.")
                "0im1jrqw29g5anrrjflj6b2gpyqkvpghnq8zvywxyhmjwzar4rn7"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
-                     ("emacs" ,emacs-no-x)))
+                     ("emacs" ,emacs-minimal)))
     (inputs `(("git" ,git)))
     (propagated-inputs
      `(("dash" ,emacs-dash)
@@ -510,7 +510,7 @@ operations.")
                (base32
                 "04y88j7q9h8xjbx5dbick6n5nr1522sn9i1znp0qwk3vjb4b5mzz"))))
     (build-system trivial-build-system)
-    (native-inputs `(("emacs" ,emacs-no-x)
+    (native-inputs `(("emacs" ,emacs-minimal)
                      ("tar" ,tar)
                      ("gzip" ,gzip)))
     (propagated-inputs `(("dash" ,emacs-dash)
@@ -569,7 +569,7 @@ support for Git-SVN.")
               (sha256
                (base32 "1kxc2yj8vb122dv91r68h7c5ladcryx963fr16plfhg71fv7f9av"))))
     (native-inputs
-     `(("emacs" ,emacs-no-x)
+     `(("emacs" ,emacs-minimal)
        ("texinfo" ,texinfo)))
     (build-system gnu-build-system)
     (arguments
@@ -650,7 +650,7 @@ programs.")
                      (setenv "PATH" (string-append emacs "/bin"))
                      (emacs-byte-compile-directory lispdir)
                      #t))))
-    (native-inputs `(("emacs" ,emacs-no-x)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
     (home-page "http://elpa.gnu.org/packages/let-alist.html")
     (synopsis "Easily let-bind values of an assoc-list by their names")
     (description
@@ -710,7 +710,7 @@ provides an optional IDE-like error list.")
                "0zfxmq86pwk64yv0426gnjrvhjrgrjqn08sdcdhmmjmfpmqvm79y"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,autoconf)
-                     ("emacs" ,emacs-no-x)))
+                     ("emacs" ,emacs-minimal)))
     (inputs `(("w3m" ,w3m)
               ("imagemagick" ,imagemagick)))
     (arguments
@@ -782,7 +782,7 @@ provides an optional IDE-like error list.")
               (base32 "10byvyv9dk0ib55gfqm7bcpxmx2qbih1jd03gmihrppr2mn52nff"))))
     (build-system gnu-build-system)
     (inputs `(("wget" ,wget)))
-    (native-inputs `(("emacs" ,emacs-no-x)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -921,7 +921,7 @@ provides an optional IDE-like error list.")
                        (chmod target #o555)))
                    %standard-phases)))
        #:tests? #f))
-    (native-inputs `(("emacs" ,emacs-no-x)       ;for (guix build emacs-utils)
+    (native-inputs `(("emacs" ,emacs-minimal)    ;for (guix build emacs-utils)
                      ("texinfo" ,texinfo)))
     (inputs `(("alsa-utils" ,alsa-utils)
               ("vorbis-tools" ,vorbis-tools)
@@ -971,7 +971,7 @@ light user interface.")
                      (with-directory-excursion site
                        (symlink "bbdb-loaddefs.el" "bbdb-autoloads.el"))))
                  %standard-phases)))
-    (native-inputs `(("emacs" ,emacs-no-x)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
     (home-page "http://savannah.nongnu.org/projects/bbdb/")
     (synopsis "Contact management utility for Emacs")
     (description
@@ -1054,7 +1054,7 @@ or XEmacs.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("emacs" ,emacs-no-x)
+       ("emacs" ,emacs-minimal)
        ("texinfo" ,texinfo)))
     (home-page "https://github.com/purcell/mmm-mode")
     (synopsis "Allow multiple major modes in an Emacs buffer")
@@ -1118,7 +1118,7 @@ single buffer.")
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
                      ("pkg-config" ,pkg-config)
-                     ("emacs" ,emacs-no-x)))
+                     ("emacs" ,emacs-minimal)))
     (propagated-inputs
      `(("let-alist" ,let-alist)))
     (inputs `(("poppler" ,poppler)
@@ -1530,8 +1530,6 @@ debugging, documentation lookup, and so on.")
                (base32
                 "1yrgfj8y69xmcb6kwgplhq68ndm9410qwh7sd2knnd1gchpphdc0"))))
     (build-system emacs-build-system)
-    (native-inputs
-     `(("emacs" ,emacs-no-x)))
     (home-page "https://github.com/auto-complete/popup-el")
     (synopsis "Visual Popup User Interface for Emacs")
     (description
@@ -1579,8 +1577,6 @@ insertion mode.  When enabled all keys are implicitly prefixed with
                (base32
                 "0ympj5rxig383zl2jf0pzdsa80nnq0dpvjiriq0ivfi98fj7kxbz"))))
     (build-system emacs-build-system)
-    (native-inputs
-     `(("emacs" ,emacs-no-x)))
     (synopsis "Prettify Request for Comments (RFC) documents")
     (description "The Internet Engineering Task Force (IETF) and the Internet
 Society (ISOC) publish various Internet-related protocols and specifications
@@ -1605,8 +1601,6 @@ local directories.")
                (base32
                 "1iv61dv57a73mdps7rn6zmgz7nqh14v0ninidyrasy45b1nv6gck"))))
     (build-system emacs-build-system)
-    (native-inputs
-     `(("emacs" ,emacs-no-x)))
     (synopsis "Make ffap recognize an RFC with a space before its number")
     (description "The Internet Engineering Task Force (IETF) and the
 Internet Society (ISOC) publish various Internet-related protocols and

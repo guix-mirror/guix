@@ -386,7 +386,7 @@ It is developed using Objective Caml and Camlp5.")
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)
-       ("emacs" ,emacs-no-x)
+       ("emacs" ,emacs-minimal)
        ("texinfo" ,texinfo)))
     (inputs
      `(("host-emacs" ,emacs)

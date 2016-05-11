@@ -381,7 +381,7 @@ pictures, sounds, or video.")
                                       (assoc-ref %build-inputs "bash:include")
                                       "/include/bash"))))
 
-    (native-inputs `(("emacs" ,emacs-no-x)
+    (native-inputs `(("emacs" ,emacs-minimal)
                      ("bc" ,bc)
                      ("bash:include" ,bash "include")
                      ("libuuid" ,util-linux)))
