@@ -2390,15 +2390,15 @@ applications.")
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.36")
+    (version "5.39")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://www.kernel.org/pub/linux/bluetooth/bluez-"
+                    "mirror://kernel.org/linux/bluetooth/bluez-"
                     version ".tar.xz"))
               (sha256
                (base32
-                "1wkqwmi5krr37mxcqqlp5m2xnw7vw70v3ww7j09vvlskxcdflhx3"))))
+                "0fsrf9rdmrdyx0vmcpfji4imjsvliawyy5sjb6b64myka28vrl91"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
