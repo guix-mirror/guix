@@ -374,15 +374,7 @@ etc.")
              "-DENABLE_UPDATER=0" ; no auto-updates
              (string-append "-DFREETYPE_INCLUDE_DIR="
                             (assoc-ref %build-inputs "freetype")
-                            "/include/freetype2"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-freetype-utils
-           (lambda _
-             ;; Fix C preprocessor include directive.
-             (substitute* '("src/app/util/freetype_utils.cpp")
-               (("freetype/") ""))
-             #t)))))
+                            "/include/freetype2"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     ;; TODO: Use a patched Allegro 4 that supports window resizing.  This

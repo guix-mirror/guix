@@ -551,15 +551,11 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
            (alist-cons-after
             'install 'wrap-program
             (lambda* (#:key inputs outputs #:allow-other-keys)
-              ;; Make sure 'solfege' runs with the correct PYTHONPATH.  We
-              ;; also need to modify GDK_PIXBUF_MODULE_FILE for SVG support.
+              ;; Make sure 'solfege' runs with the correct PYTHONPATH.
               (let* ((out (assoc-ref outputs "out"))
-                     (path (getenv "PYTHONPATH"))
-                     (rsvg (assoc-ref inputs "librsvg"))
-                     (pixbuf (find-files rsvg "^loaders\\.cache$")))
+                     (path (getenv "PYTHONPATH")))
                 (wrap-program (string-append out "/bin/solfege")
-                  `("PYTHONPATH" ":" prefix (,path))
-                  `("GDK_PIXBUF_MODULE_FILE" ":" prefix ,pixbuf))))
+                  `("PYTHONPATH" ":" prefix (,path)))))
             %standard-phases)))))))
     (inputs
      `(("python" ,python-2)
@@ -567,8 +563,6 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
        ("gettext" ,gnu-gettext)
        ("gtk" ,gtk+)
        ("lilypond" ,lilypond)
-       ("librsvg" ,librsvg) ; needed at runtime for icons
-       ("libpng" ,libpng) ; needed at runtime for icons
        ;; players needed at runtime
        ("aplay" ,alsa-utils)
        ("csound" ,csound) ; optional, needed for some exercises

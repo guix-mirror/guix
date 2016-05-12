@@ -498,11 +498,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/ghostscript-CVE-2015-3228.patch		\
   gnu/packages/patches/ghostscript-runpath.patch		\
   gnu/packages/patches/glib-networking-ssl-cert-file.patch	\
-  gnu/packages/patches/glib-tests-desktop.patch			\
-  gnu/packages/patches/glib-tests-homedir.patch			\
-  gnu/packages/patches/glib-tests-prlimit.patch			\
   gnu/packages/patches/glib-tests-timer.patch			\
-  gnu/packages/patches/glib-tests-gapplication.patch		\
   gnu/packages/patches/glibc-CVE-2015-7547.patch		\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-hurd-extern-inline.patch		\
@@ -529,6 +525,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/guile-relocatable.patch			\
   gnu/packages/patches/guile-rsvg-pkgconfig.patch		\
   gnu/packages/patches/gtk2-respect-GUIX_GTK2_PATH.patch	\
+  gnu/packages/patches/gtk2-theme-paths.patch			\
   gnu/packages/patches/gtk3-respect-GUIX_GTK3_PATH.patch	\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
   gnu/packages/patches/hdf5-config-date.patch			\
@@ -539,20 +536,11 @@ dist_patch_DATA =						\
   gnu/packages/patches/hypre-doc-tables.patch			\
   gnu/packages/patches/hypre-ldflags.patch			\
   gnu/packages/patches/icecat-avoid-bundled-includes.patch	\
-  gnu/packages/patches/icecat-re-enable-DHE-cipher-suites.patch	\
-  gnu/packages/patches/icecat-update-bundled-graphite2.patch	\
-  gnu/packages/patches/icecat-CVE-2016-2805.patch		\
-  gnu/packages/patches/icecat-CVE-2016-2807-pt1.patch		\
-  gnu/packages/patches/icecat-CVE-2016-2807-pt2.patch		\
-  gnu/packages/patches/icecat-CVE-2016-2807-pt3.patch		\
-  gnu/packages/patches/icecat-CVE-2016-2807-pt4.patch		\
-  gnu/packages/patches/icecat-CVE-2016-2807-pt5.patch		\
-  gnu/packages/patches/icecat-CVE-2016-2808.patch		\
-  gnu/packages/patches/icecat-CVE-2016-2814.patch		\
   gnu/packages/patches/icu4c-CVE-2014-6585.patch		\
   gnu/packages/patches/icu4c-CVE-2015-1270.patch		\
   gnu/packages/patches/icu4c-CVE-2015-4760.patch		\
   gnu/packages/patches/ilmbase-fix-tests.patch			\
+  gnu/packages/patches/inkscape-drop-wait-for-targets.patch	\
   gnu/packages/patches/irrlicht-mesa-10.patch			\
   gnu/packages/patches/jasper-CVE-2007-2721.patch		\
   gnu/packages/patches/jasper-CVE-2008-3520.patch		\
@@ -691,7 +679,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/plink-1.07-unclobber-i.patch		\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/polkit-drop-test.patch			\
-  gnu/packages/patches/poppler-CVE-2015-8868.patch		\
   gnu/packages/patches/portaudio-audacity-compat.patch		\
   gnu/packages/patches/portmidi-modular-build.patch		\
   gnu/packages/patches/procmail-ambiguous-getline-debian.patch  \
@@ -752,6 +739,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/ttfautohint-source-date-epoch.patch	\
   gnu/packages/patches/tophat-build-with-later-seqan.patch	\
   gnu/packages/patches/torsocks-dns-test.patch			\
+  gnu/packages/patches/totem-debug-format-fix.patch		\
   gnu/packages/patches/unzip-CVE-2014-8139.patch		\
   gnu/packages/patches/unzip-CVE-2014-8140.patch		\
   gnu/packages/patches/unzip-CVE-2014-8141.patch		\
