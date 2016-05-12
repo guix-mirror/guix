@@ -448,7 +448,7 @@ interfaces, based on the useradd, usermod and userdel commands.")
 (define-public libmbim
   (package
     (name "libmbim")
-    (version "1.12.2")
+    (version "1.12.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -456,7 +456,7 @@ interfaces, based on the useradd, usermod and userdel commands.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0abv0h9c3kbw4bq1b9270sg189jcjj3x3wa91bj836ynwg9m34wl"))))
+                "0flpgzsqpjgybjkx4smbb4rjxf2w1xgd1v9gmz61rvl89qasznbv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
@@ -467,7 +467,7 @@ interfaces, based on the useradd, usermod and userdel commands.")
     (inputs
      `(("libgudev" ,libgudev)))
     (synopsis "Library to communicate with MBIM-powered modems")
-    (home-page "http://www.freedesktop.org/wiki/Software/libmbim/")
+    (home-page "https://www.freedesktop.org/wiki/Software/libmbim/")
     (description
      "Libmbim is a GLib-based library for talking to WWAN modems and devices
 which speak the Mobile Interface Broadband Model (MBIM) protocol.")
