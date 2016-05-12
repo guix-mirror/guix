@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages freeipmi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mpi)
@@ -121,3 +123,30 @@ framework for starting, executing, and monitoring work (typically a parallel
 job) on a set of allocated nodes, and arbitrates contention for resources
 by managing a queue of pending work.")
    (license license:gpl2+)))
+
+(define-public slurm-drmaa
+  (package
+    (name "slurm-drmaa")
+    (version "1.0.7")
+    (source (origin
+              (method url-fetch)
+              (uri "http://apps.man.poznan.pl/trac/slurm-drmaa/downloads/9")
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0grw55hmny2mc4nc0y1arnvxd2k0dcdfn476kzs180fibjxgfw14"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("slurm" ,slurm)))
+    (native-inputs
+     `(("which" ,which)))
+    (home-page "http://apps.man.poznan.pl/trac/slurm-drmaa")
+    (synopsis "Distributed resource management application API for SLURM")
+    (description
+     "PSNC DRMAA for Simple Linux Utility for Resource Management (SLURM) is
+an implementation of Open Grid Forum DRMAA 1.0 (Distributed Resource
+Management Application API) specification for submission and control of jobs
+to SLURM.  Using DRMAA, grid applications builders, portal developers and ISVs
+can use the same high-level API to link their software with different
+cluster/resource management systems.")
+    (license license:gpl3+)))
