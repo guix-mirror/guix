@@ -265,6 +265,7 @@ as well as the classic centralized workflow.")
     ;; FIXME: This variable designates a single file; it is not a search path.
     (list (search-path-specification
            (variable "GIT_SSL_CAINFO")
+           (file-type 'regular)
            (files '("etc/ssl/certs/ca-certificates.crt")))))
 
    (synopsis "Distributed version control system")
