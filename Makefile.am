@@ -509,7 +509,7 @@ hydra-jobs.scm: $(GOBJECTS)
 	$(AM_V_GEN)$(top_builddir)/pre-inst-env "$(GUILE)"		\
 	  "$(top_srcdir)/build-aux/hydra/evaluate.scm"			\
 	  "$(top_srcdir)/build-aux/hydra/gnu-system.scm" > "$@.tmp"
-	$(AT_V_at)mv "$@.tmp" "$@"
+	$(AM_V_at)mv "$@.tmp" "$@"
 
 .PHONY: sync-descriptions gen-ChangeLog gen-AUTHORS clean-go make-go
 .PHONY: assert-no-store-file-names assert-binaries-available
