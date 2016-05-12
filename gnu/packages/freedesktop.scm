@@ -288,7 +288,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
 (define-public exempi
   (package
     (name "exempi")
-    (version "2.2.2")
+    (version "2.3.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -296,7 +296,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
                    name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "01vcd1mfn2s0iiq2cjyzgvnxx6kcq9cwra1iipijhs0vwvjx0yhf"))))
+               "0jcrv3w8m415cq8xi886hcxfqbrn5dczxbzybx9bhf3dbqsyv6nq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "--with-boost="
