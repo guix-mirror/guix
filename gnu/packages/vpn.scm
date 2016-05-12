@@ -179,14 +179,14 @@ traversing network address translators (NATs) and firewalls.")
 (define-public tinc
   (package
     (name "tinc")
-    (version "1.0.26")
+    (version "1.0.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://tinc-vpn.org/packages/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "08ds8s32cjslms1q227ihd6jz35583v378ij4pknfa5xngfijhrb"))))
+                "0i5kx3hza359nclyhb60kxlzqyx0phmg175350hww28g6scjcl0b"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
