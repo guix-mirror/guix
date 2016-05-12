@@ -6,7 +6,7 @@
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
@@ -605,10 +605,18 @@ MailCore 2.")
               ("libsm" ,libsm)
               ("libxml2" ,libxml2)
               ("perl" ,perl)
-              ("python-2" ,python-2)))
+              ("python-2" ,python-2)
+              ("mime-info" ,shared-mime-info)))
     (arguments
       '(#:configure-flags
-        '("--enable-gnutls" "--enable-pgpmime-plugin" "--enable-enchant")))
+        '("--enable-gnutls" "--enable-pgpmime-plugin" "--enable-enchant")
+        #:phases (modify-phases %standard-phases
+                   (add-before 'build 'patch-mime
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (substitute* "src/procmime.c"
+                         (("/usr/share/mime/globs")
+                          (string-append (assoc-ref inputs "mime-info")
+                                         "/share/mime/globs"))))))))
     (synopsis "GTK-based Email client")
     (description
      "Claws-Mail is an email client (and news reader) based on GTK+.  The
