@@ -287,7 +287,7 @@ standards.")
 (define-public icecat
   (package
     (name "icecat")
-    (version "38.7.1-gnu1")
+    (version "38.8.0-gnu1")
     (source
      (origin
       (method url-fetch)
@@ -296,19 +296,9 @@ standards.")
                           name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "1wdmd6hasra36g86ha1dw8sl7a5mvr7c4jbjx4zyg9629y5gqr8g"))
+        "0v4k47ziqsyfksv9sn4v1xvk4q414rc883hb1qzld63grj2nxxwp"))
       (patches (search-patches
-                "icecat-avoid-bundled-includes.patch"
-                "icecat-re-enable-DHE-cipher-suites.patch"
-                "icecat-update-bundled-graphite2.patch"
-                "icecat-CVE-2016-2805.patch"
-                "icecat-CVE-2016-2807-pt1.patch"
-                "icecat-CVE-2016-2807-pt2.patch"
-                "icecat-CVE-2016-2807-pt3.patch"
-                "icecat-CVE-2016-2807-pt4.patch"
-                "icecat-CVE-2016-2807-pt5.patch"
-                "icecat-CVE-2016-2808.patch"
-                "icecat-CVE-2016-2814.patch"))
+                "icecat-avoid-bundled-includes.patch"))
       (modules '((guix build utils)))
       (snippet
        '(begin
