@@ -2318,7 +2318,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
 (define-public mdadm
   (package
     (name "mdadm")
-    (version "3.3.2")
+    (version "3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2326,8 +2326,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "132vdvh3myjgcjn6i9w90ck16ddjxjcszklzkyvr4f5ifqd7wfhg"))
-              (patches (search-patches "mdadm-gcc-4.9-fix.patch"))))
+                "0248v9f28mrbwabl94ck22gfim29sqhkf70wrpfi52nk4x3bxl17"))))
     (build-system gnu-build-system)
     (inputs
      `(("udev" ,eudev)))

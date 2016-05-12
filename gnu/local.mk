@@ -620,7 +620,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/matplotlib-setupext-tk.patch		\
   gnu/packages/patches/maxima-defsystem-mkdir.patch		\
   gnu/packages/patches/mcron-install.patch			\
-  gnu/packages/patches/mdadm-gcc-4.9-fix.patch			\
   gnu/packages/patches/mhash-keygen-test-segfault.patch		\
   gnu/packages/patches/mit-krb5-CVE-2015-8629.patch		\
   gnu/packages/patches/mit-krb5-CVE-2015-8630.patch		\
