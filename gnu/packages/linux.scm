@@ -1813,7 +1813,7 @@ compliance.")
 (define-public wireless-regdb
   (package
     (name "wireless-regdb")
-    (version "2015.04.06")
+    (version "2016.05.02")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1821,7 +1821,7 @@ compliance.")
                     "wireless-regdb-" version ".tar.xz"))
               (sha256
                (base32
-                "0czi83k311fp27z42hxjm8vi88fsbc23mhavv96lkb4pmari0jjc"))
+                "07n6gcwfbddz3awbdflv3dhxjszsqq2lrdwih0a0ahcliac4qry9"))
 
               ;; We're building 'regulatory.bin' by ourselves.
               (snippet '(delete-file "regulatory.bin"))))
