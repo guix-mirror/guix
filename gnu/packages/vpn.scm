@@ -3,6 +3,7 @@
 ;;; Copyright © 2013, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -148,7 +149,7 @@ and probably others.")
 (define-public openvpn
   (package
     (name "openvpn")
-    (version "2.3.6")
+    (version "2.3.9")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -156,7 +157,7 @@ and probably others.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1v8h2nshxnvn2zyr08vzkfby1kc7ma6bi0s6hix389cj9krjxbmd"))))
+                "1hfwmdsp7s34qx34qgwrpp89h30744lbsks6y619cdh27bpnpwaj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-iproute2=yes")))
