@@ -817,14 +817,15 @@ valid SQL query.")
 (define-public unixodbc
   (package
    (name "unixodbc")
-   (version "2.3.2")
+   (version "2.3.4")
    (source (origin
             (method url-fetch)
             (uri
              (string-append
-              "ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-" version ".tar.gz"))
+              "ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-"
+              version ".tar.gz"))
             (sha256
-             (base32 "16jw5fq7wgfky6ak1h2j2pqx99jivsdl4q8aq6immpr55xs5jd4w"))))
+             (base32 "0f8y88rcc2akjvjv5y66yx7k0ms9h1s0vbcfy25j93didflhj59f"))))
    (build-system gnu-build-system)
    (synopsis "Data source abstraction library")
    (description "Unixodbc is a library providing an API with which to access
