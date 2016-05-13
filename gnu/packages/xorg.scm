@@ -4281,7 +4281,30 @@ Various information is displayed depending on which options are selected.")
 formatted dump file, such as produced by xwd.")
     (license license:x11)))
 
-
+(define-public xorg-rgb
+  (package
+    (name "xorg-rgb")
+    (version "1.0.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/individual/app/rgb-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "1c76zcjs39ljil6f6jpx1x17c8fnvwazz7zvl3vbjfcrlmm7rjmv"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("xproto" ,xproto)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "X color name database")
+    (description
+     "This package provides the X color name database.")
+    (license license:x11)))
 
 ;; packages of height 1 in the propagated-inputs tree
 
