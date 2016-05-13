@@ -27,6 +27,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:select (gpl2))
   #:use-module (guix packages)
@@ -91,6 +92,7 @@
              ("libpng" ,libpng)
              ("libtiff" ,libtiff)
              ("libxml2" ,libxml2)
+             ("xorg-rgb" ,xorg-rgb)
              ("zlib" ,zlib)))
    (native-inputs
      `(("flex" ,flex)
@@ -111,7 +113,11 @@
              (display "JPEGLIB = libjpeg.so\n" f)
              (display "ZLIB = libz.so\n" f)
              (display (string-append "LDFLAGS += -Wl,-rpath=" %output "/lib") f)
-             (close-port f))))
+             (close-port f))
+           (let ((rgb (string-append (assoc-ref inputs "xorg-rgb")
+                                     "/share/X11/rgb.txt")))
+             (substitute* "pm_config.in.h"
+               (("/usr/share/X11/rgb.txt") rgb)))))
        (add-before 'check 'setup-check
          (lambda _
            ;; install temporarily into /tmp/netpbm
