@@ -136,13 +136,14 @@ and provides interfaces to the traditional file format.")
 (define-public bdb
   (package
     (name "bdb")
-    (version "5.3.21")
+    (version "6.2.23")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.oracle.com/berkeley-db/db-" version
-                                  ".tar.gz"))
-              (sha256 (base32
-                       "1f2g2612lf8djbwbwhxsvmffmf9d7693kh2l20195pqp0f9jmnfx"))))
+              (uri (string-append "http://download.oracle.com/berkeley-db/db-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1isxx4jfmnh913jzhp8hhfngbk6dsg46f4kjpvvc56maj64jqqa7"))))
     (build-system gnu-build-system)
     (outputs '("out"                             ; programs, libraries, headers
                "doc"))                           ; 94 MiB of HTML docs
