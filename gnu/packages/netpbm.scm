@@ -99,50 +99,48 @@
        ("python" ,python-wrapper)))
    (arguments
     `(#:phases
-      (alist-replace
-       'configure
-       (lambda _
-        (copy-file "config.mk.in" "config.mk")
-        (chmod "config.mk" #o664)
-        (let ((f (open-file "config.mk" "a")))
-         (display "CC=gcc\n" f)
-         (display "CFLAGS_SHLIB += -fPIC\n" f)
-         (display "TIFFLIB = libtiff.so\n" f)
-         (display "JPEGLIB = libjpeg.so\n" f)
-         (display "ZLIB = libz.so\n" f)
-         (display (string-append "LDFLAGS += -Wl,-rpath=" %output "/lib") f)
-         (close-port f)))
-      (alist-cons-before
-       'check 'setup-check
-       (lambda _
-         ;; install temporarily into /tmp/netpbm
-         (system* "make" "package")
-         ;; remove test requiring X
-         (substitute* "test/all-in-place.test" (("pamx") ""))
-         ;; do not worry about non-existing file
-         (substitute* "test/all-in-place.test" (("^rm ") "rm -f "))
-         ;; remove four tests that fail for unknown reasons
-         (substitute* "test/Test-Order"
-           (("all-in-place.test") "")
-           (("pnmpsnr.test") "")
-           (("pnmremap1.test") "")
-           (("gif-roundtrip.test") "")))
-      (alist-replace
-       'install
-       (lambda* (#:key outputs make-flags #:allow-other-keys)
-        (let ((out (assoc-ref outputs "out")))
-         (apply system* "make" "package"
-                        (string-append "pkgdir=" out) make-flags)
-         ;; copy static library
-         (copy-file (string-append out "/link/libnetpbm.a")
-                    (string-append out "/lib/libnetpbm.a"))
-         ;; remove superfluous folders and files
-         (system* "rm" "-r" (string-append out "/link"))
-         (system* "rm" "-r" (string-append out "/misc"))
-         (with-directory-excursion out
-           (for-each delete-file
-                     '("config_template" "pkginfo" "README" "VERSION")))))
-      %standard-phases)))))
+      (modify-phases %standard-phases
+       (replace 'configure
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (copy-file "config.mk.in" "config.mk")
+           (chmod "config.mk" #o664)
+           (let ((f (open-file "config.mk" "a")))
+             (display "CC=gcc\n" f)
+             (display "CFLAGS_SHLIB += -fPIC\n" f)
+             (display "TIFFLIB = libtiff.so\n" f)
+             (display "JPEGLIB = libjpeg.so\n" f)
+             (display "ZLIB = libz.so\n" f)
+             (display (string-append "LDFLAGS += -Wl,-rpath=" %output "/lib") f)
+             (close-port f))))
+       (add-before 'check 'setup-check
+         (lambda _
+           ;; install temporarily into /tmp/netpbm
+           (system* "make" "package")
+           ;; remove test requiring X
+           (substitute* "test/all-in-place.test" (("pamx") ""))
+           ;; do not worry about non-existing file
+           (substitute* "test/all-in-place.test" (("^rm ") "rm -f "))
+           ;; remove four tests that fail for unknown reasons
+           (substitute* "test/Test-Order"
+             (("all-in-place.test") "")
+             (("pnmpsnr.test") "")
+             (("pnmremap1.test") "")
+             (("gif-roundtrip.test") ""))))
+       (replace 'install
+         (lambda* (#:key outputs make-flags #:allow-other-keys)
+           (let ((out (assoc-ref outputs "out")))
+             (apply system* "make" "package"
+                    (string-append "pkgdir=" out) make-flags)
+             ;; copy static library
+             (copy-file (string-append out "/link/libnetpbm.a")
+                        (string-append out "/lib/libnetpbm.a"))
+             ;; remove superfluous folders and files
+             (system* "rm" "-r" (string-append out "/link"))
+             (system* "rm" "-r" (string-append out "/misc"))
+             (with-directory-excursion out
+               (for-each delete-file
+                         '("config_template" "pkginfo" "README"
+                           "VERSION")))))))))
    (synopsis "Toolkit for manipulation of images")
    (description
     "Netpbm is a toolkit for the manipulation of graphic images, including
