@@ -18,7 +18,7 @@
 
 (define-module (gnu packages fish)
   #:use-module (guix licenses)
-  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
   #:use-module (guix packages)

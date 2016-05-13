@@ -47,7 +47,7 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages docbook)
-  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)

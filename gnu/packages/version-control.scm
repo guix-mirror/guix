@@ -40,7 +40,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages autotools)
-  #:use-module (gnu packages asciidoc)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cook)

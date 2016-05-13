@@ -29,7 +29,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages dejagnu)
-  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages graphviz)

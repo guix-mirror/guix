@@ -60,7 +60,7 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages docbook)
-  #:use-module (gnu packages asciidoc)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages tls)

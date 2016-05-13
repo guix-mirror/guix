@@ -37,7 +37,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
-  #:use-module (gnu packages asciidoc)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages image)

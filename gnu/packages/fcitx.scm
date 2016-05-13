@@ -21,7 +21,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
-  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)

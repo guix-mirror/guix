@@ -33,7 +33,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnunet)
   #:use-module (gnu packages guile)

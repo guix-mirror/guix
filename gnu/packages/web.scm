@@ -42,7 +42,7 @@
   #:use-module (guix build-system r)
   #:use-module (gnu packages)
   #:use-module (gnu packages apr)
-  #:use-module (gnu packages asciidoc)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)

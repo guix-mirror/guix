@@ -30,7 +30,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)

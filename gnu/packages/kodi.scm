@@ -34,7 +34,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages gettext)

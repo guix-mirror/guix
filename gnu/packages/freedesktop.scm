@@ -46,7 +46,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)

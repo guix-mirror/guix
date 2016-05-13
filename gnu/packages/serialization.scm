@@ -22,7 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
-  #:use-module (gnu packages doxygen))
+  #:use-module (gnu packages documentation))
 
 (define-public cereal
   (package

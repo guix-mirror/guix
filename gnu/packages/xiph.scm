@@ -27,7 +27,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
-  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)

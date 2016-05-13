@@ -37,7 +37,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages asciidoc)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages docbook)

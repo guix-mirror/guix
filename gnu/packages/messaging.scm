@@ -37,7 +37,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages enchant)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
