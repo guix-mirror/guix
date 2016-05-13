@@ -561,11 +561,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/liba52-link-with-libm.patch		\
   gnu/packages/patches/liba52-set-soname.patch			\
   gnu/packages/patches/liba52-use-mtune-not-mcpu.patch		\
-  gnu/packages/patches/libarchive-bsdtar-test.patch		\
-  gnu/packages/patches/libarchive-CVE-2013-0211.patch		\
-  gnu/packages/patches/libarchive-CVE-2016-1541.patch		\
-  gnu/packages/patches/libarchive-fix-lzo-test-case.patch	\
-  gnu/packages/patches/libarchive-mtree-filename-length-fix.patch \
   gnu/packages/patches/libbonobo-activation-test-race.patch	\
   gnu/packages/patches/libcanberra-sound-theme-freedesktop.patch \
   gnu/packages/patches/libcmis-fix-test-onedrive.patch		\
