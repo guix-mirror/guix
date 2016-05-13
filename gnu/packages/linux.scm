@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
+;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,10 +60,11 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages docbook)
-  #:use-module (gnu packages asciidoc)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages calendar)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages freedesktop)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -222,7 +224,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
     (search-path %load-path file)))
 
 (define-public linux-libre
-  (let* ((version "4.5.2")
+  (let* ((version "4.5.4")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Avoid introducing timestamps
@@ -300,7 +302,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "0mw8n5pms33k3m3aamlryahrcbhfnqbzvkglgw3j4dhaja3hwr7n"))))
+               "0c587v03kz5whh82apva6gwqvczdi6djy29gk0gfd9dbkb2518b1"))))
     (build-system gnu-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
@@ -337,13 +339,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.4
   (package
     (inherit linux-libre)
-    (version "4.4.8")
+    (version "4.4.10")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "0zyhdy01gjglgmlrmpqa1sdnm0z91mzwspbksj6zvcamczb8ml53"))))
+                "1k7h632vgh3wlz44qqawy238f4mzn19bm9sz9zqq0ql6wwhkjdkj"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))
@@ -354,13 +356,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.1
   (package
     (inherit linux-libre)
-    (version "4.1.22")
+    (version "4.1.24")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "0bn6qba7q4i3yn3zx2p56gawnb2gczrf4vyrjggirj4d60gvng7y"))))
+                "14jlnq0k86bl4wj8shmvgf34w90bbm9in44j1pdjwwvn169zh9ra"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))
@@ -1217,11 +1219,31 @@ devices.  It replaces 'iwconfig', which is deprecated.")
         (base32
          "0nlwazxbnn0k6q5f5b09wdhw0f194lpzkp3l7vxansqhfczmcyx8"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         ;; TODO: Patch some hardcoded "wlan0" in calibrate/calibrate.cpp to
+         ;; allow calibrating the network interface in GuixSD.
+         (add-after 'unpack 'patch-absolute-file-names
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((kmod (assoc-ref inputs "kmod")))
+               (substitute* (find-files "src" "\\.cpp$")
+                 ;; Give the right 'modprobe' file name so that essential
+                 ;; modules such as msr.ko can be loaded.
+                 (("/sbin/modprobe") (string-append kmod "/bin/modprobe"))
+                 ;; These programs are only needed to calibrate, so using
+                 ;; relative file names avoids adding extra inputs.  When they
+                 ;; are missing powertop gracefully handles it.
+                 (("/usr/bin/hcitool") "hcitool")
+                 (("/usr/bin/xset") "xset")
+                 (("/usr/sbin/hciconfig") "hciconfig"))
+               #t))))))
     (inputs
-     `(("zlib" ,zlib)
-       ("pciutils" ,pciutils)
+     `(("kmod" ,kmod)
+       ("libnl" ,libnl)
        ("ncurses" ,ncurses)
-       ("libnl" ,libnl)))
+       ("pciutils" ,pciutils)
+       ("zlib" ,zlib)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://01.org/powertop/")
@@ -2599,3 +2621,58 @@ where they are less likely to cause damage to the spinning disc.  Requires a
 drive that supports the ATA/ATAPI-7 IDLE IMMEDIATE command with unload
 feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
     (license license:gpl2)))
+
+(define-public thinkfan
+  (package
+    (name "thinkfan")
+    (version "0.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/thinkfan/"
+                                  version "/thinkfan-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0nz4c48f0i0dljpk5y33c188dnnwg8gz82s4grfl8l64jr4n675n"))
+              (modules '((guix build utils)))
+              ;; Fix erroneous man page location in Makefile leading to
+              ;; a compilation failure.
+              (snippet
+               '(substitute* "CMakeLists.txt"
+                  (("thinkfan\\.1") "src/thinkfan.1")))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:modules ((guix build cmake-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:tests? #f                      ;no test target
+       #:configure-flags
+       ;; Enable reading temperatures from hard disks via S.M.A.R.T.
+       `("-DUSE_ATASMART:BOOL=ON")
+       #:phases
+       (modify-phases %standard-phases
+         ;; Install scripts for various foreign init systems. Also fix
+         ;; hard-coded path for daemon.
+         (add-after 'install 'install-rc-scripts
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (files (find-files
+                           (string-append "../thinkfan-" ,version "/rcscripts")
+                           ".*")))
+               (substitute* files
+                 (("/usr/sbin/(\\$NAME|thinkfan)" _ name)
+                  (string-append out "/sbin/" name)))
+               (for-each (cute install-file <>
+                               (string-append out "/share/thinkfan"))
+                         files))
+             #t)))))
+    (inputs
+     `(("libatasmart" ,libatasmart)))
+    (home-page "http://thinkfan.sourceforge.net/")
+    (synopsis "Simple fan control program")
+    (description
+     "Thinkfan is a simple fan control program.  It reads temperatures,
+checks them against configured limits and switches to appropriate (also
+pre-configured) fan level.  It requires a working @code{thinkpad_acpi} or any
+other @code{hwmon} driver that enables temperature reading and fan control
+from userspace.")
+    (license license:gpl3+)))

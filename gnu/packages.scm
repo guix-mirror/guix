@@ -24,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix combinators)
   #:use-module ((guix build utils)
                 #:select ((package-name->name+version
                            . hyphen-separated-name->name+version)))

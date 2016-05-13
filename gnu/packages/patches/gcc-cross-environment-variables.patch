@@ -1,9 +1,23 @@
 Search path environment variables for cross-compilers.  See the discussion
 at <http://gcc.gnu.org/ml/gcc/2013-02/msg00124.html>.
 
---- gcc-4.7.2/gcc/incpath.c	2012-01-27 00:34:58.000000000 +0100
-+++ gcc-4.7.2/gcc/incpath.c	2013-02-12 10:11:27.000000000 +0100
-@@ -452,7 +452,7 @@ register_include_chains (cpp_reader *pfi
+Note: Touch 'C_INCLUDE_PATH' et al. rather than 'CPATH', as discussed
+at <http://bugs.gnu.org/22186>.
+
+--- a/gcc/incpath.c
++++ b/gcc/incpath.c
+@@ -461,8 +461,8 @@ register_include_chains (cpp_reader *pfile, const char *sysroot,
+ 			 int stdinc, int cxx_stdinc, int verbose)
+ {
+   static const char *const lang_env_vars[] =
+-    { "C_INCLUDE_PATH", "CPLUS_INCLUDE_PATH",
+-      "OBJC_INCLUDE_PATH", "OBJCPLUS_INCLUDE_PATH" };
++    { "CROSS_C_INCLUDE_PATH", "CROSS_CPLUS_INCLUDE_PATH",
++      "CROSS_OBJC_INCLUDE_PATH", "CROSS_OBJCPLUS_INCLUDE_PATH" };
+   cpp_options *cpp_opts = cpp_get_options (pfile);
+   size_t idx = (cpp_opts->objc ? 2: 0);
+ 
+@@ -473,7 +473,7 @@ register_include_chains (cpp_reader *pfile, const char *sysroot,
  
    /* CPATH and language-dependent environment variables may add to the
       include chain.  */
@@ -12,20 +26,22 @@ at <http://gcc.gnu.org/ml/gcc/2013-02/msg00124.html>.
    add_env_var_paths (lang_env_vars[idx], SYSTEM);
  
    target_c_incpath.extra_pre_includes (sysroot, iprefix, stdinc);
-
---- gcc-4.7.2/gcc/system.h	2012-02-17 00:16:28.000000000 +0100
-+++ gcc-4.7.2/gcc/system.h	2013-02-12 10:22:17.000000000 +0100
-@@ -1023,4 +1023,6 @@ helper_const_non_const_cast (const char
- #define DEBUG_VARIABLE
- #endif
+diff --git a/gcc/system.h b/gcc/system.h
+index 42bc509..af3b9ad 100644
+--- a/gcc/system.h
++++ b/gcc/system.h
+@@ -1063,4 +1063,6 @@ helper_const_non_const_cast (const char *p)
+ /* Get definitions of HOST_WIDE_INT and HOST_WIDEST_INT.  */
+ #include "hwint.h"
  
 +#define LIBRARY_PATH_ENV "CROSS_LIBRARY_PATH"
 +
  #endif /* ! GCC_SYSTEM_H */
-
---- gcc-4.7.2/gcc/tlink.c	2012-02-11 09:50:23.000000000 +0100
-+++ gcc-4.7.2/gcc/tlink.c	2013-05-23 22:06:19.000000000 +0200
-@@ -461,7 +461,7 @@ recompile_files (void)
+diff --git a/gcc/tlink.c b/gcc/tlink.c
+index bc358b8..ad6242f 100644
+--- a/gcc/tlink.c
++++ b/gcc/tlink.c
+@@ -458,7 +458,7 @@ recompile_files (void)
    file *f;
  
    putenv (xstrdup ("COMPILER_PATH="));
@@ -34,10 +50,11 @@ at <http://gcc.gnu.org/ml/gcc/2013-02/msg00124.html>.
  
    while ((f = file_pop ()) != NULL)
      {
-
---- gcc-4.7.3/gcc/gcc.c	2013-03-08 08:25:09.000000000 +0100
-+++ gcc-4.7.3/gcc/gcc.c	2013-05-24 08:58:16.000000000 +0200
-@@ -3726,7 +3726,7 @@ process_command (unsigned int decoded_op
+diff --git a/gcc/gcc.c b/gcc/gcc.c
+index adbf0c4..70448c6 100644
+--- a/gcc/gcc.c
++++ b/gcc/gcc.c
+@@ -3853,7 +3853,7 @@ process_command (unsigned int decoded_options_count,
      }
  
    temp = getenv (LIBRARY_PATH_ENV);

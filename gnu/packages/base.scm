@@ -6,6 +6,7 @@
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2014, 2015 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,7 +25,7 @@
 
 (define-module (gnu packages base)
   #:use-module ((guix licenses)
-                #:select (gpl3+ lgpl2.0+ public-domain))
+                #:select (gpl3+ lgpl2.0+ lgpl3+ public-domain))
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages bash)
@@ -919,6 +920,33 @@ representative locations around the globe.  It is updated periodically to
 reflect changes made by political bodies to time zone boundaries, UTC offsets,
 and daylight-saving rules.")
     (license public-domain)))
+
+(define-public libiconv
+  (package
+    (name "libiconv")
+    (version "1.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/libiconv/libiconv-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "04q6lgl3kglmmhw59igq1n7v3rp1rpkypl366cy1k1yn2znlvckj"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Work around "declared gets" error on glibc systems (fixed by
+               ;; Gnulib commit 66712c23388e93e5c518ebc8515140fa0c807348.)
+               '(substitute* "srclib/stdio.in.h"
+                  (("^#undef gets") "")
+                  (("^_GL_WARN_ON_USE \\(gets.*") "")))))
+    (build-system gnu-build-system)
+    (synopsis "Character set conversion library")
+    (description
+     "libiconv provides an implementation of the iconv function for systems
+that lack it.  iconv is used to convert between character encodings in a
+program.  It supports a wide variety of different encodings.")
+    (home-page "http://www.gnu.org/software/libiconv/")
+    (license lgpl3+)))
 
 (define-public (canonical-package package)
   ;; Avoid circular dependency by lazily resolving 'commencement'.

@@ -393,15 +393,17 @@ formatted with this string, an action button is inserted.")
       (guix-format-insert nil)
     (let ((location-file (car (split-string location ":"))))
       (guix-info-insert-value-indent location 'guix-package-location)
-      (guix-info-insert-indent)
-      (guix-info-insert-action-button
-       "Packages"
-       (lambda (btn)
-         (guix-package-get-display (guix-ui-current-profile)
-                                   'location
-                                   (button-get btn 'location)))
-       (format "Display packages from location '%s'" location-file)
-       'location location-file))))
+      ;; Do not show "Packages" button if a package 'from file' is displayed.
+      (unless (eq (guix-ui-current-search-type) 'from-file)
+        (guix-info-insert-indent)
+        (guix-info-insert-action-button
+         "Packages"
+         (lambda (btn)
+           (guix-package-get-display (guix-ui-current-profile)
+                                     'location
+                                     (button-get btn 'location)))
+         (format "Display packages from location '%s'" location-file)
+         'location location-file)))))
 
 (defun guix-package-info-insert-systems (systems entry)
   "Insert supported package SYSTEMS at point."
@@ -999,6 +1001,19 @@ Interactively with prefix, prompt for PROFILE."
    (list (guix-read-package-location)
          (guix-ui-read-profile)))
   (guix-package-get-display profile 'location location))
+
+;;;###autoload
+(defun guix-package-from-file (file &optional profile)
+  "Display Guix package that the code from FILE evaluates to.
+If PROFILE is nil, use `guix-current-profile'.
+Interactively with prefix, prompt for PROFILE."
+  (interactive
+   (list (read-file-name "File with package: ")
+         (guix-ui-read-profile)))
+  (guix-buffer-get-display-entries
+   'info 'package
+   (list (or profile guix-current-profile) 'from-file file)
+   'add))
 
 ;;;###autoload
 (defun guix-search-by-regexp (regexp &optional params profile)

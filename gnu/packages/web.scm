@@ -42,7 +42,7 @@
   #:use-module (guix build-system r)
   #:use-module (gnu packages)
   #:use-module (gnu packages apr)
-  #:use-module (gnu packages asciidoc)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
@@ -109,14 +109,14 @@ and its related documentation.")
 (define-public nginx
   (package
     (name "nginx")
-    (version "1.8.1")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1dwpyw4pvhj68vxramqxm8f79pqz9lrm8mvifbn49h3615ikqjwg"))))
+                "0kdyqa5xaxvhz6y75ixs05mzygk3kszzdq5h0gnlrg35vp1lgmlf"))))
     (build-system gnu-build-system)
     (inputs `(("pcre" ,pcre)
               ("openssl" ,openssl)

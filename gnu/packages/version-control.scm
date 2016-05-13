@@ -3,7 +3,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
+;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -27,7 +27,7 @@
 
 (define-module (gnu packages version-control)
   #:use-module ((guix licenses)
-                #:select (asl2.0 bsd-2
+                #:select (asl2.0 bsd-2 bsd-3
                           gpl1+ gpl2 gpl2+ gpl3+ lgpl2.1
                           public-domain x11-style))
   #:use-module (guix utils)
@@ -40,7 +40,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages autotools)
-  #:use-module (gnu packages asciidoc)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages cook)
@@ -605,14 +605,14 @@ control to Git repositories.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "3.7.3")
+    (version "3.8.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
              (sha256
               (base32
-               "0c2vkad9piqkggyk8y310rf619qgdfcwswnk3nv21mg2fhnw96f0"))))
+               "156m6269xdqq7mpw01c6b065k29xnb8b9lyzn1b0nlz5il2izkps"))))
     (build-system python-build-system)
     (arguments
      `(;; Restrict to Python 2, as Python 3 would require
@@ -1011,6 +1011,58 @@ changes back into the master source of the program, with as little disruption
 as possible.  Resolution of contention for source files, a major headache for
 any project with more than one developer, is one of Aegis's major functions.")
     (license gpl3+)))
+
+(define-public reposurgeon
+  (package
+    (name "reposurgeon")
+    (version "3.37")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.catb.org/~esr/" name "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "14asjg4xy3mhh5z0r3k7c1wv9y803j2zfq32g5q5m95sf7yzygan"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f                      ;no test suite distributed
+       #:make-flags
+       (list (string-append "target=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'fix-docbook
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* (find-files "." "\\.xml$")
+               (("docbook/docbookx.dtd")
+                (string-append (assoc-ref inputs "docbook-xml")
+                               "/xml/dtd/docbook/docbookx.dtd")))
+             #t))
+         (add-after 'install 'install-emacs-data
+           (lambda* (#:key outputs #:allow-other-keys)
+             (install-file "reposurgeon-mode.el"
+                           (string-append (assoc-ref outputs "out")
+                                          "/share/emacs/site-lisp")))))))
+    (inputs
+     `(("python" ,python-wrapper)))
+    (native-inputs
+     `(("asciidoc" ,asciidoc)
+       ("docbook-xml" ,docbook-xml-4.1.2)
+       ("docbook-xsl" ,docbook-xsl)
+       ("libxml2" ,libxml2)
+       ("xmlto" ,xmlto)))
+    (home-page "http://www.catb.org/~esr/reposurgeon/")
+    (synopsis "Edit version-control repository history")
+    (description "Reposurgeon enables risky operations that version-control
+systems don't want to let you do, such as editing past comments and metadata
+and removing commits.  It works with any version control system that can
+export and import Git fast-import streams, including Git, Mercurial, Fossil,
+Bazaar, CVS, RCS, and Src.  It can also read Subversion dump files directly
+and can thus be used to script production of very high-quality conversions
+from Subversion to any supported Distributed Version Control System (DVCS).")
+    ;; Most files are distributed under bsd-2, except 'repocutter' which is
+    ;; under bsd-3.
+    (license (list bsd-2 bsd-3))))
 
 (define-public tig
   (package

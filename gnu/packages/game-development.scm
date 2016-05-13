@@ -33,7 +33,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
-  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnunet)
   #:use-module (gnu packages guile)
@@ -129,7 +129,7 @@ provide connectivity for client applications written in any language.")
 (define-public tiled
   (package
     (name "tiled")
-    (version "0.15.1")
+    (version "0.16.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/bjorn/tiled/archive/v"
@@ -137,7 +137,7 @@ provide connectivity for client applications written in any language.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "10bbjdv5r36229r1dqg32bxcj9yvpkx9jgs9v4s1qb71v856b15h"))))
+                "0s1i6yhm1z9ayzjh8cprcc9jvj5m87l9snyqg6w7zlj3q9zn4rn6"))))
     (build-system gnu-build-system)
     (inputs `(("qt" ,qt)
               ("zlib" ,zlib)))
@@ -374,15 +374,7 @@ etc.")
              "-DENABLE_UPDATER=0" ; no auto-updates
              (string-append "-DFREETYPE_INCLUDE_DIR="
                             (assoc-ref %build-inputs "freetype")
-                            "/include/freetype2"))
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'patch-freetype-utils
-           (lambda _
-             ;; Fix C preprocessor include directive.
-             (substitute* '("src/app/util/freetype_utils.cpp")
-               (("freetype/") ""))
-             #t)))))
+                            "/include/freetype2"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     ;; TODO: Use a patched Allegro 4 that supports window resizing.  This

@@ -46,7 +46,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
@@ -338,14 +338,14 @@ Analysis and Reporting Technology) functionality.")
 (define-public udisks
   (package
     (name "udisks")
-    (version "2.1.6")
+    (version "2.1.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://udisks.freedesktop.org/releases/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0spl155k0g2l2hvqf8xyjv08i68gfyhzpjva6cwlzxx0bz4gbify"))))
+                "119pr2zbff8vkwlhghim7d7ir24c1dil9hp4q49wm4f6pnrjpbmb"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums

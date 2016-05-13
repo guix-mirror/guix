@@ -19,6 +19,7 @@
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
+;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,6 +93,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages fribidi)
+  #:use-module (gnu packages xdisorg)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
@@ -1021,14 +1023,14 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.12.4")
+    (version "1.12.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "19qyylylaljhk45lk2ja0xp7cx9iy4hx07l65zkg20a2v9h50lmz"))))
+                "07d8ms9ayswg2g530p0zwmz3d77zv68l6nmc718iq9sbv90av6jr"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no check target
@@ -2097,7 +2099,7 @@ the chat server psyced with the specific config located at
 http://lavachat.symlynx.com/unix/")
     (license license:gpl2+)))
 
-(define-public redeclipse
+(define-public red-eclipse
   (let ((data-sources
          '(("acerspyro"   "0gxxr6nbac918b49x1cp72nw951hqm5m4iyi2shb1612ly384w8q")
            ("actors"      "1jq9q82m6nx07nwpb5cnpdcwa33jrcgg0j2yir8zk6zpnxdmp0il")
@@ -2133,7 +2135,7 @@ http://lavachat.symlynx.com/unix/")
            ("weapons"     "1ghn6nfcnd5lyl8dnj22csldvf9hrb32wjzpab4sjjz3iyv0zmr3")
            ("wicked"      "0q9badvg6ix5rhl05s83kw2v6a49jpnbkqk4ls89qahaddfagi8g"))))
     (package
-      (name "redeclipse")
+      (name "red-eclipse")
       (version "1.5.3")
       (source (origin
                 (method url-fetch)

@@ -3,6 +3,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,7 +39,7 @@
 (define-public ntp
   (package
    (name "ntp")
-   (version "4.2.8p6")
+   (version "4.2.8p7")
    (source (origin
 	    (method url-fetch)
 	    (uri (string-append
@@ -47,7 +48,7 @@
                   "/ntp-" version ".tar.gz"))
 	    (sha256
 	     (base32
-              "0j509gd0snj8dq15rhfv2v4wisfaabya1gmgqslk1kisawf0wgaq"))
+              "1p100856h17nb0kpnppy70nja57hbcc95h7shhxvw6mhl030rll1"))
             (modules '((guix build utils)))
             (snippet
              '(begin
@@ -92,7 +93,7 @@ computers over a network.")
 (define-public openntpd
   (package
     (name "openntpd")
-    (version "5.7p3")
+    (version "5.9p1")
     (source (origin
               (method url-fetch)
               ;; XXX Use mirror://openbsd
@@ -101,7 +102,7 @@ computers over a network.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "0filjmb3b8rc39bvhm8q2azzj10ljfgq41qih71pxv919j57qhag"))))
+                "1cwp6vxv7nj039kgbf0mgfm06f8zc4axawdc7ijl2r2ddl2h8310"))))
     (build-system gnu-build-system)
     (home-page "http://www.openntpd.org/")
     (synopsis "NTP client and server by the OpenBSD Project")

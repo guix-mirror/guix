@@ -38,6 +38,7 @@ MODULES =					\
   guix/hash.scm					\
   guix/pk-crypto.scm				\
   guix/pki.scm					\
+  guix/combinators.scm				\
   guix/utils.scm				\
   guix/sets.scm					\
   guix/download.scm				\
@@ -231,6 +232,7 @@ SCM_TESTS =					\
   tests/ui.scm					\
   tests/records.scm				\
   tests/upstream.scm				\
+  tests/combinators.scm				\
   tests/utils.scm				\
   tests/build-utils.scm				\
   tests/packages.scm				\
@@ -295,8 +297,11 @@ TESTS = $(SCM_TESTS) $(SH_TESTS)
 
 AM_TESTS_ENVIRONMENT = abs_top_srcdir="$(abs_top_srcdir)" GUILE_AUTO_COMPILE=0
 
-SCM_LOG_DRIVER = $(top_builddir)/test-env $(GUILE) --no-auto-compile \
-                   -e main $(top_srcdir)/build-aux/test-driver.scm
+SCM_LOG_DRIVER =				\
+  $(top_builddir)/test-env --quiet-stderr	\
+  $(GUILE) --no-auto-compile -e main		\
+      $(top_srcdir)/build-aux/test-driver.scm
+
 AM_SCM_LOG_DRIVER_FLAGS = --brief=yes
 
 SH_LOG_COMPILER = $(top_builddir)/test-env $(SHELL)
@@ -325,6 +330,13 @@ check-local:
 
 endif !CAN_RUN_TESTS
 
+check-system: $(GOBJECTS)
+	$(AM_V_at)echo "Running system tests..."
+	$(AM_V_at)$(top_builddir)/pre-inst-env			\
+	   $(GUILE) --no-auto-compile				\
+	   -e '(@@ (run-system-tests) run-system-tests)'	\
+	   $(top_srcdir)/build-aux/run-system-tests.scm
+
 # Public key used to sign substitutes from hydra.gnu.org.
 dist_pkgdata_DATA = hydra.gnu.org.pub
 
@@ -349,6 +361,7 @@ EXTRA_DIST =						\
   build-aux/make-binary-tarball.scm			\
   build-aux/generate-authors.scm			\
   build-aux/test-driver.scm				\
+  build-aux/run-system-tests.scm			\
   srfi/srfi-37.scm.in					\
   srfi/srfi-64.scm					\
   srfi/srfi-64.upstream.scm				\

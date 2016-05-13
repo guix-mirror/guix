@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
+;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,10 +23,13 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages webkit)
   #:use-module (gnu packages fontutils))
 
 (define-public dwm
@@ -188,4 +192,39 @@ numbers of user-defined menu items efficiently.")
 implements 256 colors, most VT10X escape sequences, utf8, X11 copy/paste,
 antialiased fonts (using fontconfig), fallback fonts, resizing, and line
 drawing.")
+    (license license:x11)))
+
+(define-public surf
+  (package
+    (name "surf")
+    (version "0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://dl.suckless.org/surf/surf-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0jj93izd8fizxfa6ln9w1h9bwki81sz5dhskh5x1rl34zd38aq4m"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     '(#:tests? #f ; no tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure))))
+    (inputs
+     `(("glib-networking" ,glib-networking)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("webkitgtk" ,webkitgtk/gtk+-2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://surf.suckless.org/")
+    (synopsis "Simple web browser")
+    (description
+     "Surf is a simple web browser based on WebKit/GTK+.  It is able to
+display websites and follow links.  It supports the XEmbed protocol which
+makes it possible to embed it in another application.  Furthermore, one can
+point surf to another URI by setting its XProperties.")
     (license license:x11)))

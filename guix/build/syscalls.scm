@@ -65,6 +65,7 @@
             processes
             mkdtemp!
             pivot-root
+            fcntl-flock
 
             CLONE_CHILD_CLEARTID
             CLONE_CHILD_SETTID
@@ -110,9 +111,7 @@
             termios-input-speed
             termios-output-speed
             local-flags
-            TCSANOW
-            TCSADRAIN
-            TCSAFLUSH
+            tcsetattr-action
             tcgetattr
             tcsetattr
 
@@ -641,6 +640,81 @@ system to PUT-OLD."
 
 
 ;;;
+;;; Advisory file locking.
+;;;
+
+(define-c-struct %struct-flock                    ;<fcntl.h>
+  sizeof-flock
+  list
+  read-flock
+  write-flock!
+  (type   short)
+  (whence short)
+  (start  size_t)
+  (length size_t)
+  (pid    int))
+
+(define F_SETLKW
+  ;; On Linux-based systems, this is usually 7, but not always
+  ;; (exceptions include SPARC.)  On GNU/Hurd, it's 9.
+  (cond ((string-contains %host-type "sparc") 9)  ; sparc-*-linux-gnu
+        ((string-contains %host-type "linux") 7)  ; *-linux-gnu
+        (else 9)))                                ; *-gnu*
+
+(define F_SETLK
+  ;; Likewise: GNU/Hurd and SPARC use 8, while the others typically use 6.
+  (cond ((string-contains %host-type "sparc") 8)  ; sparc-*-linux-gnu
+        ((string-contains %host-type "linux") 6)  ; *-linux-gnu
+        (else 8)))                                ; *-gnu*
+
+(define F_xxLCK
+  ;; The F_RDLCK, F_WRLCK, and F_UNLCK constants.
+  (cond ((string-contains %host-type "sparc") #(1 2 3))    ; sparc-*-linux-gnu
+        ((string-contains %host-type "hppa")  #(1 2 3))    ; hppa-*-linux-gnu
+        ((string-contains %host-type "linux") #(0 1 2))    ; *-linux-gnu
+        (else                                 #(1 2 3))))  ; *-gnu*
+
+(define fcntl-flock
+  (let ((proc (syscall->procedure int "fcntl" `(,int ,int *))))
+    (lambda* (fd-or-port operation #:key (wait? #t))
+      "Perform locking OPERATION on the file beneath FD-OR-PORT.  OPERATION
+must be a symbol, one of 'read-lock, 'write-lock, or 'unlock.  When WAIT? is
+true, block until the lock is acquired; otherwise, thrown an 'flock-error'
+exception if it's already taken."
+      (define (operation->int op)
+        (case op
+          ((read-lock)  (vector-ref F_xxLCK 0))
+          ((write-lock) (vector-ref F_xxLCK 1))
+          ((unlock)     (vector-ref F_xxLCK 2))
+          (else         (error "invalid fcntl-flock operation" op))))
+
+      (define fd
+        (if (port? fd-or-port)
+            (fileno fd-or-port)
+            fd-or-port))
+
+      (define bv
+        (make-bytevector sizeof-flock))
+
+      (write-flock! bv 0
+                    (operation->int operation) SEEK_SET
+                    0 0                           ;whole file
+                    0)
+
+      ;; XXX: 'fcntl' is a vararg function, but here we happily use the
+      ;; standard ABI; crossing fingers.
+      (let ((ret (proc fd
+                       (if wait?
+                           F_SETLKW               ; lock & wait
+                           F_SETLK)               ; non-blocking attempt
+                       (bytevector->pointer bv)))
+            (err (errno)))
+        (unless (zero? ret)
+          ;; Presumably we got EAGAIN or so.
+          (throw 'flock-error err))))))
+
+
+;;;
 ;;; Network interfaces.
 ;;;
 
@@ -1059,9 +1133,11 @@ given an integer, returns the list of names of the constants that are or'd."
  (define EXTPROC #o0200000))
 
 ;; "Actions" values for 'tcsetattr'.
-(define TCSANOW  0)
-(define TCSADRAIN 1)
-(define TCSAFLUSH 2)
+(define-bits tcsetattr-action
+  %unused-tcsetattr-action->symbols
+  (define TCSANOW  0)
+  (define TCSADRAIN 1)
+  (define TCSAFLUSH 2))
 
 (define-record-type <termios>
   (termios input-flags output-flags control-flags local-flags
@@ -1107,8 +1183,8 @@ given an integer, returns the list of names of the constants that are or'd."
 (define tcsetattr
   (let ((proc (syscall->procedure int "tcsetattr" (list int int '*))))
     (lambda (fd actions termios)
-      "Use TERMIOS for the tty at FD.  ACTIONS is one of 'TCSANOW',
-'TCSADRAIN', or 'TCSAFLUSH'; see tcsetattr(3) for details."
+      "Use TERMIOS for the tty at FD.  ACTIONS is one of of the values
+produced by 'tcsetattr-action'; see tcsetattr(3) for details."
       (define bv
         (make-bytevector sizeof-termios))
 

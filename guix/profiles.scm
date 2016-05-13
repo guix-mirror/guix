@@ -445,6 +445,40 @@ replace it."
                 (cons (gexp-input thing output) deps)))
               (manifest-entries manifest)))
 
+(define (manifest-lookup-package manifest name)
+  "Return as a monadic value the first package or store path referenced by
+MANIFEST that named NAME, or #f if not found."
+  ;; Return as a monadic value the package or store path referenced by the
+  ;; manifest ENTRY, or #f if not referenced.
+  (define (entry-lookup-package entry)
+    (define (find-among-inputs inputs)
+      (find (lambda (input)
+              (and (package? input)
+                   (equal? name (package-name input))))
+            inputs))
+    (define (find-among-store-items items)
+      (find (lambda (item)
+              (equal? name (package-name->name+version
+                            (store-path-package-name item))))
+            items))
+
+    ;; TODO: Factorize.
+    (define references*
+      (store-lift references))
+
+    (with-monad %store-monad
+      (match (manifest-entry-item entry)
+        ((? package? package)
+         (match (package-transitive-inputs package)
+           (((labels inputs . _) ...)
+            (return (find-among-inputs inputs)))))
+        ((? string? item)
+         (mlet %store-monad ((refs (references* item)))
+           (return (find-among-store-items refs)))))))
+
+  (anym %store-monad
+        entry-lookup-package (manifest-entries manifest)))
+
 (define (info-dir-file manifest)
   "Return a derivation that builds the 'dir' file for all the entries of
 MANIFEST."
@@ -608,41 +642,7 @@ MANIFEST.  Single-file bundles are required by programs such as Git and Lynx."
 (define (gtk-icon-themes manifest)
   "Return a derivation that unions all icon themes from manifest entries and
 creates the GTK+ 'icon-theme.cache' file for each theme."
-  ;; Return as a monadic value the GTK+ package or store path referenced by the
-  ;; manifest ENTRY, or #f if not referenced.
-  (define (entry-lookup-gtk+ entry)
-    (define (find-among-inputs inputs)
-      (find (lambda (input)
-              (and (package? input)
-                   (string=? "gtk+" (package-name input))))
-            inputs))
-
-    (define (find-among-store-items items)
-      (find (lambda (item)
-              (equal? "gtk+"
-                      (package-name->name+version
-                       (store-path-package-name item))))
-            items))
-
-    ;; TODO: Factorize.
-    (define references*
-      (store-lift references))
-
-    (with-monad %store-monad
-      (match (manifest-entry-item entry)
-        ((? package? package)
-         (match (package-transitive-inputs package)
-           (((labels inputs . _) ...)
-            (return (find-among-inputs inputs)))))
-        ((? string? item)
-         (mlet %store-monad ((refs (references* item)))
-           (return (find-among-store-items refs)))))))
-
-  (define (manifest-lookup-gtk+ manifest)
-    (anym %store-monad
-          entry-lookup-gtk+ (manifest-entries manifest)))
-
-  (mlet %store-monad ((gtk+ (manifest-lookup-gtk+ manifest)))
+  (mlet %store-monad ((gtk+ (manifest-lookup-package manifest "gtk+")))
     (define build
       #~(begin
           (use-modules (guix build utils)
@@ -686,13 +686,84 @@ creates the GTK+ 'icon-theme.cache' file for each theme."
                           #:substitutable? #f)
         (return #f))))
 
+(define (xdg-desktop-database manifest)
+  "Return a derivation that builds the @file{mimeinfo.cache} database from
+desktop files.  It's used to query what applications can handle a given
+MIME type."
+  (mlet %store-monad ((desktop-file-utils
+                       (manifest-lookup-package
+                        manifest "desktop-file-utils")))
+    (define build
+      #~(begin
+          (use-modules (srfi srfi-26)
+                       (guix build utils)
+                       (guix build union))
+          (let* ((destdir (string-append #$output "/share/applications"))
+                 (appdirs (filter file-exists?
+                                  (map (cut string-append <>
+                                            "/share/applications")
+                                       '#$(manifest-inputs manifest))))
+                 (update-desktop-database (string-append
+                                           #+desktop-file-utils
+                                           "/bin/update-desktop-database")))
+            (mkdir-p (string-append #$output "/share"))
+            (union-build destdir appdirs
+                         #:log-port (%make-void-port "w"))
+            (zero? (system* update-desktop-database destdir)))))
+
+    ;; Don't run the hook when 'desktop-file-utils' is not referenced.
+    (if desktop-file-utils
+        (gexp->derivation "xdg-desktop-database" build
+                          #:modules '((guix build utils)
+                                      (guix build union))
+                          #:local-build? #t
+                          #:substitutable? #f)
+        (return #f))))
+
+(define (xdg-mime-database manifest)
+  "Return a derivation that builds the @file{mime.cache} database from manifest
+entries.  It's used to query the MIME type of a given file."
+  (mlet %store-monad ((shared-mime-info
+                       (manifest-lookup-package
+                        manifest "shared-mime-info")))
+    (define build
+      #~(begin
+          (use-modules (srfi srfi-26)
+                       (guix build utils)
+                       (guix build union))
+          (let* ((datadir (string-append #$output "/share"))
+                 (destdir (string-append datadir "/mime"))
+                 (mimedirs (filter file-exists?
+                                   (map (cut string-append <>
+                                             "/share/mime")
+                                        '#$(manifest-inputs manifest))))
+                 (update-mime-database (string-append
+                                        #+shared-mime-info
+                                        "/bin/update-mime-database")))
+            (mkdir-p datadir)
+         (union-build destdir mimedirs
+                      #:log-port (%make-void-port "w"))
+         (setenv "XDG_DATA_HOME" datadir)
+         (zero? (system* update-mime-database destdir)))))
+
+    ;; Don't run the hook when 'shared-mime-info' is referenced.
+    (if shared-mime-info
+        (gexp->derivation "xdg-mime-database" build
+                          #:modules '((guix build utils)
+                                      (guix build union))
+                          #:local-build? #t
+                          #:substitutable? #f)
+        (return #f))))
+
 (define %default-profile-hooks
   ;; This is the list of derivation-returning procedures that are called by
   ;; default when making a non-empty profile.
   (list info-dir-file
         ghc-package-cache-file
         ca-certificate-bundle
-        gtk-icon-themes))
+        gtk-icon-themes
+        xdg-desktop-database
+        xdg-mime-database))
 
 (define* (profile-derivation manifest
                              #:key

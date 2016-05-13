@@ -17,12 +17,27 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu services herd)
-  #:use-module (guix ui)
-  #:use-module (guix utils)
+  #:use-module (guix combinators)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
-  #:export (current-services
+  #:export (shepherd-error?
+            service-not-found-error?
+            service-not-found-error-service
+            action-not-found-error?
+            action-not-found-error-service
+            action-not-found-error-action
+            action-exception-error?
+            action-exception-error-service
+            action-exception-error-action
+            action-exception-error-key
+            action-exception-error-arguments
+            unknown-shepherd-error?
+            unknown-shepherd-error-sexp
+
+            current-services
             unload-services
             unload-service
             load-services
@@ -61,31 +76,54 @@ return the socket."
   (let ((connection (open-connection)))
     body ...))
 
-(define (report-action-error error)
-  "Report ERROR, an sexp received by a shepherd client in reply to COMMAND, a
-command object."
+(define-condition-type &shepherd-error &error
+  shepherd-error?)
+
+(define-condition-type &service-not-found-error &shepherd-error
+  service-not-found-error?
+  (service service-not-found-error-service))
+
+(define-condition-type &action-not-found-error &shepherd-error
+  action-not-found-error?
+  (service action-not-found-error-service)
+  (action  action-not-found-error-action))
+
+(define-condition-type &action-exception-error &shepherd-error
+  action-exception-error?
+  (service action-exception-error-service)
+  (action  action-exception-error-action)
+  (key     action-exception-error-key)
+  (args    action-exception-error-arguments))
+
+(define-condition-type &unknown-shepherd-error &shepherd-error
+  unknown-shepherd-error?
+  (sexp   unknown-shepherd-error-sexp))
+
+(define (raise-shepherd-error error)
+  "Raise an error condition corresponding to ERROR, an sexp received by a
+shepherd client in reply to COMMAND, a command object.  Return #t if ERROR
+does not denote an error."
   (match error
     (('error ('version 0 x ...) 'service-not-found service)
-     (report-error (_ "service '~a' could not be found~%")
-                   service))
+     (raise (condition (&service-not-found-error
+                        (service service)))))
     (('error ('version 0 x ...) 'action-not-found action service)
-     (report-error (_ "service '~a' does not have an action '~a'~%")
-                   service action))
+     (raise (condition (&action-not-found-error
+                        (service service)
+                        (action action)))))
     (('error ('version 0 x ...) 'action-exception action service
              key (args ...))
-     (report-error (_ "exception caught while executing '~a' \
-on service '~a':~%")
-                   action service)
-     (print-exception (current-error-port) #f key args))
+     (raise (condition (&action-exception-error
+                        (service service)
+                        (action action)
+                        (key key) (args args)))))
     (('error . _)
-     (report-error (_ "something went wrong: ~s~%")
-                   error))
+     (raise (condition (&unknown-shepherd-error (sexp error)))))
     (#f                                           ;not an error
      #t)))
 
 (define (display-message message)
-  ;; TRANSLATORS: Nothing to translate here.
-  (info (_ "shepherd: ~a~%") message))
+  (format (current-error-port) "shepherd: ~a~%" message))
 
 (define* (invoke-action service action arguments cont)
   "Invoke ACTION on SERVICE with ARGUMENTS.  On success, call CONT with the
@@ -107,10 +145,10 @@ result.  Otherwise return #f."
       (('reply ('version 0 x ...) ('result y) ('error error)
                ('messages messages))
        (for-each display-message messages)
-       (report-action-error error)
+       (raise-shepherd-error error)
        #f)
       (x
-       (warning (_ "invalid shepherd reply~%"))
+       ;; invalid reply
        #f))))
 
 (define-syntax-rule (with-shepherd-action service (action args ...)
@@ -129,7 +167,8 @@ of pairs."
 
 (define (current-services)
   "Return two lists: the list of currently running services, and the list of
-currently stopped services."
+currently stopped services.  Return #f and #f if the list of services could
+not be obtained."
   (with-shepherd-action 'root ('status) services
     (match services
       ((('service ('version 0 _ ...) _ ...) ...)
@@ -144,7 +183,6 @@ currently stopped services."
               '()
               services))
       (x
-       (warning (_ "failed to obtain list of shepherd services~%"))
        (values #f #f)))))
 
 (define (unload-service service)

@@ -27,7 +27,7 @@
 (define-public jemalloc
   (package
     (name "jemalloc")
-    (version "3.6.0")
+    (version "4.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -35,14 +35,8 @@
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1zl4vxxjvhg72bdl53sl0idz9wp18c6yzjdmqcnwm09wvmcj2v71"))))
+                "13pc6gcs5d6ws63jv83vslrb1vlqdnf1dg43awkb9bbj9xqnvl7s"))))
     (build-system gnu-build-system)
-    ;; XXX FIXME: Use gcc-4.8 on i686 to work around
-    ;; <http://bugs.gnu.org/20856>.
-    (native-inputs (if (and (not (%current-target-system))
-                            (string-prefix? "i686-" (%current-system)))
-                       `(("gcc" ,(canonical-package gcc-4.8)))
-                       '()))
     (home-page "http://www.canonware.com/jemalloc/")
     (synopsis "General-purpose scalable concurrent malloc implementation")
     (description

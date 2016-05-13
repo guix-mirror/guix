@@ -6,7 +6,7 @@
 ;;; Copyright © 2014 Julien Lepiller <julien@lepiller.eu>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
-;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
@@ -177,14 +177,14 @@ aliasing facilities to work just as they would on normal mail.")
 (define-public mutt
   (package
     (name "mutt")
-    (version "1.6.0")
+    (version "1.6.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.mutt.org/pub/mutt/mutt-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "06bc2drbgalkk68rzg7hq2v5m5qgjxff5357wg0419dpi8ivdbr9"))
+               "087dz1y9qhl4ikhsnnb4xmyvs82w6kx480w8zj130wdiqvn6rclq"))
              (patches (search-patches "mutt-store-references.patch"))))
     (build-system gnu-build-system)
     (inputs
@@ -605,10 +605,18 @@ MailCore 2.")
               ("libsm" ,libsm)
               ("libxml2" ,libxml2)
               ("perl" ,perl)
-              ("python-2" ,python-2)))
+              ("python-2" ,python-2)
+              ("mime-info" ,shared-mime-info)))
     (arguments
       '(#:configure-flags
-        '("--enable-gnutls" "--enable-pgpmime-plugin" "--enable-enchant")))
+        '("--enable-gnutls" "--enable-pgpmime-plugin" "--enable-enchant")
+        #:phases (modify-phases %standard-phases
+                   (add-before 'build 'patch-mime
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       (substitute* "src/procmime.c"
+                         (("/usr/share/mime/globs")
+                          (string-append (assoc-ref inputs "mime-info")
+                                         "/share/mime/globs"))))))))
     (synopsis "GTK-based Email client")
     (description
      "Claws-Mail is an email client (and news reader) based on GTK+.  The
@@ -622,14 +630,14 @@ which can add many functionalities to the base client.")
 (define-public msmtp
   (package
     (name "msmtp")
-    (version "1.6.3")
+    (version "1.6.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "mirror://sourceforge/msmtp/msmtp-" version ".tar.xz"))
        (sha256 (base32
-                "0mbkflxv2swjz4185inis83v6pxcblpmapwjhgpc6wh7kh3bx0pr"))))
+                "1kfihblm769s4hv8iah5mqynqd6hfwlyz5rcg2v423a4llic0jcv"))))
     (build-system gnu-build-system)
     (inputs
      `(("libidn" ,libidn)
@@ -667,7 +675,7 @@ delivery.")
 (define-public exim
   (package
     (name "exim")
-    (version "4.86.2")
+    (version "4.87")
     (source
      (origin
        (method url-fetch)
@@ -677,7 +685,7 @@ delivery.")
                                  version ".tar.bz2")))
        (sha256
         (base32
-         "1cvfcc1hi60lydv8h3a2rxlfc0v2nflwpvzjj7h7cdsqs2pxwmkp"))))
+         "1jbxn13shq90kpn0s73qpjnx5xm8jrpwhcwwgqw5s6sdzw6iwsbl"))))
     (build-system gnu-build-system)
     (inputs
      `(("bdb" ,bdb)

@@ -318,3 +318,46 @@ without modification.")
 completion for many common commands.")
     (home-page "http://bash-completion.alioth.debian.org/")
     (license gpl2+)))
+
+(define-public bash-tap
+  (package
+    (name "bash-tap")
+    (version "1.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/illusori/bash-tap/"
+                                  "archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0qs1qi38bl3ns4mpagcawv618dsk2q1lgrbddgvs0wl3ia12cyz5"))))
+    ;; There is no compilation process to use this package, however, the bash
+    ;; scripts installed by this package start with "#!/bin/bash".  To fix
+    ;; these lines, we use the patch-shebangs of the GNU build system.  The
+    ;; project does not use a Makefile.
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There is no test suite.
+       #:phases
+       (modify-phases %standard-phases
+         ;; Because there are no configure scripts or Makefile, we can
+         ;; remove these phases.
+         (delete 'configure)
+         (delete 'build)
+         ;; The installation involves manually copying the files to a location.
+         ;; To make them easily accessible by setting PATH, we add the scripts
+         ;; to the "bin" folder.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (install-file "bash-tap" bin)
+               (install-file "bash-tap-bootstrap" bin)
+               (install-file "bash-tap-mock" bin)))))))
+    (home-page "http://www.illusori.co.uk/projects/bash-tap/")
+    (synopsis "Bash port of a Test::More/Test::Builder-style TAP-compliant
+test library")
+    (description "Bash TAP is a TAP-compliant Test::More-style testing library
+for Bash shell scripts and functions.  Along with the Test::More-style testing
+helpers it provides helper functions for mocking commands and in-process output
+capturing.")
+    (license expat)))

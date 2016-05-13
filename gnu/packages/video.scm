@@ -373,14 +373,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "3.0")
+    (version "3.0.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0w74b165l4ry4y72f4xmgd357pvbc7yr61y313v3ai6787p2rwqj"))))
+               "08sjp4dxgcinmv9ly7nm24swmn2cnbbhvph44ihlplf4n33kr542"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -529,7 +529,7 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
               (format #t "setting LD_LIBRARY_PATH to ~s~%" path)
               (setenv "LD_LIBRARY_PATH" path)
               #t))))))
-    (home-page "http://www.ffmpeg.org/")
+    (home-page "https://www.ffmpeg.org/")
     (synopsis "Audio and video framework")
     (description "FFmpeg is a complete, cross-platform solution to record,
 convert and stream audio and video.  It includes the libavcodec
@@ -860,7 +860,7 @@ projects while introducing many more.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2016.04.06")
+    (version "2016.05.01")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://youtube-dl.org/downloads/"
@@ -868,7 +868,7 @@ projects while introducing many more.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1kdrjwrn0x1wmvansvd2222gfqnld4zdihf2jwnz36112r1p8nhi"))))
+                "1w04afmwq5pjvp3nl2k59q0cigqrj9n8fwkydcfldwpq83l15j5d"))))
     (build-system python-build-system)
     (home-page "http://youtube-dl.org")
     (arguments
@@ -1266,14 +1266,15 @@ from various services and pipes them into a video playing application.")
 (define-public mlt
   (package
     (name "mlt")
-    (version "0.9.8")
+    (version "6.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/mlt/mlt/mlt-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://github.com/mltframework/mlt/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0rmrkj7z9g3nr4099f3ff0r14l3ixcfnlx2cdbkqa6pxin0pv9bz"))))
+                "1zwzfgxrcbwkxnkiwv0a1rzxdnnaly90yyarl9wdw84nx11ffbnx"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -1299,11 +1300,12 @@ from various services and pipes them into a video playing application.")
        ("jack" ,jack-1)
        ("ladspa" ,ladspa)
        ("libsamplerate" ,libsamplerate)
+       ("pulseaudio" ,pulseaudio)
        ("sdl" ,sdl)
        ("sox" ,sox)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.mltframework.org/")
+    (home-page "https://www.mltframework.org/")
     (synopsis "Author, manage, and run multitrack audio/video compositions")
     (description
      "MLT is a multimedia framework, designed and developed for television
@@ -1316,14 +1318,14 @@ tools, XML authoring components, and an extensible plug-in based API.")
 (define-public v4l-utils
   (package
     (name "v4l-utils")
-    (version "1.8.1")
+    (version "1.10.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://linuxtv.org/downloads/v4l-utils"
+              (uri (string-append "https://linuxtv.org/downloads/v4l-utils"
                                   "/v4l-utils-" version ".tar.bz2"))
               (sha256
                (base32
-                "0cqv8drw0z0kfmz4f50a8kzbrz6vbj6j6q78030hgshr7yq1jqig"))))
+                "0srkwh3r6f0bkb4kp0d7i0mlmp8babs3qc22cdy1sw4awmzd5skq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1349,7 +1351,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "0.13.2")
+    (version "0.14.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jp9000/obs-studio"
@@ -1357,7 +1359,7 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1awaqlhlzlqqnwqixw54z40hqcnr3fwlclq4vlsy2kvsfyqjfr2b"))))
+                "1w07ign2swfigmsjd2jyaqqdnj2zpzs8hzsjzzk5l377jbx3ml5g"))))
     (build-system cmake-build-system)
     (arguments '(#:tests? #f)) ; no tests
     (native-inputs

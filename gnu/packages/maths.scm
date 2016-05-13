@@ -46,6 +46,7 @@
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
@@ -54,16 +55,19 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages less)
   #:use-module (gnu packages lisp)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages netpbm)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages perl)
@@ -403,7 +407,7 @@ plotting engine by third-party applications like Octave.")
 (define-public hdf5
   (package
     (name "hdf5")
-    (version "1.8.12")
+    (version "1.8.17")
     (source
      (origin
       (method url-fetch)
@@ -411,18 +415,27 @@ plotting engine by third-party applications like Octave.")
                           version "/src/hdf5-"
                           version ".tar.bz2"))
       (sha256
-       (base32 "0f9n0v3p3lwc7564791a39c6cn1d3dbrn7d1j3ikqsi27a8hy23d"))))
+       (base32 "0sj8x0gfs5fb28gipnynb9wpkz113h8wq9sva9mxx66kv27xsdgw"))
+      (patches (list (search-patch "hdf5-config-date.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)))
     (arguments
      `(#:phases
-        (alist-cons-before
-         'configure 'patch-configure
-         (lambda _
-           (substitute* "configure"
-             (("/bin/mv") "mv")))
-         %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-configure
+           (lambda _
+             (substitute* "configure"
+               (("/bin/mv") "mv"))
+             #t))
+         (add-after 'install 'patch-references
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin"))
+                   (zlib (assoc-ref inputs "zlib")))
+               (substitute* (find-files bin "h5p?cc")
+                 (("-lz" lib)
+                  (string-append "-L" zlib "/lib " lib)))
+               #t))))))
     (home-page "http://www.hdfgroup.org")
     (synopsis "Management suite for extremely large and complex data")
     (description "HDF5 is a suite that makes possible the management of
@@ -430,6 +443,140 @@ extremely large and complex data collections.")
     (license (license:x11-style
               "http://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
 
+(define-public hdf5-parallel-openmpi
+  (package (inherit hdf5)
+    (name "hdf5-parallel-openmpi")
+    (inputs
+     `(("mpi" ,openmpi)
+       ,@(package-inputs hdf5)))
+    (arguments
+     (substitute-keyword-arguments `(#:configure-flags '("--enable-parallel")
+                                     ,@(package-arguments hdf5))
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (add-before 'check 'patch-tests
+             (lambda _
+               ;; OpenMPI's mpirun will exit with non-zero status if it
+               ;; detects an "abnormal termination", i.e. any process not
+               ;; calling MPI_Finalize().  Since the test is explicitely
+               ;; avoiding MPI_Finalize so as not to have at_exit and thus
+               ;; H5C_flush_cache from being called, mpirun will always
+               ;; complain, so turn this test off.
+               (substitute* "testpar/Makefile"
+                 (("(^TEST_PROG_PARA.*)t_pflush1(.*)" front back)
+                  (string-append front back "\n")))
+               (substitute* "tools/h5diff/testph5diff.sh"
+                 (("/bin/sh") (which "sh")))
+               #t))))))
+    (synopsis "Management suite for data with parallel IO support")))
+
+(define-public h5check
+  (package
+    (name "h5check")
+    (version "2.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.hdfgroup.org/ftp/HDF5/tools/"
+                           "h5check/src/h5check-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1gm76jbwhz9adbxgn14zx8cj33dmjdr2g5xcy0m9c2gakp8w59kj"))))
+    (build-system gnu-build-system)
+    (inputs `(("hdf5" ,hdf5)))                 ;h5cc for tests
+    (home-page "https://www.hdfgroup.org/products/hdf5_tools/h5check.html")
+    (synopsis "HDF5 format checker")
+    (description "@code{h5check} is a validation tool for verifying that an
+HDF5 file is encoded according to the HDF File Format Specification.")
+    (license (license:x11-style "file://COPYING"))))
+
+(define-public netcdf
+  (package
+    (name "netcdf")
+    (version "4.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "ftp://ftp.unidata.ucar.edu/pub/netcdf/"
+                           "netcdf-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0y6gdcplarwqqnrav2xg1xd6ih732rzzbmdw78v3rl5b8mwcnh0d"))
+       (patches (list (search-patch "netcdf-config-date.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("m4" ,m4)
+       ("doxygen" ,doxygen)
+       ("graphviz" ,graphviz)))
+    (inputs
+     `(("hdf5" ,hdf5)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags '("--enable-doxygen" "--enable-dot")
+       #:parallel-tests? #f))           ;various race conditions
+    (home-page "http://www.unidata.ucar.edu/software/netcdf/")
+    (synopsis "Library for scientific data")
+    (description "NetCDF is an interface for scientific data access and a
+software library that provides an implementation of the interface.  The netCDF
+library defines a machine-independent format for representing scientific data.
+Together, the interface, library, and format support the creation, access, and
+sharing of scientific data.")
+    (license (license:x11-style "file://COPYRIGHT"))))
+
+(define-public netcdf-parallel-openmpi
+  (package (inherit netcdf)
+    (name "netcdf-parallel-openmpi")
+    (inputs
+     `(("mpi" ,openmpi)
+       ,@(alist-replace "hdf5" (list hdf5-parallel-openmpi)
+                        (package-inputs netcdf))))
+    ;; TODO: Replace pkg-config references in nc-config with absolute references
+    (arguments
+     (substitute-keyword-arguments (package-arguments netcdf)
+       ((#:configure-flags flags)
+        `(cons* "CC=mpicc" "CXX=mpicxx"
+                "--enable-parallel-tests"
+                ;; Shared libraries not supported with parallel IO.
+                "--disable-shared" "--with-pic"
+                ,flags))))))
+
+(define-public nlopt
+  (package
+    (name "nlopt")
+    (version "2.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ab-initio.mit.edu/nlopt/nlopt-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32 "12cfkkhcdf4zmb6h7y6qvvdvqjs2xf9sjpa3rl3bq76px4yn76c0"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; Shared libraries are not built by default.  They are required to
+       ;; build the Guile, Octave, and Python bindings.
+       #:configure-flags '("--enable-shared")
+
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-libnlopt-file-name
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure the Scheme module refers to the library by its
+             ;; absolute file name (we cannot do that from a snippet
+             ;; because the expansion of @libdir@ contains
+             ;; ${exec_prefix}.)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "swig/nlopt.scm.in"
+                 (("libnlopt")
+                  (string-append out "/lib/libnlopt")))
+               #t))))))
+    (inputs `(("guile" ,guile-2.0)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "http://ab-initio.mit.edu/wiki/")
+    (synopsis "Library for nonlinear optimization")
+    (description "NLopt is a library for nonlinear optimization, providing a
+common interface for a number of different free optimization routines available
+online as well as original implementations of various other algorithms.")
+    (license license:lgpl2.1+)))
 
 ;; For a fully featured Octave, users  are strongly recommended also to install
 ;; the following packages: texinfo, less, ghostscript, gnuplot.
@@ -2119,3 +2266,138 @@ are built.  It can generate many different fractal types such as the Mandelbrot
 set.")
     (home-page "http://www.gnu.org/software/xaos/")
     (license license:gpl2+)))
+
+(define-public hypre
+  (package
+    (name "hypre")
+    (version "2.11.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/LLNL/hypre/archive/"
+                                  "v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0q69ia0jivzcr8p049dn3mg8yjpn6nwq4sw9iqac8vr63vi54l6m"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; Remove use of __DATE__ and __TIME__ for reproducibility;
+                  ;; substitute the tarball creation time.
+                  (substitute* "src/utilities/HYPRE_utilities.h"
+                    (("Date Compiled: .*$")
+                     "Date Compiled: Mar 28 2016 20:19:59 +0000\"\n"))
+                  #t))))
+    (build-system gnu-build-system)
+    (outputs '("out"                    ;6.1 MiB of headers and libraries
+               "doc"))                  ;4.8 MiB of documentation
+    (native-inputs
+     `(("doc++" ,doc++)
+       ("netpbm" ,netpbm)
+       ("texlive" ,texlive)             ;full package required for fonts
+       ("ghostscript" ,ghostscript)))
+    (inputs
+     `(("blas" ,openblas)
+       ("lapack" ,lapack)))
+    (arguments
+     `(#:modules ((srfi srfi-1)
+                  ,@%gnu-build-system-modules)
+       #:configure-flags '("--enable-shared"
+                           "--disable-fortran"
+                           "--without-MPI"
+                           "--with-openmp"
+                           "--with-fei"
+                           "--with-lapack"
+                           "--with-blas")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'chdir-src
+           (lambda _ (chdir "src")))
+         (replace 'configure
+           (lambda* (#:key build target configure-flags
+                           #:allow-other-keys #:rest args)
+             (let* ((configure (assoc-ref %standard-phases 'configure)))
+               (apply configure
+                      (append args
+                              (list #:configure-flags
+                                    (cons (string-append
+                                           "--host=" (or target build))
+                                          configure-flags)))))))
+         (add-after 'build 'build-docs
+           (lambda _
+             (zero? (system* "make" "-Cdocs" "pdf" "html"))))
+         (replace 'check
+           (lambda _
+             (setenv "LD_LIBRARY_PATH" (string-append (getcwd) "/hypre/lib"))
+             (setenv "PATH" (string-append "." ":" (getenv "PATH")))
+             (and (system* "make" "check" "CHECKRUN=")
+                  (fold (lambda (filename result)
+                          (and result
+                               (let ((size (stat:size (stat filename))))
+                                 (when (not (zero? size))
+                                   (format #t "~a size ~d; error indication~%"
+                                           filename size))
+                                 (zero? size))))
+                        #t
+                        (find-files "test" ".*\\.err$")))))
+         (add-after 'install 'install-docs
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Custom install because docs/Makefile doesn't honor ${docdir}.
+             (let* ((doc (assoc-ref outputs "doc"))
+                    (docdir (string-append doc "/share/doc/hypre-" ,version)))
+               (mkdir-p docdir)
+               (with-directory-excursion "docs"
+                 (for-each (lambda (base)
+                             (install-file (string-append base ".pdf") docdir)
+                             (copy-recursively base docdir)) ;html docs
+                           '("HYPRE_usr_manual"
+                             "HYPRE_ref_manual")))
+               #t))))))
+    (home-page "http://www.llnl.gov/casc/hypre/")
+    (synopsis "Library of solvers and preconditioners for linear equations")
+    (description
+     "HYPRE is a software library of high performance preconditioners and
+solvers for the solution of large, sparse linear systems of equations.  It
+features multigrid solvers for both structured and unstructured grid
+problems.")
+    (license license:lgpl2.1)))
+
+(define-public hypre-openmpi
+  (package (inherit hypre)
+    (name "hypre-openmpi")
+    (inputs
+     `(("mpi" ,openmpi)
+       ,@(package-inputs hypre)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments hypre)
+       ((#:configure-flags flags)
+        ``("--with-MPI"
+           ,@(delete "--without-MPI" ,flags)))))
+    (synopsis "Parallel solvers and preconditioners for linear equations")
+    (description
+     "HYPRE is a software library of high performance preconditioners and
+solvers for the solution of large, sparse linear systems of equations on
+parallel computers.  It features parallel multigrid solvers for both
+structured and unstructured grid problems.")))
+
+(define-public matio
+  (package
+    (name "matio")
+    (version "1.5.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/matio/" version "/"
+                           "matio-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0y2qymgxank8wdiwc68ap8bxdzrhvyw86i29yh3xgn4z1njfd9ir"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("zlib" ,zlib)
+       ("hdf5" ,hdf5)))
+    (home-page "http://matio.sourceforge.net/")
+    (synopsis "Library for reading and writing MAT files")
+    (description "Matio is a library for reading and writing MAT files.  It
+supports compressed MAT files, as well as newer (version 7.3) MAT files.")
+    (license license:bsd-2)))

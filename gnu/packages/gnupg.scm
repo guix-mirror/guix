@@ -32,6 +32,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pth)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
@@ -148,7 +149,7 @@ provided.")
 (define-public libksba
   (package
     (name "libksba")
-    (version "1.3.3")
+    (version "1.3.4")
     (source
      (origin
       (method url-fetch)
@@ -157,7 +158,7 @@ provided.")
             version ".tar.bz2"))
       (sha256
        (base32
-        "11kp3h9l3b8ikydkcdkwgx45r662zi30m26ra5llyhfh6kz5yzqc"))))
+        "0kxdb02z41cwm1xbwfwj9nbc0dzjhwyq8c475mlhhmpcxcy8ihpn"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error)))
@@ -208,16 +209,14 @@ compatible to GNU Pth.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.1.11")
+    (version "2.1.12")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "06mn2viiwsyq991arh5i5fhr9jyxq2bi0jkdj7ndfisxihngpc5p"))
-              (patches (search-patches
-                        "gnupg-simple-query-ignore-status-messages.patch"))))
+                "01n5py45x0r97l4dzmd803jpbpbcxr1591k3k4s8m9804jfr4d5c"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -569,9 +568,9 @@ including tools for signing keys, keyring analysis, and party preparation.
    (license license:gpl2)
    (home-page "http://pgp-tools.alioth.debian.org/")))
 
-(define-public pinentry
+(define-public pinentry-tty
   (package
-    (name "pinentry")
+    (name "pinentry-tty")
     (version "0.9.7")
     (source (origin
               (method url-fetch)
@@ -581,20 +580,47 @@ including tools for signing keys, keyring analysis, and party preparation.
                (base32
                 "1cp7wjqr6nx31mdclr61s2h84ijqjl0ph99kgj4vyawpjj1j1633"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--enable-pinentry-tty")))
     (inputs
      `(("ncurses" ,ncurses)
        ("libassuan" ,libassuan)
-       ("libsecret" ,libsecret "out")
-       ("gtk+" ,gtk+-2)
-       ("glib" ,glib)))
+       ("libsecret" ,libsecret "out")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://gnupg.org/aegypten2/")
     (synopsis "GnuPG's interface to passphrase input")
     (description
-     "Pinentry provides a console and a GTK+ GUI that allows users to
-enter a passphrase when `gpg' or `gpg2' is run and needs it.")
+     "Pinentry provides a console that allows users to enter a passphrase when
+@code{gpg} or @code{gpg2} is run and needs it.")
     (license license:gpl2+)))
+
+(define-public pinentry-gtk2
+  (package
+    (inherit pinentry-tty)
+    (name "pinentry-gtk2")
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("glib" ,glib)
+       ,@(package-inputs pinentry-tty)))
+    (description
+     "Pinentry provides a console and a GTK+ GUI that allows users to enter a
+passphrase when @code{gpg} or @code{gpg2} is run and needs it.")))
+
+(define-public pinentry-qt
+  (package
+    (inherit pinentry-tty)
+    (name "pinentry-qt")
+    (inputs
+     `(("qt" ,qt)
+       ,@(package-inputs pinentry-tty)))
+  (description
+   "Pinentry provides a console and a Qt GUI that allows users to enter a
+passphrase when @code{gpg} or @code{gpg2} is run and needs it.")))
+
+(define-public pinentry
+  (package (inherit pinentry-gtk2)
+    (name "pinentry")))
 
 (define-public paperkey
   (package

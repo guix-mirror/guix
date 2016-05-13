@@ -1,0 +1,169 @@
+Adapted from https://sources.debian.net/data/main/d/doc%2B%2B/3.4.10-3.4/debian/patches/segfault_fix.patch
+
+--- doc++-3.4.10/src/McDArray.h	2000-07-30 12:40:48.000000000 +0200
++++ doc++-3.4.10/src/McDArray.h	2005-05-10 15:02:06.000000000 +0200
+@@ -80,9 +80,14 @@
+     McDArray(const McDArray& old) : memFactor(old.memFactor),
+ 	thesize(old.thesize), themax(old.themax)
+ 	{
+-	data = (T*)malloc(themax * sizeof(T));
+-	if(thesize)
+-	    memcpy(data, old.data, thesize * sizeof(T));
++	if (themax)
++	    {
++	    data = (T*)malloc(themax * sizeof(T));
++	    if(thesize)
++		memcpy(data, old.data, thesize * sizeof(T));
++	    }
++	else
++	    data = 0;
+ 	assert(isConsistent());
+ 	}
+ 
+--- doc++-3.4.10/src/McDirectory.cc	2000-03-14 22:17:36.000000000 +0100
++++ doc++-3.4.10/src/McDirectory.cc	2005-05-10 15:02:18.000000000 +0200
+@@ -23,12 +23,13 @@
+ */
+ 
+ #include "McDirectory.h"
+-#include "McSorter.h"
+ #include "McString.h"
+ #include "doc.h"
+ 
+ #include <stdio.h>
+ 
++#include <algorithm>
++
+ #ifdef WIN32
+ #include <windows.h>
+ #ifdef __BORLANDC__
+@@ -62,7 +63,7 @@
+     FindClose(searchHandle);
+     StringCompare comp;
+     if(list.size())
+-	sort((char **)list, list.size(), comp, 0);
++	std::sort((char **)list, (char **)list + list.size(), comp);
+     return 0;
+ }
+ 
+@@ -107,7 +108,7 @@
+     closedir(dir);
+     StringCompare comp;
+     if(list.size())
+-	sort((char **)list, list.size(), comp, 0);
++	std::sort((char **)list, (char **)list + list.size(), comp);
+     return list.size();
+ }
+ 
+--- doc++-3.4.10/src/McDirectory.h	2000-06-28 21:54:58.000000000 +0200
++++ doc++-3.4.10/src/McDirectory.h	2005-05-10 15:02:18.000000000 +0200
+@@ -59,9 +59,9 @@
+     class StringCompare
+ 	{
+ 	public:
+-	    int operator()(const char *t1, const char *t2)
++	    bool operator()(const char *t1, const char *t2)
+ 		{
+-		return strcmp(t1, t2);
++		return strcmp(t1, t2) < 0;
+ 		}
+ 	};
+ };
+--- doc++-3.4.10/src/html.cc	2001-02-17 07:34:49.000000000 +0100
++++ doc++-3.4.10/src/html.cc	2005-05-10 15:02:18.000000000 +0200
+@@ -38,9 +38,10 @@
+ #include <sys/stat.h>
+ #include <sys/types.h>
+ 
++#include <algorithm>
++
+ #include "McDirectory.h"
+ #include "McHashTable.h"
+-#include "McSorter.h"
+ #include "classgraph.h"
+ #include "doc.h"
+ #include "gifs.h"
+@@ -314,9 +315,11 @@
+ 	virtual void writeMember(Entry *e, bool links, bool withSub = true);
+ 	class EntryCompare {
+ 	    public:
+-		int operator()(const MemberWriterListEntry& l1, const MemberWriterListEntry& l2)
++		bool operator()(const MemberWriterListEntry& l1, const MemberWriterListEntry& l2)
+ 		    {
+-		    return strcmp(l1.entry->fullName.c_str(), l2.entry->fullName.c_str());
++		    const char *s1 = l1.entry->fullName.c_str();
++		    const char *s2 = l2.entry->fullName.c_str();
++		    return strcmp(s1, s2) < 0;
+ 		    }
+ 	};
+     public:
+@@ -324,7 +327,7 @@
+ 	    {
+ 	    EntryCompare comp;
+ 	    if(list.size())
+-		::sort((MemberWriterListEntry *)list, list.size(), comp, 0);
++		std::sort((MemberWriterListEntry *)list, (MemberWriterListEntry *)list + list.size(), comp);
+ 	    }
+ 	virtual void startList(FILE *f, char *heading, bool withLinks);
+ 	virtual void addMember(Entry *e, bool links, bool withSub = true)
+@@ -376,7 +379,7 @@
+ 	    int lp;
+ 
+ 	    if(list.size() > 1)
+-		::sort((TOCListEntry *)list, list.size(), comp, 0);
++		std::sort((TOCListEntry *)list, (TOCListEntry *)list + list.size(), comp);
+ 
+ 	    // Sort subsections
+ 	    for(lp = 0; lp < list.size(); lp++)
+@@ -385,9 +388,9 @@
+ 	    }
+ 	class EntryCompare {
+ 	    public:
+-		int operator()(TOCListEntry& l1, TOCListEntry& l2)
++		bool operator()(const TOCListEntry& l1, const TOCListEntry& l2)
+ 		    {
+-		    return strcmp(l1.name, l2.name);
++		    return strcmp(l1.name, l2.name) < 0;
+ 		    }
+ 	};
+ 	void addEntry(Entry *entry, TOClist *tl);
+@@ -487,7 +490,7 @@
+ 
+     for(i = 0; i < list.size(); i++)
+ 	if(list[i].tl)
+-	    free(list[i].tl);
++	    delete list[i].tl;
+ }
+ 
+ class HIERlist;
+@@ -509,7 +512,7 @@
+ 	    int i;
+ 
+ 	    if(list.size() > 1)
+-		::sort((HIERListEntry *)list, list.size(), comp, 0);
++		std::sort((HIERListEntry *)list, (HIERListEntry *)list + list.size(), comp);
+ 
+ 	    // Sort subentries
+ 	    for(i = 0; i < list.size(); i++)
+@@ -519,9 +522,9 @@
+ 	class EntryCompare
+ 	    {
+ 	    public:
+-		int operator()(HIERListEntry& l1, HIERListEntry& l2)
++		bool operator()(const HIERListEntry& l1, const HIERListEntry& l2)
+ 		    {
+-		    return strcmp(l1.name, l2.name);
++		    return strcmp(l1.name, l2.name) < 0;
+ 		    }
+ 	    };
+ 	void addEntry(Entry *entry, HIERlist *hl);
+--- doc++-3.4.10/src/readfiles.ll	2001-11-25 18:04:48.000000000 +0100
++++ doc++-3.4.10/src/readfiles.ll	2005-05-10 15:02:18.000000000 +0200
+@@ -28,7 +28,6 @@
+ #include <sys/types.h>
+ 
+ #include "McDirectory.h"
+-#include "McSorter.h"
+ #include "McString.h"
+ #include "doc.h"
+ #include "nametable.h"

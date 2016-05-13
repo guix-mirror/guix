@@ -24,6 +24,7 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages glib)
@@ -215,4 +216,32 @@ on.")
      "wmclock is an applet for Window Maker which displays the date and time in
 a dockable tile.  It features multiple language support, 24h or 12h time
 display, and can run a user-specified program on mouse click.")
+    (license gpl2+)))
+
+(define-public wmfire
+  (package
+    (name "wmfire")
+    (version "1.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.improbability.net/"
+                                  name "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "101grahd80n97y2dczb629clmcgiavdpbbwy78kk5wgs362m12z3"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("libgtop" ,libgtop)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.improbability.net/")
+    (synopsis "Display flames to represent CPU usage, memory usage, etc.")
+    (description
+     "wmfire is an applet for Window Maker that can monitor the average cpu
+load, or individual cpu load on SMP computers.  Additionally it can monitor the
+memory, network load, a file or just be set to show a pretty flame.  On
+entering the dock a burning spot replaces the cursor, and after two seconds
+symbols to represent the current monitor are \"burnt\" onscreen.  The flame
+colour can also be changed.")
     (license gpl2+)))

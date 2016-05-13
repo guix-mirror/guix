@@ -45,8 +45,10 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages docbook)
-  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fonts)
@@ -84,6 +86,7 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)
   #:use-module (gnu packages wxwidgets)
@@ -548,15 +551,11 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
            (alist-cons-after
             'install 'wrap-program
             (lambda* (#:key inputs outputs #:allow-other-keys)
-              ;; Make sure 'solfege' runs with the correct PYTHONPATH.  We
-              ;; also need to modify GDK_PIXBUF_MODULE_FILE for SVG support.
+              ;; Make sure 'solfege' runs with the correct PYTHONPATH.
               (let* ((out (assoc-ref outputs "out"))
-                     (path (getenv "PYTHONPATH"))
-                     (rsvg (assoc-ref inputs "librsvg"))
-                     (pixbuf (find-files rsvg "^loaders\\.cache$")))
+                     (path (getenv "PYTHONPATH")))
                 (wrap-program (string-append out "/bin/solfege")
-                  `("PYTHONPATH" ":" prefix (,path))
-                  `("GDK_PIXBUF_MODULE_FILE" ":" prefix ,pixbuf))))
+                  `("PYTHONPATH" ":" prefix (,path)))))
             %standard-phases)))))))
     (inputs
      `(("python" ,python-2)
@@ -564,8 +563,6 @@ for path in [path for path in sys.path if 'site-packages' in path]: site.addsite
        ("gettext" ,gnu-gettext)
        ("gtk" ,gtk+)
        ("lilypond" ,lilypond)
-       ("librsvg" ,librsvg) ; needed at runtime for icons
-       ("libpng" ,libpng) ; needed at runtime for icons
        ;; players needed at runtime
        ("aplay" ,alsa-utils)
        ("csound" ,csound) ; optional, needed for some exercises
@@ -831,6 +828,13 @@ mixing, FFT scopes, MIDI automation and full scriptability in Scheme.")
                             (string-prefix? "i686" system)))
                (substitute* "bristol/Makefile.in"
                  (("-msse -mfpmath=sse") "")))
+             #t))
+         ;; We know that Bristol has been linked with JACK and we don't have
+         ;; ldd, so we can just skip this check.
+         (add-after 'unpack 'do-not-grep-for-jack
+           (lambda _
+             (substitute* "bin/startBristol.in"
+               (("ldd `which bristol` | grep jack") "echo guix"))
              #t)))))
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -958,6 +962,70 @@ programming methods as well as for realizing complex systems for large-scale
 projects.")
     (license license:bsd-3)))
 
+(define-public portmidi
+  (package
+    (name "portmidi")
+    (version "217")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/portmedia/portmidi/"
+                                  version "/portmidi-src-" version ".zip"))
+              (sha256
+               (base32
+                "03rfsk7z6rdahq2ihy5k13qjzgx757f75yqka88v3gc0pn9ais88"))
+              (patches (list (search-patch "portmidi-modular-build.patch")))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f ; tests cannot be linked
+       #:configure-flags
+       (list "-DPORTMIDI_ENABLE_JAVA=Off"
+             "-DCMAKE_BUILD_TYPE=Release"    ; needed to have PMALSA set
+             "-DPORTMIDI_ENABLE_TEST=Off"))) ; tests fail linking
+    (inputs
+     `(("alsa-lib" ,alsa-lib)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://portmedia.sourceforge.net/portmidi/")
+    (synopsis "Library for MIDI I/O")
+    (description
+     "PortMidi is a library supporting real-time input and output of MIDI data
+using a system-independent interface.")
+    (license license:expat)))
+
+(define-public python-pyportmidi
+  (package
+    (name "python-pyportmidi")
+    (version (package-version portmidi))
+    (source (package-source portmidi))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-dir
+           (lambda _ (chdir "pm_python") #t))
+         (add-after 'enter-dir 'fix-setup.py
+           (lambda _
+             (substitute* "setup.py"
+               ;; Use Python 3 syntax
+               (("print (\".*\")" _ text)
+                (string-append "print(" text ")\n"))
+               ;; TODO.txt and CHANGES.txt don't exist
+               (("CHANGES =.*") "CHANGES = \"\"\n")
+               (("TODO =.*") "TODO = \"\"\n"))
+             #t)))))
+    (inputs
+     `(("portmidi" ,portmidi)
+       ("alsa-lib" ,alsa-lib)
+       ("python-cython" ,python-cython)))
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://portmedia.sourceforge.net/portmidi/")
+    (synopsis "Python bindings to PortMidi")
+    (description
+     "This package provides Python bindings to the PortMidi library.")
+    (license license:expat)))
+
 (define-public frescobaldi
   (package
     (name "frescobaldi")
@@ -973,8 +1041,10 @@ projects.")
     (build-system python-build-system)
     (inputs
      `(("lilypond" ,lilypond)
+       ("portmidi" ,portmidi)
        ("python-pyqt-4" ,python-pyqt-4)
        ("python-ly" ,python-ly)
+       ("python-pyportmidi" ,python-pyportmidi)
        ("poppler" ,poppler)
        ("python-poppler-qt4" ,python-poppler-qt4)
        ("python-sip" ,python-sip)))
@@ -1474,3 +1544,44 @@ for improved Amiga ProTracker 2/3 compatibility.")
     (home-page "http://milkytracker.org/")
     ;; 'src/milkyplay' is under Modified BSD, the rest is under GPL3 or later.
     (license (list license:bsd-3 license:gpl3+))))
+
+(define-public moc
+  (package
+    (name "moc")
+    (version "2.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ftp.daper.net/pub/soft/"
+                                  name "/stable/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1wn4za08z64bhsgfhr9c0crfyvy8c3b6a337wx7gz19am5srqh8v"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("curl" ,curl)
+       ("faad2" ,faad2)
+       ("ffmpeg" ,ffmpeg)
+       ("file" ,file)
+       ("jack" ,jack-1)
+       ("libid3tag" ,libid3tag)
+       ("libltdl" ,libltdl)
+       ("libmodplug" ,libmodplug)
+       ("libmpcdec" ,libmpcdec)
+       ("libmad" ,libmad)
+       ("ncurses" ,ncurses)
+       ("openssl" ,openssl)
+       ("sasl" ,cyrus-sasl)
+       ("speex" ,speex)
+       ("taglib" ,taglib)
+       ("wavpack" ,wavpack)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Console audio player designed to be powerful and easy to use")
+    (description
+     "Music on Console is a console audio player that supports many file
+formats, including most audio formats recognized by FFMpeg.")
+    (home-page "http://moc.daper.net")
+    (license license:gpl2+)))

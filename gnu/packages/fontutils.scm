@@ -46,23 +46,21 @@
 (define-public freetype
   (package
    (name "freetype")
-   (version "2.6")
+   (version "2.6.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://savannah/freetype/freetype-"
                                 version ".tar.bz2"))
             (sha256 (base32
-                     "0zilx15fwcpa8hmcxpc423jwb8ijw4qpq968kh18akvn4j0znsc4"))))
+                     "18k3b026762lmyrxfil5xv8qwnvj7hc12gz9bjqzbb12lmx707ip"))))
    (build-system gnu-build-system)
-   (arguments
-    `(#:phases
-       ;; This should not be necessary; reported upstream as
-       ;; https://savannah.nongnu.org/bugs/index.php?44261
-       (alist-cons-before
-        'configure 'set-paths
-        (lambda _
-          (setenv "CONFIG_SHELL" (which "bash")))
-        %standard-phases)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (propagated-inputs
+    ;; These are all in the Requires.private field of freetype2.pc.
+    ;; XXX: add harfbuzz.
+    `(("libpng" ,libpng)
+      ("zlib" ,zlib)))
    (synopsis "Font rendering library")
    (description
     "Freetype is a library that can be used by applications to access the
@@ -361,16 +359,15 @@ applications should be.")
 (define-public graphite2
   (package
    (name "graphite2")
-   (version "1.3.6")
+   (version "1.3.8")
    (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://github.com/silnrsi/graphite/archive/"
-                           version ".tar.gz"))
-       (file-name (string-append name "-" version ".tar.gz"))
+       (uri (string-append "https://github.com/silnrsi/graphite/releases/"
+                           "download/" version "/" name "-" version ".tgz"))
        (sha256
         (base32
-         "1frd9mjaqzvh9gs74ngc43igi53vzjzlwr5chbrs6ii1hc4aa23s"))))
+         "1hlc9j7w7gihy6gvzfa7902pr6yxq1sr1xkp5rwf0p29m2rjagwz"))))
    (build-system cmake-build-system)
    (native-inputs
     `(("python" ,python-2) ; because of "import imap" in tests

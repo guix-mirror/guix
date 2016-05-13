@@ -2,13 +2,14 @@
 ;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2014 David Thompson <davet@gnu.org>
+;;; Copyright © 2014, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,8 +28,12 @@
 
 (define-module (gnu packages databases)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages avahi)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages language)
   #:use-module (gnu packages linux)
@@ -40,9 +45,12 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages rdf)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages jemalloc)
@@ -57,6 +65,51 @@
   #:use-module (guix utils)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match))
+
+(define-public 4store
+  (package
+    (name "4store")
+    (version "1.1.6")
+    (source (origin
+      (method url-fetch)
+      (uri (string-append "https://github.com/garlik/4store/archive/v"
+                          version ".tar.gz"))
+      (file-name (string-append name "-" version ".tar.gz"))
+      (sha256
+       (base32 "004fmcf1w75zhc1x3zc6kc97j4jqn2v5nhk6yb3z3cpfrhzi9j50"))
+      (patches (list (search-patch "4store-fix-buildsystem.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)
+       ("python" ,python-2)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("gettext" ,gnu-gettext)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("rasqal" ,rasqal)
+       ("libxml2" ,libxml2)
+       ("raptor2" ,raptor2)
+       ("readline" ,readline)
+       ("avahi" ,avahi)
+       ("pcre" ,pcre)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("openssl" ,openssl)
+       ("util-linux" ,util-linux)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'generate-configure
+           (lambda _
+             (zero? (system* "./autogen.sh")))))))
+    ;; http://www.4store.org has been down for a while now.
+    (home-page "https://github.com/garlik/4store")
+    (synopsis "Clustered RDF storage and query engine")
+    (description "4store is a RDF/SPARQL store written in C, supporting
+either single machines or networked clusters.")
+      (license gpl3+)))
 
 (define-public gdbm
   (package
@@ -814,14 +867,14 @@ similar to BerkeleyDB, LevelDB, etc.")
 (define-public redis
   (package
     (name "redis")
-    (version "3.0.7")
+    (version "3.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.redis.io/releases/redis-"
                                   version".tar.gz"))
               (sha256
                (base32
-                "08vzfdr67gp3lvk770qpax2c5g2sx8hn6p64jn3jddrvxb2939xj"))))
+                "0ql7zp061xr66a1dzpa6a0ijm8zm133dd364va7q5h8avkrim7wq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tests related to master/slave and replication fail

@@ -33,7 +33,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages boost)
-  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages haskell)
   #:use-module (gnu packages image)
   #:use-module (gnu packages python)

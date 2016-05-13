@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014, 2016 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,7 +52,10 @@
                                   version ".tar.gz"))
               (sha256
                (base32
-                "086v01jy896dj86bq7plrf6si4p6gh6ga2v5417llgmminycz8rc"))))
+                "086v01jy896dj86bq7plrf6si4p6gh6ga2v5417llgmminycz8rc"))
+              (patch-flags '("-p0"))
+              (patches
+               (search-patches "inkscape-drop-wait-for-targets.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("aspell" ,aspell)

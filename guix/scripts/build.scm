@@ -24,6 +24,7 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix grafts)
+  #:use-module (guix combinators)
 
   ;; Use the procedure that destructures "NAME-VERSION" forms.
   #:use-module ((guix utils) #:hide (package-name->name+version))

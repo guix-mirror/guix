@@ -29,7 +29,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages dejagnu)
-  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages documentation)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages graphviz)
@@ -356,6 +356,19 @@ Go.  It also includes runtime support libraries for these languages.")
                                        "gcc-libiberty-printf-decl.patch"))))
     ;; GCC 5 ships with .info files, so no need for Texinfo.
     (native-inputs '())))
+
+(define-public gcc-6
+  (package
+    (inherit gcc-5)
+    (version "6.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gcc/gcc-"
+                                  version "/gcc-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0ld3y4rgimyqgx1nwvzqyl5gr4wzc0ch4akkvsqp3fgbmdfcii09"))
+              (patches (search-patches "gcc-5.0-libvtv-runpath.patch"))))))
 
 ;; Note: When changing the default gcc version, update
 ;;       the gcc-toolchain-* definitions accordingly.

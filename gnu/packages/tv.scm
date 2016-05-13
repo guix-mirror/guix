@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,30 +22,29 @@
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages image)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages fontutils))
+  #:use-module (gnu packages xorg))
 
 (define-public tvtime
   (package
     (name "tvtime")
-    (version "1.0.2")
+    (version "1.0.10")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/tvtime/tvtime-"
-                                  version ".tar.gz"))
+              (uri (string-append
+                    "http://linuxtv.org/downloads/tvtime/tvtime-"
+                    version ".tar.gz"))
               (sha256
                (base32
-                "08q5gzbyz0lxb730rz6d6amkzimlc7nanv6n50j2bpw4n2xa9wmf"))
-              (patches (search-patches "tvtime-videodev2.patch"
-                                       "tvtime-pngoutput.patch"
-                                       "tvtime-xmltv.patch"
-                                       "tvtime-gcc41.patch"))))
+                "1mk6dni82n8jv5wsrrpqzcwrg9ccx9vijb5sbm7gqm2y0h40q5y9"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libx11" ,libx11)
+     `(("alsa-lib" ,alsa-lib)
+       ("libx11" ,libx11)
        ("libxext" ,libxext)
        ("libxt" ,libxt)
        ("libxtst" ,libxtst)

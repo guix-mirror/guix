@@ -66,14 +66,14 @@ and BOOTP/TFTP for network booting of diskless machines.")
 (define-public bind-utils
   (package
     (name "bind-utils")
-    (version "9.10.3-P4")
+    (version "9.10.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.isc.org/isc/bind9/" version
                                   "/bind-" version ".tar.gz"))
               (sha256
                (base32
-                "0giys46ifypysf799w9v58kbaz1v3fbdzw3s212znifzzfsl9h1a"))))
+                "0mmhzi4483mkak47wj255a36g3v0yilxwfwlbckr1hssinri5m7q"))))
     (build-system gnu-build-system)
     (inputs
      ;; it would be nice to add GeoIP and gssapi once there is package

@@ -97,45 +97,6 @@
         (string-replace-substring "/nix/store/chbouib" "/nix/" "/gnu/")
         (string-replace-substring "" "foo" "bar")))
 
-(test-equal "fold2, 1 list"
-    (list (reverse (iota 5))
-          (map - (reverse (iota 5))))
-  (call-with-values
-      (lambda ()
-        (fold2 (lambda (i r1 r2)
-                 (values (cons i r1)
-                         (cons (- i) r2)))
-               '() '()
-               (iota 5)))
-    list))
-
-(test-equal "fold2, 2 lists"
-    (list (reverse '((a . 0) (b . 1) (c . 2) (d . 3)))
-          (reverse '((a . 0) (b . -1) (c . -2) (d . -3))))
-  (call-with-values
-      (lambda ()
-        (fold2 (lambda (k v r1 r2)
-                 (values (alist-cons k v r1)
-                         (alist-cons k (- v) r2)))
-               '() '()
-               '(a b c d)
-               '(0 1 2 3)))
-    list))
-
-(test-equal "split, element is in list"
-  '((foo) (baz))
-  (call-with-values
-      (lambda ()
-        (split '(foo bar baz) 'bar))
-    list))
-
-(test-equal "split, element is not in list"
-  '((foo bar baz) ())
-  (call-with-values
-      (lambda ()
-        (split '(foo bar baz) 'quux))
-    list))
-
 (test-equal "strip-keyword-arguments"
   '(a #:b b #:c c)
   (strip-keyword-arguments '(#:foo #:bar #:baz)
@@ -149,37 +110,6 @@
   (list (ensure-keyword-arguments '(#:foo 2) '(#:foo 2))
         (ensure-keyword-arguments '(#:foo 2) '(#:bar 3))
         (ensure-keyword-arguments '(#:foo 2) '(#:bar 3 #:foo 42))))
-
-(let* ((tree (alist->vhash
-              '((0 2 3) (1 3 4) (2) (3 5 6) (4 6) (5) (6))
-              hashq))
-       (add-one (lambda (_ r) (1+ r)))
-       (tree-lookup (lambda (n) (cdr (vhash-assq n tree)))))
-  (test-equal "fold-tree, single root"
-    5 (fold-tree add-one 0 tree-lookup '(0)))
-  (test-equal "fold-tree, two roots"
-    7 (fold-tree add-one 0 tree-lookup '(0 1)))
-  (test-equal "fold-tree, sum"
-    16 (fold-tree + 0 tree-lookup '(0)))
-  (test-equal "fold-tree, internal"
-    18 (fold-tree + 0 tree-lookup '(3 4)))
-  (test-equal "fold-tree, cons"
-    '(1 3 4 5 6)
-    (sort (fold-tree cons '() tree-lookup '(1)) <))
-  (test-equal "fold-tree, overlapping paths"
-    '(1 3 4 5 6)
-    (sort (fold-tree cons '() tree-lookup '(1 4)) <))
-  (test-equal "fold-tree, cons, two roots"
-    '(0 2 3 4 5 6)
-    (sort (fold-tree cons '() tree-lookup '(0 4)) <))
-  (test-equal "fold-tree-leaves, single root"
-    2 (fold-tree-leaves add-one 0 tree-lookup '(1)))
-  (test-equal "fold-tree-leaves, single root, sum"
-    11 (fold-tree-leaves + 0 tree-lookup '(1)))
-  (test-equal "fold-tree-leaves, two roots"
-    3 (fold-tree-leaves add-one 0 tree-lookup '(0 1)))
-  (test-equal "fold-tree-leaves, two roots, sum"
-    13 (fold-tree-leaves + 0 tree-lookup '(0 1))))
 
 (test-assert "filtered-port, file"
   (let* ((file  (search-path %load-path "guix.scm"))
@@ -237,88 +167,6 @@
     (bytevector=? data
                   (call-with-decompressed-port 'xz (open-file temp-file "r0b")
                     get-bytevector-all))))
-
-(false-if-exception (delete-file temp-file))
-(test-equal "fcntl-flock wait"
-  42                                              ; the child's exit status
-  (let ((file (open-file temp-file "w0b")))
-    ;; Acquire an exclusive lock.
-    (fcntl-flock file 'write-lock)
-    (match (primitive-fork)
-      (0
-       (dynamic-wind
-         (const #t)
-         (lambda ()
-           ;; Reopen FILE read-only so we can have a read lock.
-           (let ((file (open-file temp-file "r0b")))
-             ;; Wait until we can acquire the lock.
-             (fcntl-flock file 'read-lock)
-             (primitive-exit (read file)))
-           (primitive-exit 1))
-         (lambda ()
-           (primitive-exit 2))))
-      (pid
-       ;; Write garbage and wait.
-       (display "hello, world!"  file)
-       (force-output file)
-       (sleep 1)
-
-       ;; Write the real answer.
-       (seek file 0 SEEK_SET)
-       (truncate-file file 0)
-       (write 42 file)
-       (force-output file)
-
-       ;; Unlock, which should let the child continue.
-       (fcntl-flock file 'unlock)
-
-       (match (waitpid pid)
-         ((_  . status)
-          (let ((result (status:exit-val status)))
-            (close-port file)
-            result)))))))
-
-(test-equal "fcntl-flock non-blocking"
-  EAGAIN                                          ; the child's exit status
-  (match (pipe)
-    ((input . output)
-     (match (primitive-fork)
-       (0
-        (dynamic-wind
-          (const #t)
-          (lambda ()
-            (close-port output)
-
-            ;; Wait for the green light.
-            (read-char input)
-
-            ;; Open FILE read-only so we can have a read lock.
-            (let ((file (open-file temp-file "w0")))
-              (catch 'flock-error
-                (lambda ()
-                  ;; This attempt should throw EAGAIN.
-                  (fcntl-flock file 'write-lock #:wait? #f))
-                (lambda (key errno)
-                  (primitive-exit (pk 'errno errno)))))
-            (primitive-exit -1))
-          (lambda ()
-            (primitive-exit -2))))
-       (pid
-        (close-port input)
-        (let ((file (open-file temp-file "w0")))
-          ;; Acquire an exclusive lock.
-          (fcntl-flock file 'write-lock)
-
-          ;; Tell the child to continue.
-          (write 'green-light output)
-          (force-output output)
-
-          (match (waitpid pid)
-            ((_  . status)
-             (let ((result (status:exit-val status)))
-               (fcntl-flock file 'unlock)
-               (close-port file)
-               result)))))))))
 
 ;; This is actually in (guix store).
 (test-equal "store-path-package-name"
