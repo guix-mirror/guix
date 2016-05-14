@@ -65,9 +65,13 @@
 found.  Return #f if no build log was found."
   (define (valid-url? url)
     ;; Probe URL and return #t if it is accessible.
-    (guard (c ((http-get-error? c) #f))
-      (close-port (http-fetch url #:buffered? #f))
-      #t))
+    (catch 'getaddrinfo-error
+      (lambda ()
+        (guard (c ((http-get-error? c) #f))
+          (close-port (http-fetch url #:buffered? #f))
+          #t))
+      (lambda _
+        #f)))
 
   (define (find-url file)
     (let ((base (basename file)))
