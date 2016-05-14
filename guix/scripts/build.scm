@@ -681,7 +681,8 @@ needed."
                                       (_ #f))
                                     opts)))
 
-            (unless (assoc-ref opts 'log-file?)
+            (unless (or (assoc-ref opts 'log-file?)
+                        (assoc-ref opts 'derivations-only?))
               (show-what-to-build store drv
                                   #:use-substitutes?
                                   (assoc-ref opts 'substitutes?)
