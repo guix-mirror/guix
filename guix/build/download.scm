@@ -605,10 +605,22 @@ Return a list of URIs."
     (else
      (list uri))))
 
-(define* (url-fetch url file #:key (mirrors '()))
+(define* (url-fetch url file
+                    #:key
+                    (mirrors '()) (content-addressed-mirrors '())
+                    (hashes '()))
   "Fetch FILE from URL; URL may be either a single string, or a list of
 string denoting alternate URLs for FILE.  Return #f on failure, and FILE
-on success."
+on success.
+
+When MIRRORS is defined, it must be an alist of mirrors; it is used to resolve
+'mirror://' URIs.
+
+HASHES must be a list of algorithm/hash pairs, where each algorithm is a
+symbol such as 'sha256 and each hash is a bytevector.
+CONTENT-ADDRESSED-MIRRORS must be a list of procedures that, given a hash
+algorithm and a hash, return a URL where the specified data can be retrieved
+or #f."
   (define uri
     (append-map (cut maybe-expand-mirrors <> mirrors)
                 (match url
@@ -628,13 +640,21 @@ on success."
                uri)
        #f)))
 
+  (define content-addressed-urls
+    (append-map (lambda (make-url)
+                  (filter-map (match-lambda
+                                ((hash-algo . hash)
+                                 (make-url hash-algo hash)))
+                              hashes))
+                content-addressed-mirrors))
+
   ;; Make this unbuffered so 'progress-proc' works as expected.  _IOLBF means
   ;; '\n', not '\r', so it's not appropriate here.
   (setvbuf (current-output-port) _IONBF)
 
   (setvbuf (current-error-port) _IOLBF)
 
-  (let try ((uri uri))
+  (let try ((uri (append uri content-addressed-urls)))
     (match uri
       ((uri tail ...)
        (or (fetch uri file)

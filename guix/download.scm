@@ -210,6 +210,22 @@
   ;; 'object->string'.
   (plain-file "mirrors" (object->string %mirrors)))
 
+(define %content-addressed-mirrors
+  ;; List of content-addressed mirrors.  Each mirror is represented as a
+  ;; procedure that takes an algorithm (symbol) and a hash (bytevector), and
+  ;; returns a URL or #f.
+  ;; TODO: Add more.
+  '(list (lambda (algo hash)
+           ;; 'tarballs.nixos.org' supports several algorithms.
+           (string-append "http://tarballs.nixos.org/"
+                          (symbol->string algo) "/"
+                          (bytevector->nix-base32-string hash)))))
+
+(define %content-addressed-mirror-file
+  ;; Content-addressed mirrors stored in a file.
+  (plain-file "content-addressed-mirrors"
+              (object->string %content-addressed-mirrors)))
+
 (define (gnutls-package)
   "Return the default GnuTLS package."
   (let ((module (resolve-interface '(gnu packages tls))))
@@ -258,12 +274,21 @@ in the store."
                               %load-path)))
               #~#t)
 
-        (use-modules (guix build download))
+        (use-modules (guix build download)
+                     (guix base32))
 
-        (url-fetch (call-with-input-string (getenv "guix download url")
-                     read)
-                   #$output
-                   #:mirrors (call-with-input-file #$%mirror-file read))))
+        (let ((value-from-environment (lambda (variable)
+                                        (call-with-input-string
+                                            (getenv variable)
+                                          read))))
+          (url-fetch (value-from-environment "guix download url")
+                     #$output
+                     #:mirrors (call-with-input-file #$%mirror-file read)
+
+                     ;; Content-addressed mirrors.
+                     #:hashes (value-from-environment "guix download hashes")
+                     #:content-addressed-mirrors
+                     (primitive-load #$%content-addressed-mirror-file)))))
 
   (let ((uri (and (string? url) (string->uri url))))
     (if (or (and (string? url) (not uri))
@@ -278,14 +303,17 @@ in the store."
                             #:hash hash
                             #:modules '((guix build download)
                                         (guix build utils)
-                                        (guix ftp-client))
+                                        (guix ftp-client)
+                                        (guix base32))
 
                             ;; Use environment variables and a fixed script
                             ;; name so there's only one script in store for
                             ;; all the downloads.
                             #:script-name "download"
                             #:env-vars
-                            `(("guix download url" . ,(object->string url)))
+                            `(("guix download url" . ,(object->string url))
+                              ("guix download hashes"
+                               . ,(object->string `((,hash-algo . ,hash)))))
 
                             ;; Honor the user's proxy settings.
                             #:leaked-env-vars '("http_proxy" "https_proxy")
