@@ -358,13 +358,16 @@ security, and applying best practice development processes.")
 (define-public python-acme
   (package
     (name "python-acme")
-    (version "0.5.0")
+    (version "0.6.0")
     (source (origin
-      (method url-fetch)
-      (uri (pypi-uri "acme" version))
+              (method url-fetch)
+              (uri (string-append
+                     "https://pypi.python.org/packages/"
+                     "af/33/703e5ec3d7efde7c4d2fcea9cdf88953a33d4e72aafd5b0a330173a7b395/"
+                     "acme-" version ".tar.gz"))
       (sha256
         (base32
-         "1g8scfkhs3l06588h73py81xb1gvkkdzaxanl21whcvdclycc186"))))
+         "1ipck25c6nr0x54w2cc8ziwjmyyrpyz6pc1y8xc9nqmxvw4n0kpc"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -414,16 +417,19 @@ security, and applying best practice development processes.")
 (define-public python2-acme
   (package-with-python2 python-acme))
 
-(define-public letsencrypt
+(define-public certbot
   (package
-    (name "letsencrypt")
-    (version "0.5.0")
+    (name "certbot")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "letsencrypt" version))
+              (uri (string-append
+                     "https://pypi.python.org/packages/"
+                     "fc/eb/7594bf16d89909a9d52c46edbeae669d4b2ee6e12453bd97e674d0371920/"
+                     name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0nnijs26kkw07yylszc97p3jw09y98j54xihjp0rprrbp1q2p2p3"))))
+                "0ba95cf6shmyhi4vzvk64vbkrmr8qvkn32k3xwb2iv7ybbfbgc40"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -435,14 +441,14 @@ security, and applying best practice development processes.")
                     (man1 (string-append out "/share/man/man1"))
                     (man7 (string-append out "/share/man/man7"))
                     (info (string-append out "/info")))
-               (substitute* "docs/man/letsencrypt.rst"
-                 (("letsencrypt --help all")
-                  (string-append out "/bin/letsencrypt" " --help all")))
+               (substitute* "docs/man/certbot.rst"
+                 (("certbot --help all")
+                  (string-append out "/bin/certbot" " --help all")))
                (and
                  (zero? (system* "make" "-C" "docs" "man" "info"))
-                 (install-file "docs/_build/texinfo/LetsEncrypt.info" info)
-                 (install-file "docs/_build/man/letsencrypt.1" man1)
-                 (install-file "docs/_build/man/letsencrypt.7" man7)
+                 (install-file "docs/_build/texinfo/Certbot.info" info)
+                 (install-file "docs/_build/man/certbot.1" man1)
+                 (install-file "docs/_build/man/certbot.7" man7)
                  #t)))))))
     ;; TODO: Add optional inputs for testing.
     (native-inputs
@@ -474,6 +480,10 @@ to enable TLS on servers.  The client will interoperate with the Let’s Encrypt
 will be issuing browser-trusted certificates for free.")
     (home-page "https://letsencrypt.org/")
     (license license:asl2.0)))
+
+(define-public letsencrypt
+  (package (inherit certbot)
+    (name "letsencrypt")))
 
 (define-public perl-net-ssleay
   (package
