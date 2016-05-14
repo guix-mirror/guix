@@ -478,7 +478,7 @@ security, and applying best practice development processes.")
     (description "Tool to automatically receive and install X.509 certificates
 to enable TLS on servers.  The client will interoperate with the Let’s Encrypt CA which
 will be issuing browser-trusted certificates for free.")
-    (home-page "https://letsencrypt.org/")
+    (home-page "https://certbot.eff.org/")
     (license license:asl2.0)))
 
 (define-public letsencrypt
