@@ -34,14 +34,14 @@
 (define-public owncloud-client
   (package
     (name "owncloud-client")
-    (version "2.1.1")
+    (version "2.2.0")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "https://download.owncloud.com/desktop/stable/"
                            "owncloudclient-" version ".tar.xz"))
        (sha256
-        (base32 "1jxi439qff4acvyvszjprj42kvzhlz255wv8g4p3jrf55svzwz2f"))))
+        (base32 "1ak7hq13hl7qndm3zz7hdfvw6930kmhjh27s1427g784vxcqb23q"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
