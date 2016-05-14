@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -138,6 +139,7 @@ rates.")
     (arguments
      `(#:configure-flags (list "--localstatedir=/var" ;"--sysconfdir=/etc"
                                "--disable-oss-output"
+                               "--enable-bluez5"
                                (string-append "--with-udev-rules-dir="
                                               (assoc-ref %outputs "out")
                                               "/lib/udev/rules.d"))
@@ -153,8 +155,9 @@ rates.")
                  %standard-phases)))
     (inputs
      ;; TODO: Add optional inputs (GTK+?).
-     `(;; ("sbc" ,sbc)
-       ("alsa-lib" ,alsa-lib)
+     `(("alsa-lib" ,alsa-lib)
+       ("bluez" ,bluez)
+       ("sbc" ,sbc)
        ("json-c" ,json-c)
        ("speex" ,speex)
        ("libsndfile" ,libsndfile)
