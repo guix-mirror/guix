@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2385,6 +2386,29 @@ arrays when needed.")
 system calls, important for the performance of databases and other advanced
 applications.")
     (license license:lgpl2.1+)))
+
+(define-public sbc
+  (package
+    (name "sbc")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.kernel.org/pub/linux/bluetooth/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "02ckd2z51z0h85qgv7x8vv8ybp5czm9if1z78411j53gaz7j4476"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libsndfile" ,libsndfile)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.kernel.org/pub/linux/bluetooth/")
+    (synopsis "Bluetooth subband audio codec")
+    (description
+     "The SBC is a digital audio encoder and decoder used to transfer data to
+Bluetooth audio output devices like headphones or loudspeakers.")
+    (license license:gpl2+)))
 
 (define-public bluez
   (package
