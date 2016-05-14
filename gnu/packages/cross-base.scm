@@ -323,6 +323,11 @@ XBINUTILS and the cross tool chain."
            ;; itself.
            #:implicit-cross-inputs? #f
 
+           ;; We need SRFI 26.
+           #:modules ((guix build gnu-build-system)
+                      (guix build utils)
+                      (srfi srfi-26))
+
            ,@(package-arguments glibc))
        ((#:configure-flags flags)
         `(cons ,(string-append "--host=" target)
