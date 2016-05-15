@@ -197,8 +197,7 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (version "1.0.2g")
-   (replacement openssl/fixed)
+   (version "1.0.2h")
    (source (origin
              (method url-fetch)
              (uri (list (string-append "ftp://ftp.openssl.org/source/"
@@ -208,7 +207,7 @@ required structures.")
                                        "/" name "-" version ".tar.gz")))
              (sha256
               (base32
-               "0cxajjayi859czi545ddafi24m9nwsnjsw4q82zrmqvwj2rv315p"))
+               "06996ds1rk8xhnyb5y273a7xkcxhggp4bq1g02rab55d7bjhfh0x"))
              (patches (search-patches "openssl-runpath.patch"
                                       "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
@@ -333,25 +332,6 @@ required structures.")
     "OpenSSL is an implementation of SSL/TLS.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
-
-(define openssl/fixed
-  (package
-    (inherit openssl)
-    (source
-     (let ((name "openssl")
-           (version "1.0.2h"))
-       (origin
-         (method url-fetch)
-         (uri (list (string-append "ftp://ftp.openssl.org/source/"
-                                   name "-" version ".tar.gz")
-                    (string-append "ftp://ftp.openssl.org/source/old/"
-                                   (string-trim-right version char-set:letter)
-                                   "/" name "-" version ".tar.gz")))
-         (sha256
-          (base32
-           "06996ds1rk8xhnyb5y273a7xkcxhggp4bq1g02rab55d7bjhfh0x"))
-         (patches (search-patches "openssl-runpath.patch"
-                                  "openssl-c-rehash-in.patch")))))))
 
 (define-public libressl
   (package
