@@ -295,15 +295,30 @@ visual effects work for film.")
                 "1y51yjrpsihas1jy905m9p3r8iiyhq6bwi2690c564i5dnix1f9d"))))
     (build-system gnu-build-system)
     (arguments
-     `(;; FIXME: At least "testrcore1" fails.
-       #:tests? #f
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
-         (add-after 'unpack 'replace-/bin/ls
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             ;; Our grep does not support perl regular expressions.
+             (substitute* "taptool.sh"
+               (("grep -P") "grep -E"))
+             ;; Disable path tests because we cannot access /bin or /sbin.
+             (substitute* "rcore/tests/multitest.cc"
+               (("TCMP \\(Path::equals \\(\"/bin\"") "//"))
+             #t))
+         (add-before 'check 'pre-check
+           (lambda _
+             ;; The test suite requires a running X server (with DISPLAY
+             ;; number 99 or higher).
+             (system "Xvfb :99 &")
+             (setenv "DISPLAY" ":99")
+             #t))
+         (add-after 'unpack 'replace-fhs-paths
            (lambda _
              (substitute* (cons "Makefile.decl"
                                 (find-files "." "^Makefile\\.in$"))
-               (("/bin/ls") (which "ls")))
+               (("/bin/ls") (which "ls"))
+               (("/usr/bin/env") (which "env")))
              #t)))))
     ;; These libraries are listed in the "Required" section of the pkg-config
     ;; file.
@@ -311,7 +326,8 @@ visual effects work for film.")
      `(("librsvg" ,librsvg)
        ("cairo" ,cairo)
        ("pango" ,pango)
-       ("libxml2" ,libxml2)))
+       ("libxml2" ,libxml2)
+       ("python2-enum34" ,python2-enum34)))
     (inputs
      `(("gdk-pixbuf" ,gdk-pixbuf)
        ("libpng" ,libpng-1.2)
@@ -326,7 +342,8 @@ visual effects work for film.")
        ("doxygen" ,doxygen)
        ("graphviz" ,graphviz)
        ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("xvfb" ,xorg-server)))
     (home-page "http://rapicorn.org")
     (synopsis "Toolkit for rapid development of user interfaces")
     (description
