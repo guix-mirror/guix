@@ -55,7 +55,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages jemalloc)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl3+ lgpl2.1+ lgpl3+ x11-style non-copyleft
+                #:select (gpl2 gpl3 gpl3+ lgpl2.1+ lgpl3+ x11-style non-copyleft
                           bsd-2 bsd-3 public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -914,3 +914,41 @@ sets, bitmaps and hyperloglogs.")
 and B+ Tree data storage models.  It is a fast key-value lightweight
 database and supports many programming languages.  It is a NoSQL database.")
     (license gpl3+)))
+
+(define-public wiredtiger
+  (package
+    (name "wiredtiger")
+    (version "2.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://source.wiredtiger.com/releases/wiredtiger-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1qh7y5paisdxq19jgg81ld7i32lz920n5k30hdpxnr8ll9c4hgjr"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--enable-lz4" "--enable-zlib")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'disable-test/fops
+           (lambda _
+             ;; XXX: timed out after 3600 seconds of silence
+             (substitute* "Makefile"
+               (("test/fops") ""))
+             #t)))))
+    (inputs
+     `(("lz4" ,lz4)
+       ("zlib" ,zlib)))
+    (home-page "http://source.wiredtiger.com/")
+    (synopsis "NoSQL data engine")
+    (description
+     "WiredTiger is an extensible platform for data management.  It supports
+row-oriented storage (where all columns of a row are stored together),
+column-oriented storage (where columns are stored in groups, allowing for
+more efficient access and storage of column subsets) and log-structured merge
+trees (LSM), for sustained throughput under random insert workloads.")
+    (license gpl3) ; or GPL-2
+    ;; configure.ac: WiredTiger requires a 64-bit build.
+    (supported-systems '("x86_64-linux" "mips64el-linux"))))
