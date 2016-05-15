@@ -90,7 +90,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1))
 
-(define-public python-2
+(define-public python-2.7
   (package
     (name "python")
     (version "2.7.10")
@@ -262,7 +262,10 @@ packages; exception-based error handling; and very high level dynamic
 data types.")
     (license psfl)))
 
-(define-public python
+;; Current 2.x version.
+(define-public python-2 python-2.7)
+
+(define-public python-3.4
   (package (inherit python-2)
     (version "3.4.3")
     (source (origin
@@ -287,6 +290,12 @@ data types.")
             (files (list (string-append "lib/python"
                                         (version-major+minor version)
                                         "/site-packages"))))))))
+
+;; Current 3.x version.
+(define-public python-3 python-3.4)
+
+;; Current major version.
+(define-public python python-3)
 
 ;; Minimal variants of Python, mostly used to break the cycle between Tk and
 ;; Python (Tk -> libxcb -> Python.)
