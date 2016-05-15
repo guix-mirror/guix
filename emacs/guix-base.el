@@ -231,6 +231,20 @@ Ask a user with PROMPT for continuing an operation."
       :dry-run? (or guix-dry-run 'f))
      nil 'source-download)))
 
+(defun guix-build-package (package-id &optional prompt)
+  "Build package with PACKAGE-ID.
+Ask a user with PROMPT for continuing the build operation."
+  (when (or (not guix-operation-confirm)
+            (guix-operation-prompt (or prompt "Build package?")))
+    (guix-eval-in-repl
+     (format (concat ",run-in-store "
+                     "(build-package (package-by-id %d)"
+                     " #:use-substitutes? %s"
+                     " #:dry-run? %s)")
+             package-id
+             (guix-guile-boolean guix-use-substitutes)
+             (guix-guile-boolean guix-dry-run)))))
+
 ;;;###autoload
 (defun guix-apply-manifest (profile file &optional operation-buffer)
   "Apply manifest from FILE to PROFILE.

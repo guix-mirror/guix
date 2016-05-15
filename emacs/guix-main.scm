@@ -51,6 +51,7 @@
  (guix licenses)
  (guix utils)
  (guix ui)
+ (guix scripts)
  (guix scripts package)
  (gnu packages)
  (gnu system))

@@ -332,6 +332,13 @@ prompt depending on `guix-operation-confirm' variable)."
   :type 'boolean
   :group 'guix-package-info)
 
+(defcustom guix-package-info-button-functions
+  '(guix-package-info-insert-build-button)
+  "List of functions used to insert package buttons in Info buffer.
+Each function is called with 2 arguments: package ID and full name."
+  :type '(repeat function)
+  :group 'guix-package-info)
+
 (defvar guix-package-info-download-buffer nil
   "Buffer from which a current download operation was performed.")
 
@@ -558,6 +565,7 @@ PACKAGE-ID is an ID of the package which store path to show."
     (let* ((entry-id   (guix-entry-id entry))
            (package-id (or (guix-entry-value entry 'package-id)
                            entry-id))
+           (full-name  (guix-package-entry->name-specification entry))
            (store-path (guix-entry-value entry 'store-path)))
       (guix-info-insert-title-simple "Package")
       (if store-path
@@ -570,7 +578,25 @@ PACKAGE-ID is an ID of the package which store path to show."
             (button-get btn 'package-id)))
          "Show the store directory of the current package"
          'entry-id entry-id
-         'package-id package-id)))))
+         'package-id package-id))
+      (when guix-package-info-button-functions
+        (insert "\n")
+        (guix-mapinsert (lambda (fun)
+                          (funcall fun package-id full-name))
+                        guix-package-info-button-functions
+                        (guix-info-get-indent)
+                        :indent guix-info-indent
+                        :column (guix-info-fill-column))))))
+
+(defun guix-package-info-insert-build-button (id full-name)
+  "Insert button to build a package defined by ID."
+  (guix-info-insert-action-button
+   "Build"
+   (lambda (btn)
+     (guix-build-package (button-get btn 'id)
+                         (format "Build '%s' package?" full-name)))
+   (format "Build the current package")
+   'id id))
 
 (defun guix-package-info-show-source (entry-id package-id)
   "Show file name of a package source in the current info buffer.
