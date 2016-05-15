@@ -47,7 +47,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "4.7")
+    (version "4.8")
     (source
      (origin
       (method url-fetch)
@@ -55,7 +55,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1j8iixynchziw1y39lnibyl5h81m4p78w3i4f28q2vgwjgf801x4"))))
+        "04y5m29pqmvkfdbppmsdifyx89v8xclxzklpfc7a1fkr9p4jz07s"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (home-page "http://www.gnu.org/software/libtasn1/")
@@ -65,21 +65,7 @@
 for transmitting machine-neutral encodings of data objects in computer
 networking, allowing for formal validation of data according to some
 specifications.")
-    (replacement libtasn1/fixed)
     (license license:lgpl2.0+)))
-
-(define libtasn1/fixed                            ;for CVE-2016-4008
-  (package
-    (inherit libtasn1)
-    (source
-     (let ((version "4.8"))
-       (origin
-         (method url-fetch)
-         (uri (string-append "mirror://gnu/libtasn1/libtasn1-"
-                             version ".tar.gz"))
-         (sha256
-          (base32
-           "04y5m29pqmvkfdbppmsdifyx89v8xclxzklpfc7a1fkr9p4jz07s")))))))
 
 (define-public p11-kit
   (package
