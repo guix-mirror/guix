@@ -1610,7 +1610,11 @@ point numbers.")
     (build-system gnu-build-system)
     (inputs
      `(("wxwidgets" ,wxwidgets)
-       ("maxima" ,maxima)))
+       ("maxima" ,maxima)
+       ;; Runtime support.
+       ("adwaita-icon-theme" ,adwaita-icon-theme)
+       ("gtk+" ,gtk+)
+       ("shared-mime-info" ,shared-mime-info)))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after
@@ -1620,7 +1624,18 @@ point numbers.")
                                                   "/bin/wxmaxima")
                        `("PATH" ":" prefix
                          (,(string-append (assoc-ref inputs "maxima")
-                                          "/bin"))))
+                                          "/bin")))
+                       ;; For GtkFileChooserDialog.
+                       `("GSETTINGS_SCHEMA_DIR" =
+                         (,(string-append (assoc-ref inputs "gtk+")
+                                          "/share/glib-2.0/schemas")))
+                       `("XDG_DATA_DIRS" ":" prefix
+                         (;; Needed by gdk-pixbuf to know supported icon formats.
+                          ,(string-append
+                            (assoc-ref inputs "shared-mime-info") "/share")
+                          ;; The default icon theme of GTK+.
+                          ,(string-append
+                            (assoc-ref inputs "adwaita-icon-theme") "/share"))))
                      #t)))))
     (home-page "https://andrejv.github.io/wxmaxima/")
     (synopsis "Graphical user interface for the Maxima computer algebra system")
