@@ -5076,6 +5076,34 @@ specified duration and save it as a GIF encoded animated image file.")
 Microsoft SkyDrive and Hotmail, using their REST protocols.")
     (license license:lgpl2.1+)))
 
+(define-public gnome-calendar
+  (package
+    (name "gnome-calendar")
+    (version "3.20.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1vny8fclwglapdyxd2g9fbwdlk5hhnb993k2hvq3rf0hcgswycpi"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bdb" ,bdb)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("evolution-data-server" ,evolution-data-server)
+       ("gnome-online-accounts" ,gnome-online-accounts)))
+    (home-page "https://wiki.gnome.org/Apps/Calendar")
+    (synopsis "GNOME's calendar application")
+    (description
+     "GNOME Calendar is a simple calendar application designed to fit the GNOME
+desktop.  It supports multiple calendars, monthly view and yearly view.")
+    (license license:gpl3+)))
+
 (define-public gnome-tweak-tool
   (package
     (name "gnome-tweak-tool")
