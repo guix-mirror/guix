@@ -664,6 +664,9 @@ script files.")
        ("glu" ,glu)
        ("libx11" ,libx11)
        ("libxext" ,libxext)))
+    (inputs
+     `(("fontconfig" ,fontconfig)
+       ("libxft" ,libxft)))
     (arguments
      `(#:configure-flags `("-DENABLE_METIS:BOOL=OFF"
                            "-DENABLE_BUILD_SHARED:BOOL=ON"
