@@ -1410,17 +1410,17 @@ identifiers in the MIT-Scheme documentation.")
   (package
     (name "emacs-constants")
     (version "2.2")
+    (home-page "https://staff.fnwi.uva.nl/c.dominik/Tools/constants")
     (source
      (origin
        (file-name (string-append name "-" version ".el"))
        (method uncompressed-file-fetch)
-       (uri "https://staff.fnwi.uva.nl/c.dominik/Tools/constants/constants.el")
+       (uri (string-append home-page "/constants.el")) ;FIXME: unversioned URI
        (patches (search-patches "emacs-constants-lisp-like.patch"))
        (sha256
         (base32
          "14q094aphsjhq8gklv7i5a7byl0ygz63cv3n6b5p8ji2jy0mnnw3"))))
     (build-system emacs-build-system)
-    (home-page "https://staff.fnwi.uva.nl/c.dominik/Tools/constants")
     (synopsis "Enter definition of constants into an Emacs buffer")
     (description
      "This package provides functions for inserting the definition of natural
