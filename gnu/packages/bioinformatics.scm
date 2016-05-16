@@ -2094,7 +2094,7 @@ particular, reads spanning multiple exons.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://selab.janelia.org/software/hmmer"
+                    "http://eddylab.org/software/hmmer"
                     (version-prefix version 1) "/"
                     version "/hmmer-" version ".tar.gz"))
               (sha256
@@ -2102,7 +2102,7 @@ particular, reads spanning multiple exons.")
                 "0djmgc0pfli0jilfx8hql1axhwhqxqb8rxg2r5rg07aw73sfs5nx"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
-    (home-page "http://hmmer.janelia.org")
+    (home-page "http://hmmer.org/")
     (synopsis "Biosequence analysis using profile hidden Markov models")
     (description
      "HMMER is used for searching sequence databases for homologs of protein
