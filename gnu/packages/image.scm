@@ -501,9 +501,13 @@ more modular, simple, and flexible.")
     (version "1.2.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "http://linuxbrit.co.uk/downloads/giblib-"
-                    version ".tar.gz"))
+              (uri (list
+                     (string-append
+                       "http://linuxbrit.co.uk/downloads/giblib-"
+                       version ".tar.gz")
+                     (string-append
+                       "https://sourceforge.net/projects/slackbuildsdirectlinks/"
+                       "files/giblib/giblib-" version ".tar.gz")))
               (sha256
                (base32
                 "1b4bmbmj52glq0s898lppkpzxlprq9aav49r06j2wx4dv3212rhp"))))
