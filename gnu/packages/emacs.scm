@@ -1403,8 +1403,6 @@ identifiers in the MIT-Scheme documentation.")
     (gexp->derivation (or name (basename url))
                       #~(begin
                           (mkdir #$output)
-                          (setenv "PATH"
-                                  (string-append #$gzip "/bin"))
                           (chdir #$output)
                           (copy-file #$drv (basename #$url))))))
 
