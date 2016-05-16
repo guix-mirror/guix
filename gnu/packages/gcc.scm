@@ -615,6 +615,15 @@ as the 'native-search-paths' field."
                      (variable "LIBRARY_PATH")
                      (files '("lib" "lib64"))))))
 
+(define-public gcc-objc-4.9
+  (custom-gcc gcc-4.9 "gcc-objc" '("objc")
+              (list (search-path-specification
+                     (variable "OBJC_INCLUDE_PATH")
+                     (files '("include")))
+                    (search-path-specification
+                     (variable "LIBRARY_PATH")
+                     (files '("lib" "lib64"))))))
+
 (define-public gcc-objc++-4.8
   (custom-gcc gcc-4.8 "gcc-objc++" '("obj-c++")
               (list (search-path-specification
