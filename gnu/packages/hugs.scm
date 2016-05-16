@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,7 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://cvs.haskell.org/Hugs/downloads/2006-09/"
+      (uri (string-append "https://www.haskell.org/hugs/downloads/2006-09/"
                           name "98-plus-" version ".tar.gz"))
       (sha256
        (base32
@@ -67,7 +68,7 @@
                      (("/bin/cp") (which "cp"))))
                   %standard-phases)
        #:tests? #f)) ; no test target
-    (home-page "http://haskell.org/hugs")
+    (home-page "https://www.haskell.org/hugs/")
     (synopsis "Functional programming system based on Haskell 98")
     (description
      "Hugs 98 is an interpreter and programming environment for developing
