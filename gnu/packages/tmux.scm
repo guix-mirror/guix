@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +29,7 @@
 (define-public tmux
   (package
     (name "tmux")
-    (version "2.1")
+    (version "2.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -36,7 +37,7 @@
                     version "/tmux-" version ".tar.gz"))
              (sha256
               (base32
-               "0xk1mylsb08sf0w597mdgj9s6hxxjvjvjd6bngpjvvxwyixlwmii"))))
+               "1r0riry5vw604hc21087ffbkqgr6j4ia1rrsivz2k6grchdm8a5w"))))
     (build-system gnu-build-system)
     (inputs
      `(("libevent" ,libevent)
