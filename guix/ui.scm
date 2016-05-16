@@ -6,7 +6,7 @@
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014, 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
-;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
+;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -313,6 +313,10 @@ There is NO WARRANTY, to the extent permitted by law.
   (exit 0))
 
 (define (show-bug-report-information)
+  ;; TRANSLATORS: The placeholder indicates the bug-reporting address for this
+  ;; package.  Please add another line saying "Report translation bugs to
+  ;; ...\n" with the address for translation bugs (typically your translation
+  ;; team's web or email address).
   (format #t (_ "
 Report bugs to: ~a.") %guix-bug-report-address)
   (format #t (_ "
