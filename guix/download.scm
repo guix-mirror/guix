@@ -202,7 +202,8 @@
       (debian
        "http://ftp.de.debian.org/debian/"
        "http://ftp.fr.debian.org/debian/"
-       "http://ftp.debian.org/debian/"))))
+       "http://ftp.debian.org/debian/"
+       "http://archive.debian.org/debian/"))))
 
 (define %mirror-file
   ;; Copy of the list of mirrors to a file.  This allows us to keep a single
