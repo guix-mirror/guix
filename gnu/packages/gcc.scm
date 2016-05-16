@@ -644,6 +644,8 @@ as the 'native-search-paths' field."
                      (variable "LIBRARY_PATH")
                      (files '("lib" "lib64"))))))
 
+(define-public gcc-objc++ gcc-objc++-4.9)
+
 (define (make-libstdc++-doc gcc)
   "Return a package with the libstdc++ documentation for GCC."
   (package
