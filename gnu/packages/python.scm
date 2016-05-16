@@ -983,15 +983,16 @@ datetime module, available in Python 2.3+.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "0.18.0")
+    (version "0.18.1")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "pandas" version))
+       (uri (string-append
+              "https://pypi.python.org/packages/11/09/"
+              "e66eb844daba8680ddff26335d5b4fead77f60f957678243549a8dd4830d/"
+              "pandas-" version ".tar.gz"))
        (sha256
-        (base32 "050qw0ap5bhyv5flp78x3lcq1dlminl3xaj6kbrm0jqmx0672xf9"))
-       (patches (search-patches
-                 "python-pandas-fix-tslib-test-failure.patch"))))
+        (base32 "1ckpxrvvjj6zxmn68icd9hib8qcpx9b35f6izxnr25br5ilq7r6j"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)))
@@ -999,8 +1000,7 @@ datetime module, available in Python 2.3+.")
      `(("python-pytz" ,python-pytz)
        ("python-dateutil" ,python-dateutil-2)))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-setuptools" ,python-setuptools)))
+     `(("python-nose" ,python-nose)))
     (home-page "http://pandas.pydata.org")
     (synopsis "Data structures for data analysis, time series, and statistics")
     (description
@@ -1009,15 +1009,15 @@ structures designed to make working with structured (tabular,
 multidimensional, potentially heterogeneous) and time series data both easy
 and intuitive.  It aims to be the fundamental high-level building block for
 doing practical, real world data analysis in Python.")
-    (license bsd-3)))
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-pandas))))))
 
 (define-public python2-pandas
-  (let ((pandas (package-with-python2 python-pandas)))
-    (package (inherit pandas)
-             (propagated-inputs
-              `(("python2-numpy" ,python2-numpy)
-                ,@(alist-delete "python-numpy"
-                                (package-propagated-inputs pandas)))))))
+  (let ((base (package-with-python2 (strip-python2-variant python-pandas))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-inputs base))))))
 
 (define-public python-tzlocal
   (package
