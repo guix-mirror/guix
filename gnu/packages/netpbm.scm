@@ -117,7 +117,8 @@
            (let ((rgb (string-append (assoc-ref inputs "xorg-rgb")
                                      "/share/X11/rgb.txt")))
              (substitute* "pm_config.in.h"
-               (("/usr/share/X11/rgb.txt") rgb)))))
+               (("/usr/share/X11/rgb.txt") rgb)))
+           #t))
        (add-before 'check 'setup-check
          (lambda _
            ;; install temporarily into /tmp/netpbm
@@ -131,7 +132,8 @@
              (("all-in-place.test") "")
              (("pnmpsnr.test") "")
              (("pnmremap1.test") "")
-             (("gif-roundtrip.test") ""))))
+             (("gif-roundtrip.test") ""))
+           #t))
        (replace 'install
          (lambda* (#:key outputs make-flags #:allow-other-keys)
            (let ((out (assoc-ref outputs "out")))
@@ -146,7 +148,8 @@
              (with-directory-excursion out
                (for-each delete-file
                          '("config_template" "pkginfo" "README"
-                           "VERSION")))))))))
+                           "VERSION")))
+             #t))))))
    (synopsis "Toolkit for manipulation of images")
    (description
     "Netpbm is a toolkit for the manipulation of graphic images, including
