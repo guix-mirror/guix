@@ -1409,17 +1409,17 @@ identifiers in the MIT-Scheme documentation.")
 (define-public emacs-constants
   (package
     (name "emacs-constants")
-    (version "2.2")
+    (version "2.6")
     (home-page "https://staff.fnwi.uva.nl/c.dominik/Tools/constants")
     (source
      (origin
        (file-name (string-append name "-" version ".el"))
-       (method uncompressed-file-fetch)
-       (uri (string-append home-page "/constants.el")) ;FIXME: unversioned URI
-       (patches (search-patches "emacs-constants-lisp-like.patch"))
+       (method url-fetch)
+       (uri (string-append "https://github.com/fedeinthemix/emacs-constants"
+                           "/archive/v" version ".tar.gz"))
        (sha256
         (base32
-         "14q094aphsjhq8gklv7i5a7byl0ygz63cv3n6b5p8ji2jy0mnnw3"))))
+         "0pnrpmmxq8mh5h2hbrp5vcym0j0fh6dv3s7c5ccn18wllhzg9g7n"))))
     (build-system emacs-build-system)
     (synopsis "Enter definition of constants into an Emacs buffer")
     (description
