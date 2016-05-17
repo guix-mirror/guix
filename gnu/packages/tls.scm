@@ -108,7 +108,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.4.9")
+    (version "3.5.0")
     (source (origin
              (method url-fetch)
              (uri
@@ -119,7 +119,7 @@ living in the same process.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "0gvwyl0kdp1qpzbzp46wqfdzzrmwy9n54sgcjvvm1m1kpanlyna8"))))
+               "09dfb0fn4spmdja6hs2yl470fn85fx0pa5nn9njnq7j19ma3nszw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -169,7 +169,7 @@ living in the same process.")
        ("libidn" ,libidn)
        ("nettle" ,nettle)
        ("zlib" ,zlib)))
-    (home-page "http://www.gnu.org/software/gnutls/")
+    (home-page "https://www.gnu.org/software/gnutls/")
     (synopsis "Transport layer security library")
     (description
      "GnuTLS is a secure communications library implementing the SSL, TLS
