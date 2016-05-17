@@ -143,8 +143,9 @@ no update is needed or known."
                            #:key (key-download 'interactive))
   "Download the tarball at URL to the store; check its OpenPGP signature at
 SIGNATURE-URL, unless SIGNATURE-URL is false.  On success, return the tarball
-file name.  KEY-DOWNLOAD specifies a download policy for missing OpenPGP keys;
-allowed values: 'interactive' (default), 'always', and 'never'."
+file name; return #f on failure (network failure or authentication failure).
+KEY-DOWNLOAD specifies a download policy for missing OpenPGP keys; allowed
+values: 'interactive' (default), 'always', and 'never'."
   (let ((tarball (download-to-store store url)))
     (if (not signature-url)
         tarball

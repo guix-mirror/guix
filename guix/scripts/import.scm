@@ -107,6 +107,10 @@ Run IMPORTER with ARGS.\n"))
      (show-version-and-exit "guix import"))
     ((importer args ...)
      (if (member importer importers)
-         (let ((expr (apply (resolve-importer importer) args)))
-           (pretty-print expr (newline-rewriting-port (current-output-port))))
+         (match (apply (resolve-importer importer) args)
+           ((and expr ('package _ ...))
+            (pretty-print expr (newline-rewriting-port
+                                (current-output-port))))
+           (x
+            (leave (_ "'~a' import failed~%") importer)))
          (leave (_ "~a: invalid importer~%") importer)))))
