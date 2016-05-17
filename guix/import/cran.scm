@@ -23,7 +23,9 @@
   #:use-module ((ice-9 rdelim) #:select (read-string))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-41)
   #:use-module (ice-9 receive)
+  #:use-module (guix combinators)
   #:use-module (guix http-client)
   #:use-module (guix hash)
   #:use-module (guix store)
@@ -33,8 +35,10 @@
   #:use-module ((guix build-system r) #:select (cran-uri bioconductor-uri))
   #:use-module (guix upstream)
   #:use-module (guix packages)
+  #:use-module (gnu packages)
   #:export (cran->guix-package
             bioconductor->guix-package
+            recursive-import
             %cran-updater
             %bioconductor-updater))
 
@@ -245,14 +249,74 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
         (license ,license))
      propagate)))
 
-(define* (cran->guix-package package-name #:optional (repo 'cran))
-  "Fetch the metadata for PACKAGE-NAME from REPO and return the `package'
+(define cran->guix-package
+  (memoize
+   (lambda* (package-name #:optional (repo 'cran))
+     "Fetch the metadata for PACKAGE-NAME from REPO and return the `package'
 s-expression corresponding to that package, or #f on failure."
-  (let* ((url (case repo
-                ((cran)         %cran-url)
-                ((bioconductor) %bioconductor-svn-url)))
-         (module-meta (fetch-description url package-name)))
-    (and=> module-meta (cut description->package repo <>))))
+     (let* ((url (case repo
+                   ((cran)         %cran-url)
+                   ((bioconductor) %bioconductor-svn-url)))
+            (module-meta (fetch-description url package-name)))
+       (and=> module-meta (cut description->package repo <>))))))
+
+(define* (recursive-import package-name #:optional (repo 'cran))
+  "Generate a stream of package expressions for PACKAGE-NAME and all its
+dependencies."
+  (receive (package . dependencies)
+      (cran->guix-package package-name repo)
+    (if (not package)
+        stream-null
+
+        ;; Generate a lazy stream of package expressions for all unknown
+        ;; dependencies in the graph.
+        (let* ((make-state (lambda (queue done)
+                             (cons queue done)))
+               (next       (match-lambda
+                             (((next . rest) . done) next)))
+               (imported   (match-lambda
+                             ((queue . done) done)))
+               (done?      (match-lambda
+                             ((queue . done)
+                              (zero? (length queue)))))
+               (unknown?   (lambda* (dependency #:optional (done '()))
+                             (and (not (member dependency
+                                               done))
+                                  (null? (find-packages-by-name
+                                          (guix-name dependency))))))
+               (update     (lambda (state new-queue)
+                             (match state
+                               (((head . tail) . done)
+                                (make-state (lset-difference
+                                             equal?
+                                             (lset-union equal? new-queue tail)
+                                             done)
+                                            (cons head done)))))))
+          (stream-cons
+           package
+           (stream-unfold
+            ;; map: produce a stream element
+            (lambda (state)
+              (cran->guix-package (next state) repo))
+
+            ;; predicate
+            (compose not done?)
+
+            ;; generator: update the queue
+            (lambda (state)
+              (receive (package . dependencies)
+                  (cran->guix-package (next state) repo)
+                (if package
+                    (update state (filter (cut unknown? <>
+                                               (cons (next state)
+                                                     (imported state)))
+                                          (car dependencies)))
+                    ;; TODO: Try the other archives before giving up
+                    (update state (imported state)))))
+
+            ;; initial state
+            (make-state (filter unknown? (car dependencies))
+                        (list package-name))))))))
 
 
 ;;;
