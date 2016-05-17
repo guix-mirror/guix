@@ -107,10 +107,17 @@ Run IMPORTER with ARGS.\n"))
      (show-version-and-exit "guix import"))
     ((importer args ...)
      (if (member importer importers)
-         (match (apply (resolve-importer importer) args)
-           ((and expr ('package _ ...))
-            (pretty-print expr (newline-rewriting-port
-                                (current-output-port))))
-           (x
-            (leave (_ "'~a' import failed~%") importer)))
+         (let ((print (lambda (expr)
+                        (pretty-print expr (newline-rewriting-port
+                                            (current-output-port))))))
+           (match (apply (resolve-importer importer) args)
+             ((and expr ('package _ ...))
+              (print expr))
+             ((? list? expressions)
+              (for-each (lambda (expr)
+                          (print expr)
+                          (newline))
+                        expressions))
+             (x
+              (leave (_ "'~a' import failed~%") importer))))
          (leave (_ "~a: invalid importer~%") importer)))))
