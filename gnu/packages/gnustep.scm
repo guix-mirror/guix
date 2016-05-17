@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
+;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -101,7 +101,15 @@ interface.  It is fast, feature rich, easy to configure, and easy to use.")
                     version ".orig.tar.gz"))
               (sha256
                (base32
-                "0hi6bivv3xd2k68w08krndfl68wdx7nmc2wjzsmcd4q3qgwgyk44"))))
+                "0hi6bivv3xd2k68w08krndfl68wdx7nmc2wjzsmcd4q3qgwgyk44"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Fix memory leak:
+               ;; <https://lists.gnu.org/archive/html/guix-devel/2016-05/msg00466.html>.
+               '(substitute* "upower.c"
+                  (("up = up_client_new\\(\\);")
+                   (string-append "if (!up)\n"
+                                  "                up = up_client_new();"))))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f              ; no "check" target
