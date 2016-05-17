@@ -5148,6 +5148,10 @@ R package:
 guix import cran Cairo
 @end example
 
+When @code{--recursive} is added, the importer will traverse the
+dependency graph of the given upstream package recursively and generate
+package expressions for all those packages that are not yet in Guix.
+
 When @code{--archive=bioconductor} is added, metadata is imported from
 @uref{http://www.bioconductor.org/, Bioconductor}, a repository of R
 packages for for the analysis and comprehension of high-throughput
