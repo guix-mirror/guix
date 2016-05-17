@@ -494,6 +494,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/gcc-cross-environment-variables.patch	\
   gnu/packages/patches/gcc-libvtv-runpath.patch			\
   gnu/packages/patches/gcc-5.0-libvtv-runpath.patch		\
+  gnu/packages/patches/gd-CVE-2016-3074.patch			\
   gnu/packages/patches/geoclue-config.patch			\
   gnu/packages/patches/ghostscript-CVE-2015-3228.patch		\
   gnu/packages/patches/ghostscript-runpath.patch		\

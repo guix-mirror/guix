@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,7 +49,8 @@
                    "libgd-" version ".tar.xz"))
              (sha256
               (base32
-               "11djy9flzxczphigqgp7fbbblbq35gqwwhn9xfcckawlapa1xnls"))))
+               "11djy9flzxczphigqgp7fbbblbq35gqwwhn9xfcckawlapa1xnls"))
+             (patches (search-patches "gd-CVE-2016-3074.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
