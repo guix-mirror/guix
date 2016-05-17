@@ -3549,7 +3549,7 @@ of these reads to align data quickly through a hash-based indexing scheme.")
 (define-public sortmerna
   (package
     (name "sortmerna")
-    (version "2.1")
+    (version "2.1b")
     (source
      (origin
        (method url-fetch)
@@ -3559,7 +3559,7 @@ of these reads to align data quickly through a hash-based indexing scheme.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1mc5cf1c7xh0h7xb11vh7gqgzx0qvrfa606cb8ixlfg3f2av58s4"))))
+         "1ghaghvd82af9j5adavxh77g7hm247d1r69m3fbi6f1jdivj5ldk"))))
     (build-system gnu-build-system)
     (outputs '("out"      ;for binaries
                "db"))     ;for sequence databases
@@ -3579,6 +3579,8 @@ of these reads to align data quickly through a hash-based indexing scheme.")
                            (install-file file share))
                          (find-files "rRNA_databases" ".*fasta"))
                #t))))))
+    (inputs
+     `(("zlib" ,zlib)))
     (home-page "http://bioinfo.lifl.fr/RNA/sortmerna")
     (synopsis "Biological sequence analysis tool for NGS reads")
     (description
