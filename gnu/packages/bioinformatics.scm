@@ -1482,7 +1482,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.7.9")
+    (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1491,33 +1491,12 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0hfkcfv9f76h5brbyw9fyvmc0l9cmbsxrcdqk0fa9xv82zj47p15"))
-              (snippet '(begin
-                          (delete-file "bin/diamond")
-                          #t))))
-    (build-system gnu-build-system)
+                "1dqancz32c2l7w1b2vkvh5zqa2jnf99j1c41djnx1l8pxn044zdc"))))
+    (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f  ;no "check" target
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'enter-source-dir
-                    (lambda _
-                      (chdir "src")
-                      #t))
-         (delete 'configure)
-         (replace 'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let ((bin (string-append (assoc-ref outputs "out")
-                                              "/bin")))
-                      (mkdir-p bin)
-                      (copy-file "../bin/diamond"
-                                 (string-append bin "/diamond"))
-                      #t))))))
-    (native-inputs
-     `(("bc" ,bc)))
+     '(#:tests? #f)) ; no "check" target
     (inputs
-     `(("boost" ,boost)
-       ("zlib" ,zlib)))
+     `(("zlib" ,zlib)))
     (home-page "https://github.com/bbuchfink/diamond")
     (synopsis "Accelerated BLAST compatible local sequence aligner")
     (description
