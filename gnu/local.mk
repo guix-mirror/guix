@@ -466,7 +466,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/duplicity-test_selection-tmp.patch	\
   gnu/packages/patches/elfutils-tests-ptrace.patch		\
   gnu/packages/patches/einstein-build.patch			\
-  gnu/packages/patches/emacs-constants-lisp-like.patch		\
   gnu/packages/patches/emacs-exec-path.patch			\
   gnu/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
   gnu/packages/patches/emacs-source-date-epoch.patch		\
