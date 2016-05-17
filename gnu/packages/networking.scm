@@ -138,14 +138,14 @@ more.")
 (define-public libndp
   (package
     (name "libndp")
-    (version "1.5")
+    (version "1.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://libndp.org/files/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "15f743hjc7yy2sv3hzvfc27s1gny4mh5aww59vn195fff2midwgs"))))
+                "03mczwrxqbp54msafxzzyhaazkvjdwm2kipjkrb5xg8kw22glz8c"))))
     (build-system gnu-build-system)
     (home-page "http://libndp.org/")
     (synopsis "Library for Neighbor Discovery Protocol")
