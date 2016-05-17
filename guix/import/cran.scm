@@ -152,9 +152,11 @@ empty list when the FIELD cannot be found."
   "Return the `package' s-expression for an R package published on REPOSITORY
 from the alist META, which was derived from the R package's DESCRIPTION file."
   (define (guix-name name)
-    (if (string-prefix? "r-" name)
-        (string-downcase name)
-        (string-append "r-" (string-downcase name))))
+    (string-append "r-" (string-map (match-lambda
+                                      (#\_ #\-)
+                                      (#\. #\-)
+                                      (chr (char-downcase chr)))
+                                    name)))
 
   (let* ((base-url   (case repository
                        ((cran)         %cran-url)
