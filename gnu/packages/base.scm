@@ -137,17 +137,27 @@ implementation offers several extensions over the standard utility.")
 (define-public tar
   (package
    (name "tar")
-   (version "1.28")
+   (version "1.29")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/tar/tar-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1wi2zwm4c9r3h3b8y4w0nm0qq897kn8kyj9k22ba0iqvxj48vvk4"))
-            (patches (search-patches "tar-d_ino_in_dirent-fix.patch"
-                                     "tar-skip-unreliable-tests.patch"))))
+              "097hx7sbzp8qirl4m930lw84kn0wmxhmq7v1qpra3mrg0b8cyba0"))
+            (patches (search-patches "tar-skip-unreliable-tests.patch"))))
    (build-system gnu-build-system)
+   ;; Note: test suite requires ~1GiB of disk space.
+   (arguments
+    '(#:phases (modify-phases %standard-phases
+                 (add-before 'build 'set-shell-file-name
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     ;; Do not use "/bin/sh" to run programs.
+                     (let ((bash (assoc-ref inputs "bash")))
+                       (substitute* "src/system.c"
+                         (("/bin/sh")
+                          (string-append bash "/bin/sh")))
+                       #t))))))
    (synopsis "Managing tar archives")
    (description
     "Tar provides the ability to create tar archives, as well as the

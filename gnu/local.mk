@@ -721,7 +721,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/sudo-CVE-2015-5602.patch			\
   gnu/packages/patches/superlu-dist-scotchmetis.patch		\
   gnu/packages/patches/synfig-build-fix.patch			\
-  gnu/packages/patches/tar-d_ino_in_dirent-fix.patch		\
   gnu/packages/patches/tar-skip-unreliable-tests.patch		\
   gnu/packages/patches/tcl-mkindex-deterministic.patch		\
   gnu/packages/patches/tclxml-3.2-install.patch			\
