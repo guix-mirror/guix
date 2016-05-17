@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;;
@@ -69,7 +69,8 @@ formats.  GD is commonly used to generate charts, graphics, thumbnails, and
 most anything else, on the fly.  While not restricted to use on the web, the
 most common applications of GD involve website development.")
     (license (non-copyleft "file://COPYING"
-                        "See COPYING file in the distribution."))))
+                           "See COPYING file in the distribution."))
+    (properties '((cpe-name . "libgd")))))
 
 (define-public perl-gd
   (package
