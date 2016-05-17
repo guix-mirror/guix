@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2016 humanitiesNerd <catonano@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1588,3 +1589,26 @@ to recognize a name like \"RFC 1234\".  This package enhances ffap so
 that it correctly finds RFCs even when a space appears before the
 number.")
     (license license:gpl3+)))
+
+(define-public emacs-zenburn-theme
+  (package
+    (name "emacs-zenburn-theme")
+    (version "2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/bbatsov/zenburn-emacs/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0lyi84bm8sa7vj40n6zg6rlbsmi53mi1y9xn6gkjj29s5zbcnlg7"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/bbatsov/zenburn-emacs")
+    (synopsis "Low contrast color theme for Emacs")
+    (description
+     "Zenburn theme is a port of the popular Vim Zenburn theme for Emacs.
+It is built on top of the custom theme support in Emacs 24 or later.")
+    (license license:gpl3+)))
+
+
