@@ -149,6 +149,38 @@ empty list when the FIELD cannot be found."
                         (string-any char-set:whitespace item)))
                   (map string-trim-both items))))))
 
+(define default-r-packages
+  (list "KernSmooth"
+        "MASS"
+        "Matrix"
+        "base"
+        "boot"
+        "class"
+        "cluster"
+        "codetools"
+        "compiler"
+        "datasets"
+        "foreign"
+        "grDevices"
+        "graphics"
+        "grid"
+        "lattice"
+        "methods"
+        "mgcv"
+        "nlme"
+        "nnet"
+        "parallel"
+        "rpart"
+        "spatial"
+        "splines"
+        "stats"
+        "stats4"
+        "survival"
+        "tcltk"
+        "tools"
+        "translations"
+        "utils"))
+
 (define (guix-name name)
   "Return a Guix package name for a given R package name."
   (string-append "r-" (string-map (match-lambda
@@ -180,11 +212,13 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                        (_ #f)))
          (tarball    (with-store store (download-to-store store source-url)))
          (sysdepends (map string-downcase (listify meta "SystemRequirements")))
-         (propagate  (lset-union equal?
-                                 (listify meta "Imports")
-                                 (listify meta "LinkingTo")
-                                 (delete "R"
-                                         (listify meta "Depends")))))
+         (propagate  (filter (lambda (name)
+                               (not (member name default-r-packages)))
+                             (lset-union equal?
+                                         (listify meta "Imports")
+                                         (listify meta "LinkingTo")
+                                         (delete "R"
+                                                 (listify meta "Depends"))))))
     (values
      `(package
         (name ,(guix-name name))
