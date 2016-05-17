@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;;
@@ -132,4 +132,5 @@ then goes on to load the rest of the operating system.  As a multiboot
 bootloader, GRUB handles the presence of multiple operating systems installed
 on the same computer; upon booting the computer, the user is presented with a
 menu to select one of the installed operating systems.")
-    (license gpl3+)))
+    (license gpl3+)
+    (properties '((cpe-name . "grub2")))))
