@@ -23,6 +23,7 @@
   #:use-module ((ice-9 rdelim) #:select (read-string))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (ice-9 receive)
   #:use-module (guix http-client)
   #:use-module (guix hash)
   #:use-module (guix store)
@@ -179,33 +180,36 @@ from the alist META, which was derived from the R package's DESCRIPTION file."
                        (_ #f)))
          (tarball    (with-store store (download-to-store store source-url)))
          (sysdepends (map string-downcase (listify meta "SystemRequirements")))
-         (propagate  (map guix-name (lset-union equal?
-                                                (listify meta "Imports")
-                                                (listify meta "LinkingTo")
-                                                (delete "R"
-                                                        (listify meta "Depends"))))))
-    `(package
-       (name ,(guix-name name))
-       (version ,version)
-       (source (origin
-                 (method url-fetch)
-                 (uri (,(procedure-name uri-helper) ,name version))
-                 (sha256
-                  (base32
-                   ,(bytevector->nix-base32-string (file-sha256 tarball))))))
-       ,@(if (not (equal? (string-append "r-" name)
-                          (guix-name name)))
-             `((properties ,`(,'quasiquote ((,'upstream-name . ,name)))))
-             '())
-       (build-system r-build-system)
-       ,@(maybe-inputs sysdepends)
-       ,@(maybe-inputs propagate 'propagated-inputs)
-       (home-page ,(if (string-null? home-page)
-                       (string-append base-url name)
-                       home-page))
-       (synopsis ,synopsis)
-       (description ,(beautify-description (assoc-ref meta "Description")))
-       (license ,license))))
+         (propagate  (lset-union equal?
+                                 (listify meta "Imports")
+                                 (listify meta "LinkingTo")
+                                 (delete "R"
+                                         (listify meta "Depends")))))
+    (values
+     `(package
+        (name ,(guix-name name))
+        (version ,version)
+        (source (origin
+                  (method url-fetch)
+                  (uri (,(procedure-name uri-helper) ,name version))
+                  (sha256
+                   (base32
+                    ,(bytevector->nix-base32-string (file-sha256 tarball))))))
+        ,@(if (not (equal? (string-append "r-" name)
+                           (guix-name name)))
+              `((properties ,`(,'quasiquote ((,'upstream-name . ,name)))))
+              '())
+        (build-system r-build-system)
+        ,@(maybe-inputs sysdepends)
+        ,@(maybe-inputs (map guix-name propagate) 'propagated-inputs)
+        (home-page ,(if (string-null? home-page)
+                        (string-append base-url name)
+                        home-page))
+        (synopsis ,synopsis)
+        (description ,(beautify-description (or (assoc-ref meta "Description")
+                                                "")))
+        (license ,license))
+     propagate)))
 
 (define* (cran->guix-package package-name #:optional (repo 'cran))
   "Fetch the metadata for PACKAGE-NAME from REPO and return the `package'
