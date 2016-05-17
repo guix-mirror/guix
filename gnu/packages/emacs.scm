@@ -1611,4 +1611,31 @@ number.")
 It is built on top of the custom theme support in Emacs 24 or later.")
     (license license:gpl3+)))
 
-
+(define-public emacs-smartparens
+  (package
+    (name "emacs-smartparens")
+    (version "1.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Fuco1/smartparens/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1b47ppkzsj8j8a2p0bmvq05rhm2d2lsm3wlc0sg542r4zr6nji8s"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/Fuco1/smartparens")
+    (synopsis "Paredit-like insertion, wrapping and navigation with user
+defined pairs")
+    (description
+     "Smartparens is a minor mode for Emacs that deals with parens pairs
+and tries to be smart about it.  It started as a unification effort to
+combine functionality of several existing packages in a single,
+compatible and extensible way to deal with parentheses, delimiters, tags
+and the like.  Some of these packages include autopair, textmate,
+wrap-region, electric-pair-mode, paredit and others.  With the basic
+features found in other packages it also brings many improvements as
+well as completely new features.")
+    (license license:gpl3+)))
