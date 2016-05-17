@@ -3810,7 +3810,7 @@ data in the form of VCF files.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "1.10.0")
+    (version "1.11.1")
     (source
      (origin
        (method url-fetch)
@@ -3820,7 +3820,7 @@ data in the form of VCF files.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1i3bad7gnn2y3a1yfixzshd99xdkjc8w5bxzgifpysc6jiljwvb5"))
+         "1pdvm3znjgq3zryy240yj9gc0bf1z31k6vf9jxrxgdgkvzgw85c7"))
        (modules '((guix build utils)))
        (snippet
         '(begin
