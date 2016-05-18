@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,10 +34,12 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages graphics)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -881,4 +884,37 @@ the programmer.")
 whether they look alike.  It uses a computational model of the human visual
 system to detect similarities.  This allows it too see beyond irrelevant
 differences in file encoding, image quality, and other small variations.")
+    (license license:gpl2+)))
+
+(define-public steghide
+  (package
+    (name "steghide")
+    (version "0.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/steghide/steghide/"
+                                  version "/steghide-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "18bxlhbdc3zsmxj84i417xjh0q28kv26q449k23n0a72ldwziix2"))
+              (patches (list (search-patch "steghide-fixes.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("libtool" ,libtool)
+       ("perl" ,perl)))                 ;for tests
+    (inputs
+     `(("libmhash" ,libmhash)
+       ("libmcrypt" ,libmcrypt)
+       ("libjpeg" ,libjpeg)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:make-flags '("CXXFLAGS=-fpermissive"))) ;required for MHashPP.cc
+    (home-page "http://steghide.sourceforge.net")
+    (synopsis "Image and audio steganography")
+    (description
+     "Steghide is a steganography program that is able to hide data in various
+kinds of image- and audio-files.  The color- respectivly sample-frequencies
+are not changed thus making the embedding resistant against first-order
+statistical tests.")
     (license license:gpl2+)))
