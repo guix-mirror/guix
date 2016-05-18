@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 humanitiesNerd <catonano@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
+;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2022,4 +2023,33 @@ engines: PHP, JSP, ASP, Django, Twig, Jinja, Mustache, ERB, FreeMarker,
 Velocity, Cheetah, Smarty, CTemplate, Mustache, Blade, ErlyDTL, Go Template,
 Dust.js, React/JSX, Angularjs, ejs, etc.")
     (home-page "http://web-mode.org/")
+    (license license:gpl3+)))
+
+(define-public emacs-helm
+  (package
+    (name "emacs-helm")
+    (version "1.9.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/" name "/helm/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0fc897rwf1fm2m7jrsikkgcyzhngfcysxfmzchpwzfj6v9sb5rl9"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-async" ,emacs-async)
+       ("emacs-popup" ,emacs-popup)))
+    (home-page "https://emacs-helm.github.io/helm/")
+    (synopsis "Incremental completion and selection narrowing
+framework for Emacs")
+    (description "Helm is incremental completion and selection narrowing
+framework for Emacs.  It will help steer you in the right direction when
+you're looking for stuff in Emacs (like buffers, files, etc).  Helm is a fork
+of @code{anything.el} originally written by Tamas Patrovic and can be
+considered to be its successor.  Helm sets out to clean up the legacy code in
+@code{anything.el} and provide a cleaner, leaner and more modular tool, that's
+not tied in the trap of backward compatibility.")
     (license license:gpl3+)))
