@@ -66,7 +66,7 @@
 (define-public mig
   (package
     (name "mig")
-    (version "1.6")
+    (version "1.7")
     (source
      (origin
       (method url-fetch)
@@ -74,7 +74,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1i9qd6j5g8wsv9k9n6vpdqflyw0284wyayb2s2h7pp4yyi2jsksk"))))
+        "1hxqd8p14pgamgavmbmziswvd1zvwqx7lgc9qga805q9jrs93q2b"))))
     (build-system gnu-build-system)
     ;; Flex is needed both at build and run time.
     (inputs `(("gnumach-headers" ,gnumach-headers)
