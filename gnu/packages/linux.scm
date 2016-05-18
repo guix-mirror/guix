@@ -2671,3 +2671,38 @@ pre-configured) fan level.  It requires a working @code{thinkpad_acpi} or any
 other @code{hwmon} driver that enables temperature reading and fan control
 from userspace.")
     (license license:gpl3+)))
+
+(define-public ntfs-3g
+  (package
+    (name "ntfs-3g")
+    (version "2016.2.22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://tuxera.com/opensource/"
+                                  "ntfs-3g_ntfsprogs-" version ".tgz"))
+              (sha256
+               (base32
+                "180y5y09h30ryf2vim8j30a2npwz1iv9ly5yjmh3wjdkwh2jrdyp"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Install under $prefix.
+               '(substitute* '("src/Makefile.in" "ntfsprogs/Makefile.in")
+                  (("/sbin")
+                   "@sbindir@")))))
+    (build-system gnu-build-system)
+    (inputs `(("util-linux" ,util-linux)
+              ("fuse" ,fuse)))                    ;libuuid
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     '(#:configure-flags (list "--exec-prefix=${prefix}"
+                               "--with-fuse=external" ;use our own FUSE
+                               "--enable-mount-helper"
+                               "--enable-posix-acls"
+                               "--enable-xattr-mappings")))
+    (home-page "http://www.tuxera.com/community/open-source-ntfs-3g/")
+    (synopsis "Read-write access to NTFS file systems")
+    (description
+     "NTFS-3G provides read-write access to NTFS file systems, which are
+commonly found on Microsoft Windows.  It is implemented as a FUSE file system.
+The package provides additional NTFS tools.")
+    (license license:gpl2+)))
