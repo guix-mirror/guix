@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2593,6 +2594,28 @@ directly from R.  Once uploaded to a plotly account, plotly graphs (and the
 data behind them) can be viewed and modified in a web browser.")
     (license license:x11)))
 
+(define-public r-biased-urn
+  (package
+   (name "r-biased-urn")
+   (version "1.07")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (cran-uri "BiasedUrn" version))
+     (sha256
+      (base32
+       "13i2lgfnjhlbbm2yxfc2l5hswqw6x03pwba5csjmirv8kpjw4xr3"))))
+   (properties `((upstream-name . "BiasedUrn")))
+   (build-system r-build-system)
+   (home-page "http://www.agner.org/random/")
+   (synopsis "Biased urn model distributions")
+   (description
+    "This package provides statistical models of biased sampling in the form
+of univariate and multivariate noncentral hypergeometric distributions,
+including Wallenius' noncentral hypergeometric distribution and Fisher's
+noncentral hypergeometric distribution (also called extended hypergeometric
+distribution).")
+   (license license:gpl3+)))
 
 (define-public r-ztable
   (package
