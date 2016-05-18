@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
-;;; Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
+;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.

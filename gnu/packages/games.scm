@@ -18,7 +18,7 @@
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
-;;; Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
+;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.

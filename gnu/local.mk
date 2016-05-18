@@ -4,7 +4,7 @@
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
-# Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
+# Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 #
 # This file is part of GNU Guix.
 #
