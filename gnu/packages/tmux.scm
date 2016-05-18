@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,10 +22,12 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages ncurses))
+
 
 (define-public tmux
   (package
@@ -50,3 +53,38 @@ windows), each running a separate program, to be created, accessed, and
 controlled from a single screen.  tmux may be detached from a screen and
 continue running in the background, then later reattached.")
     (license isc)))
+
+(define-public tmux-themepack
+  (let ((commit "03a372866f7677f7fe63bcee140b48b9fd372c48")
+        (revision "1"))
+    (package
+      (name "tmux-themepack")
+      (version
+       (string-append "0.0.0-" revision "." (string-take commit 7))) ;; No version tags
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url
+                       (string-append "https://github.com/jimeh/" name ".git"))
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1d3k87mq5lca042jbap5kxskjy3kg79wjhhpnm6jacbn3anc67zl"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ; No test suite.
+         #:phases (modify-phases %standard-phases
+                    (delete 'configure)
+                    (delete 'build)
+                    (replace 'install
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        (let* ((out (string-append
+                                     (assoc-ref outputs "out")
+                                     "/share/" ,name "-" ,version)))
+                          (copy-recursively "." out)))))))
+      (home-page "https://github.com/jimeh/tmux-themepack")
+      (synopsis "Collection of themes for Tmux")
+      (description "A collection of various themes for Tmux.")
+      (license
+       (non-copyleft "http://www.wtfpl.net/txt/copying/")))))
