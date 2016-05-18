@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,6 +45,7 @@
 (define-public expat
   (package
     (name "expat")
+    (replacement expat/fixed)
     (version "2.1.0")
     (source (origin
              (method url-fetch)
@@ -61,6 +63,15 @@
 stream-oriented parser in which an application registers handlers for
 things the parser might find in the XML document (like start tags).")
     (license license:expat)))
+
+(define expat/fixed
+  (package
+    (inherit expat)
+    (source (origin
+              (inherit (package-source expat))
+              (patches (search-patches "expat-CVE-2015-1283.patch"
+                                       "expat-CVE-2015-1283-refix.patch"
+                                       "expat-CVE-2016-0718.patch"))))))
 
 (define-public libxml2
   (package

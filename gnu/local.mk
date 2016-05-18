@@ -472,6 +472,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/eudev-rules-directory.patch		\
   gnu/packages/patches/evilwm-lost-focus-bug.patch		\
   gnu/packages/patches/expat-CVE-2015-1283.patch		\
+  gnu/packages/patches/expat-CVE-2015-1283-refix.patch		\
+  gnu/packages/patches/expat-CVE-2016-0718.patch		\
   gnu/packages/patches/fastcap-mulGlobal.patch			\
   gnu/packages/patches/fastcap-mulSetup.patch			\
   gnu/packages/patches/fasthenry-spAllocate.patch		\
