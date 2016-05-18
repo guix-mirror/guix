@@ -1,0 +1,43 @@
+From http://swish-e.org/archive/2015-09/13295.html
+
+--- a/src/compress.c	
++++ a/src/compress.c	
+@@ -995,7 +995,7 @@ void    remove_worddata_longs(unsigned char *worddata,int *sz_worddata)
+             progerr("Internal error in remove_worddata_longs");
+ 
+         /* dst may be smaller than src. So move the data */
+-        memcpy(dst,src,data_len);
++        memmove(dst,src,data_len);
+ 
+         /* Increase pointers */
+         src += data_len;
+--- a/src/headers.c	
++++ a/src/headers.c	
+@@ -280,7 +280,7 @@ static SWISH_HEADER_VALUE fetch_single_header( IndexFILE *indexf, HEADER_MAP *he
+ 
+         case SWISH_NUMBER:
+         case SWISH_BOOL:
+-            value.number = *(unsigned long *) data_pointer;
++            value.number = *(unsigned int *) data_pointer;
+ 
+             /* $$$ Ugly hack alert! */
+             /* correct for removed files */
+--- a/src/swishspider	
++++ a/src/swishspider	
+@@ -27,6 +27,7 @@ use LWP::UserAgent;
+ use HTTP::Status;
+ use HTML::Parser 3.00;
+ use HTML::LinkExtor;
++use Encode;
+ 
+     if (scalar(@ARGV) != 2) {
+         print STDERR "Usage: $0 localpath url\n";
+@@ -94,7 +95,7 @@ use HTML::LinkExtor;
+     # Don't allow links above the base
+     $URI::ABS_REMOTE_LEADING_DOTS = 1;
+ 
+-    $p->parse( $$content_ref );
++    $p->parse( decode_utf8 $$content_ref );
+     close( LINKS );
+ 
+     exit;
