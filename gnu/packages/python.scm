@@ -1017,7 +1017,7 @@ doing practical, real world data analysis in Python.")
     (package
       (inherit base)
       (native-inputs `(("python2-setuptools" ,python2-setuptools)
-                       ,@(package-inputs base))))))
+                       ,@(package-native-inputs base))))))
 
 (define-public python-tzlocal
   (package
