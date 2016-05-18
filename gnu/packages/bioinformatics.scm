@@ -1494,7 +1494,13 @@ identify enrichments with functional annotations of the genome.")
                 "1dqancz32c2l7w1b2vkvh5zqa2jnf99j1c41djnx1l8pxn044zdc"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:tests? #f)) ; no "check" target
+     '(#:tests? #f ; no "check" target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'remove-native-compilation
+           (lambda _
+             (substitute* "CMakeLists.txt" (("-march=native") ""))
+             #t)))))
     (inputs
      `(("zlib" ,zlib)))
     (home-page "https://github.com/bbuchfink/diamond")
