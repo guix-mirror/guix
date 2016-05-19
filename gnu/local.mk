@@ -304,6 +304,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/search.scm			\
   gnu/packages/serialization.scm		\
   gnu/packages/serveez.scm			\
+  gnu/packages/shellutils.scm			\
   gnu/packages/shishi.scm			\
   gnu/packages/skarnet.scm			\
   gnu/packages/skribilo.scm			\
