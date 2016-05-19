@@ -2214,6 +2214,17 @@ in finite element programs.")
        #:strip-directories '("lib" "lib64" "libexec"
                              "bin" "sbin" "share/flann/octave")
 
+       ;; Save 12 MiB by not installing .a files.  Passing
+       ;; '-DBUILD_STATIC_LIBS=OFF' has no effect.
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'remove-static-libraries
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (lib (string-append out "/lib")))
+                        (for-each delete-file
+                                  (find-files lib "\\.a$"))
+                        #t))))
+
        #:tests? #f)) ; The test data are downloaded from the Internet.
     (home-page "http://www.cs.ubc.ca/research/flann/")
     (synopsis "Library for approximate nearest neighbors computation")
