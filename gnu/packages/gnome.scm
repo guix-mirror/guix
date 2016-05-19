@@ -17,6 +17,7 @@
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,6 +60,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages enchant)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages game-development)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -162,6 +164,55 @@
 Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
+
+(define-public dia
+  ;; This version from GNOME's repository includes fixes for compiling with
+  ;; recent versions of the build tools.  The latest activity on the
+  ;; pre-GNOME version has been in 2014, while GNOME has continued applying
+  ;; fixes in 2016.
+  (let ((commit "fbc306168edab63db80b904956117cbbdc514ee4"))
+    (package
+      (name "dia")
+      (version (string-append "0.97.2-" (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.gnome.org/browse/dia")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1b4bba0k8ph4cwgw8xjglss0p6n111bpd5app67lrq79mp0ad06l"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("glib" ,glib "bin")
+         ("pango" ,pango)
+         ("gdk-pixbuf" ,gdk-pixbuf)
+         ("gtk+" ,gtk+-2)
+         ("libxml2" ,libxml2)
+         ("freetype" ,freetype)
+         ("libart-lgpl" ,libart-lgpl)))
+      (native-inputs
+       `(("intltool" ,intltool)
+         ("pkg-config" ,pkg-config)
+         ("automake" ,automake)
+         ("autoconf" ,autoconf)
+         ("libtool" ,libtool)
+         ("perl" ,perl)
+         ("python-wrapper" ,python-wrapper)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'run-autogen
+             (lambda _
+               (system* "sh" "autogen.sh"))))))
+      (home-page "https://wiki.gnome.org/Apps/Dia")
+      (synopsis "Diagram creation for GNOME")
+      (description "Dia can be used to draw different types of diagrams, and
+includes support for UML static structure diagrams (class diagrams), entity
+relationship modeling, and network diagrams.  The program supports various file
+formats like PNG, SVG, PDF and EPS.")
+      (license license:gpl2+))))
 
 (define-public gnome-common
   (package
