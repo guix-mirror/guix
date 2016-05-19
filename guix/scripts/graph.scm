@@ -356,15 +356,18 @@ Emit a Graphviz (dot) representation of the dependencies of PACKAGE...\n"))
                                    (_ #f))
                                  opts)))
       (with-store store
-        (run-with-store store
-          ;; XXX: Since grafting can trigger unsolicited builds, disable it.
-          (mlet %store-monad ((_     (set-grafting #f))
-                              (nodes (mapm %store-monad
-                                           (node-type-convert type)
-                                           packages)))
-            (export-graph (concatenate nodes)
-                          (current-output-port)
-                          #:node-type type))))))
+        ;; Ask for absolute file names so that .drv file names passed from the
+        ;; user to 'read-derivation' are absolute when it returns.
+        (with-fluids ((%file-port-name-canonicalization 'absolute))
+          (run-with-store store
+            ;; XXX: Since grafting can trigger unsolicited builds, disable it.
+            (mlet %store-monad ((_     (set-grafting #f))
+                                (nodes (mapm %store-monad
+                                             (node-type-convert type)
+                                             packages)))
+              (export-graph (concatenate nodes)
+                            (current-output-port)
+                            #:node-type type)))))))
   #t)
 
 ;;; graph.scm ends here
