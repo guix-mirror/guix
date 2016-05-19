@@ -80,7 +80,18 @@
               (base32
                "0kn3rzm91qiswi0cql89kbv6mqn27rwsyjfb8xmwy9m5s8fxfiyx"))
              (patches (search-patches "emacs-exec-path.patch"
-                                      "emacs-source-date-epoch.patch"))))
+                                      "emacs-source-date-epoch.patch"))
+             (modules '((guix build utils)))
+             (snippet
+              ;; Delete the bundled byte-compiled elisp files and
+              ;; generated autoloads.
+              '(with-directory-excursion "lisp"
+                 (for-each delete-file
+                           (append (find-files "." "\\.elc$")
+                                   (find-files "." "loaddefs\\.el$")
+                                   ;; This is the only "autoloads" file that
+                                   ;; does not have "*loaddefs.el" name.
+                                   '("eshell/esh-groups.el")))))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
