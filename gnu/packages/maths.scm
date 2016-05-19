@@ -12,6 +12,7 @@
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2208,7 +2209,12 @@ in finite element programs.")
        ;; ("python2-numpy" ,python2-numpy) ; only required for the tests
        ("zlib" ,zlib)))
     (arguments
-     `(#:tests? #f)) ; The test data are downloaded from the Internet.
+     `(;; The 'share/flann/octave' contains a .mex file, which is an ELF file
+       ;; taken 46 MiB unstripped, and 6 MiB stripped.
+       #:strip-directories '("lib" "lib64" "libexec"
+                             "bin" "sbin" "share/flann/octave")
+
+       #:tests? #f)) ; The test data are downloaded from the Internet.
     (home-page "http://www.cs.ubc.ca/research/flann/")
     (synopsis "Library for approximate nearest neighbors computation")
     (description "FLANN is a library for performing fast approximate
