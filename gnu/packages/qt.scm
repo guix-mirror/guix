@@ -431,6 +431,40 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 developers using C++ or QML, a CSS & JavaScript like language.")
     (license (list lgpl2.1 lgpl3))))
 
+(define-public qtsvg
+  (package (inherit qtbase)
+    (name "qtsvg")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "08ca5g46g75acy27jfnvnalmcias5hxmjp7491v3y4k9y7a4ybpi"))))
+    (propagated-inputs `())
+    (native-inputs `(("perl" ,perl)))
+    (inputs
+     `(("mesa" ,mesa)
+       ("qtbase" ,qtbase)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "qmake" (string-append "PREFIX=" out))))))
+         (add-before 'install 'fix-Makefiles
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out    (assoc-ref outputs "out"))
+                   (qtbase (assoc-ref inputs "qtbase")))
+               (substitute* (find-files "." "Makefile")
+                            (((string-append "INSTALL_ROOT)" qtbase))
+                             (string-append "INSTALL_ROOT)" out)))))))))))
+
 (define-public qjson
   (package
     (name "qjson")
