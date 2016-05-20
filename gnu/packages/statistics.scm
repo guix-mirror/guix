@@ -2564,13 +2564,13 @@ It uses and relies on grid graphics and formal (S4) classes and methods.")
 (define-public r-plotly
   (package
     (name "r-plotly")
-    (version "3.4.13")
+    (version "3.6.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "plotly" version))
               (sha256
                (base32
-                "1pfl9w35iwin8a1hfwcihajyps2ngjbyrmvi61b9lspcdbk39lf8"))))
+                "15hvqa0sf4z6l6vvr614zjszfphwpv66zpc665iyiynq0pd1jv2c"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
