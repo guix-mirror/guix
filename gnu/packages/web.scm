@@ -3060,13 +3060,13 @@ particularly easy to create complete web applications using httpuv alone.")
 (define-public r-jsonlite
   (package
     (name "r-jsonlite")
-    (version "0.9.19")
+    (version "0.9.20")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "jsonlite" version))
               (sha256
                (base32
-                "1hbdraj3xv2l2gs9f205j8z054ycy0bfdvwdhvpa9qlji588sz7g"))))
+                "08b2gifd81yzj0h4k7pqp2cc2r5lwsg3sxnssi6c96rgqvl4702n"))))
     (build-system r-build-system)
     (home-page "http://arxiv.org/abs/1403.2805")
     (synopsis "Robust, high performance JSON parser and generator for R")
