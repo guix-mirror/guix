@@ -916,13 +916,13 @@ R packages that praise their users.")
 (define-public r-testthat
   (package
     (name "r-testthat")
-    (version "1.0.0")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "testthat" version))
               (sha256
                (base32
-                "1ci1y54kaz7g4di79fcibp0m0wkkxn2glchhs6v8jfg6374ka410"))))
+                "0pj1r01x4ny4capr83dfa19hi5i2sjjxky99schzip8zrq5dzxqf"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
