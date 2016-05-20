@@ -1497,13 +1497,13 @@ informative error messages when it's not available.")
 (define-public r-devtools
   (package
     (name "r-devtools")
-    (version "1.11.0")
+    (version "1.11.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "devtools" version))
               (sha256
                (base32
-                "101j15d0f9107pnmdpdwqyvk2ncykq48336rl8lnqp6idiq8id2q"))))
+                "0ik3l3q62sspdph613f9ik5yz36s8q5nrc50dqgn3pxzvpwpdj2i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-curl" ,r-curl)
