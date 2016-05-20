@@ -1453,13 +1453,13 @@ functions make it easy to control additional request components.")
 (define-public r-git2r
   (package
     (name "r-git2r")
-    (version "0.14.0")
+    (version "0.15.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "git2r" version))
               (sha256
                (base32
-                "0jkkrggffpflaaw0gn2hnm1wz83xs31amriim481g73zf30g2bpr"))))
+                "1rpdf85wy9fp456ypvbhl3p9whkb7kgl0n7rkqxd2bhvyzkvjak8"))))
     (build-system r-build-system)
     ;; This R package contains modified sources of libgit2.  This modified
     ;; version of libgit2 is built as the package is built.  Hence libgit2 is
