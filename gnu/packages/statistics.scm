@@ -685,13 +685,13 @@ There is also a Shiny app as a user interface in this package.")
 (define-public r-highr
   (package
     (name "r-highr")
-    (version "0.5.1")
+    (version "0.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "highr" version))
               (sha256
                (base32
-                "11hyawzhaw3ph5y5xphi7alx6df1d0i6wh0a2n5m4sxxhdrzswnb"))))
+                "0n9v44dxdy5fhkdmpbpa2p78whyd9z3rhhy42ipdz5m5vsr55qa3"))))
     (build-system r-build-system)
     (home-page "https://github.com/yihui/highr")
     (synopsis "Syntax highlighting for R source code")
