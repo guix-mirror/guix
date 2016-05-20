@@ -115,6 +115,8 @@ file name pairs."
                    (replace-store-references input output mapping
                                              store)
                    (chmod output (stat:perms stat))))))))
+        ((directory)
+         (mkdir-p dest))
         (else
          (error "unsupported file type" stat)))))
 
@@ -124,6 +126,7 @@ file name pairs."
   (umask #o022)
 
   (n-par-for-each (parallel-job-count)
-                  rewrite-leaf (find-files directory)))
+                  rewrite-leaf (find-files directory (const #t)
+                                           #:directories? #t)))
 
 ;;; graft.scm ends here
