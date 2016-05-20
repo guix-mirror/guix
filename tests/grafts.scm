@@ -182,4 +182,21 @@
            (and (string=? (readlink one) repl)
                 (string=? (readlink two) one))))))
 
+(test-assert "graft-derivation, renaming"         ;<http://bugs.gnu.org/23132>
+  (let* ((build `(begin
+                   (use-modules (guix build utils))
+                   (mkdir-p (string-append (assoc-ref %outputs "out") "/"
+                                           (assoc-ref %build-inputs "in")))))
+         (orig  (build-expression->derivation %store "thing-to-graft" build
+                                              #:modules '((guix build utils))
+                                              #:inputs `(("in" ,%bash))))
+         (repl  (add-text-to-store %store "bash" "fake bash"))
+         (grafted (graft-derivation %store orig
+                                    (list (graft
+                                            (origin %bash)
+                                            (replacement repl))))))
+    (and (build-derivations %store (list grafted))
+         (let ((out (derivation->output-path grafted)))
+           (file-is-directory? (string-append out "/" repl))))))
+
 (test-end)
