@@ -1731,14 +1731,14 @@ encoder/decoder, round-off-error-free sum and cumsum, etc.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "0.9.5")
+    (version "0.9.6")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
           (base32
-            "1zz98jxvw3lzva5kkj1n37gbhjwqd96gjs04y6h37pqy6qmkhk8c"))))
+            "09ajq5miqzz46q0i9svvbh93dbi7xbjn4702d6z3scdz272gx7l2"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
