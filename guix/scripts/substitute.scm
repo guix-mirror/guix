@@ -440,9 +440,15 @@ the cache STR originates form."
 (define (narinfo-cache-file cache-url path)
   "Return the name of the local file that contains an entry for PATH.  The
 entry is stored in a sub-directory specific to CACHE-URL."
-  (string-append %narinfo-cache-directory "/"
-                 (bytevector->base32-string (sha256 (string->utf8 cache-url)))
-                 "/" (store-path-hash-part path)))
+  ;; The daemon does not sanitize its input, so PATH could be something like
+  ;; "/gnu/store/foo".  Gracefully handle that.
+  (match (store-path-hash-part path)
+    (#f
+     (leave (_ "'~a' does not name a store item~%") path))
+    ((? string? hash-part)
+     (string-append %narinfo-cache-directory "/"
+                    (bytevector->base32-string (sha256 (string->utf8 cache-url)))
+                    "/" hash-part))))
 
 (define (cached-narinfo cache-url path)
   "Check locally if we have valid info about PATH coming from CACHE-URL.
