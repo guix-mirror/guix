@@ -1641,14 +1641,14 @@ full text searching.")
 (define-public armadillo
   (package
     (name "armadillo")
-    (version "6.700.4")
+    (version "6.700.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/arma/armadillo-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0dsdjcps5l2nhg0455rrc708inffarzj7n435vj4sm9lxwf21wg9"))))
+                "0xbidcxrvbq33xf7iysg2nic2ai9a043psl33kiv6ifkk7p8hcra"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ;no test target
     (inputs
