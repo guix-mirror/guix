@@ -3885,6 +3885,47 @@ Needleman-Wunsch).")
     ;; Dual licensed; also includes public domain source.
     (license (list license:gpl3 license:bsd-2))))
 
+(define-public pardre
+  (package
+    (name "pardre")
+    (version "1.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/pardre/ParDRe-rel"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0zkyjzv4s8q2h5npalhirbk17r5b1h0n2a42mh7njzlf047h9bhy"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (install-file "ParDRe" bin)
+               #t))))))
+    (inputs
+     `(("openmpi" ,openmpi)
+       ("zlib" ,zlib)))
+    (synopsis "Parallel tool to remove duplicate DNA reads")
+    (description
+     "ParDRe is a parallel tool to remove duplicate genetic sequence reads.
+Duplicate reads can be seen as identical or nearly identical sequences with
+some mismatches.  This tool lets users avoid the analysis of unnecessary
+reads, reducing the time of subsequent procedures with the
+dataset (e.g. assemblies, mappings, etc.).  The tool is implemented with MPI
+in order to exploit the parallel capabilities of multicore clusters.  It is
+faster than multithreaded counterparts (end of 2015) for the same number of
+cores and, thanks to the message-passing technology, it can be executed on
+clusters.")
+    (home-page "https://sourceforge.net/projects/pardre/")
+    (license license:gpl3+)))
+
 (define-public bio-locus
   (package
     (name "bio-locus")
