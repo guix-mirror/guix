@@ -66,14 +66,13 @@ directory."
       ;; Use GNU unpack strategy for things that aren't gem archives.
       (gnu:unpack #:source source)))
 
-(define* (build #:key source #:allow-other-keys)
-  "Build a new gem using the gemspec from the SOURCE gem."
-  (define (first-gemspec)
-    (first-matching-file "\\.gemspec$"))
+(define (first-gemspec)
+  (first-matching-file "\\.gemspec$"))
 
-  ;; Remove the original gemspec, if present, and replace it with a new one.
-  ;; This avoids issues with upstream gemspecs requiring tools such as git to
-  ;; generate the files list.
+(define* (extract-gemspec #:key source #:allow-other-keys)
+  "Remove the original gemspec, if present, and replace it with a new one.
+This avoids issues with upstream gemspecs requiring tools such as git to
+generate the files list."
   (when (gem-archive? source)
     (let ((gemspec (or (false-if-exception (first-gemspec))
                        ;; Make new gemspec if one wasn't shipped.
@@ -94,7 +93,10 @@ directory."
                   (write-char (read-char pipe) out))))
             #t)
           (lambda ()
-            (close-pipe pipe))))))
+            (close-pipe pipe)))))))
+
+(define* (build #:key source #:allow-other-keys)
+  "Build a new gem using the gemspec from the SOURCE gem."
 
   ;; Build a new gem from the current working directory.  This also allows any
   ;; dynamic patching done in previous phases to be present in the installed
@@ -134,6 +136,7 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
 (define %standard-phases
   (modify-phases gnu:%standard-phases
     (delete 'configure)
+    (add-before 'build 'extract-gemspec extract-gemspec)
     (replace 'build build)
     (replace 'unpack unpack)
     (replace 'install install)
