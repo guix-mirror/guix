@@ -1882,13 +1882,13 @@ to reproduce user environments.")
 (define-public ruby-nokogiri
   (package
     (name "ruby-nokogiri")
-    (version "1.6.7.1")
+    (version "1.6.7.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "nokogiri" version))
               (sha256
                (base32
-                "12nwv3lad5k2k73aa1d1xy4x577c143ixks6rs70yp78sinbglk2"))))
+                "11sbmpy60ynak6s3794q32lc99hs448msjy8rkp84ay7mq7zqspv"))))
     (build-system ruby-build-system)
     (arguments
      ;; Tests fail because Nokogiri can only test with an installed extension,
@@ -1897,7 +1897,13 @@ to reproduce user environments.")
        #:gem-flags (list "--" "--use-system-libraries"
                          (string-append "--with-xml2-include="
                                         (assoc-ref %build-inputs "libxml2")
-                                        "/include/libxml2" ))))
+                                        "/include/libxml2" ))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'extract-gemspec 'update-dependency
+           (lambda _
+             (substitute* ".gemspec" (("2.0.0.rc2") "2.0"))
+             #t)))))
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)
        ("ruby-rake-compiler" ,ruby-rake-compiler)))
