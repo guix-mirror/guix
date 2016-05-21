@@ -18,6 +18,7 @@
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
+;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8760,3 +8761,30 @@ respectively.")
   (description (string-append "This is an experimental compiler for a subset of
 Python.  It generates C++ code and a Makefile."))
   (license (list gpl3 bsd-3 license:expat))))
+
+(define-public python2-rope
+  (package
+    (name "python2-rope")
+    (version "0.10.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "rope" version))
+      (sha256
+        (base32
+         "18k5znhpwvrfck3yp0jmhd5j8r0f0s8bk1zh5yhs2cfgmfhbwigb"))))
+    (arguments
+     ;; Rope is currently python-2 only.
+     ;; https://github.com/python-rope/rope/issues/57
+     `(#:python ,python-2))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python2-unittest2" ,python2-unittest2)
+       ("python2-setuptools" ,python2-setuptools)))
+    (home-page "https://github.com/python-rope/rope")
+    (synopsis "Refactoring library for Python")
+    (description "Rope is a refactoring library for Python.  It facilitates
+the renaming, moving and extracting of attributes, functions, modules, fields
+and parameters in Python 2 source code.  These refactorings can also be applied
+to occurences in strings and comments.")
+    (license gpl2)))
