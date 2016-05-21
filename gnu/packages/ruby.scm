@@ -3271,26 +3271,18 @@ names.")
 (define-public ruby-shoulda-matchers
   (package
     (name "ruby-shoulda-matchers")
-    (version "3.0.1")
+    (version "3.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "shoulda-matchers" version))
        (sha256
         (base32
-         "1agabvb8i39mjrp3kb78nvhl41xk1i258hdwdlj0fm8nj9yzn1jb"))))
+         "1cf6d2d9br82vylr9p362yk9cfrd14jz8v77n0yb0lbcxdbk7xzq"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'build 'fix-import
-           (lambda _
-             ;; A presumed bug reported upstream at
-             ;; https://github.com/thoughtbot/shoulda-matchers/pull/871
-             (substitute* (string-append  "lib/shoulda/matchers/active_model/"
-                                          "validate_inclusion_of_matcher.rb")
-               (("^require 'bigdecimal'")
-                "require 'bigdecimal'; require 'date'"))))
          (replace 'check
            (lambda _
              ;; Do not run tests to avoid circular dependence with rails.  Instead
