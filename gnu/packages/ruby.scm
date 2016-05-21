@@ -3386,14 +3386,14 @@ support to both Ruby and JRuby.  It uses @code{unf_ext} on CRuby and
 (define-public ruby-domain-name
   (package
     (name "ruby-domain-name")
-    (version "0.5.25")
+    (version "0.5.20160310")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "domain_name" version))
        (sha256
         (base32
-         "16qvfrmcwlzz073aas55mpw2nhyhjcn96s524w0g1wlml242hjav"))))
+         "0g1175zspkqhlvl9s11g7p2nbmqpvpxxv02q8csd0ryc81laapys"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
