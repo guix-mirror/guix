@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014, 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -108,6 +109,13 @@
    (inputs `(("qt-4" ,qt-4)
              ,@(package-inputs poppler)))
    (synopsis "Qt4 frontend for the Poppler PDF rendering library")))
+
+(define-public poppler-qt5
+  (package (inherit poppler)
+   (name "poppler-qt5")
+   (inputs `(("qt" ,qt)
+             ,@(package-inputs poppler)))
+   (synopsis "Qt5 frontend for the Poppler PDF rendering library")))
 
 (define-public python-poppler-qt4
   (package
