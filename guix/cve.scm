@@ -19,6 +19,7 @@
 (define-module (guix cve)
   #:use-module (guix utils)
   #:use-module (guix http-client)
+  #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (sxml ssax)
   #:use-module (web uri)
   #:use-module (srfi srfi-1)
@@ -154,22 +155,68 @@ CPE string."
 vulnerability objects."
   (reverse (%parse-vulnerability-feed port '())))
 
-(define (current-vulnerabilities)
-  "Return the current list of Common Vulnerabilities and Exposures (CVE) as
-published by the US NIST."
-  (define (read-vulnerabilities uri ttl)
-    (call-with-cve-port uri ttl
+(define vulnerability->sexp
+  (match-lambda
+    (($ <vulnerability> id packages)
+     `(v ,id ,packages))))
+
+(define sexp->vulnerability
+  (match-lambda
+    (('v id (packages ...))
+     (vulnerability id packages))))
+
+(define (fetch-vulnerabilities year ttl)
+  "Return the list of <vulnerability> for YEAR, assuming the on-disk cache has
+the given TTL (fetch from the NIST web site when TTL has expired)."
+  ;; Note: We used to keep the original XML files in cache but parsing it
+  ;; would take typically ~15s for a year of data.  Thus, we instead store a
+  ;; summarized version thereof as an sexp, which can be parsed in 1s or so.
+  (define cache
+    (string-append (cache-directory) "/cve/" (number->string year)))
+
+  (define (do-fetch)
+    (call-with-cve-port (yearly-feed-uri year) ttl
       (lambda (port)
         ;; XXX: The SSAX "error port" is used to send pointless warnings such as
         ;; "warning: Skipping PI".  Turn that off.
         (parameterize ((current-ssax-error-port (%make-void-port "w")))
           (xml->vulnerabilities port)))))
 
-  (append-map read-vulnerabilities
-              (list (yearly-feed-uri %past-year)
-                    (yearly-feed-uri %current-year))
-              (list %past-year-ttl
-                    %current-year-ttl)))
+  (define (update-cache)
+    (mkdir-p (dirname cache))
+    (let ((vulns (do-fetch)))
+      (with-atomic-file-output cache
+        (lambda (port)
+          (write `(vulnerabilities
+                   0                              ;format version
+                   ,(map vulnerability->sexp vulns))
+                 port)))
+      vulns))
+
+  (define (old? file)
+    ;; Return true if PORT has passed TTL.
+    (let* ((s   (stat file))
+           (now (current-time time-utc)))
+      (< (+ (stat:mtime s) ttl) (time-second now))))
+
+  (catch 'system-error
+    (lambda ()
+      (if (old? cache)
+          (update-cache)
+          (match (call-with-input-file cache read)
+            (('vulnerabilities 0 vulns)
+             (map sexp->vulnerability vulns))
+            (x
+             (update-cache)))))
+    (lambda args
+      (update-cache))))
+
+(define (current-vulnerabilities)
+  "Return the current list of Common Vulnerabilities and Exposures (CVE) as
+published by the US NIST."
+  (append-map fetch-vulnerabilities
+              (list %past-year %current-year)
+              (list %past-year-ttl %current-year-ttl)))
 
 (define (vulnerabilities->lookup-proc vulnerabilities)
   "Return a lookup procedure built from VULNERABILITIES that takes a package
