@@ -2617,6 +2617,26 @@ noncentral hypergeometric distribution (also called extended hypergeometric
 distribution).")
    (license license:gpl3+)))
 
+(define-public r-zoo
+  (package
+    (name "r-zoo")
+    (version "1.7-13")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "zoo" version))
+              (sha256
+               (base32
+                "0m67bnrg7r1jxvs9p7rpa430szp5qfp65r056yb8bivpc16jd98c"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
+    (home-page "http://zoo.R-Forge.R-project.org/")
+    (synopsis "S3 infrastructure for regular and irregular time series")
+    (description "This package contains an S3 class with methods for totally
+ordered indexed observations.  It is particularly aimed at irregular time
+series of numeric vectors/matrices and factors.")
+    (license license:gpl2+)))
+
 (define-public r-ztable
   (package
     (name "r-ztable")
