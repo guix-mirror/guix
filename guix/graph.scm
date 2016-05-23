@@ -37,6 +37,7 @@
 
             node-edges
             node-back-edges
+            traverse/depth-first
             node-transitive-edges
 
             %graphviz-backend
@@ -99,13 +100,13 @@ returns its back edges.  NODES is taken to be the sinks of the global graph."
                (lambda (source target edges)
                  (vhash-consq target source edges))))
 
-(define (node-transitive-edges nodes node-edges)
-  "Return the list of nodes directly or indirectly connected to NODES
-according to the NODE-EDGES procedure.  NODE-EDGES must be a one-argument
-procedure that, given a node, returns its list of direct dependents; it is
-typically returned by 'node-edges' or 'node-back-edges'."
+(define (traverse/depth-first proc seed nodes node-edges)
+  "Do a depth-first traversal of NODES along NODE-EDGES, calling PROC with
+each node and the current result, and visiting each reachable node exactly
+once.  NODES must be a list of nodes, and NODE-EDGES must be a one-argument
+procedure as returned by 'node-edges' or 'node-back-edges'."
   (let loop ((nodes   (append-map node-edges nodes))
-             (result  '())
+             (result  seed)
              (visited (setq)))
     (match nodes
       (()
@@ -115,8 +116,15 @@ typically returned by 'node-edges' or 'node-back-edges'."
            (loop tail result visited)
            (let ((edges (node-edges head)))
              (loop (append edges tail)
-                   (cons head result)
+                   (proc head result)
                    (set-insert head visited))))))))
+
+(define (node-transitive-edges nodes node-edges)
+  "Return the list of nodes directly or indirectly connected to NODES
+according to the NODE-EDGES procedure.  NODE-EDGES must be a one-argument
+procedure that, given a node, returns its list of direct dependents; it is
+typically returned by 'node-edges' or 'node-back-edges'."
+  (traverse/depth-first cons '() nodes node-edges))
 
 
 ;;;
