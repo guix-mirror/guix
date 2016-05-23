@@ -127,6 +127,30 @@
                        (list one two dep)
                        (references %store dep)))))))
 
+(test-assert "graft-derivation, preserve empty directories"
+  (run-with-store %store
+    (mlet* %store-monad ((fake    (text-file "bash" "Fake bash."))
+                         (graft -> (graft
+                                     (origin %bash)
+                                     (replacement fake)))
+                         (drv     (gexp->derivation
+                                   "to-graft"
+                                   #~(begin
+                                       (use-modules (guix build utils))
+                                       (mkdir-p (string-append #$output
+                                                               "/a/b/c/d"))
+                                       (symlink #$%bash
+                                                (string-append #$output
+                                                               "/bash")))
+                                   #:modules '((guix build utils))))
+                         (grafted ((store-lift graft-derivation) drv
+                                   (list graft)))
+                         (_       (built-derivations (list grafted)))
+                         (out ->  (derivation->output-path grafted)))
+      (return (and (string=? (readlink (string-append out "/bash"))
+                             fake)
+                   (file-is-directory? (string-append out "/a/b/c/d")))))))
+
 (test-assert "graft-derivation, no dependencies on grafted output"
   (run-with-store %store
     (mlet* %store-monad ((fake    (text-file "bash" "Fake bash."))
@@ -157,5 +181,22 @@
                (two (derivation->output-path grafted "two")))
            (and (string=? (readlink one) repl)
                 (string=? (readlink two) one))))))
+
+(test-assert "graft-derivation, renaming"         ;<http://bugs.gnu.org/23132>
+  (let* ((build `(begin
+                   (use-modules (guix build utils))
+                   (mkdir-p (string-append (assoc-ref %outputs "out") "/"
+                                           (assoc-ref %build-inputs "in")))))
+         (orig  (build-expression->derivation %store "thing-to-graft" build
+                                              #:modules '((guix build utils))
+                                              #:inputs `(("in" ,%bash))))
+         (repl  (add-text-to-store %store "bash" "fake bash"))
+         (grafted (graft-derivation %store orig
+                                    (list (graft
+                                            (origin %bash)
+                                            (replacement repl))))))
+    (and (build-derivations %store (list grafted))
+         (let ((out (derivation->output-path grafted)))
+           (file-is-directory? (string-append out "/" repl))))))
 
 (test-end)

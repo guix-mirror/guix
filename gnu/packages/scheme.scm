@@ -4,6 +4,7 @@
 ;;; Copyright © 2015, 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,11 +23,15 @@
 
 (define-module (gnu packages scheme)
   #:use-module (gnu packages)
-  #:use-module ((guix licenses) #:select (gpl2+ lgpl2.0+ lgpl2.1+ asl2.0 bsd-3))
+  #:use-module ((guix licenses)
+                #:select (gpl2+ lgpl2.0+ lgpl2.1+ asl2.0 bsd-3
+                          cc-by-sa4.0))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
@@ -38,6 +43,7 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages libphidget)
@@ -872,3 +878,54 @@ procedures, embedded in the programming language Scheme, and intended to
 support teaching and research in mathematical physics and electrical
 engineering.")
       (license gpl2+))))
+
+(define-public sicp
+  (let ((commit "5b52db566968d28a89fbbaf338d207f01cc81cac"))
+    (package
+      (name "sicp")
+      (version (string-append "20160220-1." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/sarabander/sicp")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "10h6h7szwlfbshwh18bnl2hvyddj5i7106l79s145l0sjjv15cxb"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (build-system trivial-build-system)
+      (native-inputs `(("gzip" ,gzip)
+                       ("source" ,source)
+                       ("texinfo" ,texinfo)))
+      (arguments
+       `(#:modules ((guix build utils)
+                    (srfi srfi-1)
+                    (srfi srfi-26))
+         #:builder
+         (begin
+           (use-modules (guix build utils)
+                        (srfi srfi-1)
+                        (srfi srfi-26))
+           (let ((gzip (assoc-ref %build-inputs "gzip"))
+                 (source (assoc-ref %build-inputs "source"))
+                 (texinfo (assoc-ref %build-inputs "texinfo"))
+                 (info-dir (string-append %output "/share/info")))
+             (setenv "PATH" (string-append gzip "/bin"
+                                           ":" texinfo "/bin"))
+             (mkdir-p info-dir)
+             (and (zero?
+                   (system* "makeinfo" "--output"
+                            (string-append info-dir "/sicp.info")
+                            (string-append source "/sicp-pocket.texi")))
+                  (every zero?
+                         (map (cut system* "gzip" "-9n" <>)
+                              (find-files info-dir))))))))
+      (home-page "http://sarabander.github.io/sicp")
+      (synopsis "Structure and Interpretation of Computer Programs")
+      (description "Structure and Interpretation of Computer Programs (SICP) is
+a textbook aiming to teach the principles of computer programming.
+
+Using Scheme, a dialect of the Lisp programming language, the book explains
+core computer science concepts such as abstraction in programming,
+metalinguistic abstraction, recursion, interpreters, and modular programming.")
+      (license cc-by-sa4.0))))

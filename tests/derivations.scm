@@ -367,6 +367,33 @@
            (and (eq? 'one (call-with-input-file one read))
                 (eq? 'two (call-with-input-file two read)))))))
 
+(test-assert "read-derivation vs. derivation"
+  ;; Make sure 'derivation' and 'read-derivation' return objects that are
+  ;; identical.
+  (let* ((sources (unfold (cut >= <> 10)
+                          (lambda (n)
+                            (add-text-to-store %store
+                                               (format #f "input~a" n)
+                                               (random-text)))
+                          1+
+                          0))
+         (inputs  (map (lambda (file)
+                         (derivation %store "derivation-input"
+                                     %bash '()
+                                     #:inputs `((,%bash) (,file))))
+                       sources))
+         (builder (add-text-to-store %store "builder.sh"
+                                     "echo one > $one ; echo two > $two"
+                                     '()))
+         (drv     (derivation %store "derivation"
+                              %bash `(,builder)
+                              #:inputs `((,%bash) (,builder)
+                                         ,@(map list (append sources inputs)))
+                              #:outputs '("two" "one")))
+         (drv*    (call-with-input-file (derivation-file-name drv)
+                    read-derivation)))
+    (equal? drv* drv)))
+
 (test-assert "multiple-output derivation, derivation-path->output-path"
   (let* ((builder    (add-text-to-store %store "builder.sh"
                                         "echo one > $out ; echo two > $second"

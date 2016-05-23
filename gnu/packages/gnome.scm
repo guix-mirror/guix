@@ -15,7 +15,9 @@
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
-;;; Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
+;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +60,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages enchant)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages game-development)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
@@ -161,6 +164,55 @@
 Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
     (license license:gpl2+)))
+
+(define-public dia
+  ;; This version from GNOME's repository includes fixes for compiling with
+  ;; recent versions of the build tools.  The latest activity on the
+  ;; pre-GNOME version has been in 2014, while GNOME has continued applying
+  ;; fixes in 2016.
+  (let ((commit "fbc306168edab63db80b904956117cbbdc514ee4"))
+    (package
+      (name "dia")
+      (version (string-append "0.97.2-" (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://git.gnome.org/browse/dia")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1b4bba0k8ph4cwgw8xjglss0p6n111bpd5app67lrq79mp0ad06l"))))
+      (build-system gnu-build-system)
+      (inputs
+       `(("glib" ,glib "bin")
+         ("pango" ,pango)
+         ("gdk-pixbuf" ,gdk-pixbuf)
+         ("gtk+" ,gtk+-2)
+         ("libxml2" ,libxml2)
+         ("freetype" ,freetype)
+         ("libart-lgpl" ,libart-lgpl)))
+      (native-inputs
+       `(("intltool" ,intltool)
+         ("pkg-config" ,pkg-config)
+         ("automake" ,automake)
+         ("autoconf" ,autoconf)
+         ("libtool" ,libtool)
+         ("perl" ,perl)
+         ("python-wrapper" ,python-wrapper)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-before 'configure 'run-autogen
+             (lambda _
+               (system* "sh" "autogen.sh"))))))
+      (home-page "https://wiki.gnome.org/Apps/Dia")
+      (synopsis "Diagram creation for GNOME")
+      (description "Dia can be used to draw different types of diagrams, and
+includes support for UML static structure diagrams (class diagrams), entity
+relationship modeling, and network diagrams.  The program supports various file
+formats like PNG, SVG, PDF and EPS.")
+      (license license:gpl2+))))
 
 (define-public gnome-common
   (package
@@ -682,7 +734,8 @@ database is translated at Transifex.")
        ("libpng" ,libpng)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
-        ("glib" ,glib "bin")))
+        ("glib" ,glib "bin")
+        ("gobject-introspection" ,gobject-introspection)))
     (home-page "https://developer-next.gnome.org/libnotify/")
     (synopsis
      "GNOME desktop notification library")
@@ -5022,3 +5075,74 @@ specified duration and save it as a GIF encoded animated image file.")
      "Libzapojit is a GLib-based library for accessing online service APIs of
 Microsoft SkyDrive and Hotmail, using their REST protocols.")
     (license license:lgpl2.1+)))
+
+(define-public gnome-calendar
+  (package
+    (name "gnome-calendar")
+    (version "3.20.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version) "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1vny8fclwglapdyxd2g9fbwdlk5hhnb993k2hvq3rf0hcgswycpi"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bdb" ,bdb)
+       ("desktop-file-utils" ,desktop-file-utils)
+       ("evolution-data-server" ,evolution-data-server)
+       ("gnome-online-accounts" ,gnome-online-accounts)))
+    (home-page "https://wiki.gnome.org/Apps/Calendar")
+    (synopsis "GNOME's calendar application")
+    (description
+     "GNOME Calendar is a simple calendar application designed to fit the GNOME
+desktop.  It supports multiple calendars, monthly view and yearly view.")
+    (license license:gpl3+)))
+
+(define-public gnome-tweak-tool
+  (package
+    (name "gnome-tweak-tool")
+    (version "3.20.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/gnome-tweak-tool/"
+                                  (version-major+minor version) "/"
+                                  "gnome-tweak-tool-" version ".tar.xz"))
+              (patches (list
+                        (search-patch "gnome-tweak-tool-search-paths.patch")))
+              (sha256
+               (base32
+                "1fj6wjvnjygzm9br3sw9gya6d18yly1rm69yaiar9spfbkvv4wai"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--localstatedir=/tmp"
+                           "--sysconfdir=/tmp")
+       #:imported-modules ((guix build python-build-system)
+                           ,@%gnu-build-system-modules)
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'wrap
+                    (@@ (guix build python-build-system) wrap)))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python" ,python-2)
+       ("python2-pygobject" ,python2-pygobject)))
+    (propagated-inputs
+     `(("libnotify" ,libnotify)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)))
+    (synopsis "Customize advanced GNOME 3 options")
+    (home-page "https://wiki.gnome.org/action/show/Apps/GnomeTweakTool")
+    (description
+     "GNOME Tweak Tool allows adjusting advanced configuration settings in
+GNOME 3.  This includes things like the fonts used in user interface elements,
+alternative user interface themes, changes in window management behavior,
+GNOME Shell appearance and extension, etc.")
+    (license license:gpl3+)))

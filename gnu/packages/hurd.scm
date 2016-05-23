@@ -32,7 +32,7 @@
 (define-public gnumach-headers
   (package
     (name "gnumach-headers")
-    (version "1.6")
+    (version "1.7")
     (source
      (origin
       (method url-fetch)
@@ -40,7 +40,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1m7xwsrv6x6gk9xi5phs104rdn9q3lr63p348vyv0dzd6r3zyncb"))))
+        "1vd0bykshf6ilr55792b5lf6yd5ywlkp1wqz00dcsx7fq3rfadz2"))))
     (build-system gnu-build-system)
     (arguments
     `(#:phases (alist-replace
@@ -66,7 +66,7 @@
 (define-public mig
   (package
     (name "mig")
-    (version "1.6")
+    (version "1.7")
     (source
      (origin
       (method url-fetch)
@@ -74,7 +74,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1i9qd6j5g8wsv9k9n6vpdqflyw0284wyayb2s2h7pp4yyi2jsksk"))))
+        "1hxqd8p14pgamgavmbmziswvd1zvwqx7lgc9qga805q9jrs93q2b"))))
     (build-system gnu-build-system)
     ;; Flex is needed both at build and run time.
     (inputs `(("gnumach-headers" ,gnumach-headers)
@@ -97,14 +97,14 @@ communication.")
 (define-public hurd-headers
   (package
     (name "hurd-headers")
-    (version "0.7")
+    (version "0.8")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/hurd/hurd-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1q2pyc16vb5plqi8hlwnnc9jk8zlifm91cavz6x7vhbwy0nh2yvh"))))
+                "1pbc4aqgzxvkgivw80ghp3w755cl0fwxmg357vq7chimj64jk78d"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; Autoconf shouldn't be necessary but there seems to be a bug in the

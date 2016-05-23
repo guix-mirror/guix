@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,8 +55,8 @@
 (define* (gnu-package->sexp package release
                             #:key (key-download 'interactive))
   "Return the 'package' sexp for the RELEASE (a <gnu-release>) of PACKAGE (a
-<gnu-package>).  Use KEY-DOWNLOAD as the OpenPGP key download policy (see
-'download-tarball' for details.)"
+<gnu-package>), or #f upon failure.  Use KEY-DOWNLOAD as the OpenPGP key
+download policy (see 'download-tarball' for details.)"
   (define name
     (gnu-package-name package))
 
@@ -79,25 +79,29 @@
     (find (cute string-suffix? (string-append archive-type ".sig") <>)
           (upstream-source-signature-urls release)))
 
-  (let ((tarball (with-store store
-                   (download-tarball store url sig-url
-                                     #:key-download key-download))))
-    `(package
-       (name ,name)
-       (version ,(upstream-source-version release))
-       (source (origin
-                 (method url-fetch)
-                 (uri (string-append ,url-base version
-                                     ,(string-append ".tar." archive-type)))
-                 (sha256
-                  (base32
-                   ,(bytevector->nix-base32-string (file-sha256 tarball))))))
-       (build-system gnu-build-system)
-       (synopsis ,(gnu-package-doc-summary package))
-       (description ,(gnu-package-doc-description package))
-       (home-page ,(match (gnu-package-doc-urls package)
-                     ((head . tail) (qualified-url head))))
-       (license find-by-yourself!))))
+  (with-store store
+    (match (download-tarball store url sig-url
+                             #:key-download key-download)
+      ((? string? tarball)
+       `(package
+          (name ,name)
+          (version ,(upstream-source-version release))
+          (source (origin
+                    (method url-fetch)
+                    (uri (string-append ,url-base version
+                                        ,(string-append ".tar." archive-type)))
+                    (sha256
+                     (base32
+                      ,(bytevector->nix-base32-string
+                        (file-sha256 tarball))))))
+          (build-system gnu-build-system)
+          (synopsis ,(gnu-package-doc-summary package))
+          (description ,(gnu-package-doc-description package))
+          (home-page ,(match (gnu-package-doc-urls package)
+                        ((head . tail) (qualified-url head))))
+          (license find-by-yourself!)))
+      (#f                     ;failure to download or authenticate the tarball
+       #f))))
 
 (define* (gnu->guix-package name
                             #:key (key-download 'interactive))

@@ -600,15 +600,6 @@ be determined."
     ((? origin?)
      (and=> (origin-actual-file-name patch) basename))))
 
-(define (package-name->cpe-name name)
-  "Do a basic conversion of NAME, a Guix package name, to the corresponding
-Common Platform Enumeration (CPE) name."
-  (match name
-    ("icecat"   "firefox")                        ;or "firefox_esr"
-    ("grub"     "grub2")
-    ;; TODO: Add more.
-    (_          name)))
-
 (define (current-vulnerabilities*)
   "Like 'current-vulnerabilities', but return the empty list upon networking
 or HTTP errors.  This allows network-less operation and makes problems with
@@ -635,9 +626,15 @@ from ~s: ~a (~s)~%")
                         (current-vulnerabilities*)))))
     (lambda (package)
       "Return a list of vulnerabilities affecting PACKAGE."
-      ((force lookup)
-       (package-name->cpe-name (package-name package))
-       (package-version package)))))
+      ;; First we retrieve the Common Platform Enumeration (CPE) name and
+      ;; version for PACKAGE, then we can pass them to LOOKUP.
+      (let ((name    (or (assoc-ref (package-properties package)
+                                    'cpe-name)
+                         (package-name package)))
+            (version (or (assoc-ref (package-properties package)
+                                    'cpe-version)
+                         (package-version package))))
+        ((force lookup) name version)))))
 
 (define (check-vulnerabilities package)
   "Check for known vulnerabilities for PACKAGE."

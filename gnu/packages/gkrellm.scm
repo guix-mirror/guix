@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +34,7 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://members.dslextreme.com/users/billw/gkrellm/gkrellm-"
+      (uri (string-append "http://gkrellm.srcbox.net/releases/gkrellm-"
                           version ".tar.bz2"))
       (sha256
        (base32
@@ -57,7 +58,7 @@
          (list (string-append "INSTALLROOT=" out)
                "CC=gcc"
                "X11_LIBS = -lX11 -lSM -lICE -lgmodule-2.0"))))
-    (home-page "http://members.dslextreme.com/users/billw/gkrellm/gkrellm.html")
+    (home-page "http://gkrellm.srcbox.net/")
     (synopsis "System monitors")
     (description
      "GKrellM is a single process stack of system monitors which supports

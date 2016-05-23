@@ -4961,6 +4961,19 @@ To view information about a particular vulnerability, visit pages such as:
 where @code{CVE-YYYY-ABCD} is the CVE identifier---e.g.,
 @code{CVE-2015-7554}.
 
+Package developers can specify in package recipes the
+@uref{https://nvd.nist.gov/cpe.cfm,Common Platform Enumeration (CPE)}
+name and version of the package when they differ from the name that Guix
+uses, as in this example:
+
+@example
+(package
+  (name "grub")
+  ;; @dots{}
+  ;; CPE calls this package "grub2".
+  (properties '((cpe-name . "grub2"))))
+@end example
+
 @item formatting
 Warn about obvious source code formatting issues: trailing white space,
 use of tabulations, etc.
@@ -5148,6 +5161,12 @@ derivations (@pxref{Derivations}) and plain store items.  Compared to
 the above representation, many additional nodes are visible, including
 build scripts, patches, Guile modules, etc.
 
+For this type of graph, it is also possible to pass a @file{.drv} file
+name instead of a package name, as in:
+
+@example
+guix graph -t derivation `guix system build -d my-config.scm`
+@end example
 @end table
 
 All the types above correspond to @emph{build-time dependencies}.  The
@@ -5160,6 +5179,14 @@ by @command{guix gc --references} (@pxref{Invoking guix gc}).
 
 If the given package output is not available in the store, @command{guix
 graph} attempts to obtain dependency information from substitutes.
+
+Here you can also pass a store file name instead of a package name.  For
+example, the command below produces the reference graph of your profile
+(which can be big!):
+
+@example
+guix graph -t references `readlink -f ~/.guix-profile`
+@end example
 @end table
 
 The available options are the following:

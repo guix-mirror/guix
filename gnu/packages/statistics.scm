@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -356,13 +357,13 @@ Munsell colour system.")
 (define-public r-rcpp
   (package
     (name "r-rcpp")
-    (version "0.12.4")
+    (version "0.12.5")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "Rcpp" version))
        (sha256
-        (base32 "1lyhyaxrnb5w4igi3l1p378s4jblcnrv6h7h5ym42ljm54mm44w3"))))
+        (base32 "1vw0zbd6zhqixqg7h8ahn1dr1hb492365x419nrp2lhvr60r8i0k"))))
     (build-system r-build-system)
     (home-page "http://www.rcpp.org")
     (synopsis "Seamless R and C++ Integration")
@@ -604,13 +605,13 @@ evaluation (NSE) in R.")
 (define-public r-dbi
   (package
     (name "r-dbi")
-    (version "0.3.1")
+    (version "0.4-1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "DBI" version))
               (sha256
                (base32
-                "0xj5baxwnhl23rd5nskhjvranrwrc68f3xlyrklglipi41bm69hw"))))
+                "13n6ibmrma42qmq17qgkyjsc0ciwqf17sd7lw7w26pwpyjd4mwgg"))))
     (build-system r-build-system)
     (home-page "https://github.com/rstats-db/DBI")
     (synopsis "R database interface")
@@ -624,13 +625,13 @@ R/DBMS implementations.")
 (define-public r-bh
   (package
     (name "r-bh")
-    (version "1.60.0-1")
+    (version "1.60.0-2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "BH" version))
               (sha256
                (base32
-                "08gc3b0irgvpjl59irdxs8jhlbky4yp4fvs3zi4pq0wdwj43cfsk"))))
+                "136497fng9bcvrf8favpj8inz96pxdwp1rrb2k00sxjxjbgawhg4"))))
     (build-system r-build-system)
     (home-page "https://github.com/eddelbuettel/bh")
     (synopsis "R package providing subset of Boost headers")
@@ -642,13 +643,13 @@ for template use among CRAN packages.")
 (define-public r-evaluate
   (package
     (name "r-evaluate")
-    (version "0.8.3")
+    (version "0.9")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "evaluate" version))
               (sha256
                (base32
-                "08d6164m9wqf9qq6yh1s9a0qxwqzqpsq7312hilzy79gxf9gixzr"))))
+                "1bn6bympg9prr8d16g1g530bddii8i04hf4i2bkw0yf4dsfqq4g8"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-stringr" ,r-stringr)))
@@ -664,13 +665,13 @@ adapted for other output formats, such as HTML or LaTeX.")
 (define-public r-formatr
   (package
     (name "r-formatr")
-    (version "1.3")
+    (version "1.4")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "formatR" version))
               (sha256
                (base32
-                "09fsd0z6nhksc1h921h8q28f87hr6d1q8d6dmpxphjylb9r5xmj4"))))
+                "1fvynq0fj1r9grg9vvfdh5fl2riv6qki9f2rfpyvbvqq3xxpmi3f"))))
     (build-system r-build-system)
     (home-page "http://yihui.name/formatR")
     (synopsis "Format R code automatically")
@@ -684,13 +685,13 @@ There is also a Shiny app as a user interface in this package.")
 (define-public r-highr
   (package
     (name "r-highr")
-    (version "0.5.1")
+    (version "0.6")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "highr" version))
               (sha256
                (base32
-                "11hyawzhaw3ph5y5xphi7alx6df1d0i6wh0a2n5m4sxxhdrzswnb"))))
+                "0n9v44dxdy5fhkdmpbpa2p78whyd9z3rhhy42ipdz5m5vsr55qa3"))))
     (build-system r-build-system)
     (home-page "https://github.com/yihui/highr")
     (synopsis "Syntax highlighting for R source code")
@@ -765,13 +766,13 @@ emitter (http://pyyaml.org/wiki/LibYAML) for R.")
 (define-public r-knitr
   (package
     (name "r-knitr")
-    (version "1.12.3")
+    (version "1.13")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "knitr" version))
               (sha256
                (base32
-                "1v3rzv6wq8mvpdrljsaqk4z3f8323jnv385js24wmn4fglqly6dz"))))
+                "0v69846myi4fbjp8wiik4295fhba67s3i6ccysghm6x031i2f26q"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-evaluate" ,r-evaluate)
@@ -915,13 +916,13 @@ R packages that praise their users.")
 (define-public r-testthat
   (package
     (name "r-testthat")
-    (version "1.0.0")
+    (version "1.0.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "testthat" version))
               (sha256
                (base32
-                "1ci1y54kaz7g4di79fcibp0m0wkkxn2glchhs6v8jfg6374ka410"))))
+                "0pj1r01x4ny4capr83dfa19hi5i2sjjxky99schzip8zrq5dzxqf"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-digest" ,r-digest)
@@ -1395,14 +1396,14 @@ collation, and NAMESPACE files.")
 (define-public r-openssl
   (package
     (name "r-openssl")
-    (version "0.9.2")
+    (version "0.9.3")
     (source
      (origin
        (method url-fetch)
        (uri (cran-uri "openssl" version))
        (sha256
         (base32
-         "1dbsaciz39zvsmcyxkmpfm5yxzrpw2iv2nb86525wn80q0cyv0cb"))))
+         "0ldqam7d9fyxwhr651ld6lsh05lg4v2y8ajxwzq9ywzjmfb3vlpz"))))
     (build-system r-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -1452,13 +1453,13 @@ functions make it easy to control additional request components.")
 (define-public r-git2r
   (package
     (name "r-git2r")
-    (version "0.14.0")
+    (version "0.15.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "git2r" version))
               (sha256
                (base32
-                "0jkkrggffpflaaw0gn2hnm1wz83xs31amriim481g73zf30g2bpr"))))
+                "1rpdf85wy9fp456ypvbhl3p9whkb7kgl0n7rkqxd2bhvyzkvjak8"))))
     (build-system r-build-system)
     ;; This R package contains modified sources of libgit2.  This modified
     ;; version of libgit2 is built as the package is built.  Hence libgit2 is
@@ -1496,13 +1497,13 @@ informative error messages when it's not available.")
 (define-public r-devtools
   (package
     (name "r-devtools")
-    (version "1.11.0")
+    (version "1.11.1")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "devtools" version))
               (sha256
                (base32
-                "101j15d0f9107pnmdpdwqyvk2ncykq48336rl8lnqp6idiq8id2q"))))
+                "0ik3l3q62sspdph613f9ik5yz36s8q5nrc50dqgn3pxzvpwpdj2i"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-curl" ,r-curl)
@@ -1567,13 +1568,13 @@ disk (or a connection).")
 (define-public r-plotrix
   (package
     (name "r-plotrix")
-    (version "3.6-1")
+    (version "3.6-2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "plotrix" version))
               (sha256
                (base32
-                "1y8xnlpy4zba70af9lwj2sshvfdfcmfdh92wamyzj8z9gciailfr"))))
+                "1jn1k3skmlgyvpijj6vlcn5m2zgrsdh00g1fq8n5dqs1pkl1sqrw"))))
     (build-system r-build-system)
     (home-page "http://cran.r-project.org/web/packages/plotrix")
     (synopsis "Various plotting functions")
@@ -1646,13 +1647,13 @@ well as additional utilities such as panel and axis annotation functions.")
 (define-public r-rcpparmadillo
   (package
     (name "r-rcpparmadillo")
-    (version "0.6.700.3.0")
+    (version "0.6.700.6.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "RcppArmadillo" version))
               (sha256
                (base32
-                "1mc62b6my568ni18w4clgs6l6ggqrwzsm3lgx0c1prf4rap69s8w"))
+                "0x736cjg1pbvn8c6h91c88qmmz4pddvvqg88k9c9kwhn24fjrra0"))
               (modules '((guix build utils)))
               ;; Remove bundled armadillo sources
               (snippet
@@ -1730,14 +1731,14 @@ encoder/decoder, round-off-error-free sum and cumsum, etc.")
 (define-public r-rmarkdown
   (package
     (name "r-rmarkdown")
-    (version "0.9.5")
+    (version "0.9.6")
     (source
       (origin
         (method url-fetch)
         (uri (cran-uri "rmarkdown" version))
         (sha256
           (base32
-            "1zz98jxvw3lzva5kkj1n37gbhjwqd96gjs04y6h37pqy6qmkhk8c"))))
+            "09ajq5miqzz46q0i9svvbh93dbi7xbjn4702d6z3scdz272gx7l2"))))
     (properties `((upstream-name . "rmarkdown")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2411,13 +2412,13 @@ persistent (on the file system).")
 (define-public r-r-rsp
   (package
     (name "r-r-rsp")
-    (version "0.21.0")
+    (version "0.30.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "R.rsp" version))
               (sha256
                (base32
-                "0snc6ps75s3ci6sy8mil1wg2i9xmlr1ygh9n244y1brdvp43dfsw"))))
+                "1ssykygqkxzx9qblxhavxlf2z6r5bhk0s47yw1dllfiyc8zy7jv2"))))
     (properties `((upstream-name . "R.rsp")))
     (build-system r-build-system)
     (propagated-inputs
@@ -2461,13 +2462,13 @@ t-probabilities, quantiles, random deviates and densities.")
 (define-public r-matrixstats
   (package
     (name "r-matrixstats")
-    (version "0.50.1")
+    (version "0.50.2")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "matrixStats" version))
               (sha256
                (base32
-                "08l32abp7dfnsc49ca4hzznh934y60n5z01x5ga2ixky5961s57c"))))
+                "0zj27xxx9cyrq16rn4g3l0krqg68p8f2qp18w1w4i767j87amlbj"))))
     (properties `((upstream-name . "matrixStats")))
     (build-system r-build-system)
     (native-inputs
@@ -2563,13 +2564,13 @@ It uses and relies on grid graphics and formal (S4) classes and methods.")
 (define-public r-plotly
   (package
     (name "r-plotly")
-    (version "3.4.13")
+    (version "3.6.0")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "plotly" version))
               (sha256
                (base32
-                "1pfl9w35iwin8a1hfwcihajyps2ngjbyrmvi61b9lspcdbk39lf8"))))
+                "15hvqa0sf4z6l6vvr614zjszfphwpv66zpc665iyiynq0pd1jv2c"))))
     (build-system r-build-system)
     (propagated-inputs
      `(("r-base64enc" ,r-base64enc)
@@ -2593,6 +2594,28 @@ directly from R.  Once uploaded to a plotly account, plotly graphs (and the
 data behind them) can be viewed and modified in a web browser.")
     (license license:x11)))
 
+(define-public r-biased-urn
+  (package
+   (name "r-biased-urn")
+   (version "1.07")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (cran-uri "BiasedUrn" version))
+     (sha256
+      (base32
+       "13i2lgfnjhlbbm2yxfc2l5hswqw6x03pwba5csjmirv8kpjw4xr3"))))
+   (properties `((upstream-name . "BiasedUrn")))
+   (build-system r-build-system)
+   (home-page "http://www.agner.org/random/")
+   (synopsis "Biased urn model distributions")
+   (description
+    "This package provides statistical models of biased sampling in the form
+of univariate and multivariate noncentral hypergeometric distributions,
+including Wallenius' noncentral hypergeometric distribution and Fisher's
+noncentral hypergeometric distribution (also called extended hypergeometric
+distribution).")
+   (license license:gpl3+)))
 
 (define-public r-ztable
   (package

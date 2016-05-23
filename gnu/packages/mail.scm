@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
+;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -325,19 +326,10 @@ can read the same mailbox from multiple computers.  It supports IMAP as REMOTE
 repository and Maildir/IMAP as LOCAL repository.")
     (license gpl2+)))
 
-(define %mu-gtester-patch
-  ;; Ensure tests have unique names, to placate GLib 2.6's gtester.
-  (origin
-    (method url-fetch)
-    (uri "https://github.com/djcb/mu/commit/b44039ed.patch")
-    (sha256
-     (base32
-      "165hryqqhx3wah8a4f5jaq465azx1pm9r4jid7880pys9gd88qlv"))))
-
 (define-public mu
   (package
     (name "mu")
-    (version "0.9.13")
+    (version "0.9.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/djcb/mu/archive/v"
@@ -345,8 +337,7 @@ repository and Maildir/IMAP as LOCAL repository.")
               (file-name (string-append "mu-" version ".tar.gz"))
               (sha256
                (base32
-                "0wj33pma8xgjvn2akk7khzbycwn4c9sshxvzdph9dnpy7gyqxj51"))
-              (patches (list %mu-gtester-patch))))
+                "0p7hqri1r1x6750x138cc29mh81kdav2dcim26y58s8an206h25g"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -364,18 +355,39 @@ repository and Maildir/IMAP as LOCAL repository.")
        ("gmime" ,gmime)
        ("tzdata" ,tzdata)))             ;for mu/test/test-mu-query.c
     (arguments
-     '(#:phases (alist-cons-after
-                 'unpack 'autoreconf
-                 (lambda _
-                   (zero? (system* "autoreconf" "-vi")))
-                 (alist-cons-before
-                   'check 'check-tz-setup
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     ;; For mu/test/test-mu-query.c
-                     (setenv "TZDIR"
-                             (string-append (assoc-ref inputs "tzdata")
-                                            "/share/zoneinfo")))
-                   %standard-phases))))
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-configure.ac
+           ;; By default, elisp code goes to "share/emacs/site-lisp/mu4e",
+           ;; so our Emacs package can't find it.  Setting "--with-lispdir"
+           ;; configure flag doesn't help because "mu4e" will be added to
+           ;; the lispdir anyway, so we have to modify "configure.ac".
+           (lambda _
+             (substitute* "configure.ac"
+               (("^ +lispdir=.*") ""))
+             #t))
+         (add-after 'patch-configure.ac 'autoreconf
+           (lambda _
+             (zero? (system* "autoreconf" "-vi"))))
+         (add-before 'check 'check-tz-setup
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; For mu/test/test-mu-query.c
+             (setenv "TZDIR"
+                     (string-append (assoc-ref inputs "tzdata")
+                                    "/share/zoneinfo"))
+             #t))
+         (add-after 'install 'install-emacs-autoloads
+           (lambda* (#:key outputs #:allow-other-keys)
+             (emacs-generate-autoloads
+              "mu4e"
+              (string-append (assoc-ref outputs "out")
+                             "/share/emacs/site-lisp"))
+             #t)))))
     (home-page "http://www.djcbsoftware.nl/code/mu/")
     (synopsis "Quickly find emails")
     (description

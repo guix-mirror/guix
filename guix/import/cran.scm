@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -111,11 +111,11 @@ package definition."
 (define %cran-url "http://cran.r-project.org/web/packages/")
 (define %bioconductor-url "http://bioconductor.org/packages/")
 
-;; The latest Bioconductor release is 3.2.  Bioconductor packages should be
+;; The latest Bioconductor release is 3.3.  Bioconductor packages should be
 ;; updated together.
 (define %bioconductor-svn-url
   (string-append "https://readonly:readonly@"
-                 "hedgehog.fhcrc.org/bioconductor/branches/RELEASE_3_2/"
+                 "hedgehog.fhcrc.org/bioconductor/branches/RELEASE_3_3/"
                  "madman/Rpacks/"))
 
 
@@ -267,7 +267,7 @@ s-expression corresponding to that package, or #f on failure."
          (upstream-source
           (package (package-name package))
           (version version)
-          (urls (bioconductor-uri upstream-name version))))))
+          (urls (list (bioconductor-uri upstream-name version)))))))
 
 (define (cran-package? package)
   "Return true if PACKAGE is an R package from CRAN."

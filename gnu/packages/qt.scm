@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -505,7 +505,7 @@ contain over 620 classes.")
 (define-public qtkeychain
   (package
     (name "qtkeychain")
-    (version "0.5.0")
+    (version "0.6.2")
     (source
       (origin
         (method url-fetch)
@@ -513,7 +513,7 @@ contain over 620 classes.")
                             "archive/v" version ".tar.gz"))
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
-         (base32 "055mkd4pz6cyff4cw0784wjc1w92m8x223sxi96ph15fr3lplbg6"))))
+         (base32 "0g76pa786mg0fxy52hrljw09dvi6kffk2ms42lxapvpy6j94a4xf"))))
     (build-system cmake-build-system)
     (inputs
      `(("qt" ,qt)))

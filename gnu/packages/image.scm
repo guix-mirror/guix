@@ -392,14 +392,15 @@ error-resilience, a Java-viewer for j2k-images, ...")
 (define-public giflib
   (package
     (name "giflib")
-    (version "5.1.2")
+    (version "5.1.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/giflib/giflib-"
                                   (first (string-split version #\.))
                                   ".x/giflib-" version ".tar.bz2"))
               (sha256
-               (base32 "0z1adsza46q84chkxwr6x8ph11k117k8nywkzwar6bxhqf2a1h3n"))))
+               (base32
+                "1md83dip8rf29y40cm5r7nn19705f54iraz6545zhwa6y8zyq9yz"))))
     (build-system gnu-build-system)
     (outputs '("bin"                    ; utility programs
                "out"))                  ; library
@@ -408,26 +409,25 @@ error-resilience, a Java-viewer for j2k-images, ...")
               ("libsm" ,libsm)
               ("perl" ,perl)))
     (arguments
-     `(#:phases (alist-cons-after
-                 'unpack 'disable-html-doc-gen
-                 (lambda _
-                   (substitute* "doc/Makefile.in"
-                     (("^all: allhtml manpages") "")))
-                 (alist-cons-after
-                  'install 'install-manpages
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((bin (assoc-ref outputs "bin"))
-                           (man1dir (string-append bin "/share/man/man1")))
-                      (mkdir-p man1dir)
-                      (for-each (lambda (file)
-                                  (let ((base (basename file)))
-                                    (format #t "installing `~a' to `~a'~%"
-                                            base man1dir)
-                                    (copy-file file
-                                               (string-append
-                                                man1dir "/" base))))
-                                (find-files "doc" "\\.1"))))
-                  %standard-phases))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'disable-html-doc-gen
+           (lambda _
+             (substitute* "doc/Makefile.in"
+               (("^all: allhtml manpages") ""))))
+         (add-after 'install 'install-manpages
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((bin (assoc-ref outputs "bin"))
+                    (man1dir (string-append bin "/share/man/man1")))
+               (mkdir-p man1dir)
+               (for-each (lambda (file)
+                           (let ((base (basename file)))
+                             (format #t "installing `~a' to `~a'~%"
+                                     base man1dir)
+                             (copy-file file
+                                        (string-append
+                                         man1dir "/" base))))
+                         (find-files "doc" "\\.1"))))))))
     (synopsis "Tools and library for working with GIF images")
     (description
      "GIFLIB is a library for reading and writing GIF images.  It is API and
@@ -501,9 +501,13 @@ more modular, simple, and flexible.")
     (version "1.2.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "http://linuxbrit.co.uk/downloads/giblib-"
-                    version ".tar.gz"))
+              (uri (list
+                     (string-append
+                       "http://linuxbrit.co.uk/downloads/giblib-"
+                       version ".tar.gz")
+                     (string-append
+                       "https://sourceforge.net/projects/slackbuildsdirectlinks/"
+                       "files/giblib/giblib-" version ".tar.gz")))
               (sha256
                (base32
                 "1b4bmbmj52glq0s898lppkpzxlprq9aav49r06j2wx4dv3212rhp"))))

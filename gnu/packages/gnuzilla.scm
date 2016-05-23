@@ -517,4 +517,8 @@ standards.")
 software, which does not recommend non-free plugins and addons.  It also
 features built-in privacy-protecting features.")
     (license license:mpl2.0)     ;and others, see toolkit/content/license.html
-    (properties '((ftp-directory . "/gnu/gnuzilla")))))
+    (properties
+     `((ftp-directory . "/gnu/gnuzilla")
+       (cpe-name . "firefox_esr")
+       (cpe-version . ,(string-drop-right version
+                                          (string-length "-gnu1")))))))

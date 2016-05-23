@@ -43,14 +43,14 @@
 (define-public cflow
   (package
     (name "cflow")
-    (version "1.4")
+    (version "1.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/cflow/cflow-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1jkbq97ajcf834z68hbn3xfhiz921zhn39gklml1racf0kb3jzh3"))))
+                "0yq33k5ap1zpnja64n89iai4zh018ffr72wki5a6mzczd880mr3g"))))
     (build-system gnu-build-system)
 
     ;; Needed to have cflow-mode.el installed.

@@ -25,6 +25,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages bdw-gc)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ghostscript)
@@ -188,6 +189,7 @@ colors, styles, options and details.")
      `(("gs" ,ghostscript)              ;For tests
        ("texinfo" ,texinfo)             ;For generating documentation
        ("texlive" ,texlive)             ;For tests and documentation
+       ("emacs" ,emacs-no-x)
        ("perl" ,perl)))
     (inputs
      `(("fftw" ,fftw)
@@ -198,7 +200,13 @@ colors, styles, options and details.")
        ("readline" ,readline)
        ("zlib" ,zlib)))
     (arguments
-     `(#:configure-flags
+     `(#:modules ((guix build emacs-utils)
+                  (guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-26))
+       #:imported-modules (,@%gnu-build-system-modules
+                           (guix build emacs-utils))
+       #:configure-flags
        (list (string-append "--enable-gc=" (assoc-ref %build-inputs "libgc"))
              (string-append "--with-latex="
                             (assoc-ref %outputs "out")
@@ -210,15 +218,26 @@ colors, styles, options and details.")
        (modify-phases %standard-phases
          (add-before 'build 'patch-pdf-viewer
            (lambda _
-             ;; Default to a free pdf viewer
+             ;; Default to a free pdf viewer.
              (substitute* "settings.cc"
                (("defaultPDFViewer=\"acroread\"")
-                "defaultPDFViewer=\"gv\""))))
+                "defaultPDFViewer=\"gv\""))
+             #t))
          (add-before 'check 'set-HOME
            ;; Some tests require write access to $HOME, otherwise leading to
            ;; "failed to create directory /homeless-shelter/.asy" error.
            (lambda _
-             (setenv "HOME" "/tmp"))))))
+             (setenv "HOME" "/tmp")
+             #t))
+         (add-after 'install 'install-Emacs-data
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Install related Emacs libraries into an appropriate location.
+             (let* ((out (assoc-ref outputs "out"))
+                    (lisp-dir (string-append out "/share/emacs/site-lisp")))
+               (for-each (cut install-file <> lisp-dir)
+                         (find-files "." "\\.el$"))
+               (emacs-generate-autoloads ,name lisp-dir))
+             #t)))))
     (home-page "http://asymptote.sourceforge.net")
     (synopsis "Script-based vector graphics language")
     (description

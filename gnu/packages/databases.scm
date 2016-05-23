@@ -332,14 +332,14 @@ as a drop-in replacement of MySQL.")
 (define-public postgresql
   (package
     (name "postgresql")
-    (version "9.5.2")
+    (version "9.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://ftp.postgresql.org/pub/source/v"
                                   version "/postgresql-" version ".tar.bz2"))
               (sha256
                (base32
-                "0hbwwhh0pz0a6vf8j5bskiq7gmz9rwc9ywcqyhg5asshckj35lgq"))))
+                "1d500d2qsdzysnis6qi84xchnz5xh8kx8sjfmkbsijwaqlfw11bk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -460,14 +460,14 @@ is in the public domain.")
 (define-public tdb
   (package
     (name "tdb")
-    (version "1.3.8")
+    (version "1.3.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tdb/tdb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1cg6gmpgn36dd4bsp3j9k3hyrm87d8hdigqyyqxw5jga4w2aq186"))))
+                "1ll4q17scax1arg12faj8p25jq1f7q9irc3pwla0ziymwqkgf0bi"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
@@ -822,14 +822,15 @@ valid SQL query.")
 (define-public unixodbc
   (package
    (name "unixodbc")
-   (version "2.3.2")
+   (version "2.3.4")
    (source (origin
             (method url-fetch)
             (uri
              (string-append
-              "ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-" version ".tar.gz"))
+              "ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-"
+              version ".tar.gz"))
             (sha256
-             (base32 "16jw5fq7wgfky6ak1h2j2pqx99jivsdl4q8aq6immpr55xs5jd4w"))))
+             (base32 "0f8y88rcc2akjvjv5y66yx7k0ms9h1s0vbcfy25j93didflhj59f"))))
    (build-system gnu-build-system)
    (synopsis "Data source abstraction library")
    (description "Unixodbc is a library providing an API with which to access

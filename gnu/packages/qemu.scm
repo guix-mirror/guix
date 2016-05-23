@@ -55,20 +55,17 @@
 (define-public qemu
   (package
     (name "qemu")
-    (version "2.5.1.1")
+    (version "2.6.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://wiki.qemu-project.org/download/qemu-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1rpgr1v6gnsdb4bcxwn1krsz4d4h9xgvlg6ark648nkn8dp99n98"))))
+               "1v1lhhd6m59hqgmiz100g779rjq70pik5v4b3g936ci73djlmb69"))))
     (build-system gnu-build-system)
     (arguments
-     '(;; FIXME: On x86_64, the test 'check-qtest-x86_64' sometimes fails when
-       ;; parallel builds are enabled.
-       #:parallel-tests? #f
-       #:phases (alist-replace
+     '(#:phases (alist-replace
                  'configure
                  (lambda* (#:key inputs outputs (configure-flags '())
                            #:allow-other-keys)

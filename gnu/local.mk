@@ -4,7 +4,7 @@
 # Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 # Copyright © 2013, 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 # Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
-# Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
+# Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 #
 # This file is part of GNU Guix.
 #
@@ -188,6 +188,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/lego.scm				\
   gnu/packages/less.scm				\
   gnu/packages/lesstif.scm			\
+  gnu/packages/libbsd.scm			\
   gnu/packages/libcanberra.scm			\
   gnu/packages/libdaemon.scm			\
   gnu/packages/libedit.scm			\
@@ -303,6 +304,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/search.scm			\
   gnu/packages/serialization.scm		\
   gnu/packages/serveez.scm			\
+  gnu/packages/shellutils.scm			\
   gnu/packages/shishi.scm			\
   gnu/packages/skarnet.scm			\
   gnu/packages/skribilo.scm			\
@@ -465,7 +467,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/duplicity-test_selection-tmp.patch	\
   gnu/packages/patches/elfutils-tests-ptrace.patch		\
   gnu/packages/patches/einstein-build.patch			\
-  gnu/packages/patches/emacs-constants-lisp-like.patch		\
   gnu/packages/patches/emacs-exec-path.patch			\
   gnu/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
   gnu/packages/patches/emacs-source-date-epoch.patch		\
@@ -494,6 +495,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/gcc-libiberty-printf-decl.patch		\
   gnu/packages/patches/gcc-libvtv-runpath.patch			\
   gnu/packages/patches/gcc-5.0-libvtv-runpath.patch		\
+  gnu/packages/patches/gd-CVE-2016-3074.patch			\
   gnu/packages/patches/geoclue-config.patch			\
   gnu/packages/patches/ghostscript-CVE-2015-3228.patch		\
   gnu/packages/patches/ghostscript-runpath.patch		\
@@ -507,6 +509,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/glibc-versioned-locpath.patch		\
   gnu/packages/patches/gmp-arm-asm-nothumb.patch		\
   gnu/packages/patches/gmp-faulty-test.patch			\
+  gnu/packages/patches/gnome-tweak-tool-search-paths.patch	\
   gnu/packages/patches/gnucash-price-quotes-perl.patch		\
   gnu/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   gnu/packages/patches/gobject-introspection-cc.patch		\
@@ -613,7 +616,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/matplotlib-setupext-tk.patch		\
   gnu/packages/patches/maxima-defsystem-mkdir.patch		\
   gnu/packages/patches/mcron-install.patch			\
-  gnu/packages/patches/mdadm-gcc-4.9-fix.patch			\
   gnu/packages/patches/mhash-keygen-test-segfault.patch		\
   gnu/packages/patches/mit-krb5-CVE-2015-8629.patch		\
   gnu/packages/patches/mit-krb5-CVE-2015-8630.patch		\
@@ -700,7 +702,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/python-paste-remove-website-test.patch	\
   gnu/packages/patches/python-paste-remove-timing-test.patch	\
   gnu/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
-  gnu/packages/patches/python-pandas-fix-tslib-test-failure.patch \
   gnu/packages/patches/qt4-ldflags.patch			\
   gnu/packages/patches/ratpoison-shell.patch			\
   gnu/packages/patches/readline-link-ncurses.patch		\

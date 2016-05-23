@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
-;;; Copyright © 2014, 2015 David Thompson <dthompson2@worcester.edu>
+;;; Copyright © 2014, 2015, 2016 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
@@ -18,7 +18,7 @@
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
-;;; Copyright © 2016 Kei Yamashita <kei@openmailbox.org>
+;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -642,7 +642,7 @@ match, cannon keep, and grave-itation pit.")
 (define minetest-data
   (package
     (name "minetest-data")
-    (version "0.4.13")
+    (version "0.4.14")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -651,7 +651,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "04xnyfap75v3p818kpqb07xshqwqzpws5xjvw5m96qnd9x4725ld"))))
+                "11fzdh4icx2yvjfz1skdql0d0wxpzdr006k993v33x72s0q2ig7f"))))
     (build-system trivial-build-system)
     (native-inputs
      `(("source" ,source)
@@ -683,7 +683,7 @@ match, cannon keep, and grave-itation pit.")
 (define-public minetest
   (package
     (name "minetest")
-    (version "0.4.13")
+    (version "0.4.14")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -692,7 +692,7 @@ match, cannon keep, and grave-itation pit.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1xzrvsg0fpbj5p4pz6lls11m3ab4y2bnjlsm4gnw68x9006ffznp"))))
+                "0m3hhk5icx4y4gd970z7ya2013fq4vvqbjljmck62ik03baf8g90"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags

@@ -83,6 +83,28 @@ writing the result to OUTPUT."
                           (put-u8 output (char->integer char))
                           result)))))
 
+(define (rename-matching-files directory mapping)
+  "Apply MAPPING to the names of all the files in DIRECTORY, where MAPPING is
+a list of store file name pairs."
+  (let* ((mapping (map (match-lambda
+                        ((source . target)
+                         (cons (basename source) (basename target))))
+                       mapping))
+         (matches (find-files directory
+                              (lambda (file stat)
+                                (assoc-ref mapping (basename file)))
+                              #:directories? #t)))
+
+    ;; XXX: This is not quite correct: if MAPPING contains "foo", and
+    ;; DIRECTORY contains "bar/foo/foo", we first rename "bar/foo" and then
+    ;; "bar/foo/foo" no longer exists so we fail.  Oh well, surely that's good
+    ;; enough!
+    (for-each (lambda (file)
+                (let ((target (assoc-ref mapping (basename file))))
+                  (rename-file file
+                               (string-append (dirname file) "/" target))))
+              matches)))
+
 (define* (rewrite-directory directory output mapping
                             #:optional (store (%store-directory)))
   "Copy DIRECTORY to OUTPUT, replacing strings according to MAPPING, a list of
@@ -115,6 +137,8 @@ file name pairs."
                    (replace-store-references input output mapping
                                              store)
                    (chmod output (stat:perms stat))))))))
+        ((directory)
+         (mkdir-p dest))
         (else
          (error "unsupported file type" stat)))))
 
@@ -124,6 +148,8 @@ file name pairs."
   (umask #o022)
 
   (n-par-for-each (parallel-job-count)
-                  rewrite-leaf (find-files directory)))
+                  rewrite-leaf (find-files directory (const #t)
+                                           #:directories? #t))
+  (rename-matching-files output mapping))
 
 ;;; graft.scm ends here

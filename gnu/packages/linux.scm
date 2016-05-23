@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Raymond Nicholson <rain1@openmailbox.org>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -224,7 +225,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
     (search-path %load-path file)))
 
 (define-public linux-libre
-  (let* ((version "4.5.4")
+  (let* ((version "4.5.5")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Avoid introducing timestamps
@@ -302,7 +303,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "0c587v03kz5whh82apva6gwqvczdi6djy29gk0gfd9dbkb2518b1"))))
+               "1zys74hfdi13yyk17x45hvvbx7m97wk7pala3cd8k93xbq8qnai0"))))
     (build-system gnu-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
@@ -339,13 +340,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.4
   (package
     (inherit linux-libre)
-    (version "4.4.10")
+    (version "4.4.11")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "1k7h632vgh3wlz44qqawy238f4mzn19bm9sz9zqq0ql6wwhkjdkj"))))
+                "17pb9w72vigdrhm8hnkdyw9kwc2l06nabzygpdkwbvf7fg3j03vc"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))
@@ -1182,15 +1183,15 @@ configuration and monitoring interfaces.")
 (define-public iw
   (package
     (name "iw")
-    (version "3.17")
+    (version "4.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://www.kernel.org/pub/software/network/iw/iw-"
+                    "mirror://kernel.org/software/network/iw/iw-"
                     version ".tar.xz"))
               (sha256
                (base32
-                "14zsapqhivk0ws5z21y1ys2c2czi05mzk7bl2yb7qxcfrnsjx9j8"))))
+                "085jyvrxzarvn5jl0fk618jjxy50nqx7ifngszc4jxk6a4ddibd6"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libnl" ,libnl)))
@@ -1198,11 +1199,11 @@ configuration and monitoring interfaces.")
      `(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
                           "CC=gcc")
        #:phases (alist-delete 'configure %standard-phases)))
-    (home-page "http://wireless.kernel.org/en/users/Documentation/iw")
+    (home-page "https://wireless.wiki.kernel.org/")
     (synopsis "Tool for configuring wireless devices")
     (description
      "iw is a new nl80211 based CLI configuration utility for wireless
-devices.  It replaces 'iwconfig', which is deprecated.")
+devices.  It replaces @code{iwconfig}, which is deprecated.")
     (license license:isc)))
 
 (define-public powertop
@@ -1827,7 +1828,7 @@ compliance.")
 (define-public wireless-regdb
   (package
     (name "wireless-regdb")
-    (version "2015.04.06")
+    (version "2016.05.02")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1835,7 +1836,7 @@ compliance.")
                     "wireless-regdb-" version ".tar.xz"))
               (sha256
                (base32
-                "0czi83k311fp27z42hxjm8vi88fsbc23mhavv96lkb4pmari0jjc"))
+                "07n6gcwfbddz3awbdflv3dhxjszsqq2lrdwih0a0ahcliac4qry9"))
 
               ;; We're building 'regulatory.bin' by ourselves.
               (snippet '(delete-file "regulatory.bin"))))
@@ -2332,7 +2333,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
 (define-public mdadm
   (package
     (name "mdadm")
-    (version "3.3.2")
+    (version "3.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2340,8 +2341,7 @@ MPEG-2 and audio over Linux IEEE 1394.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "132vdvh3myjgcjn6i9w90ck16ddjxjcszklzkyvr4f5ifqd7wfhg"))
-              (patches (search-patches "mdadm-gcc-4.9-fix.patch"))))
+                "0248v9f28mrbwabl94ck22gfim29sqhkf70wrpfi52nk4x3bxl17"))))
     (build-system gnu-build-system)
     (inputs
      `(("udev" ,eudev)))
@@ -2401,18 +2401,41 @@ system calls, important for the performance of databases and other advanced
 applications.")
     (license license:lgpl2.1+)))
 
+(define-public sbc
+  (package
+    (name "sbc")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.kernel.org/pub/linux/bluetooth/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "02ckd2z51z0h85qgv7x8vv8ybp5czm9if1z78411j53gaz7j4476"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libsndfile" ,libsndfile)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.kernel.org/pub/linux/bluetooth/")
+    (synopsis "Bluetooth subband audio codec")
+    (description
+     "The SBC is a digital audio encoder and decoder used to transfer data to
+Bluetooth audio output devices like headphones or loudspeakers.")
+    (license license:gpl2+)))
+
 (define-public bluez
   (package
     (name "bluez")
-    (version "5.36")
+    (version "5.39")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "https://www.kernel.org/pub/linux/bluetooth/bluez-"
+                    "mirror://kernel.org/linux/bluetooth/bluez-"
                     version ".tar.xz"))
               (sha256
                (base32
-                "1wkqwmi5krr37mxcqqlp5m2xnw7vw70v3ww7j09vvlskxcdflhx3"))))
+                "0fsrf9rdmrdyx0vmcpfji4imjsvliawyy5sjb6b64myka28vrl91"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2542,7 +2565,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.5.1")
+    (version "4.5.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2550,7 +2573,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1znf2zhb56zbmdjk3lq107678xwsqwc5gczspypmc5i31qnppy7f"))))
+                "1lzbw275xgv69v4z8hmsf3jnip38116hxhkpv0madk8wv049drz6"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of binaries in "out" (~16MiB!)
@@ -2676,3 +2699,38 @@ pre-configured) fan level.  It requires a working @code{thinkpad_acpi} or any
 other @code{hwmon} driver that enables temperature reading and fan control
 from userspace.")
     (license license:gpl3+)))
+
+(define-public ntfs-3g
+  (package
+    (name "ntfs-3g")
+    (version "2016.2.22")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://tuxera.com/opensource/"
+                                  "ntfs-3g_ntfsprogs-" version ".tgz"))
+              (sha256
+               (base32
+                "180y5y09h30ryf2vim8j30a2npwz1iv9ly5yjmh3wjdkwh2jrdyp"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Install under $prefix.
+               '(substitute* '("src/Makefile.in" "ntfsprogs/Makefile.in")
+                  (("/sbin")
+                   "@sbindir@")))))
+    (build-system gnu-build-system)
+    (inputs `(("util-linux" ,util-linux)
+              ("fuse" ,fuse)))                    ;libuuid
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     '(#:configure-flags (list "--exec-prefix=${prefix}"
+                               "--with-fuse=external" ;use our own FUSE
+                               "--enable-mount-helper"
+                               "--enable-posix-acls"
+                               "--enable-xattr-mappings")))
+    (home-page "http://www.tuxera.com/community/open-source-ntfs-3g/")
+    (synopsis "Read-write access to NTFS file systems")
+    (description
+     "NTFS-3G provides read-write access to NTFS file systems, which are
+commonly found on Microsoft Windows.  It is implemented as a FUSE file system.
+The package provides additional NTFS tools.")
+    (license license:gpl2+)))

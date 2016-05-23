@@ -426,6 +426,85 @@ port if PORT is a TLS session record port."
 (module-define! (resolve-module '(web client))
                 'shutdown (const #f))
 
+
+;; XXX: Work around <http://bugs.gnu.org/23421>, fixed in Guile commit
+;; 16050431f29d56f80c4a8253506fc851b8441840.  Guile's date validation
+;; procedure rejects dates in which the hour is not padded with a zero but
+;; with whitespace.
+(begin
+  (define-syntax string-match?
+    (lambda (x)
+      (syntax-case x ()
+        ((_ str pat) (string? (syntax->datum #'pat))
+         (let ((p (syntax->datum #'pat)))
+           #`(let ((s str))
+               (and
+                (= (string-length s) #,(string-length p))
+                #,@(let lp ((i 0) (tests '()))
+                     (if (< i (string-length p))
+                         (let ((c (string-ref p i)))
+                           (lp (1+ i)
+                               (case c
+                                 ((#\.)  ; Whatever.
+                                  tests)
+                                 ((#\d)  ; Digit.
+                                  (cons #`(char-numeric? (string-ref s #,i))
+                                        tests))
+                                 ((#\a)  ; Alphabetic.
+                                  (cons #`(char-alphabetic? (string-ref s #,i))
+                                        tests))
+                                 (else   ; Literal.
+                                  (cons #`(eqv? (string-ref s #,i) #,c)
+                                        tests)))))
+                         tests)))))))))
+
+  (define (parse-rfc-822-date str space zone-offset)
+    (let ((parse-non-negative-integer (@@ (web http) parse-non-negative-integer))
+          (parse-month (@@ (web http) parse-month))
+          (bad-header (@@ (web http) bad-header)))
+      ;; We could verify the day of the week but we don't.
+      (cond ((string-match? (substring str 0 space) "aaa, dd aaa dddd dd:dd:dd")
+             (let ((date (parse-non-negative-integer str 5 7))
+                   (month (parse-month str 8 11))
+                   (year (parse-non-negative-integer str 12 16))
+                   (hour (parse-non-negative-integer str 17 19))
+                   (minute (parse-non-negative-integer str 20 22))
+                   (second (parse-non-negative-integer str 23 25)))
+               (make-date 0 second minute hour date month year zone-offset)))
+            ((string-match? (substring str 0 space) "aaa, d aaa dddd dd:dd:dd")
+             (let ((date (parse-non-negative-integer str 5 6))
+                   (month (parse-month str 7 10))
+                   (year (parse-non-negative-integer str 11 15))
+                   (hour (parse-non-negative-integer str 16 18))
+                   (minute (parse-non-negative-integer str 19 21))
+                   (second (parse-non-negative-integer str 22 24)))
+               (make-date 0 second minute hour date month year zone-offset)))
+
+            ;; The next two clauses match dates that have a space instead of
+            ;; a leading zero for hours, like " 8:49:37".
+            ((string-match? (substring str 0 space) "aaa, dd aaa dddd  d:dd:dd")
+             (let ((date (parse-non-negative-integer str 5 7))
+                   (month (parse-month str 8 11))
+                   (year (parse-non-negative-integer str 12 16))
+                   (hour (parse-non-negative-integer str 18 19))
+                   (minute (parse-non-negative-integer str 20 22))
+                   (second (parse-non-negative-integer str 23 25)))
+               (make-date 0 second minute hour date month year zone-offset)))
+            ((string-match? (substring str 0 space) "aaa, d aaa dddd  d:dd:dd")
+             (let ((date (parse-non-negative-integer str 5 6))
+                   (month (parse-month str 7 10))
+                   (year (parse-non-negative-integer str 11 15))
+                   (hour (parse-non-negative-integer str 17 18))
+                   (minute (parse-non-negative-integer str 19 21))
+                   (second (parse-non-negative-integer str 22 24)))
+               (make-date 0 second minute hour date month year zone-offset)))
+
+            (else
+             (bad-header 'date str)        ; prevent tail call
+             #f))))
+  (module-set! (resolve-module '(web http))
+               'parse-rfc-822-date parse-rfc-822-date))
+
 ;; XXX: Work around <http://bugs.gnu.org/19840>, present in Guile
 ;; up to 2.0.11.
 (unless (or (> (string->number (major-version)) 2)
@@ -605,10 +684,22 @@ Return a list of URIs."
     (else
      (list uri))))
 
-(define* (url-fetch url file #:key (mirrors '()))
+(define* (url-fetch url file
+                    #:key
+                    (mirrors '()) (content-addressed-mirrors '())
+                    (hashes '()))
   "Fetch FILE from URL; URL may be either a single string, or a list of
 string denoting alternate URLs for FILE.  Return #f on failure, and FILE
-on success."
+on success.
+
+When MIRRORS is defined, it must be an alist of mirrors; it is used to resolve
+'mirror://' URIs.
+
+HASHES must be a list of algorithm/hash pairs, where each algorithm is a
+symbol such as 'sha256 and each hash is a bytevector.
+CONTENT-ADDRESSED-MIRRORS must be a list of procedures that, given a hash
+algorithm and a hash, return a URL where the specified data can be retrieved
+or #f."
   (define uri
     (append-map (cut maybe-expand-mirrors <> mirrors)
                 (match url
@@ -628,13 +719,21 @@ on success."
                uri)
        #f)))
 
+  (define content-addressed-urls
+    (append-map (lambda (make-url)
+                  (filter-map (match-lambda
+                                ((hash-algo . hash)
+                                 (make-url hash-algo hash)))
+                              hashes))
+                content-addressed-mirrors))
+
   ;; Make this unbuffered so 'progress-proc' works as expected.  _IOLBF means
   ;; '\n', not '\r', so it's not appropriate here.
   (setvbuf (current-output-port) _IONBF)
 
   (setvbuf (current-error-port) _IOLBF)
 
-  (let try ((uri uri))
+  (let try ((uri (append uri content-addressed-urls)))
     (match uri
       ((uri tail ...)
        (or (fetch uri file)

@@ -7,6 +7,8 @@
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
+;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
+;;; Copyright © 2016 humanitiesNerd <catonano@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -251,6 +253,36 @@ Geiser.  A bundle of Elisp shims orchestrates the dialog between the Scheme
 implementation, Emacs and, ultimately, the schemer, giving them access to live
 metadata.")
     (license license:bsd-3)))
+
+(define-public geiser-next
+  ;; Geiser's upcoming version supports guile-next, and 0.8.1 does not.
+  ;; When the next Geiser release comes out, we can remove this.
+  (let ((commit "2e335695fc1a4a0b520b50deb761b958194cbec4"))
+    (package
+      (inherit geiser)
+      (name "geiser-next")
+      (version (string-append "0.8.1-1"
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://git.sv.gnu.org/geiser.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "00rmpn8zncq1fiah5m12l26z0s28bh7ql63kxdvksqdgfrisnmgf"))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("texinfo" ,texinfo)
+         ,@(package-native-inputs geiser)))
+      (arguments
+       (substitute-keyword-arguments (package-arguments geiser)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             (add-after 'unpack 'autogen
+               (lambda _
+                 (zero? (system* "sh" "autogen.sh")))))))))))
 
 (define-public paredit
   (package
@@ -1364,26 +1396,24 @@ identifiers in the MIT-Scheme documentation.")
     (gexp->derivation (or name (basename url))
                       #~(begin
                           (mkdir #$output)
-                          (setenv "PATH"
-                                  (string-append #$gzip "/bin"))
                           (chdir #$output)
                           (copy-file #$drv (basename #$url))))))
 
 (define-public emacs-constants
   (package
     (name "emacs-constants")
-    (version "2.2")
+    (version "2.6")
+    (home-page "https://staff.fnwi.uva.nl/c.dominik/Tools/constants")
     (source
      (origin
        (file-name (string-append name "-" version ".el"))
-       (method uncompressed-file-fetch)
-       (uri "https://staff.fnwi.uva.nl/c.dominik/Tools/constants/constants.el")
-       (patches (search-patches "emacs-constants-lisp-like.patch"))
+       (method url-fetch)
+       (uri (string-append "https://github.com/fedeinthemix/emacs-constants"
+                           "/archive/v" version ".tar.gz"))
        (sha256
         (base32
-         "14q094aphsjhq8gklv7i5a7byl0ygz63cv3n6b5p8ji2jy0mnnw3"))))
+         "0pnrpmmxq8mh5h2hbrp5vcym0j0fh6dv3s7c5ccn18wllhzg9g7n"))))
     (build-system emacs-build-system)
-    (home-page "https://staff.fnwi.uva.nl/c.dominik/Tools/constants")
     (synopsis "Enter definition of constants into an Emacs buffer")
     (description
      "This package provides functions for inserting the definition of natural
@@ -1550,4 +1580,54 @@ and load the appropriate RFC from a remote server.  However, it fails
 to recognize a name like \"RFC 1234\".  This package enhances ffap so
 that it correctly finds RFCs even when a space appears before the
 number.")
+    (license license:gpl3+)))
+
+(define-public emacs-zenburn-theme
+  (package
+    (name "emacs-zenburn-theme")
+    (version "2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/bbatsov/zenburn-emacs/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0lyi84bm8sa7vj40n6zg6rlbsmi53mi1y9xn6gkjj29s5zbcnlg7"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/bbatsov/zenburn-emacs")
+    (synopsis "Low contrast color theme for Emacs")
+    (description
+     "Zenburn theme is a port of the popular Vim Zenburn theme for Emacs.
+It is built on top of the custom theme support in Emacs 24 or later.")
+    (license license:gpl3+)))
+
+(define-public emacs-smartparens
+  (package
+    (name "emacs-smartparens")
+    (version "1.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/Fuco1/smartparens/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1b47ppkzsj8j8a2p0bmvq05rhm2d2lsm3wlc0sg542r4zr6nji8s"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/Fuco1/smartparens")
+    (synopsis "Paredit-like insertion, wrapping and navigation with user
+defined pairs")
+    (description
+     "Smartparens is a minor mode for Emacs that deals with parens pairs
+and tries to be smart about it.  It started as a unification effort to
+combine functionality of several existing packages in a single,
+compatible and extensible way to deal with parentheses, delimiters, tags
+and the like.  Some of these packages include autopair, textmate,
+wrap-region, electric-pair-mode, paredit and others.  With the basic
+features found in other packages it also brings many improvements as
+well as completely new features.")
     (license license:gpl3+)))

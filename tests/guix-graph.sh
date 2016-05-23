@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -20,6 +20,10 @@
 # Test the 'guix graph' command-line utility.
 #
 
+tmpfile1="t-guix-graph1-$$"
+tmpfile2="t-guix-graph2-$$"
+trap 'rm -f "$tmpfile1" "$tmpfile2"' EXIT
+
 guix graph --version
 
 for package in guile-bootstrap coreutils python
@@ -37,3 +41,15 @@ guix graph -e '(@ (gnu packages bootstrap) %bootstrap-guile)' \
     | grep guile-bootstrap
 
 if guix graph -e +; then false; else true; fi
+
+# Try passing store file names.
+
+guix graph -t references guile-bootstrap > "$tmpfile1"
+guix graph -t references `guix build guile-bootstrap` > "$tmpfile2"
+cmp "$tmpfile1" "$tmpfile2"
+
+# XXX: Filter the file names in the graph to work around the fact that we get
+# a mixture of relative and absolute file names.
+guix graph -t derivation coreutils > "$tmpfile1"
+guix graph -t derivation `guix build -d coreutils` > "$tmpfile2"
+cmp "$tmpfile1" "$tmpfile2"

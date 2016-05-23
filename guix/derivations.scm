@@ -176,6 +176,11 @@ download with a fixed hash (aka. `fetchurl')."
      #t)
     (_ #f)))
 
+(define (derivation-input<? input1 input2)
+  "Compare INPUT1 and INPUT2, two <derivation-input>."
+  (string<? (derivation-input-path input1)
+            (derivation-input-path input2)))
+
 (define (derivation-input-output-paths input)
   "Return the list of output paths corresponding to INPUT, a
 <derivation-input>."
@@ -189,6 +194,30 @@ download with a fixed hash (aka. `fetchurl')."
 the store."
   (every (cut valid-path? store <>)
          (derivation-input-output-paths input)))
+
+(define (coalesce-duplicate-inputs inputs)
+  "Return a list of inputs, such that when INPUTS contains the same DRV twice,
+they are coalesced, with their sub-derivations merged.  This is needed because
+Nix itself keeps only one of them."
+  (fold (lambda (input result)
+          (match input
+            (($ <derivation-input> path sub-drvs)
+             ;; XXX: quadratic
+             (match (find (match-lambda
+                            (($ <derivation-input> p s)
+                             (string=? p path)))
+                          result)
+               (#f
+                (cons input result))
+               ((and dup ($ <derivation-input> _ sub-drvs2))
+                ;; Merge DUP with INPUT.
+                (let ((sub-drvs (delete-duplicates
+                                 (append sub-drvs sub-drvs2))))
+                  (cons (make-derivation-input path
+                                               (sort sub-drvs string<?))
+                        (delq dup result))))))))
+        '()
+        inputs))
 
 (define* (derivation-prerequisites drv #:optional (cut? (const #f)))
   "Return the list of derivation-inputs required to build DRV, recursively.
@@ -473,29 +502,6 @@ that form."
   (define (write-string-list lst)
     (write-list lst write port))
 
-  (define (coalesce-duplicate-inputs inputs)
-    ;; Return a list of inputs, such that when INPUTS contains the same DRV
-    ;; twice, they are coalesced, with their sub-derivations merged.  This is
-    ;; needed because Nix itself keeps only one of them.
-    (fold (lambda (input result)
-            (match input
-              (($ <derivation-input> path sub-drvs)
-               ;; XXX: quadratic
-               (match (find (match-lambda
-                             (($ <derivation-input> p s)
-                              (string=? p path)))
-                            result)
-                 (#f
-                  (cons input result))
-                 ((and dup ($ <derivation-input> _ sub-drvs2))
-                  ;; Merge DUP with INPUT.
-                  (let ((sub-drvs (delete-duplicates
-                                   (append sub-drvs sub-drvs2))))
-                    (cons (make-derivation-input path sub-drvs)
-                          (delq dup result))))))))
-          '()
-          inputs))
-
   (define (write-output output port)
     (match output
      ((name . ($ <derivation-output> path hash-algo hash recursive?))
@@ -515,7 +521,7 @@ that form."
        (display "(" port)
        (write path port)
        (display "," port)
-       (write-string-list (sort sub-drvs string<?))
+       (write-string-list sub-drvs)
        (display ")" port))))
 
   (define (write-env-var env-var port)
@@ -527,35 +533,20 @@ that form."
        (write value port)
        (display ")" port))))
 
-  ;; Note: lists are sorted alphabetically, to conform with the behavior of
-  ;; C++ `std::map' in Nix itself.
-
+  ;; Assume all the lists we are writing are already sorted.
   (match drv
     (($ <derivation> outputs inputs sources
         system builder args env-vars)
      (display "Derive(" port)
-     (write-list (sort outputs
-                       (lambda (o1 o2)
-                         (string<? (car o1) (car o2))))
-                 write-output
-                 port)
+     (write-list outputs write-output port)
      (display "," port)
-     (write-list (sort (coalesce-duplicate-inputs inputs)
-                       (lambda (i1 i2)
-                         (string<? (derivation-input-path i1)
-                                   (derivation-input-path i2))))
-                 write-input
-                 port)
+     (write-list inputs write-input port)
      (display "," port)
-     (write-string-list (sort sources string<?))
+     (write-string-list sources)
      (format port ",~s,~s," system builder)
      (write-string-list args)
      (display "," port)
-     (write-list (sort env-vars
-                       (lambda (e1 e2)
-                         (string<? (car e1) (car e2))))
-                 write-env-var
-                 port)
+     (write-list env-vars write-env-var port)
      (display ")" port))))
 
 (define derivation->string
@@ -653,7 +644,10 @@ derivation at FILE."
                              (let ((hash (derivation-path->base16-hash path)))
                                (make-derivation-input hash sub-drvs))))
                            inputs))
-              (drv    (make-derivation outputs inputs sources
+              (drv    (make-derivation outputs
+                                       (sort (coalesce-duplicate-inputs inputs)
+                                             derivation-input<?)
+                                       sources
                                        system builder args env-vars
                                        #f)))
 
@@ -820,30 +814,38 @@ output should not be used."
        (make-derivation outputs inputs sources system builder
                         args env-vars file))))
 
+  (define input->derivation-input
+    (match-lambda
+      (((? derivation? drv))
+       (make-derivation-input (derivation-file-name drv) '("out")))
+      (((? derivation? drv) sub-drvs ...)
+       (make-derivation-input (derivation-file-name drv) sub-drvs))
+      (((? direct-store-path? input))
+       (make-derivation-input input '("out")))
+      (((? direct-store-path? input) sub-drvs ...)
+       (make-derivation-input input sub-drvs))
+      ((input . _)
+       (let ((path (add-to-store store (basename input)
+                                 #t "sha256" input)))
+         (make-derivation-input path '())))))
+
+  ;; Note: lists are sorted alphabetically, to conform with the behavior of
+  ;; C++ `std::map' in Nix itself.
+
   (let* ((outputs    (map (lambda (name)
                             ;; Return outputs with an empty path.
                             (cons name
                                   (make-derivation-output "" hash-algo
                                                           hash recursive?)))
-                          outputs))
-         (inputs     (map (match-lambda
-                           (((? derivation? drv))
-                            (make-derivation-input (derivation-file-name drv)
-                                                   '("out")))
-                           (((? derivation? drv) sub-drvs ...)
-                            (make-derivation-input (derivation-file-name drv)
-                                                   sub-drvs))
-                           (((? direct-store-path? input))
-                            (make-derivation-input input '("out")))
-                           (((? direct-store-path? input) sub-drvs ...)
-                            (make-derivation-input input sub-drvs))
-                           ((input . _)
-                            (let ((path (add-to-store store
-                                                      (basename input)
-                                                      #t "sha256" input)))
-                              (make-derivation-input path '()))))
-                          (delete-duplicates inputs)))
-         (env-vars   (env-vars-with-empty-outputs (user+system-env-vars)))
+                          (sort outputs string<?)))
+         (inputs     (sort (coalesce-duplicate-inputs
+                            (map input->derivation-input
+                                 (delete-duplicates inputs)))
+                           derivation-input<?))
+         (env-vars   (sort (env-vars-with-empty-outputs
+                            (user+system-env-vars))
+                           (lambda (e1 e2)
+                             (string<? (car e1) (car e2)))))
          (drv-masked (make-derivation outputs
                                       (filter (compose derivation-path?
                                                        derivation-input-path)
@@ -858,8 +860,7 @@ output should not be used."
 
     (let ((file (add-text-to-store store (string-append name ".drv")
                                    (derivation->string drv)
-                                   (map derivation-input-path
-                                        inputs))))
+                                   (map derivation-input-path inputs))))
       (set-file-name drv file))))
 
 (define* (map-derivation store drv mapping

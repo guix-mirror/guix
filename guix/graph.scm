@@ -65,7 +65,7 @@
   (identifier  node-type-identifier)              ;node -> M identifier
   (label       node-type-label)                   ;node -> string
   (edges       node-type-edges)                   ;node -> M list of nodes
-  (convert     node-type-convert                  ;package -> M list of nodes
+  (convert     node-type-convert                  ;any -> M list of nodes
                (default (lift1 list %store-monad)))
   (name        node-type-name)                    ;string
   (description node-type-description))            ;string

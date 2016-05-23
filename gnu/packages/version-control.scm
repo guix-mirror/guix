@@ -265,6 +265,7 @@ as well as the classic centralized workflow.")
     ;; FIXME: This variable designates a single file; it is not a search path.
     (list (search-path-specification
            (variable "GIT_SSL_CAINFO")
+           (file-type 'regular)
            (files '("etc/ssl/certs/ca-certificates.crt")))))
 
    (synopsis "Distributed version control system")
@@ -323,7 +324,7 @@ command.")))
 (define-public libgit2
   (package
     (name "libgit2")
-    (version "0.24.0")
+    (version "0.24.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/libgit2/libgit2/"
@@ -331,7 +332,7 @@ command.")))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1c5jx0pcpz83x7s36jimfz5bj0vy7vwpchq9p4sgdqxy8gwr6rhw"))))
+                "1ppyfwxc276d2p2pwbzlmvs2bkgng425rl8k2rf9nsq66jxqq6b0"))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases

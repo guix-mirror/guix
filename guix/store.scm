@@ -615,7 +615,7 @@ store directory (/gnu/store)."
   boolean)
 
 (define-operation (query-path-hash (store-path path))
-  "Return the SHA256 hash of PATH as a bytevector."
+  "Return the SHA256 hash of the nar serialization of PATH as a bytevector."
   base16)
 
 (define hash-part->path

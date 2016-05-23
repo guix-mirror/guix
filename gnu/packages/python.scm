@@ -18,6 +18,7 @@
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
+;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,7 +91,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1))
 
-(define-public python-2
+(define-public python-2.7
   (package
     (name "python")
     (version "2.7.11")
@@ -281,7 +282,10 @@ packages; exception-based error handling; and very high level dynamic
 data types.")
     (license psfl)))
 
-(define-public python
+;; Current 2.x version.
+(define-public python-2 python-2.7)
+
+(define-public python-3.4
   (package (inherit python-2)
     (version "3.4.3")
     (source (origin
@@ -306,6 +310,12 @@ data types.")
             (files (list (string-append "lib/python"
                                         (version-major+minor version)
                                         "/site-packages"))))))))
+
+;; Current 3.x version.
+(define-public python-3 python-3.4)
+
+;; Current major version.
+(define-public python python-3)
 
 ;; Minimal variants of Python, mostly used to break the cycle between Tk and
 ;; Python (Tk -> libxcb -> Python.)
@@ -1002,15 +1012,16 @@ datetime module, available in Python 2.3+.")
 (define-public python-pandas
   (package
     (name "python-pandas")
-    (version "0.18.0")
+    (version "0.18.1")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "pandas" version))
+       (uri (string-append
+              "https://pypi.python.org/packages/11/09/"
+              "e66eb844daba8680ddff26335d5b4fead77f60f957678243549a8dd4830d/"
+              "pandas-" version ".tar.gz"))
        (sha256
-        (base32 "050qw0ap5bhyv5flp78x3lcq1dlminl3xaj6kbrm0jqmx0672xf9"))
-       (patches (search-patches
-                 "python-pandas-fix-tslib-test-failure.patch"))))
+        (base32 "1ckpxrvvjj6zxmn68icd9hib8qcpx9b35f6izxnr25br5ilq7r6j"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-numpy" ,python-numpy)))
@@ -1018,8 +1029,7 @@ datetime module, available in Python 2.3+.")
      `(("python-pytz" ,python-pytz)
        ("python-dateutil" ,python-dateutil-2)))
     (native-inputs
-     `(("python-nose" ,python-nose)
-       ("python-setuptools" ,python-setuptools)))
+     `(("python-nose" ,python-nose)))
     (home-page "http://pandas.pydata.org")
     (synopsis "Data structures for data analysis, time series, and statistics")
     (description
@@ -1028,15 +1038,15 @@ structures designed to make working with structured (tabular,
 multidimensional, potentially heterogeneous) and time series data both easy
 and intuitive.  It aims to be the fundamental high-level building block for
 doing practical, real world data analysis in Python.")
-    (license bsd-3)))
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-pandas))))))
 
 (define-public python2-pandas
-  (let ((pandas (package-with-python2 python-pandas)))
-    (package (inherit pandas)
-             (propagated-inputs
-              `(("python2-numpy" ,python2-numpy)
-                ,@(alist-delete "python-numpy"
-                                (package-propagated-inputs pandas)))))))
+  (let ((base (package-with-python2 (strip-python2-variant python-pandas))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
 
 (define-public python-tzlocal
   (package
@@ -5856,16 +5866,18 @@ responses, rather than doing any computation.")
 (define-public python-cryptography-vectors
   (package
     (name "python-cryptography-vectors")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/c/"
-                           "cryptography-vectors/cryptography_vectors-"
-                           version ".tar.gz"))
+       (uri (string-append
+              "https://pypi.python.org/packages/"
+              "3f/fd/"
+              "5883a7fdfcdf6edec55c58605be99d8c36ce97a9b729763ea9cf30e761b7"
+              "/cryptography_vectors-" version ".tar.gz"))
        (sha256
         (base32
-         "1144l3ypz3bngxd59lb4y74xa401w92lhvvjgxzglmvbh8wzkcbb"))))
+         "0ss682bpgzdfy2vam8yhhrx7p5gnw89ydlvaswqp52za8sd8nsh0"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
@@ -5882,14 +5894,18 @@ responses, rather than doing any computation.")
 (define-public python-cryptography
   (package
     (name "python-cryptography")
-    (version "1.3.1")
+    (version "1.3.2")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "cryptography" version))
+       (uri (string-append
+              "https://pypi.python.org/packages/"
+              "04/da/"
+              "35f9a1d34dab5d777f65fb87731288f338ab0ae46a525ffdf0405b573dd0"
+              "/cryptography-" version ".tar.gz"))
        (sha256
         (base32
-         "1qjkrpfvxcyd0kal3zpm5y7f9p3y77ixn9jw8f4dqpgrw1sn3cxl"))))
+         "121067qdbzd0ir0nxjdf0kgai7qlsc9yh2xhrj4cavcn4y4gmapv"))))
     (build-system python-build-system)
     (inputs
      `(("openssl" ,openssl)))
@@ -8764,3 +8780,30 @@ respectively.")
   (description (string-append "This is an experimental compiler for a subset of
 Python.  It generates C++ code and a Makefile."))
   (license (list gpl3 bsd-3 license:expat))))
+
+(define-public python2-rope
+  (package
+    (name "python2-rope")
+    (version "0.10.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (pypi-uri "rope" version))
+      (sha256
+        (base32
+         "18k5znhpwvrfck3yp0jmhd5j8r0f0s8bk1zh5yhs2cfgmfhbwigb"))))
+    (arguments
+     ;; Rope is currently python-2 only.
+     ;; https://github.com/python-rope/rope/issues/57
+     `(#:python ,python-2))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python2-unittest2" ,python2-unittest2)
+       ("python2-setuptools" ,python2-setuptools)))
+    (home-page "https://github.com/python-rope/rope")
+    (synopsis "Refactoring library for Python")
+    (description "Rope is a refactoring library for Python.  It facilitates
+the renaming, moving and extracting of attributes, functions, modules, fields
+and parameters in Python 2 source code.  These refactorings can also be applied
+to occurences in strings and comments.")
+    (license gpl2)))

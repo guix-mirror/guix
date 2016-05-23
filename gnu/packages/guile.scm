@@ -566,16 +566,15 @@ See http://minikanren.org/ for more on miniKanren generally.")
 (define-public guile-irregex
   (package
     (name "guile-irregex")
-    (version "0.9.3")
+    (version "0.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://synthcode.com/scheme/irregex/irregex-"
-                    version
-                    ".tar.gz"))
+                    version ".tar.gz"))
               (sha256
                (base32
-                "1b8jl7bycyl2ssp6sb1j24pp9hvqyxm85ki9bmwd50glyyjs5zay"))))
+                "0cmaqvqvyarcnnsyrl2p6vwyv1r3k1q7qw8p9zrlnz1vpbj7vb90"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build utils)

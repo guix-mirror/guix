@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Jelle Licht <jlicht@fsfe.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
+;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -56,6 +57,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
@@ -273,6 +275,100 @@ data.")
 easily construct JSON objects in C, output them as JSON formatted strings and
 parse JSON formatted strings back into the C representation of JSON objects.")
     (license l:x11)))
+
+(define-public krona-tools
+  (package
+   (name "krona-tools")
+   (version "2.6.1")
+   (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/marbl/Krona/releases/download/v"
+                   version "/KronaTools-" version ".tar"))
+             (sha256
+              (base32
+               "1fj5mf6wbwz7v74n2safbw7fpw32fik19vf0wdbc2srn82i8fiwz"))))
+   (build-system perl-build-system)
+   (arguments
+     `(#:tests? #f ; no tests
+       #:phases
+       (modify-phases %standard-phases
+         ;; There is no configure or build steps.
+         (delete 'configure)
+         (replace 'build
+           ;; Remove 'use lib' statements from scripts as PERL5LIB is set
+           ;; correctly during installation.
+           (lambda _
+             (for-each
+              (lambda (executable)
+                (display executable)(display "\n")
+                (substitute* executable
+                  (("use lib \\(`ktGetLibPath`\\);") "")))
+              (find-files "scripts/" ".*"))
+             #t))
+         ;; Install script "install.pl" expects the build directory to remain
+         ;; after installation, creating symlinks etc., so re-implement it
+         ;; here.
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin   (string-append (assoc-ref outputs "out") "/bin"))
+                   (perl  (string-append (assoc-ref outputs "out")
+                                         "/lib/perl5/site_perl"))
+                   (share (string-append
+                           (assoc-ref outputs "out") "/share/krona-tools")))
+               (mkdir-p bin)
+               (for-each
+                (lambda (script)
+                  (let* ((executable (string-append "scripts/" script ".pl")))
+                    ;; Prefix executables with 'kt' as install script does.
+                    (copy-file executable (string-append bin "/kt" script))))
+                '("ClassifyBLAST"
+                  "GetContigMagnitudes"
+                  "GetTaxIDFromGI"
+                  "ImportBLAST"
+                  "ImportDiskUsage"
+                  "ImportEC"
+                  "ImportFCP"
+                  "ImportGalaxy"
+                  "ImportKrona"
+                  "ImportMETAREP-BLAST"
+                  "ImportMETAREP-EC"
+                  "ImportMGRAST"
+                  "ImportPhymmBL"
+                  "ImportRDP"
+                  "ImportRDPComparison"
+                  "ImportTaxonomy"
+                  "ImportText"
+                  "ImportXML"))
+               (mkdir-p share)
+               (copy-recursively "data" (string-append share "/data"))
+               (copy-recursively "img" (string-append share "/img"))
+               (copy-recursively "taxonomy" (string-append share "/taxonomy"))
+               (substitute* '("lib/KronaTools.pm")
+                 (("taxonomyDir = \".libPath/../taxonomy\"")
+                  (string-append "taxonomyDir = \"" share "/taxonomy\"")))
+               (install-file "lib/KronaTools.pm" perl))))
+         (add-after 'install 'wrap-program
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (path (getenv "PERL5LIB")))
+               (for-each
+                (lambda (executable)
+                  (wrap-program executable
+                    `("PERL5LIB" ":" prefix
+                      (,(string-append out "/lib/perl5/site_perl")))))
+                (find-files (string-append out "/bin/") ".*"))))))))
+   (inputs
+    `(("perl" ,perl)))
+   (home-page "https://github.com/marbl/Krona/wiki")
+   (synopsis "Hierarchical data exploration with zoomable HTML5 pie charts")
+   (description
+    "Krona is a flexible tool for exploring the relative proportions of
+hierarchical data, such as metagenomic classifications, using a radial,
+space-filling display.  It is implemented using HTML5 and JavaScript, allowing
+charts to be explored locally or served over the Internet, requiring only a
+current version of any major web browser.")
+   (license l:bsd-3)))
 
 (define-public rapidjson
   (package
@@ -2964,13 +3060,13 @@ particularly easy to create complete web applications using httpuv alone.")
 (define-public r-jsonlite
   (package
     (name "r-jsonlite")
-    (version "0.9.19")
+    (version "0.9.20")
     (source (origin
               (method url-fetch)
               (uri (cran-uri "jsonlite" version))
               (sha256
                (base32
-                "1hbdraj3xv2l2gs9f205j8z054ycy0bfdvwdhvpa9qlji588sz7g"))))
+                "08b2gifd81yzj0h4k7pqp2cc2r5lwsg3sxnssi6c96rgqvl4702n"))))
     (build-system r-build-system)
     (home-page "http://arxiv.org/abs/1403.2805")
     (synopsis "Robust, high performance JSON parser and generator for R")

@@ -10,6 +10,7 @@
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
+;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages docbook)
+  #:use-module (gnu packages enchant)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages ghostscript)
@@ -1243,4 +1245,31 @@ Redmond95 and ThinIce.")
     (description
      "Murrine is a cairo-based GTK+ theming engine.  It is named after the
 glass artworks done by Venicians glass blowers.")
+    (license license:gpl2+)))
+
+(define-public gtkspell3
+  (package
+    (name "gtkspell3")
+    (version "3.0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/gtkspell/"
+                                  version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1zrz5pz4ryvcssk898liynmy2wyxgj95ak7mp2jv7x62yzihq6h1"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("enchant" ,enchant)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+" ,gtk+)
+       ("pango" ,pango)))
+    (home-page "http://gtkspell.sourceforge.net")
+    (synopsis "Spell-checking addon for GTK's TextView widget")
+    (description
+     "GtkSpell provides word-processor-style highlighting and replacement of
+misspelled words in a GtkTextView widget.")
     (license license:gpl2+)))

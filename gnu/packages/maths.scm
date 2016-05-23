@@ -11,6 +11,8 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,6 +48,7 @@
   #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages flex)
@@ -79,6 +82,7 @@
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages zip)
@@ -583,7 +587,7 @@ online as well as original implementations of various other algorithms.")
 (define-public octave
   (package
     (name "octave")
-    (version "4.0.0")
+    (version "4.0.2")
     (source
      (origin
       (method url-fetch)
@@ -591,7 +595,7 @@ online as well as original implementations of various other algorithms.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "101jr9yck798586jz4vkjcgk36zksmxf1pxrzvipgn2xgyay0zjc"))))
+        "1hdxap3j88rpqjimnfhinym6z73wdi5dfa6fv85c13r1dk9qzk9r"))))
     (build-system gnu-build-system)
     (inputs
      `(("lapack" ,lapack)
@@ -602,6 +606,7 @@ online as well as original implementations of various other algorithms.")
        ("arpack" ,arpack-ng)
        ("curl" ,curl)
        ("pcre" ,pcre)
+       ("cyrus-sasl" ,cyrus-sasl)
        ("fltk" ,fltk)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
@@ -609,6 +614,7 @@ online as well as original implementations of various other algorithms.")
        ("libxft" ,libxft)
        ("mesa" ,mesa)
        ("glu" ,glu)
+       ("openssl" ,openssl)
        ("zlib" ,zlib)))
     (native-inputs
      `(("gfortran" ,gfortran)
@@ -626,9 +632,10 @@ online as well as original implementations of various other algorithms.")
        ("ghostscript" ,ghostscript)
        ("gnuplot" ,gnuplot)))
     (arguments
-     `(#:configure-flags (list (string-append "--with-shell="
-			    (assoc-ref %build-inputs "bash")
-			    "/bin/sh"))))
+     `(#:configure-flags
+       (list (string-append "--with-shell="
+                            (assoc-ref %build-inputs "bash")
+                            "/bin/sh"))))
     (home-page "http://www.gnu.org/software/octave/")
     (synopsis "High-level language for numerical computation")
     (description "GNU Octave is a high-level interpreted language that is
@@ -664,6 +671,9 @@ script files.")
        ("glu" ,glu)
        ("libx11" ,libx11)
        ("libxext" ,libxext)))
+    (inputs
+     `(("fontconfig" ,fontconfig)
+       ("libxft" ,libxft)))
     (arguments
      `(#:configure-flags `("-DENABLE_METIS:BOOL=OFF"
                            "-DENABLE_BUILD_SHARED:BOOL=ON"
@@ -1588,7 +1598,7 @@ point numbers.")
 (define-public wxmaxima
   (package
     (name "wxmaxima")
-    (version "15.04.0")
+    (version "16.04.2")
     (source
      (origin
        (method url-fetch)
@@ -1596,7 +1606,7 @@ point numbers.")
                            version "/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1fm47ah4aw5qdjqhkz67w5fwhy8yfffa5z896crp0d3hk2bh4180"))))
+         "1fpqzk1921isiqrpgpf433ldq41924qs9sy99fl1zn5661b2l73n"))))
     (build-system gnu-build-system)
     (inputs
      `(("wxwidgets" ,wxwidgets)
@@ -1631,14 +1641,14 @@ full text searching.")
 (define-public armadillo
   (package
     (name "armadillo")
-    (version "6.700.4")
+    (version "6.700.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/arma/armadillo-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0dsdjcps5l2nhg0455rrc708inffarzj7n435vj4sm9lxwf21wg9"))))
+                "0xbidcxrvbq33xf7iysg2nic2ai9a043psl33kiv6ifkk7p8hcra"))))
     (build-system cmake-build-system)
     (arguments `(#:tests? #f)) ;no test target
     (inputs
@@ -1659,14 +1669,14 @@ associated functions (eg. contiguous and non-contiguous submatrix views).")
 
 (define-public armadillo-for-rcpparmadillo
   (package (inherit armadillo)
-    (version "6.700.3")
+    (version "6.700.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/arma/armadillo-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1vnhifa7d0aij3kv5bxf6m91d99h3y2fyj48jrx7jcvwyb1q5wwq"))))))
+                "1cdpjxb0fz5f28y5qrqgpw53s7qi8s2v3al9lfdldqxngb21vpx8"))))))
 
 (define-public muparser
   (package
@@ -2199,7 +2209,23 @@ in finite element programs.")
        ;; ("python2-numpy" ,python2-numpy) ; only required for the tests
        ("zlib" ,zlib)))
     (arguments
-     `(#:tests? #f)) ; The test data are downloaded from the Internet.
+     `(;; The 'share/flann/octave' contains a .mex file, which is an ELF file
+       ;; taken 46 MiB unstripped, and 6 MiB stripped.
+       #:strip-directories '("lib" "lib64" "libexec"
+                             "bin" "sbin" "share/flann/octave")
+
+       ;; Save 12 MiB by not installing .a files.  Passing
+       ;; '-DBUILD_STATIC_LIBS=OFF' has no effect.
+       #:phases (modify-phases %standard-phases
+                  (add-after 'install 'remove-static-libraries
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (lib (string-append out "/lib")))
+                        (for-each delete-file
+                                  (find-files lib "\\.a$"))
+                        #t))))
+
+       #:tests? #f)) ; The test data are downloaded from the Internet.
     (home-page "http://www.cs.ubc.ca/research/flann/")
     (synopsis "Library for approximate nearest neighbors computation")
     (description "FLANN is a library for performing fast approximate

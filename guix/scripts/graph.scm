@@ -33,6 +33,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:export (%package-node-type
@@ -70,11 +71,27 @@ name."
      ;; Filter out origins and other non-package dependencies.
      (filter package? packages))))
 
+(define assert-package
+  (match-lambda
+    ((? package? package)
+     package)
+    (x
+     (raise
+      (condition
+       (&message
+        (message (format #f (_ "~a: invalid argument (package name expected)")
+                         x))))))))
+
+(define nodes-from-package
+  ;; The default conversion method.
+  (lift1 (compose list assert-package) %store-monad))
+
 (define %package-node-type
   ;; Type for the traversal of package nodes.
   (node-type
    (name "package")
    (description "the DAG of packages, excluding implicit inputs")
+   (convert nodes-from-package)
 
    ;; We use package addresses as unique identifiers.  This generally works
    ;; well, but for generated package objects, we could end up with two
@@ -131,6 +148,7 @@ Dependencies may include packages, origin, and file names."
   (node-type
    (name "bag")
    (description "the DAG of packages, including implicit inputs")
+   (convert nodes-from-package)
    (identifier bag-node-identifier)
    (label node-full-name)
    (edges (lift1 (compose (cut filter package? <>) bag-node-edges)
@@ -140,6 +158,7 @@ Dependencies may include packages, origin, and file names."
   (node-type
    (name "bag-with-origins")
    (description "the DAG of packages and origins, including implicit inputs")
+   (convert nodes-from-package)
    (identifier bag-node-identifier)
    (label node-full-name)
    (edges (lift1 (lambda (thing)
@@ -170,6 +189,7 @@ GNU-BUILD-SYSTEM have zero dependencies."
   (node-type
    (name "bag-emerged")
    (description "same as 'bag', but without the bootstrap nodes")
+   (convert nodes-from-package)
    (identifier bag-node-identifier)
    (label node-full-name)
    (edges (lift1 (compose (cut filter package? <>)
@@ -215,10 +235,19 @@ a plain store file."
   (node-type
    (name "derivation")
    (description "the DAG of derivations")
-   (convert (lambda (package)
-              (with-monad %store-monad
-                (>>= (package->derivation package)
-                     (lift1 list %store-monad)))))
+   (convert (match-lambda
+              ((? package? package)
+               (with-monad %store-monad
+                 (>>= (package->derivation package)
+                      (lift1 list %store-monad))))
+              ((? derivation-path? item)
+               (mbegin %store-monad
+                 ((store-lift add-temp-root) item)
+                 (return (list (file->derivation item)))))
+              (x
+               (raise
+                (condition (&message (message "unsupported argument for \
+derivation graph")))))))
    (identifier (lift1 derivation-node-identifier %store-monad))
    (label derivation-node-label)
    (edges (lift1 derivation-dependencies %store-monad))))
@@ -246,12 +275,20 @@ substitutes."
   (node-type
    (name "references")
    (description "the DAG of run-time dependencies (store references)")
-   (convert (lambda (package)
-              ;; Return the output file names of PACKAGE.
-              (mlet %store-monad ((drv (package->derivation package)))
-                (return (match (derivation->output-paths drv)
-                          (((_ . file-names) ...)
-                           file-names))))))
+   (convert (match-lambda
+              ((? package? package)
+               ;; Return the output file names of PACKAGE.
+               (mlet %store-monad ((drv (package->derivation package)))
+                 (return (match (derivation->output-paths drv)
+                           (((_ . file-names) ...)
+                            file-names)))))
+              ((? store-path? item)
+               (with-monad %store-monad
+                 (return (list item))))
+              (x
+               (raise
+                (condition (&message (message "unsupported argument for \
+reference graph")))))))
    (identifier (lift1 identity %store-monad))
    (label store-path-package-name)
    (edges references*)))
@@ -348,7 +385,9 @@ Emit a Graphviz (dot) representation of the dependencies of PACKAGE...\n"))
                                    (alist-cons 'argument arg result))
                                  %default-options))
            (type     (assoc-ref opts 'node-type))
-           (packages (filter-map (match-lambda
+           (items    (filter-map (match-lambda
+                                   (('argument . (? store-path? item))
+                                    item)
                                    (('argument . spec)
                                     (specification->package spec))
                                    (('expression . exp)
@@ -356,15 +395,18 @@ Emit a Graphviz (dot) representation of the dependencies of PACKAGE...\n"))
                                    (_ #f))
                                  opts)))
       (with-store store
-        (run-with-store store
-          ;; XXX: Since grafting can trigger unsolicited builds, disable it.
-          (mlet %store-monad ((_     (set-grafting #f))
-                              (nodes (mapm %store-monad
-                                           (node-type-convert type)
-                                           packages)))
-            (export-graph (concatenate nodes)
-                          (current-output-port)
-                          #:node-type type))))))
+        ;; Ask for absolute file names so that .drv file names passed from the
+        ;; user to 'read-derivation' are absolute when it returns.
+        (with-fluids ((%file-port-name-canonicalization 'absolute))
+          (run-with-store store
+            ;; XXX: Since grafting can trigger unsolicited builds, disable it.
+            (mlet %store-monad ((_     (set-grafting #f))
+                                (nodes (mapm %store-monad
+                                             (node-type-convert type)
+                                             items)))
+              (export-graph (concatenate nodes)
+                            (current-output-port)
+                            #:node-type type)))))))
   #t)
 
 ;;; graph.scm ends here

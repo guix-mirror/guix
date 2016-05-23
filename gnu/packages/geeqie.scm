@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,8 +64,9 @@ and XMP metadata of images in various formats.")
     (version "1.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://sourceforge/geeqie/geeqie-"
-                                 version ".tar.gz"))
+             (uri (string-append "https://github.com/BestImageViewer/geeqie/"
+                                 "archive/" version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
                "1kzy39z9505xkayyx7rjj2wda76xy3ch1s5z35zn8yli54ffhi2m"))))
@@ -78,7 +80,7 @@ and XMP metadata of images in various formats.")
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://geeqie.sourceforge.net")
+    (home-page "http://www.geeqie.org/")
     (synopsis "Lightweight GTK+ based image viewer")
     (description
      "Geeqie is a lightweight GTK+ based image viewer for Unix like operating

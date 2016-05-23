@@ -82,14 +82,14 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "1.2.0")
+    (version "1.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0b3f67xsy1s84cvzw22mjfkbcv6pj4p4yns4h3m0fmb7zqbvjm0p"))))
+                "1sn1s1bz06fa49izqkqf519sjclsvhf42i6slzx1w5hx4vxpb2lr"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -288,7 +288,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
 (define-public exempi
   (package
     (name "exempi")
-    (version "2.2.2")
+    (version "2.3.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -296,7 +296,7 @@ applications, X servers (rootless or fullscreen) or other display servers.")
                    name "-" version ".tar.bz2"))
              (sha256
               (base32
-               "01vcd1mfn2s0iiq2cjyzgvnxx6kcq9cwra1iipijhs0vwvjx0yhf"))))
+               "0jcrv3w8m415cq8xi886hcxfqbrn5dczxbzybx9bhf3dbqsyv6nq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "--with-boost="
@@ -448,7 +448,7 @@ interfaces, based on the useradd, usermod and userdel commands.")
 (define-public libmbim
   (package
     (name "libmbim")
-    (version "1.12.2")
+    (version "1.12.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -456,7 +456,7 @@ interfaces, based on the useradd, usermod and userdel commands.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0abv0h9c3kbw4bq1b9270sg189jcjj3x3wa91bj836ynwg9m34wl"))))
+                "0flpgzsqpjgybjkx4smbb4rjxf2w1xgd1v9gmz61rvl89qasznbv"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
@@ -467,7 +467,7 @@ interfaces, based on the useradd, usermod and userdel commands.")
     (inputs
      `(("libgudev" ,libgudev)))
     (synopsis "Library to communicate with MBIM-powered modems")
-    (home-page "http://www.freedesktop.org/wiki/Software/libmbim/")
+    (home-page "https://www.freedesktop.org/wiki/Software/libmbim/")
     (description
      "Libmbim is a GLib-based library for talking to WWAN modems and devices
 which speak the Mobile Interface Broadband Model (MBIM) protocol.")
@@ -479,7 +479,7 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
 (define-public libqmi
   (package
     (name "libqmi")
-    (version "1.12.8")
+    (version "1.14.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -487,7 +487,7 @@ which speak the Mobile Interface Broadband Model (MBIM) protocol.")
                     name "-" version ".tar.xz"))
               (sha256
                (base32
-                "19w2zkm5xl6i3vm1xhjjclks4awas17gfbb2k5y66gwnkiykjfnj"))))
+                "0h009bzss4bal47nk21lyp4s3mmlcivhhaaj7r9229qvx85bi0v2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for glib-mkenums
