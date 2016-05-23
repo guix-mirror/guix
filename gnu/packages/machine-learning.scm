@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -22,12 +22,15 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix download)
+  #:use-module (guix svn-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system r)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages pkg-config)
@@ -107,6 +110,95 @@ classification.")
     (inputs
      `(("python" ,python)))
     (synopsis "Python bindings of libSVM")))
+
+(define-public ghmm
+  ;; The latest release candidate is several years and a couple of fixes have
+  ;; been published since.  This is why we download the sources from the SVN
+  ;; repository.
+  (let ((svn-revision 2341))
+    (package
+      (name "ghmm")
+      (version (string-append "0.9-rc3-0." (number->string svn-revision)))
+      (source (origin
+                (method svn-fetch)
+                (uri (svn-reference
+                      (url "http://svn.code.sf.net/p/ghmm/code/trunk")
+                      (revision svn-revision)))
+                (file-name (string-append name "-" version))
+                (sha256
+                 (base32
+                  "0qbq1rqp94l530f043qzp8aw5lj7dng9wq0miffd7spd1ff638wq"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'enter-dir
+             (lambda _ (chdir "ghmm") #t))
+           (add-after 'enter-dir 'fix-PYTHONPATH
+             (lambda* (#:key outputs #:allow-other-keys)
+               ;; The Python tests fail as the library is assumed to be stored
+               ;; in ./build/lib.linux-i686-*.  To fix this we detect the CPU
+               ;; and use it in the path.
+               (substitute* "configure.in"
+                 (("AM_INIT_AUTOMAKE" line)
+                  (string-append line "\nAC_CANONICAL_HOST\n")))
+               (substitute* "ghmmwrapper/Makefile.am"
+                 (("i686") "@host_cpu@"))
+               #t))
+           (add-after 'enter-dir 'fix-runpath
+             (lambda* (#:key outputs #:allow-other-keys)
+               (substitute* "ghmmwrapper/setup.py"
+                 (("^(.*)extra_compile_args = \\[" line indent)
+                  (string-append indent
+                                 "extra_link_args = [\"-Wl,-rpath="
+                                 (assoc-ref outputs "out") "/lib\"],\n"
+                                 line
+                                 "\"-Wl,-rpath="
+                                 (assoc-ref outputs "out")
+                                 "/lib\", ")))
+               #t))
+           (add-after 'enter-dir 'disable-broken-tests
+             (lambda _
+               (substitute* "tests/Makefile.am"
+                 ;; GHMM_SILENT_TESTS is assumed to be a command.
+                 (("TESTS_ENVIRONMENT.*") "")
+                 ;; Do not build broken tests.
+                 (("chmm .*") "")
+                 (("read_fa .*") "")
+                 (("mcmc .*") "")
+                 (("label_higher_order_test.*$")
+                  "label_higher_order_test\n"))
+
+               ;; These Python unittests are broken as there is no gato.
+               ;; See https://sourceforge.net/p/ghmm/support-requests/3/
+               (substitute* "ghmmwrapper/ghmmunittests.py"
+                 (("^(.*)def (testNewXML|testMultipleTransitionClasses|testNewXML)"
+                   line indent)
+                  (string-append indent
+                                 "@unittest.skip(\"Disabled by Guix\")\n"
+                                 line)))
+               #t))
+           (add-before 'configure 'autogen
+             (lambda _
+               (zero? (system* "bash" "./autogen.sh")))))))
+      (inputs
+       `(("python" ,python-2) ; only Python 2 is supported
+         ("libxml2" ,libxml2)))
+      (native-inputs
+       `(("pkg-config" ,pkg-config)
+         ("dejagnu" ,dejagnu)
+         ("swig" ,swig)
+         ("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)))
+      (home-page "http://ghmm.org")
+      (synopsis "Hidden Markov Model library")
+      (description
+       "The General Hidden Markov Model library (GHMM) is a C library with
+additional Python bindings implementing a wide range of types of @dfn{Hidden
+Markov Models} (HMM) and algorithms: discrete, continous emissions, basic
+training, HMM clustering, HMM mixtures.")
+      (license license:lgpl2.0+))))
 
 (define-public randomjungle
   (package
