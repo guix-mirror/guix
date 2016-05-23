@@ -4776,6 +4776,34 @@ genomic feature data as long as it has minimal information on the locations of
 genomic intervals.  In addition, it can use BAM or BigWig files as input.")
     (license license:artistic2.0)))
 
+(define-public r-genomationdata
+  (package
+    (name "r-genomationdata")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://bioconductor.org/packages/"
+                                  "release/data/experiment/src/contrib/"
+                                  "genomationData_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xzq2j722d8lcn5bc3aq3yb34xwis2d0bpsf6jsq4xw1bg0bsy79"))))
+    (build-system r-build-system)
+    ;; As this package provides little more than large data files, it doesn't
+    ;; make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "http://bioinformatics.mdc-berlin.de/genomation/")
+    (synopsis "Experimental data for use with the genomation package")
+    (description
+     "This package contains experimental genetic data for use with the
+genomation package.  Included are Chip Seq, Methylation and Cage data,
+downloaded from Encode.")
+    (license license:gpl3+)))
+
 (define-public r-org-hs-eg-db
   (package
     (name "r-org-hs-eg-db")
