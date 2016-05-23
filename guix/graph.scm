@@ -39,6 +39,7 @@
             node-back-edges
             traverse/depth-first
             node-transitive-edges
+            node-reachable-count
 
             %graphviz-backend
             graph-backend?
@@ -125,6 +126,13 @@ according to the NODE-EDGES procedure.  NODE-EDGES must be a one-argument
 procedure that, given a node, returns its list of direct dependents; it is
 typically returned by 'node-edges' or 'node-back-edges'."
   (traverse/depth-first cons '() nodes node-edges))
+
+(define (node-reachable-count nodes node-edges)
+  "Return the number of nodes reachable from NODES along NODE-EDGES."
+  (traverse/depth-first (lambda (_ count)
+                          (+ 1 count))
+                        0
+                        nodes node-edges))
 
 
 ;;;
