@@ -74,7 +74,7 @@
 
 (define (call-with-cve-port uri ttl proc)
   "Pass PROC an input port from which to read the CVE stream."
-  (let ((port (http-fetch/cached uri #:ttl ttl)))
+  (let ((port (http-fetch uri)))
     (dynamic-wind
       (const #t)
       (lambda ()
