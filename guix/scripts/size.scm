@@ -123,13 +123,20 @@ substitutes."
                        store)))
       (values (requisites store item) store))))
 
-(define (store-profile item)
+(define (mappend-map mproc lst)
+  "Apply MPROC to each item of LST and concatenate the resulting list."
+  (with-monad %store-monad
+    (>>= (mapm %store-monad mproc lst)
+         (lambda (lstlst)
+           (return (concatenate lstlst))))))
+
+(define (store-profile items)
   "Return as a monadic value a list of <profile> objects representing the
-profile of ITEM and its requisites."
-  (mlet* %store-monad ((refs  (>>= (requisites* item)
+profile of ITEMS and their requisites."
+  (mlet* %store-monad ((refs  (>>= (mappend-map requisites* items)
                                    (lambda (refs)
                                      (return (delete-duplicates
-                                              (cons item refs))))))
+                                              (append items refs))))))
                        (sizes (mapm %store-monad
                                     (lambda (item)
                                       (>>= (file-size item)
@@ -286,7 +293,7 @@ Report the size of PACKAGE and its dependencies.\n"))
 
               (run-with-store store
                 (mlet* %store-monad ((item    (ensure-store-item file))
-                                     (profile (store-profile item)))
+                                     (profile (store-profile (list item))))
                   (if map-file
                       (begin
                         (profile->page-map profile map-file)
