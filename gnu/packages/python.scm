@@ -68,7 +68,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages statistics)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)

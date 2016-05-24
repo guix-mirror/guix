@@ -28,7 +28,7 @@
   #:use-module (guix build-system perl)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages xml))
 
 ;; Use that name to avoid clashes with Guile's 'gettext' procedure.

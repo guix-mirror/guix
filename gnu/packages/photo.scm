@@ -43,7 +43,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages readline)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xfig)
   #:use-module (gnu packages xml))

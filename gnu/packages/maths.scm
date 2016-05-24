@@ -81,7 +81,7 @@
   #:use-module (gnu packages tcsh)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)

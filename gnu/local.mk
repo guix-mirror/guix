@@ -325,7 +325,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/telephony.scm			\
   %D%/packages/terminals.scm			\
   %D%/packages/texinfo.scm			\
-  %D%/packages/texlive.scm			\
+  %D%/packages/tex.scm				\
   %D%/packages/textutils.scm			\
   %D%/packages/time.scm				\
   %D%/packages/tls.scm				\

@@ -38,7 +38,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages lynx)
   #:use-module (gnu packages perl)

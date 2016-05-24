@@ -37,7 +37,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tcsh)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses) #:prefix license:)

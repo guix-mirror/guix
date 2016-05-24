@@ -85,7 +85,7 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages web)

@@ -35,7 +35,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pkg-config)

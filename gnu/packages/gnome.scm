@@ -97,7 +97,7 @@
   #:use-module (gnu packages geeqie)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)

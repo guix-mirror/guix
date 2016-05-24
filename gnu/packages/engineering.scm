@@ -52,7 +52,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages tcl)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (srfi srfi-1))
 
 (define-public librecad

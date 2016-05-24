@@ -38,7 +38,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages))
 
