@@ -20,49 +20,49 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-info_TEXINFOS = doc/guix.texi
+info_TEXINFOS = %D%/guix.texi
 
 DOT_FILES =					\
-  doc/images/bootstrap-graph.dot		\
-  doc/images/bootstrap-packages.dot		\
-  doc/images/coreutils-graph.dot		\
-  doc/images/coreutils-bag-graph.dot		\
-  doc/images/service-graph.dot			\
-  doc/images/shepherd-graph.dot
+  %D%/images/bootstrap-graph.dot		\
+  %D%/images/bootstrap-packages.dot		\
+  %D%/images/coreutils-graph.dot		\
+  %D%/images/coreutils-bag-graph.dot		\
+  %D%/images/service-graph.dot			\
+  %D%/images/shepherd-graph.dot
 
 DOT_VECTOR_GRAPHICS =				\
   $(DOT_FILES:%.dot=%.eps)			\
   $(DOT_FILES:%.dot=%.pdf)
 
 EXTRA_DIST +=					\
-  doc/htmlxref.cnf				\
-  doc/contributing.texi				\
-  doc/emacs.texi				\
-  doc/fdl-1.3.texi				\
+  %D%/htmlxref.cnf				\
+  %D%/contributing.texi				\
+  %D%/emacs.texi				\
+  %D%/fdl-1.3.texi				\
   $(DOT_FILES)					\
   $(DOT_VECTOR_GRAPHICS)			\
-  doc/images/coreutils-size-map.eps		\
-  doc/environment-gdb.scm			\
-  doc/package-hello.scm
+  %D%/images/coreutils-size-map.eps		\
+  %D%/environment-gdb.scm			\
+  %D%/package-hello.scm
 
 OS_CONFIG_EXAMPLES_TEXI =			\
-  doc/os-config-bare-bones.texi			\
-  doc/os-config-desktop.texi			\
-  doc/os-config-lightweight-desktop.texi
+  %D%/os-config-bare-bones.texi			\
+  %D%/os-config-desktop.texi			\
+  %D%/os-config-lightweight-desktop.texi
 
 # Bundle this file so that makeinfo finds it in out-of-source-tree builds.
 BUILT_SOURCES        += $(OS_CONFIG_EXAMPLES_TEXI)
 EXTRA_DIST           += $(OS_CONFIG_EXAMPLES_TEXI)
 MAINTAINERCLEANFILES  = $(OS_CONFIG_EXAMPLES_TEXI)
 
-doc/os-config-%.texi: gnu/system/examples/%.tmpl
+%D%/os-config-%.texi: gnu/system/examples/%.tmpl
 	$(AM_V_GEN)$(MKDIR_P) "`dirname $@`";	\
 	cp "$<" "$@"
 
 infoimagedir = $(infodir)/images
 dist_infoimage_DATA =				\
   $(DOT_FILES:%.dot=%.png)			\
-  doc/images/coreutils-size-map.png
+  %D%/images/coreutils-size-map.png
 
 # Try hard to obtain an image size and aspect that's reasonable for inclusion
 # in an Info or PDF document.
@@ -86,13 +86,13 @@ DOT_OPTIONS =					\
 	$(AM_V_GEN)convert "$<" "$@-tmp.eps"; \
 	mv "$@-tmp.eps" "$@"
 
-# We cannot add new dependencies to `doc/guix.pdf' & co. (info "(automake)
+# We cannot add new dependencies to `%D%/guix.pdf' & co. (info "(automake)
 # Extending").  Using the `-local' rules is imperfect, because they may be
 # triggered after the main rule.  Oh, well.
 pdf-local: $(DOT_FILES=%.dot=$(top_srcdir)/%.pdf)
 info-local: $(DOT_FILES=%.dot=$(top_srcdir)/%.png)
 ps-local: $(DOT_FILES=%.dot=$(top_srcdir)/%.eps)		\
-	  $(top_srcdir)/doc/images/coreutils-size-map.eps
+	  $(top_srcdir)/%D%/images/coreutils-size-map.eps
 dvi-local: ps-local
 
 ## ----------- ##
@@ -106,25 +106,25 @@ dvi-local: ps-local
 # They are built in $(srcdir) like info manuals.
 
 sub_commands_mans =				\
-  $(srcdir)/doc/guix-archive.1			\
-  $(srcdir)/doc/guix-build.1			\
-  $(srcdir)/doc/guix-challenge.1		\
-  $(srcdir)/doc/guix-download.1			\
-  $(srcdir)/doc/guix-edit.1			\
-  $(srcdir)/doc/guix-environment.1		\
-  $(srcdir)/doc/guix-gc.1			\
-  $(srcdir)/doc/guix-hash.1			\
-  $(srcdir)/doc/guix-import.1			\
-  $(srcdir)/doc/guix-lint.1			\
-  $(srcdir)/doc/guix-package.1			\
-  $(srcdir)/doc/guix-publish.1			\
-  $(srcdir)/doc/guix-pull.1			\
-  $(srcdir)/doc/guix-refresh.1			\
-  $(srcdir)/doc/guix-size.1			\
-  $(srcdir)/doc/guix-system.1
+  $(srcdir)/%D%/guix-archive.1			\
+  $(srcdir)/%D%/guix-build.1			\
+  $(srcdir)/%D%/guix-challenge.1		\
+  $(srcdir)/%D%/guix-download.1			\
+  $(srcdir)/%D%/guix-edit.1			\
+  $(srcdir)/%D%/guix-environment.1		\
+  $(srcdir)/%D%/guix-gc.1			\
+  $(srcdir)/%D%/guix-hash.1			\
+  $(srcdir)/%D%/guix-import.1			\
+  $(srcdir)/%D%/guix-lint.1			\
+  $(srcdir)/%D%/guix-package.1			\
+  $(srcdir)/%D%/guix-publish.1			\
+  $(srcdir)/%D%/guix-pull.1			\
+  $(srcdir)/%D%/guix-refresh.1			\
+  $(srcdir)/%D%/guix-size.1			\
+  $(srcdir)/%D%/guix-system.1
 
 dist_man1_MANS =				\
-  $(srcdir)/doc/guix.1				\
+  $(srcdir)/%D%/guix.1				\
   $(sub_commands_mans)
 
 gen_man =						\
@@ -133,14 +133,14 @@ gen_man =						\
 
 HELP2MANFLAGS = --source=GNU --info-page=$(PACKAGE_TARNAME)
 
-$(srcdir)/doc/guix.1: scripts/guix.in $(sub_commands_mans)
+$(srcdir)/%D%/guix.1: scripts/guix.in $(sub_commands_mans)
 	-$(AM_V_HELP2MAN)$(gen_man) --output="$@" `basename "$@" .1`
 
 # The 'case' ensures the man pages are only generated if the corresponding
 # source script (the first prerequisite) has been changed.  The $(GOBJECTS)
 # prerequisite is solely meant to force these docs to be made only after all
 # Guile modules have been compiled.
-$(srcdir)/doc/guix-%.1: guix/scripts/%.scm $(GOBJECTS)
+$(srcdir)/%D%/guix-%.1: guix/scripts/%.scm $(GOBJECTS)
 	-@case '$?' in \
 	  *$<*) $(AM_V_P) && set -x || echo "  HELP2MAN $@"; \
 	        $(gen_man) --output="$@" "guix $*";; \
@@ -149,9 +149,9 @@ $(srcdir)/doc/guix-%.1: guix/scripts/%.scm $(GOBJECTS)
 
 if BUILD_DAEMON
 
-dist_man1_MANS += $(srcdir)/doc/guix-daemon.1
+dist_man1_MANS += $(srcdir)/%D%/guix-daemon.1
 
-$(srcdir)/doc/guix-daemon.1: nix/nix-daemon/guix-daemon.cc
+$(srcdir)/%D%/guix-daemon.1: nix/nix-daemon/guix-daemon.cc
 	-$(AM_V_HELP2MAN)$(gen_man) --output="$@" `basename "$@" .1`
 
 endif

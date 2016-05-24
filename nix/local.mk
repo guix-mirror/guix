@@ -21,7 +21,7 @@
 # Integration of the `guix-daemon' code taken from upstream Nix.
 #
 
-BUILT_SOURCES += nix/libstore/schema.sql.hh
+BUILT_SOURCES += %D%/libstore/schema.sql.hh
 CLEANFILES += $(BUILT_SOURCES) etc/guix-daemon.service etc/guix-daemon.conf
 
 noinst_LIBRARIES = libformat.a libutil.a libstore.a
@@ -30,80 +30,80 @@ noinst_LIBRARIES = libformat.a libutil.a libstore.a
 AM_CXXFLAGS = -Wall -std=c++11
 
 libformat_a_SOURCES =				\
-  nix/boost/format/free_funcs.cc		\
-  nix/boost/format/parsing.cc			\
-  nix/boost/format/format_implementation.cc
+  %D%/boost/format/free_funcs.cc		\
+  %D%/boost/format/parsing.cc			\
+  %D%/boost/format/format_implementation.cc
 
 libformat_headers =				\
-  nix/boost/throw_exception.hpp			\
-  nix/boost/format.hpp				\
-  nix/boost/assert.hpp				\
-  nix/boost/format/macros_default.hpp		\
-  nix/boost/format/format_fwd.hpp		\
-  nix/boost/format/format_class.hpp		\
-  nix/boost/format/exceptions.hpp		\
-  nix/boost/format/group.hpp			\
-  nix/boost/format/feed_args.hpp		\
-  nix/boost/format/internals_fwd.hpp		\
-  nix/boost/format/internals.hpp
+  %D%/boost/throw_exception.hpp			\
+  %D%/boost/format.hpp				\
+  %D%/boost/assert.hpp				\
+  %D%/boost/format/macros_default.hpp		\
+  %D%/boost/format/format_fwd.hpp		\
+  %D%/boost/format/format_class.hpp		\
+  %D%/boost/format/exceptions.hpp		\
+  %D%/boost/format/group.hpp			\
+  %D%/boost/format/feed_args.hpp		\
+  %D%/boost/format/internals_fwd.hpp		\
+  %D%/boost/format/internals.hpp
 
 libformat_a_CPPFLAGS =				\
   -I$(top_srcdir)/nix
 
 libutil_a_SOURCES =				\
-  nix/libutil/archive.cc			\
-  nix/libutil/affinity.cc			\
-  nix/libutil/serialise.cc			\
-  nix/libutil/util.cc				\
-  nix/libutil/xml-writer.cc			\
-  nix/libutil/hash.cc				\
-  nix/libutil/gcrypt-hash.cc
+  %D%/libutil/archive.cc			\
+  %D%/libutil/affinity.cc			\
+  %D%/libutil/serialise.cc			\
+  %D%/libutil/util.cc				\
+  %D%/libutil/xml-writer.cc			\
+  %D%/libutil/hash.cc				\
+  %D%/libutil/gcrypt-hash.cc
 
 libutil_headers =				\
-  nix/libutil/affinity.hh			\
-  nix/libutil/hash.hh				\
-  nix/libutil/serialise.hh			\
-  nix/libutil/xml-writer.hh			\
-  nix/libutil/util.hh				\
-  nix/libutil/archive.hh			\
-  nix/libutil/types.hh				\
-  nix/libutil/gcrypt-hash.hh			\
-  nix/libutil/md5.h				\
-  nix/libutil/sha1.h				\
-  nix/libutil/sha256.h				\
-  nix/libutil/sha512.h
+  %D%/libutil/affinity.hh			\
+  %D%/libutil/hash.hh				\
+  %D%/libutil/serialise.hh			\
+  %D%/libutil/xml-writer.hh			\
+  %D%/libutil/util.hh				\
+  %D%/libutil/archive.hh			\
+  %D%/libutil/types.hh				\
+  %D%/libutil/gcrypt-hash.hh			\
+  %D%/libutil/md5.h				\
+  %D%/libutil/sha1.h				\
+  %D%/libutil/sha256.h				\
+  %D%/libutil/sha512.h
 
 libutil_a_CPPFLAGS =				\
   -I$(top_builddir)/nix				\
-  -I$(top_srcdir)/nix/libutil			\
+  -I$(top_srcdir)/%D%/libutil			\
   $(libformat_a_CPPFLAGS)
 
 libstore_a_SOURCES =				\
-  nix/libstore/gc.cc				\
-  nix/libstore/globals.cc			\
-  nix/libstore/misc.cc				\
-  nix/libstore/references.cc			\
-  nix/libstore/store-api.cc			\
-  nix/libstore/optimise-store.cc		\
-  nix/libstore/local-store.cc			\
-  nix/libstore/build.cc				\
-  nix/libstore/pathlocks.cc			\
-  nix/libstore/derivations.cc
+  %D%/libstore/gc.cc				\
+  %D%/libstore/globals.cc			\
+  %D%/libstore/misc.cc				\
+  %D%/libstore/references.cc			\
+  %D%/libstore/store-api.cc			\
+  %D%/libstore/optimise-store.cc		\
+  %D%/libstore/local-store.cc			\
+  %D%/libstore/build.cc				\
+  %D%/libstore/pathlocks.cc			\
+  %D%/libstore/derivations.cc
 
 libstore_headers =				\
-  nix/libstore/references.hh			\
-  nix/libstore/pathlocks.hh			\
-  nix/libstore/globals.hh			\
-  nix/libstore/worker-protocol.hh		\
-  nix/libstore/derivations.hh			\
-  nix/libstore/misc.hh				\
-  nix/libstore/local-store.hh			\
-  nix/libstore/store-api.hh
+  %D%/libstore/references.hh			\
+  %D%/libstore/pathlocks.hh			\
+  %D%/libstore/globals.hh			\
+  %D%/libstore/worker-protocol.hh		\
+  %D%/libstore/derivations.hh			\
+  %D%/libstore/misc.hh				\
+  %D%/libstore/local-store.hh			\
+  %D%/libstore/store-api.hh
 
 libstore_a_CPPFLAGS =				\
   $(libutil_a_CPPFLAGS)				\
-  -I$(top_srcdir)/nix/libstore			\
-  -I$(top_builddir)/nix/libstore		\
+  -I$(top_srcdir)/%D%/libstore			\
+  -I$(top_builddir)/%D%/libstore		\
   -DNIX_STORE_DIR=\"$(storedir)\"		\
   -DNIX_DATA_DIR=\"$(datadir)\"			\
   -DNIX_STATE_DIR=\"$(localstatedir)/guix\"	\
@@ -121,29 +121,29 @@ bin_PROGRAMS = guix-daemon
 sbin_PROGRAMS = guix-register
 
 guix_daemon_SOURCES =				\
-  nix/nix-daemon/nix-daemon.cc			\
-  nix/nix-daemon/guix-daemon.cc
+  %D%/nix-daemon/nix-daemon.cc			\
+  %D%/nix-daemon/guix-daemon.cc
 
 guix_daemon_CPPFLAGS =				\
   -DLOCALEDIR=\"$(localedir)\"			\
   $(libutil_a_CPPFLAGS)				\
-  -I$(top_srcdir)/nix/libstore
+  -I$(top_srcdir)/%D%/libstore
 
 guix_daemon_LDADD =				\
   libstore.a libutil.a libformat.a -lbz2	\
   $(SQLITE3_LIBS) $(LIBGCRYPT_LIBS)
 
 guix_daemon_headers =				\
-  nix/nix-daemon/shared.hh
+  %D%/nix-daemon/shared.hh
 
 
 guix_register_SOURCES =				\
-  nix/guix-register/guix-register.cc
+  %D%/guix-register/guix-register.cc
 
 guix_register_CPPFLAGS =			\
   $(libutil_a_CPPFLAGS)				\
   $(libstore_a_CPPFLAGS)			\
-  -I$(top_srcdir)/nix/libstore
+  -I$(top_srcdir)/%D%/libstore
 
 # XXX: Should we start using shared libs?
 guix_register_LDADD =				\
@@ -155,7 +155,7 @@ noinst_HEADERS =						\
   $(libformat_headers) $(libutil_headers) $(libstore_headers)	\
   $(guix_daemon_headers)
 
-nix/libstore/schema.sql.hh: nix/libstore/schema.sql
+%D%/libstore/schema.sql.hh: %D%/libstore/schema.sql
 	$(AM_V_GEN)$(GUILE) --no-auto-compile -c		\
 	  "(use-modules (rnrs io ports))			\
 	   (call-with-output-file \"$@\"			\
@@ -165,20 +165,20 @@ nix/libstore/schema.sql.hh: nix/libstore/schema.sql
 	           (write (get-string-all in) out)))))"
 
 nodist_pkglibexec_SCRIPTS =			\
-  nix/scripts/list-runtime-roots		\
-  nix/scripts/substitute
+  %D%/scripts/list-runtime-roots		\
+  %D%/scripts/substitute
 
 if BUILD_DAEMON_OFFLOAD
 
 nodist_pkglibexec_SCRIPTS +=			\
-  nix/scripts/offload
+  %D%/scripts/offload
 
 endif BUILD_DAEMON_OFFLOAD
 
 
 # XXX: It'd be better to hide it in $(pkglibexecdir).
 nodist_libexec_SCRIPTS =			\
-  nix/scripts/guix-authenticate
+  %D%/scripts/guix-authenticate
 
 # The '.service' file for systemd.
 systemdservicedir = $(libdir)/systemd/system
@@ -203,9 +203,9 @@ etc/guix-daemon.conf: etc/guix-daemon.conf.in	\
 	mv "$@.tmp" "$@"
 
 EXTRA_DIST +=					\
-  nix/libstore/schema.sql			\
-  nix/AUTHORS					\
-  nix/COPYING					\
+  %D%/libstore/schema.sql			\
+  %D%/AUTHORS					\
+  %D%/COPYING					\
   etc/guix-daemon.service.in	\
   etc/guix-daemon.conf.in
 

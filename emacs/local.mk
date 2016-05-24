@@ -17,51 +17,51 @@
 # You should have received a copy of the GNU General Public License
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-AUTOLOADS = emacs/guix-autoloads.el
+AUTOLOADS = %D%/guix-autoloads.el
 
 ELFILES =					\
-  emacs/guix-about.el				\
-  emacs/guix-backend.el				\
-  emacs/guix-base.el				\
-  emacs/guix-build-log.el			\
-  emacs/guix-buffer.el				\
-  emacs/guix-command.el				\
-  emacs/guix-devel.el				\
-  emacs/guix-emacs.el				\
-  emacs/guix-entry.el				\
-  emacs/guix-external.el			\
-  emacs/guix-geiser.el				\
-  emacs/guix-guile.el				\
-  emacs/guix-help-vars.el			\
-  emacs/guix-history.el				\
-  emacs/guix-hydra.el				\
-  emacs/guix-hydra-build.el			\
-  emacs/guix-hydra-jobset.el			\
-  emacs/guix-info.el				\
-  emacs/guix-init.el				\
-  emacs/guix-license.el				\
-  emacs/guix-list.el				\
-  emacs/guix-location.el			\
-  emacs/guix-messages.el			\
-  emacs/guix-pcomplete.el			\
-  emacs/guix-popup.el				\
-  emacs/guix-prettify.el			\
-  emacs/guix-profiles.el			\
-  emacs/guix-read.el				\
-  emacs/guix-ui.el				\
-  emacs/guix-ui-license.el			\
-  emacs/guix-ui-location.el			\
-  emacs/guix-ui-package.el			\
-  emacs/guix-ui-generation.el			\
-  emacs/guix-ui-system-generation.el		\
-  emacs/guix-utils.el
+  %D%/guix-about.el				\
+  %D%/guix-backend.el				\
+  %D%/guix-base.el				\
+  %D%/guix-build-log.el				\
+  %D%/guix-buffer.el				\
+  %D%/guix-command.el				\
+  %D%/guix-devel.el				\
+  %D%/guix-emacs.el				\
+  %D%/guix-entry.el				\
+  %D%/guix-external.el				\
+  %D%/guix-geiser.el				\
+  %D%/guix-guile.el				\
+  %D%/guix-help-vars.el				\
+  %D%/guix-history.el				\
+  %D%/guix-hydra.el				\
+  %D%/guix-hydra-build.el			\
+  %D%/guix-hydra-jobset.el			\
+  %D%/guix-info.el				\
+  %D%/guix-init.el				\
+  %D%/guix-license.el				\
+  %D%/guix-list.el				\
+  %D%/guix-location.el				\
+  %D%/guix-messages.el				\
+  %D%/guix-pcomplete.el				\
+  %D%/guix-popup.el				\
+  %D%/guix-prettify.el				\
+  %D%/guix-profiles.el				\
+  %D%/guix-read.el				\
+  %D%/guix-ui.el				\
+  %D%/guix-ui-license.el			\
+  %D%/guix-ui-location.el			\
+  %D%/guix-ui-package.el			\
+  %D%/guix-ui-generation.el			\
+  %D%/guix-ui-system-generation.el		\
+  %D%/guix-utils.el
 
 if HAVE_EMACS
 
 dist_lisp_DATA = $(ELFILES)
 
 nodist_lisp_DATA = 		\
-  emacs/guix-config.el		\
+  %D%/guix-config.el		\
   $(AUTOLOADS)
 
 $(AUTOLOADS): $(ELFILES)
