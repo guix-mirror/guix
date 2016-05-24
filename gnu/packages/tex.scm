@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,6 +41,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages tcsh)
   #:use-module (gnu packages base)
@@ -386,4 +388,41 @@ of course, enough times so that all references are defined, and running BibTeX
 to manage bibliographic references.  Automatic execution of dvips to produce
 PostScript documents is also included, as well as usage of pdfLaTeX to produce
 PDF documents.")
+    (license license:gpl2+)))
+
+(define-public texmaker
+  (package
+    (name "texmaker")
+    (version "4.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.xm1math.net/texmaker/texmaker-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "056njk6j8wma23mlp7xa3rgfaxx0q8ynwx8wkmj7iy0b85p9ds9c"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; Qt has its own configuration utility.
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "qmake"
+                               (string-append "PREFIX=" out)
+                               (string-append "DESKTOPDIR=" out
+                                              "/share/applications")
+                               (string-append "ICONDIR=" out "/share/pixmaps")
+                               "texmaker.pro"))))))))
+    (inputs
+     `(("poppler-qt5" ,poppler-qt5)
+       ("qt" ,qt)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.xm1math.net/texmaker/")
+    (synopsis "LaTeX editor")
+    (description "Texmaker is a program that integrates many tools needed to
+develop documents with LaTeX, in a single application.")
     (license license:gpl2+)))
