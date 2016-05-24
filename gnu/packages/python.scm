@@ -5443,7 +5443,7 @@ should be stored on various operating systems.")
 (define-public python-llfuse
   (package
     (name "python-llfuse")
-    (version "1.0")
+    (version "1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5451,7 +5451,7 @@ should be stored on various operating systems.")
                     "llfuse-" version ".tar.bz2"))
               (sha256
                (base32
-                "1li7q04ljrvwharw4fblcbfhvk6s0l3lnv8yqb4c22lcgbkiqlps"))))
+                "1ywzbqkahrfl9kkcasxrmgilv6fybapvh6pqvimimnfh7sgxal72"))))
     (build-system python-build-system)
     (inputs
      `(("fuse" ,fuse)
