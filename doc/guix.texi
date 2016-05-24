@@ -5058,6 +5058,24 @@ reports information based on the available substitutes
 (@pxref{Substitutes}).  This makes it possible it to profile disk usage of
 store items that are not even on disk, only available remotely.
 
+You can also specify several package names:
+
+@example
+$ guix size coreutils grep sed bash
+store item                               total    self
+/gnu/store/@dots{}-coreutils-8.24          77.8    13.8  13.4%
+/gnu/store/@dots{}-grep-2.22               73.1     0.8   0.8%
+/gnu/store/@dots{}-bash-4.3.42             72.3     4.7   4.6%
+/gnu/store/@dots{}-readline-6.3            67.6     1.2   1.2%
+@dots{}
+total: 102.3 MiB
+@end example
+
+@noindent
+In this example we see that the combination of the four packages takes
+102.3@tie{}MiB in total, which is much less than the sum of each closure
+since they have a lot of dependencies in common.
+
 The available options are:
 
 @table @option

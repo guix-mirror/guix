@@ -91,7 +91,8 @@ if ITEM is not in the store."
               (sort profile
                     (match-lambda*
                       ((($ <profile> _ _ total1) ($ <profile> _ _ total2))
-                       (> total1 total2)))))))
+                       (> total1 total2)))))
+    (format port (_ "total: ~,1f MiB~%") (/ whole MiB 1.))))
 
 (define display-profile*
   (lift display-profile %store-monad))
@@ -280,7 +281,7 @@ Report the size of PACKAGE and its dependencies.\n"))
       (match files
         (()
          (leave (_ "missing store item argument\n")))
-        ((file)
+        ((files ..1)
          (leave-on-EPIPE
           ;; Turn off grafts because (1) hydra.gnu.org does not serve grafted
           ;; packages, and (2) they do not make any difference on the
@@ -292,13 +293,12 @@ Report the size of PACKAGE and its dependencies.\n"))
                                  #:substitute-urls urls)
 
               (run-with-store store
-                (mlet* %store-monad ((item    (ensure-store-item file))
-                                     (profile (store-profile (list item))))
+                (mlet* %store-monad ((items   (mapm %store-monad
+                                                    ensure-store-item files))
+                                     (profile (store-profile items)))
                   (if map-file
                       (begin
                         (profile->page-map profile map-file)
                         (return #t))
                       (display-profile* profile)))
-                #:system system)))))
-        ((files ...)
-         (leave (_ "too many arguments\n")))))))
+                #:system system)))))))))
