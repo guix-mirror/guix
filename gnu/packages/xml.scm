@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
@@ -77,6 +77,7 @@ things the parser might find in the XML document (like start tags).")
   (package
     (name "libxml2")
     (version "2.9.3")
+    (replacement libxml2/fixed)                   ;multiple CVEs
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
@@ -102,6 +103,14 @@ things the parser might find in the XML document (like start tags).")
      "Libxml2 is the XML C parser and toolkit developed for the Gnome
 project (but it is usable outside of the Gnome platform).")
     (license license:x11)))
+
+(define libxml2/fixed
+  (package
+    (inherit libxml2)
+    (source (origin
+              (inherit (package-source libxml2))
+              (patches (search-patches "libxml2-CVE-2016-3627.patch"
+                                       "libxml2-CVE-2016-3705.patch"))))))
 
 (define-public python-libxml2
   (package (inherit libxml2)
