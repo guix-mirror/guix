@@ -792,6 +792,29 @@ generation in R using Literate Programming techniques.")
     ;; here.
     (license license:gpl2+)))
 
+(define-public r-knitrbootstrap
+  (package
+    (name "r-knitrbootstrap")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "knitrBootstrap" version))
+       (sha256
+        (base32
+         "0pshn2slzqwpryklslsxwh1dmqcnwv6bwi7yfm6m342wjybpk0wl"))))
+    (properties `((upstream-name . "knitrBootstrap")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)))
+    (home-page "https://github.com/jimhester/knitrBootstrap")
+    (synopsis "Knitr bootstrap framework")
+    (description
+     "This package provides a framework to create Bootstrap 3 HTML reports
+from knitr Rmarkdown.")
+    (license license:expat)))
+
 (define-public r-microbenchmark
   (package
     (name "r-microbenchmark")
