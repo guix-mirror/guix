@@ -97,10 +97,10 @@ if ITEM is not in the store."
 (define display-profile*
   (lift display-profile %store-monad))
 
-(define (substitutable-requisites store item)
-  "Return the list of requisites of ITEM based on information available in
+(define (substitutable-requisites store items)
+  "Return the list of requisites of ITEMS based on information available in
 substitutes."
-  (let loop ((items  (list item))
+  (let loop ((items  items)
              (result '()))
     (match items
       (()
@@ -114,27 +114,20 @@ substitutes."
                (append (append-map substitutable-references info)
                        result)))))))
 
-(define (requisites* item)
+(define (requisites* items)
   "Return as a monadic value the requisites of ITEMS, based either on the
 information available in the local store or using information about
 substitutes."
   (lambda (store)
     (guard (c ((nix-protocol-error? c)
-               (values (substitutable-requisites store item)
+               (values (substitutable-requisites store items)
                        store)))
-      (values (requisites store (list item)) store))))
-
-(define (mappend-map mproc lst)
-  "Apply MPROC to each item of LST and concatenate the resulting list."
-  (with-monad %store-monad
-    (>>= (mapm %store-monad mproc lst)
-         (lambda (lstlst)
-           (return (concatenate lstlst))))))
+      (values (requisites store items) store))))
 
 (define (store-profile items)
   "Return as a monadic value a list of <profile> objects representing the
 profile of ITEMS and their requisites."
-  (mlet* %store-monad ((refs  (>>= (mappend-map requisites* items)
+  (mlet* %store-monad ((refs  (>>= (requisites* items)
                                    (lambda (refs)
                                      (return (delete-duplicates
                                               (append items refs))))))
@@ -145,7 +138,7 @@ profile of ITEMS and their requisites."
                                              (return (cons item size)))))
                                     refs)))
     (define (dependency-size item)
-      (mlet %store-monad ((deps (requisites* item)))
+      (mlet %store-monad ((deps (requisites* (list item))))
         (foldm %store-monad
                (lambda (item total)
                  (return (+ (assoc-ref sizes item) total)))
