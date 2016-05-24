@@ -1293,18 +1293,15 @@ processes currently causing I/O.")
 (define-public fuse
   (package
     (name "fuse")
-    (version "2.9.5")
+    (version "2.9.6")
     (source (origin
               (method url-fetch)
-              (uri (let ((version-with-underscores
-                          (string-join (string-split version #\.) "_")))
-                     (string-append
-                       "https://github.com/libfuse/libfuse/"
-                       "releases/download/fuse_" version-with-underscores
-                       "/fuse-" version ".tar.gz")))
+              (uri (string-append "https://github.com/libfuse/libfuse/releases/"
+                                  "download/fuse-" version
+                                  "/fuse-" version ".tar.gz"))
               (sha256
                (base32
-                "1dfvbi1p57svbv2sfnbqwpnsk219spvjnlapf35azhgzqlf3g7sp"))))
+                "0szi2vlsjxg03y4ji51jks34p269jqj5ify6l0ajsqq6f6y8pd0c"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (arguments
@@ -1340,7 +1337,7 @@ processes currently causing I/O.")
                     (("-DFUSERMOUNT_DIR=[[:graph:]]+")
                      "-DFUSERMOUNT_DIR=\\\"/var/empty\\\"")))
                 %standard-phases)))
-    (home-page "http://fuse.sourceforge.net/")
+    (home-page "https://github.com/libfuse/libfuse")
     (synopsis "Support file systems implemented in user space")
     (description
      "As a consequence of its monolithic design, file system code for Linux
