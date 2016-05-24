@@ -122,7 +122,7 @@ substitutes."
     (guard (c ((nix-protocol-error? c)
                (values (substitutable-requisites store item)
                        store)))
-      (values (requisites store item) store))))
+      (values (requisites store (list item)) store))))
 
 (define (mappend-map mproc lst)
   "Apply MPROC to each item of LST and concatenate the resulting list."

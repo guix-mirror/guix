@@ -803,12 +803,12 @@ the list of references")
             (loop items tail
                   (cons head result)))))))))
 
-(define* (fold-path store proc seed path
+(define* (fold-path store proc seed paths
                     #:optional (relatives (cut references store <>)))
-  "Call PROC for each of the RELATIVES of PATH, exactly once, and return the
+  "Call PROC for each of the RELATIVES of PATHS, exactly once, and return the
 result formed from the successive calls to PROC, the first of which is passed
 SEED."
-  (let loop ((paths  (list path))
+  (let loop ((paths  paths)
              (result seed)
              (seen   vlist-null))
     (match paths
@@ -822,10 +822,10 @@ SEED."
       (()
        result))))
 
-(define (requisites store path)
-  "Return the requisites of PATH, including PATH---i.e., its closure (all its
-references, recursively)."
-  (fold-path store cons '() path))
+(define (requisites store paths)
+  "Return the requisites of PATHS, including PATHS---i.e., their closures (all
+its references, recursively)."
+  (fold-path store cons '() paths))
 
 (define (topologically-sorted store paths)
   "Return a list containing PATHS and all their references sorted in

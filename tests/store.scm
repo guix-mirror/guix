@@ -244,10 +244,12 @@
       (and (= (length x) (length y))
            (lset= equal? x y)))
 
-    (and (same? (requisites %store t1) (list t1))
-         (same? (requisites %store t2) (list t1 t2))
-         (same? (requisites %store t3) (list t1 t2 t3))
-         (same? (requisites %store t4) (list t1 t2 t3 t4)))))
+    (and (same? (requisites %store (list t1)) (list t1))
+         (same? (requisites %store (list t2)) (list t1 t2))
+         (same? (requisites %store (list t3)) (list t1 t2 t3))
+         (same? (requisites %store (list t4)) (list t1 t2 t3 t4))
+         (same? (requisites %store (list t1 t2 t3 t4))
+                (list t1 t2 t3 t4)))))
 
 (test-assert "derivers"
   (let* ((b (add-text-to-store %store "build" "echo $foo > $out" '()))
