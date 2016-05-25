@@ -252,16 +252,23 @@ derivations to the corresponding set of grafts."
          (deps                                    ;one or more dependencies
           (mlet %state-monad ((grafts (mapm %state-monad dependency-grafts deps))
                               (cache  (current-state)))
-            (let* ((grafts  (delete-duplicates (concatenate grafts) equal?))
-                   (origins (map graft-origin-file-name grafts)))
-              (if (find (cut member <> deps) origins)
-                  (let* ((new    (graft-derivation/shallow store drv grafts
-                                                           #:guile guile
-                                                           #:system system))
-                         (grafts (cons (graft (origin drv) (replacement new))
-                                       grafts)))
-                    (return/cache cache grafts))
-                  (return/cache cache grafts))))))))))
+            (let* ((grafts     (delete-duplicates (concatenate grafts) equal?))
+                   (origins    (map graft-origin-file-name grafts)))
+              (match (filter (lambda (graft)
+                               (member (graft-origin-file-name graft) deps))
+                             grafts)
+                (()
+                 (return/cache cache grafts))
+                ((applicable ..1)
+                 ;; Use APPLICABLE, the subset of GRAFTS that is really
+                 ;; applicable to DRV, to avoid creating several identical
+                 ;; grafted variants of DRV.
+                 (let* ((new    (graft-derivation/shallow store drv applicable
+                                                          #:guile guile
+                                                          #:system system))
+                        (grafts (cons (graft (origin drv) (replacement new))
+                                      grafts)))
+                   (return/cache cache grafts))))))))))))
 
 (define* (graft-derivation store drv grafts
                            #:key (guile (%guile-for-build))
