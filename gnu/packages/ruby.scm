@@ -1707,6 +1707,33 @@ instance, it provides @code{assert_true}, @code{assert_false} and
     (home-page "http://blowmage.com/minitest-rg")
     (license license:expat)))
 
+(define-public ruby-minitest-hooks
+  (package
+    (name "ruby-minitest-hooks")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "minitest-hooks" version))
+       (sha256
+        (base32
+         "092fymh0c09v3a585qw3hc15b0zf159s74rxx1ga87drk5jr958z"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"))
+    (native-inputs
+     `(("ruby-sequel" ,ruby-sequel)
+       ("ruby-sqlite3" ,ruby-sqlite3)))
+    (synopsis "Hooks for the minitest framework")
+    (description
+     "Minitest-hooks adds @code{around}, @code{before_all}, @code{after_all},
+@code{around_all} hooks for Minitest.  This allows, for instance, running each
+suite of specs inside a database transaction, running each spec inside its own
+savepoint inside that transaction.  This can significantly speed up testing
+for specs that share expensive database setup code.")
+    (home-page "http://github.com/jeremyevans/minitest-hooks")
+    (license license:expat)))
+
 (define-public ruby-daemons
   (package
     (name "ruby-daemons")
