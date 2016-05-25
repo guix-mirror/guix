@@ -3187,14 +3187,14 @@ look up the likely MIME type definitions.")
 (define-public ruby-mime-types
   (package
     (name "ruby-mime-types")
-    (version "3.0")
+    (version "3.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "mime-types" version))
        (sha256
         (base32
-         "1snjc38a9vqvy8j41xld1i1byq9prbl955pbjw7dxqcfcirqlzra"))))
+         "0087z9kbnlqhci7fxh9f6il63hj1k02icq2rs0c6cppmqchr753m"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-mime-types-data" ,ruby-mime-types-data)))
@@ -3203,7 +3203,8 @@ look up the likely MIME type definitions.")
        ("ruby-fivemat" ,ruby-fivemat)
        ("ruby-minitest-focus" ,ruby-minitest-focus)
        ("ruby-minitest-rg" ,ruby-minitest-rg)
-       ("ruby-minitest-bonus-assertions" ,ruby-minitest-bonus-assertions)))
+       ("ruby-minitest-bonus-assertions" ,ruby-minitest-bonus-assertions)
+       ("ruby-minitest-hooks" ,ruby-minitest-hooks)))
     (synopsis "Library and registry for MIME content type definitions")
     (description "The mime-types library provides a library and registry for
 information about Multipurpose Internet Mail Extensions (MIME) content type
