@@ -3877,3 +3877,25 @@ part of the Prawn PDF generator.")
     ;; From the README: "Matz's terms for Ruby, GPLv2, or GPLv3. See LICENSE
     ;; for details."
     (license (list license:gpl2 license:gpl3 license:ruby))))
+
+(define-public ruby-sequel
+  (package
+    (name "ruby-sequel")
+    (version "4.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "sequel" version))
+       (sha256
+        (base32
+         "0qscddpfwcajggxvbm4a4jv8kkpn6q056bgdg03km34bz8bis1x1"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; Avoid dependency loop with ruby-minitest-hooks.
+    (synopsis "Database toolkit for Ruby")
+    (description "Sequel provides thread safety, connection pooling and a
+concise DSL for constructing SQL queries and table schemas.  It includes a
+comprehensive ORM layer for mapping records to Ruby objects and handling
+associated records.")
+    (home-page "http://sequel.jeremyevans.net")
+    (license license:expat)))
