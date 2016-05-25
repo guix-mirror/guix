@@ -1684,3 +1684,25 @@ well as completely new features.")
 refactoring for the @uref{http://clojure.org, Clojure programming language}.
 It is recommended to use @code{clojure-mode} with paredit or smartparens.")
     (license license:gpl3+)))
+
+(define-public emacs-epl
+  (package
+    (name "emacs-epl")
+    (version "0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/cask/epl/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1511n3a3f5gvaf2b4nh018by61ciyzi3y3603fzqma7p9hrckarc"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/cask/epl")
+    (synopsis "Emacs Package Library")
+    (description
+     "A package management library for Emacs, based on @code{package.el}.
+
+The purpose of this library is to wrap all the quirks and hassle of
+@code{package.el} into a sane API.")
+    (license license:gpl3+)))
