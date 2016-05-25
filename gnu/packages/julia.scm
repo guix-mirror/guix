@@ -43,8 +43,8 @@
   #:use-module (ice-9 match))
 
 (define libuv-julia
-  (let ((commit "07730c4bd595b4d45a498a8ee0bcd53878ff7c10")
-        (revision "2"))
+  (let ((commit "efb40768b7c7bd9f173a7868f74b92b1c5a61a0e")
+        (revision "3"))
     (package (inherit libuv)
       (name "libuv-julia")
       (version (string-append "0.11.26." revision "-" (string-take commit 8)))
@@ -56,7 +56,7 @@
                 (file-name (string-append name "-" version "-checkout"))
                 (sha256
                  (base32
-                  "1r0d4wb41w8k3bi9sjr7kapk1ag131ss2fbqa4jz4gnrzvw94sqx"))))
+                  "16k6pm2jl0ymz5j4ldxn94imdimahqqfd2izgr3zf1vwyyay77w3"))))
       (build-system gnu-build-system)
       (arguments
        (substitute-keyword-arguments (package-arguments libuv)
@@ -68,7 +68,7 @@
 (define-public julia
   (package
     (name "julia")
-    (version "0.4.3")
+    (version "0.4.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -76,7 +76,7 @@
                     version "/julia-" version "-full.tar.gz"))
               (sha256
                (base32
-                "1i8k847d8n9v37xg69grpl51dysx36p0phwf0d1qxpsqixdg579b"))))
+                "1nbi78fav5f4zj5332iwm4mfk0qhd5qh61z881q69rvp7b163wyb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
