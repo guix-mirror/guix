@@ -115,6 +115,7 @@ project (but it is usable outside of the Gnome platform).")
 (define-public python-libxml2
   (package (inherit libxml2)
     (name "python-libxml2")
+    (replacement #f)
     (build-system python-build-system)
     (arguments
      `(;; XXX: Tests are specified in 'Makefile.am', but not in 'setup.py'.
