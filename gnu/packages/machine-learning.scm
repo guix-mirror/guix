@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -138,7 +139,8 @@ classification.")
        ("libxml2" ,libxml2)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("gfortran" ,gfortran)))
+     `(("gfortran" ,gfortran)
+       ("gfortran:lib" ,gfortran "lib")))
     (home-page "http://www.imbs-luebeck.de/imbs/de/node/227/")
     (synopsis "Implementation of the Random Forests machine learning method")
     (description
