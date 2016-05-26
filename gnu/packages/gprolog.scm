@@ -38,7 +38,10 @@
         "13miyas47bmijmadm68cbvb21n4s156gjafz7kfx9brk9djfkh0q"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-cons-before
+     `(#:configure-flags
+       (list (string-append
+              "--with-install-dir=" %output "/share/gprolog"))
+       #:phases (alist-cons-before
                  'configure 'change-dir-n-fix-shells
                  (lambda _
                    (chdir "src")
