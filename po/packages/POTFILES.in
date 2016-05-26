@@ -49,8 +49,8 @@ gnu/packages/scheme.scm
 gnu/packages/search.scm
 gnu/packages/serveez.scm
 gnu/packages/telephony.scm
+gnu/packages/tex.scm
 gnu/packages/texinfo.scm
-gnu/packages/texlive.scm
 gnu/packages/textutils.scm
 gnu/packages/version-control.scm
 gnu/packages/webkit.scm
