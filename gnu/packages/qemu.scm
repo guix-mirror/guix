@@ -105,6 +105,10 @@
                                       (install-file info infodir))
                                     (find-files "." "\\.info$"))
                           #t))))))
+         (add-before 'check 'make-gtester-verbose
+           (lambda _
+             ;; Make GTester verbose to facilitate investigation upon failure.
+             (setenv "V" "1")))
          (add-before 'check 'disable-test-qga
            (lambda _
              (substitute* "tests/Makefile"
