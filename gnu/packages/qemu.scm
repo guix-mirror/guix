@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -65,7 +65,11 @@
                "1v1lhhd6m59hqgmiz100g779rjq70pik5v4b3g936ci73djlmb69"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
+     '(;; Running tests in parallel can occasionally lead to failures, like:
+       ;; boot_sector_test: assertion failed (signature == SIGNATURE): (0x00000000 == 0x0000dead)
+       #:parallel-tests? #f
+
+       #:phases (alist-replace
                  'configure
                  (lambda* (#:key inputs outputs (configure-flags '())
                            #:allow-other-keys)
