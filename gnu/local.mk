@@ -717,6 +717,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ripperx-missing-file.patch		\
   %D%/packages/patches/rsem-makefile.patch			\
   %D%/packages/patches/ruby-symlinkfix.patch                    \
+  %D%/packages/patches/rush-CVE-2013-6889.patch			\
   %D%/packages/patches/sed-hurd-path-max.patch			\
   %D%/packages/patches/scheme48-tests.patch			\
   %D%/packages/patches/scotch-test-threading.patch		\
