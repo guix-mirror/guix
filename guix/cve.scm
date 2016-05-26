@@ -25,6 +25,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-19)
+  #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)
@@ -179,6 +180,7 @@ the given TTL (fetch from the NIST web site when TTL has expired)."
       (lambda (port)
         ;; XXX: The SSAX "error port" is used to send pointless warnings such as
         ;; "warning: Skipping PI".  Turn that off.
+        (format (current-error-port) "fetching CVE database for ~a...~%" year)
         (parameterize ((current-ssax-error-port (%make-void-port "w")))
           (xml->vulnerabilities port)))))
 
@@ -214,9 +216,19 @@ the given TTL (fetch from the NIST web site when TTL has expired)."
 (define (current-vulnerabilities)
   "Return the current list of Common Vulnerabilities and Exposures (CVE) as
 published by the US NIST."
-  (append-map fetch-vulnerabilities
-              (list %past-year %current-year)
-              (list %past-year-ttl %current-year-ttl)))
+  (let ((past-years (unfold (cut > <> 3)
+                            (lambda (n)
+                              (- %current-year n))
+                            1+
+                            1))
+        (past-ttls  (unfold (cut > <> 3)
+                            (lambda (n)
+                              (* n %past-year-ttl))
+                            1+
+                            1)))
+    (append-map fetch-vulnerabilities
+                (cons %current-year past-years)
+                (cons %current-year-ttl past-ttls))))
 
 (define (vulnerabilities->lookup-proc vulnerabilities)
   "Return a lookup procedure built from VULNERABILITIES that takes a package
