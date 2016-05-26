@@ -3082,7 +3082,7 @@ Store Monad}).
 
 @cindex derivations
 Low-level build actions and the environment in which they are performed
-are represented by @dfn{derivations}.  A derivation contain the
+are represented by @dfn{derivations}.  A derivation contains the
 following pieces of information:
 
 @itemize
