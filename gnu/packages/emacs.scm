@@ -984,14 +984,14 @@ mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
 (define-public emacs-async
   (package
     (name "emacs-async")
-    (version "1.6")
+    (version "1.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/async-"
                                   version ".tar"))
               (sha256
                (base32
-                "17psvz75n42x33my967wkgi7r0blx46n3jdv510j0z5jswv66039"))))
+                "1ip5nc8xyln5szvqwp6wqva9xr84pn8ssn3nnphrszr19y4js2bm"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/async.html")
     (synopsis "Asynchronous processing in Emacs")
