@@ -472,6 +472,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
   %D%/packages/patches/einstein-build.patch			\
   %D%/packages/patches/emacs-exec-path.patch			\
+  %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
   %D%/packages/patches/emacs-scheme-complete-scheme-r5rs-info.patch	\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
   %D%/packages/patches/eudev-rules-directory.patch		\

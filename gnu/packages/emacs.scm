@@ -80,6 +80,7 @@
               (base32
                "0kn3rzm91qiswi0cql89kbv6mqn27rwsyjfb8xmwy9m5s8fxfiyx"))
              (patches (search-patches "emacs-exec-path.patch"
+                                      "emacs-fix-scheme-indent-function.patch"
                                       "emacs-source-date-epoch.patch"))
              (modules '((guix build utils)))
              (snippet
