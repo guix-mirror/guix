@@ -910,3 +910,44 @@ demos.  It also acts as a nice screen locker.")
               (string-append
                "http://metadata.ftp-master.debian.org/changelogs/"
                "/main/x/xscreensaver/xscreensaver_5.34-2_copyright")))))
+
+(define-public rofi
+  (package
+    (name "rofi")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/DaveDavenport/rofi/"
+                                  "releases/download/"
+                                  version "/rofi-" version ".tar.xz"))
+              (sha256
+               (base32
+                "01jxml9vk4cw7pngpan7dipmb98s6ibh6f0023lw3hbgxy650637"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("pango" ,pango)
+       ("cairo" ,cairo)
+       ("glib" ,glib)
+       ("startup-notification" ,startup-notification)
+       ("libxkbcommon" ,libxkbcommon)
+       ("libxcb" ,libxcb)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-wm" ,xcb-util-wm)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'adjust-tests
+           (lambda _
+             (substitute* '("test/helper-expand.c")
+               (("~root") "/root")
+               (("~") "")
+               (("g_get_home_dir \\(\\)") "\"/\"")))))))
+    (home-page "https://davedavenport.github.io/rofi/")
+    (synopsis "Application Launcher")
+    (description "Rofi is a minimalist Application Launcher.  It memorizes which
+applications you regularily use and also allows you to search for an application
+by name.")
+    (license license:expat)))
