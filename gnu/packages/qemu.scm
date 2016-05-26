@@ -102,9 +102,7 @@
                         (let ((infodir (string-append out "/share/info")))
                           (mkdir-p infodir)
                           (for-each (lambda (info)
-                                      (copy-file
-                                       info
-                                       (string-append infodir "/" info)))
+                                      (install-file info infodir))
                                     (find-files "." "\\.info$"))
                           #t))))))
          (add-before 'check 'disable-test-qga
