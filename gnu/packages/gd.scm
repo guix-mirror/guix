@@ -37,20 +37,19 @@
   (package
     (name "gd")
 
-    ;; Note: With libgd.org now pointing to bitbucket.org, genuine old
+    ;; Note: With libgd.org now pointing to github.com, genuine old
     ;; tarballs are no longer available.  Notably, versions 2.0.x are
     ;; missing.
-    (version "2.1.1")
+    (version "2.2.1")
 
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "https://bitbucket.org/libgd/gd-libgd/downloads/"
-                   "libgd-" version ".tar.xz"))
+                   "https://github.com/libgd/libgd/releases/download/gd-"
+                   version "/libgd-" version ".tar.xz"))
              (sha256
               (base32
-               "11djy9flzxczphigqgp7fbbblbq35gqwwhn9xfcckawlapa1xnls"))
-             (patches (search-patches "gd-CVE-2016-3074.patch"))))
+               "0xmrqka1ggqgml84xbmkw1y0r0lg7qn657v5b1my8pry92p651vh"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
