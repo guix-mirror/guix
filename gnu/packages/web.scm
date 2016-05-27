@@ -701,7 +701,7 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://serf.googlecode.com/svn/src_releases/serf-"
+       (uri (string-append "https://archive.apache.org/dist/serf/serf-"
                            version ".tar.bz2"))
        (sha256
         (base32 "14155g48gamcv5s0828bzij6vr14nqmbndwq8j8f9g6vcph0nl70"))
@@ -752,7 +752,7 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
                                       (string-append "PREFIX=" out))))))
          (replace 'check   (lambda _ (zero? (system* "scons" "check"))))
          (replace 'install (lambda _ (zero? (system* "scons" "install")))))))
-    (home-page "https://code.google.com/p/serf/")
+    (home-page "https://serf.apache.org/")
     (synopsis "High-performance asynchronous HTTP client library")
     (description
      "serf is a C-based HTTP client library built upon the Apache Portable
