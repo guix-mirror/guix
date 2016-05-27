@@ -111,6 +111,19 @@ is found and `guix-package-list-single' is nil."
       (list (if (= 0 package-id) package-id-str package-id)
             output))))
 
+(defun guix-package-build-log-file (id)
+  "Return build log file name of a package defined by ID."
+  (guix-eval-read
+   (guix-make-guile-expression 'package-build-log-file id)))
+
+(defun guix-package-find-build-log (id)
+  "Show build log of a package defined by ID."
+  (require 'guix-build-log)
+  (let ((file (guix-package-build-log-file id)))
+    (if file
+        (guix-build-log-find-file file)
+      (message "Couldn't find the package build log."))))
+
 
 ;;; Processing package actions
 
@@ -333,7 +346,8 @@ prompt depending on `guix-operation-confirm' variable)."
   :group 'guix-package-info)
 
 (defcustom guix-package-info-button-functions
-  '(guix-package-info-insert-build-button)
+  '(guix-package-info-insert-build-button
+    guix-package-info-insert-build-log-button)
   "List of functions used to insert package buttons in Info buffer.
 Each function is called with 2 arguments: package ID and full name."
   :type '(repeat function)
@@ -596,6 +610,15 @@ PACKAGE-ID is an ID of the package which store path to show."
      (guix-build-package (button-get btn 'id)
                          (format "Build '%s' package?" full-name)))
    (format "Build the current package")
+   'id id))
+
+(defun guix-package-info-insert-build-log-button (id _name)
+  "Insert button to show build log of a package defined by ID."
+  (guix-info-insert-action-button
+   "Build Log"
+   (lambda (btn)
+     (guix-package-find-build-log (button-get btn 'id)))
+   "View build log of the current package"
    'id id))
 
 (defun guix-package-info-show-source (entry-id package-id)

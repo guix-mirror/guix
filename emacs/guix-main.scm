@@ -1000,6 +1000,16 @@ GENERATIONS is a list of generation numbers."
         (format #t "The source store path: ~a~%"
                 (package-source-derivation->store-path derivation))))))
 
+(define (package-build-log-file package-id)
+  "Return the build log file of a package PACKAGE-ID.
+Return #f if the build log is not found."
+  (and-let* ((package (package-by-id package-id)))
+    (with-store store
+      (let* ((derivation (package-derivation store package))
+             (file       (derivation-file-name derivation)))
+        (or (log-file store file)
+            ((@@ (guix scripts build) log-url) store file))))))
+
 
 ;;; Executing guix commands
 
