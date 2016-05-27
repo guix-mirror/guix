@@ -457,7 +457,7 @@ compression format (.mpc files).")
 (define-public eyed3
   (package
     (name "eyed3")
-    (version "0.7.8")
+    (version "0.7.9")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -465,7 +465,7 @@ compression format (.mpc files).")
                   version ".tar.gz"))
              (sha256
               (base32
-               "1nv7nhfn1d0qm7rgkzksbccgqisng8klf97np0nwaqwd5dbmdf86"))))
+               "08mzhqg3k63d244cgwd0y1xrb8x9m6b99ykyskpnwyxl4wxrgrzp"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))
