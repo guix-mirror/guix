@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -417,8 +418,10 @@ format.")
     (version "0.2.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/mpc123/version%20"
-                                  version "/mpc123-" version ".tar.gz"))
+              (uri (list (string-append "mirror://sourceforge/mpc123/version%20"
+                                        version "/mpc123-" version ".tar.gz")
+                         (string-append "mirror://debian/pool/main/m/" name
+                                        "/" name "_" version ".orig.tar.gz")))
               (sha256
                (base32
                 "0sf4pns0245009z6mbxpx7kqy4kwl69bc95wz9v23wgappsvxgy1"))
@@ -446,7 +449,7 @@ format.")
     (inputs
      `(("libao" ,ao)
        ("libmpcdec" ,libmpcdec)))
-    (home-page "http://mpc123.sourceforge.net/")
+    (home-page "https://github.com/bucciarati/mpc123")
     (synopsis "Audio player for Musepack-formatted files")
     (description
      "Mpc123 is a command-line player for files in the Musepack audio
