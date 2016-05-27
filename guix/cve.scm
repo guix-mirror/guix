@@ -24,6 +24,7 @@
   #:use-module (web uri)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
@@ -48,8 +49,8 @@
 (define-record-type <vulnerability>
   (vulnerability id packages)
   vulnerability?
-  (id         vulnerability-id)
-  (packages   vulnerability-packages))
+  (id         vulnerability-id)                   ;string
+  (packages   vulnerability-packages))            ;((p1 v1 v2 v3) (p2 v1) ...)
 
 (define %now
   (current-date))
@@ -93,18 +94,45 @@
 
 (define (cpe->package-name cpe)
   "Converts the Common Platform Enumeration (CPE) string CPE to a package
-name, in a very naive way.  Return #f if CPE does not look like an application
-CPE string."
-  (and=> (regexp-exec %cpe-package-rx (string-trim-both cpe))
+name, in a very naive way.  Return two values: the package name, and its
+version string.  Return #f and #f if CPE does not look like an application CPE
+string."
+  (cond ((regexp-exec %cpe-package-rx (string-trim-both cpe))
+         =>
          (lambda (matches)
-           (cons (match:substring matches 2)
-                 (string-append (match:substring matches 3)
-                                (match (match:substring matches 4)
-                                  ("" "")
-                                  (patch-level
-                                   ;; Drop the colon from things like
-                                   ;; "cpe:/a:openbsd:openssh:6.8:p1".
-                                   (string-drop patch-level 1))))))))
+           (values (match:substring matches 2)
+                   (string-append (match:substring matches 3)
+                                  (match (match:substring matches 4)
+                                    ("" "")
+                                    (patch-level
+                                     ;; Drop the colon from things like
+                                     ;; "cpe:/a:openbsd:openssh:6.8:p1".
+                                     (string-drop patch-level 1)))))))
+        (else
+         (values #f #f))))
+
+(define (cpe->product-alist products)
+  "Given PRODUCTS, a list of CPE names, return the subset limited to the
+applications listed in PRODUCTS, with names converted to package names:
+
+  (cpe->product-alist
+    '(\"cpe:/a:gnu:libtasn1:4.7\" \"cpe:/a:gnu:libtasn1:4.6\" \"cpe:/a:gnu:cpio:2.11\"))
+  => ((\"libtasn1\" \"4.7\" \"4.6\") (\"cpio\" \"2.11\"))
+"
+  (fold (lambda (product result)
+          (let-values (((name version) (cpe->package-name product)))
+            (if name
+                (match result
+                  (((previous . versions) . tail)
+                   ;; Attempt to coalesce NAME and PREVIOUS.
+                   (if (string=? name previous)
+                       (alist-cons name (cons version versions) tail)
+                       (alist-cons name (list version) result)))
+                  (()
+                   (alist-cons name (list version) result)))
+                result)))
+        '()
+        (sort products string<?)))
 
 (define %parse-vulnerability-feed
   ;; Parse the XML vulnerability feed from
@@ -132,12 +160,12 @@ CPE string."
                             ;; Some entries have no vulnerable-software-list.
                             rest)
                            ((products id . rest)
-                            (match (filter-map cpe->package-name products)
+                            (match (cpe->product-alist products)
                               (()
                                ;; No application among PRODUCTS.
                                rest)
                               (packages
-                               (cons (vulnerability id (reverse packages))
+                               (cons (vulnerability id packages)
                                      rest))))))
                         (x
                          seed)))
@@ -190,7 +218,7 @@ the given TTL (fetch from the NIST web site when TTL has expired)."
       (with-atomic-file-output cache
         (lambda (port)
           (write `(vulnerabilities
-                   0                              ;format version
+                   1                              ;format version
                    ,(map vulnerability->sexp vulns))
                  port)))
       vulns))
@@ -206,7 +234,7 @@ the given TTL (fetch from the NIST web site when TTL has expired)."
       (if (old? cache)
           (update-cache)
           (match (call-with-input-file cache read)
-            (('vulnerabilities 0 vulns)
+            (('vulnerabilities 1 vulns)
              (map sexp->vulnerability vulns))
             (x
              (update-cache)))))
@@ -233,8 +261,8 @@ published by the US NIST."
 (define (vulnerabilities->lookup-proc vulnerabilities)
   "Return a lookup procedure built from VULNERABILITIES that takes a package
 name and optionally a version number.  When the version is omitted, the lookup
-procedure returns a list of version/vulnerability pairs; otherwise, it returns
-a list of vulnerabilities affection the given package version."
+procedure returns a list of vulnerabilities; otherwise, it returns a list of
+vulnerabilities affecting the given package version."
   (define table
     ;; Map package names to lists of version/vulnerability pairs.
     (fold (lambda (vuln table)
@@ -242,8 +270,8 @@ a list of vulnerabilities affection the given package version."
               (($ <vulnerability> id packages)
                (fold (lambda (package table)
                        (match package
-                         ((name . version)
-                          (vhash-cons name (cons version vuln)
+                         ((name . versions)
+                          (vhash-cons name (cons vuln versions)
                                       table))))
                      table
                      packages))))
@@ -254,11 +282,14 @@ a list of vulnerabilities affection the given package version."
     (vhash-fold* (if version
                      (lambda (pair result)
                        (match pair
-                         ((v . vuln)
-                          (if (string=? v version)
+                         ((vuln . versions)
+                          (if (member version versions)
                               (cons vuln result)
                               result))))
-                     cons)
+                     (lambda (pair result)
+                       (match pair
+                         ((vuln . _)
+                          (cons vuln result)))))
                  '()
                  package table)))
 
