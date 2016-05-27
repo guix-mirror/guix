@@ -11,6 +11,7 @@
 ;;; Copyright © 2015 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -540,7 +541,7 @@ things less distracting.")
 (define-public xlockmore
   (package
     (name "xlockmore")
-    (version "5.46")
+    (version "5.47")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -549,10 +550,10 @@ things less distracting.")
                         (string-append
                           "http://www.tux.org/~bagleyd/xlock/xlockmore-old"
                           "/xlockmore-" version
-                          "/xlockmore-" version ".tar.bz2")))
+                          "/xlockmore-" version ".tar.xz")))
              (sha256
               (base32
-               "1ps0dmnh912x8mwns94y2607xk90rjxrjn5s1pkmmpjg5h9bxcrj"))))
+               "138d79b8zc2hambbr9fnxp3fhihlcljgqns04zf0kv2f53pavqwl"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--enable-appdefaultdir="
@@ -570,8 +571,7 @@ things less distracting.")
      "XLockMore is a classic screen locker and screen saver for the
 X Window System.")
     (license (license:non-copyleft #f "See xlock.c.")
-             ;; + GPLv2 in modes/glx/biof.c.
-             )))
+             ))) ; + GPLv2 in modes/glx/biof.c.
 
 (define-public xosd
   (package
