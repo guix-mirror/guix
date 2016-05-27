@@ -234,9 +234,10 @@ and 'guix publish', something like
         (string-drop path 33)
         path)))
 
-(define (ftp-fetch uri file)
-  "Fetch data from URI and write it to FILE.  Return FILE on success."
-  (let* ((conn (ftp-open (uri-host uri)))
+(define* (ftp-fetch uri file #:key timeout)
+  "Fetch data from URI and write it to FILE.  Return FILE on success.  Bail
+out if the connection could not be established in less than TIMEOUT seconds."
+  (let* ((conn (ftp-open (uri-host uri) #:timeout timeout))
          (size (false-if-exception (ftp-size conn (uri-path uri))))
          (in   (ftp-retr conn (basename (uri-path uri))
                          (dirname (uri-path uri)))))
@@ -585,8 +586,10 @@ Return the resulting target URI."
                     #:query    (uri-query    ref)
                     #:fragment (uri-fragment ref)))))
 
-(define (http-fetch uri file)
-  "Fetch data from URI and write it to FILE.  Return FILE on success."
+(define* (http-fetch uri file #:key timeout)
+  "Fetch data from URI and write it to FILE; when TIMEOUT is true, bail out if
+the connection could not be established in less than TIMEOUT seconds.  Return
+FILE on success."
 
   (define post-2.0.7?
     (or (> (string->number (major-version)) 2)
@@ -605,7 +608,7 @@ Return the resulting target URI."
       (Accept . "*/*")))
 
   (let*-values (((connection)
-                 (open-connection-for-uri uri))
+                 (open-connection-for-uri uri #:timeout timeout))
                 ((resp bv-or-port)
                  ;; XXX: `http-get*' was introduced in 2.0.7, and replaced by
                  ;; #:streaming? in 2.0.8.  We know we're using it within the
@@ -646,7 +649,7 @@ Return the resulting target URI."
          (format #t "following redirection to `~a'...~%"
                  (uri->string uri))
          (close connection)
-         (http-fetch uri file)))
+         (http-fetch uri file #:timeout timeout)))
       (else
        (error "download failed" (uri->string uri)
               code (response-reason-phrase resp))))))
@@ -686,6 +689,7 @@ Return a list of URIs."
 
 (define* (url-fetch url file
                     #:key
+                    (timeout 10)
                     (mirrors '()) (content-addressed-mirrors '())
                     (hashes '()))
   "Fetch FILE from URL; URL may be either a single string, or a list of
@@ -711,9 +715,9 @@ or #f."
             file (uri->string uri))
     (case (uri-scheme uri)
       ((http https)
-       (false-if-exception* (http-fetch uri file)))
+       (false-if-exception* (http-fetch uri file #:timeout timeout)))
       ((ftp)
-       (false-if-exception* (ftp-fetch uri file)))
+       (false-if-exception* (ftp-fetch uri file #:timeout timeout)))
       (else
        (format #t "skipping URI with unsupported scheme: ~s~%"
                uri)
