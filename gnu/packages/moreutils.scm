@@ -46,18 +46,17 @@
               ("docbook-xsl" ,docbook-xsl)))
     (arguments
      `(#:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key inputs #:allow-other-keys)
-          (use-modules (srfi srfi-1))
-          (substitute* "Makefile"
-            (("/usr/share/xml/.*/docbook.xsl")
-             (let* ((docbook-xsl (assoc-ref inputs "docbook-xsl"))
-                    (files (find-files docbook-xsl "^docbook\\.xsl$")))
-               (find (lambda (file)
-                       (string-suffix? "/manpages/docbook.xsl" file))
-                     files)))))
-        %standard-phases)
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (use-modules (srfi srfi-1))
+             (substitute* "Makefile"
+               (("/usr/share/xml/.*/docbook.xsl")
+                (let* ((docbook-xsl (assoc-ref inputs "docbook-xsl"))
+                       (files (find-files docbook-xsl "^docbook\\.xsl$")))
+                  (find (lambda (file)
+                          (string-suffix? "/manpages/docbook.xsl" file))
+                        files)))))))
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "CC=gcc")))
