@@ -66,25 +66,23 @@
     (arguments
      `(#:phases
        (let ((srcdir (string-append "../synergy-" ,version "-stable")))
-         (alist-cons-before
-          'configure 'unpack-aux-src
-          ;; TODO: package and use from system
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let ((unzip (string-append
-                          (assoc-ref inputs "unzip")
-                          "/bin/unzip")))
-              (with-directory-excursion "ext"
-                (for-each
-                 (lambda (f)
-                   (system* unzip "-d" f (string-append f ".zip")))
-                 '("gmock-1.6.0" "gtest-1.6.0")))))
-          (alist-replace
-           'check
-           ;; Don't run "integtests" as it requires network and X an display.
-           (lambda _
-             (zero? (system* (string-append srcdir "/bin/unittests"))))
-           (alist-replace
-            'install
+         (modify-phases %standard-phases
+           (add-before 'configure 'unpack-aux-src
+             ;; TODO: package and use from system
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((unzip (string-append
+                             (assoc-ref inputs "unzip")
+                             "/bin/unzip")))
+                 (with-directory-excursion "ext"
+                   (for-each
+                    (lambda (f)
+                      (system* unzip "-d" f (string-append f ".zip")))
+                    '("gmock-1.6.0" "gtest-1.6.0"))))))
+          (replace 'check
+            ;; Don't run "integtests" as it requires network and X an display.
+            (lambda _
+              (zero? (system* (string-append srcdir "/bin/unittests")))))
+          (replace 'install
             ;; There currently is no installation process, see:
             ;; http://synergy-project.org/spit/issues/details/3317/
             (lambda* (#:key outputs #:allow-other-keys)
@@ -104,8 +102,7 @@
                      (install-file (string-append srcdir "/doc/" e) ex))
                    '("synergy.conf.example"
                      "synergy.conf.example-advanced"
-                     "synergy.conf.example-basic")))))
-            %standard-phases))))))
+                     "synergy.conf.example-basic"))))))))))
     (home-page "http://symless.com/")
     (synopsis "Mouse and keyboard sharing utility")
     (description
