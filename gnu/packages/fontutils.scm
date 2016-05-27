@@ -281,7 +281,10 @@ high quality, anti-aliased and subpixel rendered text on a display.")
    (version "5.1.2")
    (source (origin
             (method url-fetch)
-            (uri "ftp://sunsite.unc.edu/pub/Linux/libs/graphics/t1lib-5.1.2.tar.gz")
+            (uri (list (string-append "ftp://sunsite.unc.edu/pub/Linux/libs/"
+                                      "graphics/" name "-" version ".tar.gz")
+                       (string-append "https://fossies.org/linux/misc/old/"
+                                      name "-" version ".tar.gz")))
             (sha256 (base32
                      "0nbvjpnmcznib1nlgg8xckrmsw3haa154byds2h90y2g0nsjh4w2"))))
    (build-system gnu-build-system)
