@@ -719,11 +719,11 @@ or #f."
                uri)
        #f)))
 
-  (define content-addressed-urls
+  (define content-addressed-uris
     (append-map (lambda (make-url)
                   (filter-map (match-lambda
                                 ((hash-algo . hash)
-                                 (make-url hash-algo hash)))
+                                 (string->uri (make-url hash-algo hash))))
                               hashes))
                 content-addressed-mirrors))
 
@@ -733,7 +733,7 @@ or #f."
 
   (setvbuf (current-error-port) _IOLBF)
 
-  (let try ((uri (append uri content-addressed-urls)))
+  (let try ((uri (append uri content-addressed-uris)))
     (match uri
       ((uri tail ...)
        (or (fetch uri file)
