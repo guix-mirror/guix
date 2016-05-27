@@ -21,6 +21,7 @@
   #:use-module (guix build utils)
   #:use-module (guix build emacs-utils)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
@@ -38,6 +39,27 @@
 ;; Emacs expects to find the ELPA repository 'archive-contents' file and the
 ;; archive signature.
 (define %install-suffix "/share/emacs/site-lisp/guix.d")
+
+(define gnu:unpack (assoc-ref gnu:%standard-phases 'unpack))
+
+(define (store-file->elisp-source-file file)
+  "Convert FILE, a store file name for an Emacs Lisp source file, into a file
+name that has been stripped of the hash and version number."
+  (let-values (((name version)
+                (package-name->name+version
+                 (strip-store-file-name file))))
+    (string-append name ".el")))
+
+(define* (unpack #:key source #:allow-other-keys)
+  "Unpack SOURCE into the build directory.  SOURCE may be a compressed
+archive, a directory, or an Emacs Lisp file."
+  (if (string-suffix? ".el" source)
+      (begin
+        (mkdir "source")
+        (chdir "source")
+        (copy-file source (store-file->elisp-source-file source))
+        #t)
+      (gnu:unpack #:source source)))
 
 (define* (build #:key outputs inputs #:allow-other-keys)
   "Compile .el files."
@@ -151,6 +173,7 @@ second hyphen.  This corresponds to 'name-version' as used in ELPA packages."
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
+    (replace 'unpack unpack)
     (delete 'configure)
     (delete 'check)
     (delete 'install)
