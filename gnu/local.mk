@@ -616,8 +616,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libwmf-CVE-2015-0848+CVE-2015-4588.patch	\
   %D%/packages/patches/libwmf-CVE-2015-4695.patch		\
   %D%/packages/patches/libwmf-CVE-2015-4696.patch		\
-  %D%/packages/patches/libxml2-CVE-2016-3627.patch		\
-  %D%/packages/patches/libxml2-CVE-2016-3705.patch		\
   %D%/packages/patches/libxslt-CVE-2015-7995.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/libpthread-glibc-preparation.patch	\

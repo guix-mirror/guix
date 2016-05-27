@@ -107,10 +107,16 @@ project (but it is usable outside of the Gnome platform).")
 (define libxml2/fixed
   (package
     (inherit libxml2)
-    (source (origin
-              (inherit (package-source libxml2))
-              (patches (search-patches "libxml2-CVE-2016-3627.patch"
-                                       "libxml2-CVE-2016-3705.patch"))))))
+    (source
+     (let ((name "libxml2")
+           (version "2.9.4"))
+       (origin
+         (method url-fetch)
+         (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
+                             version ".tar.gz"))
+         (sha256
+          (base32
+           "0g336cr0bw6dax1q48bblphmchgihx9p1pjmxdnrd6sh3qci3fgz")))))))
 
 (define-public python-libxml2
   (package (inherit libxml2)
