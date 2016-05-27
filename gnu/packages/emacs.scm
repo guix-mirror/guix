@@ -1775,3 +1775,24 @@ ongoing operations.")
 complement basic functions provided by @code{subr.el}.  All provided functions
 work on lists, strings and vectors.")
     (license license:gpl3+)))
+
+(define-public emacs-better-defaults
+  (package
+    (name "emacs-better-defaults")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/technomancy/better-defaults"
+                           "/archive/" version ".tar.gz"))
+       (sha256
+        (base32
+         "08fg4zslzlxbvyil5g4gwvwd22fh4zsgqprs5wh9hv1rgc6757m2"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/technomancy/better-defaults")
+    (synopsis "Better defaults for Emacs")
+    (description
+     "Better defaults attempts to address the most obvious deficiencies of the
+Emacs default configuration in uncontroversial ways that nearly everyone can
+agree upon.")
+    (license license:gpl3+)))
