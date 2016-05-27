@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +37,7 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://github.com/synergy/synergy/archive/"
+      (uri (string-append "https://github.com/symless/synergy/archive/"
                           "v" version "-stable.tar.gz"))
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
@@ -105,7 +106,7 @@
                      "synergy.conf.example-advanced"
                      "synergy.conf.example-basic")))))
             %standard-phases))))))
-    (home-page "http://www.synergy-project.org")
+    (home-page "http://symless.com/")
     (synopsis "Mouse and keyboard sharing utility")
     (description
      "Synergy brings your computers together in one cohesive experience; its
