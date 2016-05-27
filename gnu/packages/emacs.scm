@@ -1707,3 +1707,25 @@ It is recommended to use @code{clojure-mode} with paredit or smartparens.")
 The purpose of this library is to wrap all the quirks and hassle of
 @code{package.el} into a sane API.")
     (license license:gpl3+)))
+
+(define-public emacs-queue
+  (package
+    (name "emacs-queue")
+    (version "0.1.1")
+    (source (origin
+              (method uncompressed-file-fetch)
+              (uri (string-append "http://elpa.gnu.org/packages/queue-"
+                                  version ".el"))
+              (sha256
+               (base32
+                "0jw24fxqnf9qcaf2nh09cnds1kqfk7hal35dw83x1ari95say391"))))
+    (build-system emacs-build-system)
+    (home-page "http://www.dr-qubit.org/tags/computing-code-emacs.html")
+    (synopsis "Queue data structure for Emacs")
+    (description
+     "This Emacs library provides queue data structure.  These queues can be
+used both as a first-in last-out (FILO) and as a first-in first-out (FIFO)
+stack, i.e. elements can be added to the front or back of the queue, and can
+be removed from the front.  This type of data structure is sometimes called an
+\"output-restricted deque\".")
+    (license license:gpl3+)))
