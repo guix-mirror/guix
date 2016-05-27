@@ -33,7 +33,7 @@
 (define-public synergy
   (package
     (name "synergy")
-    (version "1.7.4")
+    (version "1.7.6")
     (source
      (origin
       (method url-fetch)
@@ -42,7 +42,7 @@
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
-        "1prb06dmi4bhfsraih4hzlsfiraiczgzhqy9gjsxygczif8w6p91"))
+        "07a1g2kh4f064nqjdqgfzrjfayls31scnssphbndmnvfc20bhlx4"))
       (modules '((guix build utils)))
       (snippet
        ;; Remove ~14MB of unnecessary bundled source and binaries
