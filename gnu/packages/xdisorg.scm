@@ -382,9 +382,12 @@ move windows, switch between desktops, etc.).")
     (version "0.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "http://linuxbrit.co.uk/downloads/scrot-"
-                    version ".tar.gz"))
+              (uri (list (string-append
+                           "http://linuxbrit.co.uk/downloads/scrot-"
+                           version ".tar.gz")
+                         (string-append
+                           "https://fossies.org/linux/privat/old/scrot-"
+                           version "tar.gz")))
               (sha256
                (base32
                 "1wll744rhb49lvr2zs6m93rdmiq59zm344jzqvijrdn24ksiqgb1"))))
