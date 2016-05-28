@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +23,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
@@ -31,23 +32,46 @@
 (define-public lirc
   (package
     (name "lirc")
-    (version "0.9.3")
+    (version "0.9.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/lirc/lirc-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "19c6ldjsdnk1md66q3nb035ja1xj217k8iabhxpsb8rs10a6kwi6"))
+                "1l2xzhnm4hrla51ik09hcafki0y8wnww7svfm7j63zbl2rssc66x"))
               (patches (search-patches "lirc-localstatedir.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--localstatedir=/var")))
+     '(#:configure-flags '("--localstatedir=/var")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-lirc-make-devinput
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; 'lirc-make-devinput' script assumes that linux headers
+             ;; are placed in "/usr/...".
+             (let ((headers (assoc-ref inputs "linux-headers")))
+               (substitute* "tools/lirc-make-devinput"
+                 (("/usr/include") (string-append headers "/include"))))
+             #t))
+         (add-after 'unpack 'patch-doc/Makefile.in
+           (lambda _
+             ;; Lirc wants to install several images and a useless html page
+             ;; to "$(localstatedir)/lib/lirc/".  This makes 'install' phase
+             ;; fail as localstatedir is "/var", so do not install these
+             ;; files there (the same images are installed in
+             ;; "share/doc/lirc/images/" anyway).
+             (substitute* "doc/Makefile.in"
+               (("^vardocs_DATA =.*") "vardocs_DATA =\n")
+               (("^varimage_DATA =.*") "varimage_DATA =\n"))
+             #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("libxslt" ,libxslt)))
     (inputs
      `(("libx11" ,libx11)
+       ("libusb-compat" ,libusb-compat)
+       ("linux-headers" ,linux-libre-headers)
        ("alsa-lib" ,alsa-lib)
        ("python" ,python)))
     (home-page "http://www.lirc.org/")
