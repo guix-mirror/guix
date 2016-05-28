@@ -604,7 +604,7 @@ of people.")
 (define-public libyaml
   (package
     (name "libyaml")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
@@ -613,7 +613,7 @@ of people.")
              version ".tar.gz"))
        (sha256
         (base32
-         "1vrv5ly58bkmcyc049ad180f2m8iav6l9h3v8l2fqdmrny7yx1zs"))))
+         "0j9731s5zjb8mjx7wzf6vh7bsqi38ay564x6s9nri2nh9cdrg9kx"))))
     (build-system gnu-build-system)
     (home-page "http://pyyaml.org/wiki/LibYAML")
     (synopsis "YAML 1.1 parser and emitter written in C")
