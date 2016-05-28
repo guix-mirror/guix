@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,6 +52,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -821,6 +823,60 @@ Guile-Present can be used to make presentations programmatically, but also
 includes a tools to generate PDF presentations out of Org mode and Texinfo
 documents.")
     (license license:lgpl3+)))
+
+(define-public guile-gnome
+   (package
+    (name "guile-gnome")
+    (version "2.16.4")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "mirror://gnu/" name
+                              "/guile-gnome-platform/guile-gnome-platform-"
+                              version ".tar.gz"))
+             (sha256
+              (base32
+               "1hqnqbb2lmr3hgbcv9kds1himn3av6h0lkk0zll8agcrsn7d9axd"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("atk" ,atk)
+       ;;("corba" ,corba) ; not packaged yet
+       ("gconf" ,gconf)
+       ("gobject-introspection" ,gobject-introspection)
+       ;;("gthread" ,gthread) ; not packaged yet
+       ("gnome-vfs" ,gnome-vfs)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("gtk+" ,gtk+-2)
+       ("libglade" ,libglade)
+       ("libgnome" ,libgnome)
+       ("libgnomecanvas" ,libgnomecanvas)
+       ("libgnomeui" ,libgnomeui)
+       ("pango" ,pango)
+       ("libffi" ,libffi)
+       ("glib" ,glib)))
+    (inputs `(("guile" ,guile-2.0)))
+    (propagated-inputs
+     `(("guile-cairo" ,guile-cairo)
+       ("g-wrap" ,g-wrap)
+       ("guile-lib" ,guile-lib)))
+    (arguments
+      `(#:tests? #f                               ;FIXME
+        #:phases (modify-phases %standard-phases
+                   (add-before 'configure 'pre-configure
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (let ((out (assoc-ref outputs "out")))
+                         (substitute* (find-files "." "^Makefile.in$")
+                           (("guilesite :=.*guile/site" all)
+                            (string-append all "/2.0")))
+                         #t))))))
+    (outputs '("out" "debug"))
+    (synopsis "Guile interface for GTK+ programming for GNOME")
+    (description
+     "Includes guile-clutter, guile-gnome-gstreamer,
+guile-gnome-platform (GNOME developer libraries), and guile-gtksourceview.")
+    (home-page "http://www.gnu.org/software/guile-gnome/")
+    (license license:gpl2+)))
 
 ;;;
 ;;; C++ bindings.
