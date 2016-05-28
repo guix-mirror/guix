@@ -181,15 +181,16 @@ build process and its dependencies, whereas Make uses Makefile format.")
 (define-public icedtea-6
   (package
     (name "icedtea")
-    (version "1.13.10")
+    (version "1.13.11")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "http://icedtea.wildebeest.org/download/source/icedtea6-"
                     version ".tar.xz"))
+              (patches (search-patches "icedtea-remove-overrides.patch"))
               (sha256
                (base32
-                "1mq08sfyfjlfw0c1czjs47303zv4h91s1jc0nhdlra4rbbx0g2d0"))
+                "1grki39a4rf8n74zc0iglcggxxbpniyfh1gk1lb10p63zvvcsvjj"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile.in"
@@ -539,6 +540,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
        ("mit-krb5" ,mit-krb5)
        ("nss" ,nss)
        ("libx11" ,libx11)
+       ("libxcomposite" ,libxcomposite)
        ("libxt" ,libxt)
        ("libxtst" ,libxtst)
        ("libxi" ,libxi)
@@ -552,10 +554,10 @@ build process and its dependencies, whereas Make uses Makefile format.")
        ("openjdk6-src"
         ,(origin
            (method url-fetch)
-           (uri "https://java.net/downloads/openjdk6/openjdk-6-src-b38-20_jan_2016.tar.gz")
+           (uri "https://java.net/downloads/openjdk6/openjdk-6-src-b39-03_may_2016.tar.gz")
            (sha256
             (base32
-             "1fapj9w4ahzf5nwvdgi1dsxjyh9dqbcvf9638r60h1by13wjqk5p"))))
+             "1brxbsgwcj4js26y5lk6capc3pvghgjidvv9cavw6z8n7c7aw8af"))))
        ("lcms" ,lcms)
        ("zlib" ,zlib)
        ("gtk" ,gtk+-2)
