@@ -7355,6 +7355,17 @@ Return a service that runs the Guix build daemon according to
 Run @var{udev}, which populates the @file{/dev} directory dynamically.
 @end deffn
 
+@deffn {Scheme Procedure} urandom-seed-service @var{#f}
+Save some entropy in @var{%random-seed-file} to seed @file{/dev/urandom}
+when rebooting.
+@end deffn
+
+@defvr {Scheme Variable} %random-seed-file
+This is the name of the file where some random bytes are saved by
+@var{urandom-seed-service} to seed @file{/dev/urandom} when rebooting.
+It defaults to @file{/var/lib/random-seed}.
+@end defvr
+
 @deffn {Scheme Procedure} console-keymap-service @var{files} ...
 @cindex keyboard layout
 Return a service to load console keymaps from @var{files} using
