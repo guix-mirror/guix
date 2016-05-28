@@ -611,6 +611,7 @@ of people.")
        (uri (string-append
              "http://pyyaml.org/download/libyaml/yaml-"
              version ".tar.gz"))
+       (patches (search-patches "libyaml-CVE-2014-9130.patch"))
        (sha256
         (base32
          "0j9731s5zjb8mjx7wzf6vh7bsqi38ay564x6s9nri2nh9cdrg9kx"))))

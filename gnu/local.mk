@@ -809,6 +809,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/xfce4-session-fix-xflock4.patch		\
   %D%/packages/patches/xfce4-settings-defaults.patch		\
   %D%/packages/patches/xmodmap-asprintf.patch 			\
+  %D%/packages/patches/libyaml-CVE-2014-9130.patch 		\
   %D%/packages/patches/zathura-plugindir-environment-variable.patch
 
 MISC_DISTRO_FILES =				\
