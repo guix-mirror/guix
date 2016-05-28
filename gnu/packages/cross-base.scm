@@ -20,12 +20,12 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages cross-base)
-  #:use-module (guix licenses)
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages base)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages hurd)
+  #:use-module (gnu packages mingw)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -37,12 +37,25 @@
   #:use-module (ice-9 regex)
   #:export (cross-binutils
             cross-libc
-            cross-gcc))
+            cross-gcc
+            cross-newlib?))
 
 (define %xgcc
   ;; GCC package used as the basis for cross-compilation.  It doesn't have to
   ;; be 'gcc' and can be a specific variant such as 'gcc-4.8'.
   gcc)
+
+(define %gcc-include-paths
+  ;; Environment variables for header search paths.
+  ;; Note: See <http://bugs.gnu.org/22186> for why not 'CPATH'.
+  '("C_INCLUDE_PATH"
+    "CPLUS_INCLUDE_PATH"
+    "OBJC_INCLUDE_PATH"
+    "OBJCPLUS_INCLUDE_PATH"))
+
+(define %gcc-cross-include-paths
+  ;; Search path for target headers when cross-compiling.
+  (map (cut string-append "CROSS_" <>) %gcc-include-paths))
 
 (define (cross p target)
   (package (inherit p)
@@ -131,7 +144,12 @@ may be either a libc package or #f.)"
                                "--disable-libitm"
                                "--disable-libvtv"
                                "--disable-libsanitizer"
-                               )))
+                                ))
+
+                       ;; For a newlib (non-glibc) target
+                       ,@(if (cross-newlib? target)
+                             '("--with-newlib")
+                             '()))
 
                  ,(if libc
                       flags
@@ -173,12 +191,82 @@ may be either a libc package or #f.)"
                     ;; for cross-compilers.
                     (zero? (system* "make" "install-strip")))
                   ,phases))))
-          (if libc
+           (cond
+            ((target-mingw? target)
+             `(modify-phases ,phases
+                (add-before
+                 'configure 'set-cross-path
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; Add the cross mingw headers to CROSS_C_*_INCLUDE_PATH,
+                   ;; and remove them from C_*INCLUDE_PATH.
+                   (let ((libc (assoc-ref inputs "libc"))
+                         (gcc (assoc-ref inputs "gcc")))
+                     (define (cross? x)
+                       (and libc (string-prefix? libc x)))
+                     (define (unpacked-mingw-dir)
+                       (match
+                           (scandir
+                            "."
+                            (lambda (name) (string-contains name "mingw-w64")))
+                         ((mingw-dir)
+                          (string-append
+                           (getcwd) "/" mingw-dir "/mingw-w64-headers"))))
+                     (if libc
+                         (let ((cpath (string-append
+                                       libc "/include"
+                                       ":" libc "/i686-w64-mingw32/include")))
+                           (for-each (cut setenv <> cpath)
+                                     ',%gcc-cross-include-paths))
+                         ;; libc is false, so we are building xgcc-sans-libc
+                         ;; Add essential headers from mingw-w64.
+                         (let ((mingw-source (assoc-ref inputs "mingw-source")))
+                           (system* "tar" "xf" mingw-source)
+                           (let ((mingw-headers (unpacked-mingw-dir)))
+                             ;; We need _mingw.h which will gets built from
+                             ;; _mingw.h.in by mingw-w64's configure.  We
+                             ;; cannot configure mingw-w64 until we have
+                             ;; xgcc-sans-libc; substitute to the rescue.
+                             (copy-file (string-append mingw-headers
+                                                       "/crt/_mingw.h.in")
+                                        (string-append mingw-headers
+                                                       "/crt/_mingw.h"))
+                             (substitute* (string-append mingw-headers
+                                                         "/crt/_mingw.h")
+                               (("@MINGW_HAS_SECURE_API@")
+                                "#define MINGW_HAS_SECURE_API 1"))
+                             (let ((cpath
+                                    (string-append
+                                     mingw-headers "/include"
+                                     ":" mingw-headers "/crt"
+                                     ":" mingw-headers "/defaults/include")))
+                               (for-each (cut setenv <> cpath)
+                                         (cons
+                                          "CROSS_LIBRARY_PATH"
+                                          ',%gcc-cross-include-paths))))
+                             (when libc
+                               (setenv "CROSS_LIBRARY_PATH"
+                                       (string-append
+                                        libc "/lib"
+                                        ":" libc "/i686-w64-mingw32/lib")))))
+                     (setenv "CPP" (string-append gcc "/bin/cpp"))
+                     (for-each
+                      (lambda (var)
+                        (and=>
+                         (getenv var)
+                         (lambda (value)
+                           (let* ((path (search-path-as-string->list
+                                         value))
+                                  (native-path (list->search-path-as-string
+                                                (remove cross? path) ":")))
+                             (setenv var native-path)))))
+                      (cons "LIBRARY_PATH" ',%gcc-include-paths))
+                     #t)))))
+            (libc
               `(alist-cons-before
                 'configure 'set-cross-path
                 (lambda* (#:key inputs #:allow-other-keys)
-                  ;; Add the cross kernel headers to CROSS_CPATH, and remove them
-                  ;; from CPATH.
+                  ;; Add the cross kernel headers to CROSS_CPATH, and remove
+                  ;; them from CPATH.
                   (let ((libc  (assoc-ref inputs "libc"))
                         (kernel (assoc-ref inputs "xkernel-headers")))
                     (define (cross? x)
@@ -189,36 +277,39 @@ may be either a libc package or #f.)"
                                   libc "/include"
                                   ":" kernel "/include")))
                       (for-each (cut setenv <> cpath)
-                                '("CROSS_C_INCLUDE_PATH"
-                                  "CROSS_CPLUS_INCLUDE_PATH"
-                                  "CROSS_OBJC_INCLUDE_PATH"
-                                  "CROSS_OBJCPLUS_INCLUDE_PATH")))
+                                ',%gcc-cross-include-paths))
                     (setenv "CROSS_LIBRARY_PATH"
                             (string-append libc "/lib:"
                                            kernel "/lib")) ;for Hurd's libihash
                     (for-each
                      (lambda (var)
-                       (and=> (getenv var)
-                              (lambda (value)
-                                (let* ((path (search-path-as-string->list value))
-                                       (native-path (list->search-path-as-string
-                                                     (remove cross? path) ":")))
-                                  (setenv var native-path)))))
-                              '("C_INCLUDE_PATH"
-                                "CPLUS_INCLUDE_PATH"
-                                "OBJC_INCLUDE_PATH"
-                                "OBJCPLUS_INCLUDE_PATH"
-                                "LIBRARY_PATH"))
+                       (and=>
+                        (getenv var)
+                        (lambda (value)
+                          (let* ((path (search-path-as-string->list value))
+                                 (native-path (list->search-path-as-string
+                                               (remove cross? path) ":")))
+                            (setenv var native-path)))))
+                     (cons "LIBRARY_PATH" ',%gcc-include-paths))
                     #t))
-                ,phases)
-              phases)))))))
+                ,phases))
+          (else phases))))))))
 
 (define (cross-gcc-patches target)
   "Return GCC patches needed for TARGET."
   (cond ((string-prefix? "xtensa-" target)
          ;; Patch by Qualcomm needed to build the ath9k-htc firmware.
          (search-patches "ath9k-htc-firmware-gcc.patch"))
+        ((target-mingw? target)
+         (search-patches "gcc-4.9.3-mingw-gthr-default.patch"))
         (else '())))
+
+(define (cross-gcc-snippet target)
+  "Return GCC snippet needed for TARGET."
+  (cond ((target-mingw? target)
+         '(copy-recursively "libstdc++-v3/config/os/mingw32-w64"
+                            "libstdc++-v3/config/os/newlib"))
+        (else #f)))
 
 (define* (cross-gcc target
                     #:optional (xbinutils (cross-binutils target)) libc)
@@ -234,7 +325,10 @@ GCC that does not target a libc; otherwise, target that libc."
                (append
                 (origin-patches (package-source %xgcc))
                 (cons (search-patch "gcc-cross-environment-variables.patch")
-                      (cross-gcc-patches target))))))
+                      (cross-gcc-patches target))))
+              (modules '((guix build utils)))
+              (snippet
+               (cross-gcc-snippet target))))
 
     ;; For simplicity, use a single output.  Otherwise libgcc_s & co. are not
     ;; found by default, etc.
@@ -244,6 +338,8 @@ GCC that does not target a libc; otherwise, target that libc."
      `(#:implicit-inputs? #f
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
+                  (ice-9 ftw)
+                  (ice-9 match)
                   (ice-9 regex)
                   (srfi srfi-1)
                   (srfi srfi-26))
@@ -264,34 +360,32 @@ GCC that does not target a libc; otherwise, target that libc."
        ;; Remaining inputs.
        ,@(let ((inputs (append (package-inputs %xgcc)
                                (alist-delete "libc" (%final-inputs)))))
-           (if libc
-               `(("libc" ,libc)
-                 ("xkernel-headers"                ;the target headers
-                  ,@(assoc-ref (package-propagated-inputs libc)
-                               "kernel-headers"))
-                 ,@inputs)
-               inputs))))
+           (cond
+            ((target-mingw? target)
+             (if libc
+                 `(("libc" ,mingw-w64)
+                   ,@inputs)
+                 `(("mingw-source" ,(package-source mingw-w64))
+                   ,@inputs)))
+            (libc
+             `(("libc" ,libc)
+               ("xkernel-headers"                ;the target headers
+                ,@(assoc-ref (package-propagated-inputs libc)
+                             "kernel-headers"))
+               ,@inputs))
+            (else inputs)))))
 
     (inputs '())
 
     ;; Only search target inputs, not host inputs.
-    ;; Note: See <http://bugs.gnu.org/22186> for why not 'CPATH'.
-    (search-paths
-     (list (search-path-specification
-            (variable "CROSS_C_INCLUDE_PATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "CROSS_CPLUS_INCLUDE_PATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "CROSS_OBJC_INCLUDE_PATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "CROSS_OBJCPLUS_INCLUDE_PATH")
-            (files '("include")))
-           (search-path-specification
-            (variable "CROSS_LIBRARY_PATH")
-            (files '("lib" "lib64")))))
+    (search-paths (cons (search-path-specification
+                         (variable "CROSS_LIBRARY_PATH")
+                         (files '("lib" "lib64")))
+                        (map (lambda (variable)
+                               (search-path-specification
+                                (variable variable)
+                                (files '("include"))))
+                             %gcc-cross-include-paths)))
     (native-search-paths '())))
 
 (define* (cross-kernel-headers target
@@ -464,61 +558,72 @@ XBINUTILS and the cross tool chain."
       (_ glibc/linux)))
 
   ;; Use (cross-libc-for-target ...) to determine the correct libc to use.
-  (let ((libc (cross-libc-for-target target)))
-    (package (inherit libc)
-      (name (string-append "glibc-cross-" target))
-      (arguments
-       (substitute-keyword-arguments
-           `(;; Disable stripping (see above.)
-             #:strip-binaries? #f
 
-             ;; This package is used as a target input, but it should not have
-             ;; the usual cross-compilation inputs since that would include
-             ;; itself.
-             #:implicit-cross-inputs? #f
+  (if (cross-newlib? target)
+      (native-libc target)
+      (let ((libc (cross-libc-for-target target)))
+        (package (inherit libc)
+          (name (string-append "glibc-cross-" target))
+          (arguments
+           (substitute-keyword-arguments
+               `(;; Disable stripping (see above.)
+                 #:strip-binaries? #f
 
-             ;; We need SRFI 26.
-             #:modules ((guix build gnu-build-system)
-                        (guix build utils)
-                        (srfi srfi-26))
+                 ;; This package is used as a target input, but it should not have
+                 ;; the usual cross-compilation inputs since that would include
+                 ;; itself.
+                 #:implicit-cross-inputs? #f
 
-             ,@(package-arguments libc))
-         ((#:configure-flags flags)
-          `(cons ,(string-append "--host=" target)
-               ,flags))
-         ((#:phases phases)
-          `(alist-cons-before
-            'configure 'set-cross-kernel-headers-path
-            (lambda* (#:key inputs #:allow-other-keys)
-              (let* ((kernel (assoc-ref inputs "kernel-headers"))
-                     (cpath (string-append kernel "/include")))
-                (for-each (cut setenv <> cpath)
-                          '("CROSS_C_INCLUDE_PATH"
-                            "CROSS_CPLUS_INCLUDE_PATH"
-                            "CROSS_OBJC_INCLUDE_PATH"
-                            "CROSS_OBJCPLUS_INCLUDE_PATH"))
-                (setenv "CROSS_LIBRARY_PATH"
-                        (string-append kernel "/lib")) ;for Hurd's libihash
-                #t))
-            ,phases))))
+                 ;; We need SRFI 26.
+                 #:modules ((guix build gnu-build-system)
+                            (guix build utils)
+                            (srfi srfi-26))
 
-      ;; Shadow the native "kernel-headers" because glibc's recipe expects the
-      ;; "kernel-headers" input to point to the right thing.
-      (propagated-inputs `(("kernel-headers" ,xheaders)))
+                 ,@(package-arguments libc))
+             ((#:configure-flags flags)
+              `(cons ,(string-append "--host=" target)
+                   ,flags))
+             ((#:phases phases)
+              `(alist-cons-before
+                'configure 'set-cross-kernel-headers-path
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (let* ((kernel (assoc-ref inputs "kernel-headers"))
+                         (cpath (string-append kernel "/include")))
+                    (for-each (cut setenv <> cpath)
+                              '("CROSS_C_INCLUDE_PATH"
+                                "CROSS_CPLUS_INCLUDE_PATH"
+                                "CROSS_OBJC_INCLUDE_PATH"
+                                "CROSS_OBJCPLUS_INCLUDE_PATH"))
+                    (setenv "CROSS_LIBRARY_PATH"
+                            (string-append kernel "/lib")) ;for Hurd's libihash
+                    #t))
+                ,phases))))
 
-      ;; FIXME: 'static-bash' should really be an input, not a native input, but
-      ;; to do that will require building an intermediate cross libc.
-      (inputs '())
+          ;; Shadow the native "kernel-headers" because glibc's recipe expects the
+          ;; "kernel-headers" input to point to the right thing.
+          (propagated-inputs `(("kernel-headers" ,xheaders)))
 
-      (native-inputs `(("cross-gcc" ,xgcc)
-                       ("cross-binutils" ,xbinutils)
-                       ,@(if (string-match (or "i586-pc-gnu" "i586-gnu") target)
-                             `(("cross-mig"
-                                ,@(assoc-ref (package-native-inputs xheaders)
-                                             "cross-mig")))
-                             '())
-                       ,@(package-inputs libc)     ;FIXME: static-bash
-                       ,@(package-native-inputs libc))))))
+          ;; FIXME: 'static-bash' should really be an input, not a native input, but
+          ;; to do that will require building an intermediate cross libc.
+          (inputs '())
+
+          (native-inputs `(("cross-gcc" ,xgcc)
+                           ("cross-binutils" ,xbinutils)
+                           ,@(if (string-match (or "i586-pc-gnu" "i586-gnu") target)
+                                 `(("cross-mig"
+                                    ,@(assoc-ref (package-native-inputs xheaders)
+                                                 "cross-mig")))
+                                 '())
+                           ,@(package-inputs libc)     ;FIXME: static-bash
+                           ,@(package-native-inputs libc)))))))
+
+(define (native-libc target)
+  (if (target-mingw? target)
+      mingw-w64
+      glibc))
+
+(define (cross-newlib? target)
+  (not (eq? (native-libc target) glibc)))
 
 
 ;;; Concrete cross tool chains are instantiated like this:

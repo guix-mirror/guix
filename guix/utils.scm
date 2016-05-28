@@ -70,6 +70,7 @@
             %current-system
             %current-target-system
             package-name->name+version
+            target-mingw?
             version-compare
             version>?
             version>=?
@@ -507,6 +508,10 @@ returned.  Both parts must not contain any '@'."
     (#f  (values spec #f))
     (idx (values (substring spec 0 idx)
                  (substring spec (1+ idx))))))
+
+(define* (target-mingw? #:optional (target (%current-target-system)))
+  (and target
+       (string-suffix? "-mingw32" target)))
 
 (define version-compare
   (let ((strverscmp
