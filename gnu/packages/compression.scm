@@ -110,22 +110,37 @@ utility.  Instead of being written in Java, FastJar is written in C.")
 (define-public libtar
   (package
    (name "libtar")
-   (version "1.2.11")
+   (version "1.2.20")
    (source (origin
             (method url-fetch)
-            (uri (string-append
-                  "ftp://ftp.feep.net/pub/software/libtar/libtar-"
-                  version ".tar.gz"))
+            (uri (list
+                   (string-append
+                     "ftp://ftp.feep.net/pub/software/libtar/libtar-"
+                     version ".tar.gz")
+                   (string-append
+                     "mirror://debian/pool/main/libt/libtar/libtar_"
+                     version ".orig.tar.gz")))
             (sha256
              (base32
-              "1f3vx1wa69a6c5y0z0aakd81gygirdcm0vimazg433q8nyvfybja"))))
+              "02cihzl77ia0dcz7z2cga2412vyhhs5pa2355q4wpwbyga2lrwjh"))))
    (build-system gnu-build-system)
-   (arguments `(#:tests? #f)) ;no "check" target
+   (arguments
+    `(#:tests? #f ;no "check" target
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'autoconf
+          (lambda _ (zero? (system* "sh" "autoreconf" "-vfi")))))))
+   (native-inputs
+    `(("autoconf" ,autoconf)
+      ("automake" ,automake)
+      ("libtool" ,libtool)))
+   (inputs
+    `(("zlib" ,zlib)))
    (synopsis "C library for manipulating POSIX tar files")
    (description
     "libtar is a C library for manipulating POSIX tar files.  It handles
 adding and extracting files to/from a tar archive.")
-   (home-page "http://www.feep.net/libtar/")
+   (home-page "https://repo.or.cz/libtar.git")
    (license license:bsd-3)))
 
 (define-public gzip
