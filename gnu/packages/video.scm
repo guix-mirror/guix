@@ -1167,7 +1167,7 @@ capabilities.")
 (define-public vapoursynth
   (package
     (name "vapoursynth")
-    (version "28")
+    (version "32")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1176,7 +1176,7 @@ capabilities.")
               (file-name (string-append name "-" version))
               (sha256
                (base32
-                "0pnrawcg1j65i46yim0z447lglq1af5zgx0lkqf1x5xl1bfwc0v7"))))
+                "1j08whj946v2kkpgxsfhpca8xf0ax9iqzn73wvwjx319p9j0ymp9"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("autoconf" ,autoconf)
@@ -1189,7 +1189,8 @@ capabilities.")
     (inputs
      `(("ffmpeg" ,ffmpeg)
        ("libass" ,libass)
-       ("tesseract-ocr" ,tesseract-ocr)))
+       ("tesseract-ocr" ,tesseract-ocr)
+       ("zimg" ,zimg)))
     (arguments
      '(#:phases
        (modify-phases %standard-phases
