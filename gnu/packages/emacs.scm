@@ -1769,3 +1769,23 @@ be removed from the front.  This type of data structure is sometimes called an
      "This Emacs package adds spinners and progress-bars to the mode-line for
 ongoing operations.")
     (license license:gpl3+)))
+
+(define-public emacs-seq
+  (package
+    (name "emacs-seq")
+    (version "2.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://elpa.gnu.org/packages/seq-"
+                                  version ".tar"))
+              (sha256
+               (base32
+                "09wi1765bmn7i8fg6ajjfaxgs4ipc42d58zx2fdqpidrdg9c7q73"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/seq.html")
+    (synopsis "Sequence manipulation functions for Emacs")
+    (description
+     "This Emacs library provides sequence-manipulation functions that
+complement basic functions provided by @code{subr.el}.  All provided functions
+work on lists, strings and vectors.")
+    (license license:gpl3+)))
