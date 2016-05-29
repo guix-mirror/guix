@@ -19,6 +19,7 @@
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
+;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -8809,3 +8810,46 @@ to occurences in strings and comments.")
 functionality in a modular way, allowing you to extend your panel with your
 own code, responding to click events and updating clock every second.")
     (license bsd-3)))
+
+(define-public python-tblib
+  (package
+    (name "python-tblib")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "tblib" version))
+              (sha256 (base32
+                       "02iahfkfa927hb4jq2bak36ldihwapzacfiq5lyxg8llwn98a1yi"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Upstream runs tests after installation and the package itself
+             ;; resides in a subdirectory. Extend PYTHONPATH so it will be
+             ;; found.
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) "/build/lib:"
+                                    (getenv "PYTHONPATH")))
+             (zero? (system* "py.test" "-vv" "tests" "README.rst")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/ionelmc/python-tblib")
+    (synopsis "Traceback serialization library")
+    (description
+     "Traceback serialization allows you to:
+
+@enumerate
+@item Pickle tracebacks and raise exceptions with pickled tracebacks in
+different processes.  This allows better error handling when running code over
+multiple processes (imagine multiprocessing, billiard, futures, celery etc).
+
+@item Parse traceback strings and raise with the parsed tracebacks.
+@end itemize")
+    (license bsd-3)))
+
+(define-public python2-tblib
+  (package-with-python2 python-tblib))
