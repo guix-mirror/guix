@@ -1149,7 +1149,8 @@ deliver it in various ways.")
        ;; The following patch fixes an ambiguous definition of
        ;; getline() in formail.c.  The patch is provided by Debian as
        ;; patch 24.
-       (patches (search-patches "procmail-ambiguous-getline-debian.patch"))))
+       (patches (search-patches "procmail-ambiguous-getline-debian.patch"
+                                "procmail-CVE-2014-3618.patch"))))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (replace 'configure
