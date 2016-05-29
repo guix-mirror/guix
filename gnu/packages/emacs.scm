@@ -1729,3 +1729,24 @@ stack, i.e. elements can be added to the front or back of the queue, and can
 be removed from the front.  This type of data structure is sometimes called an
 \"output-restricted deque\".")
     (license license:gpl3+)))
+
+(define-public emacs-pkg-info
+  (package
+    (name "emacs-pkg-info")
+    (version "0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/lunaryorn/pkg-info.el/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1gy1jks5mmm02gg1c8gcyr4f8a9s5ggzhk56gv33b9mzjqzi5rd5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-epl" ,emacs-epl)))
+    (home-page "https://github.com/lunaryorn/pkg-info.el")
+    (synopsis "Information about Emacs packages")
+    (description
+     "This library extracts information from the installed Emacs packages.")
+    (license license:gpl3+)))
