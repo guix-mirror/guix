@@ -11113,7 +11113,9 @@ packages with the corresponding names.
 
 If a project already contains the word @code{python}, we drop this;
 for instance, the module python-dateutil is packaged under the names
-@code{python-dateutil} and @code{python2-dateutil}.
+@code{python-dateutil} and @code{python2-dateutil}.  If the project name
+starts with @code{py} (e.g. @code{pytz}), we keep it and prefix it as
+described above.
 
 
 @node Perl Modules
