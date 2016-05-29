@@ -327,14 +327,14 @@ symlinks to the files in a common directory such as /usr/local.")
 (define-public rpm
   (package
     (name "rpm")
-    (version "4.12.0")
+    (version "4.12.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://rpm.org/releases/rpm-4.12.x/rpm-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "18hk47hc755nslvb7xkq4jb095z7va0nlcyxdpxayc4lmb8mq3bp"))))
+                "0a82ym8phx7g0f3k6smvxnvzh7yv857l42xafk49689kzhld5pbp"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-external-db"   ;use the system's bdb
