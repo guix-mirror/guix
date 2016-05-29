@@ -47,18 +47,18 @@
                     (guix build utils)
                     (srfi srfi-1))
        #:test-target "test"
-       #:phases (alist-replace
-                 'build
-                 (lambda _ (zero? (system* "make" "CFLAGS=-fPIC" "linux")))
-                 (alist-replace
-                  'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let ((out (assoc-ref outputs "out")))
-                      (zero? (system* "make" "install"
-                                      (string-append "INSTALL_TOP=" out)
-                                      (string-append "INSTALL_MAN=" out
-                                                     "/share/man/man1")))))
-                  (alist-delete 'configure %standard-phases)))))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _ (zero? (system* "make" "CFLAGS=-fPIC" "linux"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "make" "install"
+                               (string-append "INSTALL_TOP=" out)
+                               (string-append "INSTALL_MAN=" out
+                                              "/share/man/man1")))))))))
     (home-page "http://www.lua.org/")
     (synopsis "Embeddable scripting language")
     (description
