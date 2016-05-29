@@ -460,10 +460,12 @@ stopped before 'kill' is called."
                    (let ((buf (make-bytevector 512)))
                      (call-with-input-file "/dev/urandom"
                        (lambda (urandom)
-                         (get-bytevector-n! urandom buf 0 512)
-                         (call-with-output-file #$%random-seed-file
-                           (lambda (seed)
-                             (put-bytevector seed buf)))
+                         (let ((previous-umask (umask #o077)))
+                           (get-bytevector-n! urandom buf 0 512)
+                           (call-with-output-file #$%random-seed-file
+                             (lambda (seed)
+                               (put-bytevector seed buf)))
+                           (umask previous-umask))
                          #t)))))
          (modules `((rnrs bytevectors)
                     (rnrs io ports)
