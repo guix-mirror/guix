@@ -8853,3 +8853,37 @@ multiple processes (imagine multiprocessing, billiard, futures, celery etc).
 
 (define-public python2-tblib
   (package-with-python2 python-tblib))
+
+(define-public python-sqlparse
+  (package
+    (name "python-sqlparse")
+    (version "0.1.19")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sqlparse" version))
+              (sha256
+               (base32
+                "1s2fvaxgh9kqzrd6iwy5h7i61ckn05plx9np13zby93z3hdbx5nq"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* _
+             ;; setup.py-integrated 2to3 only affects the build files, but
+             ;; py.test is using the source files. So we need to convert them
+             ;; manually.
+             (when (zero? (system* "python3"))
+               (system* "2to3" "--no-diff" "-wn" "sqlparse" "tests"))
+             (zero? (system* "py.test")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/andialbrecht/sqlparse")
+    (synopsis "Non-validating SQL parser")
+    (description "Sqlparse is a non-validating SQL parser for Python.  It
+provides support for parsing, splitting and formatting SQL statements.")
+    (license bsd-3)))
+
+(define-public python2-sqlparse
+  (package-with-python2 python-sqlparse))
