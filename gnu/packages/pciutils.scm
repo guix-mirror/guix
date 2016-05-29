@@ -40,33 +40,31 @@
                 "0byl2f897w5lhs4bvr6p7qwcz9bllj2zyfv7nywbcbsnb9ha9wrb"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; There's no 'configure' script, just a raw makefile.
-                   (substitute* "Makefile"
-                     (("^PREFIX=.*$")
-                      (string-append "PREFIX := " (assoc-ref outputs "out")
-                                     "\n"))
-                     (("^MANDIR:=.*$")
-                       ;; By default the thing tries to automatically
-                       ;; determine whether to use $prefix/man or
-                       ;; $prefix/share/man, and wrongly so.
-                      (string-append "MANDIR := " (assoc-ref outputs "out")
-                                     "/share/man\n"))
-                     (("^SHARED=.*$")
-                      ;; Build libpciutils.so.
-                      "SHARED := yes\n")
-                     (("^ZLIB=.*$")
-                      ;; Ask for zlib support.
-                      "ZLIB := yes\n")))
-
-                 (alist-replace
-                  'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    ;; Install the commands, library, and .pc files.
-                    (zero? (system* "make" "install" "install-lib")))
-                  %standard-phases))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; There's no 'configure' script, just a raw makefile.
+             (substitute* "Makefile"
+               (("^PREFIX=.*$")
+                (string-append "PREFIX := " (assoc-ref outputs "out")
+                               "\n"))
+               (("^MANDIR:=.*$")
+                 ;; By default the thing tries to automatically
+                 ;; determine whether to use $prefix/man or
+                 ;; $prefix/share/man, and wrongly so.
+                (string-append "MANDIR := " (assoc-ref outputs "out")
+                               "/share/man\n"))
+               (("^SHARED=.*$")
+                ;; Build libpciutils.so.
+                "SHARED := yes\n")
+               (("^ZLIB=.*$")
+                ;; Ask for zlib support.
+                "ZLIB := yes\n"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Install the commands, library, and .pc files.
+             (zero? (system* "make" "install" "install-lib")))))
 
        ;; Make sure programs have an RPATH so they can find libpciutils.so.
        #:make-flags (list (string-append "LDFLAGS=-Wl,-rpath="
