@@ -5,7 +5,7 @@
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2014, 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
@@ -856,7 +856,7 @@ either by Infocom or created using the Inform compiler.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.3.1")
+    (version "1.3.4")
     (source
      (origin
        (method url-fetch)
@@ -864,7 +864,7 @@ either by Infocom or created using the Inform compiler.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1wydzvligyby05x8c4lpg6xcnw9qkmvkskyhzc28xq10vm3q57fv"))))
+        (base32 "077v1sj000y3csjw9vradba3k2aknvg5k8521z8aya6q987klwx5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
