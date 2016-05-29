@@ -5788,6 +5788,35 @@ IPv6 addresses and networks.  This is a port of the Python 3.3 ipaddress
 module to older versions of Python.")
     (license psfl)))
 
+(define-public python2-ipaddr
+  (package
+    (name "python2-ipaddr")
+    (version "2.1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ipaddr" version))
+       (sha256
+        (base32 "1dwq3ngsapjc93fw61rp17fvzggmab5x1drjzvd4y4q0i255nm8v"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2                         ;version 2 only
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* _
+             (zero? (system* "python" "ipaddr_test.py")))))))
+    (home-page "https://github.com/google/ipaddr-py")
+    (synopsis "IP address manipulation library")
+    (description
+     "Ipaddr is a Python@tie{}2 library for creating and manupilating IPv4 and
+IPv6 addresses and networks.
+
+For new implementations you may prefer to use the standard module
+@code{ipaddress}, which was introduced in Python 3.3 and backported to older
+versions of Python.")
+    (license asl2.0)))
+
 (define-public python-idna
   (package
     (name "python-idna")
