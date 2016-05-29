@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,16 +29,15 @@
 (define-public pciutils
   (package
     (name "pciutils")
-    (version "3.3.1")
+    (version "3.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://kernel.org/software/utils/pciutils/pciutils-"
-                    version
-                    ".tar.xz"))
+                    version ".tar.xz"))
               (sha256
                (base32
-                "1ag3skny1bamqil46dlppw8j1fp08spqa60fjygbxkg4fzdknjji"))))
+                "0byl2f897w5lhs4bvr6p7qwcz9bllj2zyfv7nywbcbsnb9ha9wrb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
