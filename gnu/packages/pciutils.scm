@@ -24,6 +24,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages base))
 
 (define-public pciutils
@@ -76,8 +77,8 @@
      `(("which" ,which)
        ("pkg-config" ,pkg-config)))
     (inputs
-     ;; TODO: Add dependency on Linux libkmod.
-     `(("zlib" ,zlib)))
+     `(("kmod" ,kmod)
+       ("zlib" ,zlib)))
     (home-page "http://mj.ucw.cz/sw/pciutils/")
     (synopsis "Programs for inspecting and manipulating PCI devices")
     (description
