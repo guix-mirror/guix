@@ -115,14 +115,14 @@ or server shell scripts with network connections.")
 (define-public zeromq
   (package
     (name "zeromq")
-    (version "4.0.5")
+    (version "4.0.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://download.zeromq.org/zeromq-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0arl8fy8d03xd5h0mgda1s5bajwg8iyh1kk4hd1420rpcxgkrj9v"))))
+                "00vvwhgcdr1lva2pavicvy92iad0hj8cf71n702hv6blw1kjj2z0"))))
     (build-system gnu-build-system)
     (home-page "http://zeromq.org")
     (synopsis "Library for message-based applications")
