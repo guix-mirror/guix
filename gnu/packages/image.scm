@@ -767,3 +767,37 @@ implementation of the codec specified in the JPEG-2000 Part-1 standard (i.e.,
 ISO/IEC 15444-1).")
     (home-page "https://www.ece.uvic.ca/~frodo/jasper/")
     (license (license:x11-style "file://LICENSE"))))
+
+(define-public zimg
+  (package
+    (name "zimg")
+    (version "2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "https://github.com/sekrit-twc/zimg/archive/"
+                            "release-" version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "1hqp1gcsa2zhypms5dnasb1srjgxdqm7cip3w5i571kk9nxkn289"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+           (lambda _
+             (zero? (system* "sh" "autogen.sh")))))))
+    (synopsis "Scaling, colorspace conversion, and dithering library")
+    (description "Zimg implements the commonly required image processing basics
+of scaling, colorspace conversion, and depth conversion.  A simple API enables
+conversion between any supported formats to operate with minimal knowledge from
+the programmer.")
+    (home-page "https://github.com/sekrit-twc/zimg")
+    ;; test/extra/ contains musl-libm, 
+    ;; which is MIT/expat licensed, but only used for tests
+    (license (license:fsf-free "file://COPYING")))) ;WTFPL version 2
