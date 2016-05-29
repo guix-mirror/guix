@@ -85,13 +85,13 @@ for configuration, scripting, and rapid prototyping.")
 (define-public luajit
   (package
     (name "luajit")
-    (version "2.0.3")
+    (version "2.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://luajit.org/download/LuaJIT-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "0ydxpqkmsn2c341j4r2v6r5r0ig3kbwv3i9jran3iv81s6r6rgjm"))
+               (base32 "0zc0y7p6nx1c0pp4nhgbdgjljpfxsb5kgwp4ysz22l1p2bms83v2"))
               (patches (search-patches "luajit-symlinks.patch"
                                        "luajit-no_ldconfig.patch"))))
     (build-system gnu-build-system)
