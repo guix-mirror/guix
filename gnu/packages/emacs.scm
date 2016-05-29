@@ -1750,3 +1750,22 @@ be removed from the front.  This type of data structure is sometimes called an
     (description
      "This library extracts information from the installed Emacs packages.")
     (license license:gpl3+)))
+
+(define-public emacs-spinner
+  (package
+    (name "emacs-spinner")
+    (version "1.7.1")
+    (source (origin
+              (method uncompressed-file-fetch)
+              (uri (string-append "http://elpa.gnu.org/packages/spinner-"
+                                  version ".el"))
+              (sha256
+               (base32
+                "1fmwzdih0kbyvs8bn38mpm4sbs2mikqy2vdykfy9g20wpa8vb681"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Malabarba/spinner.el")
+    (synopsis "Emacs mode-line spinner for operations in progress")
+    (description
+     "This Emacs package adds spinners and progress-bars to the mode-line for
+ongoing operations.")
+    (license license:gpl3+)))
