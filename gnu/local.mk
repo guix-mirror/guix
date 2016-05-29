@@ -612,6 +612,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/lirc-localstatedir.patch			\
   %D%/packages/patches/libpthread-glibc-preparation.patch	\
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
+  %D%/packages/patches/lua-CVE-2014-5461.patch                      \
   %D%/packages/patches/lua-pkgconfig.patch                      \
   %D%/packages/patches/lua51-liblua-so.patch                    \
   %D%/packages/patches/lua52-liblua-so.patch                    \

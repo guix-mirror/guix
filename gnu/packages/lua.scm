@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -78,7 +79,8 @@ for configuration, scripting, and rapid prototyping.")
                                  version ".tar.gz"))
              (sha256
               (base32 "0cskd4w0g6rdm2q8q3i4n1h3j8kylhs3rq8mxwl9vwlmlxbgqh16"))
-             (patches (search-patches "lua51-liblua-so.patch"))))))
+             (patches (search-patches "lua51-liblua-so.patch"
+                                      "lua-CVE-2014-5461.patch"))))))
 
 (define-public luajit
   (package
