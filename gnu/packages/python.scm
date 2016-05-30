@@ -8788,3 +8788,24 @@ the renaming, moving and extracting of attributes, functions, modules, fields
 and parameters in Python 2 source code.  These refactorings can also be applied
 to occurences in strings and comments.")
     (license gpl2)))
+
+(define-public python-py3status
+  (package
+    (name "python-py3status")
+    (version "2.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "py3status" version))
+       (sha256
+        (base32
+         "09y7h8rjay5kzwk5akq7f5f9wqnvjkxhivck04hdc8ny1nw3vqzp"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/ultrabug/py3status")
+    (synopsis "Extensible i3status wrapper written in Python")
+    (description "py3status is an i3status wrapper which extends i3status
+functionality in a modular way, allowing you to extend your panel with your
+own code, responding to click events and updating clock every second.")
+    (license bsd-3)))
