@@ -741,6 +741,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/sudo-CVE-2015-5602.patch			\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
   %D%/packages/patches/synfig-build-fix.patch			\
+  %D%/packages/patches/t1lib-CVE-2010-2642.patch		\
+  %D%/packages/patches/t1lib-CVE-2011-0764.patch		\
+  %D%/packages/patches/t1lib-CVE-2011-1552+CVE-2011-1553+CVE-2011-1554.patch		\
   %D%/packages/patches/tar-d_ino_in_dirent-fix.patch		\
   %D%/packages/patches/tar-skip-unreliable-tests.patch		\
   %D%/packages/patches/tcl-mkindex-deterministic.patch		\

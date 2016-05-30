@@ -286,7 +286,11 @@ high quality, anti-aliased and subpixel rendered text on a display.")
                        (string-append "https://fossies.org/linux/misc/old/"
                                       name "-" version ".tar.gz")))
             (sha256 (base32
-                     "0nbvjpnmcznib1nlgg8xckrmsw3haa154byds2h90y2g0nsjh4w2"))))
+                     "0nbvjpnmcznib1nlgg8xckrmsw3haa154byds2h90y2g0nsjh4w2"))
+            (patches (search-patches
+                       "t1lib-CVE-2010-2642.patch"
+                       "t1lib-CVE-2011-0764.patch"
+                       "t1lib-CVE-2011-1552+CVE-2011-1553+CVE-2011-1554.patch"))))
    (build-system gnu-build-system)
    (arguments
     ;; Making the documentation requires latex, but t1lib is also an input
