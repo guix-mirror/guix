@@ -518,6 +518,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gobject-introspection-absolute-shlib-path.patch \
   %D%/packages/patches/gobject-introspection-cc.patch		\
   %D%/packages/patches/gobject-introspection-girepository.patch	\
+  %D%/packages/patches/graphicsmagick-CVE-2016-5118.patch	\
   %D%/packages/patches/grep-timing-sensitive-test.patch		\
   %D%/packages/patches/grub-CVE-2015-8370.patch			\
   %D%/packages/patches/grub-gets-undeclared.patch		\

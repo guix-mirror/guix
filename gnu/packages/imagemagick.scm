@@ -160,6 +160,7 @@ script.")
              (uri (string-append "ftp://ftp.graphicsmagick.org/pub/"
                                  "GraphicsMagick/" (version-major+minor version)
                                  "/GraphicsMagick-" version ".tar.xz"))
+             (patches (search-patches "graphicsmagick-CVE-2016-5118.patch"))
              (sha256
               (base32
                "03g6l2h8cmf231y1vma0z7x85070jm1ysgs9ppqcd3jj56jka9gx"))))
