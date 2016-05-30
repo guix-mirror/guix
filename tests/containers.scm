@@ -79,6 +79,18 @@
        (assert-exit (file-exists? "/testing")))
      #:namespaces '(user mnt))))
 
+(test-equal "call-with-container, mnt namespace, wrong bind mount"
+  `(system-error ,ENOENT)
+  ;; An exception should be raised; see <http://bugs.gnu.org/23306>.
+  (catch 'system-error
+    (lambda ()
+      (call-with-container '(("/does-not-exist" device "/foo"
+                              "none" (bind-mount) #f #f))
+        (const #t)
+        #:namespaces '(user mnt)))
+    (lambda args
+      (list 'system-error (system-error-errno args)))))
+
 (test-assert "call-with-container, all namespaces"
   (zero?
    (call-with-container '()

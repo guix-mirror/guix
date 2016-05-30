@@ -44,6 +44,16 @@ else
     test $? = 42
 fi
 
+# Make sure file-not-found errors in mounts are reported.
+if guix environment --container --ad-hoc --bootstrap guile-bootstrap \
+	--expose=/does-not-exist -- guile -c 1 2> "$tmpdir/error"
+then
+    false
+else
+    grep "/does-not-exist" "$tmpdir/error"
+    grep "[Nn]o such file" "$tmpdir/error"
+fi
+
 # Make sure that the right directories are mapped.
 mount_test_code="
 (use-modules (ice-9 rdelim)
