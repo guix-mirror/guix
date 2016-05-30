@@ -869,7 +869,7 @@ MIDI functionality to the Linux-based operating system.")
 (define-public iptables
   (package
     (name "iptables")
-    (version "1.4.16.2")
+    (version "1.4.21")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -877,7 +877,7 @@ MIDI functionality to the Linux-based operating system.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "0vkg5lzkn4l3i1sm6v3x96zzvnv9g7mi0qgj6279ld383mzcws24"))))
+               "1q6kg7sf0pgpq0qhab6sywl23cngxxfzc9zdzscsba8x09l4q02j"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f       ; no test suite
