@@ -173,13 +173,22 @@
        "ftp://artfiles.org/cpan.org/"
        "http://www.cpan.org/"
        "ftp://cpan.rinet.ru/pub/mirror/CPAN/"
-       "http://cpan.cu.be/"
        "ftp://cpan.inode.at/"
        "ftp://cpan.iht.co.il/"
        "ftp://ftp.osuosl.org/pub/CPAN/"
        "ftp://ftp.nara.wide.ad.jp/pub/CPAN/"
        "http://mirrors.163.com/cpan/"
-       "ftp://cpan.mirror.ac.za/")
+       "ftp://cpan.mirror.ac.za/"
+       "http://cpan.mirrors.ionfish.org/"
+       "http://cpan.mirror.dkm.cz/pub/CPAN/"
+       "http://cpan.mirror.iphh.net/"
+       "http://mirrors.teentelecom.net/CPAN/"
+       "http://mirror.teklinks.com/CPAN/"
+       "http://cpan.weepeetelecom.be/"
+       "http://mirrors.xservers.ro/CPAN/"
+       "http://cpan.yimg.com/"
+       "http://mirror.yazd.ac.ir/cpan/"
+       "http://ftp.belnet.be/ftp.cpan.org/")
       (cran
        ;; Arbitrary mirrors from http://cran.r-project.org/mirrors.html
        ;; This one automatically redirects to servers worldwide
