@@ -52,30 +52,30 @@
                                ;; Provide the `result' field in `Tcl_Interp'.
                                ;; See <https://bugs.gentoo.org/show_bug.cgi?id=452034>.
                                "CFLAGS=-DUSE_INTERP_RESULT")
-       #:phases (alist-cons-after
-                 'install 'post-install
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out"))
-                         (bin (assoc-ref outputs "tk"))
-                         (tk  (assoc-ref inputs "tk"))
-                         (tkv ,(let ((v (package-version tk)))
-                                 (string-take v (string-index-right v #\.)))))
-                     ;; Move `wishwn' and `wnb' to BIN.
-                     (for-each (lambda (prog)
-                                 (let ((orig (string-append out "/bin/" prog))
-                                       (dst  (string-append bin "/bin/" prog))
-                                       (dir  (string-append tk "/lib/tk" tkv)))
-                                   (mkdir-p (dirname dst))
-                                   (copy-file orig dst)
-                                   (delete-file orig)
-                                   (wrap-program dst
-                                                 `("TK_LIBRARY" "" = (,dir))
-                                                 `("PATH" ":" prefix
-                                                   (,(string-append out
-                                                                    "/bin"))))))
-                               '("wishwn" "wnb"))
-                     #t))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'post-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (bin (assoc-ref outputs "tk"))
+                   (tk  (assoc-ref inputs "tk"))
+                   (tkv ,(let ((v (package-version tk)))
+                           (string-take v (string-index-right v #\.)))))
+               ;; Move `wishwn' and `wnb' to BIN.
+               (for-each (lambda (prog)
+                           (let ((orig (string-append out "/bin/" prog))
+                                 (dst  (string-append bin "/bin/" prog))
+                                 (dir  (string-append tk "/lib/tk" tkv)))
+                             (mkdir-p (dirname dst))
+                             (copy-file orig dst)
+                             (delete-file orig)
+                             (wrap-program dst
+                                           `("TK_LIBRARY" "" = (,dir))
+                                           `("PATH" ":" prefix
+                                             (,(string-append out
+                                                              "/bin"))))))
+                         '("wishwn" "wnb"))
+               #t))))))
     (outputs '("out"
                "tk"))                             ; for the Tcl/Tk GUI
     (inputs `(("tk" ,tk)
