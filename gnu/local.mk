@@ -460,6 +460,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/dbus-helper-search-path.patch		\
   %D%/packages/patches/dealii-p4est-interface.patch		\
+  %D%/packages/patches/devil-CVE-2009-3994.patch		\
   %D%/packages/patches/devil-fix-libpng.patch			\
   %D%/packages/patches/dico-libtool-deterministic.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\

@@ -693,7 +693,8 @@ channels.")
                 "1zd850nn7nvkkhasrv7kn17kzgslr5ry933v6db62s4lr0zzlbv8"))
               ;; Backported from upstream:
               ;; https://github.com/DentonW/DevIL/commit/724194d7a9a91221a564579f64bdd6f0abd64219.patch
-              (patches (search-patches "devil-fix-libpng.patch"))
+              (patches (search-patches "devil-fix-libpng.patch"
+                                       "devil-CVE-2009-3994.patch"))
               (modules '((guix build utils)))
               (snippet
                ;; Fix old lcms include directives and lib flags.
