@@ -108,11 +108,11 @@ versions of ID3v2.")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/id3lib/id3lib/"
-                                version "/id3lib-"
-                                version ".tar.gz"))
+                                version "/id3lib-" version ".tar.gz"))
             (sha256
              (base32
-              "0yfhqwk0w8q2hyv1jib1008jvzmwlpsxvc8qjllhna6p1hycqj97"))))
+              "0yfhqwk0w8q2hyv1jib1008jvzmwlpsxvc8qjllhna6p1hycqj97"))
+            (patches (search-patches "id3lib-CVE-2007-4460.patch"))))
    (build-system gnu-build-system)
    (arguments
     `(#:phases
