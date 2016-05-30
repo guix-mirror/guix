@@ -424,6 +424,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/aegis-test-fixup-2.patch            	\
   %D%/packages/patches/agg-am_c_prototype.patch			\
   %D%/packages/patches/alsa-lib-mips-atomic-fix.patch		\
+  %D%/packages/patches/antiword-CVE-2014-8123.patch			\
   %D%/packages/patches/apr-skip-getservbyname-test.patch	\
   %D%/packages/patches/arb-ldconfig.patch			\
   %D%/packages/patches/ath9k-htc-firmware-binutils.patch	\
