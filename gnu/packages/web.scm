@@ -232,7 +232,8 @@ and UNIX socket support.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "1mvq9p85khsl818i4vbszyfab0fd45mdrwrxjkzw05mk1xcyc1br"))))
+               "1mvq9p85khsl818i4vbszyfab0fd45mdrwrxjkzw05mk1xcyc1br"))
+             (patches (search-patches "jansson-CVE-2016-4425.patch"))))
     (build-system gnu-build-system)
     (home-page "http://www.digip.org/jansson/")
     (synopsis "JSON C library")
