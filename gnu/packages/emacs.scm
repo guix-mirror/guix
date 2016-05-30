@@ -1423,20 +1423,6 @@ to a key in your preferred mode.")
 identifiers in the MIT-Scheme documentation.")
     (license license:gpl2+)))
 
-;;; XXX: move this procedure to an utility module
-(define* (uncompressed-file-fetch url hash-algo hash
-                                  #:optional name
-                                  #:key (system (%current-system))
-                                  (guile (default-guile)))
-  (mlet %store-monad ((drv (url-fetch url hash-algo hash name
-                                      #:system system
-                                      #:guile guile)))
-    (gexp->derivation (or name (basename url))
-                      #~(begin
-                          (mkdir #$output)
-                          (chdir #$output)
-                          (copy-file #$drv (basename #$url))))))
-
 (define-public emacs-constants
   (package
     (name "emacs-constants")
@@ -1572,7 +1558,7 @@ insertion mode.  When enabled all keys are implicitly prefixed with
     (version "0.13")
     (home-page "http://www.loveshack.ukfsn.org/emacs")
     (source (origin
-              (method uncompressed-file-fetch)
+              (method url-fetch)
               (uri "http://www.loveshack.ukfsn.org/emacs/rfcview.el")
               (sha256
                (base32
@@ -1596,7 +1582,7 @@ local directories.")
     (version "12")
     (home-page "http://user42.tuxfamily.org/ffap-rfc-space/index.html")
     (source (origin
-              (method uncompressed-file-fetch)
+              (method url-fetch)
               (uri "http://download.tuxfamily.org/user42/ffap-rfc-space.el")
               (sha256
                (base32
@@ -1713,7 +1699,7 @@ The purpose of this library is to wrap all the quirks and hassle of
     (name "emacs-queue")
     (version "0.1.1")
     (source (origin
-              (method uncompressed-file-fetch)
+              (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/queue-"
                                   version ".el"))
               (sha256
@@ -1756,7 +1742,7 @@ be removed from the front.  This type of data structure is sometimes called an
     (name "emacs-spinner")
     (version "1.7.1")
     (source (origin
-              (method uncompressed-file-fetch)
+              (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/spinner-"
                                   version ".el"))
               (sha256
