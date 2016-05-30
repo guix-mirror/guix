@@ -1,0 +1,18 @@
+This patch was created by oCert according to
+ http://www.ocert.org/advisories/ocert-2008-014.html
+Unfortunately the original patch contained a bug which was
+later fixed by the issuer of the patch Rob Holland <rob@ocert.org>
+This part was now separated in this file.
+
+--- a/lib/search.c
++++ b/lib/search.c
+@@ -1568,7 +1568,8 @@ char *findtheinfo(char *searchstr, int d
+ 			bufstart[0] = '\n';
+ 			bufstart++;
+ 		    }
+-		    strncpy(bufstart, tmpbuf, strlen(tmpbuf));
++                   /* Avoid writing a trailing \0 after the string */
++                   memcpy(bufstart, tmpbuf, strlen(tmpbuf));
+ 		    bufstart = searchbuffer + strlen(searchbuffer);
+ 		}
+ 	    }

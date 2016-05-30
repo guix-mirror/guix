@@ -798,6 +798,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/wicd-wpa2-ttls.patch			\
   %D%/packages/patches/wmctrl-64-fix.patch			\
   %D%/packages/patches/woff2-libbrotli.patch			\
+  %D%/packages/patches/wordnet-CVE-2008-2149.patch			\
+  %D%/packages/patches/wordnet-CVE-2008-3908-pt1.patch			\
+  %D%/packages/patches/wordnet-CVE-2008-3908-pt2.patch			\
   %D%/packages/patches/wpa-supplicant-CVE-2015-5310.patch	\
   %D%/packages/patches/wpa-supplicant-CVE-2015-5314.patch	\
   %D%/packages/patches/wpa-supplicant-CVE-2015-5315.patch	\
