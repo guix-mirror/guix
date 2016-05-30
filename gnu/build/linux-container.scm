@@ -214,15 +214,18 @@ host user identifiers to map into the user namespace."
            (lambda ()
              (close out)
              ;; Wait for parent to set things up.
-             (read in)
-             (close in)
-             (purify-environment)
-             (when (memq 'mnt namespaces)
-               (mount-file-systems root mounts
-                                   #:mount-/proc? (memq 'pid namespaces)
-                                   #:mount-/sys?  (memq 'net namespaces)))
-             ;; TODO: Manage capabilities.
-             (thunk))))
+             (match (read in)
+               ('ready
+                (close in)
+                (purify-environment)
+                (when (memq 'mnt namespaces)
+                  (mount-file-systems root mounts
+                                      #:mount-/proc? (memq 'pid namespaces)
+                                      #:mount-/sys?  (memq 'net namespaces)))
+                ;; TODO: Manage capabilities.
+                (thunk))
+               (_                                 ;parent died or something
+                (primitive-exit 2))))))
          (pid
           (when (memq 'user namespaces)
             (initialize-user-namespace pid host-uids))
