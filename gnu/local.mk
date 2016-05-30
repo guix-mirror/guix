@@ -779,6 +779,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/vorbis-tools-CVE-2014-9640.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2015-6749.patch		\
   %D%/packages/patches/vpnc-script.patch			\
+  %D%/packages/patches/vte-CVE-2012-2738-pt1.patch			\
+  %D%/packages/patches/vte-CVE-2012-2738-pt2.patch			\
   %D%/packages/patches/vtk-mesa-10.patch			\
   %D%/packages/patches/w3m-libgc.patch				\
   %D%/packages/patches/w3m-force-ssl_verify_server-on.patch	\

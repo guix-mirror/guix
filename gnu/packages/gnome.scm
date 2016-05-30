@@ -1820,7 +1820,10 @@ editors, IDEs, etc.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1bmhahkf8wdsra9whd3k5l5z4rv7r58ksr8mshzajgq2ma0hpkw6"))))
+                "1bmhahkf8wdsra9whd3k5l5z4rv7r58ksr8mshzajgq2ma0hpkw6"))
+              (patches (search-patches
+                         "vte-CVE-2012-2738-pt1.patch"
+                         "vte-CVE-2012-2738-pt2.patch"))))
     (arguments
      '(#:configure-flags '("--disable-python")))
     (native-inputs
