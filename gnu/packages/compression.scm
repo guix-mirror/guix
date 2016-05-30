@@ -34,6 +34,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
@@ -122,7 +123,8 @@ utility.  Instead of being written in Java, FastJar is written in C.")
                      version ".orig.tar.gz")))
             (sha256
              (base32
-              "02cihzl77ia0dcz7z2cga2412vyhhs5pa2355q4wpwbyga2lrwjh"))))
+              "02cihzl77ia0dcz7z2cga2412vyhhs5pa2355q4wpwbyga2lrwjh"))
+            (patches (search-patches "libtar-CVE-2013-4420.patch"))))
    (build-system gnu-build-system)
    (arguments
     `(#:tests? #f ;no "check" target

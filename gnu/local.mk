@@ -588,6 +588,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libmad-frame-length.patch		\
   %D%/packages/patches/libmad-mips-newgcc.patch			\
   %D%/packages/patches/libssh-0.6.5-CVE-2016-0739.patch		\
+  %D%/packages/patches/libtar-CVE-2013-4420.patch \
   %D%/packages/patches/libtheora-config-guess.patch		\
   %D%/packages/patches/libtiff-CVE-2015-8665+CVE-2015-8683.patch \
   %D%/packages/patches/libtiff-oob-accesses-in-decode.patch	\
