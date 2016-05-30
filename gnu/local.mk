@@ -766,6 +766,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/util-linux-tests.patch			\
   %D%/packages/patches/upower-builddir.patch			\
   %D%/packages/patches/valgrind-enable-arm.patch		\
+  %D%/packages/patches/vorbis-tools-CVE-2014-9638+CVE-2014-9639.patch		\
+  %D%/packages/patches/vorbis-tools-CVE-2014-9640.patch		\
   %D%/packages/patches/vorbis-tools-CVE-2015-6749.patch		\
   %D%/packages/patches/vpnc-script.patch			\
   %D%/packages/patches/vtk-mesa-10.patch			\
