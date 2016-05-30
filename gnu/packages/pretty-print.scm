@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,7 +44,10 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "195k78m1h03m961qn7jr120z815iyb93gwi159p1p9348lyqvbpk"))))
+        "195k78m1h03m961qn7jr120z815iyb93gwi159p1p9348lyqvbpk"))
+      (patches (search-patches
+                 "a2ps-CVE-2001-1593.patch"
+                 "a2ps-CVE-2014-0466.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("psutils" ,psutils)
