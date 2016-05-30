@@ -528,16 +528,15 @@ used to validate and fix HTML data.")
 (define-public tinyproxy
   (package
     (name "tinyproxy")
-    (version "1.8.3")
+    (version "1.8.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://download.banu.com/tinyproxy/"
-                    (version-major+minor version)
-                    "/tinyproxy-" version ".tar.gz"))
+              (uri (string-append "https://github.com/tinyproxy/tinyproxy/"
+                                  "releases/download/" version "/tinyproxy-"
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "05y0y2q9j10x72y1fipya6bmc8hjcdf3kfw7dh8ahczpy341c938"))))
+                "002hi97687czhfkwsjkr174yvlp10224qi6gd5s53z230bgls7x4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -560,7 +559,7 @@ used to validate and fix HTML data.")
                      ("docbook-xml" ,docbook-xml)
                      ("docbook-xsl" ,docbook-xsl)
                      ("libxslt" ,libxslt)))
-    (home-page "https://banu.com/tinyproxy/")
+    (home-page "https://tinyproxy.github.io/")
     (synopsis "Light-weight HTTP/HTTPS proxy daemon")
     (description "Tinyproxy is a light-weight HTTP/HTTPS proxy
 daemon.  Designed from the ground up to be fast and yet small, it is an ideal
