@@ -79,12 +79,12 @@ view to show two terminals at once.")
     (build-system gnu-build-system)
     (arguments
      ;; No install target.
-     '(#:phases (alist-replace
-                 'install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out")))
-                     (install-file "dtach" (string-append out "/bin"))))
-                 %standard-phases)
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "dtach" (string-append out "/bin"))))))
        ;; No check target.
        #:tests? #f))
     (home-page "http://dtach.sourceforge.net/")
