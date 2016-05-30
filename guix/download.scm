@@ -98,14 +98,28 @@
        "http://savannah.c3sl.ufpr.br/"
        "http://www.centervenus.com/mirrors/nongnu/"
        "http://download.savannah.gnu.org/releases-noredirect/")
-      (sourceforge
+      (sourceforge ; https://sourceforge.net/p/forge/documentation/Mirrors/
        "http://prdownloads.sourceforge.net/"
        "http://heanet.dl.sourceforge.net/sourceforge/"
-       "http://surfnet.dl.sourceforge.net/sourceforge/"
        "http://dfn.dl.sourceforge.net/sourceforge/"
-       "http://mesh.dl.sourceforge.net/sourceforge/"
-       "http://ovh.dl.sourceforge.net/sourceforge/"
-       "http://osdn.dl.sourceforge.net/sourceforge/")
+       "http://freefr.dl.sourceforge.net/sourceforge/"
+       "http://internode.dl.sourceforge.net/sourceforge/"
+       "http://iweb.dl.sourceforge.net/sourceforge/"
+       "http://jaist.dl.sourceforge.net/sourceforge/"
+       "http://kaz.dl.sourceforge.net/sourceforge/"
+       "http://kent.dl.sourceforge.net/sourceforge/"
+       "http://liquidtelecom.dl.sourceforge.net/sourceforge/"
+       "http://nbtelecom.dl.sourceforge.net/sourceforge/"
+       "http://nchc.dl.sourceforge.net/sourceforge/"
+       "http://ncu.dl.sourceforge.net/sourceforge/"
+       "http://netcologne.dl.sourceforge.net/sourceforge/"
+       "http://netix.dl.sourceforge.net/sourceforge/"
+       "http://pilotfiber.dl.sourceforge.net/sourceforge/"
+       "http://superb-sea2.dl.sourceforge.net/sourceforge/"
+       "http://tenet.dl.sourceforge.net/sourceforge/"
+       "http://ufpr.dl.sourceforge.net/sourceforge/"
+       "http://vorboss.dl.sourceforge.net/sourceforge/"
+       "http://netassist.dl.sourceforge.net/sourceforge/")
       (kernel.org
        "http://www.all.kernel.org/pub/"
        "http://ramses.wh2.tu-dresden.de/pub/mirrors/kernel.org/"
