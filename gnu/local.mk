@@ -636,6 +636,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/matplotlib-setupext-tk.patch		\
   %D%/packages/patches/maxima-defsystem-mkdir.patch		\
   %D%/packages/patches/mcron-install.patch			\
+  %D%/packages/patches/mcrypt-CVE-2012-4409.patch			\
+  %D%/packages/patches/mcrypt-CVE-2012-4426.patch			\
+  %D%/packages/patches/mcrypt-CVE-2012-4527.patch			\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
   %D%/packages/patches/mit-krb5-CVE-2015-8629.patch		\
   %D%/packages/patches/mit-krb5-CVE-2015-8630.patch		\
