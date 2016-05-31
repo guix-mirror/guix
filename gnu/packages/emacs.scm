@@ -1887,3 +1887,23 @@ Currently git, mercurial and bazaar repos are considered projects by default.
 If you want to mark a folder manually as a project just create an empty
 .projectile file in it.")
     (license license:gpl3+)))
+
+(define-public emacs-elfeed
+  (package
+    (name "emacs-elfeed")
+    (version "1.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/skeeto/elfeed/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0i75r8x9ypbfjlnym04h16ikcrlks86p7wsgawrx7mh1lk4inp89"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/skeeto/elfeed")
+    (synopsis "Atom/RSS feed reader for Emacs")
+    (description
+     "Elfeed is an extensible web feed reader for Emacs, supporting both Atom
+and RSS, with a user interface inspired by notmuch.")
+    (license license:gpl3+)))
