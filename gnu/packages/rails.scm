@@ -23,6 +23,44 @@
   #:use-module (gnu packages ruby)
   #:use-module (guix build-system ruby))
 
+(define-public ruby-spring
+  (package
+    (name "ruby-spring")
+    (version "1.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "https://github.com/rails/spring/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0czc4mkwfngcqmna49a0l98f6wlhdq2i8gwr63lrmk90d9k25x1n"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "test:unit"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'remove-bump
+           (lambda _
+             (substitute* "spring.gemspec"
+               (("gem.add_development_dependency 'bump'") ""))
+             (substitute* "Rakefile"
+               (("require \\\"bump/tasks\\\"") ""))
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-activesupport" ,ruby-activesupport)))
+    (synopsis "Ruby on Rails application preloader")
+    (description
+     "Spring is a Ruby on Rails application preloader.  It speeds up
+development by keeping your application running in the background so the
+application does need to boot it every time you run a test, rake task or
+migration.")
+    (home-page "https://github.com/rails/spring")
+    (license license:expat)))
+
 (define-public ruby-debug-inspector
   (package
     (name "ruby-debug-inspector")
