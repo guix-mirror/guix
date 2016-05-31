@@ -1817,3 +1817,26 @@ agree upon.")
 convenient interface to your recently and most frequently used commands.  And
 to all the other commands, too.")
     (license license:gpl3+)))
+
+(define-public emacs-js2-mode
+  (package
+    (name "emacs-js2-mode")
+    (version "20150909")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mooz/js2-mode/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1nsm36c4kwb473p13i58fgrnlk8fbn3rdhj47d9xz70az4ra44q0"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/mooz/js2-mode/")
+    (synopsis "Improved JavaScript editing mode for Emacs")
+    (description
+     "Js2-mode provides a JavaScript major mode for Emacs that is more
+advanced than the built-in javascript-mode.  Features include accurate syntax
+highlighting using a recursive-descent parser, on-the-fly reporting of syntax
+errors and strict-mode warnings, smart line-wrapping within comments and
+strings, and code folding.")
+    (license license:gpl3+)))
