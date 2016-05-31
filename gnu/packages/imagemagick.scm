@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -154,16 +155,15 @@ script.")
 (define-public graphicsmagick
   (package
     (name "graphicsmagick")
-    (version "1.3.23")
+    (version "1.3.24")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.graphicsmagick.org/pub/"
                                  "GraphicsMagick/" (version-major+minor version)
                                  "/GraphicsMagick-" version ".tar.xz"))
-             (patches (search-patches "graphicsmagick-CVE-2016-5118.patch"))
              (sha256
               (base32
-               "03g6l2h8cmf231y1vma0z7x85070jm1ysgs9ppqcd3jj56jka9gx"))))
+               "1q40w5hcl8rcpszm0r7rpr3a9lj390p39zfvavkvlgxyyk7bmgsj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
