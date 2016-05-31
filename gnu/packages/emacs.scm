@@ -1907,3 +1907,27 @@ If you want to mark a folder manually as a project just create an empty
      "Elfeed is an extensible web feed reader for Emacs, supporting both Atom
 and RSS, with a user interface inspired by notmuch.")
     (license license:gpl3+)))
+
+(define-public emacs-rainbow-delimiters
+  (package
+    (name "emacs-rainbow-delimiters")
+    (version "2.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://raw.githubusercontent.com/Fanael"
+                                  "/rainbow-delimiters/" version
+                                  "/rainbow-delimiters.el"))
+              (file-name (string-append "rainbow-delimiters-" version ".el"))
+              (sha256
+               (base32
+                "1b3kampwsjabhcqdp0khgff13wc5jqhy3rbvaa12vnv7qy22l9ck"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Fanael/rainbow-delimiters")
+    (synopsis "Highlight brackets according to their depth")
+    (description
+     "Rainbow-delimiters is a \"rainbow parentheses\"-like mode for Emacs which
+highlights parentheses, brackets, and braces according to their depth.  Each
+successive level is highlighted in a different color, making it easy to spot
+matching delimiters, orient yourself in the code, and tell which statements
+are at a given level.")
+    (license license:gpl3+)))
