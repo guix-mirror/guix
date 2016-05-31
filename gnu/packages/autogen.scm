@@ -46,16 +46,16 @@
     (inputs `(("which" ,which)
               ("guile" ,guile-2.0)))
     (arguments
-     '(#:phases (alist-cons-before
-                 'patch-source-shebangs 'patch-test-scripts
-                 (lambda _
-                   (let ((sh (which "sh")))
-                     (substitute*
-                         (append (find-files "agen5/test" "\\.test$")
-                                 (find-files "autoopts/test" "\\.(test|in)$"))
-                       (("/bin/sh") sh)
-                       (("/usr/bin/tr") "tr"))))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'patch-source-shebangs 'patch-test-scripts
+           (lambda _
+             (let ((sh (which "sh")))
+               (substitute*
+                 (append (find-files "agen5/test" "\\.test$")
+                         (find-files "autoopts/test" "\\.(test|in)$"))
+                 (("/bin/sh") sh)
+                 (("/usr/bin/tr") "tr"))))))))
     (home-page "http://www.gnu.org/software/autogen/")
     (synopsis "Automated program generator")
     (description
