@@ -1213,6 +1213,9 @@ template<class T> T LocalStore::getIntLineFromSubstituter(RunningSubstituter & r
 PathSet LocalStore::querySubstitutablePaths(const PathSet & paths)
 {
     PathSet res;
+
+    if (!settings.useSubstitutes) return res;
+
     foreach (Paths::iterator, i, settings.substituters) {
         if (res.size() == paths.size()) break;
         RunningSubstituter & run(runningSubstituters[*i]);
@@ -1239,6 +1242,8 @@ PathSet LocalStore::querySubstitutablePaths(const PathSet & paths)
 void LocalStore::querySubstitutablePathInfos(const Path & substituter,
     PathSet & paths, SubstitutablePathInfos & infos)
 {
+    if (!settings.useSubstitutes) return;
+
     RunningSubstituter & run(runningSubstituters[substituter]);
     startSubstituter(substituter, run);
     if (run.disabled) return;
