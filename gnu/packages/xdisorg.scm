@@ -399,16 +399,16 @@ move windows, switch between desktops, etc.).")
        (list (string-append "--mandir="
                             (assoc-ref %outputs "out")
                             "/share/man"))
-       #:phases (alist-replace
-                 'install
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   (let* ((out (assoc-ref outputs "out"))
-                          (doc (string-append out "/share/doc/scrot")))
-                     (mkdir-p doc)
-                     (zero?
-                      (system* "make" "install"
-                               (string-append "docsdir=" doc)))))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/scrot")))
+               (mkdir-p doc)
+               (zero?
+                (system* "make" "install"
+                         (string-append "docsdir=" doc)))))))))
     (inputs
      `(("libx11" ,libx11)
        ("giblib" ,giblib)))
