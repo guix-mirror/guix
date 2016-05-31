@@ -1505,20 +1505,20 @@ displays a table of current bandwidth usage by pairs of hosts.")
 (define-public munge
   (package
     (name "munge")
-    (version "0.5.11")
+    (version "0.5.12")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/dun/munge/archive/munge-"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/dun/munge/releases/"
+                                  "download/munge-" version "/munge-"
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "0njplyalwwqh7xr7xc7klc6x06mq0ak8w2pxh85w8n4hxkmqqnf5"))))
+                "1s0vlwgm3hcx75vcmjf2y3icy5nv8y07bx93w2cmm6a7x71y6wp9"))))
     (inputs
      `(("openssl" ,openssl)
        ("libgcrypt" ,libgcrypt)))
     (build-system gnu-build-system)
-    (home-page "http://dun.github.io/munge/")
+    (home-page "https://dun.github.io/munge/")
     (synopsis "Cluster computing authentication service")
     (description
      "Munge is an authentication service for creating and validating
