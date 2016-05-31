@@ -145,6 +145,11 @@ current store is on a RAM disk."
         (chmod #$directory #o1775)))
 
   #~(begin
+      ;; Bind-mount TARGET's /tmp in case we need space to build things.
+      (let ((tmpdir (string-append #$target "/tmp")))
+        (mkdir-p tmpdir)
+        (mount tmpdir "/tmp" "none" MS_BIND))
+
       (unless (file-exists? "/.ro-store")
         (mkdir "/.ro-store")
         (mount #$(%store-prefix) "/.ro-store" "none"
