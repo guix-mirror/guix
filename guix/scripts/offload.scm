@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +24,7 @@
   #:use-module (guix serialization)
   #:use-module (guix nar)
   #:use-module (guix utils)
+  #:use-module ((guix build syscalls) #:select (fcntl-flock))
   #:use-module ((guix build utils) #:select (which mkdir-p))
   #:use-module (guix ui)
   #:use-module (srfi srfi-1)
