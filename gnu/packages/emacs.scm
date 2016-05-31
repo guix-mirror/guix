@@ -1977,3 +1977,26 @@ Emacs completion function instead.")
      "Ido-ubiquitous enables ido-style completion for almost every function
 that uses the standard completion function completing-read.")
   (license license:gpl3+)))
+
+(define-public emacs-yaml-mode
+  (package
+    (name "emacs-yaml-mode")
+    (version "0.0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://raw.githubusercontent.com/yoshiki"
+                                  "/yaml-mode/v" version "/yaml-mode.el"))
+              (file-name (string-append "yaml-mode-" version ".el"))
+              (sha256
+               (base32
+                "05zbb7l5j0jhn1z65lhy1f6yf77rd3rsf5ayvwm5a6dfkhr9zwnm"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/yoshiki/yaml-mode")
+    (synopsis "Major mode for editing YAML files")
+    (description
+     "Yaml-mode is an Emacs major mode for editing files in the YAML data
+serialization format.  It was initially developed by Yoshiki Kurihara and many
+features were added by Marshall Vandegrift.  As YAML and Python share the fact
+that indentation determines structure, this mode provides indentation and
+indentation command behavior very similar to that of python-mode.")
+    (license license:gpl3+)))
