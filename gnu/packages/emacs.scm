@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 humanitiesNerd <catonano@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -825,14 +826,14 @@ provides an optional IDE-like error list.")
 (define-public emms
   (package
     (name "emms")
-    (version "4.0")
+    (version "4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emms/emms-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1q0n3iwva8bvai2rl9sm49sdjmk0wi7vajz4knz01l7g67nrp87l"))
+                "0ay6631p3dr6xnhkm7skwn0gp317r1mxbip28m126w4zqf05cbh3"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
