@@ -1931,3 +1931,26 @@ successive level is highlighted in a different color, making it easy to spot
 matching delimiters, orient yourself in the code, and tell which statements
 are at a given level.")
     (license license:gpl3+)))
+
+(define-public emacs-ido-completing-read+
+  (package
+    (name "emacs-ido-completing-read+")
+    (version "3.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://raw.githubusercontent.com"
+                                  "/DarwinAwardWinner/ido-ubiquitous/v"
+                                  version "/ido-completing-read+.el"))
+              (file-name (string-append "ido-completing-read+-" version ".el"))
+              (sha256
+               (base32
+                "1cyalb0p7nfsm4n6n9q6rjmvn6adqc0fq8ybnlj3n41n289dkfjf"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/DarwinAwardWinner/ido-ubiquitous")
+    (synopsis "Replacement for completing-read using ido")
+    (description
+     "The ido-completing-read+ function is a wrapper for ido-completing-read.
+Importantly, it detects edge cases that ordinary ido cannot handle and either
+adjusts them so ido can handle them, or else simply falls back to the standard
+Emacs completion function instead.")
+    (license license:gpl3+)))
