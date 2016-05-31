@@ -2640,6 +2640,26 @@ noncentral hypergeometric distribution (also called extended hypergeometric
 distribution).")
    (license license:gpl3+)))
 
+(define-public r-runit
+  (package
+    (name "r-runit")
+    (version "0.4.31")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RUnit" version))
+       (sha256
+        (base32
+         "1jqr871jkll2xmk7wk5hv1z3a36hyn2ibgivw7bwk4b346940xlx"))))
+    (properties `((upstream-name . "RUnit")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/RUnit")
+    (synopsis "R unit test framework")
+    (description
+     "This package provides R functions implementing a standard unit testing
+framework, with additional code inspection and report generation tools.")
+    (license license:gpl2+)))
+
 (define-public r-zoo
   (package
     (name "r-zoo")
