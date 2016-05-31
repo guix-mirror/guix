@@ -285,6 +285,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/qemu.scm				\
   %D%/packages/qt.scm				\
   %D%/packages/ragel.scm			\
+  %D%/packages/rails.scm			\
   %D%/packages/ratpoison.scm			\
   %D%/packages/rc.scm				\
   %D%/packages/rdesktop.scm			\
