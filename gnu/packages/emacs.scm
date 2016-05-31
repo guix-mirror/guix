@@ -1861,3 +1861,29 @@ strings, and code folding.")
      "Markdown-mode is a major mode for editing Markdown-formatted text files
 in Emacs.")
     (license license:gpl3+)))
+
+(define-public emacs-projectile
+  (package
+    (name "emacs-projectile")
+    (version "0.13.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://raw.githubusercontent.com/bbatsov"
+                                  "/projectile/v" version "/projectile.el"))
+              (file-name (string-append "projectile-" version ".el"))
+              (sha256
+               (base32
+                "1pc6xb61hzxzc5hkqkli1ab0s7wz0rfgx4kcn9y30ksvhw18smbz"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-pkg-info" ,emacs-pkg-info)))
+    (home-page "https://github.com/bbatsov/projectile")
+    (synopsis "Manage and navigate projects in Emacs easily")
+    (description
+     "This library provides easy project management and navigation.  The
+concept of a project is pretty basic - just a folder containing special file.
+Currently git, mercurial and bazaar repos are considered projects by default.
+If you want to mark a folder manually as a project just create an empty
+.projectile file in it.")
+    (license license:gpl3+)))
