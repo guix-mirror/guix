@@ -10,6 +10,7 @@
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 humanitiesNerd <catonano@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1794,4 +1795,25 @@ work on lists, strings and vectors.")
      "Better defaults attempts to address the most obvious deficiencies of the
 Emacs default configuration in uncontroversial ways that nearly everyone can
 agree upon.")
+    (license license:gpl3+)))
+
+(define-public emacs-smex
+  (package
+    (name "emacs-smex")
+    (version "3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://raw.githubusercontent.com"
+                                  "/nonsequitur/smex/" version "/smex.el"))
+              (file-name (string-append "smex-" version ".el"))
+              (sha256
+               (base32
+                "0ar310zx9k5y4i1vl2rawvi712xj9gx77160860jbs691p77cxqp"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/nonsequitur/smex/")
+    (synopsis "M-x interface with Ido-style fuzzy matching")
+    (description
+     "Smex is a M-x enhancement for Emacs.  Built on top of Ido, it provides a
+convenient interface to your recently and most frequently used commands.  And
+to all the other commands, too.")
     (license license:gpl3+)))
