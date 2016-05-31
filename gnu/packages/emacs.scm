@@ -2000,3 +2000,26 @@ features were added by Marshall Vandegrift.  As YAML and Python share the fact
 that indentation determines structure, this mode provides indentation and
 indentation command behavior very similar to that of python-mode.")
     (license license:gpl3+)))
+
+(define-public emacs-web-mode
+  (package
+    (name "emacs-web-mode")
+    (version "14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://raw.githubusercontent.com/fxbois"
+                                  "/web-mode/v" version "/web-mode.el"))
+              (file-name (string-append "web-mode-" version ".el"))
+              (sha256
+               (base32
+                "086hik5fmxg3kx74qmransx9cz961qd22d4m6ah2dw6cwaj1s3s5"))))
+    (build-system emacs-build-system)
+    (synopsis "Major mode for editing web templates")
+    (description "Web-mode is an Emacs major mode for editing web templates
+aka HTML files embedding parts (CSS/JavaScript) and blocks (pre rendered by
+client/server side engines).  Web-mode is compatible with many template
+engines: PHP, JSP, ASP, Django, Twig, Jinja, Mustache, ERB, FreeMarker,
+Velocity, Cheetah, Smarty, CTemplate, Mustache, Blade, ErlyDTL, Go Template,
+Dust.js, React/JSX, Angularjs, ejs, etc.")
+    (home-page "http://web-mode.org/")
+    (license license:gpl3+)))
