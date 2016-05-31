@@ -1840,3 +1840,24 @@ highlighting using a recursive-descent parser, on-the-fly reporting of syntax
 errors and strict-mode warnings, smart line-wrapping within comments and
 strings, and code folding.")
     (license license:gpl3+)))
+
+(define-public emacs-markdown-mode
+  (package
+    (name "emacs-markdown-mode")
+    (version "2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://raw.githubusercontent.com/jrblevin"
+                                  "/markdown-mode/v" version
+                                  "/markdown-mode.el"))
+              (file-name (string-append "markdown-mode-" version ".el"))
+              (sha256
+               (base32
+                "1faibar32jnjia9202swblw91q6z1g5s4k9xmypwjahfh8yznl6w"))))
+    (build-system emacs-build-system)
+    (home-page "http://jblevins.org/projects/markdown-mode/")
+    (synopsis "Emacs Major mode for Markdown files")
+    (description
+     "Markdown-mode is a major mode for editing Markdown-formatted text files
+in Emacs.")
+    (license license:gpl3+)))
