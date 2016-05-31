@@ -55,7 +55,6 @@ libutil_a_SOURCES =				\
   %D%/libutil/affinity.cc			\
   %D%/libutil/serialise.cc			\
   %D%/libutil/util.cc				\
-  %D%/libutil/xml-writer.cc			\
   %D%/libutil/hash.cc				\
   %D%/libutil/gcrypt-hash.cc
 
@@ -63,7 +62,6 @@ libutil_headers =				\
   %D%/libutil/affinity.hh			\
   %D%/libutil/hash.hh				\
   %D%/libutil/serialise.hh			\
-  %D%/libutil/xml-writer.hh			\
   %D%/libutil/util.hh				\
   %D%/libutil/archive.hh			\
   %D%/libutil/types.hh				\
