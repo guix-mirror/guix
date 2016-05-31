@@ -1954,3 +1954,26 @@ Importantly, it detects edge cases that ordinary ido cannot handle and either
 adjusts them so ido can handle them, or else simply falls back to the standard
 Emacs completion function instead.")
     (license license:gpl3+)))
+
+(define-public emacs-ido-ubiquitous
+  (package
+    (name "emacs-ido-ubiquitous")
+    (version "3.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://raw.githubusercontent.com"
+                                  "/DarwinAwardWinner/ido-ubiquitous/v"
+                                  version "/ido-ubiquitous.el"))
+              (file-name (string-append "ido-ubiquitous-" version ".el"))
+              (sha256
+               (base32
+                "197ypji0fb6jsdcq40rpnknwlh3imas6s6jbsvkfm0pz9988c3q2"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ido-completing-read+" ,emacs-ido-completing-read+)))
+    (home-page "https://github.com/DarwinAwardWinner/ido-ubiquitous")
+    (synopsis "Use ido (nearly) everywhere")
+    (description
+     "Ido-ubiquitous enables ido-style completion for almost every function
+that uses the standard completion function completing-read.")
+  (license license:gpl3+)))
