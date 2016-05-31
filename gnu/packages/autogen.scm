@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013,2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2013, 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +31,7 @@
 (define-public autogen
   (package
     (name "autogen")
-    (version "5.18.7")
+    (version "5.18.10")
     (source
      (origin
       (method url-fetch)
@@ -39,7 +39,7 @@
                           "/autogen-" version ".tar.xz"))
       (sha256
        (base32
-        "01d4m8ckww12sy50vgyxlnz83z9dxqpyqp153cscncc9w6jq19d7"))))
+        "0j61mf3qab5ya7w5xsp7xalrby00cv92g462bxffl104ql18w92f"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)     ;for doc generator mdoc
                      ("pkg-config" ,pkg-config)))
