@@ -1428,7 +1428,7 @@ identifiers in the MIT-Scheme documentation.")
     (home-page "https://staff.fnwi.uva.nl/c.dominik/Tools/constants")
     (source
      (origin
-       (file-name (string-append name "-" version ".el"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (method url-fetch)
        (uri (string-append "https://github.com/fedeinthemix/emacs-constants"
                            "/archive/v" version ".tar.gz"))
