@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -133,15 +134,15 @@ C++.")
 (define-public microscheme
   (package
     (name "microscheme")
-    (version "0.9.2")
+    (version "0.9.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ryansuchocki/"
-                                  "microscheme/archive/v" version ".zip"))
+                                  "microscheme/archive/v" version ".tar.gz"))
               (sha256
                (base32
-                "0cmp1c6ilcib4w9ysqghav310g8jsq9gdfpfa9sd23wgl7mlncxf"))
-              (file-name (string-append name "-" version ".zip"))))
+                "1n404mh7z2icy3ga1mx249lk9x091k7idj6xpcf20hnmzabd0k0x"))
+              (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; fails to build otherwise
