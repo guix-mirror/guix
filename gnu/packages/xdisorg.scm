@@ -387,7 +387,7 @@ move windows, switch between desktops, etc.).")
                            version ".tar.gz")
                          (string-append
                            "https://fossies.org/linux/privat/old/scrot-"
-                           version "tar.gz")))
+                           version ".tar.gz")))
               (sha256
                (base32
                 "1wll744rhb49lvr2zs6m93rdmiq59zm344jzqvijrdn24ksiqgb1"))))
