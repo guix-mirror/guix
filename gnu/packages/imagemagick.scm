@@ -46,6 +46,7 @@
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
                                  version ".tar.xz"))
+             (patches (search-patches "imagemagick-CVE-2016-5118.patch"))
              (sha256
               (base32
                "0niwa7ci50865x1h6qffz1q6i2ph2l5ym7bhcg5kdnvi4f75p9ir"))))
