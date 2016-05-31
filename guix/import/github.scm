@@ -43,7 +43,7 @@ failure."
 (define (find-extension url)
   "Return the extension of the archive e.g. '.tar.gz' given a URL, or
 false if none is recognized"
-  (find (lambda x (string-suffix? (first x) url))
+  (find (lambda (x) (string-suffix? x url))
         (list ".tar.gz" ".tar.bz2" ".tar.xz" ".zip" ".tar" ".tgz")))
 
 (define (updated-github-url old-package new-version)
