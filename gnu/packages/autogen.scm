@@ -35,7 +35,7 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://gnu/autogen"
+      (uri (string-append "mirror://gnu/autogen/rel" version
                           "/autogen-" version ".tar.xz"))
       (sha256
        (base32
