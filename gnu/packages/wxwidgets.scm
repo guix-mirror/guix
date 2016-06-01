@@ -63,7 +63,7 @@
      `(("pkg-config" ,pkg-config)))
     (arguments
      '(#:configure-flags
-       '("--with-regex=sys" "--with-libmspack"
+       '("--with-regex" "--with-libmspack"
          "--with-sdl"
          "--enable-webview"
          "--enable-webkit"
