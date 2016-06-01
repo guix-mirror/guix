@@ -336,6 +336,13 @@ manager, which can be done on top of a running GNU/Linux system.  If,
 instead, you want to install the complete GNU operating system,
 @pxref{System Installation}.
 
+@cindex foreign distro
+When installed on a running GNU/Linux system---thereafter called a
+@dfn{foreign distro}---GNU@tie{}Guix complements the available tools
+without interference.  Its data lives exclusively in two directories,
+usually @file{/gnu/store} and @file{/var/guix}; other files on your
+system, such as @file{/etc}, are left untouched.
+
 @menu
 * Binary Installation::         Getting Guix running in no time!
 * Requirements::                Software needed to build and run Guix.
@@ -1096,6 +1103,7 @@ daemons on the same machine.
 @node Application Setup
 @section Application Setup
 
+@cindex foreign distro
 When using Guix on top of GNU/Linux distribution other than GuixSD---a
 so-called @dfn{foreign distro}---a few additional steps are needed to
 get everything in place.  Here are some of them.
