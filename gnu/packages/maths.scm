@@ -582,6 +582,37 @@ common interface for a number of different free optimization routines available
 online as well as original implementations of various other algorithms.")
     (license license:lgpl2.1+)))
 
+(define-public ipopt
+  (package
+    (name "ipopt")
+    (version "3.12.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.coin-or.org/download/source/Ipopt/Ipopt-"
+                    version".tgz"))
+              (sha256
+               (base32
+                "09bk2hqy2vgi4yi76xng9zxakddwqy3wij9nx7wf2vfbxxpazrsk"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Make sure we don't use the bundled software.
+               '(delete-file-recursively "ThirdParty"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (inputs
+     ;; TODO: Maybe add dependency on COIN-MUMPS, ASL, and HSL.
+     `(("blas" ,openblas)
+       ("lapack" ,lapack)))
+    (home-page "http://www.coin-or.org")
+    (synopsis "Large-scale nonlinear optimizer")
+    (description
+     "The Interior Point Optimizer (IPOPT) is a software package for
+large-scale nonlinear optimization.  It provides C++, C, and Fortran
+interfaces.")
+    (license license:epl1.0)))
+
 ;; For a fully featured Octave, users  are strongly recommended also to install
 ;; the following packages: texinfo, less, ghostscript, gnuplot.
 (define-public octave
