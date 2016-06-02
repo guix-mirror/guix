@@ -437,10 +437,10 @@ Guile.")
 (define-public non-sequencer
   ;; The latest tagged release is three years old and uses a custom build
   ;; system, so we take the last commit affecting the "sequencer" directory.
-  (let ((commit "1d9bd576"))
+  (let ((commit "1d9bd576f6bf7ea240af5f7a60260592750af0dd"))
     (package
       (name "non-sequencer")
-      (version (string-append "1.9.5-" commit))
+      (version (string-append "1.9.5-" (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference

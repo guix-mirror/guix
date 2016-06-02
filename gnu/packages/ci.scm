@@ -39,10 +39,10 @@
   #:use-module (guix build-system gnu))
 
 (define-public hydra
-  (let ((commit "4c0e3e4"))
+  (let ((commit "4c0e3e47034545ad3e9e86dd069138bcebb8ccee"))
     (package
       (name "hydra")
-      (version (string-append "20150407." commit))
+      (version (string-append "20150407." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference

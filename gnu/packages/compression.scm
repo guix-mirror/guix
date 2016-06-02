@@ -443,16 +443,17 @@ with the sfArk algorithm.")
     (license license:gpl3+)))
 
 (define-public sfarkxtc
+ (let ((commit "b5e0a2ba3921f019d74d4b92bd31c36dd19d2cf1"))
   (package
     (name "sfarkxtc")
-    (version "b5e0a2ba39")
+    (version (string-take commit 10))
     (source (origin
               ;; There are no release tarballs, so we just fetch the latest
               ;; commit at this time.
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/raboof/sfarkxtc.git")
-                    (commit version)))
+                    (commit commit)))
               (sha256
                (base32
                 "0f5x6i46qfl6ry21s7g2p4sd4b2r1g4fb03yqi2vv4kq3saryhvj"))))
@@ -473,7 +474,7 @@ with the sfArk algorithm.")
     (synopsis "Basic sfArk decompressor")
     (description "SfArk extractor converts SoundFonts in the compressed legacy
 sfArk file format to the uncompressed sf2 format.")
-    (license license:gpl3+)))
+    (license license:gpl3+))))
 
 (define-public libmspack
   (package

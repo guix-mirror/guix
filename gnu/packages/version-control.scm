@@ -479,7 +479,7 @@ will work.")
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/nvie/gitflow/")
-                    (commit "15aab26")))
+                    (commit "15aab26490facf285acef56cb5d61025eacb3a69")))
               (sha256
                (base32
                 "01fs97q76fdfnvmrh2cyjhywcs3pykf1dg58sy0frflnsdzs6prx"))))
@@ -513,10 +513,10 @@ lot easier.")
     (license bsd-2)))
 
 (define-public git-test-sequence
-  (let ((commit "48e5a2f"))
+  (let ((commit "48e5a2f5a13a5f30452647237e23362b459b9c76"))
     (package
       (name "git-test-sequence")
-      (version (string-append "20140312." commit))
+      (version (string-append "20140312." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference

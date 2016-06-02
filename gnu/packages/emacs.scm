@@ -1238,7 +1238,7 @@ files and directories.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (commit "8807064693")
+                    (commit "880706469338ab59b5bb7dbe8460016f89755364")
                     (url "https://github.com/gregsexton/ob-ipython.git")))
               (sha256
                (base32

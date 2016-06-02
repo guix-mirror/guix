@@ -2670,10 +2670,10 @@ the phenotype as it models the data.")
     (license license:asl2.0)))
 
 (define-public pbtranscript-tofu
-  (let ((commit "8f5467fe6"))
+  (let ((commit "8f5467fe6a4472bcfb4226c8720993c8507adfe4"))
     (package
       (name "pbtranscript-tofu")
-      (version (string-append "2.2.3." commit))
+      (version (string-append "2.2.3." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -3009,7 +3009,7 @@ viewer.")
                (delete 'configure))))))))
 
 (define-public mosaik
-  (let ((commit "5c25216d"))
+  (let ((commit "5c25216d3522d6a33e53875cd76a6d65001e4e67"))
     (package
       (name "mosaik")
       (version "2.2.30")
@@ -3259,10 +3259,10 @@ subsequent visualization, annotation and storage of results.")
 
 (define-public smithlab-cpp
   (let ((revision "1")
-        (commit "728a097"))
+        (commit "728a097bec88c6f4b8528b685932049e660eff2e"))
     (package
       (name "smithlab-cpp")
-      (version (string-append "0." revision "." commit))
+      (version (string-append "0." revision "." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -5169,7 +5169,7 @@ libraries for systems that do not have these available via other means.")
        ("samtools" ,samtools-0.1)
        ("gsl" ,gsl)
        ("smithlab-cpp"
-        ,(let ((commit "3723e2d"))
+        ,(let ((commit "3723e2db438c51501d0423429ff396c3035ba46a"))
            (origin
              (method git-fetch)
              (uri (git-reference
