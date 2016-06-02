@@ -553,7 +553,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/icu4c-CVE-2015-4760.patch		\
   %D%/packages/patches/id3lib-CVE-2007-4460.patch			\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
-  %D%/packages/patches/imagemagick-CVE-2016-5118.patch		\
   %D%/packages/patches/inkscape-drop-wait-for-targets.patch	\
   %D%/packages/patches/irrlicht-mesa-10.patch			\
   %D%/packages/patches/jansson-CVE-2016-4425.patch		\
