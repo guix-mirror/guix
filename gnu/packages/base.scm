@@ -825,7 +825,7 @@ command.")
        ;; We just pass the flags really needed to build the headers.
        ((#:configure-flags _)
         `(list "--enable-add-ons"
-               "--host=i686-pc-gnu"
+               "--host=i586-pc-gnu"
                "--enable-obsolete-rpc"))
        ((#:phases _)
         '(alist-replace
