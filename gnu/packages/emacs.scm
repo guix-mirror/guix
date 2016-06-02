@@ -2053,3 +2053,39 @@ considered to be its successor.  Helm sets out to clean up the legacy code in
 @code{anything.el} and provide a cleaner, leaner and more modular tool, that's
 not tied in the trap of backward compatibility.")
     (license license:gpl3+)))
+
+(define-public emacs-cider
+  (package
+    (name "emacs-cider")
+    (version "0.12.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/clojure-emacs/cider/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "00qzbfjy3w6bcnki7gw0clmi0cc5yqjdrcyhgv4ymijjs79h9p5s"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-clojure-mode" ,emacs-clojure-mode)
+       ("emacs-spinner" ,emacs-spinner)
+       ("emacs-pkg-info" ,emacs-pkg-info)
+       ("emacs-queue" ,emacs-queue)
+       ("emacs-seq" ,emacs-seq)))
+    (home-page "https://cider.readthedocs.org/")
+    (synopsis "Clojure development environment for Emacs")
+    (description
+     "CIDER (Clojure Interactive Development Environment that Rocks) aims to
+provide an interactive development experience similar to the one you'd get
+when programming in Emacs Lisp, Common Lisp (with SLIME or Sly), Scheme (with
+Geiser) and Smalltalk.
+
+CIDER is the successor to the now deprecated combination of using SLIME +
+swank-clojure for Clojure development.
+
+There are plenty of differences between CIDER and SLIME, but the core ideas
+are pretty much the same (and SLIME served as the principle inspiration for
+CIDER).")
+    (license license:gpl3+)))
