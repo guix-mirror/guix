@@ -502,7 +502,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/glib-networking-ssl-cert-file.patch	\
   gnu/packages/patches/glib-tests-timer.patch			\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
-  gnu/packages/patches/glibc-hurd-extern-inline.patch		\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
   gnu/packages/patches/glibc-locales.patch			\
   gnu/packages/patches/glibc-o-largefile.patch			\
@@ -601,7 +600,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/libxslt-generated-ids.patch		\
   gnu/packages/patches/libxslt-remove-date-timestamps.patch	\
   gnu/packages/patches/lirc-localstatedir.patch			\
-  gnu/packages/patches/libpthread-glibc-preparation.patch	\
   gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\
   gnu/packages/patches/lua-pkgconfig.patch                      \
   gnu/packages/patches/lua51-liblua-so.patch                    \

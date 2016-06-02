@@ -761,66 +761,56 @@ command.")
   ;; The Hurd's libc variant.
   (package (inherit glibc)
     (name "glibc-hurd")
-    (version "2.18")
+    (version "2.19")
     (source (origin
-              (method git-fetch)
-              (uri (git-reference
-                    (url "git://git.sv.gnu.org/hurd/glibc")
-                    (commit "cc94b3cfe65523f980359e5f0e93a26196bda1d3")))
+              (method url-fetch)
+              (uri (string-append "http://alpha.gnu.org/gnu/hurd/glibc-"
+                                  version "-hurd+libpthread-20160518" ".tar.gz"))
               (sha256
                (base32
-                "17gsh0kaz0zyvghjmx861mi2p65m9901lngi179x61zm6v2v3xc4"))
-              (file-name (string-append name "-" version))
-              (patches (search-patches "glibc-hurd-extern-inline.patch"))))
+                "12zmdjviybpsdb2kq4cg98rds7909f0cc96fzdahdfrzlxx1q0px"))))
 
     ;; Libc provides <hurd.h>, which includes a bunch of Hurd and Mach headers,
     ;; so both should be propagated.
-    (propagated-inputs `(("gnumach-headers" ,gnumach-headers)
-                         ("hurd-headers" ,hurd-headers)
-                         ("hurd-minimal" ,hurd-minimal)))
+    (propagated-inputs `(("hurd-core-headers" ,hurd-core-headers)))
     (native-inputs
      `(,@(package-native-inputs glibc)
-       ("patch/libpthread-patch" ,(search-patch "libpthread-glibc-preparation.patch"))
        ("mig" ,mig)
-       ("perl" ,perl)
-       ("libpthread" ,(origin
-                        (method git-fetch)
-                        (uri (git-reference
-                              (url "git://git.sv.gnu.org/hurd/libpthread")
-                              (commit "0ef7b75c4ba91b6660f0d3d8b51d14d25e3d5bfb")))
-                        (sha256
-                         (base32
-                          "031py18fls15z0wprni33mf762kg6fx8xqijppimhp83yp6ky3l3"))
-                        (file-name "libpthread")))))
+       ("perl" ,perl)))
 
     (arguments
      (substitute-keyword-arguments (package-arguments glibc)
-       ((#:configure-flags original-configure-flags)
-        `(append (list "--host=i686-pc-gnu"
+       ((#:phases original-phases)
+        ;; Add libmachuser.so and libhurduser.so to libc.so's search path.
+        ;; See <http://lists.gnu.org/archive/html/bug-hurd/2015-07/msg00051.html>.
+        `(alist-cons-after
+          'install 'augment-libc.so
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out")))
+              (substitute* (string-append out "/lib/libc.so")
+                (("/[^ ]+/lib/libc.so.0.3")
+                 (string-append out "/lib/libc.so.0.3" " libmachuser.so" " libhurduser.so"))))
+            #t)
+          (alist-cons-after
+           'pre-configure 'pre-configure-set-pwd
+           (lambda _
+             ;; Use the right 'pwd'.
+             (substitute* "configure"
+               (("/bin/pwd") "pwd")))
+          ,original-phases)))
+        ((#:configure-flags original-configure-flags)
+        `(append (list "--host=i586-pc-gnu"
+
+                       ;; We need this to get a working openpty() function.
+                       "--enable-pt_chown"
 
                        ;; nscd fails to build for GNU/Hurd:
                        ;; <https://lists.gnu.org/archive/html/bug-hurd/2014-07/msg00006.html>.
                        ;; Disable it.
                        "--disable-nscd")
                  (filter (lambda (flag)
-                           (not (or (string-prefix? "--with-headers=" flag)
-                                    (string-prefix? "--enable-kernel=" flag))))
-                         ;; Evaluate 'original-configure-flags' in a
-                         ;; lexical environment that has a dummy
-                         ;; "linux-headers" input, to prevent errors.
-                         (let ((%build-inputs `(("linux-headers" . "@DUMMY@")
-                                                ,@%build-inputs)))
-                           ,original-configure-flags))))
-       ((#:phases phases)
-        `(alist-cons-after
-          'unpack 'prepare-libpthread
-          (lambda* (#:key inputs #:allow-other-keys)
-            (copy-recursively (assoc-ref inputs "libpthread") "libpthread")
-
-            (system* "patch" "--force" "-p1" "-i"
-                     (assoc-ref inputs "patch/libpthread-patch"))
-            #t)
-          ,phases))))
+                           (not (string-prefix? "--enable-kernel=" flag)))
+                         ,original-configure-flags)))))
     (synopsis "The GNU C Library (GNU Hurd variant)")
     (supported-systems %hurd-systems)))
 
