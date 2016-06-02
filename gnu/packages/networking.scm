@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <tobias.geerinckx.rice@gmail.com>
 ;;; Copyright   2016 John Darrington <jmd@gnu.org>
+;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,12 +27,25 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages tls)
-  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages admin)
+  #:use-module (gnu packages adns)
+  #:use-module (gnu packages audio)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
+  #:use-module (gnu packages mit-krb5)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages compression))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages tls))
 
 (define-public macchanger
   (package
@@ -273,3 +287,54 @@ DNS queries are allowed.  The bandwidth is asymmetrical, with limited upstream
 and up to 1 Mbit/s downstream.")
     ;; src/md5.[ch] is released under the zlib license
     (license (list license:isc license:zlib))))
+
+(define-public wireshark
+  (package
+    (name "wireshark")
+    (version "2.0.3")
+    (synopsis "Network traffic analyzer")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.wireshark.org/download/src/wireshark-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "1z358k65frp9m0l07cppwxhvbcp1w9ya5sml87pzs8gyfmp3g5p1"))))
+    (build-system glib-or-gtk-build-system)
+    (inputs `(("bison" ,bison)
+              ("c-ares" ,c-ares)
+              ("flex" ,flex)
+              ("gnutls" ,gnutls)
+              ("gtk+" ,gtk+)
+              ("libcap" ,libcap)
+              ("libgcrypt" ,libgcrypt)
+              ("libnl" ,libnl)
+              ("libpcap" ,libpcap)
+              ("lua" ,lua)
+              ("krb5" ,mit-krb5)
+              ("openssl" ,openssl)
+              ("portaudio" ,portaudio)
+              ("sbc" ,sbc)
+              ("zlib" ,zlib)))
+    (native-inputs `(("perl" ,perl)
+                     ("pkg-config" ,pkg-config)
+                     ("python" ,python-wrapper)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-c-ares=" (assoc-ref %build-inputs "c-ares"))
+             (string-append "--with-krb5=" (assoc-ref %build-inputs "krb5"))
+             (string-append "--with-libcap=" (assoc-ref %build-inputs "libcap"))
+             (string-append "--with-lua=" (assoc-ref %build-inputs "lua"))
+             (string-append "--with-pcap=" (assoc-ref %build-inputs "libpcap"))
+             (string-append "--with-portaudio="
+                             (assoc-ref %build-inputs "portaudio"))
+             (string-append "--with-sbc=" (assoc-ref %build-inputs "sbc"))
+             (string-append "--with-ssl=" (assoc-ref %build-inputs "openssl"))
+             (string-append "--with-zlib=" (assoc-ref %build-inputs "zlib"))
+             "--without-qt")))
+    (description "Wireshark is a network protocol analyzer, or @dfn{packet
+sniffer}, that lets you capture and interactively browse the contents of
+network frames.")
+    (license license:gpl2+)
+    (home-page "https://www.wireshark.org/")))
