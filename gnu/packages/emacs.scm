@@ -1989,7 +1989,7 @@ that uses the standard completion function completing-read.")
               (file-name (string-append "yaml-mode-" version ".el"))
               (sha256
                (base32
-                "05zbb7l5j0jhn1z65lhy1f6yf77rd3rsf5ayvwm5a6dfkhr9zwnm"))))
+                "17wq433ycli0qx4gdhgrmb392qblm6y2dwcyn38j5ja1lasfb0ax"))))
     (build-system emacs-build-system)
     (home-page "https://github.com/yoshiki/yaml-mode")
     (synopsis "Major mode for editing YAML files")
