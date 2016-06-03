@@ -465,6 +465,28 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                             (((string-append "INSTALL_ROOT)" qtbase))
                              (string-append "INSTALL_ROOT)" out)))))))))))
 
+(define-public qtimageformats
+  (package (inherit qtsvg)
+    (name "qtimageformats")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "020v1148433zx4g87z2r8fgff32n0laajxqqsja1l3yzz7jbrwvl"))))
+    (native-inputs `())
+    (inputs
+     `(("libmng" ,libmng)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
+       ("mesa" ,mesa)
+       ("qtbase" ,qtbase)
+       ("zlib" ,zlib)))))
+
 (define-public qjson
   (package
     (name "qjson")
