@@ -358,16 +358,16 @@ security, and applying best practice development processes.")
 (define-public python-acme
   (package
     (name "python-acme")
-    (version "0.7.0")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                      "https://pypi.python.org/packages/"
-                     "d9/8c/69dfff1020cd05d00cb44879db401ea3aca13eeed56cc72bea5ebe118ee5/"
+                     "45/17/6fdcede92c7fe4d9c1ab9d7513ded5aa969a0b9c90f3d7b3b074cd37e898/"
                      "acme-" version ".tar.gz"))
       (sha256
         (base32
-         "1fgf32zpkwp5nwiyay4vagyiqnpw325fxga1nwk20h3qg6aa2xcz"))))
+         "1nk48p0pi6xmqpsqjvw6xkx5vv4vl33yzq67fpr33ci8fra6pa6z"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -420,16 +420,16 @@ security, and applying best practice development processes.")
 (define-public certbot
   (package
     (name "certbot")
-    (version "0.7.0")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                      "https://pypi.python.org/packages/"
-                     "d8/08/dde6bc98204c79bdefe0c1ae3a08c44f4f319197b0fc34c109a9f6a6df64/"
+                     "da/b8/fa6d7f0f8c0d37944ca4a1940b1e933fc6673498995a45db03c034bb11dd/"
                      name "-" version ".tar.gz"))
               (sha256
                (base32
-                "127ykqsw39h7gvlax0zhv9x6sfwp6hps7lq2d20apl8nbvbq6l5d"))))
+                "052338jdiy8dniskqxm2hzbca084ms0xqnjicshl6cpvhjs70g1w"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
@@ -441,10 +441,6 @@ security, and applying best practice development processes.")
                     (man1 (string-append out "/share/man/man1"))
                     (man7 (string-append out "/share/man/man7"))
                     (info (string-append out "/info")))
-               ;; Fix path.
-               ;; https://github.com/certbot/certbot/pull/3102
-               (substitute* "docs/man/certbot.rst"
-                 (("cli-help.txt") "../cli-help.txt"))
                (and
                  (zero? (system* "make" "-C" "docs" "man" "info"))
                  (install-file "docs/_build/texinfo/Certbot.info" info)
