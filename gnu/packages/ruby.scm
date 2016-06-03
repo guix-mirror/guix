@@ -3995,4 +3995,61 @@ call.")
     (home-page "https://github.com/travisjeffery/timecop")
     (license license:expat)))
 
+(define-public ruby-concurrent
+  (package
+    (name "ruby-concurrent")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Download from GitHub because the rubygems version does not contain
+       ;; Rakefile.
+       (uri (string-append
+             "https://github.com/ruby-concurrency/concurrent-ruby/archive/v"
+             version
+             ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1x3g2admp14ykwfxidsicqbhlfsnxh9wyc806np4i15hws4if1d8"))
+       ;; Exclude failing test reported at
+       ;; https://github.com/ruby-concurrency/concurrent-ruby/issues/534
+       (patches (search-patches "ruby-concurrent-ignore-broken-test.patch"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-git-lsfiles-and-extra-gemspecs
+           (lambda _
+             (for-each (lambda (file)
+                         (substitute* file
+                           (("git ls-files") "find * |sort")))
+                       (list "concurrent-ruby.gemspec"
+                             "support/file_map.rb"))
+             #t))
+         (add-before 'build 'remove-extra-gemspecs
+           (lambda _
+             ;; Delete extra gemspec files so 'first-gemspec' chooses the
+             ;; correct one.
+             (delete-file "concurrent-ruby-edge.gemspec")
+             (delete-file "concurrent-ruby-ext.gemspec")
+             #t))
+         (add-before 'check 'rake-compile
+           ;; Fix the test error described at
+           ;; https://github.com/ruby-concurrency/concurrent-ruby/pull/408
+           (lambda _ (zero? (system* "rake" "compile")))))))
+    (native-inputs
+     `(("ruby-rake-compiler" ,ruby-rake-compiler)
+       ("ruby-yard" ,ruby-yard)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-timecop" ,ruby-timecop)))
+    (synopsis "Concurrency tools for Ruby")
+    (description
+     "This library provides modern concurrency tools including agents,
+futures, promises, thread pools, actors, supervisors, and more.  It is
+inspired by Erlang, Clojure, Go, JavaScript, actors and classic concurrency
+patterns.")
+    (home-page "http://www.concurrent-ruby.com")
+    (license license:expat)))
 
