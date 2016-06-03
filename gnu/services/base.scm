@@ -431,15 +431,6 @@ stopped before 'kill' is called."
 (define %random-seed-file
   "/var/lib/random-seed")
 
-(define %urandom-seed-activation
-  ;; Activation gexp for the urandom seed
-  #~(begin
-      (use-modules (guix build utils))
-
-      (mkdir-p (dirname #$%random-seed-file))
-      (close-port (open-file #$%random-seed-file "a0b"))
-      (chmod #$%random-seed-file #o600)))
-
 (define (urandom-seed-shepherd-service _)
   "Return a shepherd service for the /dev/urandom seed."
   (list (shepherd-service
@@ -454,6 +445,18 @@ stopped before 'kill' is called."
                           (call-with-output-file "/dev/urandom"
                             (lambda (urandom)
                               (dump-port seed urandom))))))
+                    ;; Immediately refresh the seed in case the system doesn't
+                    ;; shut down cleanly.
+                    (call-with-input-file "/dev/urandom"
+                      (lambda (urandom)
+                        (let ((previous-umask (umask #o077))
+                              (buf (make-bytevector 512)))
+                          (mkdir-p (dirname #$%random-seed-file))
+                          (get-bytevector-n! urandom buf 0 512)
+                          (call-with-output-file #$%random-seed-file
+                            (lambda (seed)
+                              (put-bytevector seed buf)))
+                          (umask previous-umask))))
                     #t))
          (stop #~(lambda _
                    ;; During shutdown, write from /dev/urandom into random seed.
@@ -462,6 +465,7 @@ stopped before 'kill' is called."
                        (lambda (urandom)
                          (let ((previous-umask (umask #o077)))
                            (get-bytevector-n! urandom buf 0 512)
+                           (mkdir-p (dirname #$%random-seed-file))
                            (call-with-output-file #$%random-seed-file
                              (lambda (seed)
                                (put-bytevector seed buf)))
@@ -475,9 +479,7 @@ stopped before 'kill' is called."
   (service-type (name 'urandom-seed)
                 (extensions
                  (list (service-extension shepherd-root-service-type
-                                          urandom-seed-shepherd-service)
-                       (service-extension activation-service-type
-                                          (const %urandom-seed-activation))))))
+                                          urandom-seed-shepherd-service)))))
 
 (define (urandom-seed-service)
   (service urandom-seed-service-type #f))
