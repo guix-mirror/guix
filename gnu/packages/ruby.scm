@@ -2541,7 +2541,8 @@ you about the changes.")
        ("ruby-json" ,ruby-json)
        ("ruby-minitest" ,ruby-minitest)
        ("ruby-thread-safe" ,ruby-thread-safe)
-       ("ruby-tzinfo" ,ruby-tzinfo)))
+       ("ruby-tzinfo" ,ruby-tzinfo)
+       ("ruby-tzinfo-data" ,ruby-tzinfo-data)))
     (synopsis "Ruby on Rails utility library")
     (description "ActiveSupport is a toolkit of support libraries and Ruby
 core extensions extracted from the Rails framework.  It includes support for
