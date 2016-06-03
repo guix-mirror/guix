@@ -3960,3 +3960,39 @@ comprehensive ORM layer for mapping records to Ruby objects and handling
 associated records.")
     (home-page "http://sequel.jeremyevans.net")
     (license license:expat)))
+
+(define-public ruby-timecop
+  (package
+    (name "ruby-timecop")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "timecop" version))
+       (sha256
+        (base32
+         "0vwbkwqyxhavzvr1820hqwz43ylnfcf6w4x6sag0nghi44sr9kmx"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-check-rubylib
+           (lambda _
+             ;; Set RUBYLIB so timecop tests finds its own lib.
+             (setenv "RUBYLIB" "lib")
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-minitest-rg" ,ruby-minitest-rg)
+       ("ruby-mocha" ,ruby-mocha)
+       ("ruby-activesupport" ,ruby-activesupport)))
+    (synopsis "Test mocks for time-dependent functions.")
+    (description
+     "Timecop provides \"time travel\" and \"time freezing\" capabilities,
+making it easier to test time-dependent code.  It provides a unified method to
+mock @code{Time.now}, @code{Date.today}, and @code{DateTime.now} in a single
+call.")
+    (home-page "https://github.com/travisjeffery/timecop")
+    (license license:expat)))
+
+
