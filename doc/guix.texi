@@ -9395,6 +9395,55 @@ Finally, @var{extra-options} is a list of additional command-line options
 passed to @command{lircd}.
 @end deffn
 
+@subsubsection Dictionary Services
+The @code{(gnu services dict)} module provides the following service:
+
+@deffn {Scheme Procedure} dicod-service [#:config (dicod-configuration)]
+Return a service that runs the @command{dicod} daemon, an implementation
+of DICT server (@pxref{Dicod,,, dico, GNU Dico Manual}).
+
+The optional @var{config} argument specifies the configuration for
+@command{dicod}, which should be a @code{<dicod-configuration>} object, by
+default it serves the GNU Collaborative International Dictonary of English.
+
+You can add @command{open localhost} to your @file{~/.dico} file to make
+@code{localhost} the default server for @command{dico} client
+(@pxref{Initialization File,,, dico, GNU Dico Manual}).
+@end deffn
+
+@deftp {Data Type} dicod-configuration
+Data type representing the configuration of dicod.
+
+@table @asis
+@item @code{dico} (default: @var{dico})
+Package object of the GNU Dico dictionary server.
+
+@item @code{databases} (default: @var{(list %dicod-database:gcide)})
+List of @code{<dicod-database>} objects denoting dictionaries to be served.
+@end table
+@end deftp
+
+@deftp {Data Type} dicod-database
+Data type representing a dictionary database.
+
+@table @asis
+@item @code{name}
+Name of the database, will be used in DICT commands.
+
+@item @code{module}
+Name of the dicod module used by this database
+(@pxref{Modules,,, dico, GNU Dico Manual}).
+
+@item @code{options}
+List of strings or gexps representing the arguments for the module handler
+(@pxref{Handlers,,, dico, GNU Dico Manual}).
+@end table
+@end deftp
+
+@defvr {Scheme Variable} %dicod-database:gcide
+A @code{<dicod-database>} object serving the GNU Collaborative International
+Dictonary of English using the @code{gcide} package.
+@end defvr
 
 @node Setuid Programs
 @subsection Setuid Programs

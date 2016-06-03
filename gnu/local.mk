@@ -374,6 +374,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/databases.scm			\
   %D%/services/dbus.scm				\
   %D%/services/desktop.scm			\
+  %D%/services/dict.scm				\
   %D%/services/lirc.scm				\
   %D%/services/mail.scm				\
   %D%/services/networking.scm			\
