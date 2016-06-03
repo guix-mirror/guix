@@ -599,12 +599,28 @@ online as well as original implementations of various other algorithms.")
                ;; Make sure we don't use the bundled software.
                '(delete-file-recursively "ThirdParty"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'add--L-flags-in-ipopt.pc
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; The '.pc' file lists '-llapack -lblas' in "Libs";
+                      ;; move it to "Libs.private" where it belongs, and add a
+                      ;; '-L' flag for LAPACK.
+                      (let ((out    (assoc-ref outputs "out"))
+                            (lapack (assoc-ref inputs "lapack")))
+                        (substitute* (string-append out "/lib/pkgconfig/"
+                                                    "ipopt.pc")
+                          (("Libs: (.*)-llapack -lblas(.*)$" _ before after)
+                           (string-append "Libs: " before " " after "\n"
+                                          "Libs.private: " before
+                                          "-L" lapack "/lib -llapack -lblas "
+                                          after "\n")))
+                        #t))))))
     (native-inputs
      `(("gfortran" ,gfortran)))
     (inputs
      ;; TODO: Maybe add dependency on COIN-MUMPS, ASL, and HSL.
-     `(("blas" ,openblas)
-       ("lapack" ,lapack)))
+     `(("lapack" ,lapack)))                    ;for both libblas and liblapack
     (home-page "http://www.coin-or.org")
     (synopsis "Large-scale nonlinear optimizer")
     (description
