@@ -5982,6 +5982,11 @@ dependencies of your system configuration can be downloaded.  See the
 ``Networking'' section below.
 @end quotation
 
+The installation system includes many common tools needed for this task.
+But it is also a full-blown GuixSD system, which means that you can
+install additional packages, should you need it, using @command{guix
+package} (@pxref{Invoking guix package}).
+
 @subsubsection Keyboard Layout
 
 @cindex keyboard layout
