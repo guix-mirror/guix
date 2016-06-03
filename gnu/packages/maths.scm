@@ -613,6 +613,55 @@ large-scale nonlinear optimization.  It provides C++, C, and Fortran
 interfaces.")
     (license license:epl1.0)))
 
+(define-public ceres
+  (package
+    (name "ceres-solver")
+    (version "1.11.0")
+    (home-page "http://ceres-solver.org/")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "ceres-solver-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0i7qkbf8g6pd8arxzldppga26ckv93y8zldsfz6wbd4n6b1nqrjd"))))
+    (build-system cmake-build-system)
+    (arguments
+     ;; TODO: Build HTML user documentation and install separately.
+     ;; XXX: Use the embedded "miniglog" as a replacement for
+     ;; <https://github.com/google/glog>.  TODO: Use Glog when it's available.
+     '(#:configure-flags '("-DMINIGLOG=ON"
+                           "-DBUILD_EXAMPLES=OFF"
+                           "-DBUILD_SHARED_LIBS=ON")
+
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-library-directory
+                    (lambda _
+                      ;; Install libraries to lib/, not lib64/.
+                      (substitute* "internal/ceres/CMakeLists.txt"
+                        (("set\\(LIB_SUFFIX \"64\"\\)")
+                         "set(LIB_SUFFIX \"\")"))
+                      #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("eigen" ,eigen)
+       ("blas" ,openblas)
+       ("lapack" ,lapack)
+       ("suitesparse" ,suitesparse)
+       ("gflags" ,gflags)))
+    (synopsis "C++ library for solving large optimization problems")
+    (description
+     "Ceres Solver is a C++ library for modeling and solving large,
+complicated optimization problems.  It is a feature rich, mature and
+performant library which has been used in production since 2010.  Ceres Solver
+can solve two kinds of problems:
+@enumerate
+@item non-linear least squares problems with bounds constraints;
+@item general unconstrained optimization problems.
+@end enumerate\n")
+    (license license:bsd-3)))
+
 ;; For a fully featured Octave, users  are strongly recommended also to install
 ;; the following packages: texinfo, less, ghostscript, gnuplot.
 (define-public octave
