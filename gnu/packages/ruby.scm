@@ -2101,6 +2101,38 @@ aware transformations between times in different time zones.")
     (home-page "http://tzinfo.github.io")
     (license license:expat)))
 
+(define-public ruby-tzinfo-data
+  (package
+    (name "ruby-tzinfo-data")
+    (version "1.2016.4")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Download from GitHub because the rubygems version does not contain
+       ;; Rakefile or tests.
+       (uri (string-append
+             "https://github.com/tzinfo/tzinfo-data/archive/v"
+             version
+             ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jnm8i379hn48cq5n39j7wzm08i0mw73kqzx3cqbxpiwlb1hnz80"))
+       ;; Remove the known test failure.
+       ;; https://github.com/tzinfo/tzinfo-data/issues/10
+       ;; https://bugs.launchpad.net/ubuntu/+source/glibc/+bug/1587128
+       (patches (search-patches
+                 "ruby-tzinfo-data-ignore-broken-test.patch"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-tzinfo" ,ruby-tzinfo)))
+    (synopsis "Data from the IANA Time Zone database")
+    (description
+     "This library provides @code{TZInfo::Data}, which contains data from the
+IANA Time Zone database packaged as Ruby modules for use with @code{TZInfo}.")
+    (home-page "http://tzinfo.github.io")
+    (license license:expat)))
+
 (define-public ruby-rb-inotify
   (package
     (name "ruby-rb-inotify")
