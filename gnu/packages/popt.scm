@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,7 +20,9 @@
 (define-module (gnu packages popt)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (guix licenses))
 
 (define-public argtable
@@ -88,3 +90,32 @@ similar to getopt(3), it contains a number of enhancements, including:
   - popt provides convience functions for parsing strings into argv[] style
     arrays.")
     (license x11)))
+
+(define-public gflags
+  (package
+    (name "gflags")
+    (version "2.1.2")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (commit (string-append "v" version))
+                    (url "https://github.com/gflags/gflags.git")))
+              (sha256
+               (base32
+                "0qxvr9cyxq3px60jglkm94pq5bil8dkjjdb99l3ypqcds7iypx9w"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:configure-flags '("-DBUILD_SHARED_LIBS=ON"
+                           "-DBUILD_TESTING=ON")))
+    (home-page "https://gflags.github.io/gflags/")
+    (synopsis "C++ library for command-line argument parsing")
+    (description
+     "Gflags is a C++ library to parse command-line flags.  It differs from
+other such libraries in that command-line flag definitions can be scattered
+around the source code, and not just listed in one place such as @code{main}.
+This means that a single source-code file will define and use flags that are
+meaningful to that file.  Any application that links in that file will get the
+flags, and the gflags library will automatically handle that flag
+appropriately.")
+    (license bsd-3)))
