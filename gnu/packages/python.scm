@@ -45,6 +45,7 @@
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages adns)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
@@ -58,6 +59,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
@@ -8941,3 +8943,42 @@ are synchronized with data exchanges on \"channels\".")
 
 (define-public python2-greenlet
   (package-with-python2 python-greenlet))
+
+(define-public python-gevent
+  (package
+    (name "python-gevent")
+    (version "1.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "gevent" version))
+              (sha256
+               (base32
+                "1smf3kvidpdiyi2c81alal74p2zm0clrm6xbyy6y1k9a3f2vkrbf"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; unbunding libev and c-ares
+                  (for-each delete-file-recursively '("libev" "c-ares"))
+                  ;; fixing testsuite
+                  (call-with-output-file "greentest/__init__.py" noop)
+                  (substitute* "greentest/testrunner.py"
+                    (("import util") "from . import util")
+                    (("from util import log") "from .util import log"))))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-greenlet" ,python-greenlet)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)))
+    (inputs
+     `(("c-ares" ,c-ares)
+       ("libev" ,libev)))
+    (home-page "http://www.gevent.org/")
+    (synopsis "Coroutine-based network library")
+    (description
+     "gevent is a coroutine-based Python networking library that uses greenlet
+to provide a high-level synchronous API on top of the libev event loop.")
+    (license license:expat)))
+
+(define-public python2-gevent
+  (package-with-python2 python-gevent))
