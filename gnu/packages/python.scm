@@ -8916,3 +8916,28 @@ provides support for parsing, splitting and formatting SQL statements.")
 
 (define-public python2-sqlparse
   (package-with-python2 python-sqlparse))
+
+(define-public python-greenlet
+  (package
+    (name "python-greenlet")
+    (version "0.4.9")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "greenlet" version))
+              (sha256
+               (base32
+                "04h0m54dyqg49vyarq26mry6kbivnpl47rnmmrk9qn8wpfxviybr"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://greenlet.readthedocs.io/")
+    (synopsis "Lightweight in-process concurrent programming")
+    (description
+     "Greenlet package is a spin-off of Stackless, a version of CPython
+that supports micro-threads called \"tasklets\".  Tasklets run
+pseudo-concurrently (typically in a single or a few OS-level threads) and
+are synchronized with data exchanges on \"channels\".")
+    (license (list psfl license:expat))))
+
+(define-public python2-greenlet
+  (package-with-python2 python-greenlet))
