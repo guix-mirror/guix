@@ -6010,6 +6010,13 @@ Run the following command see what your network interfaces are called:
 ifconfig -a
 @end example
 
+@noindent
+@dots{} or, using the GNU/Linux-specific @command{ip} command:
+
+@example
+ip a
+@end example
+
 @c http://cgit.freedesktop.org/systemd/systemd/tree/src/udev/udev-builtin-net_id.c#n20
 Wired interfaces have a name starting with @samp{e}; for example, the
 interface corresponding to the first on-board Ethernet controller is
