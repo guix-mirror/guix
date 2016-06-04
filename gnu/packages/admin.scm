@@ -1253,7 +1253,7 @@ various ways that may be running with too much privilege.")
 (define-public smartmontools
   (package
     (name "smartmontools")
-    (version "6.3")
+    (version "6.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1261,7 +1261,7 @@ various ways that may be running with too much privilege.")
                     version "/smartmontools-" version ".tar.gz"))
               (sha256
                (base32
-                "06gy71jh2d3gcfmlbbrsqw7215knkfq59q3j6qdxfrar39fhcxx7"))))
+                "1g25r6sx85b5lay5n6sbnqv05qxzj6xsafsp93hnrg1h044bps49"))))
     (build-system gnu-build-system)
     (inputs `(("libcap-ng" ,libcap-ng)))
     (home-page "http://www.smartmontools.org/")
