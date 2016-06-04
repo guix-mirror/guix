@@ -8982,3 +8982,30 @@ to provide a high-level synchronous API on top of the libev event loop.")
 
 (define-public python2-gevent
   (package-with-python2 python-gevent))
+
+(define-public python-twisted
+  (package
+    (name "python-twisted")
+    (version "16.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (list (pypi-uri "Twisted" version ".tar.bz2") ; 404
+                         (string-append
+                          "https://pypi.io/packages/source/T/Twisted/"
+                          "Twisted-" version ".tar.bz2")))
+              (sha256
+               (base32
+                "0ydxrp9myw1mvsz3qfzx5579y5llmqa82pxvqchgp5syczffi450"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-zope-interface" ,python-zope-interface)))
+    (home-page "https://twistedmatrix.com/")
+    (synopsis "Asynchronous networking framework written in Python")
+    (description
+     "Twisted is an extensible framework for Python programming, with special
+focus on event-based network programming and multiprotocol integration.")
+    (license license:expat)))
+
+(define-public python2-twisted
+  (package-with-python2 python-twisted))
