@@ -291,8 +291,7 @@ parse JSON formatted strings back into the C representation of JSON objects.")
                "1fj5mf6wbwz7v74n2safbw7fpw32fik19vf0wdbc2srn82i8fiwz"))))
    (build-system perl-build-system)
    (arguments
-     `(#:tests? #f ; no tests
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          ;; There is no configure or build steps.
          (delete 'configure)
@@ -314,9 +313,7 @@ parse JSON formatted strings back into the C representation of JSON objects.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin   (string-append (assoc-ref outputs "out") "/bin"))
                    (perl  (string-append (assoc-ref outputs "out")
-                                         "/lib/perl5/site_perl"))
-                   (share (string-append
-                           (assoc-ref outputs "out") "/share/krona-tools")))
+                                         "/lib/perl5/site_perl/krona-tools/lib")))
                (mkdir-p bin)
                (for-each
                 (lambda (script)
@@ -341,13 +338,13 @@ parse JSON formatted strings back into the C representation of JSON objects.")
                   "ImportTaxonomy"
                   "ImportText"
                   "ImportXML"))
-               (mkdir-p share)
-               (copy-recursively "data" (string-append share "/data"))
-               (copy-recursively "img" (string-append share "/img"))
-               (copy-recursively "taxonomy" (string-append share "/taxonomy"))
-               (substitute* '("lib/KronaTools.pm")
-                 (("taxonomyDir = \".libPath/../taxonomy\"")
-                  (string-append "taxonomyDir = \"" share "/taxonomy\"")))
+               (copy-recursively "data" (string-append perl "/../data"))
+               (copy-recursively "img" (string-append perl "/../img"))
+               (copy-recursively "taxonomy" (string-append perl "/../taxonomy"))
+               (install-file "src/krona-2.0.js" (string-append perl "/../src"))
+               (substitute* "lib/KronaTools.pm"
+                 (("`ktGetLibPath`")
+                  (string-append "\"" perl "\"")))
                (install-file "lib/KronaTools.pm" perl))))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -357,8 +354,14 @@ parse JSON formatted strings back into the C representation of JSON objects.")
                 (lambda (executable)
                   (wrap-program executable
                     `("PERL5LIB" ":" prefix
-                      (,(string-append out "/lib/perl5/site_perl")))))
-                (find-files (string-append out "/bin/") ".*"))))))))
+                      (,(string-append out "/lib/perl5/site_perl/krona-tools/lib")))))
+                (find-files (string-append out "/bin/") ".*")))))
+         (delete 'check)
+         (add-after 'wrap-program 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (with-directory-excursion "data"
+               (zero? (system* (string-append (assoc-ref outputs "out") "/bin/ktImportText")
+                               "ec.tsv"))))))))
    (inputs
     `(("perl" ,perl)))
    (home-page "https://github.com/marbl/Krona/wiki")
