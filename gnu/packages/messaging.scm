@@ -378,14 +378,14 @@ compromised.")
 (define-public znc
   (package
     (name "znc")
-    (version "1.6.2")
+    (version "1.6.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://znc.in/releases/archive/znc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "14q5dyr5zg99hm6j6g1gilcn1zf7dskhxfpz3bnkyhy6q0kpgwgf"))))
+                "09xqi5fs40x6nj9gq99bnw1a7saq96bvqxknxx0ilq7yfvg4c733"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; tries to download GoogleTest with wget
