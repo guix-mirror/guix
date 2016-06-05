@@ -458,17 +458,16 @@ while JSON objects are mapped to QVariantMap.")
 (define-public python-sip
   (package
     (name "python-sip")
-    (version "4.16.9")
+    (version "4.18")
     (source
       (origin
         (method url-fetch)
         (uri
           (string-append "mirror://sourceforge/pyqt/sip/"
-                         "sip-" version "/sip-"
-                         version ".tar.gz"))
+                         "sip-" version "/sip-" version ".tar.gz"))
         (sha256
          (base32
-          "0m85dgm3g9s9h7s5sfxvcxi423vqxwq1vg5wnl5wl9kfasm77qfv"))))
+          "1dlw4kyiwd9bzmd1djm79c121r219abaz86lvizdk6ksq20mrp7i"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-wrapper)))
@@ -496,7 +495,7 @@ while JSON objects are mapped to QVariantMap.")
               (zero?
                 (system* "python" "configure.py"
                          "--bindir" bin
-                          "--destdir" lib
+                         "--destdir" lib
                          "--incdir" include))))
           %standard-phases)))
     (home-page "http://www.riverbankcomputing.com/software/sip/intro")
