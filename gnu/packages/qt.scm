@@ -521,22 +521,22 @@ module provides support functions to the automatically generated code.")
 (define-public python-pyqt
   (package
     (name "python-pyqt")
-    (version "5.5")
+    (version "5.6")
     (source
       (origin
         (method url-fetch)
         (uri
           (string-append "mirror://sourceforge/pyqt/PyQt5/"
-                         "PyQt-" version "/PyQt-gpl-"
+                         "PyQt-" version "/PyQt5_gpl-"
                          version ".tar.gz"))
         (sha256
          (base32
-          "056qmkv02wdcfblqdaxiswrgn4wa88sz22i1x58dpb1iniavplfd"))
+          "1qgh42zsr9jppl9k7fcdbhxcd1wrb7wyaj9lng9nxfa19in1lj1f"))
        (patches (search-patches "pyqt-configure.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python-sip" ,python-sip)
-       ("qt" ,qt))) ; for qmake
+       ("qtbase" ,qtbase))) ; for qmake
     (inputs
      `(("python" ,python-wrapper)))
     (arguments
@@ -583,7 +583,7 @@ contain over 620 classes.")
     (name "python2-pyqt")
     (native-inputs
      `(("python-sip" ,python2-sip)
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)))
     (inputs
      `(("python" ,python-2)))))
 
