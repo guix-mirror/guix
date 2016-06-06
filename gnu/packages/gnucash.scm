@@ -24,12 +24,14 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages tls)
@@ -150,3 +152,44 @@ applications and libraries.  It is used by AqBanking.")
     ;; distribute this library with the OpenSSL Toolkit.
     (license license:lgpl2.1+)))
 
+(define-public aqbanking
+  (package
+    (name "aqbanking")
+    (version "5.6.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.aquamaniac.de/sites/download/download.php?"
+                           "package=03&release=206&file=01&dummy=aqbanking-"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1x0isvpk43rq2zlyyb9p0kgjmqv7yq07vgkiprw3f5sjkykvxw6d"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; Parallel building fails because aqhbci is required before it's
+       ;; built.
+       #:parallel-build? #f
+       #:configure-flags
+       (list (string-append "--with-gwen-dir="
+                            (assoc-ref %build-inputs "gwenhywfar")))))
+    (propagated-inputs
+     `(("gwenhywfar" ,gwenhywfar)))
+    (inputs
+     `(("gmp" ,gmp)
+       ("xmlsec" ,xmlsec)
+       ("gnutls" ,gnutls)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("libltdl" ,libltdl)))
+    (home-page "http://www.aquamaniac.de/sites/aqbanking/index.php")
+    (synopsis "Interface for online banking tasks")
+    (description
+     "AqBanking is a modular and generic interface to online banking tasks,
+financial file formats (import/export) and bank/country/currency information.
+AqBanking uses backend plugins to actually perform the online tasks.  HBCI,
+OFX DirectConnect, YellowNet, GeldKarte, and DTAUS discs are currently
+supported.  AqBanking is used by GnuCash, KMyMoney, and QBankManager.")
+    ;; AqBanking is licensed under the GPLv2 or GPLv3
+    (license (list license:gpl2 license:gpl3))))
