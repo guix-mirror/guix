@@ -601,6 +601,30 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("qtdeclarative" ,qtdeclarative)))
     (inputs `(("qtbase" ,qtbase)))))
 
+(define-public qtmultimedia
+  (package (inherit qtsvg)
+    (name "qtmultimedia")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "058523c2qra3d8fq46ygcndnkrbwlh316zy28s2cr5pjr5gmnjyj"))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)
+       ("qtdeclarative" ,qtdeclarative)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("mesa" ,mesa)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)))))
+
 (define-public qjson
   (package
     (name "qjson")
