@@ -248,6 +248,7 @@ SCM_TESTS =					\
   tests/profiles.scm				\
   tests/syscalls.scm				\
   tests/gremlin.scm				\
+  tests/bournish.scm				\
   tests/lint.scm				\
   tests/publish.scm				\
   tests/scripts.scm				\
