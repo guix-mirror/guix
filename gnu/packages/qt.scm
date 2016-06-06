@@ -544,6 +544,27 @@ developers using C++ or QML, a CSS & JavaScript like language.")
      `(("mesa" ,mesa)
        ("qtbase" ,qtbase)))))
 
+(define-public qtconnectivity
+  (package (inherit qtsvg)
+    (name "qtconnectivity")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "06fr9321f52kf0nda9zjjfzp5694hbnx0y0v315iw28mnpvandas"))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("qtdeclarative" ,qtdeclarative)))
+    (inputs
+     `(("bluez" ,bluez)
+       ("qtbase" ,qtbase)))))
+
 (define-public qjson
   (package
     (name "qjson")
