@@ -521,6 +521,29 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (native-inputs `(("perl" ,perl)))
     (inputs `(("qtbase" ,qtbase)))))
 
+(define-public qtdeclarative
+  (package (inherit qtsvg)
+    (name "qtdeclarative")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1d2217kxk85kpi7ls08b41hqzy26hvch8m4cgzq6km5sqi5zvz0j"))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)
+       ("qtsvg" ,qtsvg)
+       ("qtxmlpatterns" ,qtxmlpatterns)))
+    (inputs
+     `(("mesa" ,mesa)
+       ("qtbase" ,qtbase)))))
+
 (define-public qjson
   (package
     (name "qjson")
