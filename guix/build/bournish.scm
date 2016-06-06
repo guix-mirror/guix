@@ -134,8 +134,10 @@ commands such as 'ls' and 'cd'; it lacks globbing, pipes---everything.\n"))
 (define (read-bournish port env)
   "Read a Bournish expression from PORT, and return the corresponding Scheme
 code as an sexp."
-  (match (string-tokenize (read-line port))
-    ((command args ...)
+  (match (read-line port)
+    ((? eof-object? eof)
+     eof)
+    ((= string-tokenize (command args ...))
      (match (assoc command %commands)
        ((command proc)                            ;built-in command
         (apply proc (map expand-variable args)))
