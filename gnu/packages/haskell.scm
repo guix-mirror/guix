@@ -3198,6 +3198,27 @@ to annotate the text with semantic information, which can later be rendered in
 a variety of ways.")
     (license license:bsd-3)))
 
+(define-public ghc-wl-pprint
+  (package
+    (name "ghc-wl-pprint")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://hackage.haskell.org/package/wl-pprint/wl-pprint-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "166zvk4zwn2zaa9kx66m1av38m34qp6h4i65bri2sfnxgvx0700r"))))
+    (build-system haskell-build-system)
+    (home-page "http://hackage.haskell.org/package/wl-pprint")
+    (synopsis "Wadler/Leijen pretty printer")
+    (description
+     "This is a pretty printing library based on Wadler's paper @i{A Prettier
+Printer}.  This version allows the library user to declare overlapping
+instances of the @code{Pretty} class.")
+    (license license:bsd-3)))
+
 (define-public ghc-ansi-wl-pprint
   (package
     (name "ghc-ansi-wl-pprint")
