@@ -63,6 +63,7 @@
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("webkitgtk" ,webkitgtk/gtk+-2)
+       ("aqbanking" ,aqbanking)
        ("perl-date-manip" ,perl-date-manip)
        ("perl-finance-quote" ,perl-finance-quote)))
     (native-inputs
@@ -71,7 +72,8 @@
        ("pkg-config" ,pkg-config)))
     (arguments
      `(#:tests? #f ;FIXME: failing at /qof/gnc-date/qof print date dmy buff
-       #:configure-flags '("--disable-dbi")
+       #:configure-flags '("--disable-dbi"
+                           "--enable-aqbanking")
        #:phases
        (modify-phases %standard-phases
          (add-after
