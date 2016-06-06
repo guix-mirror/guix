@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Siniša Biđin <sinisa@bidin.eu>
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4854,6 +4855,39 @@ notation}.")
     (description "This package provides a JSON parsing and encoding library
 for Haskell, optimized for ease of use and high performance.  (A note on
 naming: in Greek mythology, Aeson was the father of Jason.)")
+    (license license:bsd-3)))
+
+(define-public ghc-aeson-pretty
+  (package
+    (name "ghc-aeson-pretty")
+    (version "0.7.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://hackage.haskell.org/package/aeson-pretty/aeson-pretty-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "03ap81853qi8yd9kdgczllrrni23a6glsfxrwj8zab6ipjrbh234"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-aeson" ,ghc-aeson)
+       ("ghc-vector" ,ghc-vector)
+       ("ghc-text" ,ghc-text)
+       ("ghc-unordered-containers"
+        ,ghc-unordered-containers)
+       ("ghc-attoparsec" ,ghc-attoparsec)
+       ("ghc-cmdargs" ,ghc-cmdargs)))
+    (home-page "http://github.com/informatikr/aeson-pretty")
+    (synopsis "JSON pretty-printing library and command-line tool")
+    (description
+     "This package provides a JSON pretty-printing library compatible with aeson
+as well as a command-line tool to improve readabilty of streams of JSON data.
+The library provides the function @code{encodePretty}.  It is a drop-in
+replacement for aeson's @code{encode} function, producing JSON-ByteStrings for
+human readers.  The command-line tool reads JSON from stdin and writes
+prettified JSON to stdout.  It also offers a complementary \"compact\"-mode,
+essentially the opposite of pretty-printing.")
     (license license:bsd-3)))
 
 (define-public ghc-wai
