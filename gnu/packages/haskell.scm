@@ -2002,6 +2002,31 @@ isn't available, portable implementations are used.")
 both client and server code).")
     (license license:bsd-3)))
 
+(define-public ghc-indents
+  (package
+    (name "ghc-indents")
+    (version "0.3.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://hackage.haskell.org/package/indents/indents-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "16lz21bp9j14xilnq8yym22p3saxvc9fsgfcf5awn2a6i6n527xn"))))
+    (build-system haskell-build-system)
+    (inputs
+     `(("ghc-parsec" ,ghc-parsec)
+       ("ghc-concatenative" ,ghc-concatenative)
+       ("ghc-mtl" ,ghc-mtl)))
+    (home-page "http://patch-tag.com/r/salazar/indents")
+    (synopsis "Indentation sensitive parser-combinators for parsec")
+    (description
+     "This library provides functions for use in parsing indentation sensitive
+contexts.  It parses blocks of lines all indented to the same level as well as
+lines continued at an indented level below.")
+    (license license:bsd-3)))
+
 (define-public ghc-iproute
   (package
     (name "ghc-iproute")
