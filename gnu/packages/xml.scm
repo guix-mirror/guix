@@ -3,7 +3,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
@@ -40,7 +40,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system python)
-  #:use-module (gnu packages linux))
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages pkg-config))
 
 (define-public expat
   (package
@@ -636,6 +637,8 @@ XSL-T processor.  It also performs any necessary post-processing.")
      `(("gnutls" ,gnutls)
        ("libgcrypt" ,libgcrypt)
        ("libltdl" ,libltdl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://www.libexpat.org/")
     (synopsis "XML Security Library")
     (description
