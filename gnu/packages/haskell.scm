@@ -732,6 +732,28 @@ tool lex or flex for C/C++.")
      "This library provides an easy way to define command line parsers.")
     (license license:bsd-3)))
 
+(define-public ghc-concatenative
+  (package
+    (name "ghc-concatenative")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://hackage.haskell.org/package/concatenative/concatenative-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "05xwqvcdnk8bsyj698ab9jxpa1nk23pf3m7wi9mwmw0q8n99fngd"))))
+    (build-system haskell-build-system)
+    (home-page
+     "https://patch-tag.com/r/salazar/concatenative/snapshot/current/content/pretty")
+    (synopsis "Library for postfix control flow")
+    (description
+     "Concatenative gives Haskell Factor-style combinators and arrows for
+postfix notation.  For more information on stack based languages, see
+@uref{http://concatenative.org}.")
+    (license license:bsd-3)))
+
 (define-public ghc-happy
   (package
     (name "ghc-happy")
