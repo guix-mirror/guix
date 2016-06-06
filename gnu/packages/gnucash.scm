@@ -25,12 +25,14 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xml))
@@ -107,3 +109,44 @@ the double-entry accounting practice.  It includes support for QIF/OFX/HBCI
 import and transaction matching.  It also automates several tasks, such as
 financial calculations or scheduled transactions.")
     (license license:gpl3+)))
+
+(define-public gwenhywfar
+  (package
+    (name "gwenhywfar")
+    (version "4.15.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.aquamaniac.de/sites/download/download.php?"
+                           "package=01&release=201&file=01&dummy=gwenhywfar-"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0fp67s932x66xfljb26zbrn8ambbc5y5c3hllr6l284nr63qf3ka"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list "--disable-network-checks"
+             ;; Both GTK+2 and QT4 are supported.
+             "--with-guis=gtk2"
+             (string-append "--with-openssl-includes="
+                            (assoc-ref %build-inputs "openssl") "/include")
+             (string-append "--with-openssl-libs="
+                            (assoc-ref %build-inputs "openssl") "/lib"))))
+    (inputs
+     `(("libgcrypt" ,libgcrypt)
+       ("gnutls" ,gnutls)
+       ("openssl" ,openssl)
+       ("gtk+" ,gtk+-2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.aquamaniac.de/sites/aqbanking/index.php")
+    (synopsis "Utility library for networking and security applications")
+    (description
+     "This package provides a helper library for networking and security
+applications and libraries.  It is used by AqBanking.")
+    ;; The license includes an explicit additional permission to compile and
+    ;; distribute this library with the OpenSSL Toolkit.
+    (license license:lgpl2.1+)))
+
