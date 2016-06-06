@@ -44,7 +44,9 @@
   #:use-module (guix download)
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system trivial))
+  #:use-module (guix build-system trivial)
+  #:use-module (ice-9 match)
+  #:export (glibc))
 
 ;;; Commentary:
 ;;;
@@ -464,7 +466,7 @@ store.")
 
 (export make-ld-wrapper)
 
-(define-public glibc
+(define-public glibc/linux
   (package
    (name "glibc")
    (version "2.23")
@@ -641,6 +643,75 @@ with the Linux kernel.")
    (license lgpl2.0+)
    (home-page "http://www.gnu.org/software/libc/")))
 
+(define-public glibc/hurd
+  ;; The Hurd's libc variant.
+  (package (inherit glibc/linux)
+    (name "glibc-hurd")
+    (version "2.19")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://alpha.gnu.org/gnu/hurd/glibc-"
+                                  version "-hurd+libpthread-20160518" ".tar.gz"))
+              (sha256
+               (base32
+                "12zmdjviybpsdb2kq4cg98rds7909f0cc96fzdahdfrzlxx1q0px"))))
+
+    ;; Libc provides <hurd.h>, which includes a bunch of Hurd and Mach headers,
+    ;; so both should be propagated.
+    (propagated-inputs `(("hurd-core-headers" ,hurd-core-headers)))
+    (native-inputs
+     `(,@(package-native-inputs glibc/linux)
+       ("mig" ,mig)
+       ("perl" ,perl)))
+
+    (arguments
+     (substitute-keyword-arguments (package-arguments glibc/linux)
+       ((#:phases original-phases)
+        ;; Add libmachuser.so and libhurduser.so to libc.so's search path.
+        ;; See <http://lists.gnu.org/archive/html/bug-hurd/2015-07/msg00051.html>.
+        `(alist-cons-after
+          'install 'augment-libc.so
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out (assoc-ref outputs "out")))
+              (substitute* (string-append out "/lib/libc.so")
+                (("/[^ ]+/lib/libc.so.0.3")
+                 (string-append out "/lib/libc.so.0.3" " libmachuser.so" " libhurduser.so"))))
+            #t)
+          (alist-cons-after
+           'pre-configure 'pre-configure-set-pwd
+           (lambda _
+             ;; Use the right 'pwd'.
+             (substitute* "configure"
+               (("/bin/pwd") "pwd")))
+          ,original-phases)))
+        ((#:configure-flags original-configure-flags)
+        `(append (list "--host=i586-pc-gnu"
+
+                       ;; We need this to get a working openpty() function.
+                       "--enable-pt_chown"
+
+                       ;; nscd fails to build for GNU/Hurd:
+                       ;; <https://lists.gnu.org/archive/html/bug-hurd/2014-07/msg00006.html>.
+                       ;; Disable it.
+                       "--disable-nscd")
+                 (filter (lambda (flag)
+                           (not (string-prefix? "--enable-kernel=" flag)))
+                         ,original-configure-flags)))))
+    (synopsis "The GNU C Library (GNU Hurd variant)")
+    (supported-systems %hurd-systems)))
+
+(define* (glibc-for-target #:optional
+                           (target (or (%current-target-system)
+                                       (%current-system))))
+  "Return the glibc for TARGET, GLIBC/LINUX for a Linux host or
+GLIBC/HURD for a Hurd host"
+  (match target
+    ((or "i586-pc-gnu" "i586-gnu") glibc/hurd)
+    (_ glibc/linux)))
+
+(define-syntax glibc
+  (identifier-syntax (glibc-for-target)))
+
 (define-public glibc-2.21
   ;; The old libc, which we use mostly to build locale data in the old format
   ;; (which the new libc can cope with.)
@@ -759,63 +830,6 @@ test environments.")
 variety of options.  It is an alternative to the shell \"type\" built-in
 command.")
     (license gpl3+))) ; some files are under GPLv2+
-
-(define-public glibc/hurd
-  ;; The Hurd's libc variant.
-  (package (inherit glibc)
-    (name "glibc-hurd")
-    (version "2.19")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://alpha.gnu.org/gnu/hurd/glibc-"
-                                  version "-hurd+libpthread-20160518" ".tar.gz"))
-              (sha256
-               (base32
-                "12zmdjviybpsdb2kq4cg98rds7909f0cc96fzdahdfrzlxx1q0px"))))
-
-    ;; Libc provides <hurd.h>, which includes a bunch of Hurd and Mach headers,
-    ;; so both should be propagated.
-    (propagated-inputs `(("hurd-core-headers" ,hurd-core-headers)))
-    (native-inputs
-     `(,@(package-native-inputs glibc)
-       ("mig" ,mig)
-       ("perl" ,perl)))
-
-    (arguments
-     (substitute-keyword-arguments (package-arguments glibc)
-       ((#:phases original-phases)
-        ;; Add libmachuser.so and libhurduser.so to libc.so's search path.
-        ;; See <http://lists.gnu.org/archive/html/bug-hurd/2015-07/msg00051.html>.
-        `(alist-cons-after
-          'install 'augment-libc.so
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out")))
-              (substitute* (string-append out "/lib/libc.so")
-                (("/[^ ]+/lib/libc.so.0.3")
-                 (string-append out "/lib/libc.so.0.3" " libmachuser.so" " libhurduser.so"))))
-            #t)
-          (alist-cons-after
-           'pre-configure 'pre-configure-set-pwd
-           (lambda _
-             ;; Use the right 'pwd'.
-             (substitute* "configure"
-               (("/bin/pwd") "pwd")))
-          ,original-phases)))
-        ((#:configure-flags original-configure-flags)
-        `(append (list "--host=i586-pc-gnu"
-
-                       ;; We need this to get a working openpty() function.
-                       "--enable-pt_chown"
-
-                       ;; nscd fails to build for GNU/Hurd:
-                       ;; <https://lists.gnu.org/archive/html/bug-hurd/2014-07/msg00006.html>.
-                       ;; Disable it.
-                       "--disable-nscd")
-                 (filter (lambda (flag)
-                           (not (string-prefix? "--enable-kernel=" flag)))
-                         ,original-configure-flags)))))
-    (synopsis "The GNU C Library (GNU Hurd variant)")
-    (supported-systems %hurd-systems)))
 
 (define-public glibc/hurd-headers
   (package (inherit glibc/hurd)
