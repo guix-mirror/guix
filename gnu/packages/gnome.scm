@@ -5215,3 +5215,38 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
     (home-page "https://github.com/horst3180/arc-theme")
     ;; No "or later" language found.
     (license license:gpl3)))
+
+(define-public moka-icon-theme
+  (package
+    (name "moka-icon-theme")
+    (version "5.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/moka-project"
+                                  "/moka-icon-theme/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1lnk7p8dsd9xh6cgz5krvlcr457w8yl4m6p6s5c2g5narsjswzrm"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-makefile.am
+           (lambda _
+             (substitute* '("Makefile.am")
+               (("\\$\\(DESTDIR\\)/usr/share")
+                "$(datadir)"))
+             #t))
+         (add-after 'patch-makefile.am 'bootstrap
+           (lambda _
+             (zero? (system* "autoreconf" "-vif")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (synopsis "Moka icon theme")
+    (description "Moka is a stylized desktop icon set, designed to be clear,
+simple and consistent.")
+    (home-page "http://snwh.org/moka")
+    (license license:gpl3+)))
