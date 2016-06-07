@@ -26,7 +26,6 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (guix git-download))
 
@@ -112,11 +111,7 @@ communication.")
                 "1pbc4aqgzxvkgivw80ghp3w755cl0fwxmg357vq7chimj64jk78d"))))
     (build-system gnu-build-system)
     (native-inputs
-     `(;; Autoconf shouldn't be necessary but there seems to be a bug in the
-       ;; build system triggering its use.
-       ("autoconf" ,autoconf)
-
-       ("mig" ,mig)))
+     `(("mig" ,mig)))
     (arguments
      `(#:phases (alist-replace
                  'install
@@ -146,8 +141,7 @@ Library and other user programs.")
     (name "hurd-minimal")
     (inputs `(("glibc-hurd-headers" ,glibc/hurd-headers)))
     (native-inputs
-     `(("autoconf" ,(autoconf-wrapper))
-       ("mig" ,mig)))
+     `(("mig" ,mig)))
 
     (arguments
      `(#:phases (alist-replace
