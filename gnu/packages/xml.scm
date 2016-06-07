@@ -66,15 +66,14 @@ things the parser might find in the XML document (like start tags).")
 (define-public libxml2
   (package
     (name "libxml2")
-    (version "2.9.3")
-    (replacement libxml2/fixed)                   ;multiple CVEs
+    (version "2.9.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0bd17g6znn2r98gzpjppsqjg33iraky4px923j3k8kdl8qgy7sad"))))
+               "0g336cr0bw6dax1q48bblphmchgihx9p1pjmxdnrd6sh3qci3fgz"))))
     (build-system gnu-build-system)
     (home-page "http://www.xmlsoft.org/")
     (synopsis "C parser for XML")
@@ -93,20 +92,6 @@ things the parser might find in the XML document (like start tags).")
      "Libxml2 is the XML C parser and toolkit developed for the Gnome
 project (but it is usable outside of the Gnome platform).")
     (license license:x11)))
-
-(define libxml2/fixed
-  (package
-    (inherit libxml2)
-    (source
-     (let ((name "libxml2")
-           (version "2.9.4"))
-       (origin
-         (method url-fetch)
-         (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
-                             version ".tar.gz"))
-         (sha256
-          (base32
-           "0g336cr0bw6dax1q48bblphmchgihx9p1pjmxdnrd6sh3qci3fgz")))))))
 
 (define-public python-libxml2
   (package (inherit libxml2)
