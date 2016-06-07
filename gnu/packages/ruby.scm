@@ -3939,6 +3939,29 @@ part of the Prawn PDF generator.")
     ;; for details."
     (license (list license:gpl2 license:gpl3 license:ruby))))
 
+(define-public ruby-hoe-git
+  (package
+    (name "ruby-hoe-git")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "hoe-git" version))
+       (sha256
+        (base32
+         "10jmmbjm0lkglwxbn4rpqghgg1ipjxrswm117n50adhmy8yij650"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-hoe" ,ruby-hoe)
+       ("git" ,git)))
+    (synopsis "Hoe plugins for tighter Git integration")
+    (description
+     "This package provides a set of Hoe plugins for tighter Git integration.
+It provides tasks to automate release tagging and pushing and changelog
+generation.")
+    (home-page "http://github.com/jbarnette/hoe-git")
+    (license license:expat)))
+
 (define-public ruby-sequel
   (package
     (name "ruby-sequel")
