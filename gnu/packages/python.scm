@@ -9096,3 +9096,33 @@ programming errors.")
 
 (define-public python2-kazoo
   (package-with-python2 python-kazoo))
+
+(define-public python-pykafka
+  (package
+    (name "python-pykafka")
+    (version "2.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pykafka" version))
+              (sha256
+               (base32
+                "1id6sr159p6aa13bxcqyr9gln8sqg1l0ddzns5iws8kk5q1p5cfv"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; XXX: needs zookeeper, kafka, etc.
+    (native-inputs
+     `(("python-gevent" ,python-gevent)
+       ("python-kazoo" ,python-kazoo)
+       ("python-setuptools" ,python-setuptools)
+       ("python-tabulate" ,python-tabulate)))
+    (inputs
+     `(("librdkafka" ,librdkafka)))
+    (home-page "https://pykafka.readthedocs.io/")
+    (synopsis "Apache Kafka client for Python")
+    (description
+     "PyKafka is a client for the Apache Kafka distributed messaging system.
+It includes Python implementations of Kafka producers and consumers, which
+are optionally backed by a C extension built on librdkafka.")
+    (license asl2.0)))
+
+(define-public python2-pykafka
+  (package-with-python2 python-pykafka))
