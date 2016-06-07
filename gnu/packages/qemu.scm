@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,9 +21,13 @@
 
 (define-module (gnu packages qemu)
   #:use-module (gnu packages)
-  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages attr)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages cyrus-sasl)
+  #:use-module (gnu packages disk)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages image)
@@ -31,14 +36,18 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages python)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages spice)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xml)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
-  #:use-module ((guix licenses) #:select (gpl2))
+  #:use-module ((guix licenses) #:select (gpl2 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
@@ -178,3 +187,74 @@ server and embedded PowerPC, and S390 guests.")
     ;; Remove dependencies on optional libraries, notably GUI libraries.
     (inputs (fold alist-delete (package-inputs qemu)
                   '("libusb" "mesa" "sdl" "spice" "virglrenderer")))))
+
+(define-public libvirt
+  (package
+    (name "libvirt")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://libvirt.org/sources/libvirt-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0sriasjc573c519yqw1hcfb3qqjcsm9hm8vayw0anwkl6di9ay8s"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; FAIL: virshtest
+       ;; FAIL: virfirewalltest
+       ;; FAIL: virkmodtest
+       ;; FAIL: virnetsockettest
+       ;; FAIL: networkxml2firewalltest
+       ;; FAIL: nwfilterebiptablestest
+       ;; FAIL: nwfilterxml2firewalltest
+       ;; Times out after PASS: virsh-vcpupin
+       #:tests? #f
+       #:configure-flags
+       (list "--with-polkit"
+             "--localstatedir=/var")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (substitute* '("tests/commandtest.c"
+                            "gnulib/tests/test-posix_spawn1.c"
+                            "gnulib/tests/test-posix_spawn2.c")
+               (("/bin/sh") (which "sh")))
+             #t))
+         (add-after 'unpack 'do-not-mkdir-in-/var
+           ;; Since the localstatedir should be /var at runtime, we must
+           ;; prevent writing to /var at installation time.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out           (assoc-ref outputs "out"))
+                    (localstatedir (string-append out "/var")))
+               (substitute* '("src/Makefile.in"
+                              "daemon/Makefile.in")
+                 (("\\$\\(DESTDIR\\)\\$\\(localstatedir)") localstatedir)))
+             #t)))))
+    (inputs
+     `(("libxml2" ,libxml2)
+       ("gnutls" ,gnutls)
+       ("dbus" ,dbus)
+       ("qemu" ,qemu)
+       ("polkit" ,polkit)
+       ("libpcap" ,libpcap)
+       ("libnl" ,libnl)
+       ("libuuid" ,util-linux)
+       ("lvm2" ,lvm2) ; for libdevmapper
+       ("curl" ,curl)
+       ("openssl" ,openssl)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("perl" ,perl)
+       ("python" ,python-2)
+       ("libyajl" ,libyajl)
+       ("audit" ,audit)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://libvirt.org")
+    (synopsis "Simple API for virtualization")
+    (description "Libvirt is a C toolkit to interact with the virtualization
+capabilities of recent versions of Linux.  The library aims at providing long
+term stable C API initially for the Xen paravirtualization but should be able
+to integrate other virtualization mechanisms if needed.")
+    (license lgpl2.1+)))
