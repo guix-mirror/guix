@@ -9009,3 +9009,31 @@ focus on event-based network programming and multiprotocol integration.")
 
 (define-public python2-twisted
   (package-with-python2 python-twisted))
+
+(define-public python-ply
+  (package
+    (name "python-ply")
+    (version "3.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/"
+               "96/e0/430fcdb6b3ef1ae534d231397bee7e9304be14a47a267e82ebcb3323d0b5"
+               "/ply-" version ".tar.gz"))
+        (sha256
+          (base32
+            "1f70ipynmiy09k6px2j7v4w5cdrc21za3xs2k6f1bsvb0bzvvlg7"))))
+    (build-system python-build-system)
+    (home-page "http://www.dabeaz.com/ply/")
+    (synopsis "Python Lex & Yacc")
+    (description "PLY is a @code{lex}/@code{yacc} implemented purely in Python.
+It uses LR parsing and does extensive error checking.")
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-ply))))))
+
+(define-public python2-ply
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-ply)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
