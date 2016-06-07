@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +29,7 @@
 (define-public moreutils
   (package
     (name "moreutils")
-    (version "0.57")
+    (version "0.58")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -36,7 +37,7 @@
                     version ".orig.tar.gz"))
               (sha256
                (base32
-                "078dpkwwwrv8hxnylbc901kib2d1rr3hsja37j6dlpjfcfq58z9s"))))
+                "02n00vqp6jxbxr5v3rdjxmzp6kxxjdkjgcclam6wrw8qamsbljww"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)
               ("libxml2" ,libxml2)
@@ -45,18 +46,17 @@
               ("docbook-xsl" ,docbook-xsl)))
     (arguments
      `(#:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key inputs #:allow-other-keys)
-          (use-modules (srfi srfi-1))
-          (substitute* "Makefile"
-            (("/usr/share/xml/.*/docbook.xsl")
-             (let* ((docbook-xsl (assoc-ref inputs "docbook-xsl"))
-                    (files (find-files docbook-xsl "^docbook\\.xsl$")))
-               (find (lambda (file)
-                       (string-suffix? "/manpages/docbook.xsl" file))
-                     files)))))
-        %standard-phases)
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs #:allow-other-keys)
+             (use-modules (srfi srfi-1))
+             (substitute* "Makefile"
+               (("/usr/share/xml/.*/docbook.xsl")
+                (let* ((docbook-xsl (assoc-ref inputs "docbook-xsl"))
+                       (files (find-files docbook-xsl "^docbook\\.xsl$")))
+                  (find (lambda (file)
+                          (string-suffix? "/manpages/docbook.xsl" file))
+                        files)))))))
        #:make-flags
        (list (string-append "PREFIX=" (assoc-ref %outputs "out"))
              "CC=gcc")))

@@ -205,32 +205,53 @@ host user identifiers to map into the user namespace."
   ;; The parent process must initialize the user namespace for the child
   ;; before it can boot.  To negotiate this, a pipe is used such that the
   ;; child process blocks until the parent writes to it.
-  (match (pipe)
-    ((in . out)
+  (match (socketpair PF_UNIX SOCK_STREAM 0)
+    ((child . parent)
      (let ((flags (namespaces->bit-mask namespaces)))
        (match (clone flags)
          (0
           (call-with-clean-exit
            (lambda ()
-             (close out)
+             (close-port parent)
              ;; Wait for parent to set things up.
-             (read in)
-             (close in)
-             (purify-environment)
-             (when (memq 'mnt namespaces)
-               (mount-file-systems root mounts
-                                   #:mount-/proc? (memq 'pid namespaces)
-                                   #:mount-/sys?  (memq 'net namespaces)))
-             ;; TODO: Manage capabilities.
-             (thunk))))
+             (match (read child)
+               ('ready
+                (purify-environment)
+                (when (memq 'mnt namespaces)
+                  (catch #t
+                    (lambda ()
+                      (mount-file-systems root mounts
+                                          #:mount-/proc? (memq 'pid namespaces)
+                                          #:mount-/sys?  (memq 'net
+                                                               namespaces)))
+                    (lambda args
+                      ;; Forward the exception to the parent process.
+                      (write args child)
+                      (primitive-exit 3))))
+                ;; TODO: Manage capabilities.
+                (write 'ready child)
+                (close-port child)
+                (thunk))
+               (_                                 ;parent died or something
+                (primitive-exit 2))))))
          (pid
+          (close-port child)
           (when (memq 'user namespaces)
             (initialize-user-namespace pid host-uids))
           ;; TODO: Initialize cgroups.
-          (close in)
-          (write 'ready out)
-          (close out)
-          pid))))))
+          (write 'ready parent)
+          (newline parent)
+
+          ;; Check whether the child process' setup phase succeeded.
+          (let ((message (read parent)))
+            (close-port parent)
+            (match message
+              ('ready                             ;success
+               pid)
+              (((? symbol? key) args ...)         ;exception
+               (apply throw key args))
+              (_                                  ;unexpected termination
+               #f)))))))))
 
 (define* (call-with-container mounts thunk #:key (namespaces %namespaces)
                               (host-uids 1))

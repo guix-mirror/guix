@@ -1,0 +1,29 @@
+Fix 'scheme-indent-function' to indent s-expressions starting with a keyword
+properly, like this:
+
+(#:foo 1
+ #:bar 2)
+
+instead of like this:
+
+(#:foo 1
+       #:bar 2)
+
+The fix is made by Mark H Weaver <mhw@netris.org>:
+<http://www.netris.org/~mhw/scheme-indent-function.el>
+
+--- a/lisp/progmodes/scheme.el
++++ b/lisp/progmodes/scheme.el
+@@ -482,6 +482,12 @@
+ 			(> (length function) 3)
+ 			(string-match "\\`def" function)))
+ 	       (lisp-indent-defform state indent-point))
++              ((and (null method)
++                    (> (length function) 1)
++                    ;; The '#' in '#:' seems to get lost, not sure why
++                    (string-match "\\`:" function))
++               (let ((lisp-body-indent 1))
++                 (lisp-indent-defform state indent-point)))
+ 	      ((integerp method)
+ 	       (lisp-indent-specform method state
+ 				     indent-point normal-indent))

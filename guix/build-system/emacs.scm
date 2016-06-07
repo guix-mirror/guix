@@ -47,11 +47,7 @@
   "Return the default Emacs package."
   ;; Lazily resolve the binding to avoid a circular dependency.
   (let ((emacs-mod (resolve-interface '(gnu packages emacs))))
-    ;; we use 'emacs' instead of 'emacs-no-x' because the latter appears not
-    ;; to be loading some macros and causes problems to some packages.  For
-    ;; example, with the latter AUCTeX gives the error message:
-    ;; "(invalid-function dbus-ignore-errors)".
-    (module-ref emacs-mod 'emacs)))
+    (module-ref emacs-mod 'emacs-minimal)))
 
 (define* (lower name
                 #:key source inputs native-inputs outputs system target

@@ -5,7 +5,7 @@
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014 Sylvain Beucler <beuc@beuc.net>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014, 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2014, 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
@@ -590,11 +590,11 @@ for common mesh file formats, and collision detection.")
   ;; The latest release on SourceForge relies on an unreleased version of SFML
   ;; with a different API, so we take the latest version from the official
   ;; repository on Github.
-  (let ((commit   "c855d04409")
+  (let ((commit   "c855d044094a1d92317e38935d81ba938946132e")
         (revision "1"))
     (package
       (name "mars")
-      (version (string-append "0.7.5." revision "." commit ))
+      (version (string-append "0.7.5." revision "." (string-take commit 7) ))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -856,7 +856,7 @@ either by Infocom or created using the Inform compiler.")
 (define-public retroarch
   (package
     (name "retroarch")
-    (version "1.3.1")
+    (version "1.3.4")
     (source
      (origin
        (method url-fetch)
@@ -864,7 +864,7 @@ either by Infocom or created using the Inform compiler.")
                            version ".tar.gz"))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "1wydzvligyby05x8c4lpg6xcnw9qkmvkskyhzc28xq10vm3q57fv"))))
+        (base32 "077v1sj000y3csjw9vradba3k2aknvg5k8521z8aya6q987klwx5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -1833,36 +1833,37 @@ emulation community.  It provides highly accurate emulation.")
     (license license:gpl2+)))
 
 (define-public emulation-station
-  (package
-    (name "emulation-station")
-    (version "2.0.1")
-    (source (origin
-              (method git-fetch) ; no tarball available
-              (uri (git-reference
-                    (url "https://github.com/Aloshi/EmulationStation.git")
-                    (commit "646bede"))) ; no version tag
-              (sha256
-               (base32
-                "0cm0sq2wri2l9cvab1l0g02za59q7klj0h3p028vr96n6njj4w9v"))))
-    (build-system cmake-build-system)
-    (arguments
-     '(#:tests? #f)) ; no tests
-    (inputs
-     `(("alsa-lib" ,alsa-lib)
-       ("boost" ,boost)
-       ("curl" ,curl)
-       ("eigin" ,eigen)
-       ("freeimage" ,freeimage)
-       ("freetype" ,freetype)
-       ("mesa" ,mesa)
-       ("sdl2" ,sdl2)))
-    (synopsis "Video game console emulator front-end")
-    (description "EmulationStation provides a graphical front-end to a large
+  (let ((commit "646bede3d9ec0acf0ae378415edac136774a66c5"))
+    (package
+      (name "emulation-station")
+      (version "2.0.1")
+      (source (origin
+                (method git-fetch) ; no tarball available
+                (uri (git-reference
+                      (url "https://github.com/Aloshi/EmulationStation.git")
+                      (commit commit))) ; no version tag
+                (sha256
+                 (base32
+                  "0cm0sq2wri2l9cvab1l0g02za59q7klj0h3p028vr96n6njj4w9v"))))
+      (build-system cmake-build-system)
+      (arguments
+       '(#:tests? #f)) ; no tests
+      (inputs
+       `(("alsa-lib" ,alsa-lib)
+         ("boost" ,boost)
+         ("curl" ,curl)
+         ("eigin" ,eigen)
+         ("freeimage" ,freeimage)
+         ("freetype" ,freetype)
+         ("mesa" ,mesa)
+         ("sdl2" ,sdl2)))
+      (synopsis "Video game console emulator front-end")
+      (description "EmulationStation provides a graphical front-end to a large
 number of video game console emulators.  It features an interface that is
 usable with any game controller that has at least 4 buttons, theming support,
 and a game metadata scraper.")
-    (home-page "http://www.emulationstation.org")
-    (license license:expat)))
+      (home-page "http://www.emulationstation.org")
+      (license license:expat))))
 
 (define openttd-engine
   (package

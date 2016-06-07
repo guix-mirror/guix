@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -107,11 +108,11 @@ versions of ID3v2.")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://sourceforge/id3lib/id3lib/"
-                                version "/id3lib-"
-                                version ".tar.gz"))
+                                version "/id3lib-" version ".tar.gz"))
             (sha256
              (base32
-              "0yfhqwk0w8q2hyv1jib1008jvzmwlpsxvc8qjllhna6p1hycqj97"))))
+              "0yfhqwk0w8q2hyv1jib1008jvzmwlpsxvc8qjllhna6p1hycqj97"))
+            (patches (search-patches "id3lib-CVE-2007-4460.patch"))))
    (build-system gnu-build-system)
    (arguments
     `(#:phases
@@ -417,36 +418,36 @@ format.")
     (version "0.2.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/mpc123/version%20"
-                                  version "/mpc123-" version ".tar.gz"))
+              (uri (list (string-append "mirror://sourceforge/mpc123/version%20"
+                                        version "/mpc123-" version ".tar.gz")
+                         (string-append "mirror://debian/pool/main/m/" name
+                                        "/" name "_" version ".orig.tar.gz")))
               (sha256
                (base32
                 "0sf4pns0245009z6mbxpx7kqy4kwl69bc95wz9v23wgappsvxgy1"))
               (patches (search-patches "mpc123-initialize-ao.patch"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda _
-                   (substitute* "Makefile"
-                     (("CC[[:blank:]]*:=.*")
-                      "CC := gcc\n")))
-                 (alist-replace
-                  'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let* ((out (assoc-ref outputs "out"))
-                           (bin (string-append out "/bin")))
-                      (mkdir-p bin)
-                      (install-file "mpc123" bin)))
-                  %standard-phases))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (substitute* "Makefile"
+               (("CC[[:blank:]]*:=.*")
+                "CC := gcc\n"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (mkdir-p bin)
+               (install-file "mpc123" bin)))))
        #:tests? #f))
-
     (native-inputs
      `(("gettext" ,gnu-gettext)))
     (inputs
      `(("libao" ,ao)
        ("libmpcdec" ,libmpcdec)))
-    (home-page "http://mpc123.sourceforge.net/")
+    (home-page "https://github.com/bucciarati/mpc123")
     (synopsis "Audio player for Musepack-formatted files")
     (description
      "Mpc123 is a command-line player for files in the Musepack audio
@@ -456,7 +457,7 @@ compression format (.mpc files).")
 (define-public eyed3
   (package
     (name "eyed3")
-    (version "0.7.8")
+    (version "0.7.9")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -464,7 +465,7 @@ compression format (.mpc files).")
                   version ".tar.gz"))
              (sha256
               (base32
-               "1nv7nhfn1d0qm7rgkzksbccgqisng8klf97np0nwaqwd5dbmdf86"))))
+               "08mzhqg3k63d244cgwd0y1xrb8x9m6b99ykyskpnwyxl4wxrgrzp"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2))

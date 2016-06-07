@@ -19,6 +19,7 @@
 ;;; Copyright © 2015, 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
+;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,6 +45,7 @@
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages adns)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
@@ -57,6 +59,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages libevent)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages maths)
@@ -68,7 +71,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages statistics)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
@@ -5462,7 +5465,7 @@ should be stored on various operating systems.")
 (define-public python-llfuse
   (package
     (name "python-llfuse")
-    (version "1.0")
+    (version "1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -5470,7 +5473,7 @@ should be stored on various operating systems.")
                     "llfuse-" version ".tar.bz2"))
               (sha256
                (base32
-                "1li7q04ljrvwharw4fblcbfhvk6s0l3lnv8yqb4c22lcgbkiqlps"))))
+                "1ywzbqkahrfl9kkcasxrmgilv6fybapvh6pqvimimnfh7sgxal72"))))
     (build-system python-build-system)
     (inputs
      `(("fuse" ,fuse)
@@ -5805,6 +5808,35 @@ in Python.  This library is used to create, poke at, and manipulate IPv4 and
 IPv6 addresses and networks.  This is a port of the Python 3.3 ipaddress
 module to older versions of Python.")
     (license psfl)))
+
+(define-public python2-ipaddr
+  (package
+    (name "python2-ipaddr")
+    (version "2.1.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "ipaddr" version))
+       (sha256
+        (base32 "1dwq3ngsapjc93fw61rp17fvzggmab5x1drjzvd4y4q0i255nm8v"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2                         ;version 2 only
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* _
+             (zero? (system* "python" "ipaddr_test.py")))))))
+    (home-page "https://github.com/google/ipaddr-py")
+    (synopsis "IP address manipulation library")
+    (description
+     "Ipaddr is a Python@tie{}2 library for creating and manupilating IPv4 and
+IPv6 addresses and networks.
+
+For new implementations you may prefer to use the standard module
+@code{ipaddress}, which was introduced in Python 3.3 and backported to older
+versions of Python.")
+    (license asl2.0)))
 
 (define-public python-idna
   (package
@@ -8807,3 +8839,192 @@ the renaming, moving and extracting of attributes, functions, modules, fields
 and parameters in Python 2 source code.  These refactorings can also be applied
 to occurences in strings and comments.")
     (license gpl2)))
+
+(define-public python-py3status
+  (package
+    (name "python-py3status")
+    (version "2.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "py3status" version))
+       (sha256
+        (base32
+         "09y7h8rjay5kzwk5akq7f5f9wqnvjkxhivck04hdc8ny1nw3vqzp"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/ultrabug/py3status")
+    (synopsis "Extensible i3status wrapper written in Python")
+    (description "py3status is an i3status wrapper which extends i3status
+functionality in a modular way, allowing you to extend your panel with your
+own code, responding to click events and updating clock every second.")
+    (license bsd-3)))
+
+(define-public python-tblib
+  (package
+    (name "python-tblib")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "tblib" version))
+              (sha256 (base32
+                       "02iahfkfa927hb4jq2bak36ldihwapzacfiq5lyxg8llwn98a1yi"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; Upstream runs tests after installation and the package itself
+             ;; resides in a subdirectory. Extend PYTHONPATH so it will be
+             ;; found.
+             (setenv "PYTHONPATH"
+                     (string-append (getcwd) "/build/lib:"
+                                    (getenv "PYTHONPATH")))
+             (zero? (system* "py.test" "-vv" "tests" "README.rst")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/ionelmc/python-tblib")
+    (synopsis "Traceback serialization library")
+    (description
+     "Traceback serialization allows you to:
+
+@enumerate
+@item Pickle tracebacks and raise exceptions with pickled tracebacks in
+different processes.  This allows better error handling when running code over
+multiple processes (imagine multiprocessing, billiard, futures, celery etc).
+
+@item Parse traceback strings and raise with the parsed tracebacks.
+@end itemize")
+    (license bsd-3)))
+
+(define-public python2-tblib
+  (package-with-python2 python-tblib))
+
+(define-public python-sqlparse
+  (package
+    (name "python-sqlparse")
+    (version "0.1.19")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sqlparse" version))
+              (sha256
+               (base32
+                "1s2fvaxgh9kqzrd6iwy5h7i61ckn05plx9np13zby93z3hdbx5nq"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda* _
+             ;; setup.py-integrated 2to3 only affects the build files, but
+             ;; py.test is using the source files. So we need to convert them
+             ;; manually.
+             (when (zero? (system* "python3"))
+               (system* "2to3" "--no-diff" "-wn" "sqlparse" "tests"))
+             (zero? (system* "py.test")))))))
+    (native-inputs
+     `(("python-pytest" ,python-pytest)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/andialbrecht/sqlparse")
+    (synopsis "Non-validating SQL parser")
+    (description "Sqlparse is a non-validating SQL parser for Python.  It
+provides support for parsing, splitting and formatting SQL statements.")
+    (license bsd-3)))
+
+(define-public python2-sqlparse
+  (package-with-python2 python-sqlparse))
+
+(define-public python-greenlet
+  (package
+    (name "python-greenlet")
+    (version "0.4.9")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "greenlet" version))
+              (sha256
+               (base32
+                "04h0m54dyqg49vyarq26mry6kbivnpl47rnmmrk9qn8wpfxviybr"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://greenlet.readthedocs.io/")
+    (synopsis "Lightweight in-process concurrent programming")
+    (description
+     "Greenlet package is a spin-off of Stackless, a version of CPython
+that supports micro-threads called \"tasklets\".  Tasklets run
+pseudo-concurrently (typically in a single or a few OS-level threads) and
+are synchronized with data exchanges on \"channels\".")
+    (license (list psfl license:expat))))
+
+(define-public python2-greenlet
+  (package-with-python2 python-greenlet))
+
+(define-public python-gevent
+  (package
+    (name "python-gevent")
+    (version "1.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "gevent" version))
+              (sha256
+               (base32
+                "1smf3kvidpdiyi2c81alal74p2zm0clrm6xbyy6y1k9a3f2vkrbf"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  ;; unbunding libev and c-ares
+                  (for-each delete-file-recursively '("libev" "c-ares"))
+                  ;; fixing testsuite
+                  (call-with-output-file "greentest/__init__.py" noop)
+                  (substitute* "greentest/testrunner.py"
+                    (("import util") "from . import util")
+                    (("from util import log") "from .util import log"))))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-greenlet" ,python-greenlet)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)))
+    (inputs
+     `(("c-ares" ,c-ares)
+       ("libev" ,libev)))
+    (home-page "http://www.gevent.org/")
+    (synopsis "Coroutine-based network library")
+    (description
+     "gevent is a coroutine-based Python networking library that uses greenlet
+to provide a high-level synchronous API on top of the libev event loop.")
+    (license license:expat)))
+
+(define-public python2-gevent
+  (package-with-python2 python-gevent))
+
+(define-public python-twisted
+  (package
+    (name "python-twisted")
+    (version "16.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (list (pypi-uri "Twisted" version ".tar.bz2") ; 404
+                         (string-append
+                          "https://pypi.io/packages/source/T/Twisted/"
+                          "Twisted-" version ".tar.bz2")))
+              (sha256
+               (base32
+                "0ydxrp9myw1mvsz3qfzx5579y5llmqa82pxvqchgp5syczffi450"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-zope-interface" ,python-zope-interface)))
+    (home-page "https://twistedmatrix.com/")
+    (synopsis "Asynchronous networking framework written in Python")
+    (description
+     "Twisted is an extensible framework for Python programming, with special
+focus on event-based network programming and multiprotocol integration.")
+    (license license:expat)))
+
+(define-public python2-twisted
+  (package-with-python2 python-twisted))

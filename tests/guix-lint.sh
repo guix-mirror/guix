@@ -54,7 +54,7 @@ grep_warning ()
 # 2) the synopsis starts with a lower-case letter;
 # 3) the description has a single space following the end-of-sentence period.
 
-out=`guix lint dummy 2>&1`
+out=`guix lint -c synopsis,description dummy 2>&1`
 if [ `grep_warning "$out"` -ne 3 ]
 then false; else true; fi
 

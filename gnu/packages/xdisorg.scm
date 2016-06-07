@@ -11,6 +11,7 @@
 ;;; Copyright © 2015 Florian Paul Schmidt <mista.tapas@gmx.net>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -381,9 +382,12 @@ move windows, switch between desktops, etc.).")
     (version "0.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "http://linuxbrit.co.uk/downloads/scrot-"
-                    version ".tar.gz"))
+              (uri (list (string-append
+                           "http://linuxbrit.co.uk/downloads/scrot-"
+                           version ".tar.gz")
+                         (string-append
+                           "https://fossies.org/linux/privat/old/scrot-"
+                           version ".tar.gz")))
               (sha256
                (base32
                 "1wll744rhb49lvr2zs6m93rdmiq59zm344jzqvijrdn24ksiqgb1"))))
@@ -395,16 +399,16 @@ move windows, switch between desktops, etc.).")
        (list (string-append "--mandir="
                             (assoc-ref %outputs "out")
                             "/share/man"))
-       #:phases (alist-replace
-                 'install
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   (let* ((out (assoc-ref outputs "out"))
-                          (doc (string-append out "/share/doc/scrot")))
-                     (mkdir-p doc)
-                     (zero?
-                      (system* "make" "install"
-                               (string-append "docsdir=" doc)))))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (doc (string-append out "/share/doc/scrot")))
+               (mkdir-p doc)
+               (zero?
+                (system* "make" "install"
+                         (string-append "docsdir=" doc)))))))))
     (inputs
      `(("libx11" ,libx11)
        ("giblib" ,giblib)))
@@ -540,7 +544,7 @@ things less distracting.")
 (define-public xlockmore
   (package
     (name "xlockmore")
-    (version "5.46")
+    (version "5.47")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -549,10 +553,10 @@ things less distracting.")
                         (string-append
                           "http://www.tux.org/~bagleyd/xlock/xlockmore-old"
                           "/xlockmore-" version
-                          "/xlockmore-" version ".tar.bz2")))
+                          "/xlockmore-" version ".tar.xz")))
              (sha256
               (base32
-               "1ps0dmnh912x8mwns94y2607xk90rjxrjn5s1pkmmpjg5h9bxcrj"))))
+               "138d79b8zc2hambbr9fnxp3fhihlcljgqns04zf0kv2f53pavqwl"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--enable-appdefaultdir="
@@ -570,8 +574,7 @@ things less distracting.")
      "XLockMore is a classic screen locker and screen saver for the
 X Window System.")
     (license (license:non-copyleft #f "See xlock.c.")
-             ;; + GPLv2 in modes/glx/biof.c.
-             )))
+             ))) ; + GPLv2 in modes/glx/biof.c.
 
 (define-public xosd
   (package
@@ -907,3 +910,44 @@ demos.  It also acts as a nice screen locker.")
               (string-append
                "http://metadata.ftp-master.debian.org/changelogs/"
                "/main/x/xscreensaver/xscreensaver_5.34-2_copyright")))))
+
+(define-public rofi
+  (package
+    (name "rofi")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/DaveDavenport/rofi/"
+                                  "releases/download/"
+                                  version "/rofi-" version ".tar.xz"))
+              (sha256
+               (base32
+                "01jxml9vk4cw7pngpan7dipmb98s6ibh6f0023lw3hbgxy650637"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("pango" ,pango)
+       ("cairo" ,cairo)
+       ("glib" ,glib)
+       ("startup-notification" ,startup-notification)
+       ("libxkbcommon" ,libxkbcommon)
+       ("libxcb" ,libxcb)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-wm" ,xcb-util-wm)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'adjust-tests
+           (lambda _
+             (substitute* '("test/helper-expand.c")
+               (("~root") "/root")
+               (("~") "")
+               (("g_get_home_dir \\(\\)") "\"/\"")))))))
+    (home-page "https://davedavenport.github.io/rofi/")
+    (synopsis "Application Launcher")
+    (description "Rofi is a minimalist Application Launcher.  It memorizes which
+applications you regularily use and also allows you to search for an application
+by name.")
+    (license license:expat)))

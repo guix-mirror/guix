@@ -52,16 +52,16 @@ clients.")
 (define-public vdirsyncer
   (package
     (name "vdirsyncer")
-    (version "0.10.0")
+    (version "0.11.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://pypi.python.org/packages/0b/fb/"
-                                 "c42223e1e9169e4770194e62143d431755724b080d8cb"
-                                 "77f14705b634815/"
-                                 "vdirsyncer-" version ".tar.gz"))
+             (uri (string-append
+                    "https://pypi.python.org/packages/"
+                    "39/e5/1e7097b5f0cd6de79ec9014f162a6000b77ca2a369ea8a1588a2eebff570/"
+                    name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1gf86sbd6w0w4zayh9r3irlp5jwrzbjikjc0vs5zkdpa5c199f78"))))
+               "1bf0vk29qdswar0q4267aamfriq3134302i2p3qcqxpmmcwx3qfv"))))
     (build-system python-build-system)
     (arguments
       `(#:phases (modify-phases %standard-phases

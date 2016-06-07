@@ -3,6 +3,7 @@
 ;;; Copyright © 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -92,6 +93,8 @@
             guix-publish-service-type
             gpm-service-type
             gpm-service
+
+            urandom-seed-service
 
             %base-services))
 
@@ -419,6 +422,67 @@ All the services that spawn processes must depend on this one so that they are
 stopped before 'kill' is called."
   (service user-processes-service-type
            (list (filter file-system-mount? file-systems) grace-delay)))
+
+
+;;;
+;;; Preserve entropy to seed /dev/urandom on boot.
+;;;
+
+(define %random-seed-file
+  "/var/lib/random-seed")
+
+(define (urandom-seed-shepherd-service _)
+  "Return a shepherd service for the /dev/urandom seed."
+  (list (shepherd-service
+         (documentation "Preserve entropy across reboots for /dev/urandom.")
+         (provision '(urandom-seed))
+         (requirement '(user-processes))
+         (start #~(lambda _
+                    ;; On boot, write random seed into /dev/urandom.
+                    (when (file-exists? #$%random-seed-file)
+                      (call-with-input-file #$%random-seed-file
+                        (lambda (seed)
+                          (call-with-output-file "/dev/urandom"
+                            (lambda (urandom)
+                              (dump-port seed urandom))))))
+                    ;; Immediately refresh the seed in case the system doesn't
+                    ;; shut down cleanly.
+                    (call-with-input-file "/dev/urandom"
+                      (lambda (urandom)
+                        (let ((previous-umask (umask #o077))
+                              (buf (make-bytevector 512)))
+                          (mkdir-p (dirname #$%random-seed-file))
+                          (get-bytevector-n! urandom buf 0 512)
+                          (call-with-output-file #$%random-seed-file
+                            (lambda (seed)
+                              (put-bytevector seed buf)))
+                          (umask previous-umask))))
+                    #t))
+         (stop #~(lambda _
+                   ;; During shutdown, write from /dev/urandom into random seed.
+                   (let ((buf (make-bytevector 512)))
+                     (call-with-input-file "/dev/urandom"
+                       (lambda (urandom)
+                         (let ((previous-umask (umask #o077)))
+                           (get-bytevector-n! urandom buf 0 512)
+                           (mkdir-p (dirname #$%random-seed-file))
+                           (call-with-output-file #$%random-seed-file
+                             (lambda (seed)
+                               (put-bytevector seed buf)))
+                           (umask previous-umask))
+                         #t)))))
+         (modules `((rnrs bytevectors)
+                    (rnrs io ports)
+                    ,@%default-modules)))))
+
+(define urandom-seed-service-type
+  (service-type (name 'urandom-seed)
+                (extensions
+                 (list (service-extension shepherd-root-service-type
+                                          urandom-seed-shepherd-service)))))
+
+(define (urandom-seed-service)
+  (service urandom-seed-service-type #f))
 
 
 ;;;
@@ -1200,7 +1264,6 @@ extra rules from the packages listed in @var{rules}."
   "Return a service that uses @var{device} as a swap device."
   (service swap-service-type device))
 
-
 (define-record-type* <gpm-configuration>
   gpm-configuration make-gpm-configuration gpm-configuration?
   (gpm      gpm-configuration-gpm)                ;package
@@ -1281,6 +1344,7 @@ This is the GNU operating system, welcome!\n\n")))
           (static-networking-service "lo" "127.0.0.1"
                                      #:provision '(loopback))
           (syslog-service)
+          (urandom-seed-service)
           (guix-service)
           (nscd-service)
 

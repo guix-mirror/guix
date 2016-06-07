@@ -270,7 +270,10 @@ Kate stream.")
             (sha256
              (base32
               "1g12bnh5ah08v529y72kfdz5lhvy75iaz7f9jskyby23m9dkk2d3"))
-            (patches (search-patches "vorbis-tools-CVE-2015-6749.patch"))))
+            (patches (search-patches 
+                       "vorbis-tools-CVE-2014-9638+CVE-2014-9639.patch"
+                       "vorbis-tools-CVE-2014-9640.patch"
+                       "vorbis-tools-CVE-2015-6749.patch"))))
    (build-system gnu-build-system)
    (inputs `(("ao" ,ao)
              ("curl" ,curl)

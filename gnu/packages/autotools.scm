@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -158,6 +159,27 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
                      (exit (status:exit-val result))))
                 port)))
            (chmod (string-append bin "/autoconf") #o555)))))))
+
+(define-public autoconf-archive
+  (package
+    (name "autoconf-archive")
+    (version "2016.03.20")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/autoconf-archive/autoconf-archive-"
+                          version ".tar.xz"))
+      (sha256
+       (base32
+        "0dz4fnc723jqn3by22ds5fys7g31apzm1r9allldvva0yvzjxyw8"))))
+    (build-system gnu-build-system)
+    (home-page "https://www.gnu.org/software/autoconf-archive")
+    (synopsis "Collection of freely reusable Autoconf macros")
+    (description
+     "Autoconf Archive is a collection of over 450 new macros for Autoconf,
+greatly expanding the domain of its functionality.  These macros have been
+contributed as free software by the community.")
+    (license gpl3+)))
 
 (define-public autobuild
   (package

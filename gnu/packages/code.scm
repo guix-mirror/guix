@@ -54,7 +54,7 @@
     (build-system gnu-build-system)
 
     ;; Needed to have cflow-mode.el installed.
-    (native-inputs `(("emacs" ,emacs-no-x)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
 
     (home-page "http://www.gnu.org/software/cflow/")
     (synopsis "Create a graph of control flow within a program")

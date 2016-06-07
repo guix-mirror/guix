@@ -333,11 +333,11 @@ requisite store items i.e. the union closure of all the inputs."
     (requisites*
      (match input
        ((drv output)
-        (derivation->output-path drv output))
+        (list (derivation->output-path drv output)))
        ((drv)
-        (derivation->output-path drv))
+        (list (derivation->output-path drv)))
        ((? direct-store-path? path)
-        path))))
+        (list path)))))
 
   (mlet %store-monad ((reqs (sequence %store-monad
                                       (map input->requisites inputs))))

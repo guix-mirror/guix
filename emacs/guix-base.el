@@ -207,6 +207,13 @@ Ask a user with PROMPT for continuing an operation."
    (guix-make-guile-expression
     'package-source-path package-id)))
 
+(defun guix-package-store-path (package-id)
+  "Return a list of store directories of outputs of package PACKAGE-ID."
+  (message "Calculating the package derivation ...")
+  (guix-eval-read
+   (guix-make-guile-expression
+    'package-store-path package-id)))
+
 (defvar guix-after-source-download-hook nil
   "Hook run after successful performing a 'source-download' operation.")
 
@@ -223,6 +230,20 @@ Ask a user with PROMPT for continuing an operation."
       :use-substitutes? (or guix-use-substitutes 'f)
       :dry-run? (or guix-dry-run 'f))
      nil 'source-download)))
+
+(defun guix-build-package (package-id &optional prompt)
+  "Build package with PACKAGE-ID.
+Ask a user with PROMPT for continuing the build operation."
+  (when (or (not guix-operation-confirm)
+            (guix-operation-prompt (or prompt "Build package?")))
+    (guix-eval-in-repl
+     (format (concat ",run-in-store "
+                     "(build-package (package-by-id %d)"
+                     " #:use-substitutes? %s"
+                     " #:dry-run? %s)")
+             package-id
+             (guix-guile-boolean guix-use-substitutes)
+             (guix-guile-boolean guix-dry-run)))))
 
 ;;;###autoload
 (defun guix-apply-manifest (profile file &optional operation-buffer)

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses)
   #:use-module (guix download)
+  #:use-module (gnu packages)
   #:use-module (gnu packages tcl))
 
 (define-public wordnet
@@ -30,11 +32,14 @@
     (source (origin
              (method url-fetch)
              (uri (string-append "http://wordnetcode.princeton.edu/"
-                                 version "/WordNet-"
-                                 version ".tar.bz2"))
+                                 version "/WordNet-" version ".tar.bz2"))
              (sha256
               (base32
-               "08pgjvd2vvmqk3h641x63nxp7wqimb9r30889mkyfh2agc62sjbc"))))
+               "08pgjvd2vvmqk3h641x63nxp7wqimb9r30889mkyfh2agc62sjbc"))
+             (patches (search-patches
+                        "wordnet-CVE-2008-2149.patch"
+                        "wordnet-CVE-2008-3908-pt1.patch"
+                        "wordnet-CVE-2008-3908-pt2.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list (string-append "--with-tcl="
@@ -47,30 +52,30 @@
                                ;; Provide the `result' field in `Tcl_Interp'.
                                ;; See <https://bugs.gentoo.org/show_bug.cgi?id=452034>.
                                "CFLAGS=-DUSE_INTERP_RESULT")
-       #:phases (alist-cons-after
-                 'install 'post-install
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out"))
-                         (bin (assoc-ref outputs "tk"))
-                         (tk  (assoc-ref inputs "tk"))
-                         (tkv ,(let ((v (package-version tk)))
-                                 (string-take v (string-index-right v #\.)))))
-                     ;; Move `wishwn' and `wnb' to BIN.
-                     (for-each (lambda (prog)
-                                 (let ((orig (string-append out "/bin/" prog))
-                                       (dst  (string-append bin "/bin/" prog))
-                                       (dir  (string-append tk "/lib/tk" tkv)))
-                                   (mkdir-p (dirname dst))
-                                   (copy-file orig dst)
-                                   (delete-file orig)
-                                   (wrap-program dst
-                                                 `("TK_LIBRARY" "" = (,dir))
-                                                 `("PATH" ":" prefix
-                                                   (,(string-append out
-                                                                    "/bin"))))))
-                               '("wishwn" "wnb"))
-                     #t))
-                 %standard-phases)))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'post-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out"))
+                   (bin (assoc-ref outputs "tk"))
+                   (tk  (assoc-ref inputs "tk"))
+                   (tkv ,(let ((v (package-version tk)))
+                           (string-take v (string-index-right v #\.)))))
+               ;; Move `wishwn' and `wnb' to BIN.
+               (for-each (lambda (prog)
+                           (let ((orig (string-append out "/bin/" prog))
+                                 (dst  (string-append bin "/bin/" prog))
+                                 (dir  (string-append tk "/lib/tk" tkv)))
+                             (mkdir-p (dirname dst))
+                             (copy-file orig dst)
+                             (delete-file orig)
+                             (wrap-program dst
+                                           `("TK_LIBRARY" "" = (,dir))
+                                           `("PATH" ":" prefix
+                                             (,(string-append out
+                                                              "/bin"))))))
+                         '("wishwn" "wnb"))
+               #t))))))
     (outputs '("out"
                "tk"))                             ; for the Tcl/Tk GUI
     (inputs `(("tk" ,tk)

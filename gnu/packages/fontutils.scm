@@ -281,9 +281,16 @@ high quality, anti-aliased and subpixel rendered text on a display.")
    (version "5.1.2")
    (source (origin
             (method url-fetch)
-            (uri "ftp://sunsite.unc.edu/pub/Linux/libs/graphics/t1lib-5.1.2.tar.gz")
+            (uri (list (string-append "ftp://sunsite.unc.edu/pub/Linux/libs/"
+                                      "graphics/" name "-" version ".tar.gz")
+                       (string-append "https://fossies.org/linux/misc/old/"
+                                      name "-" version ".tar.gz")))
             (sha256 (base32
-                     "0nbvjpnmcznib1nlgg8xckrmsw3haa154byds2h90y2g0nsjh4w2"))))
+                     "0nbvjpnmcznib1nlgg8xckrmsw3haa154byds2h90y2g0nsjh4w2"))
+            (patches (search-patches
+                       "t1lib-CVE-2010-2642.patch"
+                       "t1lib-CVE-2011-0764.patch"
+                       "t1lib-CVE-2011-1552+CVE-2011-1553+CVE-2011-1554.patch"))))
    (build-system gnu-build-system)
    (arguments
     ;; Making the documentation requires latex, but t1lib is also an input
@@ -386,7 +393,7 @@ and returns a sequence of positioned glyphids from the font.")
 (define-public potrace
   (package
     (name "potrace")
-    (version "1.11")
+    (version "1.13")
     (source
      (origin
       (method url-fetch)
@@ -394,7 +401,7 @@ and returns a sequence of positioned glyphids from the font.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1bbyl7jgigawmwc8r14znv8lb6lrcxh8zpvynrl6s800dr4yp9as"))))
+        "115p2vgyq7p2mf4nidk2x3aa341nvv2v8ml056vbji36df5l6lk2"))))
     (build-system gnu-build-system)
     (native-inputs `(("ghostscript" ,ghostscript))) ;for tests
     (inputs `(("zlib" ,zlib)))

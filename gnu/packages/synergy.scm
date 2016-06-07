@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,16 +33,16 @@
 (define-public synergy
   (package
     (name "synergy")
-    (version "1.7.4")
+    (version "1.7.6")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://github.com/synergy/synergy/archive/"
+      (uri (string-append "https://github.com/symless/synergy/archive/"
                           "v" version "-stable.tar.gz"))
       (file-name (string-append name "-" version ".tar.gz"))
       (sha256
        (base32
-        "1prb06dmi4bhfsraih4hzlsfiraiczgzhqy9gjsxygczif8w6p91"))
+        "07a1g2kh4f064nqjdqgfzrjfayls31scnssphbndmnvfc20bhlx4"))
       (modules '((guix build utils)))
       (snippet
        ;; Remove ~14MB of unnecessary bundled source and binaries
@@ -65,25 +66,23 @@
     (arguments
      `(#:phases
        (let ((srcdir (string-append "../synergy-" ,version "-stable")))
-         (alist-cons-before
-          'configure 'unpack-aux-src
-          ;; TODO: package and use from system
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let ((unzip (string-append
-                          (assoc-ref inputs "unzip")
-                          "/bin/unzip")))
-              (with-directory-excursion "ext"
-                (for-each
-                 (lambda (f)
-                   (system* unzip "-d" f (string-append f ".zip")))
-                 '("gmock-1.6.0" "gtest-1.6.0")))))
-          (alist-replace
-           'check
-           ;; Don't run "integtests" as it requires network and X an display.
-           (lambda _
-             (zero? (system* (string-append srcdir "/bin/unittests"))))
-           (alist-replace
-            'install
+         (modify-phases %standard-phases
+           (add-before 'configure 'unpack-aux-src
+             ;; TODO: package and use from system
+             (lambda* (#:key inputs #:allow-other-keys)
+               (let ((unzip (string-append
+                             (assoc-ref inputs "unzip")
+                             "/bin/unzip")))
+                 (with-directory-excursion "ext"
+                   (for-each
+                    (lambda (f)
+                      (system* unzip "-d" f (string-append f ".zip")))
+                    '("gmock-1.6.0" "gtest-1.6.0"))))))
+          (replace 'check
+            ;; Don't run "integtests" as it requires network and X an display.
+            (lambda _
+              (zero? (system* (string-append srcdir "/bin/unittests")))))
+          (replace 'install
             ;; There currently is no installation process, see:
             ;; http://synergy-project.org/spit/issues/details/3317/
             (lambda* (#:key outputs #:allow-other-keys)
@@ -103,9 +102,8 @@
                      (install-file (string-append srcdir "/doc/" e) ex))
                    '("synergy.conf.example"
                      "synergy.conf.example-advanced"
-                     "synergy.conf.example-basic")))))
-            %standard-phases))))))
-    (home-page "http://www.synergy-project.org")
+                     "synergy.conf.example-basic"))))))))))
+    (home-page "http://symless.com/")
     (synopsis "Mouse and keyboard sharing utility")
     (description
      "Synergy brings your computers together in one cohesive experience; its

@@ -9,6 +9,9 @@
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 humanitiesNerd <catonano@gmail.com>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 David Thompson <davet@gnu.org>
+;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,7 +83,19 @@
               (base32
                "0kn3rzm91qiswi0cql89kbv6mqn27rwsyjfb8xmwy9m5s8fxfiyx"))
              (patches (search-patches "emacs-exec-path.patch"
-                                      "emacs-source-date-epoch.patch"))))
+                                      "emacs-fix-scheme-indent-function.patch"
+                                      "emacs-source-date-epoch.patch"))
+             (modules '((guix build utils)))
+             (snippet
+              ;; Delete the bundled byte-compiled elisp files and
+              ;; generated autoloads.
+              '(with-directory-excursion "lisp"
+                 (for-each delete-file
+                           (append (find-files "." "\\.elc$")
+                                   (find-files "." "loaddefs\\.el$")
+                                   ;; This is the only "autoloads" file that
+                                   ;; does not have "*loaddefs.el" name.
+                                   '("eshell/esh-groups.el")))))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:phases
@@ -159,9 +174,24 @@ large Lisp programs.  It has full Unicode support for nearly all human
 languages.")
     (license license:gpl3+)))
 
-(define-public emacs-no-x
+(define-public emacs-minimal
   ;; This is the version that you should use as an input to packages that just
   ;; need to byte-compile .el files.
+  (package (inherit emacs)
+    (name "emacs-minimal")
+    (synopsis "The extensible text editor (used only for byte-compilation)")
+    (build-system gnu-build-system)
+    (arguments
+     (substitute-keyword-arguments (package-arguments emacs)
+       ((#:phases phases)
+        `(modify-phases ,phases
+           (delete 'install-site-start)))))
+    (inputs
+     `(("ncurses" ,ncurses)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))))
+
+(define-public emacs-no-x
   (package (inherit emacs)
     (name "emacs-no-x")
     (synopsis "The extensible, customizable, self-documenting text
@@ -241,8 +271,8 @@ editor (without an X toolkit)" )
                                            "/share/emacs/site-lisp/"
                                            "geiser-autoloads.el")))
                  %standard-phases)))
-    (inputs `(("guile" ,guile-2.0)
-              ("emacs" ,emacs-no-x)))
+    (inputs `(("guile" ,guile-2.0)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
     (home-page "http://nongnu.org/geiser/")
     (synopsis "Collection of Emacs modes for Guile and Racket hacking")
     (description
@@ -296,7 +326,7 @@ metadata.")
                (base32
                 "0pp3n8q6kc70blqsaw0zlzp6bc327dpgdrjr0cnh7hqg1lras7ka"))))
     (build-system trivial-build-system)
-    (inputs `(("emacs" ,emacs-no-x)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
     (arguments
      `(#:modules ((guix build utils)
                   (guix build emacs-utils))
@@ -367,7 +397,7 @@ when typing parentheses directly or commenting out code line by line.")
                                       (lisp (string-append
                                              out "/share/emacs/site-lisp/")))
                                  (emacs-generate-autoloads ,name lisp)))))))
-    (native-inputs `(("emacs" ,emacs-no-x)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
     (home-page "https://github.com/magit/git-modes")
     (synopsis "Emacs major modes for Git configuration files")
     (description
@@ -403,7 +433,7 @@ on stdout instead of using a socket as the Emacsclient does.")
 (define-public magit
   (package
     (name "magit")
-    (version "2.6.2")
+    (version "2.7.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -411,10 +441,10 @@ on stdout instead of using a socket as the Emacsclient does.")
                    version "/" name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0im1jrqw29g5anrrjflj6b2gpyqkvpghnq8zvywxyhmjwzar4rn7"))))
+               "1kzd8k2n0lcr04jvn5b6d29zf765mxgshfhzflkzndwmvyxmlqpl"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
-                     ("emacs" ,emacs-no-x)))
+                     ("emacs" ,emacs-minimal)))
     (inputs `(("git" ,git)))
     (propagated-inputs
      `(("dash" ,emacs-dash)
@@ -476,7 +506,7 @@ operations.")
                (base32
                 "04y88j7q9h8xjbx5dbick6n5nr1522sn9i1znp0qwk3vjb4b5mzz"))))
     (build-system trivial-build-system)
-    (native-inputs `(("emacs" ,emacs-no-x)
+    (native-inputs `(("emacs" ,emacs-minimal)
                      ("tar" ,tar)
                      ("gzip" ,gzip)))
     (propagated-inputs `(("dash" ,emacs-dash)
@@ -534,9 +564,9 @@ support for Git-SVN.")
                     version ".tar.gz"))
               (sha256
                (base32 "1kxc2yj8vb122dv91r68h7c5ladcryx963fr16plfhg71fv7f9av"))))
-    (inputs `(("emacs" ,emacs-no-x)))
     (native-inputs
-     `(("texinfo" ,texinfo)))
+     `(("emacs" ,emacs-minimal)
+       ("texinfo" ,texinfo)))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "EMACS="
@@ -616,7 +646,7 @@ programs.")
                      (setenv "PATH" (string-append emacs "/bin"))
                      (emacs-byte-compile-directory lispdir)
                      #t))))
-    (native-inputs `(("emacs" ,emacs-no-x)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
     (home-page "http://elpa.gnu.org/packages/let-alist.html")
     (synopsis "Easily let-bind values of an assoc-list by their names")
     (description
@@ -675,10 +705,10 @@ provides an optional IDE-like error list.")
               (base32
                "0zfxmq86pwk64yv0426gnjrvhjrgrjqn08sdcdhmmjmfpmqvm79y"))))
     (build-system gnu-build-system)
-    (native-inputs `(("autoconf" ,autoconf)))
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("emacs" ,emacs-minimal)))
     (inputs `(("w3m" ,w3m)
-              ("imagemagick" ,imagemagick)
-              ("emacs" ,emacs-no-x)))
+              ("imagemagick" ,imagemagick)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -747,8 +777,8 @@ provides an optional IDE-like error list.")
              (sha256
               (base32 "10byvyv9dk0ib55gfqm7bcpxmx2qbih1jd03gmihrppr2mn52nff"))))
     (build-system gnu-build-system)
-    (inputs `(("wget" ,wget)
-              ("emacs" ,emacs-no-x)))
+    (inputs `(("wget" ,wget)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
@@ -790,14 +820,14 @@ provides an optional IDE-like error list.")
 (define-public emms
   (package
     (name "emms")
-    (version "4.0")
+    (version "4.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/emms/emms-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1q0n3iwva8bvai2rl9sm49sdjmk0wi7vajz4knz01l7g67nrp87l"))
+                "0ay6631p3dr6xnhkm7skwn0gp317r1mxbip28m126w4zqf05cbh3"))
               (modules '((guix build utils)))
               (snippet
                '(substitute* "Makefile"
@@ -823,71 +853,68 @@ provides an optional IDE-like error list.")
        #:imported-modules (,@%gnu-build-system-modules
                            (guix build emacs-utils))
 
-       #:phases (alist-replace
-                 'configure
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   (let ((out     (assoc-ref outputs "out"))
-                         (vorbis  (assoc-ref inputs "vorbis-tools"))
-                         (alsa    (assoc-ref inputs "alsa-utils"))
-                         (mpg321  (assoc-ref inputs "mpg321"))
-                         (mp3info (assoc-ref inputs "mp3info")))
-                     ;; Specify the installation directory.
-                     (substitute* "Makefile"
-                       (("PREFIX=.*$")
-                        (string-append "PREFIX := " out "\n")))
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out     (assoc-ref outputs "out"))
+                   (vorbis  (assoc-ref inputs "vorbis-tools"))
+                   (alsa    (assoc-ref inputs "alsa-utils"))
+                   (mpg321  (assoc-ref inputs "mpg321"))
+                   (mp3info (assoc-ref inputs "mp3info")))
+               ;; Specify the installation directory.
+               (substitute* "Makefile"
+                 (("PREFIX=.*$")
+                  (string-append "PREFIX := " out "\n")))
 
-                     (setenv "SHELL" (which "sh"))
-                     (setenv "CC" "gcc")
+               (setenv "SHELL" (which "sh"))
+               (setenv "CC" "gcc")
 
-                     ;; Specify the absolute file names of the various
-                     ;; programs so that everything works out-of-the-box.
-                     (with-directory-excursion "lisp"
-                       (emacs-substitute-variables
-                           "emms-player-mpg321-remote.el"
-                         ("emms-player-mpg321-remote-command"
-                          (string-append mpg321 "/bin/mpg321")))
-                       (substitute* "emms-player-simple.el"
-                         (("\"ogg123\"")
-                          (string-append "\"" vorbis "/bin/ogg123\"")))
-                       (emacs-substitute-variables "emms-info-ogginfo.el"
-                         ("emms-info-ogginfo-program-name"
-                          (string-append vorbis "/bin/ogginfo")))
-                       (emacs-substitute-variables "emms-info-libtag.el"
-                         ("emms-info-libtag-program-name"
-                          (string-append out "/bin/emms-print-metadata")))
-                       (emacs-substitute-variables "emms-info-mp3info.el"
-                         ("emms-info-mp3info-program-name"
-                          (string-append mp3info "/bin/mp3info")))
-                       (substitute* "emms-volume-amixer.el"
-                         (("\"amixer\"")
-                          (string-append "\"" alsa "/bin/amixer\"")))
-                       (substitute* "emms-tag-editor.el"
-                         (("\"mp3info\"")
-                          (string-append "\"" mp3info "/bin/mp3info\""))))))
-                 (alist-cons-before
-                  'install 'pre-install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    ;; The 'install' rule expects the target directory to
-                    ;; exist.
-                    (let* ((out  (assoc-ref outputs "out"))
-                           (man1 (string-append out "/share/man/man1")))
-                      (mkdir-p man1)
-                      #t))
-                  (alist-cons-after
-                   'install 'post-install
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let* ((out    (assoc-ref outputs "out"))
-                            (target (string-append
-                                     out "/bin/emms-print-metadata")))
-                       (symlink "emms-auto.el"
-                                (string-append out "/share/emacs/site-lisp/"
-                                               "emms-autoloads.el"))
-                       (mkdir-p (dirname target))
-                       (copy-file "src/emms-print-metadata" target)
-                       (chmod target #o555)))
-                   %standard-phases)))
+               ;; Specify the absolute file names of the various
+               ;; programs so that everything works out-of-the-box.
+               (with-directory-excursion "lisp"
+                 (emacs-substitute-variables
+                     "emms-player-mpg321-remote.el"
+                   ("emms-player-mpg321-remote-command"
+                    (string-append mpg321 "/bin/mpg321")))
+                 (substitute* "emms-player-simple.el"
+                   (("\"ogg123\"")
+                    (string-append "\"" vorbis "/bin/ogg123\"")))
+                 (emacs-substitute-variables "emms-info-ogginfo.el"
+                   ("emms-info-ogginfo-program-name"
+                    (string-append vorbis "/bin/ogginfo")))
+                 (emacs-substitute-variables "emms-info-libtag.el"
+                   ("emms-info-libtag-program-name"
+                    (string-append out "/bin/emms-print-metadata")))
+                 (emacs-substitute-variables "emms-info-mp3info.el"
+                   ("emms-info-mp3info-program-name"
+                    (string-append mp3info "/bin/mp3info")))
+                 (substitute* "emms-volume-amixer.el"
+                   (("\"amixer\"")
+                    (string-append "\"" alsa "/bin/amixer\"")))
+                 (substitute* "emms-tag-editor.el"
+                   (("\"mp3info\"")
+                    (string-append "\"" mp3info "/bin/mp3info\"")))))))
+         (add-before 'install 'pre-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; The 'install' rule expects the target directory to exist.
+             (let* ((out  (assoc-ref outputs "out"))
+                    (man1 (string-append out "/share/man/man1")))
+               (mkdir-p man1)
+               #t)))
+         (add-after 'install 'post-install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out    (assoc-ref outputs "out"))
+                    (target (string-append
+                             out "/bin/emms-print-metadata")))
+               (symlink "emms-auto.el"
+                        (string-append out "/share/emacs/site-lisp/"
+                                       "emms-autoloads.el"))
+               (mkdir-p (dirname target))
+               (copy-file "src/emms-print-metadata" target)
+               (chmod target #o555)))))
        #:tests? #f))
-    (native-inputs `(("emacs" ,emacs-no-x)       ;for (guix build emacs-utils)
+    (native-inputs `(("emacs" ,emacs-minimal)    ;for (guix build emacs-utils)
                      ("texinfo" ,texinfo)))
     (inputs `(("alsa-utils" ,alsa-utils)
               ("vorbis-tools" ,vorbis-tools)
@@ -937,7 +964,7 @@ light user interface.")
                      (with-directory-excursion site
                        (symlink "bbdb-loaddefs.el" "bbdb-autoloads.el"))))
                  %standard-phases)))
-    (native-inputs `(("emacs" ,emacs-no-x)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
     (home-page "http://savannah.nongnu.org/projects/bbdb/")
     (synopsis "Contact management utility for Emacs")
     (description
@@ -950,14 +977,14 @@ mode, Rmail, Gnus, MH-E, and VM).  BBDB is fully customizable.")
 (define-public emacs-async
   (package
     (name "emacs-async")
-    (version "1.6")
+    (version "1.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://elpa.gnu.org/packages/async-"
                                   version ".tar"))
               (sha256
                (base32
-                "17psvz75n42x33my967wkgi7r0blx46n3jdv510j0z5jswv66039"))))
+                "1ip5nc8xyln5szvqwp6wqva9xr84pn8ssn3nnphrszr19y4js2bm"))))
     (build-system emacs-build-system)
     (home-page "http://elpa.gnu.org/packages/async.html")
     (synopsis "Asynchronous processing in Emacs")
@@ -983,6 +1010,9 @@ as a library for other Emacs packages.")
         (base32
          "1pmki8hdjjikxlvip3pzi350bln3gcimr27yjf0xfwjvnp5hh9nc"))))
     (build-system emacs-build-system)
+    ;; We use 'emacs' because AUCTeX requires dbus at compile time
+    ;; ('emacs-minimal' does not provide dbus).
+    (arguments `(#:emacs ,emacs))
     (native-inputs
      `(("perl" ,perl)))
     (home-page "http://www.gnu.org/software/auctex/")
@@ -1017,7 +1047,7 @@ or XEmacs.")
     (native-inputs
      `(("autoconf" ,autoconf)
        ("automake" ,automake)
-       ("emacs" ,emacs-no-x)
+       ("emacs" ,emacs-minimal)
        ("texinfo" ,texinfo)))
     (home-page "https://github.com/purcell/mmm-mode")
     (synopsis "Allow multiple major modes in an Emacs buffer")
@@ -1081,7 +1111,7 @@ single buffer.")
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
                      ("pkg-config" ,pkg-config)
-                     ("emacs" ,emacs-no-x)))
+                     ("emacs" ,emacs-minimal)))
     (propagated-inputs
      `(("let-alist" ,let-alist)))
     (inputs `(("poppler" ,poppler)
@@ -1200,7 +1230,7 @@ files and directories.")
     (source (origin
               (method git-fetch)
               (uri (git-reference
-                    (commit "8807064693")
+                    (commit "880706469338ab59b5bb7dbe8460016f89755364")
                     (url "https://github.com/gregsexton/ob-ipython.git")))
               (sha256
                (base32
@@ -1385,20 +1415,6 @@ to a key in your preferred mode.")
 identifiers in the MIT-Scheme documentation.")
     (license license:gpl2+)))
 
-;;; XXX: move this procedure to an utility module
-(define* (uncompressed-file-fetch url hash-algo hash
-                                  #:optional name
-                                  #:key (system (%current-system))
-                                  (guile (default-guile)))
-  (mlet %store-monad ((drv (url-fetch url hash-algo hash name
-                                      #:system system
-                                      #:guile guile)))
-    (gexp->derivation (or name (basename url))
-                      #~(begin
-                          (mkdir #$output)
-                          (chdir #$output)
-                          (copy-file #$drv (basename #$url))))))
-
 (define-public emacs-constants
   (package
     (name "emacs-constants")
@@ -1406,7 +1422,7 @@ identifiers in the MIT-Scheme documentation.")
     (home-page "https://staff.fnwi.uva.nl/c.dominik/Tools/constants")
     (source
      (origin
-       (file-name (string-append name "-" version ".el"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (method url-fetch)
        (uri (string-append "https://github.com/fedeinthemix/emacs-constants"
                            "/archive/v" version ".tar.gz"))
@@ -1493,8 +1509,6 @@ debugging, documentation lookup, and so on.")
                (base32
                 "1yrgfj8y69xmcb6kwgplhq68ndm9410qwh7sd2knnd1gchpphdc0"))))
     (build-system emacs-build-system)
-    (native-inputs
-     `(("emacs" ,emacs-no-x)))
     (home-page "https://github.com/auto-complete/popup-el")
     (synopsis "Visual Popup User Interface for Emacs")
     (description
@@ -1536,14 +1550,12 @@ insertion mode.  When enabled all keys are implicitly prefixed with
     (version "0.13")
     (home-page "http://www.loveshack.ukfsn.org/emacs")
     (source (origin
-              (method uncompressed-file-fetch)
+              (method url-fetch)
               (uri "http://www.loveshack.ukfsn.org/emacs/rfcview.el")
               (sha256
                (base32
                 "0ympj5rxig383zl2jf0pzdsa80nnq0dpvjiriq0ivfi98fj7kxbz"))))
     (build-system emacs-build-system)
-    (native-inputs
-     `(("emacs" ,emacs-no-x)))
     (synopsis "Prettify Request for Comments (RFC) documents")
     (description "The Internet Engineering Task Force (IETF) and the Internet
 Society (ISOC) publish various Internet-related protocols and specifications
@@ -1562,14 +1574,12 @@ local directories.")
     (version "12")
     (home-page "http://user42.tuxfamily.org/ffap-rfc-space/index.html")
     (source (origin
-              (method uncompressed-file-fetch)
+              (method url-fetch)
               (uri "http://download.tuxfamily.org/user42/ffap-rfc-space.el")
               (sha256
                (base32
                 "1iv61dv57a73mdps7rn6zmgz7nqh14v0ninidyrasy45b1nv6gck"))))
     (build-system emacs-build-system)
-    (native-inputs
-     `(("emacs" ,emacs-no-x)))
     (synopsis "Make ffap recognize an RFC with a space before its number")
     (description "The Internet Engineering Task Force (IETF) and the
 Internet Society (ISOC) publish various Internet-related protocols and
@@ -1630,4 +1640,444 @@ and the like.  Some of these packages include autopair, textmate,
 wrap-region, electric-pair-mode, paredit and others.  With the basic
 features found in other packages it also brings many improvements as
 well as completely new features.")
+    (license license:gpl3+)))
+
+(define-public emacs-clojure-mode
+  (package
+    (name "emacs-clojure-mode")
+    (version "5.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/clojure-emacs/clojure-mode/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0gi8ra3ap5m3mz4qh1yxp2cldn7z9xcxvypznr6rrlc6a9l8s5a6"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/clojure-emacs/clojure-mode")
+    (synopsis "Major mode for Clojure code")
+    (description
+     "This Emacs package provides font-lock, indentation, navigation and basic
+refactoring for the @uref{http://clojure.org, Clojure programming language}.
+It is recommended to use @code{clojure-mode} with paredit or smartparens.")
+    (license license:gpl3+)))
+
+(define-public emacs-epl
+  (package
+    (name "emacs-epl")
+    (version "0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/cask/epl/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1511n3a3f5gvaf2b4nh018by61ciyzi3y3603fzqma7p9hrckarc"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/cask/epl")
+    (synopsis "Emacs Package Library")
+    (description
+     "A package management library for Emacs, based on @code{package.el}.
+
+The purpose of this library is to wrap all the quirks and hassle of
+@code{package.el} into a sane API.")
+    (license license:gpl3+)))
+
+(define-public emacs-queue
+  (package
+    (name "emacs-queue")
+    (version "0.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://elpa.gnu.org/packages/queue-"
+                                  version ".el"))
+              (sha256
+               (base32
+                "0jw24fxqnf9qcaf2nh09cnds1kqfk7hal35dw83x1ari95say391"))))
+    (build-system emacs-build-system)
+    (home-page "http://www.dr-qubit.org/tags/computing-code-emacs.html")
+    (synopsis "Queue data structure for Emacs")
+    (description
+     "This Emacs library provides queue data structure.  These queues can be
+used both as a first-in last-out (FILO) and as a first-in first-out (FIFO)
+stack, i.e. elements can be added to the front or back of the queue, and can
+be removed from the front.  This type of data structure is sometimes called an
+\"output-restricted deque\".")
+    (license license:gpl3+)))
+
+(define-public emacs-pkg-info
+  (package
+    (name "emacs-pkg-info")
+    (version "0.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/lunaryorn/pkg-info.el/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1gy1jks5mmm02gg1c8gcyr4f8a9s5ggzhk56gv33b9mzjqzi5rd5"))))
+    (build-system emacs-build-system)
+    (propagated-inputs `(("emacs-epl" ,emacs-epl)))
+    (home-page "https://github.com/lunaryorn/pkg-info.el")
+    (synopsis "Information about Emacs packages")
+    (description
+     "This library extracts information from the installed Emacs packages.")
+    (license license:gpl3+)))
+
+(define-public emacs-spinner
+  (package
+    (name "emacs-spinner")
+    (version "1.7.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://elpa.gnu.org/packages/spinner-"
+                                  version ".el"))
+              (sha256
+               (base32
+                "1fmwzdih0kbyvs8bn38mpm4sbs2mikqy2vdykfy9g20wpa8vb681"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Malabarba/spinner.el")
+    (synopsis "Emacs mode-line spinner for operations in progress")
+    (description
+     "This Emacs package adds spinners and progress-bars to the mode-line for
+ongoing operations.")
+    (license license:gpl3+)))
+
+(define-public emacs-seq
+  (package
+    (name "emacs-seq")
+    (version "2.15")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://elpa.gnu.org/packages/seq-"
+                                  version ".tar"))
+              (sha256
+               (base32
+                "09wi1765bmn7i8fg6ajjfaxgs4ipc42d58zx2fdqpidrdg9c7q73"))))
+    (build-system emacs-build-system)
+    (home-page "http://elpa.gnu.org/packages/seq.html")
+    (synopsis "Sequence manipulation functions for Emacs")
+    (description
+     "This Emacs library provides sequence-manipulation functions that
+complement basic functions provided by @code{subr.el}.  All provided functions
+work on lists, strings and vectors.")
+    (license license:gpl3+)))
+
+(define-public emacs-better-defaults
+  (package
+    (name "emacs-better-defaults")
+    (version "0.1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/technomancy/better-defaults"
+                           "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "08fg4zslzlxbvyil5g4gwvwd22fh4zsgqprs5wh9hv1rgc6757m2"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/technomancy/better-defaults")
+    (synopsis "Better defaults for Emacs")
+    (description
+     "Better defaults attempts to address the most obvious deficiencies of the
+Emacs default configuration in uncontroversial ways that nearly everyone can
+agree upon.")
+    (license license:gpl3+)))
+
+(define-public emacs-smex
+  (package
+    (name "emacs-smex")
+    (version "3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://raw.githubusercontent.com"
+                                  "/nonsequitur/smex/" version "/smex.el"))
+              (file-name (string-append "smex-" version ".el"))
+              (sha256
+               (base32
+                "0ar310zx9k5y4i1vl2rawvi712xj9gx77160860jbs691p77cxqp"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/nonsequitur/smex/")
+    (synopsis "M-x interface with Ido-style fuzzy matching")
+    (description
+     "Smex is a M-x enhancement for Emacs.  Built on top of Ido, it provides a
+convenient interface to your recently and most frequently used commands.  And
+to all the other commands, too.")
+    (license license:gpl3+)))
+
+(define-public emacs-js2-mode
+  (package
+    (name "emacs-js2-mode")
+    (version "20150909")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/mooz/js2-mode/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1nsm36c4kwb473p13i58fgrnlk8fbn3rdhj47d9xz70az4ra44q0"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/mooz/js2-mode/")
+    (synopsis "Improved JavaScript editing mode for Emacs")
+    (description
+     "Js2-mode provides a JavaScript major mode for Emacs that is more
+advanced than the built-in javascript-mode.  Features include accurate syntax
+highlighting using a recursive-descent parser, on-the-fly reporting of syntax
+errors and strict-mode warnings, smart line-wrapping within comments and
+strings, and code folding.")
+    (license license:gpl3+)))
+
+(define-public emacs-markdown-mode
+  (package
+    (name "emacs-markdown-mode")
+    (version "2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://raw.githubusercontent.com/jrblevin"
+                                  "/markdown-mode/v" version
+                                  "/markdown-mode.el"))
+              (file-name (string-append "markdown-mode-" version ".el"))
+              (sha256
+               (base32
+                "1faibar32jnjia9202swblw91q6z1g5s4k9xmypwjahfh8yznl6w"))))
+    (build-system emacs-build-system)
+    (home-page "http://jblevins.org/projects/markdown-mode/")
+    (synopsis "Emacs Major mode for Markdown files")
+    (description
+     "Markdown-mode is a major mode for editing Markdown-formatted text files
+in Emacs.")
+    (license license:gpl3+)))
+
+(define-public emacs-projectile
+  (package
+    (name "emacs-projectile")
+    (version "0.13.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://raw.githubusercontent.com/bbatsov"
+                                  "/projectile/v" version "/projectile.el"))
+              (file-name (string-append "projectile-" version ".el"))
+              (sha256
+               (base32
+                "1pc6xb61hzxzc5hkqkli1ab0s7wz0rfgx4kcn9y30ksvhw18smbz"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-pkg-info" ,emacs-pkg-info)))
+    (home-page "https://github.com/bbatsov/projectile")
+    (synopsis "Manage and navigate projects in Emacs easily")
+    (description
+     "This library provides easy project management and navigation.  The
+concept of a project is pretty basic - just a folder containing special file.
+Currently git, mercurial and bazaar repos are considered projects by default.
+If you want to mark a folder manually as a project just create an empty
+.projectile file in it.")
+    (license license:gpl3+)))
+
+(define-public emacs-elfeed
+  (package
+    (name "emacs-elfeed")
+    (version "1.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/skeeto/elfeed/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0i75r8x9ypbfjlnym04h16ikcrlks86p7wsgawrx7mh1lk4inp89"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/skeeto/elfeed")
+    (synopsis "Atom/RSS feed reader for Emacs")
+    (description
+     "Elfeed is an extensible web feed reader for Emacs, supporting both Atom
+and RSS, with a user interface inspired by notmuch.")
+    (license license:gpl3+)))
+
+(define-public emacs-rainbow-delimiters
+  (package
+    (name "emacs-rainbow-delimiters")
+    (version "2.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://raw.githubusercontent.com/Fanael"
+                                  "/rainbow-delimiters/" version
+                                  "/rainbow-delimiters.el"))
+              (file-name (string-append "rainbow-delimiters-" version ".el"))
+              (sha256
+               (base32
+                "1b3kampwsjabhcqdp0khgff13wc5jqhy3rbvaa12vnv7qy22l9ck"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Fanael/rainbow-delimiters")
+    (synopsis "Highlight brackets according to their depth")
+    (description
+     "Rainbow-delimiters is a \"rainbow parentheses\"-like mode for Emacs which
+highlights parentheses, brackets, and braces according to their depth.  Each
+successive level is highlighted in a different color, making it easy to spot
+matching delimiters, orient yourself in the code, and tell which statements
+are at a given level.")
+    (license license:gpl3+)))
+
+(define-public emacs-ido-completing-read+
+  (package
+    (name "emacs-ido-completing-read+")
+    (version "3.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://raw.githubusercontent.com"
+                                  "/DarwinAwardWinner/ido-ubiquitous/v"
+                                  version "/ido-completing-read+.el"))
+              (file-name (string-append "ido-completing-read+-" version ".el"))
+              (sha256
+               (base32
+                "1cyalb0p7nfsm4n6n9q6rjmvn6adqc0fq8ybnlj3n41n289dkfjf"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/DarwinAwardWinner/ido-ubiquitous")
+    (synopsis "Replacement for completing-read using ido")
+    (description
+     "The ido-completing-read+ function is a wrapper for ido-completing-read.
+Importantly, it detects edge cases that ordinary ido cannot handle and either
+adjusts them so ido can handle them, or else simply falls back to the standard
+Emacs completion function instead.")
+    (license license:gpl3+)))
+
+(define-public emacs-ido-ubiquitous
+  (package
+    (name "emacs-ido-ubiquitous")
+    (version "3.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://raw.githubusercontent.com"
+                                  "/DarwinAwardWinner/ido-ubiquitous/v"
+                                  version "/ido-ubiquitous.el"))
+              (file-name (string-append "ido-ubiquitous-" version ".el"))
+              (sha256
+               (base32
+                "197ypji0fb6jsdcq40rpnknwlh3imas6s6jbsvkfm0pz9988c3q2"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ido-completing-read+" ,emacs-ido-completing-read+)))
+    (home-page "https://github.com/DarwinAwardWinner/ido-ubiquitous")
+    (synopsis "Use ido (nearly) everywhere")
+    (description
+     "Ido-ubiquitous enables ido-style completion for almost every function
+that uses the standard completion function completing-read.")
+  (license license:gpl3+)))
+
+(define-public emacs-yaml-mode
+  (package
+    (name "emacs-yaml-mode")
+    (version "0.0.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://raw.githubusercontent.com/yoshiki"
+                                  "/yaml-mode/v" version "/yaml-mode.el"))
+              (file-name (string-append "yaml-mode-" version ".el"))
+              (sha256
+               (base32
+                "17wq433ycli0qx4gdhgrmb392qblm6y2dwcyn38j5ja1lasfb0ax"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/yoshiki/yaml-mode")
+    (synopsis "Major mode for editing YAML files")
+    (description
+     "Yaml-mode is an Emacs major mode for editing files in the YAML data
+serialization format.  It was initially developed by Yoshiki Kurihara and many
+features were added by Marshall Vandegrift.  As YAML and Python share the fact
+that indentation determines structure, this mode provides indentation and
+indentation command behavior very similar to that of python-mode.")
+    (license license:gpl3+)))
+
+(define-public emacs-web-mode
+  (package
+    (name "emacs-web-mode")
+    (version "14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://raw.githubusercontent.com/fxbois"
+                                  "/web-mode/v" version "/web-mode.el"))
+              (file-name (string-append "web-mode-" version ".el"))
+              (sha256
+               (base32
+                "086hik5fmxg3kx74qmransx9cz961qd22d4m6ah2dw6cwaj1s3s5"))))
+    (build-system emacs-build-system)
+    (synopsis "Major mode for editing web templates")
+    (description "Web-mode is an Emacs major mode for editing web templates
+aka HTML files embedding parts (CSS/JavaScript) and blocks (pre rendered by
+client/server side engines).  Web-mode is compatible with many template
+engines: PHP, JSP, ASP, Django, Twig, Jinja, Mustache, ERB, FreeMarker,
+Velocity, Cheetah, Smarty, CTemplate, Mustache, Blade, ErlyDTL, Go Template,
+Dust.js, React/JSX, Angularjs, ejs, etc.")
+    (home-page "http://web-mode.org/")
+    (license license:gpl3+)))
+
+(define-public emacs-helm
+  (package
+    (name "emacs-helm")
+    (version "1.9.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/" name "/helm/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0fc897rwf1fm2m7jrsikkgcyzhngfcysxfmzchpwzfj6v9sb5rl9"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-async" ,emacs-async)
+       ("emacs-popup" ,emacs-popup)))
+    (home-page "https://emacs-helm.github.io/helm/")
+    (synopsis "Incremental completion and selection narrowing
+framework for Emacs")
+    (description "Helm is incremental completion and selection narrowing
+framework for Emacs.  It will help steer you in the right direction when
+you're looking for stuff in Emacs (like buffers, files, etc).  Helm is a fork
+of @code{anything.el} originally written by Tamas Patrovic and can be
+considered to be its successor.  Helm sets out to clean up the legacy code in
+@code{anything.el} and provide a cleaner, leaner and more modular tool, that's
+not tied in the trap of backward compatibility.")
+    (license license:gpl3+)))
+
+(define-public emacs-cider
+  (package
+    (name "emacs-cider")
+    (version "0.12.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/clojure-emacs/cider/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "00qzbfjy3w6bcnki7gw0clmi0cc5yqjdrcyhgv4ymijjs79h9p5s"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-clojure-mode" ,emacs-clojure-mode)
+       ("emacs-spinner" ,emacs-spinner)
+       ("emacs-pkg-info" ,emacs-pkg-info)
+       ("emacs-queue" ,emacs-queue)
+       ("emacs-seq" ,emacs-seq)))
+    (home-page "https://cider.readthedocs.org/")
+    (synopsis "Clojure development environment for Emacs")
+    (description
+     "CIDER (Clojure Interactive Development Environment that Rocks) aims to
+provide an interactive development experience similar to the one you'd get
+when programming in Emacs Lisp, Common Lisp (with SLIME or Sly), Scheme (with
+Geiser) and Smalltalk.
+
+CIDER is the successor to the now deprecated combination of using SLIME +
+swank-clojure for Clojure development.
+
+There are plenty of differences between CIDER and SLIME, but the core ideas
+are pretty much the same (and SLIME served as the principle inspiration for
+CIDER).")
     (license license:gpl3+)))

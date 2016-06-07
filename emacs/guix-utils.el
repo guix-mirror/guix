@@ -84,16 +84,33 @@ If FORMAT is non-nil, format VAL with FORMAT."
                 (format format str)
               str))))
 
-(defun guix-mapinsert (function sequence separator)
+(cl-defun guix-mapinsert (function sequence separator &key indent column)
   "Like `mapconcat' but for inserting text.
 Apply FUNCTION to each element of SEQUENCE, and insert SEPARATOR
-at point between each FUNCTION call."
-  (when sequence
-    (funcall function (car sequence))
-    (mapc (lambda (obj)
-            (insert separator)
-            (funcall function obj))
-          (cdr sequence))))
+at point between each FUNCTION call.
+
+If INDENT is non-nil, it should be a number of spaces used to
+indent each line of the inserted text.
+
+If COLUMN is non-nil, it should be a column number which
+shouldn't be exceeded by the inserted text."
+  (pcase sequence
+    (`(,first . ,rest)
+     (let* ((indent (or indent 0))
+            (max-column (and column (- column indent))))
+       (guix-with-indent indent
+         (funcall function first)
+         (dolist (element rest)
+           (let ((before-sep-pos (and column (point))))
+             (insert separator)
+             (let ((after-sep-pos (and column (point))))
+               (funcall function element)
+               (when (and column
+                          (> (current-column) max-column))
+                 (save-excursion
+                   (delete-region before-sep-pos after-sep-pos)
+                   (goto-char before-sep-pos)
+                   (insert "\n")))))))))))
 
 (defun guix-insert-button (label &optional type &rest properties)
   "Make button of TYPE with LABEL and insert it at point.

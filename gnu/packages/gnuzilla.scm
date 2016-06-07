@@ -448,6 +448,8 @@ standards.")
                            )
 
        #:modules ((ice-9 ftw)
+                  (ice-9 rdelim)
+                  (ice-9 match)
                   ,@%gnu-build-system-modules)
        #:phases
        (modify-phases %standard-phases
@@ -509,7 +511,48 @@ standards.")
               (format #t "configure flags: ~s~%" flags)
               (zero? (apply system* bash
                             (string-append srcdir "/configure")
-                            flags))))))))
+                            flags)))))
+         (add-before 'configure 'install-desktop-entry
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Install the '.desktop' file.
+             (define (swallow-%%-directives input output)
+               ;; Interpret '%%ifdef' directives found in the '.desktop' file.
+               (let loop ((state 'top))
+                 (match (read-line input 'concat)
+                   ((? eof-object?)
+                    #t)
+                   ((? string? line)
+                    (cond ((string-prefix? "%%ifdef" line)
+                           (loop 'ifdef))
+                          ((string-prefix? "%%else" line)
+                           (loop 'else))
+                          ((string-prefix? "%%endif" line)
+                           (loop 'top))
+                          (else
+                           (case state
+                             ((top else)
+                              (display line output)
+                              (loop state))
+                             (else
+                              (loop state)))))))))
+
+             (let* ((out (assoc-ref outputs "out"))
+                    (applications (string-append out "/share/applications")))
+               (call-with-input-file "debian/icecat.desktop.in"
+                 (lambda (input)
+                   (call-with-output-file "debian/icecat.desktop"
+                     (lambda (output)
+                       (swallow-%%-directives input output)))))
+
+               (substitute* "debian/icecat.desktop"
+                 (("@MOZ_DISPLAY_NAME@")
+                  "GNU IceCat")
+                 (("^Exec=@MOZ_APP_NAME@")
+                  (string-append "Exec=" out "/bin/icecat"))
+                 (("@MOZ_APP_NAME@")
+                  "icecat"))
+               (install-file "debian/icecat.desktop" applications)
+               #t))))))
     (home-page "http://www.gnu.org/software/gnuzilla/")
     (synopsis "Entirely free browser derived from Mozilla Firefox")
     (description

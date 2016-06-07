@@ -1,6 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2014, 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 David Thompson <davet@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,52 +21,128 @@
 
 (define-module (gnu packages avr)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages cross-base)
+  #:use-module (gnu packages flashing-tools)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages vim)
   #:use-module (gnu packages zip))
+
+(define-public avr-binutils
+  (package
+    (inherit (cross-binutils "avr"))
+    (name "avr-binutils")))
+
+(define-public avr-gcc-4.9
+  (let ((xgcc (cross-gcc "avr" avr-binutils)))
+    (package
+      (inherit xgcc)
+      (name "avr-gcc")
+      (arguments
+       (substitute-keyword-arguments (package-arguments xgcc)
+         ((#:phases phases)
+          `(modify-phases ,phases
+             ;; Without a working multilib build, the resulting GCC lacks
+             ;; support for nearly every AVR chip.
+             (add-after 'unpack 'fix-genmultilib
+               (lambda _
+                 ;; patch-shebang doesn't work here because there are actually
+                 ;; several scripts inside this script, each with a #!/bin/sh
+                 ;; that needs patching.
+                 (substitute* "gcc/genmultilib"
+                   (("#!/bin/sh") (string-append "#!" (which "sh"))))
+                 #t))))
+         ((#:configure-flags flags)
+          `(delete "--disable-multilib" ,flags))))
+      (native-search-paths
+       (list (search-path-specification
+              (variable "CROSS_CPATH")
+              (files '("avr/include")))
+             (search-path-specification
+              (variable "CROSS_LIBRARY_PATH")
+              (files '("avr/lib"))))))))
+
+(define-public avr-gcc-5
+  (package
+    (inherit avr-gcc-4.9)
+    (version (package-version gcc-5))
+    (source (package-source gcc-5))))
 
 (define-public avr-libc
   (package
     (name "avr-libc")
-    (version "1.8.1")
+    (version "2.0.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://savannah//avr-libc/avr-libc-"
-                    version ".tar.bz2"))
+              (uri (string-append "mirror://savannah//avr-libc/avr-libc-"
+                                  version ".tar.bz2"))
               (sha256
                (base32
-                "0sd9qkvhmk9av4g1f8dsjwc309hf1g0731bhvicnjb3b3d42l1n3"))))
+                "15svr2fx8j6prql2il2fc0ppwlv50rpmyckaxx38d3gxxv97zpdj"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:out-of-source? #t
-       #:configure-flags '("--host=avr")))
-
-    (native-inputs `(("cross-binutils" ,(cross-binutils "avr"))
-                     ("cross-gcc" ,xgcc-avr)))
+     '(#:out-of-source? #t
+       #:configure-flags '("--host=avr")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'unpack 'fix-cpath
+           (lambda _
+             ;; C_INCLUDE_PATH poses issues for cross-building, leading to
+             ;; failures when building avr-libc on 64-bit systems.  Simply
+             ;; unsetting it allows the build to succeed because it doesn't
+             ;; try to use any of the native system's headers.
+             (unsetenv "C_INCLUDE_PATH")
+             #t)))))
+    (native-inputs `(("avr-binutils" ,avr-binutils)
+                     ("avr-gcc" ,avr-gcc-4.9)))
     (home-page "http://www.nongnu.org/avr-libc/")
     (synopsis "The AVR C Library")
     (description
      "AVR Libc is a project whose goal is to provide a high quality C library
 for use with GCC on Atmel AVR microcontrollers.")
-    (license (license:non-copyleft "http://www.nongnu.org/avr-libc/LICENSE.txt"))))
+    (license
+     (license:non-copyleft "http://www.nongnu.org/avr-libc/LICENSE.txt"))))
+
+(define (avr-toolchain avr-gcc)
+  (package
+    (name "avr-toolchain")
+    (version (package-version avr-gcc))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments '(#:builder (mkdir %output)))
+    (propagated-inputs
+     `(("avrdude" ,avrdude)
+       ("binutils" ,avr-binutils)
+       ("gcc" ,avr-gcc)
+       ("libc" ,avr-libc)))
+    (synopsis "Complete GCC tool chain for AVR microcontroller development")
+    (description "This package provides a complete GCC tool chain for AVR
+microcontroller development.  This includes the GCC AVR cross compiler and
+avrdude for firmware flashing.  The supported programming languages are C and
+C++.")
+    (home-page (package-home-page avr-libc))
+    (license (package-license avr-gcc))))
+
+(define-public avr-toolchain-4.9 (avr-toolchain avr-gcc-4.9))
+(define-public avr-toolchain-5 (avr-toolchain avr-gcc-5))
 
 (define-public microscheme
   (package
     (name "microscheme")
-    (version "0.9.2")
+    (version "0.9.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/ryansuchocki/"
-                                  "microscheme/archive/v" version ".zip"))
+                                  "microscheme/archive/v" version ".tar.gz"))
               (sha256
                (base32
-                "0cmp1c6ilcib4w9ysqghav310g8jsq9gdfpfa9sd23wgl7mlncxf"))
-              (file-name (string-append name "-" version ".zip"))))
+                "1n404mh7z2icy3ga1mx249lk9x091k7idj6xpcf20hnmzabd0k0x"))
+              (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:parallel-build? #f ; fails to build otherwise

@@ -81,7 +81,7 @@
   #:use-module (gnu packages tcsh)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages wxwidgets)
   #:use-module (gnu packages xml)
@@ -581,6 +581,102 @@ sharing of scientific data.")
 common interface for a number of different free optimization routines available
 online as well as original implementations of various other algorithms.")
     (license license:lgpl2.1+)))
+
+(define-public ipopt
+  (package
+    (name "ipopt")
+    (version "3.12.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.coin-or.org/download/source/Ipopt/Ipopt-"
+                    version".tgz"))
+              (sha256
+               (base32
+                "09bk2hqy2vgi4yi76xng9zxakddwqy3wij9nx7wf2vfbxxpazrsk"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Make sure we don't use the bundled software.
+               '(delete-file-recursively "ThirdParty"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'install 'add--L-flags-in-ipopt.pc
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      ;; The '.pc' file lists '-llapack -lblas' in "Libs";
+                      ;; move it to "Libs.private" where it belongs, and add a
+                      ;; '-L' flag for LAPACK.
+                      (let ((out    (assoc-ref outputs "out"))
+                            (lapack (assoc-ref inputs "lapack")))
+                        (substitute* (string-append out "/lib/pkgconfig/"
+                                                    "ipopt.pc")
+                          (("Libs: (.*)-llapack -lblas(.*)$" _ before after)
+                           (string-append "Libs: " before " " after "\n"
+                                          "Libs.private: " before
+                                          "-L" lapack "/lib -llapack -lblas "
+                                          after "\n")))
+                        #t))))))
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (inputs
+     ;; TODO: Maybe add dependency on COIN-MUMPS, ASL, and HSL.
+     `(("lapack" ,lapack)))                    ;for both libblas and liblapack
+    (home-page "http://www.coin-or.org")
+    (synopsis "Large-scale nonlinear optimizer")
+    (description
+     "The Interior Point Optimizer (IPOPT) is a software package for
+large-scale nonlinear optimization.  It provides C++, C, and Fortran
+interfaces.")
+    (license license:epl1.0)))
+
+(define-public ceres
+  (package
+    (name "ceres-solver")
+    (version "1.11.0")
+    (home-page "http://ceres-solver.org/")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append home-page "ceres-solver-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0i7qkbf8g6pd8arxzldppga26ckv93y8zldsfz6wbd4n6b1nqrjd"))))
+    (build-system cmake-build-system)
+    (arguments
+     ;; TODO: Build HTML user documentation and install separately.
+     ;; XXX: Use the embedded "miniglog" as a replacement for
+     ;; <https://github.com/google/glog>.  TODO: Use Glog when it's available.
+     '(#:configure-flags '("-DMINIGLOG=ON"
+                           "-DBUILD_EXAMPLES=OFF"
+                           "-DBUILD_SHARED_LIBS=ON")
+
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'set-library-directory
+                    (lambda _
+                      ;; Install libraries to lib/, not lib64/.
+                      (substitute* "internal/ceres/CMakeLists.txt"
+                        (("set\\(LIB_SUFFIX \"64\"\\)")
+                         "set(LIB_SUFFIX \"\")"))
+                      #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("eigen" ,eigen)
+       ("blas" ,openblas)
+       ("lapack" ,lapack)
+       ("suitesparse" ,suitesparse)
+       ("gflags" ,gflags)))
+    (synopsis "C++ library for solving large optimization problems")
+    (description
+     "Ceres Solver is a C++ library for modeling and solving large,
+complicated optimization problems.  It is a feature rich, mature and
+performant library which has been used in production since 2010.  Ceres Solver
+can solve two kinds of problems:
+@enumerate
+@item non-linear least squares problems with bounds constraints;
+@item general unconstrained optimization problems.
+@end enumerate\n")
+    (license license:bsd-3)))
 
 ;; For a fully featured Octave, users  are strongly recommended also to install
 ;; the following packages: texinfo, less, ghostscript, gnuplot.
@@ -1610,7 +1706,11 @@ point numbers.")
     (build-system gnu-build-system)
     (inputs
      `(("wxwidgets" ,wxwidgets)
-       ("maxima" ,maxima)))
+       ("maxima" ,maxima)
+       ;; Runtime support.
+       ("adwaita-icon-theme" ,adwaita-icon-theme)
+       ("gtk+" ,gtk+)
+       ("shared-mime-info" ,shared-mime-info)))
     (arguments
      `(#:phases (modify-phases %standard-phases
                   (add-after
@@ -1620,7 +1720,18 @@ point numbers.")
                                                   "/bin/wxmaxima")
                        `("PATH" ":" prefix
                          (,(string-append (assoc-ref inputs "maxima")
-                                          "/bin"))))
+                                          "/bin")))
+                       ;; For GtkFileChooserDialog.
+                       `("GSETTINGS_SCHEMA_DIR" =
+                         (,(string-append (assoc-ref inputs "gtk+")
+                                          "/share/glib-2.0/schemas")))
+                       `("XDG_DATA_DIRS" ":" prefix
+                         (;; Needed by gdk-pixbuf to know supported icon formats.
+                          ,(string-append
+                            (assoc-ref inputs "shared-mime-info") "/share")
+                          ;; The default icon theme of GTK+.
+                          ,(string-append
+                            (assoc-ref inputs "adwaita-icon-theme") "/share"))))
                      #t)))))
     (home-page "https://andrejv.github.io/wxmaxima/")
     (synopsis "Graphical user interface for the Maxima computer algebra system")

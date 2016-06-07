@@ -619,7 +619,8 @@ connection alive.")
        "ISC's Dynamic Host Configuration Protocol (DHCP) distribution provides a
 reference implementation of all aspects of DHCP, through a suite of DHCP
 tools: server, client, and relay agent.")
-      (license license:isc))))
+      (license license:isc)
+      (properties '((cpe-name . "dhcp"))))))
 
 (define-public libpcap
   (package
@@ -1252,7 +1253,7 @@ various ways that may be running with too much privilege.")
 (define-public smartmontools
   (package
     (name "smartmontools")
-    (version "6.3")
+    (version "6.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1260,7 +1261,7 @@ various ways that may be running with too much privilege.")
                     version "/smartmontools-" version ".tar.gz"))
               (sha256
                (base32
-                "06gy71jh2d3gcfmlbbrsqw7215knkfq59q3j6qdxfrar39fhcxx7"))))
+                "1g25r6sx85b5lay5n6sbnqv05qxzj6xsafsp93hnrg1h044bps49"))))
     (build-system gnu-build-system)
     (inputs `(("libcap-ng" ,libcap-ng)))
     (home-page "http://www.smartmontools.org/")
@@ -1504,20 +1505,20 @@ displays a table of current bandwidth usage by pairs of hosts.")
 (define-public munge
   (package
     (name "munge")
-    (version "0.5.11")
+    (version "0.5.12")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://github.com/dun/munge/archive/munge-"
-                                  version ".tar.gz"))
-              (file-name (string-append name "-" version ".tar.gz"))
+              (uri (string-append "https://github.com/dun/munge/releases/"
+                                  "download/munge-" version "/munge-"
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "0njplyalwwqh7xr7xc7klc6x06mq0ak8w2pxh85w8n4hxkmqqnf5"))))
+                "1s0vlwgm3hcx75vcmjf2y3icy5nv8y07bx93w2cmm6a7x71y6wp9"))))
     (inputs
      `(("openssl" ,openssl)
        ("libgcrypt" ,libgcrypt)))
     (build-system gnu-build-system)
-    (home-page "http://dun.github.io/munge/")
+    (home-page "https://dun.github.io/munge/")
     (synopsis "Cluster computing authentication service")
     (description
      "Munge is an authentication service for creating and validating

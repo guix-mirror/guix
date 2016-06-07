@@ -18,7 +18,6 @@
 
 (define-module (gnu system file-systems)
   #:use-module (ice-9 match)
-  #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (guix store)
   #:use-module ((gnu build file-systems)

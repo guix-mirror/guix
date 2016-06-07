@@ -811,6 +811,7 @@ the monadic procedures listed in HOOKS--such as an Info 'dir' file, etc."
                          #:search-paths search-paths)))
 
     (gexp->derivation "profile" builder
+                      #:system system
                       #:modules '((guix build profiles)
                                   (guix build union)
                                   (guix build utils)

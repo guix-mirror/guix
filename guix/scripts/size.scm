@@ -91,15 +91,16 @@ if ITEM is not in the store."
               (sort profile
                     (match-lambda*
                       ((($ <profile> _ _ total1) ($ <profile> _ _ total2))
-                       (> total1 total2)))))))
+                       (> total1 total2)))))
+    (format port (_ "total: ~,1f MiB~%") (/ whole MiB 1.))))
 
 (define display-profile*
   (lift display-profile %store-monad))
 
-(define (substitutable-requisites store item)
-  "Return the list of requisites of ITEM based on information available in
+(define (substitutable-requisites store items)
+  "Return the list of requisites of ITEMS based on information available in
 substitutes."
-  (let loop ((items  (list item))
+  (let loop ((items  items)
              (result '()))
     (match items
       (()
@@ -113,23 +114,23 @@ substitutes."
                (append (append-map substitutable-references info)
                        result)))))))
 
-(define (requisites* item)
+(define (requisites* items)
   "Return as a monadic value the requisites of ITEMS, based either on the
 information available in the local store or using information about
 substitutes."
   (lambda (store)
     (guard (c ((nix-protocol-error? c)
-               (values (substitutable-requisites store item)
+               (values (substitutable-requisites store items)
                        store)))
-      (values (requisites store item) store))))
+      (values (requisites store items) store))))
 
-(define (store-profile item)
+(define (store-profile items)
   "Return as a monadic value a list of <profile> objects representing the
-profile of ITEM and its requisites."
-  (mlet* %store-monad ((refs  (>>= (requisites* item)
+profile of ITEMS and their requisites."
+  (mlet* %store-monad ((refs  (>>= (requisites* items)
                                    (lambda (refs)
                                      (return (delete-duplicates
-                                              (cons item refs))))))
+                                              (append items refs))))))
                        (sizes (mapm %store-monad
                                     (lambda (item)
                                       (>>= (file-size item)
@@ -137,7 +138,7 @@ profile of ITEM and its requisites."
                                              (return (cons item size)))))
                                     refs)))
     (define (dependency-size item)
-      (mlet %store-monad ((deps (requisites* item)))
+      (mlet %store-monad ((deps (requisites* (list item))))
         (foldm %store-monad
                (lambda (item total)
                  (return (+ (assoc-ref sizes item) total)))
@@ -273,7 +274,7 @@ Report the size of PACKAGE and its dependencies.\n"))
       (match files
         (()
          (leave (_ "missing store item argument\n")))
-        ((file)
+        ((files ..1)
          (leave-on-EPIPE
           ;; Turn off grafts because (1) hydra.gnu.org does not serve grafted
           ;; packages, and (2) they do not make any difference on the
@@ -285,13 +286,12 @@ Report the size of PACKAGE and its dependencies.\n"))
                                  #:substitute-urls urls)
 
               (run-with-store store
-                (mlet* %store-monad ((item    (ensure-store-item file))
-                                     (profile (store-profile item)))
+                (mlet* %store-monad ((items   (mapm %store-monad
+                                                    ensure-store-item files))
+                                     (profile (store-profile items)))
                   (if map-file
                       (begin
                         (profile->page-map profile map-file)
                         (return #t))
                       (display-profile* profile)))
-                #:system system)))))
-        ((files ...)
-         (leave (_ "too many arguments\n")))))))
+                #:system system)))))))))

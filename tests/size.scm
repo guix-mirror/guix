@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,7 +54,7 @@
     (mbegin %store-monad
       (built-derivations (list file2))
       (mlet %store-monad ((profiles (store-profile
-                                     (derivation->output-path file2)))
+                                     (list (derivation->output-path file2))))
                           (bash     (interned-file
                                      (search-bootstrap-binary
                                       "bash" (%current-system)) "bash"

@@ -792,6 +792,29 @@ generation in R using Literate Programming techniques.")
     ;; here.
     (license license:gpl2+)))
 
+(define-public r-knitrbootstrap
+  (package
+    (name "r-knitrbootstrap")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "knitrBootstrap" version))
+       (sha256
+        (base32
+         "0pshn2slzqwpryklslsxwh1dmqcnwv6bwi7yfm6m342wjybpk0wl"))))
+    (properties `((upstream-name . "knitrBootstrap")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-knitr" ,r-knitr)
+       ("r-rmarkdown" ,r-rmarkdown)))
+    (home-page "https://github.com/jimhester/knitrBootstrap")
+    (synopsis "Knitr bootstrap framework")
+    (description
+     "This package provides a framework to create Bootstrap 3 HTML reports
+from knitr Rmarkdown.")
+    (license license:expat)))
+
 (define-public r-microbenchmark
   (package
     (name "r-microbenchmark")
@@ -2616,6 +2639,46 @@ including Wallenius' noncentral hypergeometric distribution and Fisher's
 noncentral hypergeometric distribution (also called extended hypergeometric
 distribution).")
    (license license:gpl3+)))
+
+(define-public r-runit
+  (package
+    (name "r-runit")
+    (version "0.4.31")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "RUnit" version))
+       (sha256
+        (base32
+         "1jqr871jkll2xmk7wk5hv1z3a36hyn2ibgivw7bwk4b346940xlx"))))
+    (properties `((upstream-name . "RUnit")))
+    (build-system r-build-system)
+    (home-page "http://cran.r-project.org/web/packages/RUnit")
+    (synopsis "R unit test framework")
+    (description
+     "This package provides R functions implementing a standard unit testing
+framework, with additional code inspection and report generation tools.")
+    (license license:gpl2+)))
+
+(define-public r-zoo
+  (package
+    (name "r-zoo")
+    (version "1.7-13")
+    (source (origin
+              (method url-fetch)
+              (uri (cran-uri "zoo" version))
+              (sha256
+               (base32
+                "0m67bnrg7r1jxvs9p7rpa430szp5qfp65r056yb8bivpc16jd98c"))))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-lattice" ,r-lattice)))
+    (home-page "http://zoo.R-Forge.R-project.org/")
+    (synopsis "S3 infrastructure for regular and irregular time series")
+    (description "This package contains an S3 class with methods for totally
+ordered indexed observations.  It is particularly aimed at irregular time
+series of numeric vectors/matrices and factors.")
+    (license license:gpl2+)))
 
 (define-public r-ztable
   (package

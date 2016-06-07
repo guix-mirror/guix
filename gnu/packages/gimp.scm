@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
+  #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
@@ -75,7 +77,8 @@ provided as well as the framework to add new color models and data types.")
                                         "/" name "-" version ".tar.bz2")))
               (sha256
                (base32
-                "09nlv06li9nrn74ifpm7223mxpg0s7cii702z72cpbwrjh6nlbnz"))))
+                "09nlv06li9nrn74ifpm7223mxpg0s7cii702z72cpbwrjh6nlbnz"))
+              (patches (search-patches "gegl-CVE-2012-4433.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(;; More than just the one test disabled below now fails; disable them
@@ -121,14 +124,15 @@ buffers.")
 (define-public gimp
   (package
     (name "gimp")
-    (version "2.8.14")
+    (version "2.8.16")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.gimp.org/pub/gimp/v2.8/gimp-"
-                                  version ".tar.bz2"))
+              (uri (string-append "http://download.gimp.org/pub/gimp/v"
+                                  (version-major+minor version)
+                                  "/gimp-" version ".tar.bz2"))
               (sha256
                (base32
-                "0bdj0l7a94jqhjnj40m9rqaf622wj905iximivb55iy98639aanq"))))
+                "1dsgazia9hmab8cw3iis7s69dvqyfj5wga7ds7w2q5mms1xqbqwm"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "doc"))                            ;8 MiB of gtk-doc HTML

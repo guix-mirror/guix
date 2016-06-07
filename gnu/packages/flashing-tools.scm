@@ -1,6 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
+;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +32,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages libftdi)
   #:use-module (gnu packages pciutils)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages admin))
 
 (define-public flashrom
@@ -129,4 +132,31 @@ technique (ISP).")
      "Dfu-programmer is a multi-platform command-line programmer for
 Atmel (8051, AVR, XMEGA & AVR32) chips with a USB bootloader supporting
 ISP.")
+    (license gpl2+)))
+
+(define-public dfu-util
+  (package
+    (name "dfu-util")
+    (version "0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://dfu-util.sourceforge.net/releases/dfu-util-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0czq73m92ngf30asdzrfkzraag95hlrr74imbanqq25kdim8qhin"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libusb" ,libusb)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Host side of the USB Device Firmware Upgrade (DFU) protocol")
+    (description
+     "The DFU (Universal Serial Bus Device Firmware Upgrade) protocol is
+intended to download and upload firmware to devices connected over USB.  It
+ranges from small devices like micro-controller boards up to mobile phones.
+With dfu-util you are able to download firmware to your device or upload
+firmware from it.")
+    (home-page "http://dfu-util.sourceforge.net/")
     (license gpl2+)))

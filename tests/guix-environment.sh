@@ -57,6 +57,21 @@ else
     test $? = 42
 fi
 
+case "`uname -m`" in
+    x86_64)
+	# On x86_64, we should be able to create a 32-bit environment.
+	guix environment --bootstrap --ad-hoc guile-bootstrap --pure	\
+	     -- guile -c '(exit (string-prefix? "x86_64" %host-type))'
+	guix environment --bootstrap --ad-hoc guile-bootstrap --pure	\
+	     -s i686-linux						\
+	     -- guile -c '(exit (string-prefix? "i686" %host-type))'
+	;;
+    *)
+	echo "nothing to do" >&2
+	;;
+esac
+
+
 # Same as above, but with deprecated -E flag.
 if guix environment --bootstrap --ad-hoc guile-bootstrap --pure \
         -E "guile -c '(exit 42)'"

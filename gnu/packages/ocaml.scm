@@ -38,7 +38,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages lynx)
   #:use-module (gnu packages perl)
@@ -386,7 +386,7 @@ It is developed using Objective Caml and Camlp5.")
     (build-system gnu-build-system)
     (native-inputs
      `(("which" ,which)
-       ("emacs" ,emacs-no-x)
+       ("emacs" ,emacs-minimal)
        ("texinfo" ,texinfo)))
     (inputs
      `(("host-emacs" ,emacs)

@@ -97,7 +97,7 @@
   #:use-module (gnu packages geeqie)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages web)
   #:use-module (gnu packages webkit)
@@ -1787,6 +1787,39 @@ gnome-terminal, but can also be used to embed a console/terminal in games,
 editors, IDEs, etc.")
     (license license:lgpl2.1+)))
 
+(define-public vte-ng
+  (package
+    (inherit vte)
+    (name "vte-ng")
+    (version "0.44.1.b")
+    (native-inputs
+     `(("gtk-doc" ,gtk-doc)
+       ("gperf" ,gperf)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ,@(package-native-inputs vte)))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/thestinger/"
+                                  name "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1mhz4i1qkdlrs49vgm7nsrb60lry9v6wsgwsmji7fln1nyrp1pag"))))
+    (arguments
+      `(#:configure-flags '("CXXFLAGS=-Wformat=0")
+        #:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'bootstrap
+                    (lambda _
+                      (setenv "NOCONFIGURE" "true")
+                      (zero? (system* "sh" "autogen.sh")))))))
+  (synopsis "Enhanced VTE terminal widget")
+  (description
+   "VTE is a library (libvte) implementing a terminal emulator widget for
+GTK+, this fork provides additional functions exposed for keyboard text
+selection and URL hints.")))
+
 ;; provides vte 2.90, required for some terminal emulators
 ;; tilda bug: https://github.com/lanoxx/tilda/issues/94
 ;; pantheon-terminal bug: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=788021
@@ -1820,7 +1853,10 @@ editors, IDEs, etc.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1bmhahkf8wdsra9whd3k5l5z4rv7r58ksr8mshzajgq2ma0hpkw6"))))
+                "1bmhahkf8wdsra9whd3k5l5z4rv7r58ksr8mshzajgq2ma0hpkw6"))
+              (patches (search-patches
+                         "vte-CVE-2012-2738-pt1.patch"
+                         "vte-CVE-2012-2738-pt2.patch"))))
     (arguments
      '(#:configure-flags '("--disable-python")))
     (native-inputs

@@ -25,6 +25,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages disk)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages fontutils)
@@ -99,11 +100,6 @@
                      ;; Make the font visible.
                      (copy-file (assoc-ref inputs "unifont") "unifont.bdf.gz")
                      (system* "gunzip" "unifont.bdf.gz")
-
-                     ;; TODO: Re-enable this test when we have Parted.
-                     (substitute* "tests/partmap_test.in"
-                       (("set -e") "exit 77"))
-
                      #t)))))
     (inputs
      `(;; ("lvm2" ,lvm2)
@@ -121,6 +117,7 @@
 
        ;; Dependencies for the test suite.  The "real" QEMU is needed here,
        ;; because several targets are used.
+       ("parted" ,parted)
        ("qemu" ,qemu-for-tests)
        ("xorriso" ,xorriso)))
     (home-page "http://www.gnu.org/software/grub/")

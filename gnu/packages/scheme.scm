@@ -41,7 +41,7 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages netpbm)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pkg-config)
@@ -736,7 +736,7 @@ and 32-bit PowerPC architectures.")
       (build-system gnu-build-system)
       (inputs
        `(("mit-scheme" ,mit-scheme)
-         ("emacs" ,emacs-no-x)))
+         ("emacs" ,emacs-minimal)))
       (arguments
        `(#:tests? #f ;; no tests-suite
          #:modules ((guix build gnu-build-system)

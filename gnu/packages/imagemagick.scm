@@ -2,6 +2,7 @@
 ;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,14 +41,14 @@
 (define-public imagemagick
   (package
     (name "imagemagick")
-    (version "6.9.4-4")
+    (version "6.9.4-7")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "005nnp0masv59yfcdip6qld86567zjbz59c9lkcqrxclm27vmx0p"))))
+               "11jcbc9phx37m7ra4v3qsfa2iqh3srsvxplxz38h911jvgfchkzm"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--with-frozenpaths")
@@ -154,7 +155,7 @@ script.")
 (define-public graphicsmagick
   (package
     (name "graphicsmagick")
-    (version "1.3.23")
+    (version "1.3.24")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.graphicsmagick.org/pub/"
@@ -162,7 +163,7 @@ script.")
                                  "/GraphicsMagick-" version ".tar.xz"))
              (sha256
               (base32
-               "03g6l2h8cmf231y1vma0z7x85070jm1ysgs9ppqcd3jj56jka9gx"))))
+               "1q40w5hcl8rcpszm0r7rpr3a9lj390p39zfvavkvlgxyyk7bmgsj"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags

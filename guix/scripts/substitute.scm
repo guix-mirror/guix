@@ -889,7 +889,11 @@ DESTINATION as a nar file.  Verify the substitute against ACL."
     ;; Tell the daemon what the expected hash of the Nar itself is.
     (format #t "~a~%" (narinfo-hash narinfo))
 
-    (format (current-error-port) "Downloading ~a~:[~*~; (~a installed)~]...~%"
+    (format (current-error-port)
+            ;; TRANSLATORS: The second part of this message looks like
+            ;; "(4.1MiB installed)"; it shows the size of the package once
+            ;; installed.
+            (_ "Downloading ~a~:[~*~; (~a installed)~]...~%")
             (store-path-abbreviation store-item)
             ;; Use the Nar size as an estimate of the installed size.
             (narinfo-size narinfo)

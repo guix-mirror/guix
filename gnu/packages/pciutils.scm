@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,50 +24,48 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages base))
 
 (define-public pciutils
   (package
     (name "pciutils")
-    (version "3.3.1")
+    (version "3.5.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://kernel.org/software/utils/pciutils/pciutils-"
-                    version
-                    ".tar.xz"))
+                    version ".tar.xz"))
               (sha256
                (base32
-                "1ag3skny1bamqil46dlppw8j1fp08spqa60fjygbxkg4fzdknjji"))))
+                "0byl2f897w5lhs4bvr6p7qwcz9bllj2zyfv7nywbcbsnb9ha9wrb"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; There's no 'configure' script, just a raw makefile.
-                   (substitute* "Makefile"
-                     (("^PREFIX=.*$")
-                      (string-append "PREFIX := " (assoc-ref outputs "out")
-                                     "\n"))
-                     (("^MANDIR:=.*$")
-                       ;; By default the thing tries to automatically
-                       ;; determine whether to use $prefix/man or
-                       ;; $prefix/share/man, and wrongly so.
-                      (string-append "MANDIR := " (assoc-ref outputs "out")
-                                     "/share/man\n"))
-                     (("^SHARED=.*$")
-                      ;; Build libpciutils.so.
-                      "SHARED := yes\n")
-                     (("^ZLIB=.*$")
-                      ;; Ask for zlib support.
-                      "ZLIB := yes\n")))
-
-                 (alist-replace
-                  'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    ;; Install the commands, library, and .pc files.
-                    (zero? (system* "make" "install" "install-lib")))
-                  %standard-phases))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; There's no 'configure' script, just a raw makefile.
+             (substitute* "Makefile"
+               (("^PREFIX=.*$")
+                (string-append "PREFIX := " (assoc-ref outputs "out")
+                               "\n"))
+               (("^MANDIR:=.*$")
+                 ;; By default the thing tries to automatically
+                 ;; determine whether to use $prefix/man or
+                 ;; $prefix/share/man, and wrongly so.
+                (string-append "MANDIR := " (assoc-ref outputs "out")
+                               "/share/man\n"))
+               (("^SHARED=.*$")
+                ;; Build libpciutils.so.
+                "SHARED := yes\n")
+               (("^ZLIB=.*$")
+                ;; Ask for zlib support.
+                "ZLIB := yes\n"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Install the commands, library, and .pc files.
+             (zero? (system* "make" "install" "install-lib")))))
 
        ;; Make sure programs have an RPATH so they can find libpciutils.so.
        #:make-flags (list (string-append "LDFLAGS=-Wl,-rpath="
@@ -78,8 +77,8 @@
      `(("which" ,which)
        ("pkg-config" ,pkg-config)))
     (inputs
-     ;; TODO: Add dependency on Linux libkmod.
-     `(("zlib" ,zlib)))
+     `(("kmod" ,kmod)
+       ("zlib" ,zlib)))
     (home-page "http://mj.ucw.cz/sw/pciutils/")
     (synopsis "Programs for inspecting and manipulating PCI devices")
     (description

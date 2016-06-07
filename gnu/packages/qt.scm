@@ -20,7 +20,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages qt)
-  #:use-module ((guix licenses) #:select (bsd-3 gpl2 gpl3 lgpl2.1 lgpl2.1+ x11-style))
+  #:use-module ((guix licenses) #:select (bsd-3 gpl2 gpl3 lgpl2.1 lgpl2.1+ lgpl3 x11-style))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build utils)
@@ -298,6 +298,139 @@ developers using C++ or QML, a CSS & JavaScript like language.")
               (delete-file-recursively olddoc)
               #t))))))))
 
+(define-public qtbase
+  (package
+    (name "qtbase")
+    (version "5.6.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+               (base32
+                 "0ynnvcs5idivzldsq5ciqg9myg82b3l3906l4vjv54lyamf8mykf"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                ;; Remove one of the two bundled harfbuzz copies in addition
+                ;; to passing "-system-harfbuzz".
+                (delete-file-recursively "src/3rdparty/harfbuzz-ng")
+                ;; Remove the bundled sqlite copy in addition to
+                ;; passing "-system-sqlite".
+                (delete-file-recursively "src/3rdparty/sqlite")))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("mesa" ,mesa)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("cups" ,cups)
+       ("dbus" ,dbus)
+       ("expat" ,expat)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("glib" ,glib)
+       ("harfbuzz" ,harfbuzz)
+       ("icu4c" ,icu4c)
+       ("libjpeg" ,libjpeg)
+       ("libmng" ,libmng)
+       ("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("libxcomposite" ,libxcomposite)
+       ("libxcursor" ,libxcursor)
+       ("libxfixes" ,libxfixes)
+       ("libxi" ,libxi)
+       ("libxinerama" ,libxinerama)
+       ("libxkbcommon" ,libxkbcommon)
+       ("libxml2" ,libxml2)
+       ("libxrandr" ,libxrandr)
+       ("libxrender" ,libxrender)
+       ("libxslt" ,libxslt)
+       ("libxtst" ,libxtst)
+       ("mtdev" ,mtdev)
+       ("mysql" ,mysql)
+       ("nss" ,nss)
+       ("openssl" ,openssl)
+       ("pcre" ,pcre)
+       ("postgresql" ,postgresql)
+       ("pulseaudio" ,pulseaudio)
+       ("sqlite" ,sqlite)
+       ("unixodbc" ,unixodbc)
+       ("xcb-util" ,xcb-util)
+       ("xcb-util-image" ,xcb-util-image)
+       ("xcb-util-keysyms" ,xcb-util-keysyms)
+       ("xcb-util-renderutil" ,xcb-util-renderutil)
+       ("xcb-util-wm" ,xcb-util-wm)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("gperf" ,gperf)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)
+       ("ruby" ,ruby)
+       ("which" ,(@ (gnu packages base) which))))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-bin-sh
+           (lambda _
+             (substitute* '("config.status"
+                            "configure"
+                            "mkspecs/features/qt_functions.prf"
+                            "qmake/library/qmakebuiltins.cpp")
+                          (("/bin/sh") (which "sh")))
+             #t))
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* "configure"
+                 (("/bin/pwd") (which "pwd")))
+               (substitute* "src/corelib/global/global.pri"
+                 (("/bin/ls") (which "ls")))
+               ;; do not pass "--enable-fast-install", which makes the
+               ;; configure process fail
+               (zero? (system*
+                       "./configure"
+                       "-verbose"
+                       "-prefix" out
+                       "-opensource"
+                       "-confirm-license"
+                       ;; Do not build examples; if desired, these could go
+                       ;; into a separate output, but for the time being, we
+                       ;; prefer to save the space and build time.
+                       "-nomake" "examples"
+                       ;; Most "-system-..." are automatic, but some use
+                       ;; the bundled copy by default.
+                       "-system-sqlite"
+                       "-system-harfbuzz"
+                       ;; explicitly link with openssl instead of dlopening it
+                       "-openssl-linked"
+                       ;; explicitly link with dbus instead of dlopening it
+                       "-dbus-linked"
+                       ;; drop special machine instructions not supported
+                       ;; on all instances of the target
+                       ,@(if (string-prefix? "x86_64"
+                                             (or (%current-target-system)
+                                                 (%current-system)))
+                             '()
+                             '("-no-sse2"))
+                       "-no-sse3"
+                       "-no-ssse3"
+                       "-no-sse4.1"
+                       "-no-sse4.2"
+                       "-no-avx"
+                       "-no-avx2"
+                       "-no-mips_dsp"
+                       "-no-mips_dspr2"))))))))
+    (home-page "https://www.qt.io/")
+    (synopsis "Cross-platform GUI library")
+    (description "Qt is a cross-platform application and UI framework for
+developers using C++ or QML, a CSS & JavaScript like language.")
+    (license (list lgpl2.1 lgpl3))))
+
 (define-public qjson
   (package
     (name "qjson")
@@ -325,17 +458,16 @@ while JSON objects are mapped to QVariantMap.")
 (define-public python-sip
   (package
     (name "python-sip")
-    (version "4.16.9")
+    (version "4.18")
     (source
       (origin
         (method url-fetch)
         (uri
           (string-append "mirror://sourceforge/pyqt/sip/"
-                         "sip-" version "/sip-"
-                         version ".tar.gz"))
+                         "sip-" version "/sip-" version ".tar.gz"))
         (sha256
          (base32
-          "0m85dgm3g9s9h7s5sfxvcxi423vqxwq1vg5wnl5wl9kfasm77qfv"))))
+          "1dlw4kyiwd9bzmd1djm79c121r219abaz86lvizdk6ksq20mrp7i"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-wrapper)))
@@ -344,29 +476,28 @@ while JSON objects are mapped to QVariantMap.")
        #:modules ((srfi srfi-1)
                   ,@%gnu-build-system-modules)
        #:phases
-         (alist-replace
-          'configure
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let* ((out (assoc-ref outputs "out"))
-                   (bin (string-append out "/bin"))
-                   (include (string-append out "/include"))
-                   (python (assoc-ref inputs "python"))
-                   (python-version
-                     (last (string-split python #\-)))
-                   (python-major+minor
-                     (string-join
-                       (take (string-split python-version #\.) 2)
-                       "."))
-                   (lib (string-append out "/lib/python"
-                                       python-major+minor
-                                       "/site-packages")))
-              (zero?
-                (system* "python" "configure.py"
-                         "--bindir" bin
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (include (string-append out "/include"))
+                    (python (assoc-ref inputs "python"))
+                    (python-version
+                      (last (string-split python #\-)))
+                    (python-major+minor
+                      (string-join
+                        (take (string-split python-version #\.) 2)
+                        "."))
+                    (lib (string-append out "/lib/python"
+                                        python-major+minor
+                                        "/site-packages")))
+               (zero?
+                 (system* "python" "configure.py"
+                          "--bindir" bin
                           "--destdir" lib
-                         "--incdir" include))))
-          %standard-phases)))
-    (home-page "http://www.riverbankcomputing.com/software/sip/intro")
+                          "--incdir" include))))))))
+    (home-page "https://www.riverbankcomputing.com/software/sip/intro")
     (synopsis "Python binding creator for C and C++ libraries")
     (description
      "SIP is a tool to create Python bindings for C and C++ libraries.  It
@@ -390,56 +521,55 @@ module provides support functions to the automatically generated code.")
 (define-public python-pyqt
   (package
     (name "python-pyqt")
-    (version "5.5")
+    (version "5.6")
     (source
       (origin
         (method url-fetch)
         (uri
           (string-append "mirror://sourceforge/pyqt/PyQt5/"
-                         "PyQt-" version "/PyQt-gpl-"
+                         "PyQt-" version "/PyQt5_gpl-"
                          version ".tar.gz"))
         (sha256
          (base32
-          "056qmkv02wdcfblqdaxiswrgn4wa88sz22i1x58dpb1iniavplfd"))
+          "1qgh42zsr9jppl9k7fcdbhxcd1wrb7wyaj9lng9nxfa19in1lj1f"))
        (patches (search-patches "pyqt-configure.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python-sip" ,python-sip)
-       ("qt" ,qt))) ; for qmake
+       ("qtbase" ,qtbase))) ; for qmake
     (inputs
      `(("python" ,python-wrapper)))
     (arguments
      `(#:modules ((srfi srfi-1)
                   ,@%gnu-build-system-modules)
        #:phases
-         (alist-replace
-         'configure
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let* ((out (assoc-ref outputs "out"))
-                  (bin (string-append out "/bin"))
-                  (sip (string-append out "/share/sip"))
-                  (plugins (string-append out "/plugins"))
-                  (designer (string-append plugins "/designer"))
-                  (qml (string-append plugins "/PyQt5"))
-                  (python (assoc-ref inputs "python"))
-                  (python-version
-                    (last (string-split python #\-)))
-                  (python-major+minor
-                    (string-join
-                      (take (string-split python-version #\.) 2)
-                      "."))
-                  (lib (string-append out "/lib/python"
-                                      python-major+minor
-                                      "/site-packages")))
-             (zero? (system* "python" "configure.py"
-                             "--confirm-license"
-                             "--bindir" bin
-                             "--destdir" lib
-                             "--designer-plugindir" designer
-                             "--qml-plugindir" qml
-                             "--sipdir" sip))))
-         %standard-phases)))
-    (home-page "http://www.riverbankcomputing.com/software/pyqt/intro")
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (sip (string-append out "/share/sip"))
+                    (plugins (string-append out "/plugins"))
+                    (designer (string-append plugins "/designer"))
+                    (qml (string-append plugins "/PyQt5"))
+                    (python (assoc-ref inputs "python"))
+                    (python-version
+                      (last (string-split python #\-)))
+                    (python-major+minor
+                      (string-join
+                        (take (string-split python-version #\.) 2)
+                        "."))
+                    (lib (string-append out "/lib/python"
+                                        python-major+minor
+                                        "/site-packages")))
+               (zero? (system* "python" "configure.py"
+                               "--confirm-license"
+                               "--bindir" bin
+                               "--destdir" lib
+                               "--designer-plugindir" designer
+                               "--qml-plugindir" qml
+                               "--sipdir" sip))))))))
+    (home-page "https://www.riverbankcomputing.com/software/pyqt/intro")
     (synopsis "Python bindings for Qt")
     (description
      "PyQt is a set of Python v2 and v3 bindings for the Qt application
@@ -452,7 +582,7 @@ contain over 620 classes.")
     (name "python2-pyqt")
     (native-inputs
      `(("python-sip" ,python2-sip)
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)))
     (inputs
      `(("python" ,python-2)))))
 
@@ -505,7 +635,7 @@ contain over 620 classes.")
 (define-public qtkeychain
   (package
     (name "qtkeychain")
-    (version "0.6.2")
+    (version "0.7.0")
     (source
       (origin
         (method url-fetch)
@@ -513,7 +643,7 @@ contain over 620 classes.")
                             "archive/v" version ".tar.gz"))
         (file-name (string-append name "-" version ".tar.gz"))
         (sha256
-         (base32 "0g76pa786mg0fxy52hrljw09dvi6kffk2ms42lxapvpy6j94a4xf"))))
+         (base32 "0fka5q5cdzlf79igcjgbnb2smvwbwfasqawkzkbr34whispgm6lz"))))
     (build-system cmake-build-system)
     (inputs
      `(("qt" ,qt)))

@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
 
 (define-module (gnu packages telephony)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
@@ -211,3 +213,42 @@ Real-time Transport Protocol (SRTP), the Universal Security Transform (UST),
 and a supporting cryptographic kernel.")
     (home-page "https://github.com/cisco/libsrtp")
     (license bsd-3)))
+
+(define-public libiax2
+  (let ((commit "0e5980f1d78ce462e2d1ed6bc39ff35c8341f201"))
+    ;; This is the commit used by the Ring Project.
+    (package
+      (name "libiax2")
+      (version (string-append "0.0.0-1." (string-take commit 7)))
+      (source
+       (origin
+         (method url-fetch)
+         (uri
+          (string-append
+           "https://gitlab.savoirfairelinux.com/sflphone/libiax2/"
+           "repository/archive.tar.gz?ref="
+           commit))
+         (file-name (string-append name "-" version ".tar.gz"))
+         (sha256
+          (base32
+           "0cj5293bixp3k5x3hjwyd0iq7z8w5p7yavxvvkqk5817hjq386y2"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("libtool" ,libtool)))
+      (arguments
+       `(#:phases (modify-phases %standard-phases
+                    (add-before 'configure 'autoconf
+                      (lambda _
+                        (zero? (system* "autoreconf" "-vfi")))))))
+      (home-page "https://gitlab.savoirfairelinux.com/sflphone/libiax2")
+      (synopsis "Inter-Asterisk-Protocol library")
+      (description "LibIAX2 implements the Inter-Asterisk-Protocol for relaying
+Voice-over-IP (VoIP) communications.")
+      ;; The file 'src/md5.c' is released into the public domain by RSA Data
+      ;; Security.  The files 'src/answer.h', 'src/miniphone.c',
+      ;; 'src/options.c', 'src/options.h', 'src/ring10.h', 'src/winiphone.c' are
+      ;; covered under the 'GPL'.
+      ;; The package as a whole is distributed under the LGPL 2.0.
+      (license (list lgpl2.0 public-domain gpl2+)))))

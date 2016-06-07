@@ -51,6 +51,7 @@
  (guix licenses)
  (guix utils)
  (guix ui)
+ (guix scripts)
  (guix scripts package)
  (gnu packages)
  (gnu system))
@@ -953,6 +954,17 @@ GENERATIONS is a list of generation numbers."
                ((package _ ...) package)))
          (compose location->string package-location)))
 
+(define (package-store-path package-id)
+  "Return a list of store directories of outputs of package PACKAGE-ID."
+  (match (package-by-id package-id)
+    (#f '())
+    (package
+      (with-store store
+        (map (match-lambda
+               ((_ . drv)
+                (derivation-output-path drv)))
+             (derivation-outputs (package-derivation store package)))))))
+
 (define (package-source-derivation->store-path derivation)
   "Return a store path of the package source DERIVATION."
   (match (derivation-outputs derivation)
@@ -987,6 +999,16 @@ GENERATIONS is a list of generation numbers."
           (build-derivations store derivations))
         (format #t "The source store path: ~a~%"
                 (package-source-derivation->store-path derivation))))))
+
+(define (package-build-log-file package-id)
+  "Return the build log file of a package PACKAGE-ID.
+Return #f if the build log is not found."
+  (and-let* ((package (package-by-id package-id)))
+    (with-store store
+      (let* ((derivation (package-derivation store package))
+             (file       (derivation-file-name derivation)))
+        (or (log-file store file)
+            ((@@ (guix scripts build) log-url) store file))))))
 
 
 ;;; Executing guix commands

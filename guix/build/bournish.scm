@@ -134,8 +134,10 @@ commands such as 'ls' and 'cd'; it lacks globbing, pipes---everything.\n"))
 (define (read-bournish port env)
   "Read a Bournish expression from PORT, and return the corresponding Scheme
 code as an sexp."
-  (match (string-tokenize (read-line port))
-    ((command args ...)
+  (match (read-line port)
+    ((? eof-object? eof)
+     eof)
+    ((= string-tokenize (command args ...))
      (match (assoc command %commands)
        ((command proc)                            ;built-in command
         (apply proc (map expand-variable args)))
@@ -147,11 +149,24 @@ code as an sexp."
 
 (define %bournish-language
   (let ((scheme (lookup-language 'scheme)))
+    ;; XXX: The 'scheme' language lacks a "joiner", so we add one here.  This
+    ;; allows us to have 'read-bournish' read one shell statement at a time
+    ;; instead of having to read until EOF.
+    (set! (language-joiner scheme)
+      (lambda (exps env)
+        (match exps
+          (()   '(begin))
+          ((exp) exp)
+          (_    `(begin ,@exps)))))
+
     (make-language #:name 'bournish
                    #:title "Bournish"
+
+                   ;; The reader does all the heavy lifting.
                    #:reader read-bournish
-                   #:compilers (language-compilers scheme)
-                   #:decompilers (language-decompilers scheme)
+                   #:compilers `((scheme . ,(lambda (exp env options)
+                                              (values exp env env))))
+                   #:decompilers '()
                    #:evaluator (language-evaluator scheme)
                    #:printer (language-printer scheme)
                    #:make-default-environment

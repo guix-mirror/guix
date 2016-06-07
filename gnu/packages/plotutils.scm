@@ -38,7 +38,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages))
 
@@ -189,7 +189,7 @@ colors, styles, options and details.")
      `(("gs" ,ghostscript)              ;For tests
        ("texinfo" ,texinfo)             ;For generating documentation
        ("texlive" ,texlive)             ;For tests and documentation
-       ("emacs" ,emacs-no-x)
+       ("emacs" ,emacs-minimal)
        ("perl" ,perl)))
     (inputs
      `(("fftw" ,fftw)

@@ -140,6 +140,20 @@ rm "$profile" "$profile"-[0-9]-link
 guix gc -d "$real_profile"
 [ ! -d "$real_profile" ]
 
+# Package transformations.
+
+# Make sure we get the right version number when using '--with-source'.
+mkdir "$module_dir"
+emacs_tarball="$module_dir/emacs-42.5.9rc7.tar.gz"
+touch "$emacs_tarball"
+guix package -p "$profile" -i emacs --with-source="$emacs_tarball" -n \
+     2> "$tmpfile"
+grep -E 'emacs[[:blank:]]+42\.5\.9rc7[[:blank:]]+.*-emacs-42.5.9rc7' \
+     "$tmpfile"
+rm "$emacs_tarball" "$tmpfile"
+rmdir "$module_dir"
+
+
 #
 # Try with the default profile.
 #

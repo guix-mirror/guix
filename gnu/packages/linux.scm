@@ -225,7 +225,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
     (search-path %load-path file)))
 
 (define-public linux-libre
-  (let* ((version "4.5.5")
+  (let* ((version "4.6.1")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Avoid introducing timestamps
@@ -303,7 +303,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "1zys74hfdi13yyk17x45hvvbx7m97wk7pala3cd8k93xbq8qnai0"))))
+               "16cwr2jhd688bxdjfjpymap7sq0qsl24k5dylbz1rwfblnv2wn51"))))
     (build-system gnu-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
@@ -340,13 +340,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.4
   (package
     (inherit linux-libre)
-    (version "4.4.11")
+    (version "4.4.12")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "17pb9w72vigdrhm8hnkdyw9kwc2l06nabzygpdkwbvf7fg3j03vc"))))
+                "1zbds4ihk4x3lxr1jw7yrjzv1dkl995m41a54dfgqm0kj70li8ws"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))
@@ -357,13 +357,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.1
   (package
     (inherit linux-libre)
-    (version "4.1.24")
+    (version "4.1.25")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "14jlnq0k86bl4wj8shmvgf34w90bbm9in44j1pdjwwvn169zh9ra"))))
+                "1vpgcnmfnn005rcd60wyyg0f84fgapdmz2dpcy77p2l66mw4pakf"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))
@@ -883,7 +883,7 @@ MIDI functionality to the Linux-based operating system.")
 (define-public iptables
   (package
     (name "iptables")
-    (version "1.4.16.2")
+    (version "1.4.21")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -891,7 +891,7 @@ MIDI functionality to the Linux-based operating system.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "0vkg5lzkn4l3i1sm6v3x96zzvnv9g7mi0qgj6279ld383mzcws24"))))
+               "1q6kg7sf0pgpq0qhab6sywl23cngxxfzc9zdzscsba8x09l4q02j"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f       ; no test suite
@@ -1307,18 +1307,15 @@ processes currently causing I/O.")
 (define-public fuse
   (package
     (name "fuse")
-    (version "2.9.5")
+    (version "2.9.6")
     (source (origin
               (method url-fetch)
-              (uri (let ((version-with-underscores
-                          (string-join (string-split version #\.) "_")))
-                     (string-append
-                       "https://github.com/libfuse/libfuse/"
-                       "releases/download/fuse_" version-with-underscores
-                       "/fuse-" version ".tar.gz")))
+              (uri (string-append "https://github.com/libfuse/libfuse/releases/"
+                                  "download/fuse-" version
+                                  "/fuse-" version ".tar.gz"))
               (sha256
                (base32
-                "1dfvbi1p57svbv2sfnbqwpnsk219spvjnlapf35azhgzqlf3g7sp"))))
+                "0szi2vlsjxg03y4ji51jks34p269jqj5ify6l0ajsqq6f6y8pd0c"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
     (arguments
@@ -1354,7 +1351,7 @@ processes currently causing I/O.")
                     (("-DFUSERMOUNT_DIR=[[:graph:]]+")
                      "-DFUSERMOUNT_DIR=\\\"/var/empty\\\"")))
                 %standard-phases)))
-    (home-page "http://fuse.sourceforge.net/")
+    (home-page "https://github.com/libfuse/libfuse")
     (synopsis "Support file systems implemented in user space")
     (description
      "As a consequence of its monolithic design, file system code for Linux

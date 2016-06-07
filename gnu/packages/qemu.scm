@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -65,55 +65,58 @@
                "1v1lhhd6m59hqgmiz100g779rjq70pik5v4b3g936ci73djlmb69"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key inputs outputs (configure-flags '())
+     '(;; Running tests in parallel can occasionally lead to failures, like:
+       ;; boot_sector_test: assertion failed (signature == SIGNATURE): (0x00000000 == 0x0000dead)
+       #:parallel-tests? #f
+
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key inputs outputs (configure-flags '())
                            #:allow-other-keys)
-                   ;; The `configure' script doesn't understand some of the
-                   ;; GNU options.  Thus, add a new phase that's compatible.
-                   (let ((out (assoc-ref outputs "out")))
-                     (setenv "SHELL" (which "bash"))
+             ;; The `configure' script doesn't understand some of the
+             ;; GNU options.  Thus, add a new phase that's compatible.
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "SHELL" (which "bash"))
 
-                     ;; While we're at it, patch for tests.
-                     (substitute* "tests/libqtest.c"
-                       (("/bin/sh") (which "sh")))
+               ;; While we're at it, patch for tests.
+               (substitute* "tests/libqtest.c"
+                 (("/bin/sh") (which "sh")))
 
-                     ;; The binaries need to be linked against -lrt.
-                     (setenv "LDFLAGS" "-lrt")
-                     (zero?
-                      (apply system*
-                             `("./configure"
-                               ,(string-append "--cc=" (which "gcc"))
-                               "--disable-debug-info" ; save build space
-                               "--enable-virtfs"      ; just to be sure
-                               ,(string-append "--prefix=" out)
-                               ,@configure-flags)))))
-                 (alist-cons-after
-                  'install 'install-info
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    ;; Install the Info manual, unless Texinfo is missing.
-                    (or (not (assoc-ref inputs "texinfo"))
-                        (let ((out (assoc-ref outputs "out")))
-                          (and (zero? (system* "make" "info"))
-                               (let ((infodir (string-append out "/share/info")))
-                                 (mkdir-p infodir)
-                                 (for-each (lambda (info)
-                                             (copy-file
-                                              info
-                                              (string-append infodir "/" info)))
-                                           (find-files "." "\\.info$"))
-                                 #t)))))
-                  (alist-cons-before
-                   'check 'disable-test-qga
-                   (lambda _
-                     (substitute* "tests/Makefile"
-                       ;; Comment out the test-qga test, which needs /sys and
-                       ;; fails within the build environment.
-                       (("check-unit-.* tests/test-qga" all)
-                        (string-append "# " all)))
-                     #t)
-                   %standard-phases)))))
-
+               ;; The binaries need to be linked against -lrt.
+               (setenv "LDFLAGS" "-lrt")
+               (zero?
+                (apply system*
+                       `("./configure"
+                         ,(string-append "--cc=" (which "gcc"))
+                         "--disable-debug-info" ; save build space
+                         "--enable-virtfs"      ; just to be sure
+                         ,(string-append "--prefix=" out)
+                         ,@configure-flags))))))
+         (add-after 'install 'install-info
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Install the Info manual, unless Texinfo is missing.
+             (or (not (assoc-ref inputs "texinfo"))
+                 (let ((out (assoc-ref outputs "out")))
+                   (and (zero? (system* "make" "info"))
+                        (let ((infodir (string-append out "/share/info")))
+                          (mkdir-p infodir)
+                          (for-each (lambda (info)
+                                      (install-file info infodir))
+                                    (find-files "." "\\.info$"))
+                          #t))))))
+         (add-before 'check 'make-gtester-verbose
+           (lambda _
+             ;; Make GTester verbose to facilitate investigation upon failure.
+             (setenv "V" "1")))
+         (add-before 'check 'disable-test-qga
+           (lambda _
+             (substitute* "tests/Makefile"
+               ;; Comment out the test-qga test, which needs /sys and
+               ;; fails within the build environment.
+               (("check-unit-.* tests/test-qga" all)
+                (string-append "# " all)))
+             #t)))))
     (inputs                                       ; TODO: Add optional inputs.
      `(("sdl" ,sdl)
        ("mesa" ,mesa)

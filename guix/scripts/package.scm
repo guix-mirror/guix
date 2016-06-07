@@ -794,9 +794,13 @@ processed, #f otherwise."
   (define transform (options->transformation opts))
 
   (define (transform-entry entry)
-    (manifest-entry
-      (inherit entry)
-      (item (transform store (manifest-entry-item entry)))))
+    (let ((item (transform store (manifest-entry-item entry))))
+      (manifest-entry
+        (inherit entry)
+        (item item)
+        (version (if (package? item)
+                     (package-version item)
+                     (manifest-entry-version entry))))))
 
   ;; First, process roll-backs, generation removals, etc.
   (for-each (match-lambda

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +36,8 @@
              (sha256
               (base32
                "0fh0gbbp0iiq3wbkf503xb40r8ljk42vyj9bnlflbz82d6ipy1rm"))
-             (patches (search-patches "cpio-gets-undeclared.patch"))))
+             (patches (search-patches "cpio-gets-undeclared.patch"
+                                      "rush-CVE-2013-6889.patch"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/rush/")
     (synopsis "Restricted user (login) shell")

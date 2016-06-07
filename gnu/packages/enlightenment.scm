@@ -54,7 +54,7 @@
 (define-public efl
   (package
     (name "efl")
-    (version "1.17.0")
+    (version "1.17.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -62,7 +62,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "1zisnz4x54mn9sm46kcr571faqnazkcglyf0lbz19l34syx40df1"))))
+                "0d58bhvwg7c5hp07wywlwnqi01k4jhmpgac7gkx9lil1x6kmahqs"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -137,7 +137,7 @@ removable devices or support for multimedia.")
 (define-public elementary
   (package
     (name "elementary")
-    (version "1.17.0")
+    (version "1.17.1")
     (source (origin
               (method url-fetch)
               (uri
@@ -145,7 +145,7 @@ removable devices or support for multimedia.")
                               "elementary/elementary-" version ".tar.xz"))
               (sha256
                (base32
-                "0avb0d6nk4d88l81c2j6py13vdfnvg080ycw2y3qvawyjf1mhska"))))
+                "149xjq4z71l44w1kd8zks9b2g0wjc9656w46hzd27b58afj1dqc5"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -273,7 +273,7 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.20.6")
+    (version "0.20.8")
     (source (origin
               (method url-fetch)
               (uri
@@ -281,7 +281,7 @@ Libraries with some extra bells and whistles.")
                               name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                 "11ahll68nlci214ka05whp5l32hy9lznmcdfqx3hxsmq2p7bl7zj"))))
+                 "17fi3frq4a73i0x7v7244g9m0fbjfamw0cfb4zhqs2rp1z8nq1iy"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-mount-eeze")))

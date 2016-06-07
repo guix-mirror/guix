@@ -530,7 +530,10 @@ store.")
                            ,version)
 
             (string-append "--with-headers="
-                           (assoc-ref %build-inputs "kernel-headers")
+                           (assoc-ref ,(if (%current-target-system)
+                                           '%build-target-inputs
+                                           '%build-inputs)
+                                      "kernel-headers")
                            "/include")
 
             ;; This is the default for most architectures as of GNU libc 2.21,

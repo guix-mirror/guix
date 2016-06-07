@@ -2810,10 +2810,10 @@ X server.")
 
 
 (define-public xf86-video-intel
-  (let ((commit "d167280"))
+  (let ((commit "d1672806a5222f00dcc2eb24ccddd03f727f71bc"))
     (package
       (name "xf86-video-intel")
-      (version (string-append "2.99.917-1-" commit))
+      (version (string-append "2.99.917-1-" (string-take commit 7)))
       (source
        (origin
          ;; there's no current tarball

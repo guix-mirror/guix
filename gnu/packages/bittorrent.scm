@@ -207,7 +207,7 @@ interface, for the Transmission BitTorrent daemon.")
 (define-public aria2
   (package
     (name "aria2")
-    (version "1.22.0")
+    (version "1.23.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/tatsuhiro-t/aria2/"
@@ -215,7 +215,7 @@ interface, for the Transmission BitTorrent daemon.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "12agwdvvkr34wqhyyfp418dj0k7nbr297qmcd3wj5kkn7brv6gxc"))))
+                "14qz7686zxnhbaqj6l1hqpkykhpygm74h2mzwhh13gqmcj38alaq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-libaria2")
@@ -230,10 +230,10 @@ interface, for the Transmission BitTorrent daemon.")
                (("CPPUNIT_TEST_SUITE_REGISTRATION\\(LpdMessageReceiverTest\\);" text)
                 (string-append "// " text))))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("cppunit" ,cppunit) ; for the tests
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("c-ares" ,c-ares)
-       ("cppunit" ,cppunit) ; for the tests
        ("gnutls" ,gnutls)
        ("gmp" ,gmp)
        ("libssh2" ,libssh2)
@@ -241,7 +241,7 @@ interface, for the Transmission BitTorrent daemon.")
        ("nettle" ,nettle)
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
-    (home-page "http://aria2.sourceforge.net/")
+    (home-page "https://aria2.github.io/")
     (synopsis "Utility for parallel downloading files")
     (description
       "Aria2 is a lightweight, multi-protocol & multi-source command-line

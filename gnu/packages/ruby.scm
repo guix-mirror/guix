@@ -423,13 +423,13 @@ expectations and mocks frameworks.")
 (define-public bundler
   (package
     (name "bundler")
-    (version "1.11.2")
+    (version "1.12.5")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "bundler" version))
               (sha256
                (base32
-                "0s37j1hyngc4shq0in8f9y1knjdqkisdg3dd1mfwgq7n1bz8zan7"))))
+                "1q84xiwm9j771lpmiply0ls9l2bpvl5axn3jblxjvrldh8di2pkc"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -1707,6 +1707,33 @@ instance, it provides @code{assert_true}, @code{assert_false} and
     (home-page "http://blowmage.com/minitest-rg")
     (license license:expat)))
 
+(define-public ruby-minitest-hooks
+  (package
+    (name "ruby-minitest-hooks")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "minitest-hooks" version))
+       (sha256
+        (base32
+         "092fymh0c09v3a585qw3hc15b0zf159s74rxx1ga87drk5jr958z"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:test-target "spec"))
+    (native-inputs
+     `(("ruby-sequel" ,ruby-sequel)
+       ("ruby-sqlite3" ,ruby-sqlite3)))
+    (synopsis "Hooks for the minitest framework")
+    (description
+     "Minitest-hooks adds @code{around}, @code{before_all}, @code{after_all},
+@code{around_all} hooks for Minitest.  This allows, for instance, running each
+suite of specs inside a database transaction, running each spec inside its own
+savepoint inside that transaction.  This can significantly speed up testing
+for specs that share expensive database setup code.")
+    (home-page "http://github.com/jeremyevans/minitest-hooks")
+    (license license:expat)))
+
 (define-public ruby-daemons
   (package
     (name "ruby-daemons")
@@ -1871,24 +1898,24 @@ to reproduce user environments.")
 
 (define-public ruby-mini-portile-2
   (package (inherit ruby-mini-portile)
-    (version "2.0.0")
+    (version "2.1.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "mini_portile2" version))
               (sha256
                (base32
-                "056drbn5m4khdxly1asmiik14nyllswr6sh3wallvsywwdiryz8l"))))))
+                "1y25adxb1hgg1wb2rn20g3vl07qziq6fz364jc5694611zz863hb"))))))
 
 (define-public ruby-nokogiri
   (package
     (name "ruby-nokogiri")
-    (version "1.6.7.1")
+    (version "1.6.7.2")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "nokogiri" version))
               (sha256
                (base32
-                "12nwv3lad5k2k73aa1d1xy4x577c143ixks6rs70yp78sinbglk2"))))
+                "11sbmpy60ynak6s3794q32lc99hs448msjy8rkp84ay7mq7zqspv"))))
     (build-system ruby-build-system)
     (arguments
      ;; Tests fail because Nokogiri can only test with an installed extension,
@@ -1897,7 +1924,13 @@ to reproduce user environments.")
        #:gem-flags (list "--" "--use-system-libraries"
                          (string-append "--with-xml2-include="
                                         (assoc-ref %build-inputs "libxml2")
-                                        "/include/libxml2" ))))
+                                        "/include/libxml2" ))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'extract-gemspec 'update-dependency
+           (lambda _
+             (substitute* ".gemspec" (("2.0.0.rc2") "2.0"))
+             #t)))))
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)
        ("ruby-rake-compiler" ,ruby-rake-compiler)))
@@ -2505,67 +2538,68 @@ multibyte strings, internationalization, time zones, and testing.")
     (license license:expat)))
 
 (define-public ruby-nokogumbo
-  (package
-    (name "ruby-nokogumbo")
-    (version "1.4.6")
-    (source (origin
-              ;; We use the git reference, because there's no Rakefile in the
-              ;; published gem and the tarball on Github is outdated.
-              (method git-fetch)
-              (uri (git-reference
-                    (url "https://github.com/rubys/nokogumbo.git")
-                    (commit "d56f954d20a")))
-              (file-name (string-append name "-" version "-checkout"))
-              (sha256
-               (base32
-                "0bnppjy96xiadrsrc9dp8y6wvdwnkfa930n7acrp0mqm4qywl2wl"))))
-    (build-system ruby-build-system)
-    (arguments
-     `(#:modules ((guix build ruby-build-system)
-                  (guix build utils)
-                  (ice-9 rdelim))
-       #:phases
-       (modify-phases %standard-phases
-         (add-before 'build 'build-gemspec
-          (lambda _
-            (substitute* "Rakefile"
-              ;; Build Makefile even without a copy of gumbo-parser sources
-              (("'gumbo-parser/src',") "")
-              ;; We don't bundle gumbo-parser sources
-              (("'gumbo-parser/src/\\*',") "")
-              (("'gumbo-parser/visualc/include/\\*',") "")
-              ;; The definition of SOURCES will be cut in gemspec, and
-              ;; "FileList" will be undefined.
-              (("SOURCES \\+ FileList\\[")
-               "['ext/nokogumboc/extconf.rb', 'ext/nokogumboc/nokogumbo.c', "))
+  (let ((commit "fb51ff299a1c34346837580b6d1d9a60fadf5dbd"))
+    (package
+      (name "ruby-nokogumbo")
+      (version (string-append "1.4.7-1." (string-take commit 8)))
+      (source (origin
+                ;; We use the git reference, because there's no Rakefile in the
+                ;; published gem and the tarball on Github is outdated.
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/rubys/nokogumbo.git")
+                      (commit "d56f954d20a")))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0bnppjy96xiadrsrc9dp8y6wvdwnkfa930n7acrp0mqm4qywl2wl"))))
+      (build-system ruby-build-system)
+      (arguments
+       `(#:modules ((guix build ruby-build-system)
+                    (guix build utils)
+                    (ice-9 rdelim))
+         #:phases
+         (modify-phases %standard-phases
+           (add-before 'build 'build-gemspec
+            (lambda _
+              (substitute* "Rakefile"
+                ;; Build Makefile even without a copy of gumbo-parser sources
+                (("'gumbo-parser/src',") "")
+                ;; We don't bundle gumbo-parser sources
+                (("'gumbo-parser/src/\\*',") "")
+                (("'gumbo-parser/visualc/include/\\*',") "")
+                ;; The definition of SOURCES will be cut in gemspec, and
+                ;; "FileList" will be undefined.
+                (("SOURCES \\+ FileList\\[")
+                 "['ext/nokogumboc/extconf.rb', 'ext/nokogumboc/nokogumbo.c', "))
 
-            ;; Copy the Rakefile and cut out the gemspec.
-            (copy-file "Rakefile" ".gemspec")
-            (with-atomic-file-replacement ".gemspec"
-              (lambda (in out)
-                (let loop ((line (read-line in 'concat))
-                           (skipping? #t))
-                  (if (eof-object? line)
-                      #t
-                      (let ((skip-next? (if skipping?
-                                            (not (string-prefix? "SPEC =" line))
-                                            (string-prefix? "end" line))))
-                        (when (or (not skipping?)
-                                  (and skipping? (not skip-next?)))
-                          (format #t "~a" line)
-                          (display line out))
-                        (loop (read-line in 'concat) skip-next?))))))
-            #t)))))
-    (inputs
-     `(("gumbo-parser" ,gumbo-parser)))
-    (propagated-inputs
-     `(("ruby-nokogiri" ,ruby-nokogiri)))
-    (synopsis "Ruby bindings to the Gumbo HTML5 parser")
-    (description
-     "Nokogumbo allows a Ruby program to invoke the Gumbo HTML5 parser and
+              ;; Copy the Rakefile and cut out the gemspec.
+              (copy-file "Rakefile" ".gemspec")
+              (with-atomic-file-replacement ".gemspec"
+                (lambda (in out)
+                  (let loop ((line (read-line in 'concat))
+                             (skipping? #t))
+                    (if (eof-object? line)
+                        #t
+                        (let ((skip-next? (if skipping?
+                                              (not (string-prefix? "SPEC =" line))
+                                              (string-prefix? "end" line))))
+                          (when (or (not skipping?)
+                                    (and skipping? (not skip-next?)))
+                                (format #t "~a" line)
+                                (display line out))
+                          (loop (read-line in 'concat) skip-next?))))))
+              #t)))))
+      (inputs
+       `(("gumbo-parser" ,gumbo-parser)))
+      (propagated-inputs
+       `(("ruby-nokogiri" ,ruby-nokogiri)))
+      (synopsis "Ruby bindings to the Gumbo HTML5 parser")
+      (description
+       "Nokogumbo allows a Ruby program to invoke the Gumbo HTML5 parser and
 access the result as a Nokogiri parsed document.")
-    (home-page "https://github.com/rubys/nokogumbo/")
-    (license license:asl2.0)))
+      (home-page "https://github.com/rubys/nokogumbo/")
+      (license license:asl2.0))))
 
 (define-public ruby-sanitize
   (package
@@ -3129,14 +3163,14 @@ that TURN is no longer being maintained.")
 (define-public ruby-mime-types-data
   (package
     (name "ruby-mime-types-data")
-    (version "3.2015.1120")
+    (version "3.2016.0221")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "mime-types-data" version))
        (sha256
         (base32
-         "04fzvy02w8d0rrsg8avncn7h58pvwdxj82aps54srb3sam2dkhic"))))
+         "05ygjn0nnfh6yp1wsi574jckk95wqg9a6g598wk4svvrkmkrzkpn"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("ruby-hoe" ,ruby-hoe)))
@@ -3153,14 +3187,14 @@ look up the likely MIME type definitions.")
 (define-public ruby-mime-types
   (package
     (name "ruby-mime-types")
-    (version "3.0")
+    (version "3.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "mime-types" version))
        (sha256
         (base32
-         "1snjc38a9vqvy8j41xld1i1byq9prbl955pbjw7dxqcfcirqlzra"))))
+         "0087z9kbnlqhci7fxh9f6il63hj1k02icq2rs0c6cppmqchr753m"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-mime-types-data" ,ruby-mime-types-data)))
@@ -3169,7 +3203,8 @@ look up the likely MIME type definitions.")
        ("ruby-fivemat" ,ruby-fivemat)
        ("ruby-minitest-focus" ,ruby-minitest-focus)
        ("ruby-minitest-rg" ,ruby-minitest-rg)
-       ("ruby-minitest-bonus-assertions" ,ruby-minitest-bonus-assertions)))
+       ("ruby-minitest-bonus-assertions" ,ruby-minitest-bonus-assertions)
+       ("ruby-minitest-hooks" ,ruby-minitest-hooks)))
     (synopsis "Library and registry for MIME content type definitions")
     (description "The mime-types library provides a library and registry for
 information about Multipurpose Internet Mail Extensions (MIME) content type
@@ -3265,26 +3300,18 @@ names.")
 (define-public ruby-shoulda-matchers
   (package
     (name "ruby-shoulda-matchers")
-    (version "3.0.1")
+    (version "3.1.1")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "shoulda-matchers" version))
        (sha256
         (base32
-         "1agabvb8i39mjrp3kb78nvhl41xk1i258hdwdlj0fm8nj9yzn1jb"))))
+         "1cf6d2d9br82vylr9p362yk9cfrd14jz8v77n0yb0lbcxdbk7xzq"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
-         (add-before 'build 'fix-import
-           (lambda _
-             ;; A presumed bug reported upstream at
-             ;; https://github.com/thoughtbot/shoulda-matchers/pull/871
-             (substitute* (string-append  "lib/shoulda/matchers/active_model/"
-                                          "validate_inclusion_of_matcher.rb")
-               (("^require 'bigdecimal'")
-                "require 'bigdecimal'; require 'date'"))))
          (replace 'check
            (lambda _
              ;; Do not run tests to avoid circular dependence with rails.  Instead
@@ -3380,14 +3407,14 @@ support to both Ruby and JRuby.  It uses @code{unf_ext} on CRuby and
 (define-public ruby-domain-name
   (package
     (name "ruby-domain-name")
-    (version "0.5.25")
+    (version "0.5.20160310")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "domain_name" version))
        (sha256
         (base32
-         "16qvfrmcwlzz073aas55mpw2nhyhjcn96s524w0g1wlml242hjav"))))
+         "0g1175zspkqhlvl9s11g7p2nbmqpvpxxv02q8csd0ryc81laapys"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
@@ -3878,3 +3905,25 @@ part of the Prawn PDF generator.")
     ;; From the README: "Matz's terms for Ruby, GPLv2, or GPLv3. See LICENSE
     ;; for details."
     (license (list license:gpl2 license:gpl3 license:ruby))))
+
+(define-public ruby-sequel
+  (package
+    (name "ruby-sequel")
+    (version "4.34.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "sequel" version))
+       (sha256
+        (base32
+         "0qscddpfwcajggxvbm4a4jv8kkpn6q056bgdg03km34bz8bis1x1"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; Avoid dependency loop with ruby-minitest-hooks.
+    (synopsis "Database toolkit for Ruby")
+    (description "Sequel provides thread safety, connection pooling and a
+concise DSL for constructing SQL queries and table schemas.  It includes a
+comprehensive ORM layer for mapping records to Ruby objects and handling
+associated records.")
+    (home-page "http://sequel.jeremyevans.net")
+    (license license:expat)))

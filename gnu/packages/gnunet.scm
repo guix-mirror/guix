@@ -266,10 +266,10 @@ privacy-preserving, decentralized public key infrastructure.")
    (home-page "https://gnunet.org/")))
 
 (define-public guile-gnunet                       ;GSoC 2015!
-  (let ((commit "383eac2"))
+  (let ((commit "383eac2aab175d8d9ea5315c2f1c8a5055c76a52"))
     (package
       (name "guile-gnunet")
-      (version (string-append "0.0." commit))
+      (version (string-append "0.0." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference

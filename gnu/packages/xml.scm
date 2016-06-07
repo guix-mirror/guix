@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
@@ -67,6 +67,7 @@ things the parser might find in the XML document (like start tags).")
   (package
     (name "libxml2")
     (version "2.9.3")
+    (replacement libxml2/fixed)                   ;multiple CVEs
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
@@ -93,9 +94,24 @@ things the parser might find in the XML document (like start tags).")
 project (but it is usable outside of the Gnome platform).")
     (license license:x11)))
 
+(define libxml2/fixed
+  (package
+    (inherit libxml2)
+    (source
+     (let ((name "libxml2")
+           (version "2.9.4"))
+       (origin
+         (method url-fetch)
+         (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
+                             version ".tar.gz"))
+         (sha256
+          (base32
+           "0g336cr0bw6dax1q48bblphmchgihx9p1pjmxdnrd6sh3qci3fgz")))))))
+
 (define-public python-libxml2
   (package (inherit libxml2)
     (name "python-libxml2")
+    (replacement #f)
     (build-system python-build-system)
     (arguments
      `(;; XXX: Tests are specified in 'Makefile.am', but not in 'setup.py'.

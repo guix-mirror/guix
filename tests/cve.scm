@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,12 +32,10 @@
   (list
    ;; CVE-2003-0001 has no "/a" in its product list so it is omitted.
    ;; CVE-2004-0230 lists "tcp" as an application, but lacks a version number.
-   (vulnerability "CVE-2008-2335" '(("phpvid" . "1.1") ("phpvid" . "1.2")))
-   (vulnerability "CVE-2008-3522" '(("enterprise_virtualization" . "3.5")
-                                    ("jasper" . "1.900.1")))
-   (vulnerability "CVE-2009-3301" '(("openoffice.org" . "2.1.0")
-                                    ("openoffice.org" . "2.3.0")
-                                    ("openoffice.org" . "2.2.1")))
+   (vulnerability "CVE-2008-2335" '(("phpvid" "1.2" "1.1")))
+   (vulnerability "CVE-2008-3522" '(("enterprise_virtualization" "3.5")
+                                    ("jasper" "1.900.1")))
+   (vulnerability "CVE-2009-3301" '(("openoffice.org" "2.3.0" "2.2.1" "2.1.0")))
    ;; CVE-2015-8330 has no software list.
    ))
 
@@ -48,9 +46,8 @@
   %expected-vulnerabilities
   (call-with-input-file %sample xml->vulnerabilities))
 
-(test-equal ""
-  (list `(("1.1" . ,(first %expected-vulnerabilities))
-          ("1.2" . ,(first %expected-vulnerabilities)))
+(test-equal "vulnerabilities->lookup-proc"
+  (list (list (first %expected-vulnerabilities))
         '()
         '()
         (list (second %expected-vulnerabilities))

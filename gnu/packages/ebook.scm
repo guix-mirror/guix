@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,7 +61,7 @@
 (define-public calibre
   (package
     (name "calibre")
-    (version "2.51.0")
+    (version "2.58.0")
     (source
       (origin
         (method url-fetch)
@@ -68,8 +69,8 @@
                             version "/calibre-"
                             version ".tar.xz"))
         (sha256
-          (base32
-           "1rhpcxic4g2zyr5s3xn8dayyb45l9r8zyniaig8j7pl5kmsfjijn"))
+         (base32
+          "0npqvfjqj1vwa7nmnsyd4d30z40brydw275ldf1jankrp6dr9dyd"))
         ;; Remove non-free or doubtful code, see
         ;; https://lists.gnu.org/archive/html/guix-devel/2015-02/msg00478.html
         (modules '((guix build utils)))

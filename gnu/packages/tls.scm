@@ -351,16 +351,16 @@ security, and applying best practice development processes.")
 (define-public python-acme
   (package
     (name "python-acme")
-    (version "0.6.0")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                      "https://pypi.python.org/packages/"
-                     "af/33/703e5ec3d7efde7c4d2fcea9cdf88953a33d4e72aafd5b0a330173a7b395/"
+                     "45/17/6fdcede92c7fe4d9c1ab9d7513ded5aa969a0b9c90f3d7b3b074cd37e898/"
                      "acme-" version ".tar.gz"))
       (sha256
         (base32
-         "1ipck25c6nr0x54w2cc8ziwjmyyrpyz6pc1y8xc9nqmxvw4n0kpc"))))
+         "1nk48p0pi6xmqpsqjvw6xkx5vv4vl33yzq67fpr33ci8fra6pa6z"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -413,30 +413,27 @@ security, and applying best practice development processes.")
 (define-public certbot
   (package
     (name "certbot")
-    (version "0.6.0")
+    (version "0.8.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                      "https://pypi.python.org/packages/"
-                     "fc/eb/7594bf16d89909a9d52c46edbeae669d4b2ee6e12453bd97e674d0371920/"
+                     "da/b8/fa6d7f0f8c0d37944ca4a1940b1e933fc6673498995a45db03c034bb11dd/"
                      name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0ba95cf6shmyhi4vzvk64vbkrmr8qvkn32k3xwb2iv7ybbfbgc40"))))
+                "052338jdiy8dniskqxm2hzbca084ms0xqnjicshl6cpvhjs70g1w"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2
        #:phases
        (modify-phases %standard-phases
-         (add-after 'install 'docs
+         (add-after 'build 'docs
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
                     (man1 (string-append out "/share/man/man1"))
                     (man7 (string-append out "/share/man/man7"))
                     (info (string-append out "/info")))
-               (substitute* "docs/man/certbot.rst"
-                 (("certbot --help all")
-                  (string-append out "/bin/certbot" " --help all")))
                (and
                  (zero? (system* "make" "-C" "docs" "man" "info"))
                  (install-file "docs/_build/texinfo/Certbot.info" info)

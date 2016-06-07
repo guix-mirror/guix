@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,13 +31,13 @@
 (define-public lua
   (package
     (name "lua")
-    (version "5.2.3")
+    (version "5.2.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.lua.org/ftp/lua-"
                                  version ".tar.gz"))
              (sha256
-              (base32 "0b8034v1s82n4dg5rzcn12067ha3nxaylp2vdp8gg08kjsbzphhk"))
+              (base32 "0jwznq0l8qg9wh5grwg07b5cy3lzngvl5m2nl1ikp6vqssmf9qmr"))
              (patches (search-patches "lua-pkgconfig.patch"
                                       "lua52-liblua-so.patch"))))
     (build-system gnu-build-system)
@@ -46,18 +47,18 @@
                     (guix build utils)
                     (srfi srfi-1))
        #:test-target "test"
-       #:phases (alist-replace
-                 'build
-                 (lambda _ (zero? (system* "make" "CFLAGS=-fPIC" "linux")))
-                 (alist-replace
-                  'install
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let ((out (assoc-ref outputs "out")))
-                      (zero? (system* "make" "install"
-                                      (string-append "INSTALL_TOP=" out)
-                                      (string-append "INSTALL_MAN=" out
-                                                     "/share/man/man1")))))
-                  (alist-delete 'configure %standard-phases)))))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'build
+           (lambda _ (zero? (system* "make" "CFLAGS=-fPIC" "linux"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "make" "install"
+                               (string-append "INSTALL_TOP=" out)
+                               (string-append "INSTALL_MAN=" out
+                                              "/share/man/man1")))))))))
     (home-page "http://www.lua.org/")
     (synopsis "Embeddable scripting language")
     (description
@@ -78,18 +79,19 @@ for configuration, scripting, and rapid prototyping.")
                                  version ".tar.gz"))
              (sha256
               (base32 "0cskd4w0g6rdm2q8q3i4n1h3j8kylhs3rq8mxwl9vwlmlxbgqh16"))
-             (patches (search-patches "lua51-liblua-so.patch"))))))
+             (patches (search-patches "lua51-liblua-so.patch"
+                                      "lua-CVE-2014-5461.patch"))))))
 
 (define-public luajit
   (package
     (name "luajit")
-    (version "2.0.3")
+    (version "2.0.4")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://luajit.org/download/LuaJIT-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "0ydxpqkmsn2c341j4r2v6r5r0ig3kbwv3i9jran3iv81s6r6rgjm"))
+               (base32 "0zc0y7p6nx1c0pp4nhgbdgjljpfxsb5kgwp4ysz22l1p2bms83v2"))
               (patches (search-patches "luajit-symlinks.patch"
                                        "luajit-no_ldconfig.patch"))))
     (build-system gnu-build-system)

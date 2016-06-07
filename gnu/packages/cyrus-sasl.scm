@@ -34,7 +34,7 @@
    (source (origin
             (method url-fetch)
             (uri (list (string-append
-                        "http://cyrusimap.org/releases/cyrus-sasl-"
+                        "https://cyrusimap.org/releases/cyrus-sasl-"
                         version ".tar.gz")
                        (string-append
                         "ftp://ftp.cyrusimap.org/cyrus-sasl/cyrus-sasl-"
@@ -63,4 +63,4 @@ library makes supporting various SASL mechanisms easy for both client and
 server writers.")
    (license (license:non-copyleft "file://COPYING"
                                   "See COPYING in the distribution."))
-   (home-page "http://cyrusimap.web.cmu.edu/index.php")))
+   (home-page "http://cyrusimap.web.cmu.edu")))

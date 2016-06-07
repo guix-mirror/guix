@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,3 +77,41 @@
      "V.E.R.A. (Virtual Entity of Relevant Acronyms) is a list of computing
 acronyms distributed as an info document.")
     (license fdl1.3+)))
+
+(define-public gcide
+  (package
+    (name "gcide")
+    (version "0.51")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnu/gcide/gcide-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1wm0s51ygc6480dq8gwahzr35ls8jgpf34yiwl5yqcaa0i19fdv7"))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:builder (begin
+                   (use-modules (guix build utils))
+                   (let* ((src     (assoc-ref %build-inputs "source"))
+                          (tar     (assoc-ref %build-inputs "tar"))
+                          (xz      (assoc-ref %build-inputs "xz"))
+                          (out     (assoc-ref %outputs "out"))
+                          (datadir (string-append out "/share/gcide")))
+                     (set-path-environment-variable "PATH" '("bin")
+                                                    (list tar xz))
+                     (mkdir-p datadir)
+                     (zero? (system* "tar" "-C" datadir
+                                     "--strip-components=1"
+                                     "-xvf" src))))
+       #:modules ((guix build utils))))
+    (native-inputs
+     `(("tar" ,tar)
+       ("xz" ,xz)))
+    (synopsis "GNU Collaborative International Dictionary of English")
+    (description
+     "GCIDE is a free dictionary based on a combination of sources.  It can
+be used via the GNU Dico program or accessed online at
+http://gcide.gnu.org.ua/")
+    (home-page "http://gcide.gnu.org.ua/")
+    (license gpl3+)))

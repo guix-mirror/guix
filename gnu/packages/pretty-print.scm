@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,7 +44,10 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "195k78m1h03m961qn7jr120z815iyb93gwi159p1p9348lyqvbpk"))))
+        "195k78m1h03m961qn7jr120z815iyb93gwi159p1p9348lyqvbpk"))
+      (patches (search-patches
+                 "a2ps-CVE-2001-1593.patch"
+                 "a2ps-CVE-2014-0466.patch"))))
     (build-system gnu-build-system)
     (inputs
      `(("psutils" ,psutils)
@@ -54,37 +58,36 @@
      `(("gperf" ,gperf)
        ("perl" ,perl)))
     (arguments
-     '(#:phases (alist-cons-before
-                 'build 'patch-scripts
-                 (lambda _
-                   (substitute*
-                       '("afm/make_fonts_map.sh"
-                         "tests/defs"
-                         "tests/backup.tst"
-                         "tests/styles.tst")
-                     (("/bin/rm") (which "rm"))))
-                 (alist-cons-before
-                  'check 'patch-test-files
-                  ;; Alternatively, we could unpatch the shebangs in tstfiles
-                  (lambda* (#:key inputs #:allow-other-keys)
-                    (let ((perl (assoc-ref inputs "perl")))
-                      (substitute* '("tests/ps-ref/includeres.ps"
-                                     "tests/gps-ref/includeres.ps")
-                        (("/usr/local/bin/perl")
-                         (string-append perl "/bin/perl"))))
-                    ;; Some of the reference postscript contain a 'version 3'
-                    ;; string that in inconsistent with the source text in the
-                    ;; tstfiles directory.  Erroneous search-and-replace?
-                    (substitute* '("tests/ps-ref/InsertBlock.ps"
-                                   "tests/gps-ref/InsertBlock.ps"
-                                   "tests/ps-ref/bookie.ps"
-                                   "tests/gps-ref/bookie.ps")
-                      (("version 3") "version 2"))
-                    (substitute* '("tests/ps-ref/psmandup.ps"
-                                   "tests/gps-ref/psmandup.ps")
-                      (("#! */bin/sh") (string-append
-                                        "#!" (which "sh")))))
-                  %standard-phases))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'patch-scripts
+           (lambda _
+             (substitute*
+                 '("afm/make_fonts_map.sh"
+                   "tests/defs"
+                   "tests/backup.tst"
+                   "tests/styles.tst")
+               (("/bin/rm") (which "rm")))))
+         (add-before 'check 'patch-test-files
+           ;; Alternatively, we could unpatch the shebangs in tstfiles
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((perl (assoc-ref inputs "perl")))
+               (substitute* '("tests/ps-ref/includeres.ps"
+                              "tests/gps-ref/includeres.ps")
+                 (("/usr/local/bin/perl")
+                  (string-append perl "/bin/perl"))))
+             ;; Some of the reference postscript contain a 'version 3'
+             ;; string that in inconsistent with the source text in the
+             ;; tstfiles directory.  Erroneous search-and-replace?
+             (substitute* '("tests/ps-ref/InsertBlock.ps"
+                            "tests/gps-ref/InsertBlock.ps"
+                            "tests/ps-ref/bookie.ps"
+                            "tests/gps-ref/bookie.ps")
+               (("version 3") "version 2"))
+             (substitute* '("tests/ps-ref/psmandup.ps"
+                            "tests/gps-ref/psmandup.ps")
+               (("#! */bin/sh") (string-append
+                                 "#!" (which "sh")))))))))
     (home-page "http://www.gnu.org/software/a2ps")
     (synopsis "Any file to PostScript, including pretty-printing")
     (description

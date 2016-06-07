@@ -123,7 +123,7 @@ to recover data more efficiently by only reading the necessary blocks.")
 (define-public dosfstools
   (package
     (name "dosfstools")
-    (version "3.0.28")
+    (version "4.0")
     (source
      (origin
        (method url-fetch)
@@ -132,14 +132,12 @@ to recover data more efficiently by only reading the necessary blocks.")
                            name "-" version ".tar.xz"))
        (sha256
         (base32
-         "1qkya6lald91c8nsf29jwnk0k5v42wlj24gacfdp3wpc8hq935gf"))))
+         "1bvxbv1w6vhbx0nx7ygp700wq5k2hjv0hm7w0kz1x7amaf4p6dwh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags (list (string-append "PREFIX=" %output)
                           "CC=gcc")
-       #:tests? #f  ;no tests
-       #:phases (modify-phases %standard-phases
-                  (delete 'configure))))
+       #:tests? #f))  ;no tests
     (home-page "https://github.com/dosfstools/dosfstools")
     (synopsis "Utilities for making and checking MS-DOS FAT filesystems")
     (description

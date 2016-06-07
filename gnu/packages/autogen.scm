@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013,2014 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2013, 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,31 +31,31 @@
 (define-public autogen
   (package
     (name "autogen")
-    (version "5.18.7")
+    (version "5.18.10")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://gnu/autogen"
+      (uri (string-append "mirror://gnu/autogen/rel" version
                           "/autogen-" version ".tar.xz"))
       (sha256
        (base32
-        "01d4m8ckww12sy50vgyxlnz83z9dxqpyqp153cscncc9w6jq19d7"))))
+        "0j61mf3qab5ya7w5xsp7xalrby00cv92g462bxffl104ql18w92f"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)     ;for doc generator mdoc
                      ("pkg-config" ,pkg-config)))
     (inputs `(("which" ,which)
               ("guile" ,guile-2.0)))
     (arguments
-     '(#:phases (alist-cons-before
-                 'patch-source-shebangs 'patch-test-scripts
-                 (lambda _
-                   (let ((sh (which "sh")))
-                     (substitute*
-                         (append (find-files "agen5/test" "\\.test$")
-                                 (find-files "autoopts/test" "\\.(test|in)$"))
-                       (("/bin/sh") sh)
-                       (("/usr/bin/tr") "tr"))))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'patch-source-shebangs 'patch-test-scripts
+           (lambda _
+             (let ((sh (which "sh")))
+               (substitute*
+                 (append (find-files "agen5/test" "\\.test$")
+                         (find-files "autoopts/test" "\\.(test|in)$"))
+                 (("/bin/sh") sh)
+                 (("/usr/bin/tr") "tr"))))))))
     (home-page "http://www.gnu.org/software/autogen/")
     (synopsis "Automated program generator")
     (description

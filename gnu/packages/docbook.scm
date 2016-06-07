@@ -23,7 +23,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages inkscape)
-  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages python)
   #:use-module (gnu packages base)
   #:use-module (gnu packages xml)

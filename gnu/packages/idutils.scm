@@ -37,7 +37,7 @@
                "1hmai3422iaqnp34kkzxdnywl7n7pvlxp11vrw66ybxn9wxg90c1"))
              (patches (search-patches "diffutils-gets-undeclared.patch"))))
     (build-system gnu-build-system)
-    (native-inputs `(("emacs" ,emacs-no-x)))
+    (native-inputs `(("emacs" ,emacs-minimal)))
     (home-page "http://www.gnu.org/software/idutils/")
     (synopsis "Identifier database utilities")
     (description

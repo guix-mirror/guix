@@ -205,7 +205,8 @@
                                                         (%current-system))))
              (d  (derivation s "the-thing" b '("--help")
                              #:inputs `((,b)))))
-        (references/substitutes s (list (derivation->output-path d) b))))))
+        (references/substitutes s (list (derivation->output-path d) b))
+        #f))))
 
 (test-assert "references/substitutes with substitute info"
   (with-store s
@@ -231,6 +232,32 @@
                   (,t1)                           ;refs of T2
                   ()))))))                        ;refs of T1
 
+(test-equal "substitutable-path-info when substitutes are turned off"
+  '()
+  (with-store s
+    (set-build-options s #:use-substitutes? #f)
+    (let* ((b  (add-to-store s "bash" #t "sha256"
+                             (search-bootstrap-binary "bash"
+                                                      (%current-system))))
+           (d  (derivation s "the-thing" b '("--version")
+                           #:inputs `((,b))))
+           (o  (derivation->output-path d)))
+      (with-derivation-narinfo d
+        (substitutable-path-info s (list o))))))
+
+(test-equal "substitutable-paths when substitutes are turned off"
+  '()
+  (with-store s
+    (set-build-options s #:use-substitutes? #f)
+    (let* ((b  (add-to-store s "bash" #t "sha256"
+                             (search-bootstrap-binary "bash"
+                                                      (%current-system))))
+           (d  (derivation s "the-thing" b '("--version")
+                           #:inputs `((,b))))
+           (o  (derivation->output-path d)))
+      (with-derivation-narinfo d
+        (substitutable-paths s (list o))))))
+
 (test-assert "requisites"
   (let* ((t1 (add-text-to-store %store "random1"
                                 (random-text) '()))
@@ -244,10 +271,12 @@
       (and (= (length x) (length y))
            (lset= equal? x y)))
 
-    (and (same? (requisites %store t1) (list t1))
-         (same? (requisites %store t2) (list t1 t2))
-         (same? (requisites %store t3) (list t1 t2 t3))
-         (same? (requisites %store t4) (list t1 t2 t3 t4)))))
+    (and (same? (requisites %store (list t1)) (list t1))
+         (same? (requisites %store (list t2)) (list t1 t2))
+         (same? (requisites %store (list t3)) (list t1 t2 t3))
+         (same? (requisites %store (list t4)) (list t1 t2 t3 t4))
+         (same? (requisites %store (list t1 t2 t3 t4))
+                (list t1 t2 t3 t4)))))
 
 (test-assert "derivers"
   (let* ((b (add-text-to-store %store "build" "echo $foo > $out" '()))

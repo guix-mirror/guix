@@ -28,14 +28,14 @@
 (define-public taskwarrior
   (package
     (name "taskwarrior")
-    (version "2.4.3")
+    (version "2.5.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "http://taskwarrior.org/download/task-" version ".tar.gz"))
        (sha256 (base32
-                "1lkbw2fhshynbl7hppar1viapyrs712s14xhd8p3l8gyhvxbh0mv"))))
+                "059a9yc58wcicc6xxsjh1ph7k2yrag0spsahp1wqmsq6h7jwwyyq"))))
     (build-system cmake-build-system)
     (inputs
      `(("gnutls" ,gnutls)

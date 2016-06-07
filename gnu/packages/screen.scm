@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -67,23 +68,23 @@ view to show two terminals at once.")
 (define-public dtach
   (package
     (name "dtach")
-    (version "0.8")
+    (version "0.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/dtach/dtach-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1agjp08zxxxfni62sqx9qsd9526yqwlz7ry07lfq3clavyylwq8n"))))
+                "1wwj2hlngi8qn2pisvhyfxxs8gyqjlgrrv5lz91w8ly54dlzvs9j"))))
     (build-system gnu-build-system)
     (arguments
      ;; No install target.
-     '(#:phases (alist-replace
-                 'install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out")))
-                     (install-file "dtach" (string-append out "/bin"))))
-                 %standard-phases)
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (install-file "dtach" (string-append out "/bin"))))))
        ;; No check target.
        #:tests? #f))
     (home-page "http://dtach.sourceforge.net/")

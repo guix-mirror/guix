@@ -258,38 +258,36 @@ downloaded and authenticated; not updating~%")
 
 (define (list-dependents packages)
   "List all the things that would need to be rebuilt if PACKAGES are changed."
-  (with-store store
-    (run-with-store store
-      ;; Using %BAG-NODE-TYPE is more accurate than using %PACKAGE-NODE-TYPE
-      ;; because it includes implicit dependencies.
-      (mlet %store-monad ((edges (node-back-edges %bag-node-type
-                                                  (all-packages))))
-        (let* ((dependents (node-transitive-edges packages edges))
-               (covering   (filter (lambda (node)
-                                     (null? (edges node)))
-                                   dependents)))
-          (match dependents
-            (()
-             (format (current-output-port)
-                     (N_ "No dependents other than itself: ~{~a~}~%"
-                         "No dependents other than themselves: ~{~a~^ ~}~%"
-                         (length packages))
-                     (map package-full-name packages)))
+  ;; Using %BAG-NODE-TYPE is more accurate than using %PACKAGE-NODE-TYPE
+  ;; because it includes implicit dependencies.
+  (mlet %store-monad ((edges (node-back-edges %bag-node-type
+                                              (all-packages))))
+    (let* ((dependents (node-transitive-edges packages edges))
+           (covering   (filter (lambda (node)
+                                 (null? (edges node)))
+                               dependents)))
+      (match dependents
+        (()
+         (format (current-output-port)
+                 (N_ "No dependents other than itself: ~{~a~}~%"
+                     "No dependents other than themselves: ~{~a~^ ~}~%"
+                     (length packages))
+                 (map package-full-name packages)))
 
-            ((x)
-             (format (current-output-port)
-                     (_ "A single dependent package: ~a~%")
-                     (package-full-name x)))
-            (lst
-             (format (current-output-port)
-                     (N_ "Building the following package would ensure ~d \
+        ((x)
+         (format (current-output-port)
+                 (_ "A single dependent package: ~a~%")
+                 (package-full-name x)))
+        (lst
+         (format (current-output-port)
+                 (N_ "Building the following package would ensure ~d \
 dependent packages are rebuilt: ~*~{~a~^ ~}~%"
-                         "Building the following ~d packages would ensure ~d \
+                     "Building the following ~d packages would ensure ~d \
 dependent packages are rebuilt: ~{~a~^ ~}~%"
-                         (length covering))
-                     (length covering) (length dependents)
-                     (map package-full-name covering))))
-          (return #t))))))
+                     (length covering))
+                 (length covering) (length dependents)
+                 (map package-full-name covering))))
+      (return #t))))
 
 
 ;;;
@@ -381,31 +379,36 @@ update would trigger a complete rebuild."
             (some                                 ; user-specified packages
              some))))
     (with-error-handling
-      (cond
-       (list-dependent?
-        (list-dependents packages))
-       (update?
-        (let ((store (open-connection)))
-          (parameterize ((%openpgp-key-server
-                          (or (assoc-ref opts 'key-server)
-                              (%openpgp-key-server)))
-                         (%gpg-command
-                          (or (assoc-ref opts 'gpg-command)
-                              (%gpg-command))))
-            (for-each
-             (cut update-package store <> updaters
-                  #:key-download key-download)
-             packages))))
-       (else
-        (for-each (lambda (package)
-                    (match (package-update-path package updaters)
-                      ((? upstream-source? source)
-                       (let ((loc (or (package-field-location package 'version)
-                                      (package-location package))))
-                         (format (current-error-port)
-                                 (_ "~a: ~a would be upgraded from ~a to ~a~%")
-                                 (location->string loc)
-                                 (package-name package) (package-version package)
-                                 (upstream-source-version source))))
-                      (#f #f)))
-                  packages))))))
+      (with-store store
+        (run-with-store store
+          (cond
+           (list-dependent?
+            (list-dependents packages))
+           (update?
+            (parameterize ((%openpgp-key-server
+                            (or (assoc-ref opts 'key-server)
+                                (%openpgp-key-server)))
+                           (%gpg-command
+                            (or (assoc-ref opts 'gpg-command)
+                                (%gpg-command))))
+              (for-each
+               (cut update-package store <> updaters
+                    #:key-download key-download)
+               packages)
+              (with-monad %store-monad
+                (return #t))))
+           (else
+            (for-each (lambda (package)
+                        (match (package-update-path package updaters)
+                          ((? upstream-source? source)
+                           (let ((loc (or (package-field-location package 'version)
+                                          (package-location package))))
+                             (format (current-error-port)
+                                     (_ "~a: ~a would be upgraded from ~a to ~a~%")
+                                     (location->string loc)
+                                     (package-name package) (package-version package)
+                                     (upstream-source-version source))))
+                          (#f #f)))
+                      packages)
+            (with-monad %store-monad
+              (return #t)))))))))

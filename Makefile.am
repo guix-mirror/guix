@@ -174,8 +174,8 @@ dist_noinst_DATA = guix/tests.scm
 
 # Linux-Libre configurations.
 KCONFIGS =					\
-  gnu/packages/linux-libre-4.5-i686.conf	\
-  gnu/packages/linux-libre-4.5-x86_64.conf	\
+  gnu/packages/linux-libre-4.6-i686.conf	\
+  gnu/packages/linux-libre-4.6-x86_64.conf	\
   gnu/packages/linux-libre-4.4-i686.conf	\
   gnu/packages/linux-libre-4.4-x86_64.conf	\
   gnu/packages/linux-libre-4.1-i686.conf	\
@@ -248,6 +248,7 @@ SCM_TESTS =					\
   tests/profiles.scm				\
   tests/syscalls.scm				\
   tests/gremlin.scm				\
+  tests/bournish.scm				\
   tests/lint.scm				\
   tests/publish.scm				\
   tests/scripts.scm				\

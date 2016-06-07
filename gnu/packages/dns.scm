@@ -33,7 +33,7 @@
 (define-public dnsmasq
   (package
     (name "dnsmasq")
-    (version "2.72")
+    (version "2.76")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -41,7 +41,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "1c80hq09hfm8cp5pirfb8wdlc7dqkp7zzmbmdaradcvlblzx42vx"))))
+                "15lzih6671gh9knzpl8mxchiml7z5lfqzr7jm2r0rjhrxs6nk4jb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

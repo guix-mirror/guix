@@ -111,14 +111,14 @@ and its related documentation.")
 (define-public nginx
   (package
     (name "nginx")
-    (version "1.10.0")
+    (version "1.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://nginx.org/download/nginx-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0kdyqa5xaxvhz6y75ixs05mzygk3kszzdq5h0gnlrg35vp1lgmlf"))))
+                "00d8hxj8453c7989qd7z4f1mjp0k3ib8k29i1qyf11b4ar35ilqz"))))
     (build-system gnu-build-system)
     (inputs `(("pcre" ,pcre)
               ("openssl" ,openssl)
@@ -232,7 +232,8 @@ and UNIX socket support.")
                              version ".tar.gz"))
              (sha256
               (base32
-               "1mvq9p85khsl818i4vbszyfab0fd45mdrwrxjkzw05mk1xcyc1br"))))
+               "1mvq9p85khsl818i4vbszyfab0fd45mdrwrxjkzw05mk1xcyc1br"))
+             (patches (search-patches "jansson-CVE-2016-4425.patch"))))
     (build-system gnu-build-system)
     (home-page "http://www.digip.org/jansson/")
     (synopsis "JSON C library")
@@ -290,8 +291,7 @@ parse JSON formatted strings back into the C representation of JSON objects.")
                "1fj5mf6wbwz7v74n2safbw7fpw32fik19vf0wdbc2srn82i8fiwz"))))
    (build-system perl-build-system)
    (arguments
-     `(#:tests? #f ; no tests
-       #:phases
+     `(#:phases
        (modify-phases %standard-phases
          ;; There is no configure or build steps.
          (delete 'configure)
@@ -313,9 +313,7 @@ parse JSON formatted strings back into the C representation of JSON objects.")
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((bin   (string-append (assoc-ref outputs "out") "/bin"))
                    (perl  (string-append (assoc-ref outputs "out")
-                                         "/lib/perl5/site_perl"))
-                   (share (string-append
-                           (assoc-ref outputs "out") "/share/krona-tools")))
+                                         "/lib/perl5/site_perl/krona-tools/lib")))
                (mkdir-p bin)
                (for-each
                 (lambda (script)
@@ -340,13 +338,13 @@ parse JSON formatted strings back into the C representation of JSON objects.")
                   "ImportTaxonomy"
                   "ImportText"
                   "ImportXML"))
-               (mkdir-p share)
-               (copy-recursively "data" (string-append share "/data"))
-               (copy-recursively "img" (string-append share "/img"))
-               (copy-recursively "taxonomy" (string-append share "/taxonomy"))
-               (substitute* '("lib/KronaTools.pm")
-                 (("taxonomyDir = \".libPath/../taxonomy\"")
-                  (string-append "taxonomyDir = \"" share "/taxonomy\"")))
+               (copy-recursively "data" (string-append perl "/../data"))
+               (copy-recursively "img" (string-append perl "/../img"))
+               (copy-recursively "taxonomy" (string-append perl "/../taxonomy"))
+               (install-file "src/krona-2.0.js" (string-append perl "/../src"))
+               (substitute* "lib/KronaTools.pm"
+                 (("`ktGetLibPath`")
+                  (string-append "\"" perl "\"")))
                (install-file "lib/KronaTools.pm" perl))))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -356,8 +354,14 @@ parse JSON formatted strings back into the C representation of JSON objects.")
                 (lambda (executable)
                   (wrap-program executable
                     `("PERL5LIB" ":" prefix
-                      (,(string-append out "/lib/perl5/site_perl")))))
-                (find-files (string-append out "/bin/") ".*"))))))))
+                      (,(string-append out "/lib/perl5/site_perl/krona-tools/lib")))))
+                (find-files (string-append out "/bin/") ".*")))))
+         (delete 'check)
+         (add-after 'wrap-program 'check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (with-directory-excursion "data"
+               (zero? (system* (string-append (assoc-ref outputs "out") "/bin/ktImportText")
+                               "ec.tsv"))))))))
    (inputs
     `(("perl" ,perl)))
    (home-page "https://github.com/marbl/Krona/wiki")
@@ -527,16 +531,15 @@ used to validate and fix HTML data.")
 (define-public tinyproxy
   (package
     (name "tinyproxy")
-    (version "1.8.3")
+    (version "1.8.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "https://download.banu.com/tinyproxy/"
-                    (version-major+minor version)
-                    "/tinyproxy-" version ".tar.gz"))
+              (uri (string-append "https://github.com/tinyproxy/tinyproxy/"
+                                  "releases/download/" version "/tinyproxy-"
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "05y0y2q9j10x72y1fipya6bmc8hjcdf3kfw7dh8ahczpy341c938"))))
+                "002hi97687czhfkwsjkr174yvlp10224qi6gd5s53z230bgls7x4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -559,7 +562,7 @@ used to validate and fix HTML data.")
                      ("docbook-xml" ,docbook-xml)
                      ("docbook-xsl" ,docbook-xsl)
                      ("libxslt" ,libxslt)))
-    (home-page "https://banu.com/tinyproxy/")
+    (home-page "https://tinyproxy.github.io/")
     (synopsis "Light-weight HTTP/HTTPS proxy daemon")
     (description "Tinyproxy is a light-weight HTTP/HTTPS proxy
 daemon.  Designed from the ground up to be fast and yet small, it is an ideal
@@ -604,16 +607,17 @@ of people.")
 (define-public libyaml
   (package
     (name "libyaml")
-    (version "0.1.5")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
              "http://pyyaml.org/download/libyaml/yaml-"
              version ".tar.gz"))
+       (patches (search-patches "libyaml-CVE-2014-9130.patch"))
        (sha256
         (base32
-         "1vrv5ly58bkmcyc049ad180f2m8iav6l9h3v8l2fqdmrny7yx1zs"))))
+         "0j9731s5zjb8mjx7wzf6vh7bsqi38ay564x6s9nri2nh9cdrg9kx"))))
     (build-system gnu-build-system)
     (home-page "http://pyyaml.org/wiki/LibYAML")
     (synopsis "YAML 1.1 parser and emitter written in C")
@@ -701,7 +705,7 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://serf.googlecode.com/svn/src_releases/serf-"
+       (uri (string-append "https://archive.apache.org/dist/serf/serf-"
                            version ".tar.bz2"))
        (sha256
         (base32 "14155g48gamcv5s0828bzij6vr14nqmbndwq8j8f9g6vcph0nl70"))
@@ -752,7 +756,7 @@ from streaming URLs.  It is a command-line wrapper for the libquvi library.")
                                       (string-append "PREFIX=" out))))))
          (replace 'check   (lambda _ (zero? (system* "scons" "check"))))
          (replace 'install (lambda _ (zero? (system* "scons" "install")))))))
-    (home-page "https://code.google.com/p/serf/")
+    (home-page "https://serf.apache.org/")
     (synopsis "High-performance asynchronous HTTP client library")
     (description
      "serf is a C-based HTTP client library built upon the Apache Portable

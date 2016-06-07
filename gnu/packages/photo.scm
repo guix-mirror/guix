@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,11 +37,13 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xfig)
   #:use-module (gnu packages xml))
@@ -218,7 +221,7 @@ overlapping images, as well as some command line tools.")
 (define-public enblend-enfuse
   (package
     (name "enblend-enfuse")
-    (version "4.1.3")
+    (version "4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/enblend/"
@@ -227,7 +230,7 @@ overlapping images, as well as some command line tools.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1b7r1nnwaind0344ckwggy0ghl0ipbk9jzylsxcjfl05rnasw00w"))))
+                "0j5x011ilalb47ssah50ag0a4phgh1b0wdgxdbbp1gcyjcjf60w7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -235,8 +238,10 @@ overlapping images, as well as some command line tools.")
        ("perl-timedate" ,perl-timedate)
        ;; for building the documentation
        ("gnuplot" ,gnuplot)
+       ("help2man" ,help2man)
        ("imagemagick" ,imagemagick)
        ("libxml2" ,libxml2)
+       ("texlive-minimal" ,texlive-minimal)
        ("tidy" ,tidy)
        ("transfig" ,transfig)))
     (inputs

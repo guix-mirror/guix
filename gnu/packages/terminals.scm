@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Mckinley Olsen <mck.olsen@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module (guix build utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
@@ -28,7 +30,10 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages wm))
+  #:use-module (gnu packages wm)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages gnome))
 
 (define-public tilda
   (package
@@ -67,3 +72,52 @@ is similar to the built-in consoles in some applications.  Tilda is highly
 configureable through a graphical wizard.")
     (home-page "https://github.com/lanoxx/tilda")
     (license license:gpl2+)))
+
+(define-public termite
+  (package
+    (name "termite")
+    (version "11")
+    (source
+      (origin
+        (method git-fetch)
+        (uri (git-reference
+              (url (string-append "https://github.com/thestinger/"
+                                  name ".git"))
+              (commit (string-append "v" version))
+              (recursive? #t)))
+        (file-name (string-append name "-" version "-checkout"))
+        (sha256
+          (base32
+            "1cw4yw7n9m2si8b7zcfyz9pyihncabxm5g39v1mxslfajxgwzmd8"))))
+    (build-system gnu-build-system)
+    (arguments
+      `(#:phases (alist-delete 'configure %standard-phases)
+        #:tests? #f
+        ;; This sets the destination when installing the necessary terminal
+        ;; capability data, which are not provided by 'ncurses'.  See
+        ;; <https://lists.gnu.org/archive/html/bug-ncurses/2009-10/msg00031.html>.
+        #:make-flags (list "PREFIX="
+                           (string-append "VERSION=v" (version))
+                           (string-append "DESTDIR="
+                                          (assoc-ref %outputs "out")))))
+    (inputs
+     `(("vte", vte-ng)
+       ("gtk+", gtk+)
+       ("ncurses", ncurses)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+
+    ;; FIXME: This should only be located in 'ncurses'.  Nonetheless it is
+    ;; provided for usability reasons.  See <https://bugs.gnu.org/22138>.
+    (native-search-paths
+      (list (search-path-specification
+              (variable "TERMINFO_DIRS")
+              (files '("share/terminfo")))))
+    (home-page "https://github.com/thestinger/termite/")
+    (synopsis "Keyboard-centric, VTE-based terminal")
+    (description "Termite is a minimal terminal emulator designed for use with
+tiling window managers.  It is a modal application, similar to Vim, with an
+insert mode and command mode where keybindings have different functions.")
+
+    ;; Files under util/ are under the Expat license; the rest is LGPLv2+.
+    (license license:lgpl2.0+)))

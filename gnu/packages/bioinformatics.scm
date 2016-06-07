@@ -1482,7 +1482,7 @@ identify enrichments with functional annotations of the genome.")
 (define-public diamond
   (package
     (name "diamond")
-    (version "0.8.1")
+    (version "0.8.5")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1491,7 +1491,7 @@ identify enrichments with functional annotations of the genome.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1dqancz32c2l7w1b2vkvh5zqa2jnf99j1c41djnx1l8pxn044zdc"))))
+                "18zx8k3axnsrg016kikl8xs1ifnjmj36dk1sv3fq1jgpg9j9584b"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no "check" target
@@ -2670,10 +2670,10 @@ the phenotype as it models the data.")
     (license license:asl2.0)))
 
 (define-public pbtranscript-tofu
-  (let ((commit "8f5467fe6"))
+  (let ((commit "8f5467fe6a4472bcfb4226c8720993c8507adfe4"))
     (package
       (name "pbtranscript-tofu")
-      (version (string-append "2.2.3." commit))
+      (version (string-append "2.2.3." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -3009,7 +3009,7 @@ viewer.")
                (delete 'configure))))))))
 
 (define-public mosaik
-  (let ((commit "5c25216d"))
+  (let ((commit "5c25216d3522d6a33e53875cd76a6d65001e4e67"))
     (package
       (name "mosaik")
       (version "2.2.30")
@@ -3259,10 +3259,10 @@ subsequent visualization, annotation and storage of results.")
 
 (define-public smithlab-cpp
   (let ((revision "1")
-        (commit "728a097"))
+        (commit "728a097bec88c6f4b8528b685932049e660eff2e"))
     (package
       (name "smithlab-cpp")
-      (version (string-append "0." revision "." commit))
+      (version (string-append "0." revision "." (string-take commit 7)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -3884,6 +3884,47 @@ Needleman-Wunsch).")
     (supported-systems '("x86_64-linux"))
     ;; Dual licensed; also includes public domain source.
     (license (list license:gpl3 license:bsd-2))))
+
+(define-public pardre
+  (package
+    (name "pardre")
+    (version "1.1.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/pardre/ParDRe-rel"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0zkyjzv4s8q2h5npalhirbk17r5b1h0n2a42mh7njzlf047h9bhy"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests included
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((bin (string-append (assoc-ref outputs "out") "/bin")))
+               (mkdir-p bin)
+               (install-file "ParDRe" bin)
+               #t))))))
+    (inputs
+     `(("openmpi" ,openmpi)
+       ("zlib" ,zlib)))
+    (synopsis "Parallel tool to remove duplicate DNA reads")
+    (description
+     "ParDRe is a parallel tool to remove duplicate genetic sequence reads.
+Duplicate reads can be seen as identical or nearly identical sequences with
+some mismatches.  This tool lets users avoid the analysis of unnecessary
+reads, reducing the time of subsequent procedures with the
+dataset (e.g. assemblies, mappings, etc.).  The tool is implemented with MPI
+in order to exploit the parallel capabilities of multicore clusters.  It is
+faster than multithreaded counterparts (end of 2015) for the same number of
+cores and, thanks to the message-passing technology, it can be executed on
+clusters.")
+    (home-page "https://sourceforge.net/projects/pardre/")
+    (license license:gpl3+)))
 
 (define-public bio-locus
   (package
@@ -4735,6 +4776,34 @@ genomic feature data as long as it has minimal information on the locations of
 genomic intervals.  In addition, it can use BAM or BigWig files as input.")
     (license license:artistic2.0)))
 
+(define-public r-genomationdata
+  (package
+    (name "r-genomationdata")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              ;; We cannot use bioconductor-uri here because this tarball is
+              ;; located under "data/annotation/" instead of "bioc/".
+              (uri (string-append "https://bioconductor.org/packages/"
+                                  "release/data/experiment/src/contrib/"
+                                  "genomationData_" version ".tar.gz"))
+              (sha256
+               (base32
+                "1xzq2j722d8lcn5bc3aq3yb34xwis2d0bpsf6jsq4xw1bg0bsy79"))))
+    (build-system r-build-system)
+    ;; As this package provides little more than large data files, it doesn't
+    ;; make sense to build substitutes.
+    (arguments `(#:substitutable? #f))
+    (native-inputs
+     `(("r-knitr" ,r-knitr)))
+    (home-page "http://bioinformatics.mdc-berlin.de/genomation/")
+    (synopsis "Experimental data for use with the genomation package")
+    (description
+     "This package contains experimental genetic data for use with the
+genomation package.  Included are Chip Seq, Methylation and Cage data,
+downloaded from Encode.")
+    (license license:gpl3+)))
+
 (define-public r-org-hs-eg-db
   (package
     (name "r-org-hs-eg-db")
@@ -5100,7 +5169,7 @@ libraries for systems that do not have these available via other means.")
        ("samtools" ,samtools-0.1)
        ("gsl" ,gsl)
        ("smithlab-cpp"
-        ,(let ((commit "3723e2d"))
+        ,(let ((commit "3723e2db438c51501d0423429ff396c3035ba46a"))
            (origin
              (method git-fetch)
              (uri (git-reference

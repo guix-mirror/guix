@@ -34,6 +34,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
@@ -110,22 +111,38 @@ utility.  Instead of being written in Java, FastJar is written in C.")
 (define-public libtar
   (package
    (name "libtar")
-   (version "1.2.11")
+   (version "1.2.20")
    (source (origin
             (method url-fetch)
-            (uri (string-append
-                  "ftp://ftp.feep.net/pub/software/libtar/libtar-"
-                  version ".tar.gz"))
+            (uri (list
+                   (string-append
+                     "ftp://ftp.feep.net/pub/software/libtar/libtar-"
+                     version ".tar.gz")
+                   (string-append
+                     "mirror://debian/pool/main/libt/libtar/libtar_"
+                     version ".orig.tar.gz")))
             (sha256
              (base32
-              "1f3vx1wa69a6c5y0z0aakd81gygirdcm0vimazg433q8nyvfybja"))))
+              "02cihzl77ia0dcz7z2cga2412vyhhs5pa2355q4wpwbyga2lrwjh"))
+            (patches (search-patches "libtar-CVE-2013-4420.patch"))))
    (build-system gnu-build-system)
-   (arguments `(#:tests? #f)) ;no "check" target
+   (arguments
+    `(#:tests? #f ;no "check" target
+      #:phases
+      (modify-phases %standard-phases
+        (add-after 'unpack 'autoconf
+          (lambda _ (zero? (system* "sh" "autoreconf" "-vfi")))))))
+   (native-inputs
+    `(("autoconf" ,autoconf)
+      ("automake" ,automake)
+      ("libtool" ,libtool)))
+   (inputs
+    `(("zlib" ,zlib)))
    (synopsis "C library for manipulating POSIX tar files")
    (description
     "libtar is a C library for manipulating POSIX tar files.  It handles
 adding and extracting files to/from a tar archive.")
-   (home-page "http://www.feep.net/libtar/")
+   (home-page "https://repo.or.cz/libtar.git")
    (license license:bsd-3)))
 
 (define-public gzip
@@ -426,16 +443,17 @@ with the sfArk algorithm.")
     (license license:gpl3+)))
 
 (define-public sfarkxtc
+ (let ((commit "b5e0a2ba3921f019d74d4b92bd31c36dd19d2cf1"))
   (package
     (name "sfarkxtc")
-    (version "b5e0a2ba39")
+    (version (string-take commit 10))
     (source (origin
               ;; There are no release tarballs, so we just fetch the latest
               ;; commit at this time.
               (method git-fetch)
               (uri (git-reference
                     (url "https://github.com/raboof/sfarkxtc.git")
-                    (commit version)))
+                    (commit commit)))
               (sha256
                (base32
                 "0f5x6i46qfl6ry21s7g2p4sd4b2r1g4fb03yqi2vv4kq3saryhvj"))))
@@ -456,7 +474,7 @@ with the sfArk algorithm.")
     (synopsis "Basic sfArk decompressor")
     (description "SfArk extractor converts SoundFonts in the compressed legacy
 sfArk file format to the uncompressed sf2 format.")
-    (license license:gpl3+)))
+    (license license:gpl3+))))
 
 (define-public libmspack
   (package

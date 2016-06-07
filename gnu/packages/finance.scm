@@ -158,7 +158,7 @@ line client and a client based on Qt.")
        ("tzdata" ,tzdata)
        ("utfcpp" ,utfcpp)))
     (native-inputs
-     `(("emacs" ,emacs-no-x)
+     `(("emacs" ,emacs-minimal)
        ("groff" ,groff)
        ("texinfo" ,texinfo)))
     (home-page "http://ledger-cli.org/")
