@@ -9037,3 +9037,35 @@ It uses LR parsing and does extensive error checking.")
     (inherit (package-with-python2
               (strip-python2-variant python-ply)))
     (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+
+(define-public python-tabulate
+  (package
+    (name "python-tabulate")
+    (version "0.7.5")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "tabulate" version))
+             (sha256
+              (base32
+               "03l1r7ddd1a0j2snv1yd0hlnghjad3fg1an1jr8936ksv75slwch"))
+             ;; Fix tests
+             (modules '((guix build utils)))
+             (snippet '(substitute* '("test/test_cli.py"
+                                      "test/test_input.py"
+                                      "test/test_output.py"
+                                      "test/test_regression.py")
+                         (("from common") "from nose.tools")))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ;; For testing
+       ("python-nose" ,python-nose)))
+    (home-page "https://bitbucket.org/astanin/python-tabulate")
+    (synopsis "Pretty-print tabular data")
+    (description
+     "Tabulate is a library and command-line utility to pretty-print tabular
+data in Python.")
+    (license license:expat)))
+
+(define-public python2-tabulate
+  (package-with-python2 python-tabulate))
