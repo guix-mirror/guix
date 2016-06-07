@@ -9069,3 +9069,30 @@ data in Python.")
 
 (define-public python2-tabulate
   (package-with-python2 python-tabulate))
+
+(define-public python-kazoo
+  (package
+    (name "python-kazoo")
+    (version "2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "kazoo" version))
+       (sha256
+        (base32
+         "10pb864if9qi2pq9lfb9m8f7z7ss6rml80gf1d9h64lap5crjnjj"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; XXX: needs zookeeper
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)))
+    (home-page "https://kazoo.readthedocs.org")
+    (synopsis "High-level Zookeeper client library")
+    (description
+     "Kazoo is a Python client library for the Apache Zookeeper distributed
+application service.  It is designed to be easy to use and to avoid common
+programming errors.")
+    (license asl2.0)))
+
+(define-public python2-kazoo
+  (package-with-python2 python-kazoo))
