@@ -492,7 +492,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/gawk-shell.patch				\
   gnu/packages/patches/gcc-arm-link-spec-fix.patch		\
   gnu/packages/patches/gcc-cross-environment-variables.patch	\
-  gnu/packages/patches/gcc-libiberty-printf-decl.patch		\
   gnu/packages/patches/gcc-libvtv-runpath.patch			\
   gnu/packages/patches/gcc-5.0-libvtv-runpath.patch		\
   gnu/packages/patches/gd-CVE-2016-3074.patch			\
