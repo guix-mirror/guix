@@ -55,7 +55,11 @@
 
       ;; GNU Mach supports only IA32 currently, so cheat so that we can at
       ;; least install its headers.
-      #:configure-flags '("--build=i686-pc-gnu")
+      ,@(if (%current-target-system)
+            '()
+            ;; See <http://lists.gnu.org/archive/html/bug-hurd/2015-06/msg00042.html>
+            ;; <http://lists.gnu.org/archive/html/guix-devel/2015-06/msg00716.html>
+            '(#:configure-flags '("--build=i586-pc-gnu")))
 
       #:tests? #f))
     (home-page "https://www.gnu.org/software/hurd/microkernel/mach/gnumach.html")
