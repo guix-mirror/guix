@@ -5250,3 +5250,35 @@ like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
 simple and consistent.")
     (home-page "http://snwh.org/moka")
     (license license:gpl3+)))
+
+(define-public arc-icon-theme
+  (package
+    (name "arc-icon-theme")
+    (version "20160605")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/horst3180/arc-icon-theme"
+                                  "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1npf0ki0j0llrw9wbffhxxa1cdms0q7b8xlg9m943dd9g7pgdm2p"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "autoreconf" "-vif")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    ;; When Arc is missing an icon, it looks in the Moka icon theme for it.
+    (propagated-inputs
+     `(("moka-icon-theme" ,moka-icon-theme)))
+    (synopsis "Arc icon theme")
+    (description "The Arc icon theme provides a set of icons matching the
+style of the Arc GTK theme.  Icons missing from the Arc theme are provided by
+the Moka icon theme.")
+    (home-page "https://github.com/horst3180/arc-icon-theme")
+    (license license:gpl3+)))
