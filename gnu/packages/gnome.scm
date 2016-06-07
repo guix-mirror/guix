@@ -5182,3 +5182,36 @@ GNOME 3.  This includes things like the fonts used in user interface elements,
 alternative user interface themes, changes in window management behavior,
 GNOME Shell appearance and extension, etc.")
     (license license:gpl3+)))
+
+(define-public arc-theme
+  (package
+    (name "arc-theme")
+    (version "20160605")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/horst3180/arc-theme"
+                                  "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sq2031xda8jn2ws0x2bvhq77jfh7xy0c3kg86v6vm2kbrrss7y6"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "autoreconf" "-vif")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)))
+    (synopsis "A flat GTK+ theme with transparent elements")
+    (description "Arc is a flat theme with transparent elements for GTK 3, GTK
+2, and GNOME Shell which supports GTK 3 and GTK 2 based desktop environments
+like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
+    (home-page "https://github.com/horst3180/arc-theme")
+    ;; No "or later" language found.
+    (license license:gpl3)))
