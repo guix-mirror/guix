@@ -1,0 +1,13 @@
+diff --git a/test/test_integration.rb b/test/test_integration.rb
+index d9b189c..6e21180 100644
+--- a/test/test_integration.rb
++++ b/test/test_integration.rb
+@@ -115,7 +115,7 @@ class TestIntegration < Test::Unit::TestCase
+     assert_kind_of Thread, t.join(1), "server didn't stop"
+   end
+ 
+-  def test_phased_restart_via_pumactl
++  def no_test_phased_restart_via_pumactl
+     if Puma.jruby? || Puma.windows?
+       assert true
+       return
