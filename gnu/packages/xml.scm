@@ -130,17 +130,15 @@ project (but it is usable outside of the Gnome platform).")
 (define-public libxslt
   (package
     (name "libxslt")
-    (version "1.1.28")
+    (version "1.1.29")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxslt/libxslt-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "13029baw9kkyjgr7q3jccw2mz38amq7mmpr5p3bh775qawd1bisz"))
-             (patches (search-patches "libxslt-generated-ids.patch"
-                                      "libxslt-remove-date-timestamps.patch"
-                                      "libxslt-CVE-2015-7995.patch"))))
+               "1klh81xbm9ppzgqk339097i39b7fnpmlj8lzn8bpczl3aww6x5xm"))
+             (patches (search-patches "libxslt-generated-ids.patch"))))
     (build-system gnu-build-system)
     (home-page "http://xmlsoft.org/XSLT/index.html")
     (synopsis "C library for applying XSLT stylesheets to XML documents")
