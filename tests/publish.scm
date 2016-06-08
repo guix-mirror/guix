@@ -30,12 +30,14 @@
   #:use-module (guix base64)
   #:use-module ((guix serialization) #:select (restore-file))
   #:use-module (guix pk-crypto)
+  #:use-module (web uri)
   #:use-module (web client)
   #:use-module (web response)
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim))
 
@@ -101,6 +103,37 @@ References: ~a~%"
     (publish-uri
      (string-append "/" (store-path-hash-part %item) ".narinfo")))))
 
+(test-equal "/*.narinfo with properly encoded '+' sign"
+  ;; See <http://bugs.gnu.org/21888>.
+  (let* ((item (add-text-to-store %store "fake-gtk+" "Congrats!"))
+         (info (query-path-info %store item))
+         (unsigned-info
+          (format #f
+                  "StorePath: ~a
+URL: nar/~a
+Compression: none
+NarHash: sha256:~a
+NarSize: ~d
+References: ~%"
+                  item
+                  (uri-encode (basename item))
+                  (bytevector->nix-base32-string
+                   (path-info-hash info))
+                  (path-info-nar-size info)))
+         (signature (base64-encode
+                     (string->utf8
+                      (canonical-sexp->string
+                       ((@@ (guix scripts publish) signed-string)
+                        unsigned-info))))))
+    (format #f "~aSignature: 1;~a;~a~%"
+            unsigned-info (gethostname) signature))
+
+  (let ((item (add-text-to-store %store "fake-gtk+" "Congrats!")))
+    (utf8->string
+     (http-get-body
+      (publish-uri
+       (string-append "/" (store-path-hash-part item) ".narinfo"))))))
+
 (test-equal "/nar/*"
   "bar"
   (call-with-temporary-output-file
@@ -111,6 +144,18 @@ References: ~a~%"
                    (string-append "/nar/" (basename %item)))))))
        (call-with-input-string nar (cut restore-file <> temp)))
      (call-with-input-file temp read-string))))
+
+(test-equal "/nar/ with properly encoded '+' sign"
+  "Congrats!"
+  (let ((item (add-text-to-store %store "fake-gtk+" "Congrats!")))
+    (call-with-temporary-output-file
+     (lambda (temp port)
+       (let ((nar (utf8->string
+                   (http-get-body
+                    (publish-uri
+                     (string-append "/nar/" (uri-encode (basename item))))))))
+         (call-with-input-string nar (cut restore-file <> temp)))
+       (call-with-input-file temp read-string)))))
 
 (test-equal "/nar/invalid"
   404

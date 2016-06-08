@@ -146,7 +146,8 @@ Publish ~a over HTTP.\n") %store-directory)
   "Generate a narinfo key/value string for STORE-PATH; an exception is raised
 if STORE-PATH is invalid.  The narinfo is signed with KEY."
   (let* ((path-info  (query-path-info store store-path))
-         (url        (string-append "nar/" (basename store-path)))
+         (url        (encode-and-join-uri-path (list "nar"
+                                                     (basename store-path))))
          (hash       (bytevector->nix-base32-string
                       (path-info-hash path-info)))
          (size       (path-info-nar-size path-info))
