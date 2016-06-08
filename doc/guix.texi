@@ -6048,7 +6048,7 @@ passphrase for the network you are connecting to:
 
 @example
 network=@{
-  ssid=@var{my-ssid}
+  ssid="@var{my-ssid}"
   key_mgmt=WPA-PSK
   psk="the network's secret passphrase"
 @}
