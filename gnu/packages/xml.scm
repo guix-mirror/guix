@@ -116,7 +116,8 @@ project (but it is usable outside of the Gnome platform).")
                              version ".tar.gz"))
          (sha256
           (base32
-           "0g336cr0bw6dax1q48bblphmchgihx9p1pjmxdnrd6sh3qci3fgz")))))))
+           "0g336cr0bw6dax1q48bblphmchgihx9p1pjmxdnrd6sh3qci3fgz"))
+         (patches (search-patches "libxml2-CVE-2016-1762.patch")))))))
 
 (define-public python-libxml2
   (package (inherit libxml2)
