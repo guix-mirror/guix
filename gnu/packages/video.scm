@@ -559,15 +559,15 @@ audio/video codec library.")
 (define-public vlc
   (package
     (name "vlc")
-    (version "2.2.1")
+    (version "2.2.4")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://download.videolan.org/pub/videolan/vlc/"
+                   "https://download.videolan.org/pub/videolan/vlc/"
                    version "/vlc-" version ".tar.xz"))
              (sha256
               (base32
-               "1jqzrzrpw6932lbkf863xk8cfmn4z2ngbxz7w8ggmh4f6xz9sgal"))
+               "1gjkrwlg8ab3skzl67cxb9qzg4187ifckd1z9kpy11q058fyjchn"))
              (modules '((guix build utils)))
              (snippet
               ;; There are two occurrences where __DATE__ and __TIME__ are
@@ -609,7 +609,8 @@ audio/video codec library.")
        ("perl" ,perl)
        ("pulseaudio" ,pulseaudio)
        ("python" ,python-wrapper)
-       ("qt" ,qt)
+       ("qtbase" ,qtbase)
+       ;("qtx11extras" ,qtx11extras)
        ("sdl" ,sdl)
        ("sdl-image" ,sdl-image)
        ("speex" ,speex)
@@ -623,6 +624,13 @@ audio/video codec library.")
 
        #:phases
        (modify-phases %standard-phases
+         (add-before 'configure 'remove-visual-tests
+           ;; Some of the tests require using the display to test out VLC,
+           ;; which fails in our sandboxed build system
+           (lambda _
+             (substitute* "test/run_vlc.sh"
+                          (("./vlc --ignore-config") "echo"))
+             #t))
          (add-after 'install 'regenerate-plugin-cache
            (lambda* (#:key outputs #:allow-other-keys)
              ;; The 'install-exec-hook' rule in the top-level Makefile.am
