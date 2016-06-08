@@ -35,6 +35,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnuzilla)
@@ -624,6 +625,37 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("mesa" ,mesa)
        ("pulseaudio" ,pulseaudio)
        ("qtbase" ,qtbase)))))
+
+(define-public qtwayland
+  (package (inherit qtsvg)
+    (name "qtwayland")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1jgghjfrg0wwyfzfwgwhagwxz9k936ylv3w2l9bwlpql8rgm8d11"))))
+    (native-inputs
+     `(("glib" ,glib)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("qtdeclarative" ,qtdeclarative)))
+    (inputs
+     `(("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("libx11" ,libx11)
+       ("libxcomposite" ,libxcomposite)
+       ("libxext" ,libxext)
+       ("libxkbcommon" ,libxkbcommon)
+       ("libxrender" ,libxrender)
+       ("mesa" ,mesa)
+       ("mtdev" ,mtdev)
+       ("qtbase" ,qtbase)
+       ("wayland" ,wayland)))))
 
 (define-public qjson
   (package
