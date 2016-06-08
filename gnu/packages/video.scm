@@ -839,7 +839,8 @@ projects while introducing many more.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "15v7qw0ydyxn08ksb6lxn1l51pxgpwgshdwd3275yrr5hs86fv9h"))))
+                "15v7qw0ydyxn08ksb6lxn1l51pxgpwgshdwd3275yrr5hs86fv9h"))
+              (patches (search-patches "libvpx-CVE-2016-2818.patch"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
