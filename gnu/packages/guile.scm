@@ -939,6 +939,16 @@ capabilities.")
        ("guile-lib" ,guile-lib)))
     (inputs
      `(("libffi" ,libffi)))
+    (arguments
+      `(#:phases
+        (modify-phases %standard-phases
+          (add-before 'configure 'pre-configure
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out")))
+                (substitute* (find-files "." "^Makefile.in$")
+                  (("guilemoduledir =.*guile/site" all)
+                   (string-append all "/2.0")))
+                #t))))))
     (synopsis "Generate C bindings for Guile")
     (description "G-Wrap is a tool and Guile library for generating function
 wrappers for inter-language calls.  It currently only supports generating Guile
