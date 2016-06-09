@@ -418,7 +418,7 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
 (define-public xboard
   (package
     (name "xboard")
-    (version "4.8.0")
+    (version "4.9.0")
     (source
      (origin
        (method url-fetch)
@@ -426,12 +426,11 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
                            ".tar.gz"))
        (sha256
         (base32
-         "05rdj0nyirc4g1qi5hhrjy45y52ihp1j3ldq2c5bwrz0gzy4i3y8"))))
+         "1av6r3s5vyclwf3c9i1pkr2442ryrf4ixhhf2i44a4j1xyhlp5jb"))))
     (build-system gnu-build-system)
-    (inputs `(("cairo" ,cairo)
-              ("librsvg" ,librsvg)
-              ("libxt" ,libxt)
-              ("libxaw" ,libxaw)))
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("librsvg" ,librsvg)))
     (native-inputs `(("texinfo" ,texinfo)
                      ("pkg-config" ,pkg-config)))
     (home-page "http://www.gnu.org/software/xboard")
