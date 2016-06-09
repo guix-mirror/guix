@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -151,7 +152,7 @@ numbers of user-defined menu items efficiently.")
 (define-public st
   (package
     (name "st")
-    (version "0.5")
+    (version "0.6")
     (source
      (origin
        (method url-fetch)
@@ -159,7 +160,7 @@ numbers of user-defined menu items efficiently.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0knxpzaa86pprng6hak8hx8bw22yw22rpz1ffxjpcvqlz3xdv05f"))))
+         "0avsfc1qp8zvshsfjwwrkvk411jlqy58z225bsdhjkl1qc40qcc5"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
