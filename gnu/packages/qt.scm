@@ -657,6 +657,22 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("qtbase" ,qtbase)
        ("wayland" ,wayland)))))
 
+(define-public qtserialport
+  (package (inherit qtsvg)
+    (name "qtserialport")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1hp63cgqhps6y1k041lzhcb2b0rcpcmszabnn293q5ilbvla4x0b"))))
+    (native-inputs `(("perl" ,perl)))
+    (inputs `(("qtbase" ,qtbase)))))
+
 (define-public qjson
   (package
     (name "qjson")
