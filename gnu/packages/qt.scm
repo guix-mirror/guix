@@ -301,7 +301,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtbase
   (package
     (name "qtbase")
-    (version "5.6.0")
+    (version "5.6.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -310,7 +310,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
                (base32
-                 "0ynnvcs5idivzldsq5ciqg9myg82b3l3906l4vjv54lyamf8mykf"))
+                 "0r3jrqymnnxrig4f11xvs33c26f0kzfakbp3kcbdpv795gpc276h"))
              (modules '((guix build utils)))
              (snippet
               '(begin
