@@ -69,7 +69,8 @@ things the parser might find in the XML document (like start tags).")
     (inherit expat)
     (source (origin
               (inherit (package-source expat))
-              (patches (search-patches "expat-CVE-2015-1283.patch"
+              (patches (search-patches "expat-CVE-2012-6702-and-CVE-2016-5300.patch"
+                                       "expat-CVE-2015-1283.patch"
                                        "expat-CVE-2015-1283-refix.patch"
                                        "expat-CVE-2016-0718.patch"))))))
 
