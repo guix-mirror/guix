@@ -5545,6 +5545,16 @@ accept connections from any interface.
 Change privileges to @var{user} as soon as possible---i.e., once the
 server socket is open and the signing key has been read.
 
+@item --ttl=@var{ttl}
+Produce @code{Cache-Control} HTTP headers that advertise a time-to-live
+(TTL) of @var{ttl}.  @var{ttl} must denote a duration: @code{5d} means 5
+days, @code{1m} means 1 month, and so on.
+
+This allows the user's Guix to keep substitute information in cache for
+@var{ttl}.  However, note that @code{guix publish} does not itself
+guarantee that the store items it provides will indeed remain available
+for as long as @var{ttl}.
+
 @item --repl[=@var{port}]
 @itemx -r [@var{port}]
 Spawn a Guile REPL server (@pxref{REPL Servers,,, guile, GNU Guile
