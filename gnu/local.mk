@@ -542,6 +542,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_PATH.patch	\
   %D%/packages/patches/gtkglext-disable-disable-deprecated.patch \
   %D%/packages/patches/hdf5-config-date.patch			\
+  %D%/packages/patches/higan-remove-march-native-flag.patch	\
   %D%/packages/patches/hop-bigloo-4.0b.patch			\
   %D%/packages/patches/hop-linker-flags.patch			\
   %D%/packages/patches/hydra-automake-1.15.patch		\

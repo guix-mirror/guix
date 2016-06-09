@@ -2247,15 +2247,17 @@ Red Eclipse provides fast paced and accessible gameplay.")
 (define-public higan
   (package
     (name "higan")
-    (version "098")
+    (version "098b")
     (source
      (origin
        (method url-fetch)
        (uri (string-append
-             "https://github.com/TaylanUB/higan/archive/v" version ".tar.gz"))
+             "https://gitlab.com/higan/higan/repository/archive.tar.gz?ref=v"
+             version))
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
-        (base32 "12snxrk8wa94x3l69qcimgm0xc22zjgf7vzhckp2lzyfbf27950v"))))
+        (base32 "05j0xzr01gsyia4gj6jmdzklll4iky1kwxgxw0mmfcgm10m0h3bf"))
+       (patches (search-patches "higan-remove-march-native-flag.patch"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -2321,6 +2323,7 @@ Red Eclipse provides fast paced and accessible gameplay.")
                    `("PATH" ":" prefix (,bin))))))))
        #:make-flags
        (list "compiler=g++"
+             "profile=balanced"      ;default is accuracy; which is quite slow
              (string-append "prefix=" (assoc-ref %outputs "out")))
        ;; There is no test suite.
        #:tests? #f))
