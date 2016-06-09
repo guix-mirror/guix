@@ -673,6 +673,25 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (native-inputs `(("perl" ,perl)))
     (inputs `(("qtbase" ,qtbase)))))
 
+(define-public qtwebchannel
+  (package (inherit qtsvg)
+    (name "qtwebchannel")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "01q80917a1048hdhaii4v50dqs84h16lc9w3v99r9xvspk8vab7q"))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtwebsockets" ,qtwebsockets)))
+    (inputs `(("qtbase" ,qtbase)))))
+
 (define-public qjson
   (package
     (name "qjson")
