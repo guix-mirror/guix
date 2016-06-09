@@ -968,7 +968,15 @@ following patterns: \"1d\", \"1w\", \"1m\"."
     (make-time time-duration 0
                (* 3600 hours (string->number (match:substring match 1)))))
 
-  (cond ((string-match "^([0-9]+)d$" str)
+  (cond ((string-match "^([0-9]+)s$" str)
+         =>
+         (lambda (match)
+           (make-time time-duration 0
+                      (string->number (match:substring match 1)))))
+        ((string-match "^([0-9]+)h$" str)
+         (lambda (match)
+           (hours->duration 1 match)))
+        ((string-match "^([0-9]+)d$" str)
          =>
          (lambda (match)
            (hours->duration 24 match)))
