@@ -10,6 +10,7 @@
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,6 +59,7 @@
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages pciutils)
@@ -1643,3 +1645,39 @@ results (ndiff), and a packet generation and response analysis tool (nping).")
     ;; This package uses nmap's bundled versions of libdnet and liblinear, which
     ;; both use a 3-clause BSD license.
     (license (list license:nmap license:bsd-3))))
+
+(define-public dstat
+  (package
+    (name "dstat")
+    (version "0.7.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/dagwieers/dstat/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append "dstat-" version ".tar.gz"))
+              (sha256
+               (base32
+                "16286z3y2lc9nsq8njzjkv6k2vyxrj9xiixj1k3gnsbvhlhkirj6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ;; no make check
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list (string-append "DESTDIR=" out)
+                            "prefix=/"))
+       ;; no configure script
+       #:phases (alist-delete 'configure %standard-phases)))
+    (inputs `(("python-2" ,python-2)))
+    (synopsis "Versatile resource statistics tool")
+    (description "Dstat is a versatile replacement for @command{vmstat},
+@command{iostat}, @command{netstat}, and @command{ifstat}.  Dstat overcomes
+some of their limitations and adds some extra features, more counters and
+flexibility.  Dstat is handy for monitoring systems during performance tuning
+tests, benchmarks or troubleshooting.
+
+Dstat allows you to view all of your system resources in real-time, you can,
+e.g., compare disk utilization in combination with interrupts from your IDE
+controller, or compare the network bandwidth numbers directly with the disk
+throughput (in the same interval).")
+    (home-page "http://dag.wiee.rs/home-made/dstat/")
+    (license license:gpl2)))
