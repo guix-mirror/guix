@@ -1680,4 +1680,4 @@ e.g., compare disk utilization in combination with interrupts from your IDE
 controller, or compare the network bandwidth numbers directly with the disk
 throughput (in the same interval).")
     (home-page "http://dag.wiee.rs/home-made/dstat/")
-    (license license:gpl2)))
+    (license license:gpl2+)))
