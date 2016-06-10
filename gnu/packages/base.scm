@@ -160,6 +160,13 @@ implementation offers several extensions over the standard utility.")
                          (("/bin/sh")
                           (string-append bash "/bin/sh")))
                        #t))))))
+
+   ;; When cross-compiling, the 'set-shell-file-name' phase needs to be able
+   ;; to refer to the target Bash.
+   (inputs (if (%current-target-system)
+               `(("bash" ,bash))
+               '()))
+
    (synopsis "Managing tar archives")
    (description
     "Tar provides the ability to create tar archives, as well as the
