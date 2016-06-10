@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;; Copyright © 2014 Sou Bunnbu <iyzsong@gmail.com>
@@ -1168,8 +1168,7 @@ deliver it in various ways.")
     ;; filesystem are performed during 'make install'.  However, these
     ;; are performed before the actual build process.
     (build-system gnu-build-system)
-    (inputs `(("glibc" ,glibc)
-              ("exim" ,exim)))
+    (inputs `(("exim" ,exim)))
     (home-page "http://www.procmail.org/")
     (synopsis "Versatile mail delivery agent (MDA)")
     (description "Procmail is a mail delivery agent (MDA) featuring support
