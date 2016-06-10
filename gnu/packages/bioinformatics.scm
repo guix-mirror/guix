@@ -136,6 +136,99 @@ tRNA consensus sequences and RNA structure.  It also outputs the secondary
 structure of the predicted RNA.")
     (license license:gpl2)))
 
+(define-public bamm
+  (package
+    (name "bamm")
+    (version "1.7.2a")
+    (source (origin
+              (method url-fetch)
+              ;; BamM is not available on pypi.
+              (uri (string-append
+                    "https://github.com/Ecogenomics/BamM/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0nb20yml39f8fh0cahpjywsl91irh9yskig549c17xkrkl74czsq"))
+              (modules '((guix build utils)))
+              (snippet
+               `(begin
+                  ;; Delete bundled htslib.
+                  (delete-file-recursively "c/htslib-1.3.1")
+                  #t))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; BamM is Python 2 only.
+       ;; Do not use bundled libhts.  Do use the bundled libcfu because it has
+       ;; been modified from its original form.
+       #:configure-flags
+       (let ((htslib (assoc-ref %build-inputs "htslib")))
+         (list "--with-libhts-lib" (string-append htslib "/lib")
+               "--with-libhts-inc" (string-append htslib "/include/htslib")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+           (lambda _
+             (with-directory-excursion "c"
+               (let ((sh (which "sh")))
+                 ;; Use autogen so that 'configure' works.
+                 (substitute* "autogen.sh" (("/bin/sh") sh))
+                 (setenv "CONFIG_SHELL" sh)
+                 (substitute* "configure" (("/bin/sh") sh))
+                 (zero? (system* "./autogen.sh"))))))
+         (delete 'build)
+         ;; Run tests after installation so compilation only happens once.
+         (delete 'check)
+         (add-after 'install 'wrap-executable
+           (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out  (assoc-ref outputs "out"))
+                   (path (getenv "PATH")))
+              (wrap-program (string-append out "/bin/bamm")
+                `("PATH" ":" prefix (,path))))
+            #t))
+         (add-after 'wrap-executable 'post-install-check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (setenv "PATH"
+                     (string-append (assoc-ref outputs "out")
+                                    "/bin:"
+                                    (getenv "PATH")))
+             (setenv "PYTHONPATH"
+                     (string-append
+                      (assoc-ref outputs "out")
+                      "/lib/python"
+                      (string-take (string-take-right
+                                    (assoc-ref inputs "python") 5) 3)
+                      "/site-packages:"
+                      (getenv "PYTHONPATH")))
+             ;; There are 2 errors printed, but they are safe to ignore:
+             ;; 1) [E::hts_open_format] fail to open file ...
+             ;; 2) samtools view: failed to open ...
+             (zero? (system* "nosetests")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("zlib" ,zlib)
+       ("python-nose" ,python2-nose)
+       ("python-pysam" ,python2-pysam)
+       ("python-setuptools" ,python2-setuptools)))
+    (inputs
+     `(("htslib" ,htslib)
+       ("samtools" ,samtools)
+       ("bwa" ,bwa)
+       ("grep" ,grep)
+       ("sed" ,sed)
+       ("coreutils" ,coreutils)))
+    (propagated-inputs
+     `(("python-numpy" ,python2-numpy)))
+    (home-page "http://ecogenomics.github.io/BamM/")
+    (synopsis "Metagenomics-focused BAM file manipulator")
+    (description
+     "BamM is a C library, wrapped in python, to efficiently generate and
+parse BAM files, specifically for the analysis of metagenomic data.  For
+instance, it implements several methods to assess contig-wise read coverage.")
+    (license license:lgpl3+)))
+
 (define-public bamtools
   (package
     (name "bamtools")
