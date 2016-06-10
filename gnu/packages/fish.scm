@@ -29,14 +29,14 @@
 (define-public fish
   (package
     (name "fish")
-    (version "2.2.0")
+    (version "2.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://fishshell.com/files/"
                                   version "/fish-" version ".tar.gz"))
               (sha256
                (base32
-                "0ympqz7llmf0hafxwglykplw6j5cz82yhlrw50lw4bnf2kykjqx7"))
+                "1ralmp7lavdl0plc09ppm232aqsn0crxx6m3hgaa06ibam3sqawi"))
               (modules '((guix build utils)))
               ;; Don't try to install /etc/fish/config.fish.
               (snippet
