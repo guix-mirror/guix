@@ -469,7 +469,8 @@ MANIFEST that named NAME, or #f if not found."
     (with-monad %store-monad
       (match (manifest-entry-item entry)
         ((? package? package)
-         (match (package-transitive-inputs package)
+         (match (cons (list (package-name package) package)
+                      (package-transitive-inputs package))
            (((labels inputs . _) ...)
             (return (find-among-inputs inputs)))))
         ((? string? item)
