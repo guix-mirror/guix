@@ -733,18 +733,18 @@ entries.  It's used to query the MIME type of a given file."
                        (guix build union))
           (let* ((datadir (string-append #$output "/share"))
                  (destdir (string-append datadir "/mime"))
-                 (mimedirs (filter file-exists?
-                                   (map (cut string-append <>
-                                             "/share/mime")
-                                        '#$(manifest-inputs manifest))))
+                 (pkgdirs (filter file-exists?
+                                  (map (cut string-append <>
+                                            "/share/mime/packages")
+                                       '#$(manifest-inputs manifest))))
                  (update-mime-database (string-append
                                         #+shared-mime-info
                                         "/bin/update-mime-database")))
-            (mkdir-p datadir)
-         (union-build destdir mimedirs
-                      #:log-port (%make-void-port "w"))
-         (setenv "XDG_DATA_HOME" datadir)
-         (zero? (system* update-mime-database destdir)))))
+            (mkdir-p destdir)
+            (union-build (string-append destdir "/packages") pkgdirs
+                         #:log-port (%make-void-port "w"))
+            (setenv "XDG_DATA_HOME" datadir)
+            (zero? (system* update-mime-database destdir)))))
 
     ;; Don't run the hook when 'shared-mime-info' is referenced.
     (if shared-mime-info
