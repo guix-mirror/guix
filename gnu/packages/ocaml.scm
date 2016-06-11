@@ -590,8 +590,14 @@ libpanel, librsvg and quartz.")
                  (mkdir-p bin)
                  (setenv "HOME" out) ; forces correct INSTALLDIR in Makefile
                  #t)))
+           (add-after 'install 'install-fsmonitor
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 ;; 'unison-fsmonitor' is used in "unison -repeat watch" mode.
+                 (install-file "src/unison-fsmonitor" bin))))
            (add-after 'install 'install-doc
-             (lambda* (#:key inputs outputs #:allow-other-keys)
+             (lambda* (#:key outputs #:allow-other-keys)
                (let ((doc (string-append (assoc-ref outputs "doc")
                                          "/share/doc/unison")))
                  (mkdir-p doc)
