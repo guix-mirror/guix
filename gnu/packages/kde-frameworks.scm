@@ -1406,3 +1406,30 @@ were traditional plugins.")
 terminal devices as well as a KProcess derived class for running child processes
 and communicating with them using a pty.")
     (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public kunitconversion
+  (package
+    (name "kunitconversion")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "03dfjn4lm6sl2zcdrvw0b9irzvkyc2w2j5xixag5j8nw373742h8"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("ki18n" ,ki18n)
+       ("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Converting physical units")
+    (description "KUnitConversion provides functions to convert values in
+different physical units.  It supports converting different prefixes (e.g. kilo,
+mega, giga) as well as converting between different unit systems (e.g. liters,
+gallons).")
+    (license license:lgpl2.1+)))
