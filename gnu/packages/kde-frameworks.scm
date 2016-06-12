@@ -140,6 +140,33 @@ http://freedesktop.org/wiki/Specifications/open-collaboration-services/")
 Bluetooth stack.  It is used by the KDE Bluetooth stack, BlueDevil.")
     (license (list license:lgpl2.1+ license:lgpl3+))))
 
+(define-public breeze-icons
+  (package
+    (name "breeze-icons")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1dh7bijx99sdb3vn6394wmm5cq0fvvmz8h17sx4hakmbga849cx2"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Default KDE Plasma 5 icon theme")
+    (description "Breeze provides a freedesktop.org compatible icon theme.
+It is the default icon theme for the KDE Plasma 5 desktop.")
+    ;; The license file mentions lgpl3+. The license files in the source
+    ;; directories are lgpl3, while the top directory contains the lgpl2.1.
+    ;; text.
+    (license license:lgpl3+)))
+
 (define-public kwindowsystem
   (package
     (name "kwindowsystem")
