@@ -34,6 +34,7 @@
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages polkit)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xorg))
@@ -1019,4 +1020,46 @@ ASpell and HUNSPELL.")
     (synopsis "Helper for multithreaded programming")
     (description "ThreadWeaver is a helper for multithreaded programming.  It
 uses a job-based interface to queue tasks and execute them in an efficient way.")
+    (license license:lgpl2.1+)))
+
+
+;; Tier 2
+;;
+;; Tier 2 frameworks additionally depend on tier 1 frameworks, but still have
+;; easily manageable dependencies.
+
+(define-public kauth
+  (package
+    (name "kauth")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "14sjjfgl3arqyqcr77w9qhpnd8mrnh53r5rfss6bvlk26bmihs49"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("dbus" ,dbus)
+       ("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("kcoreaddons" ,kcoreaddons)
+       ("polkit-qt" ,polkit-qt)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (replace 'check
+            (lambda* _
+              (setenv "DBUS_FATAL_WARNINGS" "0")
+              (zero? (system* "dbus-launch" "ctest" ".")))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Execute actions as privileged user")
+    (description "KAuth provides a convenient, system-integrated way to offload
+actions that need to be performed as a privileged user to small set of helper
+utilities.")
     (license license:lgpl2.1+)))
