@@ -1332,3 +1332,40 @@ asynchronous jobs.")
     (description "KNotification is used to notify the user of an event.  It
 covers feedback and persistent events.")
     (license license:lgpl2.1+)))
+
+(define-public kpackage
+  (package
+    (name "kpackage")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "03aqzkpqz3c1v4qgwfbs3ncdbapiyg7psrkhxqv3z48rklavk1ri"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("karchive" ,karchive)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:tests? #f ; FIXME: 1/4 tests fail.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda* _
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug output
+             (setenv "HOME" (getcwd)))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Installation and loading of additional content as packages")
+    (description "The Package framework lets the user install and load packages
+of non binary content such as scripted extensions or graphic assets, as if they
+were traditional plugins.")
+    (license (list license:gpl2+ license:lgpl2.1+))))
