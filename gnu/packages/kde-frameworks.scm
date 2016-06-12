@@ -25,6 +25,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
@@ -280,6 +281,73 @@ Internet).")
     (license (list license:gpl2 license:gpl2+ license:bsd-2
                    license:lgpl2.1 license:lgpl2.1+ license:expat
                    license:lgpl3+ license:mpl1.1))))
+
+(define-public kconfig
+  (package
+    (name "kconfig")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1dc2i6icyigw1j6qxgdza6j2g8afh390qmxsa2a54mwl84fkfmxv"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("inetutils" ,inetutils)
+       ("qttools" ,qttools)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (add-before 'check 'check-setup
+            (lambda* _
+              (setenv "HOME" (getcwd))
+              (setenv "TMPDIR" (getcwd))
+             #t))
+          (add-before 'check 'start-xorg-server
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; The test suite requires a running X server.
+              (system (string-append (assoc-ref inputs "xorg-server")
+                                     "/bin/Xvfb :1 &"))
+              (setenv "DISPLAY" ":1")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Kconfiguration settings framework for Qt")
+    (description "KConfig provides an advanced configuration system.
+It is made of two parts: KConfigCore and KConfigGui.
+
+KConfigCore provides access to the configuration files themselves.
+It features:
+
+@itemize
+@item Code generation: describe your configuration in an XML file, and use
+`kconfig_compiler to generate classes that read and write configuration
+entries.
+
+@item Cascading configuration files (global settings overridden by local
+settings).
+
+@item Optional shell expansion support (see docs/options.md).
+
+@item The ability to lock down configuration options (see docs/options.md).
+@end itemize
+
+KConfigGui provides a way to hook widgets to the configuration so that they
+are automatically initialized from the configuration and automatically
+propagate their changes to their respective configuration files.")
+    ;; The included licenses is are gpl2 and lgpl2.1, but the sources are
+    ;; under a variety of licenses.
+    ;; This list is taken from http://packaging.neon.kde.org/cgit/
+    (license (list license:lgpl2.1 license:lgpl2.1+ license:expat
+                   license:lgpl3+ license:gpl1 ; licende:mit-olif
+                   license:bsd-2 license:bsd-3))))
 
 (define-public kwindowsystem
   (package
