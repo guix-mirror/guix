@@ -9186,3 +9186,33 @@ are optionally backed by a C extension built on librdkafka.")
 
 (define-public python2-pykafka
   (package-with-python2 python-pykafka))
+
+(define-public python-wcwidth
+ (package
+  (name "python-wcwidth")
+  (version "0.1.6")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "https://pypi.python.org/packages/"
+             "c2/d1/7689293086a8d5320025080cde0e3155b94ae0a7496fb89a3fbaa92c354a/"
+             "wcwidth-" version ".tar.gz"))
+      (sha256
+        (base32
+          "02wjrpf001gjdjsaxxbzcwfg19crlk2dbddayrfc2v06f53yrcyw"))))
+  (build-system python-build-system)
+  (home-page "https://github.com/jquast/wcwidth")
+  (synopsis "Measure number of terminal column cells of wide-character codes.")
+  (description "Wcwidth measures the number of terminal column cells of
+wide-character codes.  It is useful for those implementing a terminal emulator,
+or programs that carefully produce output to be interpreted by one.  It is a
+Python implementation of the @code{wcwidth} and @code{wcswidth} C functions
+specified in POSIX.1-2001 and POSIX.1-2008.")
+  (license license:expat)))
+
+(define-public python2-wcwidth
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-wcwidth)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
