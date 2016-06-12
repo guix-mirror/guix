@@ -732,6 +732,50 @@ are adjusted to be what a Qt developer expects - two arguments of int are
 represented by a QPoint or a QSize.")
     (license license:lgpl2.1+)))
 
+(define-public kwidgetsaddons
+  (package
+    (name "kwidgetsaddons")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1kppx0ppfhnb6q6sijs2dffyar86wkkx8miqavsjsgw1l2wiymcx"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (arguments
+     `(#:tests? #f ; FIXME: libGL error: failed to load driver: swrast.
+       #:phases
+        (modify-phases %standard-phases
+          (add-before 'check 'check-setup
+            (lambda* _
+              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug output
+              (setenv "LIBGL_DEBUG" "verbose") ; enable debug output
+              (setenv "DBUS_FATAL_WARNINGS" "0")))
+          (add-before 'check 'start-xorg-server
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; The test suite requires a running X server.
+              (system (string-append (assoc-ref inputs "xorg-server")
+                                     "/bin/Xvfb :1 &"))
+              (setenv "DISPLAY" ":1")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Large set of desktop widgets")
+    (description "Provided are action classes that can be added to toolbars or
+menus, a wide range of widgets for selecting characters, fonts, colors, actions,
+dates and times, or MIME types, as well as platform-aware dialogs for
+configuration pages, message boxes, and password requests.")
+    (license (list license:gpl2+ license:lgpl2.1+))))
+
 (define-public kwindowsystem
   (package
     (name "kwindowsystem")
