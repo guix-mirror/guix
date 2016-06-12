@@ -1262,3 +1262,31 @@ QtGui.  As such it is not required for the compilation of any other software,
 but may be a runtime requirement for Qt-based software to support certain image
 formats.")
     (license license:lgpl2.1+)))
+
+(define-public kjobwidgets
+  (package
+    (name "kjobwidgets")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1mcvrz66xcqjgbp08zpqsf943cm462wbqm5gh719p9s25hx8hwrc"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("kcoreaddons" ,kcoreaddons)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Widgets for showing progress of asynchronous jobs")
+    (description "KJobWIdgets provides widgets for showing progress of
+asynchronous jobs.")
+    (license license:lgpl2.1+)))
