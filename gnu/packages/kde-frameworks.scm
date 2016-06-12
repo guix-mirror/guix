@@ -30,21 +30,35 @@
 (define-public extra-cmake-modules
   (package
     (name "extra-cmake-modules")
-    (version "5.21.0")
+    (version "5.24.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "http://download.kde.org/stable/frameworks/"
+        (uri (string-append "mirror://kde/stable/frameworks/"
                             (version-major+minor version) "/"
                             name "-" version ".tar.xz"))
         (sha256
          (base32
-          "1kbc5fkcbz9vkg0jpz10vsfgwajlrsmbl0vrbls5qvrdgbgrwlm3"))))
-    ;; The package looks for Qt5LinguistTools provided by Qt, but apparently
-    ;; compiles without it; it might be needed for building the
-    ;; documentation, which requires the additional Sphinx package.
-    ;; To save space, we do not add these inputs.
+          "01m12ml529pwr2sal951r5z6yb1rwbpid1y4k14nlk3xqgmdakwa"))))
     (build-system cmake-build-system)
+    (native-inputs
+     `(("qtbase" ,qtbase))) ; For tests (needs qmake)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; install and check phase are swapped to prevent install from failing
+         ;; after testsuire has run
+         (add-after 'install 'check-post-install
+           (assoc-ref %standard-phases 'check))
+         (delete 'check))))
+    ;; optional dependencies - to save space, we do not add these inputs.
+    ;; Sphinx > 1.2:
+    ;;   Required to build Extra CMake Modules documentation in Qt Help format.
+    ;; Qt5LinguistTools , Qt5 linguist tools. , <http://www.qt.io/>
+    ;;   Required to run tests for the ECMPoQmTools module.
+    ;; Qt5Core
+    ;;   Required to run tests for the ECMQtDeclareLoggingCategory module,
+    ;;   and for some tests of the KDEInstallDirs module.
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "CMake module files for common software used by KDE")
     (description "The Extra CMake Modules package, or ECM, adds to the
