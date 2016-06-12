@@ -26,11 +26,13 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
@@ -912,3 +914,31 @@ which are used in DBus communication.")
     (synopsis "Oxygen provides the standard icon theme for the KDE desktop")
     (description "Oxygen icon theme for the KDE desktop")
     (license license:lgpl3+)))
+
+(define-public solid
+  (package
+    (name "solid")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "00wvsxcnvhdx7ijzpcz5wny2ypkxr1drdpr4yvawgpwa678l1107"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("bison" ,bison)
+       ("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("udev" ,eudev)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Desktop hardware abstraction")
+    (description "Solid is a device integration framework.  It provides a way of
+querying and interacting with hardware independently of the underlying operating
+system.")
+    (license license:lgpl2.1+)))
