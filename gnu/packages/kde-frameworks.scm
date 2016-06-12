@@ -423,6 +423,33 @@ as well as an API to create KDED modules.")
     ;; the lgpl2.1. Some source files are under non-copyleft licenses.
     (license license:lgpl2.1+)))
 
+(define-public kdnssd
+  (package
+    (name "kdnssd")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "01b650g031apxc3vd2m91g2fxqk9l8ap67z6rafniphfwy8i0d5m"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Network service discovery using Zeroconf")
+    (description "KDNSSD is a library for handling the DNS-based Service
+Discovery Protocol (DNS-SD), the layer of Zeroconf that allows network services,
+such as printers, to be discovered without any user intervention or centralized
+infrastructure.")
+    (license license:lgpl2.1+)))
+
 (define-public kwindowsystem
   (package
     (name "kwindowsystem")
