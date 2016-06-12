@@ -555,6 +555,67 @@ but also for getting notified upon idle time events, such as custom timeouts,
 or user activity.")
     (license (list license:gpl2+ license:lgpl2.1+))))
 
+(define-public kitemmodels
+  (package
+    (name "kitemmodels")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1s1p4nw1pqdzbdwvjnka17p9avf00wadr437p4f96md1lvh3sh69"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (add-before 'check 'start-xorg-server
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; The test suite requires a running X server.
+              (system (string-append (assoc-ref inputs "xorg-server")
+                                     "/bin/Xvfb :1 &"))
+              (setenv "DISPLAY" ":1")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Set of item models extending the Qt model-view framework")
+    (description "KItemModels provides the following models:
+
+@itemize
+@item KBreadcrumbSelectionModel - Selects the parents of selected items to
+create breadcrumbs.
+
+@item KCheckableProxyModel - Adds a checkable capability to a source model.
+
+@item KConcatenateRowsProxyModel - Concatenates rows from multiple source models.
+
+@item KDescendantsProxyModel - Proxy Model for restructuring a Tree into a list.
+
+@item KExtraColumnsProxyModel - Adds columns after existing columns.
+
+@item KLinkItemSelectionModel - Share a selection in multiple views which do
+not have the same source model.
+
+@item KModelIndexProxyMapper - Mapping of indexes and selections through proxy
+models.
+
+@item KRearrangeColumnsProxyModel - Can reorder and hide columns from the source
+model.
+
+@item KRecursiveFilterProxyModel - Recursive filtering of models.
+
+@item KSelectionProxyModel - A Proxy Model which presents a subset of its source
+model to observers
+@end itemize")
+    (license license:lgpl2.1+)))
+
 (define-public kwindowsystem
   (package
     (name "kwindowsystem")
