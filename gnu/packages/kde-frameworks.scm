@@ -1290,3 +1290,45 @@ formats.")
     (description "KJobWIdgets provides widgets for showing progress of
 asynchronous jobs.")
     (license license:lgpl2.1+)))
+
+(define-public knotifications
+  (package
+    (name "knotifications")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "0qryp41phnpx4r9wa6rfhmnzy7nxl0ijnyrafadf2n2xb53ipkpa"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("dbus" ,dbus)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("kcodecs" ,kcodecs)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("phonon" ,phonon)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda* _
+             (setenv "HOME" (getcwd))))
+         (replace 'check
+           (lambda* _
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             (zero? (system* "dbus-launch" "ctest" ".")))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Desktop notifications")
+    (description "KNotification is used to notify the user of an event.  It
+covers feedback and persistent events.")
+    (license license:lgpl2.1+)))
