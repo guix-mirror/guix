@@ -656,6 +656,44 @@ item models.  It includes views for categorizing lists and to add search filters
 to flat and hierarchical lists.")
     (license (list license:gpl2+ license:lgpl2.1+))))
 
+(define-public kplotting
+  (package
+    (name "kplotting")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "0gpypq9kh4b5s6dc7py3m117k3nbxczsfkxgxd9zxvr35kig7ya2"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (add-before 'check 'start-xorg-server
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; The test suite requires a running X server.
+              (system (string-append (assoc-ref inputs "xorg-server")
+                                     "/bin/Xvfb :1 &"))
+              (setenv "DISPLAY" ":1")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Data plotting library")
+    (description "KPlotWidget is a QWidget-derived class that provides a virtual
+base class for easy data-plotting.  The idea behind KPlotWidget is that you only
+have to specify information in \"data units\", the natural units of the
+data being plotted.  KPlotWidget automatically converts everything to screen
+pixel units.")
+    (license license:lgpl2.1+)))
+
 (define-public kwindowsystem
   (package
     (name "kwindowsystem")
