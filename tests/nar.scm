@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -235,6 +235,46 @@
                 (call-with-input-file nar
                   (cut restore-file <> output))
                 (file-tree-equal? input output))
+              (lambda ()
+                (false-if-exception (delete-file nar))
+                (false-if-exception (rm-rf output)))))))
+      (lambda ()
+        (rmdir input)))))
+
+(test-assert "write-file #:select? + restore-file"
+  (let ((input (string-append %test-dir ".input")))
+    (mkdir input)
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        (with-file-tree input
+            (directory "root"
+                       ((directory "a" (("x") ("y") ("z")))
+                        ("b") ("c") ("d" -> "b")))
+          (let* ((output %test-dir)
+                 (nar    (string-append output ".nar")))
+            (dynamic-wind
+              (lambda () #t)
+              (lambda ()
+                (call-with-output-file nar
+                  (lambda (port)
+                    (write-file input port
+                                #:select?
+                                (lambda (file stat)
+                                  (and (not (string=? (basename file)
+                                                      "a"))
+                                       (not (eq? (stat:type stat)
+                                                 'symlink)))))))
+                (call-with-input-file nar
+                  (cut restore-file <> output))
+
+                ;; Make sure "a" and "d" have been filtered out.
+                (and (not (file-exists? (string-append output "/root/a")))
+                     (file=? (string-append output "/root/b")
+                             (string-append input "/root/b"))
+                     (file=? (string-append output "/root/c")
+                             (string-append input "/root/c"))
+                     (not (file-exists? (string-append output "/root/d")))))
               (lambda ()
                 (false-if-exception (delete-file nar))
                 (false-if-exception (rm-rf output)))))))
