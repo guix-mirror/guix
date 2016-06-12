@@ -27,6 +27,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
@@ -814,6 +815,42 @@ In addition to the high level API, this framework also provides several
 lower level classes for interaction with the X Windowing System.")
     ;; Some source files mention lgpl2.0+, but the included license is
     ;; the lgpl2.1. Some source files are under non-copyleft licenses.
+    (license license:lgpl2.1+)))
+
+(define-public modemmanager-qt
+  (package
+    (name "modemmanager-qt")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "0khz5bf84xxa8aqpzwb6x839xx6dbiadwqhyj7cvgha65fh2xinh"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("dbus" ,dbus)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("modem-manager", modem-manager)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (replace 'check
+            (lambda* _
+              (setenv "DBUS_FATAL_WARNINGS" "0")
+              (zero? (system* "dbus-launch" "ctest" ".")))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Qt wrapper for ModemManager DBus API")
+    (description "ModemManagerQt provides access to all ModemManager features
+exposed on DBus.  It allows you to manage modem devices and access to
+information available for your modem devices, like signal, location and
+messages.")
     (license license:lgpl2.1+)))
 
 (define-public oxygen-icons
