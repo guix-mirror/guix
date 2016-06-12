@@ -1063,3 +1063,45 @@ uses a job-based interface to queue tasks and execute them in an efficient way."
 actions that need to be performed as a privileged user to small set of helper
 utilities.")
     (license license:lgpl2.1+)))
+
+(define-public kcompletion
+  (package
+    (name "kcompletion")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1qln0v31gn86kzwhnkijr1ydf129n32jmiybbckrp4w6hyx6xfxv"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("kconfig" ,kconfig)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (add-before 'check 'check-setup
+            (lambda* _
+              (setenv "DBUS_FATAL_WARNINGS" "0")))
+          (add-before 'check 'start-xorg-server
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; The test suite requires a running X server.
+              (system (string-append (assoc-ref inputs "xorg-server")
+                                     "/bin/Xvfb :1 &"))
+              (setenv "DISPLAY" ":1")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Powerful autocompletion framework and widgets")
+    (description "This framework helps implement autocompletion in Qt-based
+applications.  It provides a set of completion-ready widgets, or can be
+integrated it into your application's other widgets.")
+    (license license:lgpl2.1+)))
