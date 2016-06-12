@@ -246,6 +246,41 @@ GZip format, via a subclass of QIODevice.")
     (license (list license:lgpl2.1 license:lgpl2.1+
                    license:lgpl3+ license:bsd-2))))
 
+(define-public kcodecs
+  (package
+    (name "kcodecs")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1qpzjh3qc2zz80j2bmlinipbispms14k9bmqw8v61zhi6in9z14c"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "String encoding and manipulating library")
+    (description "KCodecs provide a collection of methods to manipulate
+strings using various encodings.
+
+It can automatically determine the charset of a string, translate XML
+entities, validate email addresses, and find encodings by name in a more
+tolerant way than QTextCodec (useful e.g. for data coming from the
+Internet).")
+    ;; The included licenses is are gpl2 and lgpl2.1, but the sources are
+    ;; under a variety of licenses.
+    ;; This list is taken from http://packaging.neon.kde.org/cgit/
+    (license (list license:gpl2 license:gpl2+ license:bsd-2
+                   license:lgpl2.1 license:lgpl2.1+ license:expat
+                   license:lgpl3+ license:mpl1.1))))
+
 (define-public kwindowsystem
   (package
     (name "kwindowsystem")
