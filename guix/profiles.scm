@@ -510,9 +510,9 @@ MANIFEST."
                     info (string-append #$output "/share/info/dir"))))
 
         (mkdir-p (string-append #$output "/share/info"))
-        (every install-info
-               (append-map info-files
-                           '#$(manifest-inputs manifest)))))
+        (exit (every install-info
+                     (append-map info-files
+                                 '#$(manifest-inputs manifest))))))
 
   (gexp->derivation "info-dir" build
                     #:modules '((guix build utils))
@@ -562,7 +562,7 @@ entries of MANIFEST, or #f if MANIFEST does not have any GHC packages."
                 (system* (string-append #+ghc "/bin/ghc-pkg") "recache"
                          (string-append "--package-db=" db-dir)))))
           (for-each delete-file (find-files db-dir "\\.conf$"))
-          success)))
+          (exit success))))
 
   (with-monad %store-monad
     ;; Don't depend on GHC when there's nothing to do.
@@ -710,7 +710,7 @@ MIME type."
             (mkdir-p (string-append #$output "/share"))
             (union-build destdir appdirs
                          #:log-port (%make-void-port "w"))
-            (zero? (system* update-desktop-database destdir)))))
+            (exit (zero? (system* update-desktop-database destdir))))))
 
     ;; Don't run the hook when 'desktop-file-utils' is not referenced.
     (if desktop-file-utils
@@ -745,7 +745,7 @@ entries.  It's used to query the MIME type of a given file."
             (union-build (string-append destdir "/packages") pkgdirs
                          #:log-port (%make-void-port "w"))
             (setenv "XDG_DATA_HOME" datadir)
-            (zero? (system* update-mime-database destdir)))))
+            (exit (zero? (system* update-mime-database destdir))))))
 
     ;; Don't run the hook when 'shared-mime-info' is referenced.
     (if shared-mime-info
