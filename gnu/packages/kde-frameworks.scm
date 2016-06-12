@@ -528,6 +528,33 @@ translated text.  This includes argument capturing, customizable markup, and
 translation scripting.")
     (license license:lgpl2.1+)))
 
+(define-public kidletime
+  (package
+    (name "kidletime")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "09jsj0pj27h93nr8v46savs6b93h8frydinfr7wlijkvpsl02jb4"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Reporting of idle time of user and system")
+    (description "KIdleTime is a singleton reporting information on idle time.
+It is useful not only for finding out about the current idle time of the PC,
+but also for getting notified upon idle time events, such as custom timeouts,
+or user activity.")
+    (license (list license:gpl2+ license:lgpl2.1+))))
+
 (define-public kwindowsystem
   (package
     (name "kwindowsystem")
