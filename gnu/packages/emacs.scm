@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1932,6 +1933,28 @@ successive level is highlighted in a different color, making it easy to spot
 matching delimiters, orient yourself in the code, and tell which statements
 are at a given level.")
     (license license:gpl3+)))
+
+(define-public emacs-rainbow-identifiers
+  (package
+    (name "emacs-rainbow-identifiers")
+    (version "0.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://raw.githubusercontent.com/Fanael"
+                                  "/rainbow-identifiers/" version
+                                  "/rainbow-identifiers.el"))
+              (file-name (string-append "rainbow-identifiers-" version ".el"))
+              (sha256
+               (base32
+                "0325abxj47k0g1i8nqrq70w2wr6060ckhhf92krv1s072b3jzm31"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Fanael/rainbow-identifiers")
+    (synopsis "Highlight identifiers in source code")
+    (description
+     "Rainbow identifiers mode is an Emacs minor mode providing highlighting of
+identifiers based on their names.  Each identifier gets a color based on a hash
+of its name.")
+    (license license:bsd-2)))
 
 (define-public emacs-ido-completing-read+
   (package
