@@ -694,6 +694,44 @@ data being plotted.  KPlotWidget automatically converts everything to screen
 pixel units.")
     (license license:lgpl2.1+)))
 
+(define-public kwayland
+  (package
+    (name "kwayland")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1h5anbqrxcl1s8kx1l53vcsfr8ifamcjqd47dk8a7lwr1ga6myq2"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("wayland" ,wayland)))
+    (arguments
+     `(#:tests? #f ; FIXME tests require weston to run
+                   ; weston requires wayland flags in mesa
+       #:phases
+         (modify-phases %standard-phases
+           (add-before 'check 'check-setup
+             (lambda* _
+               (setenv "XDG_RUNTIME_DIR" "/tmp"))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Qt-style API to interact with the wayland client and server")
+    (description "As the names suggest they implement a Client respectively a
+Server API for the Wayland protocol.  The API is Qt-styled removing the needs to
+interact with a for a Qt developer uncomfortable low-level C-API.  For example
+the callback mechanism from the Wayland API is replaced by signals, data types
+are adjusted to be what a Qt developer expects - two arguments of int are
+represented by a QPoint or a QSize.")
+    (license license:lgpl2.1+)))
+
 (define-public kwindowsystem
   (package
     (name "kwindowsystem")
