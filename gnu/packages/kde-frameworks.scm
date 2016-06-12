@@ -1225,3 +1225,40 @@ text and metadata from a number of different files.  This library is typically
 used by file indexers to retreive the metadata.  This library can also be used
 by applications to write metadata.")
     (license (list license:lgpl2.0 license:lgpl2.1 license:lgpl3))))
+
+(define-public kimageformats
+  (package
+    (name "kimageformats")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "12mhgckmhnvcnm8k7mk15mipxrnm7i9ip7ykbjh8nxjiwyk1pmwc"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xorg-server
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The test suite requires a running X server.
+             (system (string-append (assoc-ref inputs "xorg-server")
+                                    "/bin/Xvfb :1 &"))
+             (setenv "DISPLAY" ":1")
+            #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Plugins to allow QImage to support extra file formats")
+    (description "This framework provides additional image format plugins for
+QtGui.  As such it is not required for the compilation of any other software,
+but may be a runtime requirement for Qt-based software to support certain image
+formats.")
+    (license license:lgpl2.1+)))
