@@ -349,6 +349,44 @@ propagate their changes to their respective configuration files.")
                    license:lgpl3+ license:gpl1 ; licende:mit-olif
                    license:bsd-2 license:bsd-3))))
 
+(define-public kcoreaddons
+  (package
+    (name "kcoreaddons")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "06sx7by3nvaridnavj5p0bxv4nh47n708jlacfw8ydaikmd9i03h"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)
+       ("xorg-server" ,xorg-server))) ; for the tests
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (arguments
+     `(#:tests? #f ; FIXME: Test failure caused by stout/stderr being interleaved.
+       #:phases
+        (modify-phases %standard-phases
+          (add-before 'check 'check-setup
+            (lambda* _
+              (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; enable debug output
+              (setenv "HOME" (getcwd))
+              (setenv "TMPDIR" (getcwd)))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Qt addon library with a collection of non-GUI utilities")
+    (description "KCoreAddons provides classes built on top of QtCore to
+perform various tasks such as manipulating mime types, autosaving files,
+creating backup files, generating random sequences, performing text
+manipulations such as macro replacement, accessing user information and
+many more.")
+    (license (list license:lgpl2.0+ license:lgpl2.1+))))
+
 (define-public kwindowsystem
   (package
     (name "kwindowsystem")
