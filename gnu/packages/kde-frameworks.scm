@@ -387,6 +387,42 @@ manipulations such as macro replacement, accessing user information and
 many more.")
     (license (list license:lgpl2.0+ license:lgpl2.1+))))
 
+(define-public kdbusaddons
+  (package
+    (name "kdbusaddons")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "183nxqrhz4qk4qfp1w4an0scp2dvfqcaqbpg4cgbgk0z590q0pkk"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("dbus" ,dbus)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)))
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (replace 'check
+            (lambda* _
+              (setenv "DBUS_FATAL_WARNINGS" "0")
+              (zero? (system* "dbus-launch" "ctest" ".")))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Convenience classes for DBus")
+    (description "KDBusAddons provides convenience classes on top of QtDBus,
+as well as an API to create KDED modules.")
+    ;; Some source files mention lgpl2.0+, but the included license is
+    ;; the lgpl2.1. Some source files are under non-copyleft licenses.
+    (license license:lgpl2.1+)))
+
 (define-public kwindowsystem
   (package
     (name "kwindowsystem")
