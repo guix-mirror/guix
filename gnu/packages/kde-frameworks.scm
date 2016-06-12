@@ -968,3 +968,27 @@ system.")
 applications.  It supports several different plugins, including HSpell, Enchant,
 ASpell and HUNSPELL.")
     (license license:lgpl2.1+)))
+
+(define-public threadweaver
+  (package
+    (name "threadweaver")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "02g60zr9cc4bg1p90giich4n0qvqaiakz0y94qrnyj9f7fg0yksl"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Helper for multithreaded programming")
+    (description "ThreadWeaver is a helper for multithreaded programming.  It
+uses a job-based interface to queue tasks and execute them in an efficient way.")
+    (license license:lgpl2.1+)))
