@@ -27,6 +27,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xorg))
 
@@ -166,6 +167,49 @@ It is the default icon theme for the KDE Plasma 5 desktop.")
     ;; directories are lgpl3, while the top directory contains the lgpl2.1.
     ;; text.
     (license license:lgpl3+)))
+
+(define-public kapidox
+  (package
+    (name "kapidox")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "19a7alvn71nxflsyi7y3hghx1iw04qqc77qy54mcxcpkiyvpsggf"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ; has no test target
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (propagated-inputs
+     ;; kapidox is a python programm
+     ;; TODO: check if doxygen has to be installed, the readme does not
+     ;; mention it. The openSuse .rpm lists doxygen, graphviz, graphviz-gd,
+     ;; and python-xml.
+     `(("python" ,python)
+       ("python-jinja2" ,python-jinja2)
+       ("python-pyyaml" ,python-pyyaml)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Doxygen Tools")
+
+    (description "This framework contains scripts and data for building API
+documentation (dox) in a standard format and style for KDE.
+
+For the actual documentation extraction and formatting the Doxygen tool is
+used, but this framework provides a wrapper script to make generating the
+documentation more convenient (including reading settings from the target
+framework or other module) and a standard template for the generated
+documentation.")
+    ;; Most parts are bsd-2, but incuded jquery is expat
+    ;; This list is taken from http://packaging.neon.kde.org/cgit/
+    (license (list license:bsd-2 license:expat))))
 
 (define-public kwindowsystem
   (package
