@@ -47,6 +47,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages file)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
@@ -55,11 +56,13 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnunet) ; libmicrohttpd
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages llvm)
   #:use-module (gnu packages mp3) ;taglib
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -67,7 +70,9 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
+  #:use-module (gnu packages vim) ;xxd
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -927,6 +932,36 @@ PS, and DAB+.")
     (description
      "Faust is a programming language for realtime audio signal processing.")
     (license license:gpl2+)))
+
+(define-public faust-2
+  (package
+    (inherit faust)
+    (version "2.0.a51")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/faudiostream/faust-" version ".tgz"))
+              (sha256
+               (base32
+                "1yryjqfqmxs7lxy95hjgmrncvl9kig3rcsmg0v49ghzz7vs7haxf"))))
+    (build-system gnu-build-system)
+    (arguments
+     (substitute-keyword-arguments (package-arguments faust)
+       ((#:make-flags flags)
+        `(list (string-append "prefix=" (assoc-ref %outputs "out"))
+               "world"))))
+    (native-inputs
+     `(("llvm" ,llvm-with-rtti)
+       ("which" ,which)
+       ("xxd" ,vim)
+       ("ctags" ,emacs-minimal)  ; for ctags
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libsndfile" ,libsndfile)
+       ("libmicrohttpd" ,libmicrohttpd)
+       ("ncurses" ,ncurses)
+       ("openssl" ,openssl)
+       ("zlib" ,zlib)))))
 
 (define-public freepats
   (package
