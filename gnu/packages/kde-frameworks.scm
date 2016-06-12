@@ -25,6 +25,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -210,6 +211,40 @@ documentation.")
     ;; Most parts are bsd-2, but incuded jquery is expat
     ;; This list is taken from http://packaging.neon.kde.org/cgit/
     (license (list license:bsd-2 license:expat))))
+
+(define-public karchive
+  (package
+    (name "karchive")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1n5nfhrfvqnrdjgjjy7arqik4fya5bp3dvxa16mlhqr19azkavzq"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("qtbase" ,qtbase)
+       ("xz" ,xz)
+       ("zlib" ,zlib)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Qt 5 addon providing access to numerous types of archives")
+    (description "KArchive provides classes for easy reading, creation and
+manipulation of 'archive' formats like ZIP and TAR.
+
+It also provides transparent compression and decompression of data, like the
+GZip format, via a subclass of QIODevice.")
+    ;; The included licenses is are gpl2 and lgpl2.1, but the sources are
+    ;; under a variety of licenses.
+    ;; This list is taken from http://packaging.neon.kde.org/cgit/
+    (license (list license:lgpl2.1 license:lgpl2.1+
+                   license:lgpl3+ license:bsd-2))))
 
 (define-public kwindowsystem
   (package
