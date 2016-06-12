@@ -5183,6 +5183,33 @@ alternative user interface themes, changes in window management behavior,
 GNOME Shell appearance and extension, etc.")
     (license license:gpl3+)))
 
+(define-public gnome-shell-extensions
+  (package
+    (name "gnome-shell-extensions")
+    (version "3.20.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "18rr55krnqx1nzrzlj6kfzh4n67f3crakmwh28rr95y7cg0jwhxw"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--enable-extensions=all")))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("glib" ,glib "bin")))
+    (synopsis "Extensions for GNOME Shell")
+    (description "GNOME Shell extensions modify and extend GNOME Shell
+functionality and behavior.")
+    (home-page "https://extensions.gnome.org/")
+    (license license:gpl3+)))
+
 (define-public arc-theme
   (package
     (name "arc-theme")
