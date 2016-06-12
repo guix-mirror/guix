@@ -26,6 +26,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages attr)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages docbook)
@@ -1194,3 +1195,33 @@ application crashes.")
     (description "Provides tools to generate documentation in various format
 from DocBook files.")
     (license license:lgpl2.1+)))
+
+(define-public kfilemetadata
+  (package
+    (name "kfilemetadata")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "02n9qhpr0jlwdgdbid0k34abhs3bzhlsa56ybl5dq1aib6izk1sy"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("python-2" ,python-2)))
+    (inputs
+     `(("attr" ,attr)
+       ("karchive" ,karchive)
+       ("ki18n" ,ki18n)
+       ("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Extract metadata from different fileformats")
+    (description "KFileMetaData provides a simple library for extracting the
+text and metadata from a number of different files.  This library is typically
+used by file indexers to retreive the metadata.  This library can also be used
+by applications to write metadata.")
+    (license (list license:lgpl2.0 license:lgpl2.1 license:lgpl3))))
