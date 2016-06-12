@@ -27,6 +27,7 @@
   #:use-module (guix utils)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -484,6 +485,48 @@ infrastructure.")
     (description "The KDE GUI addons provide utilities for graphical user
 interfaces in the areas of colors, fonts, text, images, keyboard input.")
     (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public ki18n
+  (package
+    (name "ki18n")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "0cw24spmwsqa3ppkw03cm6yjd3sfll0dbbk2ya76fd4nw9hb00dv"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("gettext" ,gnu-gettext)
+       ("python" ,python)))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtscript" ,qtscript)))
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (add-before 'check 'check-setup
+            (lambda* _
+              (setenv "HOME" (getcwd)))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "KDE Gettext-based UI text internationalization")
+    (description "KI18n provides functionality for internationalizing user
+interface text in applications, based on the GNU Gettext translation system.  It
+wraps the standard Gettext functionality, so that the programmers and translators
+can use the familiar Gettext tools and workflows.
+
+KI18n provides additional functionality as well, for both programmers and
+translators, which can help to achieve a higher overall quality of source and
+translated text.  This includes argument capturing, customizable markup, and
+translation scripting.")
+    (license license:lgpl2.1+)))
 
 (define-public kwindowsystem
   (package
