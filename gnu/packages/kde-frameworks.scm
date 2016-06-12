@@ -25,6 +25,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xorg))
@@ -103,6 +104,40 @@ kdebase.
 
 The REST API is defined here:
 http://freedesktop.org/wiki/Specifications/open-collaboration-services/")
+    (license (list license:lgpl2.1+ license:lgpl3+))))
+
+(define-public bluez-qt
+  (package
+    (name "bluez-qt")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "0gy0m7lcwwklf021l5i3v7j0cl7qz7cgvzrwpj87ix3kyw5xs80z"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("dbus" ,dbus)
+       ("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (arguments
+     `(#:configure-flags
+        '("-DINSTALL_UDEV_RULE:BOOL=OFF")
+       #:phases
+        (modify-phases %standard-phases
+          (replace 'check
+            (lambda* _
+              (setenv "DBUS_FATAL_WARNINGS" "0")
+              (zero? (system* "dbus-launch" "ctest" ".")))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "QML wrapper for BlueZ")
+    (description "bluez-qt is a Qt-style library for accessing the bluez
+Bluetooth stack.  It is used by the KDE Bluetooth stack, BlueDevil.")
     (license (list license:lgpl2.1+ license:lgpl3+))))
 
 (define-public kwindowsystem
