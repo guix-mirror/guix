@@ -1,6 +1,8 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,6 +67,43 @@
 modules provided by CMake to find common software.  In addition, it provides
 common build settings used in software produced by the KDE community.")
     (license license:bsd-3)))
+
+;; Tier 1
+;;
+;; Tier 1 frameworks depend only on Qt (and possibly a small number of other
+;; third-party libraries), so can easily be used by an Qt-based project.
+
+(define-public attica
+  (package
+    (name "attica")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "0d368gmds7m7k5pnn625wqsij38cvxk1gkm4zv24phnk9f67v7cw"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Open Collaboration Service client library")
+    (description "Attica is a Qt library that implements the Open
+Collaboration Services API version 1.6.
+
+It grants easy access to the services such as querying information about
+persons and contents.  The library is used in KNewStuff3 as content provider.
+In order to integrate with KDE's Plasma Desktop, a platform plugin exists in
+kdebase.
+
+The REST API is defined here:
+http://freedesktop.org/wiki/Specifications/open-collaboration-services/")
+    (license (list license:lgpl2.1+ license:lgpl3+))))
 
 (define-public kwindowsystem
   (package
