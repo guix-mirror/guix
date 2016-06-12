@@ -28,15 +28,19 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
 (define-public extra-cmake-modules
@@ -1142,4 +1146,51 @@ integrated it into your application's other widgets.")
     (synopsis "Graceful handling of application crashes")
     (description "KCrash provides support for intercepting and handling
 application crashes.")
+    (license license:lgpl2.1+)))
+
+(define-public kdoctools
+  (package
+    (name "kdoctools")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1r129kpq0d11b9l87cqbal6fm5ycwhsps1g3r1a7jsxz70scz4ri"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("docbook-xml" ,docbook-xml)
+       ("docbook-xsl" ,docbook-xsl)
+       ("karchive" ,karchive)
+       ("ki18n" ,ki18n)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("perl" ,perl)
+       ("perl-uri" ,perl-uri)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (add-after 'unpack 'cmake-find-docbook
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* (find-files "cmake" "\\.cmake$")
+                (("CMAKE_SYSTEM_PREFIX_PATH")
+                  "CMAKE_PREFIX_PATH"))
+               (substitute* "cmake/FindDocBookXML4.cmake"
+                 (("^.*xml/docbook/schema/dtd.*$")
+                   "xml/dtd/docbook\n"))
+               (substitute* "cmake/FindDocBookXSL.cmake"
+                 (("^.*xml/docbook/stylesheet.*$")
+                  (string-append "xml/xsl/docbook-xsl-"
+                                 ,(package-version docbook-xsl) "\n"))))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Create documentation from DocBook")
+    (description "Provides tools to generate documentation in various format
+from DocBook files.")
     (license license:lgpl2.1+)))
