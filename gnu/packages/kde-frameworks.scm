@@ -450,6 +450,41 @@ such as printers, to be discovered without any user intervention or centralized
 infrastructure.")
     (license license:lgpl2.1+)))
 
+(define-public kguiaddons
+  (package
+    (name "kguiaddons")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "0ig96ah20ybg5rwpswj9va2klvkh2q4amwxmgy3z4niwfsm2g3ic"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+        (modify-phases %standard-phases
+          (add-before 'check 'start-xorg-server
+            (lambda* (#:key inputs #:allow-other-keys)
+              ;; The test suite requires a running X server.
+              (system (string-append (assoc-ref inputs "xorg-server")
+                                     "/bin/Xvfb :1 &"))
+              (setenv "DISPLAY" ":1")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Utilities for graphical user interfaces")
+    (description "The KDE GUI addons provide utilities for graphical user
+interfaces in the areas of colors, fonts, text, images, keyboard input.")
+    (license (list license:gpl2+ license:lgpl2.1+))))
+
 (define-public kwindowsystem
   (package
     (name "kwindowsystem")
