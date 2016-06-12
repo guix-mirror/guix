@@ -942,3 +942,29 @@ which are used in DBus communication.")
 querying and interacting with hardware independently of the underlying operating
 system.")
     (license license:lgpl2.1+)))
+
+(define-public sonnet
+  (package
+    (name "sonnet")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "152xz7fb1iwhb5w1n4xqvc648iaxi0inrl4kavxcsir61das1xyl"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Multi-language spell checker")
+    (description "Sonnet is a plugin-based spell checking library for Qt-based
+applications.  It supports several different plugins, including HSpell, Enchant,
+ASpell and HUNSPELL.")
+    (license license:lgpl2.1+)))
