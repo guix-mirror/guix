@@ -234,7 +234,8 @@ compatible to GNU Pth.")
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
    (arguments
-    `(#:phases
+    `(#:configure-flags '("--enable-gpg2-is-gpg")
+      #:phases
        (alist-cons-before
         'configure 'patch-config-files
         (lambda _
