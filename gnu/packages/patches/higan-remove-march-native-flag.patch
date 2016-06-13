@@ -1,0 +1,13 @@
+Remove -march=native from build flags.
+
+--- a/higan/GNUmakefile
++++ b/higan/GNUmakefile
+@@ -32,7 +32,7 @@ ifeq ($(platform),windows)
+ else ifeq ($(platform),macosx)
+   flags += -march=native
+ else ifneq ($(filter $(platform),linux bsd),)
+-  flags += -march=native -fopenmp
++  flags += -fopenmp
+   link += -fopenmp
+   link += -Wl,-export-dynamic
+   link += -lX11 -lXext

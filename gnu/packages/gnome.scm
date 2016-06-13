@@ -5182,3 +5182,103 @@ GNOME 3.  This includes things like the fonts used in user interface elements,
 alternative user interface themes, changes in window management behavior,
 GNOME Shell appearance and extension, etc.")
     (license license:gpl3+)))
+
+(define-public arc-theme
+  (package
+    (name "arc-theme")
+    (version "20160605")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/horst3180/arc-theme"
+                                  "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sq2031xda8jn2ws0x2bvhq77jfh7xy0c3kg86v6vm2kbrrss7y6"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "autoreconf" "-vif")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)))
+    (synopsis "A flat GTK+ theme with transparent elements")
+    (description "Arc is a flat theme with transparent elements for GTK 3, GTK
+2, and GNOME Shell which supports GTK 3 and GTK 2 based desktop environments
+like GNOME, Unity, Budgie, Pantheon, XFCE, Mate, etc.")
+    (home-page "https://github.com/horst3180/arc-theme")
+    ;; No "or later" language found.
+    (license license:gpl3)))
+
+(define-public moka-icon-theme
+  (package
+    (name "moka-icon-theme")
+    (version "5.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/moka-project"
+                                  "/moka-icon-theme/archive/v"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1lnk7p8dsd9xh6cgz5krvlcr457w8yl4m6p6s5c2g5narsjswzrm"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-makefile.am
+           (lambda _
+             (substitute* '("Makefile.am")
+               (("\\$\\(DESTDIR\\)/usr/share")
+                "$(datadir)"))
+             #t))
+         (add-after 'patch-makefile.am 'bootstrap
+           (lambda _
+             (zero? (system* "autoreconf" "-vif")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (synopsis "Moka icon theme")
+    (description "Moka is a stylized desktop icon set, designed to be clear,
+simple and consistent.")
+    (home-page "http://snwh.org/moka")
+    (license license:gpl3+)))
+
+(define-public arc-icon-theme
+  (package
+    (name "arc-icon-theme")
+    (version "20160605")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/horst3180/arc-icon-theme"
+                                  "/archive/" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1npf0ki0j0llrw9wbffhxxa1cdms0q7b8xlg9m943dd9g7pgdm2p"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'bootstrap
+           (lambda _
+             (zero? (system* "autoreconf" "-vif")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    ;; When Arc is missing an icon, it looks in the Moka icon theme for it.
+    (propagated-inputs
+     `(("moka-icon-theme" ,moka-icon-theme)))
+    (synopsis "Arc icon theme")
+    (description "The Arc icon theme provides a set of icons matching the
+style of the Arc GTK theme.  Icons missing from the Arc theme are provided by
+the Moka icon theme.")
+    (home-page "https://github.com/horst3180/arc-icon-theme")
+    (license license:gpl3+)))

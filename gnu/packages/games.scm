@@ -418,7 +418,7 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
 (define-public xboard
   (package
     (name "xboard")
-    (version "4.8.0")
+    (version "4.9.0")
     (source
      (origin
        (method url-fetch)
@@ -426,12 +426,11 @@ exec ~a/bin/freedink -refdir ~a/share/dink\n"
                            ".tar.gz"))
        (sha256
         (base32
-         "05rdj0nyirc4g1qi5hhrjy45y52ihp1j3ldq2c5bwrz0gzy4i3y8"))))
+         "1av6r3s5vyclwf3c9i1pkr2442ryrf4ixhhf2i44a4j1xyhlp5jb"))))
     (build-system gnu-build-system)
-    (inputs `(("cairo" ,cairo)
-              ("librsvg" ,librsvg)
-              ("libxt" ,libxt)
-              ("libxaw" ,libxaw)))
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("librsvg" ,librsvg)))
     (native-inputs `(("texinfo" ,texinfo)
                      ("pkg-config" ,pkg-config)))
     (home-page "http://www.gnu.org/software/xboard")
@@ -1191,7 +1190,7 @@ is programmed in Haskell.")
 (define-public manaplus
   (package
     (name "manaplus")
-    (version "1.6.4.23")
+    (version "1.6.6.4")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1199,7 +1198,7 @@ is programmed in Haskell.")
                     version "/manaplus-" version ".tar.xz"))
               (sha256
                (base32
-                "1ja2w86rz3pliq0sdc7yxppsdjg3d1ymcx9fdsiwnw6fv5a8nbzj"))))
+                "00sdw2mspdhrqvz0vl6jbnhiclj7vmvyjih9qf8dbkfw2s921ybc"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -2244,3 +2243,98 @@ Red Eclipse provides fast paced and accessible gameplay.")
                      license:cc-by-sa3.0
                      license:cc-by3.0
                      license:cc0)))))
+
+(define-public higan
+  (package
+    (name "higan")
+    (version "099")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://gitlab.com/higan/higan/repository/archive.tar.gz?ref=v"
+             version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32 "0xlzjqrd308hmg6yjzjkmxkkr9p3w387kf6yxyplb47jcbx2sq4n"))
+       (patches (search-patches "higan-remove-march-native-flag.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("ao" ,ao)
+       ("eudev" ,eudev)
+       ("gtk+" ,gtk+-2)
+       ("gtksourceview-2" ,gtksourceview-2)
+       ("libxv" ,libxv)
+       ("mesa" ,mesa)
+       ("openal" ,openal)
+       ("pulseaudio" ,pulseaudio)
+       ("sdl" ,sdl)))
+    (arguments
+     '(#:phases
+       (let ((build-phase (assoc-ref %standard-phases 'build))
+             (install-phase (assoc-ref %standard-phases 'install)))
+         (modify-phases %standard-phases
+           ;; The higan build system has no configure phase.
+           (delete 'configure)
+           (add-before 'build 'chdir-to-higan
+             (lambda _
+               (chdir "higan")))
+           (add-before 'install 'create-/share/applications
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 ;; It seems the author forgot to do this in the Makefile.
+                 (mkdir-p (string-append out "/share/applications")))))
+           (add-after 'install 'chdir-to-icarus
+             (lambda _
+               (chdir "../icarus")))
+           (add-after 'chdir-to-icarus 'build-icarus build-phase)
+           (add-after 'build-icarus 'install-icarus install-phase)
+           (add-after 'install-icarus 'wrap-higan-executable
+             (lambda* (#:key inputs outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin"))
+                      (higan (string-append bin "/higan"))
+                      (higan-original (string-append higan "-original"))
+                      (bash (string-append (assoc-ref inputs "bash")
+                                           "/bin/bash"))
+                      (coreutils (assoc-ref inputs "coreutils"))
+                      (mkdir (string-append coreutils "/bin/mkdir"))
+                      (cp (string-append coreutils "/bin/cp"))
+                      (cp-r (string-append cp " -r --no-preserve=mode")))
+                 ;; First, have the executable make sure ~/.local/share/higan
+                 ;; contains up to date files.  Higan insists on looking there
+                 ;; for these data files.
+                 (rename-file higan higan-original)
+                 (with-output-to-file higan
+                   (lambda ()
+                     (display
+                      (string-append
+                       "#!" bash "\n"
+                       ;; higan doesn't respect $XDG_DATA_HOME
+                       mkdir " -p ~/.local/share\n"
+                       cp-r " " out "/share/higan ~/.local/share\n"
+                       "exec " higan-original))))
+                 (chmod higan #o555)
+                 ;; Second, make sure higan will find icarus in PATH.
+                 (wrap-program higan
+                   `("PATH" ":" prefix (,bin))))))))
+       #:make-flags
+       (list "compiler=g++"
+             (string-append "prefix=" (assoc-ref %outputs "out")))
+       ;; There is no test suite.
+       #:tests? #f))
+    (home-page "http://byuu.org/emulation/higan/")
+    (synopsis "Nintendo multi-system emulator")
+    (description
+     "higan (formerly bsnes) is an emulator for multiple Nintendo video game
+consoles, including the Nintendo Entertainment System (NES/Famicom), Super
+Nintendo Entertainment System (SNES/Super Famicom), Game Boy, Game Boy
+Color (GBC), and Game Boy Advance (GBA).  It also supports the subsystems
+Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
+    ;; As noted in these files among more:
+    ;; - icarus/icarus.cpp
+    ;; - higan/emulator/emulator.hpp
+    (license license:gpl3)))

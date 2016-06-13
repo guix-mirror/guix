@@ -298,7 +298,21 @@ standards.")
        (base32
         "0v4k47ziqsyfksv9sn4v1xvk4q414rc883hb1qzld63grj2nxxwp"))
       (patches (search-patches
-                "icecat-avoid-bundled-includes.patch"))
+                "icecat-avoid-bundled-includes.patch"
+                "icecat-CVE-2016-2818-pt1.patch"
+                "icecat-CVE-2016-2818-pt2.patch"
+                "icecat-CVE-2016-2818-pt3.patch"
+                "icecat-CVE-2016-2818-pt4.patch"
+                "icecat-CVE-2016-2818-pt5.patch"
+                "icecat-CVE-2016-2818-pt6.patch"
+                "icecat-CVE-2016-2818-pt7.patch"
+                "icecat-CVE-2016-2818-pt8.patch"
+                "icecat-CVE-2016-2818-pt9.patch"
+                "icecat-CVE-2016-2819.patch"
+                "icecat-CVE-2016-2821.patch"
+                "icecat-CVE-2016-2824.patch"
+                "icecat-CVE-2016-2828.patch"
+                "icecat-CVE-2016-2831.patch"))
       (modules '((guix build utils)))
       (snippet
        '(begin

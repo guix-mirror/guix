@@ -9028,3 +9028,120 @@ focus on event-based network programming and multiprotocol integration.")
 
 (define-public python2-twisted
   (package-with-python2 python-twisted))
+
+(define-public python-ply
+  (package
+    (name "python-ply")
+    (version "3.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/"
+               "96/e0/430fcdb6b3ef1ae534d231397bee7e9304be14a47a267e82ebcb3323d0b5"
+               "/ply-" version ".tar.gz"))
+        (sha256
+          (base32
+            "1f70ipynmiy09k6px2j7v4w5cdrc21za3xs2k6f1bsvb0bzvvlg7"))))
+    (build-system python-build-system)
+    (home-page "http://www.dabeaz.com/ply/")
+    (synopsis "Python Lex & Yacc")
+    (description "PLY is a @code{lex}/@code{yacc} implemented purely in Python.
+It uses LR parsing and does extensive error checking.")
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-ply))))))
+
+(define-public python2-ply
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-ply)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+
+(define-public python-tabulate
+  (package
+    (name "python-tabulate")
+    (version "0.7.5")
+    (source (origin
+             (method url-fetch)
+             (uri (pypi-uri "tabulate" version))
+             (sha256
+              (base32
+               "03l1r7ddd1a0j2snv1yd0hlnghjad3fg1an1jr8936ksv75slwch"))
+             ;; Fix tests
+             (modules '((guix build utils)))
+             (snippet '(substitute* '("test/test_cli.py"
+                                      "test/test_input.py"
+                                      "test/test_output.py"
+                                      "test/test_regression.py")
+                         (("from common") "from nose.tools")))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ;; For testing
+       ("python-nose" ,python-nose)))
+    (home-page "https://bitbucket.org/astanin/python-tabulate")
+    (synopsis "Pretty-print tabular data")
+    (description
+     "Tabulate is a library and command-line utility to pretty-print tabular
+data in Python.")
+    (license license:expat)))
+
+(define-public python2-tabulate
+  (package-with-python2 python-tabulate))
+
+(define-public python-kazoo
+  (package
+    (name "python-kazoo")
+    (version "2.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "kazoo" version))
+       (sha256
+        (base32
+         "10pb864if9qi2pq9lfb9m8f7z7ss6rml80gf1d9h64lap5crjnjj"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; XXX: needs zookeeper
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)))
+    (home-page "https://kazoo.readthedocs.org")
+    (synopsis "High-level Zookeeper client library")
+    (description
+     "Kazoo is a Python client library for the Apache Zookeeper distributed
+application service.  It is designed to be easy to use and to avoid common
+programming errors.")
+    (license asl2.0)))
+
+(define-public python2-kazoo
+  (package-with-python2 python-kazoo))
+
+(define-public python-pykafka
+  (package
+    (name "python-pykafka")
+    (version "2.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pykafka" version))
+              (sha256
+               (base32
+                "1id6sr159p6aa13bxcqyr9gln8sqg1l0ddzns5iws8kk5q1p5cfv"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; XXX: needs zookeeper, kafka, etc.
+    (native-inputs
+     `(("python-gevent" ,python-gevent)
+       ("python-kazoo" ,python-kazoo)
+       ("python-setuptools" ,python-setuptools)
+       ("python-tabulate" ,python-tabulate)))
+    (inputs
+     `(("librdkafka" ,librdkafka)))
+    (home-page "https://pykafka.readthedocs.io/")
+    (synopsis "Apache Kafka client for Python")
+    (description
+     "PyKafka is a client for the Apache Kafka distributed messaging system.
+It includes Python implementations of Kafka producers and consumers, which
+are optionally backed by a C extension built on librdkafka.")
+    (license asl2.0)))
+
+(define-public python2-pykafka
+  (package-with-python2 python-pykafka))

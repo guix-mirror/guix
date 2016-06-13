@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
 (define-module (gnu packages check)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages python)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -193,3 +195,62 @@ in the code.  Cppcheck primarily detects the types of bugs that the compilers
 normally do not detect.  The goal is to detect only real errors in the code
 (i.e. have zero false positives).")
     (license gpl3+)))
+
+(define-public googletest
+  (package
+    (name "googletest")
+    (version "1.7.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/google/googletest/archive/"
+                           "release-" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1k0nf1l9cb3prdmsvaajl5i31bx86c1mw0d5jgzykz7rzm36afpp"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("python-2" ,python-2)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'autoconf
+           (lambda _
+             (zero? (system* "autoreconf" "-vfi"))))
+         (add-before 'autoconf 'generate-headers
+           (lambda _
+             (begin
+               (delete-file "include/gtest/gtest-param-test.h")
+               (system* "python2" "scripts/pump.py"
+                        "include/gtest/gtest-param-test.h.pump")
+               (delete-file "include/gtest/internal/gtest-tuple.h")
+               (system* "python2" "scripts/pump.py"
+                        "include/gtest//internal/gtest-tuple.h.pump")
+               (delete-file
+                "include/gtest/internal/gtest-param-util-generated.h")
+               (system*
+                "python2" "scripts/pump.py"
+                "include/gtest/internal/gtest-param-util-generated.h.pump")
+               (delete-file "include/gtest/internal/gtest-type-util.h")
+               (system* "python2" "scripts/pump.py"
+                        "include/gtest/internal/gtest-type-util.h.pump"))))
+         (replace 'install
+           (lambda _
+             (let ((out (assoc-ref %outputs "out")))
+               (begin
+                 (install-file "lib/.libs/libgtest_main.a"
+                               (string-append out "/lib"))
+                 (install-file "lib/.libs/libgtest.a"
+                               (string-append out "/lib"))
+                 (copy-recursively "include"
+                  (string-append out "/include")))))))))
+    (home-page "https://github.com/google/googletest/")
+    (synopsis "Test discovery and XUnit test framework")
+    (description "Google Test features an XUnit test framework, automated test
+discovery, death tests, assertions, parameterized tests and XML test report
+generation.")
+    (license bsd-3)))

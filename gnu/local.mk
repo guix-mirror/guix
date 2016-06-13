@@ -480,6 +480,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/emacs-source-date-epoch.patch		\
   %D%/packages/patches/eudev-rules-directory.patch		\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
+  %D%/packages/patches/expat-CVE-2012-6702-and-CVE-2016-5300.patch	\
   %D%/packages/patches/expat-CVE-2015-1283-refix.patch		\
   %D%/packages/patches/expat-CVE-2016-0718.patch		\
   %D%/packages/patches/fastcap-mulGlobal.patch			\
@@ -538,6 +539,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_PATH.patch	\
   %D%/packages/patches/gtkglext-disable-disable-deprecated.patch \
   %D%/packages/patches/hdf5-config-date.patch			\
+  %D%/packages/patches/higan-remove-march-native-flag.patch	\
   %D%/packages/patches/hop-bigloo-4.0b.patch			\
   %D%/packages/patches/hop-linker-flags.patch			\
   %D%/packages/patches/hydra-automake-1.15.patch		\
@@ -545,6 +547,20 @@ dist_patch_DATA =						\
   %D%/packages/patches/hypre-doc-tables.patch			\
   %D%/packages/patches/hypre-ldflags.patch			\
   %D%/packages/patches/icecat-avoid-bundled-includes.patch	\
+  %D%/packages/patches/icecat-CVE-2016-2818-pt1.patch		\
+  %D%/packages/patches/icecat-CVE-2016-2818-pt2.patch		\
+  %D%/packages/patches/icecat-CVE-2016-2818-pt3.patch		\
+  %D%/packages/patches/icecat-CVE-2016-2818-pt4.patch		\
+  %D%/packages/patches/icecat-CVE-2016-2818-pt5.patch		\
+  %D%/packages/patches/icecat-CVE-2016-2818-pt6.patch		\
+  %D%/packages/patches/icecat-CVE-2016-2818-pt7.patch		\
+  %D%/packages/patches/icecat-CVE-2016-2818-pt8.patch		\
+  %D%/packages/patches/icecat-CVE-2016-2818-pt9.patch		\
+  %D%/packages/patches/icecat-CVE-2016-2819.patch		\
+  %D%/packages/patches/icecat-CVE-2016-2821.patch		\
+  %D%/packages/patches/icecat-CVE-2016-2824.patch		\
+  %D%/packages/patches/icecat-CVE-2016-2828.patch		\
+  %D%/packages/patches/icecat-CVE-2016-2831.patch		\
   %D%/packages/patches/icedtea-remove-overrides.patch		\
   %D%/packages/patches/icu4c-CVE-2014-6585.patch		\
   %D%/packages/patches/icu4c-CVE-2015-1270.patch		\
@@ -597,6 +613,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/libtiff-oob-write-in-nextdecode.patch	\
   %D%/packages/patches/libtool-skip-tests2.patch		\
   %D%/packages/patches/libunwind-CVE-2015-3239.patch		\
+  %D%/packages/patches/libvpx-CVE-2016-2818.patch		\
   %D%/packages/patches/libwmf-CAN-2004-0941.patch		\
   %D%/packages/patches/libwmf-CVE-2006-3376.patch		\
   %D%/packages/patches/libwmf-CVE-2007-0455.patch		\
@@ -722,7 +739,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/ripperx-missing-file.patch		\
   %D%/packages/patches/rpm-CVE-2014-8118.patch			\
   %D%/packages/patches/rsem-makefile.patch			\
+  %D%/packages/patches/ruby-concurrent-ignore-broken-test.patch	\
   %D%/packages/patches/ruby-symlinkfix.patch                    \
+  %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
   %D%/packages/patches/rush-CVE-2013-6889.patch			\
   %D%/packages/patches/sed-hurd-path-max.patch			\
   %D%/packages/patches/scheme48-tests.patch			\

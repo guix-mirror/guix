@@ -149,6 +149,43 @@ filtering (subscriptions), seamless access to multiple transport protocols and
 more.")
     (license license:lgpl3+)))
 
+(define-public librdkafka
+  (package
+    (name "librdkafka")
+    (version "0.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/edenhill/librdkafka/archive/"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "10ldx7g7ymmg17snzx78vy4n8ma1rjx0agzi34g15j2fk867xmas"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           ;; its custom configure script doesn't understand 'CONFIG_SHELL'.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               ;; librdkafka++.so lacks RUNPATH for librdkafka.so
+               (setenv "LDFLAGS"
+                       (string-append "-Wl,-rpath=" out "/lib"))
+               (zero? (system* "./configure"
+                               (string-append "--prefix=" out)))))))))
+    (native-inputs
+     `(("python" ,python-wrapper)))
+    (propagated-inputs
+     `(("zlib" ,zlib))) ; in the Libs.private field of rdkafka.pc
+    (home-page "https://github.com/edenhill/librdkafka")
+    (synopsis "Apache Kafka C/C++ client library")
+    (description
+     "librdkafka is a C library implementation of the Apache Kafka protocol,
+containing both Producer and Consumer support.")
+    (license license:bsd-2)))
+
 (define-public libndp
   (package
     (name "libndp")
@@ -291,7 +328,7 @@ and up to 1 Mbit/s downstream.")
 (define-public wireshark
   (package
     (name "wireshark")
-    (version "2.0.3")
+    (version "2.0.4")
     (synopsis "Network traffic analyzer")
     (source
      (origin
@@ -300,7 +337,7 @@ and up to 1 Mbit/s downstream.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "1z358k65frp9m0l07cppwxhvbcp1w9ya5sml87pzs8gyfmp3g5p1"))))
+         "19g11m8m8qd7dkcvcb27lyppklg608d9ap7wr3mr88clm4nwiacy"))))
     (build-system glib-or-gtk-build-system)
     (inputs `(("bison" ,bison)
               ("c-ares" ,c-ares)

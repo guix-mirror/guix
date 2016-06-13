@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -808,3 +809,57 @@ mind.  The font includes a bold version and a good italic version with new
 glyph designs, not just an added slant.")
     (home-page "https://fontlibrary.org/en/font/fantasque-sans-mono")
     (license license:silofl1.1)))
+
+(define-public font-hack
+  (package
+    (name "font-hack")
+    (version "2.020")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/chrissimpkins/Hack/releases/download/v"
+                    version "/Hack-v"
+                    (string-replace-substring version "." "_")
+                    "-ttf.zip"))
+              (sha256
+               (base32
+                "16kkmc3psckw1b7k07ccn1gi5ymhlg9djh43nqjzg065g6p6d184"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (srfi srfi-26))
+
+                   (let ((PATH     (string-append (assoc-ref %build-inputs
+                                                             "unzip")
+                                                  "/bin"))
+                         (font-dir (string-append %output
+                                                  "/share/fonts/truetype"))
+                         (doc-dir  (string-append %output "/share/doc/"
+                                                  ,name "-" ,version)))
+                     (setenv "PATH" PATH)
+                     (system* "unzip" (assoc-ref %build-inputs "source"))
+
+                     (mkdir-p font-dir)
+                     (mkdir-p doc-dir)
+                     (for-each (lambda (ttf)
+                                 (copy-file ttf
+                                            (string-append font-dir "/" ttf)))
+                               (find-files "." "\\.ttf$"))
+                     (for-each (lambda (doc)
+                                 (copy-file doc
+                                            (string-append doc-dir "/" doc)))
+                               (find-files "." "\\.txt$"))))))
+    (native-inputs
+     `(("source" ,source)
+       ("unzip" ,unzip)))
+    (home-page "https://sourcefoundry.org/hack/")
+    (synopsis "Typeface designed for sourcecode")
+    (description
+     "Hack is designed to be a workhorse typeface for code, it expands upon
+the Bitstream Vera & DejaVu projects, provides 1561 glyphs including
+powerline support.")
+    (license (license:x11-style
+              "https://github.com/chrissimpkins/Hack/blob/master/LICENSE.md"
+              "Hack Open Font License v2.0"))))

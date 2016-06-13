@@ -51,21 +51,35 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages zip)
   #:use-module (gnu packages texinfo)
-  #:use-module ((srfi srfi-1) #:select (fold alist-delete)))
+  #:use-module ((srfi srfi-1) #:select (fold alist-delete))
+  #:use-module (srfi srfi-11)
+  #:use-module (ice-9 match))
 
 (define-public java-swt
   (package
     (name "java-swt")
     (version "4.5")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "http://ftp-stud.fht-esslingen.de/pub/Mirrors/"
-                    "eclipse/eclipse/downloads/drops4/R-" version
-                    "-201506032000/swt-" version "-gtk-linux-x86.zip"))
-              (sha256
-               (base32
-                "03mhzraikcs4fsz7d3h5af9pw1bbcfd6dglsvbk2ciwimy9zj30q"))))
+    (source
+     ;; The types of many variables and procedures differ in the sources
+     ;; dependent on whether the target architecture is a 32-bit system or a
+     ;; 64-bit system.  Instead of patching the sources on demand in a build
+     ;; phase we download either the 32-bit archive (which mostly uses "int"
+     ;; types) or the 64-bit archive (which mostly uses "long" types).
+     (let ((hash32 "03mhzraikcs4fsz7d3h5af9pw1bbcfd6dglsvbk2ciwimy9zj30q")
+           (hash64 "1qq0pjll6030v4ml0hifcaaik7sx3fl7ghybfdw95vsvxafwp2ff")
+           (file32 "x86")
+           (file64 "x86_64"))
+       (let-values (((hash file)
+                     (match (or (%current-target-system) (%current-system))
+                       ("x86_64-linux" (values hash64 file64))
+                       (_              (values hash32 file32)))))
+         (origin
+           (method url-fetch)
+           (uri (string-append
+                 "http://ftp-stud.fht-esslingen.de/pub/Mirrors/"
+                 "eclipse/eclipse/downloads/drops4/R-" version
+                 "-201506032000/swt-" version "-gtk-linux-" file ".zip"))
+           (sha256 (base32 hash))))))
     (build-system ant-build-system)
     (arguments
      `(#:jar-name "swt.jar"

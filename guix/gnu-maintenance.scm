@@ -48,7 +48,7 @@
             gnu-package-download-url
 
             official-gnu-packages
-            find-packages
+            find-package
             gnu-package?
 
             release-file?
@@ -155,13 +155,12 @@ to fetch the list of GNU packages over HTTP."
          (close-port port)
          lst)))
 
-(define (find-packages regexp)
-  "Find GNU packages which satisfy REGEXP."
-  (let ((name-rx (make-regexp regexp)))
-    (filter (lambda (package)
-              (false-if-exception
-               (regexp-exec name-rx (gnu-package-name package))))
-            (official-gnu-packages))))
+(define (find-package name)
+  "Find GNU package called NAME and return it.  Return #f if it was not
+found."
+  (find (lambda (package)
+          (string=? name (gnu-package-name package)))
+        (official-gnu-packages)))
 
 (define gnu-package?
   (memoize

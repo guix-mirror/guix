@@ -2101,6 +2101,38 @@ aware transformations between times in different time zones.")
     (home-page "http://tzinfo.github.io")
     (license license:expat)))
 
+(define-public ruby-tzinfo-data
+  (package
+    (name "ruby-tzinfo-data")
+    (version "1.2016.4")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Download from GitHub because the rubygems version does not contain
+       ;; Rakefile or tests.
+       (uri (string-append
+             "https://github.com/tzinfo/tzinfo-data/archive/v"
+             version
+             ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0jnm8i379hn48cq5n39j7wzm08i0mw73kqzx3cqbxpiwlb1hnz80"))
+       ;; Remove the known test failure.
+       ;; https://github.com/tzinfo/tzinfo-data/issues/10
+       ;; https://bugs.launchpad.net/ubuntu/+source/glibc/+bug/1587128
+       (patches (search-patches
+                 "ruby-tzinfo-data-ignore-broken-test.patch"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-tzinfo" ,ruby-tzinfo)))
+    (synopsis "Data from the IANA Time Zone database")
+    (description
+     "This library provides @code{TZInfo::Data}, which contains data from the
+IANA Time Zone database packaged as Ruby modules for use with @code{TZInfo}.")
+    (home-page "http://tzinfo.github.io")
+    (license license:expat)))
+
 (define-public ruby-rb-inotify
   (package
     (name "ruby-rb-inotify")
@@ -2509,7 +2541,8 @@ you about the changes.")
        ("ruby-json" ,ruby-json)
        ("ruby-minitest" ,ruby-minitest)
        ("ruby-thread-safe" ,ruby-thread-safe)
-       ("ruby-tzinfo" ,ruby-tzinfo)))
+       ("ruby-tzinfo" ,ruby-tzinfo)
+       ("ruby-tzinfo-data" ,ruby-tzinfo-data)))
     (synopsis "Ruby on Rails utility library")
     (description "ActiveSupport is a toolkit of support libraries and Ruby
 core extensions extracted from the Rails framework.  It includes support for
@@ -3927,3 +3960,96 @@ comprehensive ORM layer for mapping records to Ruby objects and handling
 associated records.")
     (home-page "http://sequel.jeremyevans.net")
     (license license:expat)))
+
+(define-public ruby-timecop
+  (package
+    (name "ruby-timecop")
+    (version "0.8.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "timecop" version))
+       (sha256
+        (base32
+         "0vwbkwqyxhavzvr1820hqwz43ylnfcf6w4x6sag0nghi44sr9kmx"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'set-check-rubylib
+           (lambda _
+             ;; Set RUBYLIB so timecop tests finds its own lib.
+             (setenv "RUBYLIB" "lib")
+             #t)))))
+    (native-inputs
+     `(("bundler" ,bundler)
+       ("ruby-minitest-rg" ,ruby-minitest-rg)
+       ("ruby-mocha" ,ruby-mocha)
+       ("ruby-activesupport" ,ruby-activesupport)))
+    (synopsis "Test mocks for time-dependent functions.")
+    (description
+     "Timecop provides \"time travel\" and \"time freezing\" capabilities,
+making it easier to test time-dependent code.  It provides a unified method to
+mock @code{Time.now}, @code{Date.today}, and @code{DateTime.now} in a single
+call.")
+    (home-page "https://github.com/travisjeffery/timecop")
+    (license license:expat)))
+
+(define-public ruby-concurrent
+  (package
+    (name "ruby-concurrent")
+    (version "1.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Download from GitHub because the rubygems version does not contain
+       ;; Rakefile.
+       (uri (string-append
+             "https://github.com/ruby-concurrency/concurrent-ruby/archive/v"
+             version
+             ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1x3g2admp14ykwfxidsicqbhlfsnxh9wyc806np4i15hws4if1d8"))
+       ;; Exclude failing test reported at
+       ;; https://github.com/ruby-concurrency/concurrent-ruby/issues/534
+       (patches (search-patches "ruby-concurrent-ignore-broken-test.patch"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:test-target "spec"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'remove-git-lsfiles-and-extra-gemspecs
+           (lambda _
+             (for-each (lambda (file)
+                         (substitute* file
+                           (("git ls-files") "find * |sort")))
+                       (list "concurrent-ruby.gemspec"
+                             "support/file_map.rb"))
+             #t))
+         (add-before 'build 'remove-extra-gemspecs
+           (lambda _
+             ;; Delete extra gemspec files so 'first-gemspec' chooses the
+             ;; correct one.
+             (delete-file "concurrent-ruby-edge.gemspec")
+             (delete-file "concurrent-ruby-ext.gemspec")
+             #t))
+         (add-before 'check 'rake-compile
+           ;; Fix the test error described at
+           ;; https://github.com/ruby-concurrency/concurrent-ruby/pull/408
+           (lambda _ (zero? (system* "rake" "compile")))))))
+    (native-inputs
+     `(("ruby-rake-compiler" ,ruby-rake-compiler)
+       ("ruby-yard" ,ruby-yard)
+       ("ruby-rspec" ,ruby-rspec)
+       ("ruby-timecop" ,ruby-timecop)))
+    (synopsis "Concurrency tools for Ruby")
+    (description
+     "This library provides modern concurrency tools including agents,
+futures, promises, thread pools, actors, supervisors, and more.  It is
+inspired by Erlang, Clojure, Go, JavaScript, actors and classic concurrency
+patterns.")
+    (home-page "http://www.concurrent-ruby.com")
+    (license license:expat)))
+

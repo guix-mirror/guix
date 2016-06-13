@@ -256,53 +256,57 @@ the size in bytes."
   ;; Magic cookie for Nix archives.
   "nix-archive-1")
 
-(define (write-file file port)
+(define* (write-file file port
+                     #:key (select? (const #t)))
   "Write the contents of FILE to PORT in Nar format, recursing into
-sub-directories of FILE as needed."
+sub-directories of FILE as needed.  For each directory entry, call (SELECT?
+FILE STAT), where FILE is the entry's absolute file name and STAT is the
+result of 'lstat'; exclude entries for which SELECT? does not return true."
   (define p port)
 
   (write-string %archive-version-1 p)
 
-  (let dump ((f file))
-    (let ((s (lstat f)))
-      (write-string "(" p)
-      (case (stat:type s)
-        ((regular)
-         (write-string "type" p)
-         (write-string "regular" p)
-         (if (not (zero? (logand (stat:mode s) #o100)))
-             (begin
-               (write-string "executable" p)
-               (write-string "" p)))
-         (write-contents f p (stat:size s)))
-        ((directory)
-         (write-string "type" p)
-         (write-string "directory" p)
-         (let ((entries
-                ;; 'scandir' defaults to 'string-locale<?' to sort files, but
-                ;; this happens to be case-insensitive (at least in 'en_US'
-                ;; locale on libc 2.18.)  Conversely, we want files to be
-                ;; sorted in a case-sensitive fashion.
-                (scandir f (negate (cut member <> '("." ".."))) string<?)))
-           (for-each (lambda (e)
-                       (let ((f (string-append f "/" e)))
+  (let dump ((f file) (s (lstat file)))
+    (write-string "(" p)
+    (case (stat:type s)
+      ((regular)
+       (write-string "type" p)
+       (write-string "regular" p)
+       (if (not (zero? (logand (stat:mode s) #o100)))
+           (begin
+             (write-string "executable" p)
+             (write-string "" p)))
+       (write-contents f p (stat:size s)))
+      ((directory)
+       (write-string "type" p)
+       (write-string "directory" p)
+       (let ((entries
+              ;; 'scandir' defaults to 'string-locale<?' to sort files, but
+              ;; this happens to be case-insensitive (at least in 'en_US'
+              ;; locale on libc 2.18.)  Conversely, we want files to be
+              ;; sorted in a case-sensitive fashion.
+              (scandir f (negate (cut member <> '("." ".."))) string<?)))
+         (for-each (lambda (e)
+                     (let* ((f (string-append f "/" e))
+                            (s (lstat f)))
+                       (when (select? f s)
                          (write-string "entry" p)
                          (write-string "(" p)
                          (write-string "name" p)
                          (write-string e p)
                          (write-string "node" p)
-                         (dump f)
-                         (write-string ")" p)))
-                     entries)))
-        ((symlink)
-         (write-string "type" p)
-         (write-string "symlink" p)
-         (write-string "target" p)
-         (write-string (readlink f) p))
-        (else
-         (raise (condition (&message (message "unsupported file type"))
-                           (&nar-error (file f) (port port))))))
-      (write-string ")" p))))
+                         (dump f s)
+                         (write-string ")" p))))
+                   entries)))
+      ((symlink)
+       (write-string "type" p)
+       (write-string "symlink" p)
+       (write-string "target" p)
+       (write-string (readlink f) p))
+      (else
+       (raise (condition (&message (message "unsupported file type"))
+                         (&nar-error (file f) (port port))))))
+    (write-string ")" p)))
 
 (define (restore-file port file)
   "Read a file (possibly a directory structure) in Nar format from PORT.

@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (guix build-system perl)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system r)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages documentation)
@@ -3350,3 +3352,39 @@ you'd expect.")
 HTTPS.  It provides a library, libuhttpmock, which implements recording and
 playback of HTTP request/response traces.")
     (license l:lgpl2.1+)))
+
+(define-public woof
+  (package
+    (name "woof")
+    (version "2012-05-31")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.home.unix-ag.org/simon/woof-"
+                    version ".py"))
+              (sha256
+               (base32
+                "0wjmjhpg6xlid33yi59j47q2qadz20sijrqsjahj30vngz856hyq"))))
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((source (assoc-ref %build-inputs "source"))
+                (out    (assoc-ref %outputs "out"))
+                (bin    (string-append out "/bin"))
+                (python (assoc-ref %build-inputs "python")))
+           (mkdir-p bin)
+           (with-directory-excursion bin
+             (copy-file source "woof")
+             (patch-shebang "woof" (list (string-append python "/bin")))
+             (chmod "woof" #o555))
+           #t))))
+    (inputs `(("python" ,python-2)))
+    (home-page "http://www.home.unix-ag.org/simon/woof.html")
+    (synopsis "Single file web server")
+    (description "Woof (Web Offer One File) is a small simple web server that
+can easily be invoked on a single file.  Your partner can access the file with
+tools they trust (e.g. wget).")
+    (license l:gpl2+)))

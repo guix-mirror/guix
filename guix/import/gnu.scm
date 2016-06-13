@@ -111,13 +111,13 @@ details.)"
   (match (latest-release name)
     ((? upstream-source? release)
      (let ((version (upstream-source-version release)))
-       (match (find-packages (regexp-quote name))
-         ((info . _)
-          (gnu-package->sexp info release #:key-download key-download))
-         (()
+       (match (find-package name)
+         (#f
           (raise (condition
                   (&message
-                   (message "couldn't find meta-data for GNU package"))))))))
+                   (message "couldn't find meta-data for GNU package")))))
+         (info
+          (gnu-package->sexp info release #:key-download key-download)))))
     (_
      (raise (condition
              (&message

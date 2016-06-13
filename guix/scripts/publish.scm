@@ -28,6 +28,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
   #:use-module (srfi srfi-9 gnu)
+  #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (web http)
@@ -57,6 +58,8 @@ Publish ~a over HTTP.\n") %store-directory)
       --listen=HOST      listen on the network interface for HOST"))
   (display (_ "
   -u, --user=USER        change privileges to USER as soon as possible"))
+  (display (_ "
+      --ttl=TTL          announce narinfos can be cached for TTL seconds"))
   (display (_ "
   -r, --repl[=PORT]      spawn REPL server on PORT"))
   (newline)
@@ -99,6 +102,13 @@ Publish ~a over HTTP.\n") %store-directory)
                     (()
                      (leave (_ "lookup of host '~a' returned nothing")
                             name)))))
+        (option '("ttl") #t #f
+                (lambda (opt name arg result)
+                  (let ((duration (string->duration arg)))
+                    (unless duration
+                      (leave (_ "~a: invalid duration~%") arg))
+                    (alist-cons 'narinfo-ttl (time-second duration)
+                                result))))
         (option '(#\r "repl") #f #t
                 (lambda (opt name arg result)
                   ;; If port unspecified, use default Guile REPL port.
@@ -146,7 +156,8 @@ Publish ~a over HTTP.\n") %store-directory)
   "Generate a narinfo key/value string for STORE-PATH; an exception is raised
 if STORE-PATH is invalid.  The narinfo is signed with KEY."
   (let* ((path-info  (query-path-info store store-path))
-         (url        (string-append "nar/" (basename store-path)))
+         (url        (encode-and-join-uri-path (list "nar"
+                                                     (basename store-path))))
          (hash       (bytevector->nix-base32-string
                       (path-info-hash path-info)))
          (size       (path-info-nar-size path-info))
@@ -198,12 +209,18 @@ References: ~a~%"
                         (format port "~a: ~a~%" key value)))
                       %nix-cache-info))))
 
-(define (render-narinfo store request hash)
-  "Render metadata for the store path corresponding to HASH."
+(define* (render-narinfo store request hash #:key ttl)
+  "Render metadata for the store path corresponding to HASH.  If TTL is true,
+advertise it as the maximum validity period (in seconds) via the
+'Cache-Control' header.  This allows 'guix substitute' to cache it for an
+appropriate duration."
   (let ((store-path (hash-part->path store hash)))
     (if (string-null? store-path)
         (not-found request)
-        (values '((content-type . (application/x-nix-narinfo)))
+        (values `((content-type . (application/x-nix-narinfo))
+                  ,@(if ttl
+                        `((cache-control (max-age . ,ttl)))
+                        '()))
                 (cut display
                      (narinfo-string store store-path (force %private-key))
                      <>)))))
@@ -299,7 +316,7 @@ blocking."
   http-write
   (@@ (web server http) http-close))
 
-(define (make-request-handler store)
+(define* (make-request-handler store #:key narinfo-ttl)
   (lambda (request body)
     (format #t "~a ~a~%"
             (request-method request)
@@ -311,15 +328,18 @@ blocking."
            (render-nix-cache-info))
           ;; /<hash>.narinfo
           (((= extract-narinfo-hash (? string? hash)))
-           (render-narinfo store request hash))
+           ;; TODO: Register roots for HASH that will somehow remain for
+           ;; NARINFO-TTL.
+           (render-narinfo store request hash #:ttl narinfo-ttl))
           ;; /nar/<store-item>
           (("nar" store-item)
            (render-nar store request store-item))
           (_ (not-found request)))
         (not-found request))))
 
-(define (run-publish-server socket store)
-  (run-server (make-request-handler store)
+(define* (run-publish-server socket store
+                             #:key narinfo-ttl)
+  (run-server (make-request-handler store #:narinfo-ttl narinfo-ttl)
               concurrent-http-server
               `(#:socket ,socket)))
 
@@ -357,6 +377,7 @@ blocking."
                                 %default-options))
            (user    (assoc-ref opts 'user))
            (port    (assoc-ref opts 'port))
+           (ttl     (assoc-ref opts 'narinfo-ttl))
            (address (let ((addr (assoc-ref opts 'address)))
                       (make-socket-address (sockaddr:fam addr)
                                            (sockaddr:addr addr)
@@ -383,4 +404,4 @@ consider using the '--user' option!~%")))
       (when repl-port
         (repl:spawn-server (repl:make-tcp-server-socket #:port repl-port)))
       (with-store store
-        (run-publish-server socket store)))))
+        (run-publish-server socket store #:narinfo-ttl ttl)))))
