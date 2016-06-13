@@ -494,8 +494,7 @@ user-land process."
         <))
 
 (define mkdtemp!
-  (let* ((ptr  (dynamic-func "mkdtemp" (dynamic-link)))
-         (proc (pointer->procedure '* ptr '(*))))
+  (let ((proc (syscall->procedure '* "mkdtemp" '(*))))
     (lambda (tmpl)
       "Create a new unique directory in the file system using the template
 string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
@@ -626,8 +625,7 @@ are shared between the parent and child processes."
   ;; Some systems may be using an old (pre-2.14) version of glibc where there
   ;; is no 'setns' function available.
   (false-if-exception
-   (let* ((ptr  (dynamic-func "setns" (dynamic-link)))
-          (proc (pointer->procedure int ptr (list int int))))
+   (let ((proc (syscall->procedure int "setns" (list int int))))
      (lambda (fdes nstype)
        "Reassociate the current process with the namespace specified by FDES, a
 file descriptor obtained by opening a /proc/PID/ns/* file.  NSTYPE specifies
@@ -833,9 +831,7 @@ bytevector BV at INDEX."
 
 (define %ioctl
   ;; The most terrible interface, live from Scheme.
-  (pointer->procedure int
-                      (dynamic-func "ioctl" (dynamic-link))
-                      (list int unsigned-long '*)))
+  (syscall->procedure int "ioctl" (list int unsigned-long '*)))
 
 (define (bytevector->string-list bv stride len)
   "Return the null-terminated strings found in BV every STRIDE bytes.  Read at
@@ -1075,8 +1071,7 @@ return the list of resulting <interface> objects."
            (loop ptr (cons ifaddr result)))))))
 
 (define network-interfaces
-  (let* ((ptr  (dynamic-func "getifaddrs" (dynamic-link)))
-         (proc (pointer->procedure int ptr (list '*))))
+  (let ((proc (syscall->procedure int "getifaddrs" (list '*))))
     (lambda ()
       "Return a list of <interface> objects, each denoting a configured
 network interface.  This is implemented using the 'getifaddrs' libc function."
@@ -1093,8 +1088,7 @@ network interface.  This is implemented using the 'getifaddrs' libc function."
                    (list err)))))))
 
 (define free-ifaddrs
-  (let ((ptr (dynamic-func "freeifaddrs" (dynamic-link))))
-    (pointer->procedure void ptr '(*))))
+  (syscall->procedure void "freeifaddrs" '(*)))
 
 
 ;;;
