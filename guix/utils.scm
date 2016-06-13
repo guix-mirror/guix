@@ -34,7 +34,7 @@
   #:use-module ((rnrs bytevectors) #:select (bytevector-u8-set!))
   #:use-module (guix combinators)
   #:use-module ((guix build utils) #:select (dump-port))
-  #:use-module ((guix build syscalls) #:select (mkdtemp!))
+  #:use-module ((guix build syscalls) #:select (mkdtemp! fdatasync))
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
   #:autoload   (ice-9 popen)  (open-pipe*)
@@ -625,7 +625,8 @@ output port, and PROC's result is returned."
     (with-throw-handler #t
       (lambda ()
         (let ((result (proc out)))
-          (close out)
+          (fdatasync out)
+          (close-port out)
           (rename-file template file)
           result))
       (lambda (key . args)

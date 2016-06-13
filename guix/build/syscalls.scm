@@ -64,6 +64,7 @@
 
             processes
             mkdtemp!
+            fdatasync
             pivot-root
             fcntl-flock
 
@@ -505,6 +506,20 @@ string TMPL and return its file name.  TMPL must end with 'XXXXXX'."
                  (list tmpl (strerror err))
                  (list err)))
         (pointer->string result)))))
+
+(define fdatasync
+  (let ((proc (syscall->procedure int "fdatasync" (list int))))
+    (lambda (port)
+      "Flush buffered output of PORT, an output file port, and then call
+fdatasync(2) on the underlying file descriptor."
+      (force-output port)
+      (let* ((fd  (fileno port))
+             (ret (proc fd))
+             (err (errno)))
+        (unless (zero? ret)
+          (throw 'system-error "fdatasync" "~S: ~A"
+                 (list fd (strerror err))
+                 (list err)))))))
 
 
 (define-record-type <file-system>
