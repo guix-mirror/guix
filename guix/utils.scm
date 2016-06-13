@@ -630,7 +630,8 @@ output port, and PROC's result is returned."
           (rename-file template file)
           result))
       (lambda (key . args)
-        (false-if-exception (delete-file template))))))
+        (false-if-exception (delete-file template))
+        (close-port out)))))
 
 (define (cache-directory)
   "Return the cache directory for Guix, by default ~/.cache/guix."
