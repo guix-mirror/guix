@@ -316,7 +316,9 @@ required structures.")
           (base32
            "06996ds1rk8xhnyb5y273a7xkcxhggp4bq1g02rab55d7bjhfh0x"))
          (patches (search-patches "openssl-runpath.patch"
-                                  "openssl-c-rehash-in.patch")))))))
+                                  "openssl-c-rehash-in.patch"
+                                  "openssl-CVE-2016-2177.patch"
+                                  "openssl-CVE-2016-2178.patch")))))))
 
 (define-public libressl
   (package
