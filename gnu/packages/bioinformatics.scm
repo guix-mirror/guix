@@ -5127,68 +5127,71 @@ libraries for systems that do not have these available via other means.")
     (license license:artistic2.0)))
 
 (define-public piranha
-  (package
-    (name "piranha")
-    (version "1.1.3")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "https://github.com/smithlabcode/piranha"
-                                  "/archive/svn/tags/piranha-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1lczxff01n4139w7xwqamlb36g9hgrcy93gh03nqszhwb8ivsrqd"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:test-target "test"
-       #:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'copy-smithlab-cpp
-           (lambda* (#:key inputs #:allow-other-keys)
-             (mkdir "src/smithlab_cpp")
-             (for-each (lambda (file)
-                         (install-file file "./src/smithlab_cpp/"))
-                       (find-files (assoc-ref inputs "smithlab-cpp")))
-             #t))
-         (add-after 'install 'install-to-store
-           (lambda* (#:key outputs #:allow-other-keys)
-             (let* ((out (assoc-ref outputs "out"))
-                    (bin (string-append out "/bin")))
-               (mkdir-p bin)
+  ;; There is no release tarball for the latest version.  The latest commit is
+  ;; older than one year at the time of this writing.
+  (let ((revision "1")
+        (commit   "0466d364b71117d01e4471b74c514436cc281233"))
+    (package
+      (name "piranha")
+      (version (string-append "1.2.1-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/smithlabcode/piranha.git")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "117dc0zf20c61jam69sk4abl57ah6yi6i7qra7d7y5zrbgk12q5n"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:test-target "test"
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'copy-smithlab-cpp
+             (lambda* (#:key inputs #:allow-other-keys)
                (for-each (lambda (file)
-                           (install-file file bin))
-                         (find-files "bin" ".*")))
-             #t)))
-       #:configure-flags
-       (list (string-append "--with-bam_tools_headers="
-                            (assoc-ref %build-inputs "bamtools") "/include/bamtools")
-             (string-append "--with-bam_tools_library="
-                            (assoc-ref %build-inputs "bamtools") "/lib/bamtools"))))
-    (inputs
-     `(("bamtools" ,bamtools)
-       ("samtools" ,samtools-0.1)
-       ("gsl" ,gsl)
-       ("smithlab-cpp"
-        ,(let ((commit "3723e2db438c51501d0423429ff396c3035ba46a"))
-           (origin
-             (method git-fetch)
-             (uri (git-reference
-                   (url "https://github.com/smithlabcode/smithlab_cpp.git")
-                   (commit commit)))
-             (file-name (string-append "smithlab_cpp-" commit "-checkout"))
-             (sha256
-              (base32
-               "0l4gvbwslw5ngziskja41c00x1r06l3yidv7y0xw9djibhykzy0g")))))))
-    (native-inputs
-     `(("python" ,python-2)))
-    (home-page "https://github.com/smithlabcode/piranha")
-    (synopsis "Peak-caller for CLIP-seq and RIP-seq data")
-    (description
-     "Piranha is a peak-caller for genomic data produced by CLIP-seq and
+                           (install-file file "./src/smithlab_cpp/"))
+                         (find-files (assoc-ref inputs "smithlab-cpp")))
+               #t))
+           (add-after 'install 'install-to-store
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (mkdir-p bin)
+                 (for-each (lambda (file)
+                             (install-file file bin))
+                           (find-files "bin" ".*")))
+               #t)))
+         #:configure-flags
+         (list (string-append "--with-bam_tools_headers="
+                              (assoc-ref %build-inputs "bamtools") "/include/bamtools")
+               (string-append "--with-bam_tools_library="
+                              (assoc-ref %build-inputs "bamtools") "/lib/bamtools"))))
+      (inputs
+       `(("bamtools" ,bamtools)
+         ("samtools" ,samtools-0.1)
+         ("gsl" ,gsl)
+         ("smithlab-cpp"
+          ,(let ((commit "3723e2db438c51501d0423429ff396c3035ba46a"))
+             (origin
+               (method git-fetch)
+               (uri (git-reference
+                     (url "https://github.com/smithlabcode/smithlab_cpp.git")
+                     (commit commit)))
+               (file-name (string-append "smithlab_cpp-" commit "-checkout"))
+               (sha256
+                (base32
+                 "0l4gvbwslw5ngziskja41c00x1r06l3yidv7y0xw9djibhykzy0g")))))))
+      (native-inputs
+       `(("python" ,python-2)))
+      (home-page "https://github.com/smithlabcode/piranha")
+      (synopsis "Peak-caller for CLIP-seq and RIP-seq data")
+      (description
+       "Piranha is a peak-caller for genomic data produced by CLIP-seq and
 RIP-seq experiments.  It takes input in BED or BAM format and identifies
 regions of statistically significant read enrichment.  Additional covariates
 may optionally be provided to further inform the peak-calling process.")
-    (license license:gpl3+)))
+      (license license:gpl3+))))
 
 (define-public pepr
   (package
