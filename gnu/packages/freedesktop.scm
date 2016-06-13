@@ -253,14 +253,14 @@ Python.")
 (define-public wayland
   (package
     (name "wayland")
-    (version "1.10.0")
+    (version "1.11.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://wayland.freedesktop.org/releases/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1p307ly1yyqjnzn9dbv78yffql2qszn84qk74lwanl3gma8fgxjb"))))
+                "1c0d5ivy9n44hykvw2ggrvqrnn7naw3wg11vbvgwzgi8g5gr4h4m"))))
     (build-system gnu-build-system)
     (arguments `(#:parallel-tests? #f))
     (native-inputs
