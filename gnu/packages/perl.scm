@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4955,14 +4956,14 @@ called as methods, which usually isn't want you want.")
 (define-public perl-test-deep
   (package
     (name "perl-test-deep")
-    (version "0.114")
+    (version "1.120")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
                                   "Test-Deep-" version ".tar.gz"))
               (sha256
                (base32
-                "09yr47vw7vj27sdik312x08938higcij8ybyq8k67mlccx8cpqf0"))))
+                "1kdy06r0yg7zwarqglc9163vbfb0sfc4s6ld4pw5q7i9f7mghzi0"))))
     (build-system perl-build-system)
     (inputs `(("perl-test-tester" ,perl-test-tester)
               ("perl-test-nowarnings" ,perl-test-nowarnings)))
@@ -4972,8 +4973,7 @@ called as methods, which usually isn't want you want.")
 that the values match, that arrays and hashes have the same elements and that
 references are blessed into the correct class.  It also handles circular data
 structures without getting caught in an infinite loop.")
-    (home-page (string-append "http://search.cpan.org/~rjbs/"
-                              "Test-Deep-" version))
+    (home-page "http://search.cpan.org/dist/Test-Deep")
     (license gpl1+)))  ; or "Artistic License"
 
 (define-public perl-test-differences
