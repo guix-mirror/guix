@@ -648,10 +648,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/mcrypt-CVE-2012-4426.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4527.patch			\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
-  %D%/packages/patches/mit-krb5-CVE-2015-8629.patch		\
-  %D%/packages/patches/mit-krb5-CVE-2015-8630.patch		\
-  %D%/packages/patches/mit-krb5-CVE-2015-8631.patch		\
-  %D%/packages/patches/mit-krb5-init-context-null-spnego.patch	\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
   %D%/packages/patches/mplayer2-theora-fix.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
