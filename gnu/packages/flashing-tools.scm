@@ -160,3 +160,54 @@ With dfu-util you are able to download firmware to your device or upload
 firmware from it.")
     (home-page "http://dfu-util.sourceforge.net/")
     (license gpl2+)))
+
+(define-public teensy-loader-cli
+  ;; The repo does not tag versions nor does it use releases, but a commit
+  ;; message says "Importing 2.1", while the sourcce still says "2.0". So pin
+  ;; to a fixed commit.
+  (let ((commit "f289b7a2e5627464044249f0e5742830e052e360"))
+    (package
+      (name "teensy-loader-cli")
+      (version (string-append "2.1-1." (string-take commit 7)))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "https://github.com/PaulStoffregen/"
+                             "teensy_loader_cli/archive/" commit ".tar.gz"))
+         (sha256 (base32 "17wqc2q4fa473cy7f5m2yiyb9nq0qw7xal2kzrxzaikgm9rabsw8"))
+         (file-name (string-append "teensy-loader-cli-" version ".tar.gz" ))
+         (modules '((guix build utils)))
+         (snippet
+          `(begin
+             ;; Remove example flash files and teensy rebooter flash binaries.
+             (for-each delete-file (find-files "." "\\.(elf|hex)$"))
+             ;; Fix the version
+             (substitute* "teensy_loader_cli.c"
+               (("Teensy Loader, Command Line, Version 2.0\\\\n")
+                (string-append "Teensy Loader, Command Line, " ,version "\\n")))
+             #t))
+       (patches (search-patches "teensy-loader-cli-help.patch"))))
+      (build-system gnu-build-system)
+      (arguments
+       '(#:tests? #f ;; Makefile has no test target
+         #:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let* ((out (assoc-ref outputs "out"))
+                      (bin (string-append out "/bin")))
+                 (install-file "teensy_loader_cli" bin)
+                 #t))))))
+      (inputs
+       `(("libusb-compat" ,libusb-compat)))
+      (synopsis "Command line firmware uploader for Teensy development boards")
+      (description
+       "The Teensy loader program communicates with your Teensy board when the
+HalfKay bootloader is running, so you can upload new programs and run them.
+
+You need to add the udev rules to make the Teensy update available for
+non-root users.")
+      (home-page "https://www.pjrc.com/teensy/loader_cli.html")
+      (license gpl3))))

@@ -1,0 +1,33 @@
+Add support for '-h' (help).
+
+https://github.com/PaulStoffregen/teensy_loader_cli/pull/26
+
+---
+ teensy_loader_cli.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/teensy_loader_cli.c b/teensy_loader_cli.c
+index d4a6cc5..0a06209 100644
+--- a/teensy_loader_cli.c
++++ b/teensy_loader_cli.c
+@@ -37,7 +37,8 @@ void usage(const char *err)
+ {
+ 	if(err != NULL) fprintf(stderr, "%s\n\n", err);
+ 	fprintf(stderr,
+-		"Usage: teensy_loader_cli --mcu=<MCU> [-w] [-h] [-n] [-b] [-v] <file.hex>\n"
++		"Usage: teensy_loader_cli --mcu=<MCU> [-h] [-w] [-n] [-b] [-v] <file.hex>\n"
++		"\t-h : Print this help message\n"
+ 		"\t-w : Wait for device to appear\n"
+ 		"\t-r : Use hard reboot if device not online\n"
+ 		"\t-s : Use soft reboot if device not online (Teensy3.x only)\n"
+@@ -1081,6 +1082,7 @@ void parse_flag(char *arg)
+ 	int i;
+ 	for(i=1; arg[i]; i++) {
+ 		switch(arg[i]) {
++			case 'h': usage(NULL); break;
+ 			case 'w': wait_for_device_to_appear = 1; break;
+ 			case 'r': hard_reboot_device = 1; break;
+ 			case 's': soft_reboot_device = 1; break;
+-- 
+2.7.4
+
