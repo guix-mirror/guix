@@ -406,6 +406,7 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
 
   (define decompression-type
     (cond ((string-suffix? "gz" source-file-name)  "gzip")
+          ((string-suffix? "Z" source-file-name)  "gzip")
           ((string-suffix? "bz2" source-file-name) "bzip2")
           ((string-suffix? "lz" source-file-name)  "lzip")
           ((string-suffix? "zip" source-file-name) "unzip")
