@@ -3359,6 +3359,44 @@ optimize the sequencing depth, or to screen multiple libraries to avoid low
 complexity samples.")
     (license license:gpl3+)))
 
+(define-public python-screed
+  (package
+    (name "python-screed")
+    (version "0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "screed" version))
+       (sha256
+        (base32
+         "18czszp9fkx3j6jr7y5kp6dfialscgddk05mw1zkhh2zhn0jd8i0"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (setenv "PYTHONPATH"
+                     (string-append (getenv "PYTHONPATH") ":."))
+             (zero? (system* "nosetests" "--attr" "!known_failing")))))))
+    (native-inputs
+     `(("python-nose" ,python-nose)))
+    (inputs
+     `(("python-bz2file" ,python-bz2file)))
+    (home-page "http://github.com/dib-lab/screed/")
+    (synopsis "Short read sequence database utilities")
+    (description "Screed parses FASTA and FASTQ files and generates databases.
+Values such as sequence name, sequence description, sequence quality and the
+sequence itself can be retrieved from these databases.")
+    (license license:bsd-3)))
+
+(define-public python2-screed
+  (let ((base (package-with-python2 (strip-python2-variant python-screed))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
+
 (define-public sra-tools
   (package
     (name "sra-tools")
