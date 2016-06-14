@@ -230,7 +230,7 @@ module.")
 (define-public perl-xml-libxml
   (package
     (name "perl-xml-libxml")
-    (version "2.0118")
+    (version "2.0125")
     (source
      (origin
        (method url-fetch)
@@ -238,7 +238,7 @@ module.")
                            "XML-LibXML-" version ".tar.gz"))
        (sha256
         (base32
-         "170c8dbk4p6jw9is0cria73021yp3hpmhb19p9j0zg2yxwkawr6c"))))
+         "1mvbv1pwpdqni9ia9b6brg8brnnvfxr8j5x872qsngc92gipyh01"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-xml-namespacesupport" ,perl-xml-namespacesupport)
@@ -248,7 +248,7 @@ module.")
     (home-page "http://search.cpan.org/dist/XML-LibXML")
     (synopsis "Perl interface to libxml2")
     (description "This module implements a Perl interface to the libxml2
-library which provides interfaces for parsing and manipulating XML files. This
+library which provides interfaces for parsing and manipulating XML files.  This
 module allows Perl programmers to make use of the highly capable validating
 XML parser and the high performance DOM implementation.")
     (license (package-license perl))))
