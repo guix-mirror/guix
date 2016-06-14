@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2112,3 +2113,24 @@ There are plenty of differences between CIDER and SLIME, but the core ideas
 are pretty much the same (and SLIME served as the principle inspiration for
 CIDER).")
     (license license:gpl3+)))
+
+(define-public emacs-lua-mode
+  (package
+    (name "emacs-lua-mode")
+    (version "20151025")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/immerrr/lua-mode/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sbhfny5ib65cnx6xcy6h9bbw27mw034s8m9cca00bhxqaqi6p4v"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/immerrr/lua-mode/")
+    (synopsis "Major mode for lua")
+    (description
+     "This Emacs package provides a mode for @uref{https://www.lua.org/,
+Lua programing language}.")
+    (license license:gpl2+)))
