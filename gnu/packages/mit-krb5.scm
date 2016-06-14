@@ -49,7 +49,14 @@
      `(("bison" ,bison)
        ("perl" ,perl)))
     (arguments
-     `(#:phases
+     `(;; Work around "No rule to make target '../../include/gssapi/gssapi.h',
+       ;; needed by 'authgss_prot.so'."
+       #:parallel-build? #f
+
+       ;; Likewise with tests.
+       #:parallel-tests? #f
+
+       #:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'enter-source-directory
            (lambda _
