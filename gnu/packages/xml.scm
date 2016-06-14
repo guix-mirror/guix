@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
@@ -355,7 +355,7 @@ callback.")
 (define-public perl-xml-simple
   (package
     (name "perl-xml-simple")
-    (version "2.20")
+    (version "2.22")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -363,17 +363,18 @@ callback.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0jj3jiray1l4pi9wkjcpxjc3v431whdwx5aqnhgdm4i7h3817zsw"))))
+               "0jgbk30jizafpl7078jhw1di1yh08gf8d85dsvjllr595vr0widr"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-xml-parser" ,perl-xml-parser)))
+     `(("perl-xml-parser" ,perl-xml-parser)
+       ("perl-xml-sax" ,perl-xml-sax)))
     (license (package-license perl))
     (synopsis "Perl module for easy reading/writing of XML files")
     (description
      "The XML::Simple module provides a simple API layer on top of an
 underlying XML parsing module (either XML::Parser or one of the SAX2
 parser modules).")
-    (home-page "http://search.cpan.org/~grantm/XML-Simple-2.20/lib/XML/Simple.pm")))
+    (home-page "http://search.cpan.org/dist/XML-Simple")))
 
 (define-public perl-xml-regexp
   (package
