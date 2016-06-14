@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -119,3 +119,31 @@ meaningful to that file.  Any application that links in that file will get the
 flags, and the gflags library will automatically handle that flag
 appropriately.")
     (license bsd-3)))
+
+(define-public gengetopt
+  (package
+    (name "gengetopt")
+    (version "2.22.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/gengetopt/gengetopt-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1xq1kcfs6hri101ss4dhym0jn96z4v6jdvx288mfywadc245mc1h"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f))           ; not supported
+    (synopsis "Create parsers for command line options")
+    (description
+     "GNU Gengetopt is a program to generate a C/C++ function for parsing
+command-line options using the getopt_long function found in GNU
+libc, removing some of the tedium of this task for large programs
+that accept many options.  The options parsed by the generated
+function may be in both short (e.g., \"-h\") and long (\"--help\")
+formats, as specified by the GNU coding standards.  Additionally, the
+output of the standard options \"--help\" and \"--version\" is generated
+automatically.")
+    (home-page "http://www.gnu.org/software/gengetopt/gengetopt.html")
+    (license gpl3+)))
