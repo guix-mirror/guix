@@ -435,6 +435,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/audacity-fix-ffmpeg-binding.patch	\
   %D%/packages/patches/automake-skip-amhello-tests.patch	\
   %D%/packages/patches/automake-regexp-syntax.patch		\
+  %D%/packages/patches/automake-test-gzip-warning.patch		\
   %D%/packages/patches/avahi-localstatedir.patch		\
   %D%/packages/patches/avidemux-install-to-lib.patch		\
   %D%/packages/patches/avrdude-fix-libusb.patch			\
