@@ -2134,3 +2134,24 @@ CIDER).")
      "This Emacs package provides a mode for @uref{https://www.lua.org/,
 Lua programing language}.")
     (license license:gpl2+)))
+
+(define-public emacs-ebuild-mode
+  (package
+    (name "emacs-ebuild-mode")
+    (version "1.30")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://dev.gentoo.org/~ulm/emacs/ebuild-mode"
+                    "-" version ".tar.xz"))
+              (file-name (string-append name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0vp7lq1kvmh1b2bms2x1kf2k76dy9m02d7cirkxpiglwaxa0h9vz"))))
+    (build-system emacs-build-system)
+    (home-page "https://devmanual.gentoo.org")
+    (synopsis "Major modes for Gentoo package files")
+    (description
+     "This Emacs package provides modes for ebuild, eclass, eblit, GLEP42
+news items, openrc and runscripts.")
+    (license license:gpl2+)))
