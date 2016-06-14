@@ -27,7 +27,9 @@
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (ice-9 match)
-  #:export (postgresql-service))
+  #:export (postgresql-service
+            mysql-service
+            mysql-configuration))
 
 ;;; Commentary:
 ;;;
@@ -143,3 +145,118 @@ and stores the database cluster in @var{data-directory}."
             (postgresql postgresql)
             (config-file config-file)
             (data-directory data-directory))))
+
+
+;;;
+;;; MySQL.
+;;;
+
+(define-record-type* <mysql-configuration>
+  mysql-configuration make-mysql-configuration
+  mysql-configuration?
+  (mysql mysql-configuration-mysql (default mariadb)))
+
+(define %mysql-accounts
+  (list (user-group
+         (name "mysql")
+         (system? #t))
+        (user-account
+         (name "mysql")
+         (group "mysql")
+         (system? #t)
+         (home-directory "/var/empty")
+         (shell #~(string-append #$shadow "/sbin/nologin")))))
+
+(define mysql-configuration-file
+  (match-lambda
+    (($ <mysql-configuration> mysql)
+     (plain-file "my.cnf" "[mysqld]
+datadir=/var/lib/mysql
+socket=/run/mysqld/mysqld.sock
+"))))
+
+(define (%mysql-activation config)
+  "Return an activation gexp for the MySQL or MariaDB database server."
+  (let ((mysql  (mysql-configuration-mysql config))
+        (my.cnf (mysql-configuration-file config)))
+    #~(begin
+        (use-modules (ice-9 popen)
+                     (guix build utils))
+        (let* ((mysqld  (string-append #$mysql "/bin/mysqld"))
+               (user    (getpwnam "mysql"))
+               (uid     (passwd:uid user))
+               (gid     (passwd:gid user))
+               (datadir "/var/lib/mysql")
+               (rundir  "/run/mysqld"))
+          (mkdir-p datadir)
+          (chown datadir uid gid)
+          (mkdir-p rundir)
+          (chown rundir uid gid)
+          ;; Initialize the database when it doesn't exist.
+          (when (not (file-exists? (string-append datadir "/mysql")))
+            (if (string-prefix? "mysql-" (strip-store-file-name #$mysql))
+                ;; For MySQL.
+                (system* mysqld
+                         (string-append "--defaults-file=" #$my.cnf)
+                         "--initialize"
+                         "--user=mysql")
+                ;; For MariaDB.
+                ;; XXX: The 'mysql_install_db' script doesn't work directly
+                ;;      due to missing 'mkdir' in PATH.
+                (let ((p (open-pipe* OPEN_WRITE mysqld
+                                     (string-append
+                                      "--defaults-file=" #$my.cnf)
+                                     "--bootstrap"
+                                     "--user=mysql")))
+                  ;; Create the system database, as does by 'mysql_install_db'.
+                  (display "create database mysql;\n" p)
+                  (display "use mysql;\n" p)
+                  (for-each
+                   (lambda (sql)
+                     (call-with-input-file
+                         (string-append #$mysql "/share/mysql/" sql)
+                       (lambda (in) (dump-port in p))))
+                   '("mysql_system_tables.sql"
+                     "mysql_performance_tables.sql"
+                     "mysql_system_tables_data.sql"
+                     "fill_help_tables.sql"))
+                  ;; Remove the anonymous user and disable root access from
+                  ;; remote machines, as does by 'mysql_secure_installation'.
+                  (display "
+DELETE FROM user WHERE User='';
+DELETE FROM user WHERE User='root' AND
+  Host NOT IN  ('localhost', '127.0.0.1', '::1');
+FLUSH PRIVILEGES;
+" p)
+                  (close-pipe p))))))))
+
+(define (mysql-shepherd-service config)
+  (list (shepherd-service
+         (provision '(mysql))
+         (documentation "Run the MySQL server.")
+         (start (let ((mysql  (mysql-configuration-mysql config))
+                      (my.cnf (mysql-configuration-file config)))
+                  #~(make-forkexec-constructor
+                     (list (string-append #$mysql "/bin/mysqld")
+                           (string-append "--defaults-file=" #$my.cnf))
+                     #:user "mysql" #:group "mysql")))
+         (stop #~(make-kill-destructor)))))
+
+(define mysql-service-type
+  (service-type
+   (name 'mysql)
+   (extensions
+    (list (service-extension account-service-type
+                             (const %mysql-accounts))
+          (service-extension activation-service-type
+                             %mysql-activation)
+          (service-extension shepherd-root-service-type
+                             mysql-shepherd-service)))))
+
+(define* (mysql-service #:key (config (mysql-configuration)))
+  "Return a service that runs @command{mysqld}, the MySQL or MariaDB
+database server.
+
+The optional @var{config} argument specifies the configuration for
+@command{mysqld}, which should be a @code{<mysql-configuration>} object."
+  (service mysql-service-type config))

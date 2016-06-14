@@ -8001,7 +8001,7 @@ web site} for more information.
 @node Database Services
 @subsubsection Database Services
 
-The @code{(gnu services databases)} module provides the following service.
+The @code{(gnu services databases)} module provides the following services.
 
 @deffn {Scheme Procedure} postgresql-service [#:postgresql postgresql] @
        [#:config-file] [#:data-directory ``/var/lib/postgresql/data'']
@@ -8012,6 +8012,27 @@ The PostgreSQL daemon loads its runtime configuration from
 @var{config-file} and stores the database cluster in
 @var{data-directory}.
 @end deffn
+
+@deffn {Scheme Procedure} mysql-service [#:config (mysql-configuration)]
+Return a service that runs @command{mysqld}, the MySQL or MariaDB
+database server.
+
+The optional @var{config} argument specifies the configuration for
+@command{mysqld}, which should be a @code{<mysql-configuraiton>} object.
+@end deffn
+
+@deftp {Data Type} mysql-configuration
+Data type representing the configuration of @var{mysql-service}.
+
+@table @asis
+@item @code{mysql} (default: @var{mariadb})
+Package object of the MySQL database server, can be either @var{mariadb}
+or @var{mysql}.
+
+For MySQL, a temorary root password will be displayed at activation time.
+For MariaDB, the root password is empty.
+@end table
+@end deftp
 
 @node Mail Services
 @subsubsection Mail Services
