@@ -2038,22 +2038,21 @@ in your modules in a \"Java-esque\" manner.")
 (define-public perl-exporter-lite
   (package
     (name "perl-exporter-lite")
-    (version "0.06")
+    (version "0.08")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
                                   "Exporter-Lite-" version ".tar.gz"))
               (sha256
                (base32
-                "0k4gkvid4fr8yvwj0axdx5111mzfw2iipls3qllxr364fqhmclpj"))))
+                "1hns15imih8z2h6zv3m1wwmv9fiysacsb52y94v6zf2cmw4kjny0"))))
     (build-system perl-build-system)
     (synopsis "Lightweight exporting of functions and variables")
     (description
      "Exporter::Lite is an alternative to Exporter, intended to provide a
 lightweight subset of the most commonly-used functionality.  It supports
 import(), @@EXPORT and @@EXPORT_OK and not a whole lot else.")
-    (home-page (string-append "http://search.cpan.org/~neilb/"
-                              "Exporter-Lite-" version))
+    (home-page "http://search.cpan.org/dist/Exporter-Lite")
     (license (package-license perl))))
 
 (define-public perl-exporter-tiny
