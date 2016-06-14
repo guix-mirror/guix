@@ -869,17 +869,17 @@ projects while introducing many more.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2016.05.01")
+    (version "2016.06.14")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://youtube-dl.org/downloads/"
+              (uri (string-append "https://youtube-dl.org/downloads/"
                                   version "/youtube-dl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1w04afmwq5pjvp3nl2k59q0cigqrj9n8fwkydcfldwpq83l15j5d"))))
+                "0fmvpqipc1xwagvk7ih4slmv1xz1rb6s8wpndhypwvrq4pnnm9ns"))))
     (build-system python-build-system)
-    (home-page "http://youtube-dl.org")
+    (home-page "https://youtube-dl.org")
     (arguments
      ;; The problem here is that the directory for the man page and completion
      ;; files is relative, and for some reason, setup.py uses the
