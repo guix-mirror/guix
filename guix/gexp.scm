@@ -202,19 +202,6 @@ cross-compiling.)"
   ;; %%LOCAL-FILE is not.
   (%%local-file file promise name recursive?))
 
-(define (extract-directory properties)
-  "Extract the directory name from source location PROPERTIES."
-  (match (assq 'filename properties)
-    (('filename . (? string? file-name))
-     (dirname file-name))
-    (_
-     #f)))
-
-(define-syntax-rule (current-source-directory)
-  "Expand to the directory of the current source file or #f if it could not
-be determined."
-  (extract-directory (current-source-location)))
-
 (define (absolute-file-name file directory)
   "Return the canonical absolute file name for FILE, which lives in the
 vicinity of DIRECTORY."
