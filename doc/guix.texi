@@ -2561,7 +2561,7 @@ one @i{via} its @code{Requires} field.
 
 Another example where @code{propagated-inputs} is useful is for languages
 that lack a facility to record the run-time search path akin to the
-@code{RUNPATH}of ELF files; this includes Guile, Python, Perl, GHC, and
+@code{RUNPATH} of ELF files; this includes Guile, Python, Perl, GHC, and
 more.  To ensure that libraries written in those languages can find
 library code they depend on at run time, run-time dependencies must be
 listed in @code{propagated-inputs} rather than @code{inputs}.
@@ -3907,7 +3907,7 @@ like this:
 @end example
 
 In this example, the resulting @file{/gnu/store/@dots{}-profile.sh} file
-will references @var{coreutils}, @var{grep}, and @var{sed}, thereby
+will reference @var{coreutils}, @var{grep}, and @var{sed}, thereby
 preventing them from being garbage-collected during its lifetime.
 @end deffn
 
@@ -4008,7 +4008,7 @@ for among the GNU distribution modules (@pxref{Package Modules}).
 
 Alternatively, the @code{--expression} option may be used to specify a
 Scheme expression that evaluates to a package; this is useful when
-disambiguation among several same-named packages or package variants is
+disambiguating among several same-named packages or package variants is
 needed.
 
 There may be zero or more @var{options}.  The available options are
@@ -4040,7 +4040,7 @@ the command-line tools.
 
 @item --keep-failed
 @itemx -K
-Keep the build tree of failed builds.  Thus, if a build fail, its build
+Keep the build tree of failed builds.  Thus, if a build fails, its build
 tree is kept under @file{/tmp}, in a directory whose name is shown at
 the end of the build log.  This is useful when debugging build issues.
 
