@@ -593,6 +593,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/jasper-CVE-2016-2089.patch		\
   %D%/packages/patches/jasper-CVE-2016-2116.patch		\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
+  %D%/packages/patches/khmer-use-libraries.patch                \
   %D%/packages/patches/kmod-module-directory.patch		\
   %D%/packages/patches/ldc-disable-tests.patch			\
   %D%/packages/patches/lftp-dont-save-unknown-host-fingerprint.patch \

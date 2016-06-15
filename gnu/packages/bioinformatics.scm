@@ -2301,6 +2301,84 @@ command, or queried for specific k-mers with @code{jellyfish query}.")
     ;; files such as lib/jsoncpp.cpp are released under the Expat license.
     (license (list license:gpl3+ license:expat))))
 
+(define-public khmer
+  (package
+    (name "khmer")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "khmer" version))
+       (sha256
+        (base32
+         "0wb05shqh77v00256qlm68vbbx3kl76fyzihszbz5nhanl4ni33a"))
+       (patches (search-patches "khmer-use-libraries.patch"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'set-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             ;; Delete bundled libraries.
+             (delete-file-recursively "third-party/zlib")
+             (delete-file-recursively "third-party/bzip2")
+             ;; Replace bundled seqan.
+             (let* ((seqan-all "third-party/seqan")
+                    (seqan-include (string-append
+                                    seqan-all "/core/include")))
+               (delete-file-recursively seqan-all)
+               (copy-recursively (string-append (assoc-ref inputs "seqan")
+                                                "/include/seqan")
+                          (string-append seqan-include "/seqan")))
+             ;; We do not replace the bundled MurmurHash as the canonical
+             ;; repository for this code 'SMHasher' is unsuitable for
+             ;; providing a library.  See
+             ;; https://lists.gnu.org/archive/html/guix-devel/2016-06/msg00977.html
+             #t))
+         (add-after 'unpack 'set-cc
+           (lambda _
+             (setenv "CC" "gcc")
+             #t))
+         ;; It is simpler to test after installation.
+         (delete 'check)
+         (add-after 'install 'post-install-check
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (setenv "PATH"
+                       (string-append
+                        (getenv "PATH")
+                        ":"
+                        (assoc-ref outputs "out")
+                        "/bin"))
+               (setenv "PYTHONPATH"
+                       (string-append
+                        (getenv "PYTHONPATH")
+                        ":"
+                        out
+                        "/lib/python"
+                        (string-take (string-take-right
+                                      (assoc-ref inputs "python") 5) 3)
+                        "/site-packages"))
+               (with-directory-excursion "build"
+                 (zero? (system* "nosetests" "khmer" "--attr"
+                                 "!known_failing")))))))))
+    (native-inputs
+     `(("seqan" ,seqan)
+       ("python-nose" ,python-nose)))
+    (inputs
+     `(("zlib" ,zlib)
+       ("bzip2" ,bzip2)
+       ("python-screed" ,python-screed)
+       ("python-bz2file" ,python-bz2file)))
+    (home-page "https://khmer.readthedocs.org/")
+    (synopsis "K-mer counting, filtering and graph traversal library")
+    (description "The khmer software is a set of command-line tools for
+working with DNA shotgun sequencing data from genomes, transcriptomes,
+metagenomes and single cells.  Khmer can make de novo assemblies faster, and
+sometimes better.  Khmer can also identify and fix problems with shotgun
+data.")
+    (license license:bsd-3)))
+
 (define-public macs
   (package
     (name "macs")
