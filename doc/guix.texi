@@ -7998,6 +7998,13 @@ location databases.  See
 web site} for more information.
 @end deffn
 
+@deffn {Scheme Procedure} bluetooth-service [#:bluez @var{bluez}]
+Return a service that runs the @command{bluetoothd} daemon, which manages
+all the Bluetooth devices and provides a number of D-Bus interfaces.
+
+Users need to be in the @code{lp} group to access the D-Bus service.
+@end deffn
+
 @node Database Services
 @subsubsection Database Services
 
