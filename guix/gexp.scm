@@ -189,18 +189,21 @@ cross-compiling.)"
 ;; absolute file name.  We keep it in a promise to compute it lazily and avoid
 ;; repeated 'stat' calls.
 (define-record-type <local-file>
-  (%%local-file file absolute name recursive?)
+  (%%local-file file absolute name recursive? select?)
   local-file?
   (file       local-file-file)                    ;string
   (absolute   %local-file-absolute-file-name)     ;promise string
   (name       local-file-name)                    ;string
-  (recursive? local-file-recursive?))             ;Boolean
+  (recursive? local-file-recursive?)              ;Boolean
+  (select?    local-file-select?))                ;string stat -> Boolean
+
+(define (true file stat) #t)
 
 (define* (%local-file file promise #:optional (name (basename file))
-                      #:key recursive?)
+                      #:key recursive? (select? true))
   ;; This intermediate procedure is part of our ABI, but the underlying
   ;; %%LOCAL-FILE is not.
-  (%%local-file file promise name recursive?))
+  (%%local-file file promise name recursive? select?))
 
 (define (absolute-file-name file directory)
   "Return the canonical absolute file name for FILE, which lives in the
@@ -222,6 +225,10 @@ When RECURSIVE? is true, the contents of FILE are added recursively; if FILE
 designates a flat file and RECURSIVE? is true, its contents are added, and its
 permission bits are kept.
 
+When RECURSIVE? is true, call (SELECT?  FILE STAT) for each directory entry,
+where FILE is the entry's absolute file name and STAT is the result of
+'lstat'; exclude entries for which SELECT? does not return true.
+
 This is the declarative counterpart of the 'interned-file' monadic procedure."
   (%local-file file
                (delay (absolute-file-name file (current-source-directory)))
@@ -235,12 +242,13 @@ This is the declarative counterpart of the 'interned-file' monadic procedure."
 (define-gexp-compiler (local-file-compiler (file local-file?) system target)
   ;; "Compile" FILE by adding it to the store.
   (match file
-    (($ <local-file> file (= force absolute) name recursive?)
+    (($ <local-file> file (= force absolute) name recursive? select?)
      ;; Canonicalize FILE so that if it's a symlink, it is resolved.  Failing
      ;; to do that, when RECURSIVE? is #t, we could end up creating a dangling
      ;; symlink in the store, and when RECURSIVE? is #f 'add-to-store' would
      ;; just throw an error, both of which are inconvenient.
-     (interned-file absolute name #:recursive? recursive?))))
+     (interned-file absolute name
+                    #:recursive? recursive? #:select? select?))))
 
 (define-record-type <plain-file>
   (%plain-file name content references)
