@@ -792,7 +792,7 @@ information in exceptions."
      ;; store path, it needs to be added anyway, so it can be used as a
      ;; source.
      (list name (intern file)))
-    (((? string? name) (? origin? source))
+    (((? string? name) (? struct? source))
      (list name (package-source-derivation store source system)))
     (x
      (raise (condition (&package-input-error
@@ -1161,12 +1161,12 @@ cross-compilation target triplet."
   (origin->derivation origin system))
 
 (define package-source-derivation                 ;somewhat deprecated
-  (let ((lower (store-lower origin->derivation)))
+  (let ((lower (store-lower lower-object)))
     (lambda* (store source #:optional (system (%current-system)))
       "Return the derivation or file corresponding to SOURCE, which can be an
-<origin> or a file name.  When SOURCE is a file name, return either the
-interned file name (if SOURCE is outside of the store) or SOURCE itself (if
-SOURCE is already a store item.)"
+a file name or any object handled by 'lower-object', such as an <origin>.
+When SOURCE is a file name, return either the interned file name (if SOURCE is
+outside of the store) or SOURCE itself (if SOURCE is already a store item.)"
       (match source
         ((and (? string?) (? direct-store-path?) file)
          file)

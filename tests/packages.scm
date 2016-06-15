@@ -21,6 +21,7 @@
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix grafts)
+  #:use-module ((guix gexp) #:select (local-file local-file-file))
   #:use-module ((guix utils)
                 ;; Rename the 'location' binding to allow proper syntax
                 ;; matching when setting the 'location' field of a package.
@@ -294,6 +295,20 @@
                                              (package-source package))))
     (and (direct-store-path? source)
          (string-suffix? "utils.scm" source))))
+
+(test-assert "package-source-derivation, local-file"
+  (let* ((file    (local-file "../guix/base32.scm"))
+         (package (package (inherit (dummy-package "p"))
+                    (source file)))
+         (source  (package-source-derivation %store
+                                             (package-source package))))
+    (and (store-path? source)
+         (string-suffix? "base32.scm" source)
+         (valid-path? %store source)
+         (equal? (call-with-input-file source get-bytevector-all)
+                 (call-with-input-file
+                     (search-path %load-path "guix/base32.scm")
+                   get-bytevector-all)))))
 
 (unless (network-reachable?) (test-skip 1))
 (test-equal "package-source-derivation, snippet"

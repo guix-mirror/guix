@@ -2503,8 +2503,12 @@ The name of the package, as a string.
 The version of the package, as a string.
 
 @item @code{source}
-An origin object telling how the source code for the package should be
-acquired (@pxref{origin Reference}).
+An object telling how the source code for the package should be
+acquired.  Most of the time, this is an @code{origin} object, which
+denotes a file fetched from the Internet (@pxref{origin Reference}).  It
+can also be any other ``file-like'' object such as a @code{local-file},
+which denotes a file from the local file system (@pxref{G-Expressions,
+@code{local-file}}).
 
 @item @code{build-system}
 The build system that should be used to build the package (@pxref{Build
