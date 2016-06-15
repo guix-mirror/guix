@@ -1129,12 +1129,10 @@ cross-compilation target triplet."
       (package->cross-derivation package target system)
       (package->derivation package system)))
 
-(define* (origin->derivation source
+(define* (origin->derivation origin
                              #:optional (system (%current-system)))
-  "When SOURCE is an <origin> object, return its derivation for SYSTEM.  When
-SOURCE is a file name, return either the interned file name (if SOURCE is
-outside of the store) or SOURCE itself (if SOURCE is already a store item.)"
-  (match source
+  "Return the derivation corresponding to ORIGIN."
+  (match origin
     (($ <origin> uri method sha256 name (= force ()) #f)
      ;; No patches, no snippet: this is a fixed-output derivation.
      (method uri 'sha256 sha256 name #:system system))
@@ -1155,18 +1153,24 @@ outside of the store) or SOURCE itself (if SOURCE is already a store item.)"
                          #:system system
                          #:modules modules
                          #:imported-modules modules
-                         #:guile-for-build guile)))
-    ((and (? string?) (? direct-store-path?) file)
-     (with-monad %store-monad
-       (return file)))
-    ((? string? file)
-     (interned-file file (basename file)
-                    #:recursive? #t))))
+                         #:guile-for-build guile)))))
 
 (define-gexp-compiler (origin-compiler (origin origin?) system target)
   ;; Compile ORIGIN to a derivation for SYSTEM.  This is used when referring
   ;; to an origin from within a gexp.
   (origin->derivation origin system))
 
-(define package-source-derivation
-  (store-lower origin->derivation))
+(define package-source-derivation                 ;somewhat deprecated
+  (let ((lower (store-lower origin->derivation)))
+    (lambda* (store source #:optional (system (%current-system)))
+      "Return the derivation or file corresponding to SOURCE, which can be an
+<origin> or a file name.  When SOURCE is a file name, return either the
+interned file name (if SOURCE is outside of the store) or SOURCE itself (if
+SOURCE is already a store item.)"
+      (match source
+        ((and (? string?) (? direct-store-path?) file)
+         file)
+        ((? string? file)
+         (add-to-store store (basename file) #t "sha256" file))
+        (_
+         (lower store source system))))))
