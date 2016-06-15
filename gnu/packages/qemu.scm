@@ -51,7 +51,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix download)
-  #:use-module ((guix licenses) #:select (gpl2 lgpl2.1+))
+  #:use-module ((guix licenses) #:select (gpl2 gpl2+ lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
@@ -405,3 +405,78 @@ virtualization library.")
 
 (define-public python2-libvirt
   (package-with-python2 python-libvirt))
+
+(define-public virt-manager
+  (package
+    (name "virt-manager")
+    (version "1.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://virt-manager.org/download/sources"
+                                  "/virt-manager/virt-manager-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1jnawqjmcqd2db78ngx05x7cxxn3iy1sb4qfgbwcn045qh6a8cdz"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       ;; Some of the tests seem to require network access to install virtual
+       ;; machines.
+       #:tests? #f
+       #:modules ((ice-9 match)
+                  (srfi srfi-26)
+                  (guix build python-build-system)
+                  (guix build utils))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-setup
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* "virtcli/cliconfig.py"
+               (("/usr") (assoc-ref outputs "out")))
+             #t))
+         (add-before 'wrap 'wrap-with-GI_TYPELIB_PATH
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((bin       (string-append (assoc-ref outputs "out") "/bin"))
+                    (bin-files (find-files bin ".*"))
+                    (paths     (map (match-lambda
+                                      ((output . directory)
+                                       (let* ((girepodir (string-append
+                                                          directory
+                                                          "/lib/girepository-1.0")))
+                                         (if (file-exists? girepodir)
+                                             girepodir #f))))
+                                    inputs)))
+               (for-each (lambda (file)
+                           (format #t "wrapping ~a\n" file)
+                           (wrap-program file
+                             `("GI_TYPELIB_PATH" ":" prefix
+                               ,(filter identity paths))))
+                         bin-files))
+             #t)))))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libvirt" ,libvirt)
+       ("libvirt-glib" ,libvirt-glib)
+       ("libosinfo" ,libosinfo)
+       ("gobject-introspection" ,gobject-introspection)
+       ("python2-libvirt" ,python2-libvirt)
+       ("python2-requests" ,python2-requests)
+       ("python2-ipaddr" ,python2-ipaddr)
+       ("python2-pygobject" ,python2-pygobject)
+       ("python2-libxml2" ,python2-libxml2)))
+    ;; virt-manager searches for qemu-img or kvm-img in the PATH.
+    (propagated-inputs
+     `(("qemu" ,qemu)))
+    (native-inputs
+     `(("glib" ,glib "bin")             ; glib-compile-schemas.
+       ("perl" ,perl)                   ; pod2man
+       ("intltool" ,intltool)))
+    (home-page "https://virt-manager.org/")
+    (synopsis "Manage virtual machines")
+    (description
+     "The virt-manager application is a desktop user interface for managing
+virtual machines through libvirt.  It primarily targets KVM VMs, but also
+manages Xen and LXC (Linux containers).  It presents a summary view of running
+domains, their live performance and resource utilization statistics.")
+    (license gpl2+)))
