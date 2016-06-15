@@ -154,7 +154,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/graphviz.scm			\
   %D%/packages/groff.scm			\
   %D%/packages/grub.scm				\
-  %D%/packages/grue-hunter.scm			\
   %D%/packages/gsasl.scm			\
   %D%/packages/gstreamer.scm			\
   %D%/packages/gtk.scm				\
