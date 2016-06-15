@@ -611,7 +611,7 @@ passphrase when @code{gpg} or @code{gpg2} is run and needs it.")))
     (inherit pinentry-tty)
     (name "pinentry-qt")
     (inputs
-     `(("qt" ,qt)
+     `(("qtbase" ,qtbase)
        ,@(package-inputs pinentry-tty)))
   (description
    "Pinentry provides a console and a Qt GUI that allows users to enter a
