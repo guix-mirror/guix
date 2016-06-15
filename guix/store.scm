@@ -263,14 +263,12 @@
     (path-info deriver hash refs registration-time nar-size)))
 
 (define-syntax write-arg
-  (syntax-rules (integer boolean file string string-list string-pairs
+  (syntax-rules (integer boolean string string-list string-pairs
                  store-path store-path-list base16)
     ((_ integer arg p)
      (write-int arg p))
     ((_ boolean arg p)
      (write-int (if arg 1 0) p))
-    ((_ file arg p)
-     (write-file arg p))
     ((_ string arg p)
      (write-string arg p))
     ((_ string-list arg p)
@@ -653,30 +651,51 @@ path."
               (hash-set! cache args path)
               path))))))
 
+(define true
+  ;; Define it once and for all since we use it as a default value for
+  ;; 'add-to-store' and want to make sure two default values are 'eq?' for the
+  ;; purposes or memoization.
+  (lambda (file stat)
+    #t))
+
 (define add-to-store
   ;; A memoizing version of `add-to-store'.  This is important because
   ;; `add-to-store' leads to huge data transfers to the server, and
   ;; because it's often called many times with the very same argument.
-  (let ((add-to-store (operation (add-to-store (string basename)
-                                               (boolean fixed?) ; obsolete, must be #t
-                                               (boolean recursive?)
-                                               (string hash-algo)
-                                               (file file-name))
-                                 #f
-                                 store-path)))
-    (lambda (server basename recursive? hash-algo file-name)
+  (let ((add-to-store
+         (lambda* (server basename recursive? hash-algo file-name
+                          #:key (select? true))
+           ;; We don't use the 'operation' macro so we can pass SELECT? to
+           ;; 'write-file'.
+           (let ((port (nix-server-socket server)))
+             (write-int (operation-id add-to-store) port)
+             (write-string basename port)
+             (write-int 1 port)                   ;obsolete, must be #t
+             (write-int (if recursive? 1 0) port)
+             (write-string hash-algo port)
+             (write-file file-name port #:select? select?)
+             (let loop ((done? (process-stderr server)))
+               (or done? (loop (process-stderr server))))
+             (read-store-path port)))))
+    (lambda* (server basename recursive? hash-algo file-name
+                     #:key (select? true))
       "Add the contents of FILE-NAME under BASENAME to the store.  When
 RECURSIVE? is false, FILE-NAME must designate a regular file--not a directory
 nor a symlink.  When RECURSIVE? is true and FILE-NAME designates a directory,
 the contents of FILE-NAME are added recursively; if FILE-NAME designates a
 flat file and RECURSIVE? is true, its contents are added, and its permission
-bits are kept.  HASH-ALGO must be a string such as \"sha256\"."
+bits are kept.  HASH-ALGO must be a string such as \"sha256\".
+
+When RECURSIVE? is true, call (SELECT?  FILE STAT) for each directory entry,
+where FILE is the entry's absolute file name and STAT is the result of
+'lstat'; exclude entries for which SELECT? does not return true."
       (let* ((st    (false-if-exception (lstat file-name)))
-             (args  `(,st ,basename ,recursive? ,hash-algo))
+             (args  `(,st ,basename ,recursive? ,hash-algo ,select?))
              (cache (nix-server-add-to-store-cache server)))
         (or (and st (hash-ref cache args))
-            (let ((path (add-to-store server basename #t recursive?
-                                      hash-algo file-name)))
+            (let ((path (add-to-store server basename recursive?
+                                      hash-algo file-name
+                                      #:select? select?)))
               (hash-set! cache args path)
               path))))))
 
@@ -1111,16 +1130,21 @@ resulting text file refers to; it defaults to the empty list."
             store)))
 
 (define* (interned-file file #:optional name
-                        #:key (recursive? #t))
+                        #:key (recursive? #t) (select? true))
   "Return the name of FILE once interned in the store.  Use NAME as its store
 name, or the basename of FILE if NAME is omitted.
 
 When RECURSIVE? is true, the contents of FILE are added recursively; if FILE
 designates a flat file and RECURSIVE? is true, its contents are added, and its
-permission bits are kept."
+permission bits are kept.
+
+When RECURSIVE? is true, call (SELECT?  FILE STAT) for each directory entry,
+where FILE is the entry's absolute file name and STAT is the result of
+'lstat'; exclude entries for which SELECT? does not return true."
   (lambda (store)
     (values (add-to-store store (or name (basename file))
-                          recursive? "sha256" file)
+                          recursive? "sha256" file
+                          #:select? select?)
             store)))
 
 (define build

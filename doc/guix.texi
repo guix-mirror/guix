@@ -3502,7 +3502,7 @@ resulting text file refers to; it defaults to the empty list.
 @end deffn
 
 @deffn {Monadic Procedure} interned-file @var{file} [@var{name}] @
-         [#:recursive? #t]
+         [#:recursive? #t] [#:select? (const #t)]
 Return the name of @var{file} once interned in the store.  Use
 @var{name} as its store name, or the basename of @var{file} if
 @var{name} is omitted.
@@ -3510,6 +3510,11 @@ Return the name of @var{file} once interned in the store.  Use
 When @var{recursive?} is true, the contents of @var{file} are added
 recursively; if @var{file} designates a flat file and @var{recursive?}
 is true, its contents are added, and its permission bits are kept.
+
+When @var{recursive?} is true, call @code{(@var{select?} @var{file}
+@var{stat})} for each directory entry, where @var{file} is the entry's
+absolute file name and @var{stat} is the result of @code{lstat}; exclude
+entries for which @var{select?} does not return true.
 
 The example below adds a file to the store, under two different names:
 
