@@ -1058,7 +1058,7 @@ for use with HTML5 video.")
 (define-public avidemux
   (package
     (name "avidemux")
-    (version "2.6.10")
+    (version "2.6.12")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1066,7 +1066,7 @@ for use with HTML5 video.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1vas43bwb15q2wv3dpp7fgp8dc6szinmwl7i0ziq2vv5l2128v0p"))
+               "0nz52yih8sff53inndkh2dba759xjzsh4b8xjww419lcpk0qp6kn"))
              (patches (search-patches "avidemux-install-to-lib.patch"))))
     (build-system cmake-build-system)
     (native-inputs
@@ -1100,19 +1100,19 @@ for use with HTML5 video.")
         'patch-source-shebangs 'unpack-ffmpeg
         (lambda _
           (with-directory-excursion "avidemux_core/ffmpeg_package"
-            (system* "tar" "xf" "ffmpeg-2.6.1.tar.bz2")
-            (delete-file "ffmpeg-2.6.1.tar.bz2")))
+            (system* "tar" "xf" "ffmpeg-2.7.6.tar.bz2")
+            (delete-file "ffmpeg-2.7.6.tar.bz2")))
         (alist-cons-after
          'patch-source-shebangs 'repack-ffmpeg
          (lambda _
            (with-directory-excursion "avidemux_core/ffmpeg_package"
-             (substitute* "ffmpeg-2.6.1/configure"
+             (substitute* "ffmpeg-2.7.6/configure"
                (("#! /bin/sh") (string-append "#!" (which "bash"))))
-             (system* "tar" "cjf" "ffmpeg-2.6.1.tar.bz2" "ffmpeg-2.6.1"
+             (system* "tar" "cjf" "ffmpeg-2.7.6.tar.bz2" "ffmpeg-2.7.6"
                       ;; avoid non-determinism in the archive
                       "--sort=name" "--mtime=@0"
                       "--owner=root:0" "--group=root:0")
-             (delete-file-recursively "ffmpeg-2.6.1")))
+             (delete-file-recursively "ffmpeg-2.7.6")))
          (alist-replace 'configure
           (lambda _
             ;; Copy-paste settings from the cmake build system.
