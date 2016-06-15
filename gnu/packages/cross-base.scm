@@ -184,7 +184,8 @@ may be either a libc package or #f.)"
                                   "CROSS_OBJC_INCLUDE_PATH"
                                   "CROSS_OBJCPLUS_INCLUDE_PATH")))
                     (setenv "CROSS_LIBRARY_PATH"
-                            (string-append libc "/lib"))
+                            (string-append libc "/lib:"
+                                           kernel "/lib")) ;for Hurd's libihash
                     (for-each
                      (lambda (var)
                        (and=> (getenv var)
