@@ -7,6 +7,8 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
+;;; Copyright © 2016 Carlo Zancanaro <carlo@zancanaro.id.au>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +30,7 @@
   #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages linux)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (gnu packages haskell)
@@ -49,6 +52,11 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages web)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gperf)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages lua)
   #:use-module (guix download)
   #:use-module (guix git-download))
 
@@ -370,3 +378,91 @@ and easy to handle yet full of features to make an easy and fast desktop
 experience.")
     (home-page "http://fluxbox.org/")
     (license license:expat)))
+
+(define-public awesome
+  (package
+    (name "awesome")
+    (version "3.4.15")
+    (source
+     (origin (method url-fetch)
+             (uri (string-append
+                   "https://awesome.naquadah.org/download/awesome-"
+                   version ".tar.xz"))
+             (sha256
+              (base32
+               "1m910lr7wkw2dgzmirfvz7dasfswhhccdf65l21iiciv24c3w1bb"))
+             (modules '((guix build utils)
+                        (srfi srfi-19)))
+             (imported-modules '((guix build utils)))
+             (snippet
+              ;; Remove non-reproducible timestamp and use the date of the
+              ;; source file instead.
+              '(substitute* "common/version.c"
+                 (("__DATE__ \" \" __TIME__")
+                  (date->string
+                   (time-utc->date
+                    (make-time time-utc 0
+                               (stat:mtime (stat "awesome.c"))))
+                   "\"~c\""))))
+             (patches (search-patches "awesome-reproducible-png.patch"))))
+    (build-system cmake-build-system)
+    (native-inputs `(("asciidoc" ,asciidoc)
+                     ("docbook-xsl" ,docbook-xsl)
+                     ("doxygen" ,doxygen)
+                     ("gperf" ,gperf)
+                     ("imagemagick" ,imagemagick)
+                     ("libxml2" ,libxml2)         ;for XML_CATALOG_FILES
+                     ("pkg-config" ,pkg-config)
+                     ("xmlto" ,xmlto)))
+    (inputs `(("cairo" ,cairo)
+              ("dbus" ,dbus)
+              ("gdk-pixbuf" ,gdk-pixbuf)
+              ("glib" ,glib)
+              ("imlib2" ,imlib2)
+              ("libev" ,libev)
+              ("libxcb" ,libxcb)
+              ("libxcursor" ,libxcursor)
+              ("libxdg-basedir" ,libxdg-basedir)
+              ("lua" ,lua-5.1)
+              ("pango" ,pango)
+              ("startup-notification" ,startup-notification)
+              ("xcb-util" ,xcb-util)
+              ("xcb-util-cursor" ,xcb-util-cursor)
+              ("xcb-util-image" ,xcb-util-image)
+              ("xcb-util-keysyms" ,xcb-util-keysyms)
+              ("xcb-util-renderutil" ,xcb-util-renderutil)
+              ("xcb-util-wm" ,xcb-util-wm)))
+    (arguments
+     `(;; Let compression happen in our 'compress-documentation' phase so that
+       ;; '--no-name' is used, which removes timestamps from gzip output.
+       #:configure-flags '("-DCOMPRESS_MANPAGES=off")
+
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'xmlto-skip-validation
+                    (lambda _
+                      ;; We can't download the necessary schema, so so skip
+                      ;; validation and assume they're valid.
+                      (substitute* "../build/CMakeFiles/man.dir/build.make"
+                        (("/xmlto")
+                         (string-append "/xmlto --skip-validation")))
+                      #t))
+                  (replace 'check
+                    (lambda _
+                      ;; There aren't any tests, so just make sure the binary
+                      ;; gets built and can be run successfully.
+                      (zero? (system* "../build/awesome" "-v")))))))
+    (synopsis "Highly configurable window manager")
+    (description
+     "awesome is a window manager for X.  It manages windows in different
+layouts, like floating or tiled.  Any layout can be applied dynamically,
+optimizing the environment for the application in use and the task currently
+being performed.
+
+In a tiled layout, windows are managed in a master and stacking area.  In a
+floating layout windows can be resized and moved freely.  Dialog windows are
+always managed as floating, regardless of the layout currently applied.
+
+Windows are grouped by tags in awesome.  Each window can be tagged with one or
+more tags.  Selecting certain tags displays all windows with these tags.")
+    (license license:gpl2+)
+    (home-page "https://awesome.naquadah.org/")))

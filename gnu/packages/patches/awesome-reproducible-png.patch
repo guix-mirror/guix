@@ -1,0 +1,14 @@
+Do not introduce timestamps in PNG files (for icons).
+See <https://wiki.debian.org/ReproducibleBuilds/TimestampsInPNG>.
+
+--- awesome-3.4.15/CMakeLists.txt	2013-02-11 14:50:21.000000000 +0100
++++ awesome-3.4.15/CMakeLists.txt	2016-06-16 13:59:30.528125439 +0200
+@@ -295,7 +295,7 @@ macro(a_icon_convert match replacement i
+         set(ALL_ICONS ${ALL_ICONS} ${output})
+ 
+         add_custom_command(
+-            COMMAND ${CONVERT_EXECUTABLE} ${input} ${ARGN} ${output}
++            COMMAND ${CONVERT_EXECUTABLE} +set date:create +set date:modify -define png:exclude-chunk=time ${input} ${ARGN} ${output}
+             OUTPUT  ${output}
+             DEPENDS ${input}
+             VERBATIM)
