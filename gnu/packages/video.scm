@@ -1349,7 +1349,7 @@ tools, XML authoring components, and an extensible plug-in based API.")
        ("glu" ,glu)
        ("libjpeg" ,libjpeg)
        ("libx11" ,libx11)
-       ("qt" ,qt)
+       ("qtbase" ,qtbase)
        ("eudev" ,eudev)))
     (synopsis "Realtime video capture utilities for Linux")
     (description "The v4l-utils provide a series of libraries and utilities to
