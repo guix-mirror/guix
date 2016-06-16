@@ -133,7 +133,10 @@ components of the LXQt desktop environment.")
     (inputs
      `(("kwindowsystem" ,kwindowsystem)
        ("liblxqt" ,liblxqt)
-       ("libqtxdg" ,libqtxdg)))
+       ("libqtxdg" ,libqtxdg)
+       ("qtbase" ,qtbase)
+       ("qttools" ,qttools)
+       ("qtx11extras" ,qtx11extras)))
     (home-page "http://lxqt.org/")
     (synopsis "Common files for LXQt")
     (description "lxqt-common provides the desktop integration files
