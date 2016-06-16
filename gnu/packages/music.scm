@@ -667,7 +667,7 @@ your own lessons.")
     (inputs
      `(("boost" ,boost)
        ("alsa-lib" ,alsa-lib)
-       ("qt" ,qt)
+       ("qtbase" ,qtbase)
        ("withershins" ,withershins)
        ("libiberty" ,libiberty) ;for withershins
        ("binutils" ,binutils) ;for -lbfd and -liberty (for withershins)
