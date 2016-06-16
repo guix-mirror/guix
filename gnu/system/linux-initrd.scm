@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -183,6 +184,7 @@ loaded at boot time in the order in which they appear."
       "usb-storage" "uas"                     ;for the installation image etc.
       "usbhid" "hid-generic" "hid-apple"      ;keyboards during early boot
       "dm-crypt" "xts" "serpent_generic" "wp512" ;for encrypted root partitions
+      "nvme"                                     ;for new SSD NVMe devices
       ,@(if (string-match "^(x86_64|i[3-6]86)-" (%current-system))
             '("pata_acpi" "pata_atiixp"    ;for ATA controllers
               "isci")                      ;for SAS controllers like Intel C602
