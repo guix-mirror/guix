@@ -378,6 +378,29 @@ and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
 'citation(\"Rcpp\")' for details on these last two.")
     (license license:gpl2+)))
 
+(define-public r-permute
+  (package
+   (name "r-permute")
+   (version "0.9-0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (cran-uri "permute" version))
+     (sha256
+      (base32
+       "0w68cqw6s4pixix8bh1qzsy1pm64jqh1cjznw74h82ygp8sj7p73"))))
+   (build-system r-build-system)
+   ;; Tests do not run correctly, but running them properly would entail a
+   ;; circular dependency with vegan.
+   (home-page "https://github.com/gavinsimpson/permute")
+   (synopsis "Functions for Generating Restricted Permutations of Data")
+   (description
+    "This package provides a set of restricted permutation designs for freely
+exchangeable, line transects (time series), spatial grid designs and permutation
+of blocks (groups of samples).  @code{permute} also allows split-plot designs,
+in which the whole-plots or split-plots or both can be freely exchangeable.")
+   (license license:gpl2+)))
+
 (define-public r-plyr
   (package
     (name "r-plyr")
