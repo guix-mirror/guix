@@ -1133,7 +1133,10 @@ backends, including ALSA, OSS, Network and FluidSynth.")
              #t)))))
     (inputs
      `(("drumstick" ,drumstick)
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qttools" ,qttools)
+       ("qtx11extras" ,qtx11extras)))
     (native-inputs
      `(("libxslt" ,libxslt) ;for xsltproc
        ("docbook-xsl" ,docbook-xsl)
