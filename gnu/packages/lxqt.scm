@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,8 +38,8 @@
      (origin
        (method url-fetch)
        (uri
-         (string-append "https://downloads.lxqt.org/libqtxdg/" version "/"
-                        name "-" version ".tar.xz"))
+         (string-append "https://github.com/lxde/libqtxdg/releases/"
+                        "download/" version "/" name "-" version ".tar.xz"))
        (sha256
         (base32
          "1ncqs0lcll5nx69hxfg33m3jfkryjqrjhr2kdci0b8pyaqdv1jc8"))))
@@ -64,11 +65,12 @@ in Qt.")
      (origin
        (method url-fetch)
        (uri
-         (string-append "https://downloads.lxqt.org/lxqt/" version "/"
-                        name "-" version ".tar.xz"))
+         (string-append "https://github.com/lxde/" name
+                        "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0ljdzqavvy82qwwwnhg2bgbshl2ns0k2lcswxlx1cfc8rcdr9w5l"))
+         "0mbl3qc0yfgfsndqrw8vg8k5irsy0pg2wrad8nwv0aphphd4n7rg"))
        (patches (search-patches "liblxqt-include.patch"))))
     (build-system cmake-build-system)
     (arguments
@@ -92,11 +94,12 @@ components of the LXQt desktop environment.")
      (origin
        (method url-fetch)
        (uri
-         (string-append "https://downloads.lxqt.org/lxqt/" version "/"
-                        name "-" version ".tar.xz"))
+         (string-append "https://github.com/lxde/" name
+                        "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0kbkwmrdjhfbq60wf2yfbsjmci8xlw13ilxxa7yxq68n1aqjqmvf"))))
+         "1vd3zarvl44l3y6wn7kgxcd2f1bygsmk5bcfqwa3568cq3b57aw0"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -143,11 +146,12 @@ desktop environment.")
      (origin
        (method url-fetch)
        (uri
-         (string-append "https://downloads.lxqt.org/lxqt/" version "/"
-                        name "-" version ".tar.xz"))
+         (string-append "https://github.com/lxde/" name
+                        "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "01hxand1gqbcaw14lh7z6w5zssgfaffcjncv752c2c7272wzyhy5"))))
+         "1sdwcfrfqkg7ibrsncs1skdap9n8wm4rg6n9d0fgdz2q4d45h75a"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
