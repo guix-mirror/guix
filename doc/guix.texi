@@ -11172,9 +11172,15 @@ something like ``Manipulate nucleotide sequence alignments'', which
 hopefully gives the user a better idea of whether this is what they are
 looking for.
 
-@cindex Texinfo markup, in package descriptions
 Descriptions should take between five and ten lines.  Use full
 sentences, and avoid using acronyms without first introducing them.
+Please avoid marketing phrases such as ``world-leading'',
+``industrial-strength'', and ``next-generation'', and avoid superlatives
+like ``the most advanced''---they are not helpful to users looking for a
+package and may even sound suspicious.  Instead, try to be factual,
+mentioning use cases and features.
+
+@cindex Texinfo markup, in package descriptions
 Descriptions can include Texinfo markup, which is useful to introduce
 ornaments such as @code{@@code} or @code{@@dfn}, bullet lists, or
 hyperlinks (@pxref{Overview,,, texinfo, GNU Texinfo}).  However you
