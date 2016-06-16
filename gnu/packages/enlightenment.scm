@@ -324,13 +324,18 @@ embedded systems.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+        (replace 'build
+          (lambda _
+            (zero?
+              (system* "env" "ENABLE_CYTHON=1" "python" "setup.py" "build"))))
         (add-before 'build 'set-flags
          (lambda _
            (setenv "CFLAGS"
                    (string-append "-I" (assoc-ref %build-inputs "python-dbus")
                                   "/include/dbus-1.0")))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("python-cython" ,python-cython)))
     (inputs
      `(("efl" ,efl)
        ("elementary" ,elementary)
