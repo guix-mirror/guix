@@ -3815,6 +3815,57 @@ data in the form of VCF files.")
     ;; at https://vcftools.github.io/license.html
     (license license:lgpl3)))
 
+(define-public r-vegan
+  (package
+    (name "r-vegan")
+    (version "2.4-0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "vegan" version))
+       (sha256
+        (base32
+         "10cygzkyg2m0y054ygivqxrkvqz792qsg6bmbdfzaqq37qv4wc7z"))))
+    (build-system r-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'revert-test-deletion
+           ;; The distributed sources do not include tests with the CRAN
+           ;; package.  Here we revert the commit
+           ;; `591d0e8ba1deaaf82445474ec6619c0b43db4e63' which deletes these
+           ;; tests.  There are plans to not delete tests in future as
+           ;; documented at https://github.com/vegandevs/vegan/issues/181.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero?
+              (system* "patch" "-R" "-p1" "-i"
+                       (assoc-ref inputs "r-vegan-delete-tests-patch"))))))))
+    (native-inputs
+     `(("gfortran" ,gfortran)
+       ("r-knitr" ,r-knitr)
+       ("r-vegan-delete-tests-patch"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "https://github.com/vegandevs/vegan/commit/"
+                 "591d0e8ba1deaaf82445474ec6619c0b43db4e63.patch"))
+           (sha256
+            (base32
+             "0b1bi7y4jjdl3ph721vm9apm51dr2z9piwvhy4355sf2b4kyyj5a"))))))
+    (propagated-inputs
+     `(("r-cluster" ,r-cluster)
+       ("r-lattice" ,r-lattice)
+       ("r-mgcv" ,r-mgcv)
+       ("r-permute" ,r-permute)))
+    (home-page "https://cran.r-project.org/web/packages/vegan")
+    (synopsis "Functions for community ecology")
+    (description
+     "The vegan package provides tools for descriptive community ecology.  It
+has most basic functions of diversity analysis, community ordination and
+dissimilarity analysis.  Most of its multivariate tools can be used for other
+data types as well.")
+    (license license:gpl2+)))
+
 (define-public vsearch
   (package
     (name "vsearch")
