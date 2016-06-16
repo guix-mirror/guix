@@ -544,7 +544,8 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                                           "--files-from=.file_list")))))))))
 
     (let ((name    (tarxz-name original-file-name))
-          (modules (delete-duplicates (cons '(guix build utils) modules))))
+          (modules (delete-duplicates (cons '(guix build utils)
+                                            imported-modules))))
       (gexp->derivation name build
                         #:graft? #f
                         #:system system
@@ -1152,7 +1153,7 @@ cross-compilation target triplet."
                          #:flags flags
                          #:system system
                          #:modules modules
-                         #:imported-modules modules
+                         #:imported-modules imported-modules
                          #:guile-for-build guile)))))
 
 (define-gexp-compiler (origin-compiler (origin origin?) system target)
