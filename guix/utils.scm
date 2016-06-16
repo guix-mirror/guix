@@ -704,12 +704,18 @@ output port, and PROC's result is returned."
 
 (define-syntax current-source-directory
   (lambda (s)
-    "Return the current directory name or #f if it could not be determined."
+    "Return the absolute name of the current directory, or #f if it could not
+be determined."
     (syntax-case s ()
       ((_)
        (match (assq 'filename (syntax-source s))
          (('filename . (? string? file-name))
-          (dirname file-name))
+          ;; If %FILE-PORT-NAME-CANONICALIZATION is 'relative, then FILE-NAME
+          ;; can be relative.  In that case, we try to find out the absolute
+          ;; file name by looking at %LOAD-PATH.
+          (if (string-prefix? "/" file-name)
+              (dirname file-name)
+              (and=> (search-path %load-path file-name) dirname)))
          (_
           #f))))))
 
