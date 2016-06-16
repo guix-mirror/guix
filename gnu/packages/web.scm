@@ -194,7 +194,7 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
 (define-public starman
   (package
     (name "starman")
-    (version "0.4011")
+    (version "0.4014")
     (source
      (origin
        (method url-fetch)
@@ -202,7 +202,7 @@ and as a proxy to reduce the load on back-end HTTP or mail servers.")
                            "Starman-" version ".tar.gz"))
        (sha256
         (base32
-         "1337zhi6v1sg4gd9rs3giybc7g1ysw8ak2da0vy098k4dacxyb57"))))
+         "1sbb5rb3vs82rlh1fjkgkcmj5pj62b4y9si4ihh45sl9m8c2qxx5"))))
     (build-system perl-build-system)
     (native-inputs
      `(("perl-libwww" ,perl-libwww)
