@@ -78,7 +78,10 @@ in Qt.")
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("kwindowsystem" ,kwindowsystem)
-       ("libqtxdg" ,libqtxdg)))
+       ("libqtxdg" ,libqtxdg)
+       ("qtbase" ,qtbase)
+       ("qttools" ,qttools)
+       ("qtx11extras" ,qtx11extras)))
     (home-page "http://lxqt.org/")
     (synopsis "Core utility library for all LXQt components")
     (description "liblxqt provides the basic libraries shared by the
