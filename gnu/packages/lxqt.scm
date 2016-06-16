@@ -156,12 +156,14 @@ desktop environment.")
         (base32
          "1sdwcfrfqkg7ibrsncs1skdap9n8wm4rg6n9d0fgdz2q4d45h75a"))))
     (build-system cmake-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("kwindowsystem" ,kwindowsystem)
        ("liblxqt" ,liblxqt)
-       ("libqtxdg" ,libqtxdg)))
+       ("libqtxdg" ,libqtxdg)
+       ("qtbase" ,qtbase)
+       ("qttools" ,qttools)
+       ("qtx11extras" ,qtx11extras)))
     (arguments
      `(#:tests? #f ; no check target
        #:phases
