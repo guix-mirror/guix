@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -59,7 +60,9 @@
        ("libxml2" ,libxml2)
        ("python" ,python-2)
        ("freetype" ,freetype)
-       ("qt" ,qt)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qttools" ,qttools)
        ("zlib" ,zlib)))
     (native-inputs
      `(("util-linux" ,util-linux)
