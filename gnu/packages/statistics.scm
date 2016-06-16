@@ -378,6 +378,27 @@ and Francois (2011, JSS), and the book by Eddelbuettel (2013, Springer); see
 'citation(\"Rcpp\")' for details on these last two.")
     (license license:gpl2+)))
 
+(define-public r-mgcv
+  (package
+   (name "r-mgcv")
+   (version "1.8-12")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (cran-uri "mgcv" version))
+     (sha256
+      (base32
+       "1khzy36nn6xbnzqfc2953ng0sv8w91mns1ymhibaqn1150x1qid0"))))
+   (build-system r-build-system)
+   (home-page "http://cran.r-project.org/web/packages/mgcv")
+   (synopsis "Mixed generalised additive model computation")
+   (description
+    "GAMs, GAMMs and other generalized ridge regression with multiple smoothing
+parameter estimation by GCV, REML or UBRE/AIC.  The library includes a
+@code{gam()} function, a wide variety of smoothers, JAGS support and
+distributions beyond the exponential family.")
+   (license license:gpl2+)))
+
 (define-public r-permute
   (package
    (name "r-permute")
