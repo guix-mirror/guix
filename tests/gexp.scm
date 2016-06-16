@@ -24,6 +24,7 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix tests)
+  #:use-module ((guix build utils) #:select (with-directory-excursion))
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
@@ -132,6 +133,14 @@
                (equal? `(display ,intd) (gexp->sexp* exp)))))
       (lambda ()
         (false-if-exception (delete-file link))))))
+
+(test-equal "local-file, relative file name"
+  (canonicalize-path (search-path %load-path "guix/base32.scm"))
+  (let ((directory (dirname (search-path %load-path
+                                         "guix/build-system/gnu.scm"))))
+    (with-directory-excursion directory
+        (let ((file (local-file "../guix/base32.scm")))
+          (local-file-absolute-file-name file)))))
 
 (test-assertm "local-file, #:select?"
   (mlet* %store-monad ((select? -> (lambda (file stat)
