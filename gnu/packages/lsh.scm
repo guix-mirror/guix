@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages lsh)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -25,7 +25,7 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages nettle)
-  #:use-module ((gnu packages compression) #:prefix guix:)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages gperf)
@@ -55,7 +55,7 @@ replaces the \"select() loop\" and allows the registration of event handlers
 for file and network I/O, timers and signals.  Since processes use these
 mechanisms for almost all external communication, liboop can be used as the
 basis for almost any application.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public lsh
   (package
@@ -100,7 +100,7 @@ basis for almost any application.")
        ("readline" ,readline-6.2)
 
        ("liboop" ,liboop)
-       ("zlib" ,guix:zlib)
+       ("zlib" ,zlib)
        ("gmp" ,gmp)
 
        ;; The server (lshd) invokes xauth when X11 forwarding is requested.
@@ -156,4 +156,4 @@ used to create a secure line of communication between two computers,
 providing shell access to the server system from the client.  It provides
 both the server daemon and the client application, as well as tools for
 manipulating key files.")
-    (license gpl2+)))
+    (license license:gpl2+)))
