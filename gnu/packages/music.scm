@@ -1086,7 +1086,8 @@ browser.")
                                "/manpages/docbook.xsl")))
              #t)))))
     (inputs
-     `(("qt" ,qt)
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
        ("alsa-lib" ,alsa-lib)
        ("fluidsynth" ,fluidsynth)))
     (native-inputs
