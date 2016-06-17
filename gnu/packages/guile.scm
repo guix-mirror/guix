@@ -1007,4 +1007,42 @@ provides access to that interface and its types from the Scheme level.")
     (home-page "http://www.nongnu.org/g-wrap/index.html")
     (license lgpl2.1+)))
 
+(define-public guile-dbi
+  (package
+    (name "guile-dbi")
+    (version "2.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://download.gna.org/guile-dbi/guile-dbi-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "116njrprhgrsv1qm904sp3b02rq01fx639r433d657gyhw3x159n"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append
+              "--with-guile-site-dir=" %output "/share/guile/site/2.0"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'patch-extension-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (dbi.scm (string-append
+                              out "/share/guile/site/2.0/dbi/dbi.scm"))
+                    (ext     (string-append out "/lib/libguile-dbi")))
+               (substitute* dbi.scm (("libguile-dbi") ext))
+               #t))))))
+    (propagated-inputs
+     `(("guile" ,guile-2.0)))
+    (synopsis "Guile database abstraction layer")
+    (home-page "http://home.gna.org/guile-dbi/guile-dbi.html")
+    (description
+     "guile-dbi is a library for Guile that provides a convenient interface to
+SQL databases.  Database programming with guile-dbi is generic in that the same
+programming interface is presented regardless of which database system is used.
+It currently supports MySQL, Postgres and SQLite3.")
+    (license gpl2+)))
+
 ;;; guile.scm ends here
