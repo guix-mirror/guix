@@ -2429,7 +2429,28 @@ Bluetooth audio output devices like headphones or loudspeakers.")
                "--disable-systemd"
                ;; Install dbus/udev files to the correct location.
                (string-append "--with-dbusconfdir=" out "/etc")
-               (string-append "--with-udevdir=" out "/lib/udev")))))
+               (string-append "--with-udevdir=" out "/lib/udev")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'post-install
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out        (assoc-ref outputs "out"))
+                    (servicedir (string-append out "/share/dbus-1/services"))
+                    (service    "obexd/src/org.bluez.obex.service")
+                    (rule       (string-append
+                                 out "/lib/udev/rules.d/97-hid2hci.rules")))
+               ;; Install the obex dbus service file.
+               (substitute* service
+                 (("/bin/false")
+                  (string-append out "/libexec/bluetooth/obexd")))
+               (install-file service servicedir)
+               ;; Fix paths in the udev rule.
+               (substitute* rule
+                 (("hid2hci --method")
+                  (string-append out "/lib/udev/hid2hci --method"))
+                 (("/sbin/udevadm")
+                  (string-append (assoc-ref inputs "eudev") "/bin/udevadm")))
+               #t))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gettext" ,gnu-gettext)))
