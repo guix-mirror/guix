@@ -2503,8 +2503,12 @@ The name of the package, as a string.
 The version of the package, as a string.
 
 @item @code{source}
-An origin object telling how the source code for the package should be
-acquired (@pxref{origin Reference}).
+An object telling how the source code for the package should be
+acquired.  Most of the time, this is an @code{origin} object, which
+denotes a file fetched from the Internet (@pxref{origin Reference}).  It
+can also be any other ``file-like'' object such as a @code{local-file},
+which denotes a file from the local file system (@pxref{G-Expressions,
+@code{local-file}}).
 
 @item @code{build-system}
 The build system that should be used to build the package (@pxref{Build
@@ -2557,7 +2561,7 @@ one @i{via} its @code{Requires} field.
 
 Another example where @code{propagated-inputs} is useful is for languages
 that lack a facility to record the run-time search path akin to the
-@code{RUNPATH}of ELF files; this includes Guile, Python, Perl, GHC, and
+@code{RUNPATH} of ELF files; this includes Guile, Python, Perl, GHC, and
 more.  To ensure that libraries written in those languages can find
 library code they depend on at run time, run-time dependencies must be
 listed in @code{propagated-inputs} rather than @code{inputs}.
@@ -3498,7 +3502,7 @@ resulting text file refers to; it defaults to the empty list.
 @end deffn
 
 @deffn {Monadic Procedure} interned-file @var{file} [@var{name}] @
-         [#:recursive? #t]
+         [#:recursive? #t] [#:select? (const #t)]
 Return the name of @var{file} once interned in the store.  Use
 @var{name} as its store name, or the basename of @var{file} if
 @var{name} is omitted.
@@ -3506,6 +3510,11 @@ Return the name of @var{file} once interned in the store.  Use
 When @var{recursive?} is true, the contents of @var{file} are added
 recursively; if @var{file} designates a flat file and @var{recursive?}
 is true, its contents are added, and its permission bits are kept.
+
+When @var{recursive?} is true, call @code{(@var{select?} @var{file}
+@var{stat})} for each directory entry, where @var{file} is the entry's
+absolute file name and @var{stat} is the result of @code{lstat}; exclude
+entries for which @var{select?} does not return true.
 
 The example below adds a file to the store, under two different names:
 
@@ -3795,7 +3804,7 @@ does not have any effect on what the G-expression does.
 content is directly passed as a string.
 
 @deffn {Scheme Procedure} local-file @var{file} [@var{name}] @
-   [#:recursive? #f]
+   [#:recursive? #f] [#:select? (const #t)]
 Return an object representing local file @var{file} to add to the store; this
 object can be used in a gexp.  If @var{file} is a relative file name, it is looked
 up relative to the source file where this form appears.  @var{file} will be added to
@@ -3804,6 +3813,11 @@ the store under @var{name}--by default the base name of @var{file}.
 When @var{recursive?} is true, the contents of @var{file} are added recursively; if @var{file}
 designates a flat file and @var{recursive?} is true, its contents are added, and its
 permission bits are kept.
+
+When @var{recursive?} is true, call @code{(@var{select?} @var{file}
+@var{stat})} for each directory entry, where @var{file} is the entry's
+absolute file name and @var{stat} is the result of @code{lstat}; exclude
+entries for which @var{select?} does not return true.
 
 This is the declarative counterpart of the @code{interned-file} monadic
 procedure (@pxref{The Store Monad, @code{interned-file}}).
@@ -3898,7 +3912,7 @@ like this:
 @end example
 
 In this example, the resulting @file{/gnu/store/@dots{}-profile.sh} file
-will references @var{coreutils}, @var{grep}, and @var{sed}, thereby
+will reference @var{coreutils}, @var{grep}, and @var{sed}, thereby
 preventing them from being garbage-collected during its lifetime.
 @end deffn
 
@@ -3999,7 +4013,7 @@ for among the GNU distribution modules (@pxref{Package Modules}).
 
 Alternatively, the @code{--expression} option may be used to specify a
 Scheme expression that evaluates to a package; this is useful when
-disambiguation among several same-named packages or package variants is
+disambiguating among several same-named packages or package variants is
 needed.
 
 There may be zero or more @var{options}.  The available options are
@@ -4031,7 +4045,7 @@ the command-line tools.
 
 @item --keep-failed
 @itemx -K
-Keep the build tree of failed builds.  Thus, if a build fail, its build
+Keep the build tree of failed builds.  Thus, if a build fails, its build
 tree is kept under @file{/tmp}, in a directory whose name is shown at
 the end of the build log.  This is useful when debugging build issues.
 
@@ -4545,7 +4559,9 @@ Import metadata from the @uref{https://pypi.python.org/, Python Package
 Index}@footnote{This functionality requires Guile-JSON to be installed.
 @xref{Requirements}.}.  Information is taken from the JSON-formatted
 description available at @code{pypi.python.org} and usually includes all
-the relevant information, including package dependencies.
+the relevant information, including package dependencies.  For maximum
+efficiency, it is recommended to install the @command{unzip} utility, so
+that the importer can unzip Python wheels and gather data from them.
 
 The command below imports metadata for the @code{itsdangerous} Python
 package:
@@ -7985,7 +8001,7 @@ web site} for more information.
 @node Database Services
 @subsubsection Database Services
 
-The @code{(gnu services databases)} module provides the following service.
+The @code{(gnu services databases)} module provides the following services.
 
 @deffn {Scheme Procedure} postgresql-service [#:postgresql postgresql] @
        [#:config-file] [#:data-directory ``/var/lib/postgresql/data'']
@@ -7996,6 +8012,27 @@ The PostgreSQL daemon loads its runtime configuration from
 @var{config-file} and stores the database cluster in
 @var{data-directory}.
 @end deffn
+
+@deffn {Scheme Procedure} mysql-service [#:config (mysql-configuration)]
+Return a service that runs @command{mysqld}, the MySQL or MariaDB
+database server.
+
+The optional @var{config} argument specifies the configuration for
+@command{mysqld}, which should be a @code{<mysql-configuraiton>} object.
+@end deffn
+
+@deftp {Data Type} mysql-configuration
+Data type representing the configuration of @var{mysql-service}.
+
+@table @asis
+@item @code{mysql} (default: @var{mariadb})
+Package object of the MySQL database server, can be either @var{mariadb}
+or @var{mysql}.
+
+For MySQL, a temorary root password will be displayed at activation time.
+For MariaDB, the root password is empty.
+@end table
+@end deftp
 
 @node Mail Services
 @subsubsection Mail Services
@@ -9427,6 +9464,11 @@ Data type representing the configuration of dicod.
 @table @asis
 @item @code{dico} (default: @var{dico})
 Package object of the GNU Dico dictionary server.
+
+@item @code{interfaces} (default: @var{'("localhost")})
+This is the list of IP addresses and ports and possibly socket file
+names to listen to (@pxref{Server Settings, @code{listen} directive,,
+dico, GNU Dico Manual}).
 
 @item @code{databases} (default: @var{(list %dicod-database:gcide)})
 List of @code{<dicod-database>} objects denoting dictionaries to be served.
@@ -11135,9 +11177,15 @@ something like ``Manipulate nucleotide sequence alignments'', which
 hopefully gives the user a better idea of whether this is what they are
 looking for.
 
-@cindex Texinfo markup, in package descriptions
 Descriptions should take between five and ten lines.  Use full
 sentences, and avoid using acronyms without first introducing them.
+Please avoid marketing phrases such as ``world-leading'',
+``industrial-strength'', and ``next-generation'', and avoid superlatives
+like ``the most advanced''---they are not helpful to users looking for a
+package and may even sound suspicious.  Instead, try to be factual,
+mentioning use cases and features.
+
+@cindex Texinfo markup, in package descriptions
 Descriptions can include Texinfo markup, which is useful to introduce
 ornaments such as @code{@@code} or @code{@@dfn}, bullet lists, or
 hyperlinks (@pxref{Overview,,, texinfo, GNU Texinfo}).  However you

@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -100,7 +101,8 @@
        ("jack" ,jack-1)
        ("ladspa" ,ladspa)
        ("liblo" ,liblo)
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)
+       ("qttools" ,qttools)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://alsamodular.sourceforge.net/")

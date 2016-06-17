@@ -83,7 +83,7 @@
     (build-system python-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
-       ("qt" ,qt) ; for qmake
+       ("qtbase" ,qtbase) ; for qmake
        ;; xdg-utils is supposed to be used for desktop integration, but it
        ;; also creates lots of messages
        ;; mkdir: cannot create directory '/homeless-shelter': Permission denied
@@ -121,7 +121,7 @@
        ("python2-pillow" ,python2-pillow)
        ("python2-pyqt" ,python2-pyqt)
        ("python2-sip" ,python2-sip)
-       ("qt" ,qt)
+       ("qtbase" ,qtbase)
        ("sqlite" ,sqlite)))
     (arguments
      `(#:python ,python-2

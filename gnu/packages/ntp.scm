@@ -97,7 +97,7 @@ computers over a network.")
 (define-public openntpd
   (package
     (name "openntpd")
-    (version "5.9p1")
+    (version "6.0p1")
     (source (origin
               (method url-fetch)
               ;; XXX Use mirror://openbsd
@@ -106,7 +106,7 @@ computers over a network.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1cwp6vxv7nj039kgbf0mgfm06f8zc4axawdc7ijl2r2ddl2h8310"))))
+                "1s3plmxmybwpfrimq6sc54wxnn6ca7rb2g5k2bdjm4c88w4q1axi"))))
     (build-system gnu-build-system)
     (home-page "http://www.openntpd.org/")
     (synopsis "NTP client and server by the OpenBSD Project")

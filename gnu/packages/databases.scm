@@ -264,7 +264,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.12")
+    (version "10.1.14")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -272,7 +272,7 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1rzlc2ns84x540asbkgdp9562haxhlszfpdqh64i9pz4q1m4cpvr"))))
+                "04ysdbvj2qapfpaj7s5d2j3m8k9l0yb5k0c2yaini8jrl1s1krqq"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -558,7 +558,7 @@ extremely small.")
 (define-public perl-dbi
   (package
     (name "perl-dbi")
-    (version "1.631")
+    (version "1.636")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -566,11 +566,11 @@ extremely small.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "04fmrnchhwi7jx4niaiv93vmi343hdm3xj04w9zr2m9hhqh782np"))))
+                "0v37vnr5p0bx396cj0lb5kb69jbryq2mspp602hbgd04gklxqzcg"))))
     (build-system perl-build-system)
     (synopsis "Database independent interface for Perl")
     (description "This package provides an database interface for Perl.")
-    (home-page "http://search.cpan.org/~timb/DBI-1.631/DBI.pm")
+    (home-page "http://search.cpan.org/dist/DBI")
     (license (package-license perl))))
 
 (define-public perl-dbix-class

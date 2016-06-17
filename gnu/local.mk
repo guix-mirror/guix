@@ -132,6 +132,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gcc.scm				\
   %D%/packages/gd.scm				\
   %D%/packages/gdb.scm				\
+  %D%/packages/geo.scm				\
   %D%/packages/geeqie.scm			\
   %D%/packages/gettext.scm			\
   %D%/packages/ghostscript.scm			\
@@ -154,7 +155,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/graphviz.scm			\
   %D%/packages/groff.scm			\
   %D%/packages/grub.scm				\
-  %D%/packages/grue-hunter.scm			\
   %D%/packages/gsasl.scm			\
   %D%/packages/gstreamer.scm			\
   %D%/packages/gtk.scm				\
@@ -212,6 +212,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/lisp.scm				\
   %D%/packages/llvm.scm				\
   %D%/packages/lout.scm				\
+  %D%/packages/logging.scm			\
   %D%/packages/lsh.scm				\
   %D%/packages/lsof.scm				\
   %D%/packages/lua.scm				\
@@ -439,6 +440,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/avahi-localstatedir.patch		\
   %D%/packages/patches/avidemux-install-to-lib.patch		\
   %D%/packages/patches/avrdude-fix-libusb.patch			\
+  %D%/packages/patches/awesome-reproducible-png.patch		\
   %D%/packages/patches/bash-completion-directories.patch	\
   %D%/packages/patches/bigloo-gc-shebangs.patch			\
   %D%/packages/patches/binutils-ld-new-dtags.patch		\
@@ -673,6 +675,8 @@ dist_patch_DATA =						\
   %D%/packages/patches/openssh-CVE-2015-8325.patch		\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
+  %D%/packages/patches/openssl-CVE-2016-2177.patch		\
+  %D%/packages/patches/openssl-CVE-2016-2178.patch		\
   %D%/packages/patches/orpheus-cast-errors-and-includes.patch	\
   %D%/packages/patches/ots-no-include-missing-file.patch	\
   %D%/packages/patches/patchelf-page-size.patch			\
@@ -761,6 +765,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/tcl-mkindex-deterministic.patch		\
   %D%/packages/patches/tclxml-3.2-install.patch			\
   %D%/packages/patches/tcsh-fix-autotest.patch			\
+  %D%/packages/patches/teensy-loader-cli-help.patch		\
   %D%/packages/patches/texi2html-document-encoding.patch	\
   %D%/packages/patches/texi2html-i18n.patch			\
   %D%/packages/patches/tidy-CVE-2015-5522+5523.patch		\

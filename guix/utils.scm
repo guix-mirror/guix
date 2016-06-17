@@ -34,7 +34,7 @@
   #:use-module ((rnrs bytevectors) #:select (bytevector-u8-set!))
   #:use-module (guix combinators)
   #:use-module ((guix build utils) #:select (dump-port))
-  #:use-module ((guix build syscalls) #:select (mkdtemp!))
+  #:use-module ((guix build syscalls) #:select (mkdtemp! fdatasync))
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
   #:autoload   (ice-9 popen)  (open-pipe*)
@@ -52,6 +52,8 @@
             default-keyword-arguments
             substitute-keyword-arguments
             ensure-keyword-arguments
+
+            current-source-directory
 
             <location>
             location
@@ -625,11 +627,13 @@ output port, and PROC's result is returned."
     (with-throw-handler #t
       (lambda ()
         (let ((result (proc out)))
-          (close out)
+          (fdatasync out)
+          (close-port out)
           (rename-file template file)
           result))
       (lambda (key . args)
-        (false-if-exception (delete-file template))))))
+        (false-if-exception (delete-file template))
+        (close-port out)))))
 
 (define (cache-directory)
   "Return the cache directory for Guix, by default ~/.cache/guix."
@@ -697,6 +701,23 @@ output port, and PROC's result is returned."
 ;;;
 ;;; Source location.
 ;;;
+
+(define-syntax current-source-directory
+  (lambda (s)
+    "Return the absolute name of the current directory, or #f if it could not
+be determined."
+    (syntax-case s ()
+      ((_)
+       (match (assq 'filename (syntax-source s))
+         (('filename . (? string? file-name))
+          ;; If %FILE-PORT-NAME-CANONICALIZATION is 'relative, then FILE-NAME
+          ;; can be relative.  In that case, we try to find out the absolute
+          ;; file name by looking at %LOAD-PATH.
+          (if (string-prefix? "/" file-name)
+              (dirname file-name)
+              (and=> (search-path %load-path file-name) dirname)))
+         (_
+          #f))))))
 
 ;; A source location.
 (define-record-type <location>

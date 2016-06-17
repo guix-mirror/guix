@@ -24,6 +24,7 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix tests)
+  #:use-module ((guix build utils) #:select (with-directory-excursion))
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
@@ -33,7 +34,8 @@
   #:use-module (rnrs io ports)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
-  #:use-module (ice-9 popen))
+  #:use-module (ice-9 popen)
+  #:use-module (ice-9 ftw))
 
 ;; Test the (guix gexp) module.
 
@@ -131,6 +133,29 @@
                (equal? `(display ,intd) (gexp->sexp* exp)))))
       (lambda ()
         (false-if-exception (delete-file link))))))
+
+(test-equal "local-file, relative file name"
+  (canonicalize-path (search-path %load-path "guix/base32.scm"))
+  (let ((directory (dirname (search-path %load-path
+                                         "guix/build-system/gnu.scm"))))
+    (with-directory-excursion directory
+        (let ((file (local-file "../guix/base32.scm")))
+          (local-file-absolute-file-name file)))))
+
+(test-assertm "local-file, #:select?"
+  (mlet* %store-monad ((select? -> (lambda (file stat)
+                                     (member (basename file)
+                                             '("guix.scm" "tests"
+                                               "gexp.scm"))))
+                       (file -> (local-file ".." "directory"
+                                            #:recursive? #t
+                                            #:select? select?))
+                       (dir (lower-object file)))
+    (return (and (store-path? dir)
+                 (equal? (scandir dir)
+                         '("." ".." "guix.scm" "tests"))
+                 (equal? (scandir (string-append dir "/tests"))
+                         '("." ".." "gexp.scm"))))))
 
 (test-assert "one plain file"
   (let* ((file     (plain-file "hi" "Hello, world!"))

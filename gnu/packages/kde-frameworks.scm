@@ -110,7 +110,7 @@ lower level classes for interaction with the X Windowing System.")
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Oxygen provides the standard icon theme for the KDE desktop.")
     (description "Oxygen icon theme for the KDE desktop")

@@ -195,7 +195,9 @@ required structures.")
               (base32
                "06996ds1rk8xhnyb5y273a7xkcxhggp4bq1g02rab55d7bjhfh0x"))
              (patches (search-patches "openssl-runpath.patch"
-                                      "openssl-c-rehash-in.patch"))))
+                                      "openssl-c-rehash-in.patch"
+                                      "openssl-CVE-2016-2177.patch"
+                                      "openssl-CVE-2016-2178.patch"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"                               ;1.5MiB of man3 pages
@@ -322,7 +324,7 @@ required structures.")
 (define-public libressl
   (package
     (name "libressl")
-    (version "2.3.5")
+    (version "2.3.6")
     (source
      (origin
       (method url-fetch)
@@ -331,7 +333,7 @@ required structures.")
              version ".tar.gz"))
       (sha256
        (base32
-        "0fvmifz61zfq6byy4dh1qqdg9fpbdsyldjwx5hlcgg6ywxf2f9gl"))))
+        "1yipsp1ici207nbminbf1knh252kzvqg036v0xpx0fw1wrwlg2im"))))
     (build-system gnu-build-system)
     (native-search-paths
       ;; FIXME: These two variables must designate a single file or directory

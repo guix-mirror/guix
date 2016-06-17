@@ -60,7 +60,7 @@
                  %standard-phases)))
     (inputs
      `(("aspell" ,aspell)
-       ("qt" ,qt)
+       ("qtbase" ,qtbase)
        ("qjson" ,qjson)
        ("tidy" ,tidy)))
     (synopsis "Qt-based pump.io client")

@@ -5,7 +5,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
@@ -207,7 +207,7 @@ module.")
 (define-public perl-xml-libxml
   (package
     (name "perl-xml-libxml")
-    (version "2.0118")
+    (version "2.0125")
     (source
      (origin
        (method url-fetch)
@@ -215,7 +215,7 @@ module.")
                            "XML-LibXML-" version ".tar.gz"))
        (sha256
         (base32
-         "170c8dbk4p6jw9is0cria73021yp3hpmhb19p9j0zg2yxwkawr6c"))))
+         "1mvbv1pwpdqni9ia9b6brg8brnnvfxr8j5x872qsngc92gipyh01"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-xml-namespacesupport" ,perl-xml-namespacesupport)
@@ -225,7 +225,7 @@ module.")
     (home-page "http://search.cpan.org/dist/XML-LibXML")
     (synopsis "Perl interface to libxml2")
     (description "This module implements a Perl interface to the libxml2
-library which provides interfaces for parsing and manipulating XML files. This
+library which provides interfaces for parsing and manipulating XML files.  This
 module allows Perl programmers to make use of the highly capable validating
 XML parser and the high performance DOM implementation.")
     (license (package-license perl))))
@@ -332,7 +332,7 @@ callback.")
 (define-public perl-xml-simple
   (package
     (name "perl-xml-simple")
-    (version "2.20")
+    (version "2.22")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -340,17 +340,18 @@ callback.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0jj3jiray1l4pi9wkjcpxjc3v431whdwx5aqnhgdm4i7h3817zsw"))))
+               "0jgbk30jizafpl7078jhw1di1yh08gf8d85dsvjllr595vr0widr"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-xml-parser" ,perl-xml-parser)))
+     `(("perl-xml-parser" ,perl-xml-parser)
+       ("perl-xml-sax" ,perl-xml-sax)))
     (license (package-license perl))
     (synopsis "Perl module for easy reading/writing of XML files")
     (description
      "The XML::Simple module provides a simple API layer on top of an
 underlying XML parsing module (either XML::Parser or one of the SAX2
 parser modules).")
-    (home-page "http://search.cpan.org/~grantm/XML-Simple-2.20/lib/XML/Simple.pm")))
+    (home-page "http://search.cpan.org/dist/XML-Simple")))
 
 (define-public perl-xml-regexp
   (package

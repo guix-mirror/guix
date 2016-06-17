@@ -33,6 +33,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages pcre)
@@ -635,11 +636,14 @@ useful for C++.")
             (base32
              "0z261fwrszxb28ccg3hsg9rizig4s84zvwmx6y31a4pyv7bvs5w3")))))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--enable-vala-bindings")))
     (native-inputs
      `(("glib" ,glib "bin") ; uses glib-mkenums
        ("gobject-introspection" ,gobject-introspection)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)
+       ("vala" ,vala)
        ("xsltproc" ,libxslt)))
     (propagated-inputs
      ;; There are all in the Requires.private field of telepathy-glib.pc.

@@ -73,10 +73,10 @@
               (method url-fetch)
               (uri (string-append
                     "https://github.com/JuliaLang/julia/releases/download/v"
-                    version "/julia-" version "-full.tar.gz"))
+                    version "/julia-" version ".tar.gz"))
               (sha256
                (base32
-                "1nbi78fav5f4zj5332iwm4mfk0qhd5qh61z881q69rvp7b163wyb"))))
+                "09gc6yf3v4in0qwhrbgjrjgvblp941di0mli4zax22mvf4dzc7s4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -92,6 +92,19 @@
        #:phases
        (modify-phases %standard-phases
          (delete 'configure)
+         (add-after 'unpack 'prepare-deps
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-file (assoc-ref inputs "rmath-julia")
+                        "deps/Rmath-julia-0.1.tar.gz")
+             (copy-file (assoc-ref inputs "dsfmt")
+                        "deps/dsfmt-2.2.3.tar.gz")
+             (copy-file (assoc-ref inputs "objconv")
+                        "deps/objconv.zip")
+             (copy-file (assoc-ref inputs "suitesparse")
+                        "deps/SuiteSparse-4.4.2.tar.gz")
+             (copy-file (assoc-ref inputs "virtualenv")
+                        "deps/virtualenv-1.11.6.tar.gz")
+             #t))
          (add-after 'unpack 'hardcode-soname-map
           ;; ./src/ccall.cpp creates a map from library names to paths using the
           ;; output of "/sbin/ldconfig -p".  Since ldconfig is not used in Guix,
@@ -249,7 +262,50 @@
        ("mpfr" ,mpfr)
        ("wget" ,wget)
        ("which" ,which)
-       ("gmp" ,gmp)))
+       ("gmp" ,gmp)
+       ;; FIXME: The following inputs are downloaded from upstream to allow us
+       ;; to use the lightweight Julia release tarball.  Ideally, these inputs
+       ;; would eventually be replaced with proper Guix packages.
+       ("rmath-julia"
+        ,(origin
+           (method url-fetch)
+           (uri "https://api.github.com/repos/JuliaLang/Rmath-julia/tarball/v0.1")
+           (file-name "rmath-julia-0.1.tar.gz")
+           (sha256
+            (base32
+             "0ai5dhjc43zcvangz123ryxmlbm51s21rg13bllwyn98w67arhb4"))))
+       ("suitesparse"
+        ,(origin
+           (method url-fetch)
+           (uri "http://faculty.cse.tamu.edu/davis/SuiteSparse/SuiteSparse-4.4.2.tar.gz")
+           (sha256
+            (base32
+             "1dg0qsv07n71nbn9cgcvn73933rgy1jnxw5bfqkwfq3bidk44cqc"))))
+       ("objconv"
+        ,(origin
+           (method url-fetch)
+           (uri "http://www.agner.org/optimize/objconv.zip")
+           (sha256
+            (base32
+             "1fi7qa2sd9vb35dvkgripjf0fayzg2qmff215f8agfqfiwd1g8qs"))))
+       ("dsfmt"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append
+                 "http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/"
+                 "SFMT/dSFMT-src-2.2.3.tar.gz"))
+           (sha256
+            (base32
+             "03kaqbjbi6viz0n33dk5jlf6ayxqlsq4804n7kwkndiga9s4hd42"))))
+       ("virtualenv"
+        ,(origin
+           (method url-fetch)
+           (uri (string-append "https://pypi.python.org/packages/24/cc/"
+                               "a3cdf0a49ffcaef483b7e2511476aa520cf7260c199a6928fda6c43ba916/"
+                               "virtualenv-1.11.6.tar.gz"))
+           (sha256
+            (base32
+             "1xq4prmg25n9cz5zcvbqx68lmc3kl39by582vd8pzs9f3qalqyiy"))))))
     (native-inputs
      `(("perl" ,perl)
        ("patchelf" ,patchelf)

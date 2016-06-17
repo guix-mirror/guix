@@ -5735,6 +5735,63 @@ printing of sub-tables by specifying a row range.")
 (define-public python2-prettytable
   (package-with-python2 python-prettytable))
 
+(define-public python-tables
+  (package
+    (name "python-tables")
+    (version "3.2.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "tables" version))
+       (sha256
+        (base32
+         "117s6w7s3yxafpmf3zz3svana7xfrsviw01va1xp7h8ylx8v6r1m"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; FIXME: python-build-system does not pass configure-flags to "build"
+       ;; or "check", so we must override the build and check phases.
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'use-gcc
+           (lambda _
+             (substitute* "setup.py"
+               (("compiler = new_compiler\\(\\)" line)
+                (string-append line
+                               "\ncompiler.set_executables(compiler='gcc',"
+                               "compiler_so='gcc',"
+                               "linker_exe='gcc',"
+                               "linker_so='gcc -shared')")))
+             #t))
+         (replace 'build
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero? (system* "python" "setup.py" "build"
+                             (string-append "--hdf5="
+                                            (assoc-ref inputs "hdf5"))))))
+         (replace 'check
+           (lambda* (#:key inputs #:allow-other-keys)
+             (zero? (system* "python" "setup.py" "check"
+                             (string-append "--hdf5="
+                                            (assoc-ref inputs "hdf5")))))))))
+    (propagated-inputs
+     `(("python-numexpr" ,python-numexpr)
+       ("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-cython" ,python-cython)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("hdf5" ,hdf5)
+       ("bzip2" ,bzip2)
+       ("zlib" ,zlib)))
+    (home-page "http://www.pytables.org/")
+    (synopsis "Hierarchical datasets for Python")
+    (description "PyTables is a package for managing hierarchical datasets and
+designed to efficently cope with extremely large amounts of data.")
+    (license bsd-3)))
+
+(define-public python2-tables
+  (package-with-python2 python-tables))
+
 (define-public python-pyasn1
   (package
     (name "python-pyasn1")
@@ -8728,6 +8785,43 @@ LDFLAGS and parse the output to build extensions with setup.py.")
 (define-public python2-pkgconfig
   (package-with-python2 python-pkgconfig))
 
+(define-public python-bz2file
+  (package
+    (name "python-bz2file")
+    (version "0.98")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "bz2file" version))
+       (sha256
+        (base32
+         "126s53fkpx04f33a829yqqk8fj4png3qwg4m66cvlmhmwc8zihb4"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; python setup.py test does not work as of 0.98
+         ;; but there is only the one test file
+         (replace 'check
+           (lambda _ (zero? (system* "python" "test_bz2file.py")))))))
+    (home-page "https://github.com/nvawda/bz2file")
+    (synopsis "Read and write bzip2-compressed files")
+    (description
+     "Bz2file is a Python library for reading and writing bzip2-compressed
+files.  It contains a drop-in replacement for the I/O interface in the
+standard library's @code{bz2} module, including features from the latest
+development version of CPython that are not available in older releases.")
+    (license asl2.0)
+    (properties `((python2-variant . ,(delay python2-bz2file))))))
+
+(define-public python2-bz2file
+  (let ((base (package-with-python2
+               (strip-python2-variant python-bz2file))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools))))))
+
 (define-public python-cysignals
   (package
     (name "python-cysignals")
@@ -9122,7 +9216,10 @@ programming errors.")
     (version "2.4.0")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri "pykafka" version))
+              (uri (string-append
+                     "https://pypi.python.org/packages/8b/3e/"
+                     "384eeff406b06315738b62483fd2126c6e4f544167116b17cc04ea7d2a59/"
+                     "pykafka-" version ".tar.gz"))
               (sha256
                (base32
                 "1id6sr159p6aa13bxcqyr9gln8sqg1l0ddzns5iws8kk5q1p5cfv"))))
@@ -9145,3 +9242,33 @@ are optionally backed by a C extension built on librdkafka.")
 
 (define-public python2-pykafka
   (package-with-python2 python-pykafka))
+
+(define-public python-wcwidth
+ (package
+  (name "python-wcwidth")
+  (version "0.1.6")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "https://pypi.python.org/packages/"
+             "c2/d1/7689293086a8d5320025080cde0e3155b94ae0a7496fb89a3fbaa92c354a/"
+             "wcwidth-" version ".tar.gz"))
+      (sha256
+        (base32
+          "02wjrpf001gjdjsaxxbzcwfg19crlk2dbddayrfc2v06f53yrcyw"))))
+  (build-system python-build-system)
+  (home-page "https://github.com/jquast/wcwidth")
+  (synopsis "Measure number of terminal column cells of wide-character codes.")
+  (description "Wcwidth measures the number of terminal column cells of
+wide-character codes.  It is useful for those implementing a terminal emulator,
+or programs that carefully produce output to be interpreted by one.  It is a
+Python implementation of the @code{wcwidth} and @code{wcswidth} C functions
+specified in POSIX.1-2001 and POSIX.1-2008.")
+  (license license:expat)))
+
+(define-public python2-wcwidth
+  (package
+    (inherit (package-with-python2
+              (strip-python2-variant python-wcwidth)))
+    (native-inputs `(("python2-setuptools" ,python2-setuptools)))))

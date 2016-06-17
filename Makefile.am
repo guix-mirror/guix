@@ -43,6 +43,7 @@ MODULES =					\
   guix/sets.scm					\
   guix/download.scm				\
   guix/git-download.scm				\
+  guix/hg-download.scm				\
   guix/monads.scm				\
   guix/monad-repl.scm				\
   guix/gexp.scm					\
@@ -82,6 +83,7 @@ MODULES =					\
   guix/build/cmake-build-system.scm		\
   guix/build/emacs-build-system.scm		\
   guix/build/git.scm				\
+  guix/build/hg.scm				\
   guix/build/glib-or-gtk-build-system.scm	\
   guix/build/gnu-build-system.scm		\
   guix/build/gnu-dist.scm			\

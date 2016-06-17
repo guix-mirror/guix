@@ -35,6 +35,7 @@
   #:use-module (gnu packages databases)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnuzilla)
@@ -430,6 +431,306 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (description "Qt is a cross-platform application and UI framework for
 developers using C++ or QML, a CSS & JavaScript like language.")
     (license (list lgpl2.1 lgpl3))))
+
+(define-public qtsvg
+  (package (inherit qtbase)
+    (name "qtsvg")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "08ca5g46g75acy27jfnvnalmcias5hxmjp7491v3y4k9y7a4ybpi"))))
+    (propagated-inputs `())
+    (native-inputs `(("perl" ,perl)))
+    (inputs
+     `(("mesa" ,mesa)
+       ("qtbase" ,qtbase)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero? (system* "qmake" (string-append "PREFIX=" out))))))
+         (add-before 'install 'fix-Makefiles
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out    (assoc-ref outputs "out"))
+                   (qtbase (assoc-ref inputs "qtbase")))
+               (substitute* (find-files "." "Makefile")
+                            (((string-append "INSTALL_ROOT)" qtbase))
+                             (string-append "INSTALL_ROOT)" out)))))))))))
+
+(define-public qtimageformats
+  (package (inherit qtsvg)
+    (name "qtimageformats")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "020v1148433zx4g87z2r8fgff32n0laajxqqsja1l3yzz7jbrwvl"))))
+    (native-inputs `())
+    (inputs
+     `(("libmng" ,libmng)
+       ("libtiff" ,libtiff)
+       ("libwebp" ,libwebp)
+       ("mesa" ,mesa)
+       ("qtbase" ,qtbase)
+       ("zlib" ,zlib)))))
+
+(define-public qtx11extras
+  (package (inherit qtsvg)
+    (name "qtx11extras")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0l736qiz8adrnh267xz63hv4sph6nhy90h836qfnnmv3p78ipsz8"))))
+    (native-inputs `(("perl" ,perl)))
+    (inputs
+     `(("mesa" ,mesa)
+       ("qtbase" ,qtbase)))))
+
+(define-public qtxmlpatterns
+  (package (inherit qtsvg)
+    (name "qtxmlpatterns")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0q412jv3xbg7v05b8pbahifwx17gzlp96s90akh6zwhpm8i6xx34"))))
+    (native-inputs `(("perl" ,perl)))
+    (inputs `(("qtbase" ,qtbase)))))
+
+(define-public qtdeclarative
+  (package (inherit qtsvg)
+    (name "qtdeclarative")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1d2217kxk85kpi7ls08b41hqzy26hvch8m4cgzq6km5sqi5zvz0j"))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)
+       ("qtsvg" ,qtsvg)
+       ("qtxmlpatterns" ,qtxmlpatterns)))
+    (inputs
+     `(("mesa" ,mesa)
+       ("qtbase" ,qtbase)))))
+
+(define-public qtconnectivity
+  (package (inherit qtsvg)
+    (name "qtconnectivity")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "06fr9321f52kf0nda9zjjfzp5694hbnx0y0v315iw28mnpvandas"))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("qtdeclarative" ,qtdeclarative)))
+    (inputs
+     `(("bluez" ,bluez)
+       ("qtbase" ,qtbase)))))
+
+(define-public qtwebsockets
+  (package (inherit qtsvg)
+    (name "qtwebsockets")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0fkj52i4yi6gmq4jfjgdij08cspxspac6mbpf0fknnllimmkl7jm"))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("qtdeclarative" ,qtdeclarative)))
+    (inputs `(("qtbase" ,qtbase)))))
+
+(define-public qtsensors
+  (package (inherit qtsvg)
+    (name "qtsensors")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0bll7ll6s5g8w89knyrc0famjwqyfzwpn512m1f96bf6xwacs967"))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("qtdeclarative" ,qtdeclarative)))
+    (inputs `(("qtbase" ,qtbase)))))
+
+(define-public qtmultimedia
+  (package (inherit qtsvg)
+    (name "qtmultimedia")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "058523c2qra3d8fq46ygcndnkrbwlh316zy28s2cr5pjr5gmnjyj"))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)
+       ("qtdeclarative" ,qtdeclarative)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("mesa" ,mesa)
+       ("pulseaudio" ,pulseaudio)
+       ("qtbase" ,qtbase)))))
+
+(define-public qtwayland
+  (package (inherit qtsvg)
+    (name "qtwayland")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1jgghjfrg0wwyfzfwgwhagwxz9k936ylv3w2l9bwlpql8rgm8d11"))))
+    (native-inputs
+     `(("glib" ,glib)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("qtdeclarative" ,qtdeclarative)))
+    (inputs
+     `(("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("libx11" ,libx11)
+       ("libxcomposite" ,libxcomposite)
+       ("libxext" ,libxext)
+       ("libxkbcommon" ,libxkbcommon)
+       ("libxrender" ,libxrender)
+       ("mesa" ,mesa)
+       ("mtdev" ,mtdev)
+       ("qtbase" ,qtbase)
+       ("wayland" ,wayland)))))
+
+(define-public qtserialport
+  (package (inherit qtsvg)
+    (name "qtserialport")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1hp63cgqhps6y1k041lzhcb2b0rcpcmszabnn293q5ilbvla4x0b"))))
+    (native-inputs `(("perl" ,perl)))
+    (inputs `(("qtbase" ,qtbase)))))
+
+(define-public qtwebchannel
+  (package (inherit qtsvg)
+    (name "qtwebchannel")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "01q80917a1048hdhaii4v50dqs84h16lc9w3v99r9xvspk8vab7q"))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtwebsockets" ,qtwebsockets)))
+    (inputs `(("qtbase" ,qtbase)))))
+
+(define-public qtlocation
+  (package (inherit qtsvg)
+    (name "qtlocation")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0qahs7a2n3l4h0bl8bnwci9mzy1vra3zncnzr40csic9ys67ddfk"))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("qtdeclarative" ,qtdeclarative)
+       ;("qtquickcontrols" ,qtquickcontrols)
+       ("qtserialport" ,qtserialport)))
+    (inputs `(("qtbase" ,qtbase)))))
+
+(define-public qttools
+  (package (inherit qtsvg)
+    (name "qttools")
+    (version "5.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://download.qt.io/official_releases/qt/"
+                                 (version-major+minor version) "/" version
+                                 "/submodules/" name "-opensource-src-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0wbzq60d7lkvlb7b5lqcw87qgy6kyjz1npjavz8f4grdxsaqi8vp"))))
+    (native-inputs
+     `(("perl" ,perl)
+       ("qtdeclarative" ,qtdeclarative)))
+    (inputs
+     `(("mesa" ,mesa)
+       ("qtbase" ,qtbase)))))
 
 (define-public qjson
   (package

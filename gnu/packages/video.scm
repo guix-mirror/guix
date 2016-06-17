@@ -869,17 +869,17 @@ projects while introducing many more.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2016.05.01")
+    (version "2016.06.14")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://youtube-dl.org/downloads/"
+              (uri (string-append "https://youtube-dl.org/downloads/"
                                   version "/youtube-dl-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1w04afmwq5pjvp3nl2k59q0cigqrj9n8fwkydcfldwpq83l15j5d"))))
+                "0fmvpqipc1xwagvk7ih4slmv1xz1rb6s8wpndhypwvrq4pnnm9ns"))))
     (build-system python-build-system)
-    (home-page "http://youtube-dl.org")
+    (home-page "https://youtube-dl.org")
     (arguments
      ;; The problem here is that the directory for the man page and completion
      ;; files is relative, and for some reason, setup.py uses the
@@ -1058,7 +1058,7 @@ for use with HTML5 video.")
 (define-public avidemux
   (package
     (name "avidemux")
-    (version "2.6.10")
+    (version "2.6.12")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1066,7 +1066,7 @@ for use with HTML5 video.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "1vas43bwb15q2wv3dpp7fgp8dc6szinmwl7i0ziq2vv5l2128v0p"))
+               "0nz52yih8sff53inndkh2dba759xjzsh4b8xjww419lcpk0qp6kn"))
              (patches (search-patches "avidemux-install-to-lib.patch"))))
     (build-system cmake-build-system)
     (native-inputs
@@ -1080,13 +1080,16 @@ for use with HTML5 video.")
        ("glu" ,glu)
        ("jack" ,jack-1)
        ("lame" ,lame)
+       ("libva" ,libva)
+       ("libvdpau" ,libvdpau)
        ("libvorbis" ,libvorbis)
        ("libvpx" ,libvpx)
        ("libxv" ,libxv)
        ("perl" ,perl)
        ("pulseaudio" ,pulseaudio)
        ("python" ,python-wrapper)
-       ("qt" ,qt)
+       ("qtbase" ,qtbase)
+       ("qttools" ,qttools)
        ("sdl" ,sdl)
        ("sqlite" ,sqlite)
        ("yasm" ,yasm)
@@ -1096,41 +1099,41 @@ for use with HTML5 video.")
        #:phases
        ;; Make sure files inside the included ffmpeg tarball are
        ;; patch-shebanged.
-       (alist-cons-before
-        'patch-source-shebangs 'unpack-ffmpeg
-        (lambda _
-          (with-directory-excursion "avidemux_core/ffmpeg_package"
-            (system* "tar" "xf" "ffmpeg-2.6.1.tar.bz2")
-            (delete-file "ffmpeg-2.6.1.tar.bz2")))
-        (alist-cons-after
-         'patch-source-shebangs 'repack-ffmpeg
+       (modify-phases %standard-phases
+       (add-before 'patch-source-shebangs 'unpack-ffmpeg
          (lambda _
            (with-directory-excursion "avidemux_core/ffmpeg_package"
-             (substitute* "ffmpeg-2.6.1/configure"
+             (system* "tar" "xf" "ffmpeg-2.7.6.tar.bz2")
+             (delete-file "ffmpeg-2.7.6.tar.bz2"))))
+       (add-after 'patch-source-shebangs 'repack-ffmpeg
+         (lambda _
+           (with-directory-excursion "avidemux_core/ffmpeg_package"
+             (substitute* "ffmpeg-2.7.6/configure"
                (("#! /bin/sh") (string-append "#!" (which "bash"))))
-             (system* "tar" "cjf" "ffmpeg-2.6.1.tar.bz2" "ffmpeg-2.6.1"
+             (system* "tar" "cjf" "ffmpeg-2.7.6.tar.bz2" "ffmpeg-2.7.6"
                       ;; avoid non-determinism in the archive
                       "--sort=name" "--mtime=@0"
                       "--owner=root:0" "--group=root:0")
-             (delete-file-recursively "ffmpeg-2.6.1")))
-         (alist-replace 'configure
-          (lambda _
-            ;; Copy-paste settings from the cmake build system.
-            (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
-            (setenv "CMAKE_INCLUDE_PATH" (getenv "C_INCLUDE_PATH")))
-          (alist-replace 'build
-            (lambda* (#:key inputs outputs #:allow-other-keys)
-              (let*
-                ((out (assoc-ref outputs "out"))
-                 (lib (string-append out "/lib"))
-                 (top (getcwd))
-                 (sdl (assoc-ref inputs "sdl"))
-                 (build_component
-                   (lambda* (component srcdir #:optional (args '()))
-                     (let ((builddir (string-append "build_" component)))
-                       (mkdir builddir)
-                       (with-directory-excursion builddir
-                        (zero? (and
+             (delete-file-recursively "ffmpeg-2.7.6"))))
+       (replace 'configure
+         (lambda _
+           ;; Copy-paste settings from the cmake build system.
+           (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
+           (setenv "CMAKE_INCLUDE_PATH" (getenv "C_INCLUDE_PATH"))))
+       (replace 'build
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let*
+             ((out (assoc-ref outputs "out"))
+              (lib (string-append out "/lib"))
+              (top (getcwd))
+              (sdl (assoc-ref inputs "sdl"))
+              (build_component
+                (lambda* (component srcdir #:optional (args '()))
+                  (let ((builddir (string-append "build_" component)))
+                    (mkdir builddir)
+                    (with-directory-excursion builddir
+                      (zero?
+                        (and
                           (apply system* "cmake"
                                  "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"
                                  (string-append "-DCMAKE_INSTALL_PREFIX=" out)
@@ -1143,26 +1146,25 @@ for use with HTML5 video.")
                                  (string-append "../" srcdir)
                                  "-DENABLE_QT5=True"
                                  args)
-                          (system* "make" "-j"
-                                   (number->string (parallel-job-count)))
-                          (system* "make" "install"))))))))
-                (mkdir out)
-                (and (build_component "core" "avidemux_core")
-                     (build_component "cli" "avidemux/cli")
-                     (build_component "qt4" "avidemux/qt4")
-                     (build_component "plugins_common" "avidemux_plugins"
-                                     '("-DPLUGIN_UI=COMMON"))
-                     (build_component "plugins_cli" "avidemux_plugins"
-                                     '("-DPLUGIN_UI=CLI"))
-                     (build_component "plugins_qt4" "avidemux_plugins"
-                                     '("-DPLUGIN_UI=QT4"))
-                     (build_component "plugins_settings" "avidemux_plugins"
-                                     '("-DPLUGIN_UI=SETTINGS")))
-                ;; Remove .exe and .dll file.
-                (delete-file-recursively
-                  (string-append out "/share/ADM6_addons"))))
-            (alist-delete 'install
-               %standard-phases)))))))
+                         (system* "make" "-j"
+                                 (number->string (parallel-job-count)))
+                         (system* "make" "install"))))))))
+             (mkdir out)
+             (and (build_component "core" "avidemux_core")
+                  (build_component "cli" "avidemux/cli")
+                  (build_component "qt4" "avidemux/qt4")
+                  (build_component "plugins_common" "avidemux_plugins"
+                                  '("-DPLUGIN_UI=COMMON"))
+                  (build_component "plugins_cli" "avidemux_plugins"
+                                  '("-DPLUGIN_UI=CLI"))
+                  (build_component "plugins_qt4" "avidemux_plugins"
+                                  '("-DPLUGIN_UI=QT4"))
+                  (build_component "plugins_settings" "avidemux_plugins"
+                                  '("-DPLUGIN_UI=SETTINGS")))
+             ;; Remove .exe and .dll file.
+             (delete-file-recursively
+               (string-append out "/share/ADM6_addons")))))
+       (delete 'install))))
     (home-page "http://fixounet.free.fr/avidemux/")
     (synopsis "Video editor")
     (description "Avidemux is a video editor designed for simple cutting,
@@ -1328,14 +1330,14 @@ tools, XML authoring components, and an extensible plug-in based API.")
 (define-public v4l-utils
   (package
     (name "v4l-utils")
-    (version "1.10.0")
+    (version "1.10.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://linuxtv.org/downloads/v4l-utils"
                                   "/v4l-utils-" version ".tar.bz2"))
               (sha256
                (base32
-                "0srkwh3r6f0bkb4kp0d7i0mlmp8babs3qc22cdy1sw4awmzd5skq"))))
+                "1h1nhg5cmmzlbipak526nk4bm6d0yb217mll75f3rpg7kz1cqiv1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -1349,7 +1351,7 @@ tools, XML authoring components, and an extensible plug-in based API.")
        ("glu" ,glu)
        ("libjpeg" ,libjpeg)
        ("libx11" ,libx11)
-       ("qt" ,qt)
+       ("qtbase" ,qtbase)
        ("eudev" ,eudev)))
     (synopsis "Realtime video capture utilities for Linux")
     (description "The v4l-utils provide a series of libraries and utilities to
@@ -1385,7 +1387,8 @@ be used for realtime video capture via Linux-specific APIs.")
        ("libxcomposite" ,libxcomposite)
        ("mesa" ,mesa)
        ("pulseaudio" ,pulseaudio)
-       ("qt" ,qt)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
        ("v4l-utils" ,v4l-utils)
        ("zlib" ,zlib)))
     (synopsis "Live streaming software")

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,8 @@
   dicod-configuration make-dicod-configuration
   dicod-configuration?
   (dico        dicod-configuration-dico       (default dico))
+  (interfaces  dicod-configuration-interfaces     ;list of strings
+               (default '("localhost")))
   (databases   dicod-configuration-databases
                ;; list of <dicod-database>
                (default (list %dicod-database:gcide))))
@@ -72,20 +75,25 @@
          (shell #~(string-append #$shadow "/sbin/nologin")))))
 
 (define (dicod-configuration-file config)
-  (define dicod-configuration->text
+  (define database->text
     (match-lambda
-      (($ <dicod-configuration> dico databases)
-       (append-map (match-lambda
-                     (($ <dicod-database> name module options)
-                      `("
+      (($ <dicod-database> name module options)
+       `("
 load-module " ,module ";
 database {
    name \"" ,name "\";
    handler \"" ,module
    (string-join (list ,@options) " " 'prefix) "\";
-}\n")))
-                   databases))))
-  (apply mixed-text-file "dicod.conf" (dicod-configuration->text config)))
+}\n"))))
+
+  (define configuration->text
+    (match-lambda
+      (($ <dicod-configuration> dico (interfaces ...) databases)
+       (append `("listen ("
+                 ,(string-join interfaces ", ") ");\n")
+               (append-map database->text databases)))))
+
+  (apply mixed-text-file "dicod.conf" (configuration->text config)))
 
 (define %dicod-activation
   #~(begin

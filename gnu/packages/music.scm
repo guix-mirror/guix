@@ -667,7 +667,7 @@ your own lessons.")
     (inputs
      `(("boost" ,boost)
        ("alsa-lib" ,alsa-lib)
-       ("qt" ,qt)
+       ("qtbase" ,qtbase)
        ("withershins" ,withershins)
        ("libiberty" ,libiberty) ;for withershins
        ("binutils" ,binutils) ;for -lbfd and -liberty (for withershins)
@@ -706,7 +706,8 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
        ("lv2" ,lv2)
        ("alsa-lib" ,alsa-lib)
        ("liblo" ,liblo)
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)
+       ("qttools" ,qttools)))
     (home-page "http://synthv1.sourceforge.net")
     (synopsis "Polyphonic subtractive synthesizer")
     (description
@@ -1085,7 +1086,8 @@ browser.")
                                "/manpages/docbook.xsl")))
              #t)))))
     (inputs
-     `(("qt" ,qt)
+     `(("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
        ("alsa-lib" ,alsa-lib)
        ("fluidsynth" ,fluidsynth)))
     (native-inputs
@@ -1132,7 +1134,10 @@ backends, including ALSA, OSS, Network and FluidSynth.")
              #t)))))
     (inputs
      `(("drumstick" ,drumstick)
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)
+       ("qttools" ,qttools)
+       ("qtx11extras" ,qtx11extras)))
     (native-inputs
      `(("libxslt" ,libxslt) ;for xsltproc
        ("docbook-xsl" ,docbook-xsl)

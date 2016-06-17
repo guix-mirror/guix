@@ -18,6 +18,7 @@
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1728,7 +1729,9 @@ passwords in the GNOME keyring.")
                        (setenv "CC" "gcc")
                        ;; For missing '/etc/machine-id'.
                        (setenv "DBUS_FATAL_WARNINGS" "0")
-                       #t)))))
+                       #t)))
+       ;; Build the Vala API generator
+       #:configure-flags '("--enable-vapigen")))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("flex" ,flex)
@@ -2948,7 +2951,11 @@ GL based interactive canvas library.")
                (base32
                 "1arzd1hsgq14rbiwa1ih2g250x6ljna2s2kiqfrw155c612s9cxk"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments '(#:configure-flags '("--enable-vala")))
+    (native-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
     (propagated-inputs
      `(("libsoup" ,libsoup)
        ("sqlite" ,sqlite)
@@ -4249,6 +4256,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
          (list "--disable-uoa"    ; disable Ubuntu Online Accounts support
                "--disable-google" ; disable Google Contacts support
                "--disable-google-auth" ; disable Google authentication
+               "--enable-vala-bindings"
                (string-append "--with-nspr-includes=" nspr "/include/nspr")
                (string-append "--with-nss-includes=" nss "/include/nss")
                (string-append "--with-nss-libs=" nss "/lib/nss")))
@@ -4265,6 +4273,7 @@ Exchange, Last.fm, IMAP/SMTP, Jabber, SIP and Kerberos.")
        ("gperf" ,gperf)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
+       ("vala" ,vala)
        ("python" ,python)))
     (propagated-inputs
      ;; These are all in the Requires field of .pc files.
@@ -5183,6 +5192,33 @@ alternative user interface themes, changes in window management behavior,
 GNOME Shell appearance and extension, etc.")
     (license license:gpl3+)))
 
+(define-public gnome-shell-extensions
+  (package
+    (name "gnome-shell-extensions")
+    (version "3.20.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "18rr55krnqx1nzrzlj6kfzh4n67f3crakmwh28rr95y7cg0jwhxw"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--enable-extensions=all")))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glib" ,glib)
+       ("glib" ,glib "bin")))
+    (synopsis "Extensions for GNOME Shell")
+    (description "GNOME Shell extensions modify and extend GNOME Shell
+functionality and behavior.")
+    (home-page "https://extensions.gnome.org/")
+    (license license:gpl3+)))
+
 (define-public arc-theme
   (package
     (name "arc-theme")
@@ -5282,3 +5318,71 @@ style of the Arc GTK theme.  Icons missing from the Arc theme are provided by
 the Moka icon theme.")
     (home-page "https://github.com/horst3180/arc-icon-theme")
     (license license:gpl3+)))
+
+(define-public folks
+  (package
+    (name "folks")
+    (version "0.11.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1f51albxgfqxbax57i3pcgv2fx7i419xaapzdvldas6gw100ma1m"))))
+    (build-system glib-or-gtk-build-system)
+    (inputs
+     `(("bdb" ,bdb)
+       ("dbus-glib" ,dbus-glib)
+       ("evolution-data-server" ,evolution-data-server)
+       ("glib" ,glib)
+       ("libgee" ,libgee)
+       ("telepathy-glib" ,telepathy-glib)))
+    (native-inputs
+     `(("gobject-introspection" ,gobject-introspection)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("vala" ,vala)))
+    (synopsis "Library to aggregate data about people")
+    (description "Libfolks is a library that aggregates information about people
+from multiple sources (e.g., Telepathy connection managers for IM contacts,
+Evolution Data Server for local contacts, libsocialweb for web service contacts,
+etc.) to create metacontacts.  It's written in Vala, which generates C code when
+compiled.")
+    (home-page "https://wiki.gnome.org/Projects/Folks")
+    (license license:lgpl2.1+)))
+
+(define-public gfbgraph
+  (package
+    (name "gfbgraph")
+    (version "0.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/"
+                    (version-major+minor version) "/"
+                    name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1dp0v8ia35fxs9yhnqpxj3ir5lh018jlbiwifjfn8ayy7h47j4fs"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:tests? #f ; Tests appear to require the network.
+       ;; FIXME --enable-gtk-doc fails even with gtk-doc as a native-input.
+       #:configure-flags '("--disable-gtk-doc"
+                           "--disable-static"
+                           "--enable-introspection")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)))
+    (inputs
+     `(("json-glib" ,json-glib)
+       ("gnome-online-accounts" ,gnome-online-accounts)
+       ("rest" ,rest)))
+    (synopsis "GLib/GObject wrapper for the Facebook API")
+    (description "This library allows you to use the Facebook API from
+GLib/GObject code.")
+    (home-page "https://wiki.gnome.org/Projects/GFBGraph")
+    (license license:lgpl2.1+)))

@@ -232,6 +232,7 @@ optimizer; and it can produce photorealistic and design review images.")
               (modules '((guix build utils)
                          (guix build download)
                          (guix ftp-client)))
+              (imported-modules modules)
               (patches (search-patches "fastcap-mulSetup.patch"
                                        "fastcap-mulGlobal.patch"))))
     (build-system gnu-build-system)

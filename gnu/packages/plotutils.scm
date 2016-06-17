@@ -173,14 +173,14 @@ colors, styles, options and details.")
 (define-public asymptote
   (package
     (name "asymptote")
-    (version "2.37")
+    (version "2.38")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/asymptote/"
                                   version "/asymptote-" version ".src.tgz"))
               (sha256
                (base32
-                "16nh02m52mk9a53i8wc6l9vg710gnzr3lfbypcbvamghvaj0458i"))))
+                "1dxwvq0xighqckkjkjva8s0igxfgy1j25z81pbwvlz6jzsrxpip9"))))
     (build-system gnu-build-system)
     ;; Note: The 'asy' binary retains a reference to docdir for use with its
     ;; "help" command in interactive mode, so adding a "doc" output is not

@@ -31,6 +31,7 @@
  #:use-module (gnu packages emacs)
  #:use-module (gnu packages groff)
  #:use-module (gnu packages libedit)
+ #:use-module (gnu packages libevent)
  #:use-module (gnu packages linux)
  #:use-module (gnu packages multiprecision)
  #:use-module (gnu packages pkg-config)
@@ -45,16 +46,15 @@
 (define-public bitcoin-core
   (package
     (name "bitcoin-core")
-    (version "0.11.2")
+    (version "0.12.1")
     (source (origin
              (method url-fetch)
              (uri
               (string-append "https://bitcoin.org/bin/bitcoin-core-"
-                             version "/bitcoin-"
-                             version ".tar.gz"))
+                             version "/bitcoin-" version ".tar.gz"))
              (sha256
               (base32
-               "1lwh0vhw1gf3h6zrhynvad9y9qbpmhc8cw1zvj11yzsz5rjbvlm4"))))
+               "16g1cnasy24275kxrs0cg48nbx1dk54xvxm1pdsvk7y30mn3pz08"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -63,6 +63,7 @@
     (inputs
      `(("bdb" ,bdb)
        ("boost" ,boost)
+       ("libevent" ,libevent)
        ("miniupnpc" ,miniupnpc)
        ("openssl" ,openssl)
        ("protobuf" ,protobuf)

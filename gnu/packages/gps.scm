@@ -63,7 +63,8 @@
     (inputs
      `(("expat" ,expat)
        ("zlib" ,zlib)
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)
+       ("qttools" ,qttools)))
     (native-inputs
      `(("which" ,which)
        ("libxml2" ,libxml2)))              ;'xmllint' needed for the KML tests

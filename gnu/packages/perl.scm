@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2056,22 +2057,21 @@ in your modules in a \"Java-esque\" manner.")
 (define-public perl-exporter-lite
   (package
     (name "perl-exporter-lite")
-    (version "0.06")
+    (version "0.08")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
                                   "Exporter-Lite-" version ".tar.gz"))
               (sha256
                (base32
-                "0k4gkvid4fr8yvwj0axdx5111mzfw2iipls3qllxr364fqhmclpj"))))
+                "1hns15imih8z2h6zv3m1wwmv9fiysacsb52y94v6zf2cmw4kjny0"))))
     (build-system perl-build-system)
     (synopsis "Lightweight exporting of functions and variables")
     (description
      "Exporter::Lite is an alternative to Exporter, intended to provide a
 lightweight subset of the most commonly-used functionality.  It supports
 import(), @@EXPORT and @@EXPORT_OK and not a whole lot else.")
-    (home-page (string-append "http://search.cpan.org/~neilb/"
-                              "Exporter-Lite-" version))
+    (home-page "http://search.cpan.org/dist/Exporter-Lite")
     (license (package-license perl))))
 
 (define-public perl-exporter-tiny
@@ -4974,14 +4974,14 @@ called as methods, which usually isn't want you want.")
 (define-public perl-test-deep
   (package
     (name "perl-test-deep")
-    (version "0.114")
+    (version "1.120")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/R/RJ/RJBS/"
                                   "Test-Deep-" version ".tar.gz"))
               (sha256
                (base32
-                "09yr47vw7vj27sdik312x08938higcij8ybyq8k67mlccx8cpqf0"))))
+                "1kdy06r0yg7zwarqglc9163vbfb0sfc4s6ld4pw5q7i9f7mghzi0"))))
     (build-system perl-build-system)
     (inputs `(("perl-test-tester" ,perl-test-tester)
               ("perl-test-nowarnings" ,perl-test-nowarnings)))
@@ -4991,8 +4991,7 @@ called as methods, which usually isn't want you want.")
 that the values match, that arrays and hashes have the same elements and that
 references are blessed into the correct class.  It also handles circular data
 structures without getting caught in an infinite loop.")
-    (home-page (string-append "http://search.cpan.org/~rjbs/"
-                              "Test-Deep-" version))
+    (home-page "http://search.cpan.org/dist/Test-Deep")
     (license gpl1+)))  ; or "Artistic License"
 
 (define-public perl-test-differences
@@ -5394,14 +5393,14 @@ makes fork(2) safe to use in test cases.")
 (define-public perl-test-simple
   (package
     (name "perl-test-simple")
-    (version "1.001014")
+    (version "1.302026")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/E/EX/EXODIST/"
                                   "Test-Simple-" version ".tar.gz"))
               (sha256
                (base32
-                "0szi95shwwdvc4nqykzgx05g2m1001mjhvqqhjg5wypbi771992m"))))
+                "1mq1sykv48rgjamw4wxa290mnyjm0dw9w9lpzncnac9gfx18vm72"))))
     (build-system perl-build-system)
     (synopsis "Basic utilities for writing tests")
     (description

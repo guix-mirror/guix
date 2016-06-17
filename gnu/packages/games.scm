@@ -20,6 +20,7 @@
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2338,3 +2339,60 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
     ;; - icarus/icarus.cpp
     ;; - higan/emulator/emulator.hpp
     (license license:gpl3)))
+
+(define-public grue-hunter
+  (package
+    (name "grue-hunter")
+    (version "1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://jxself.org/" name ".tar.gz"))
+              (sha256
+               (base32
+                "1hjcpy5439qs3v2zykis7hsi0i17zjs62gks3zd8mnfw9ni4i2h3"))))
+    (build-system trivial-build-system) ; no Makefile.PL
+    (arguments `(#:modules ((guix build utils))
+                 #:builder
+                 (begin
+                   (use-modules (guix build utils))
+                   (use-modules (srfi srfi-1))
+
+                   (let* ((tarball (assoc-ref %build-inputs "tarball"))
+                          (perl    (string-append (assoc-ref %build-inputs
+                                                             "perl")
+                                                  "/bin"))
+                          (gunzip  (string-append (assoc-ref %build-inputs
+                                                             "gzip")
+                                                  "/bin/gunzip"))
+                          (tar     (string-append (assoc-ref %build-inputs
+                                                             "tar")
+                                                  "/bin/tar"))
+                          (out     (assoc-ref %outputs "out"))
+                          (bin     (string-append out "/bin"))
+                          (doc     (string-append out "/share/doc")))
+                     (begin
+                       (mkdir out)
+                       (copy-file tarball "grue-hunter.tar.gz")
+                       (zero? (system* gunzip "grue-hunter.tar.gz"))
+                       (zero? (system* tar "xvf"  "grue-hunter.tar"))
+
+                       (mkdir-p bin)
+                       (copy-file "grue-hunter/gh.pl"
+                                  (string-append bin "/grue-hunter"))
+                       (patch-shebang (string-append bin "/grue-hunter")
+                                      (list perl))
+
+                       (mkdir-p doc)
+                       (copy-file "grue-hunter/AGPLv3.txt"
+                                  (string-append doc "/grue-hunter")))))))
+    (inputs `(("perl" ,perl)
+              ("tar" ,tar)
+              ("gzip" ,gzip)
+              ("tarball" ,source)))
+    (home-page "http://jxself.org/grue-hunter.shtml")
+    (synopsis "Text adventure game")
+    (description
+     "Grue Hunter is a text adventure game written in Perl.  You must make
+your way through an underground cave system in search of the Grue.  Can you
+capture it and get out alive?")
+    (license license:agpl3+)))

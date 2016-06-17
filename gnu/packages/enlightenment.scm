@@ -273,7 +273,7 @@ Libraries with some extra bells and whistles.")
 (define-public enlightenment
   (package
     (name "enlightenment")
-    (version "0.20.8")
+    (version "0.20.9")
     (source (origin
               (method url-fetch)
               (uri
@@ -281,7 +281,7 @@ Libraries with some extra bells and whistles.")
                               name "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                 "17fi3frq4a73i0x7v7244g9m0fbjfamw0cfb4zhqs2rp1z8nq1iy"))))
+                "1gniy7i3mg3q9cgqf004lvnv397yncdr2b7w1gzj69bvv7a2lyfv"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--enable-mount-eeze")))
@@ -300,7 +300,7 @@ Libraries with some extra bells and whistles.")
      ;; both these inputs are present in pkgconfig file in Require section
      `(("efl" ,efl) ; enlightenment.pc
        ("elementary" ,elementary))) ; enlightenment.pc
-    (home-page "http://www.enlightenment.org")
+    (home-page "https://www.enlightenment.org")
     (synopsis "Lightweight desktop environment")
     (description
      "Enlightenment is resource friendly desktop environment with integrated
@@ -324,13 +324,18 @@ embedded systems.")
     (arguments
      '(#:phases
        (modify-phases %standard-phases
+        (replace 'build
+          (lambda _
+            (zero?
+              (system* "env" "ENABLE_CYTHON=1" "python" "setup.py" "build"))))
         (add-before 'build 'set-flags
          (lambda _
            (setenv "CFLAGS"
                    (string-append "-I" (assoc-ref %build-inputs "python-dbus")
                                   "/include/dbus-1.0")))))))
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("python-cython" ,python-cython)))
     (inputs
      `(("efl" ,efl)
        ("elementary" ,elementary)

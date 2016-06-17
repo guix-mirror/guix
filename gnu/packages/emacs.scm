@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2104,3 +2105,45 @@ There are plenty of differences between CIDER and SLIME, but the core ideas
 are pretty much the same (and SLIME served as the principle inspiration for
 CIDER).")
     (license license:gpl3+)))
+
+(define-public emacs-lua-mode
+  (package
+    (name "emacs-lua-mode")
+    (version "20151025")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/immerrr/lua-mode/archive/v"
+                    version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sbhfny5ib65cnx6xcy6h9bbw27mw034s8m9cca00bhxqaqi6p4v"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/immerrr/lua-mode/")
+    (synopsis "Major mode for lua")
+    (description
+     "This Emacs package provides a mode for @uref{https://www.lua.org/,
+Lua programing language}.")
+    (license license:gpl2+)))
+
+(define-public emacs-ebuild-mode
+  (package
+    (name "emacs-ebuild-mode")
+    (version "1.30")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://dev.gentoo.org/~ulm/emacs/ebuild-mode"
+                    "-" version ".tar.xz"))
+              (file-name (string-append name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0vp7lq1kvmh1b2bms2x1kf2k76dy9m02d7cirkxpiglwaxa0h9vz"))))
+    (build-system emacs-build-system)
+    (home-page "https://devmanual.gentoo.org")
+    (synopsis "Major modes for Gentoo package files")
+    (description
+     "This Emacs package provides modes for ebuild, eclass, eblit, GLEP42
+news items, openrc and runscripts.")
+    (license license:gpl2+)))
