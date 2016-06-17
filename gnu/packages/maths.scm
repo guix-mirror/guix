@@ -418,6 +418,32 @@ plotting engine by third-party applications like Octave.")
       (license (license:fsf-free
                 "http://gnuplot.cvs.sourceforge.net/gnuplot/gnuplot/Copyright")))))
 
+(define-public gctp
+  (package
+    (name "gctp")
+    (version "2.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/OkoSanto/GCTP/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0l9aqnqynh9laicn5dxf3rsb1n14xiks79wbyqccirzmjqd1c1x4"))))
+    (native-inputs
+     `(("fortran" ,gfortran)))
+    (build-system gnu-build-system)
+    (synopsis "General Cartographic Transformation Package (GCTP)")
+    (description
+     "The General Cartographic Transformation Package (GCTP) is a system of
+software routines designed to permit the transformation of coordinate pairs
+from one map projection to another.  The GCTP is the standard computer
+software used by the National Mapping Division for map projection
+computations.")
+    (home-page "https://github.com/OkoSanto/GCTP")
+    (license 'license:public-domain))) ; https://www2.usgs.gov/laws/info_policies.html
+
 (define-public hdf5
   (package
     (name "hdf5")
