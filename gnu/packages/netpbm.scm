@@ -55,9 +55,8 @@
             (file-name (string-append name "-" version "-checkout"))
             (modules '((guix build utils)))
             (snippet
-             ;; Remove non-FSDG-compliant code.
              '(begin
-                (use-modules (guix build utils))
+                ;; Remove non-FSDG-compliant code.
 
                 (define-syntax drop
                   (syntax-rules (in)
@@ -85,7 +84,15 @@
                 (drop "pbmto4425" "pbmtoln03" "pbmtolps" "pbmtopk" "pktopbm"
                       in "converter/pbm")
                 (drop "spottopgm" in "converter/pgm")
-                (drop "ppmtopjxl" in "converter/ppm")))))
+                (drop "ppmtopjxl" in "converter/ppm")
+
+                ;; Remove timestamps from the generated code.
+                (substitute* "buildtools/stamp-date"
+                  (("^DATE=.*")
+                   "DATE=\"Thu Jan 01 00:00:00+0000 1970\"\n")
+                  (("^USER=.*")
+                   "USER=Guix\n"))))))
+
    (build-system gnu-build-system)
    (inputs `(("ghostscript" ,ghostscript)
              ("libjpeg" ,libjpeg)
