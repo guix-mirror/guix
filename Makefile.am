@@ -101,6 +101,7 @@ MODULES =					\
   guix/build/rpath.scm				\
   guix/build/cvs.scm				\
   guix/build/svn.scm				\
+  guix/build/syscalls.scm                       \
   guix/build/gremlin.scm			\
   guix/build/emacs-utils.scm			\
   guix/build/graft.scm				\
@@ -154,13 +155,6 @@ MODULES +=					\
   guix/import/cpan.scm				\
   guix/scripts/import/gem.scm			\
   guix/import/gem.scm
-
-endif
-
-if BUILD_SYSCALLS_MODULE
-
-MODULES +=					\
-  guix/build/syscalls.scm
 
 endif
 
@@ -383,13 +377,6 @@ EXTRA_DIST +=					\
   guix/scripts/offload.scm
 
 endif !BUILD_DAEMON_OFFLOAD
-
-if !BUILD_SYSCALLS_MODULE
-
-EXTRA_DIST +=					\
-  guix/build/syscalls.scm
-
-endif !BUILD_SYSCALLS_MODULE
 
 
 CLEANFILES =					\
