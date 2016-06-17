@@ -571,6 +571,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/gtk3-respect-GUIX_GTK3_IM_MODULE_FILE.patch \
   %D%/packages/patches/gtkglext-disable-disable-deprecated.patch \
   %D%/packages/patches/hdf5-config-date.patch			\
+  %D%/packages/patches/hdf-eos5-build-shared.patch 		\
+  %D%/packages/patches/hdf-eos5-remove-gctp.patch		\
+  %D%/packages/patches/hdf-eos5-fix-szip.patch			\
+  %D%/packages/patches/hdf-eos5-fortrantests.patch		\
   %D%/packages/patches/higan-remove-march-native-flag.patch	\
   %D%/packages/patches/hop-bigloo-4.0b.patch			\
   %D%/packages/patches/hop-linker-flags.patch			\

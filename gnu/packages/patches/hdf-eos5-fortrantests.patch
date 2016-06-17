@@ -1,0 +1,156 @@
+Fix fortran line length/indentation issues in Fortran test programs.
+Reported to upstream maintainer.
+
+diff --git a/samples/he5_gd_writedataF_32.f b/samples/he5_gd_writedataF_32.f
+index 515edf9..9c86299 100755
+--- a/samples/he5_gd_writedataF_32.f
++++ b/samples/he5_gd_writedataF_32.f
+@@ -77,26 +77,26 @@ c           ------------------------------
+ 
+ 		attr4 = "ABCDEFGH"
+ 		count(1) = 8
+-		status = he5_gdwrattr(gdid,"GLOBAL_CHAR_ATTR",HE5T_NATIVE_CHAR,
+-	1	count,attr4)
++		status = he5_gdwrattr(gdid,"GLOBAL_CHAR_ATTR"
++     &               ,HE5T_NATIVE_CHAR,count,attr4)
+ 	write(*,*) 'Status returned by he5_gdwrattr():  ',status
+ 
+ 		attr4 = "111"
+ 		count(1) = 3
+-		status = he5_gdwrgattr(gdid,"GLOBAL_CHAR_ATTR_1",HE5T_NATIVE_CHAR,
+-	1	count,attr4)
++		status = he5_gdwrgattr(gdid,"GLOBAL_CHAR_ATTR_1"
++     &               ,HE5T_NATIVE_CHAR,count,attr4)
+ 	write(*,*) 'Status returned by he5_gdwrgattr():  ',status
+ 
+ 		attr4 = "222222"
+ 		count(1) = 6
+-		status = he5_ehwrglatt(gdfid,"GLOBAL_CHAR_ATTR_2",HE5T_NATIVE_CHAR,
+-	1	count,attr4)
++		status = he5_ehwrglatt(gdfid,"GLOBAL_CHAR_ATTR_2"
++     &               ,HE5T_NATIVE_CHAR,count,attr4)
+ 	write(*,*) 'Status returned by he5_ehwrglatt():  ',status
+ 
+ 		attr5 = "abcdefgh111111111111"
+ 		count(1) = 20
+-		status = he5_gdwrlattr(gdid,"Vegetation","LocalAttribute_0",
+-	1	HE5T_NATIVE_CHAR,count,attr5)
++		status = he5_gdwrlattr(gdid,"Vegetation"
++     &               ,"LocalAttribute_0",HE5T_NATIVE_CHAR,count,attr5)
+ 	write(*,*) 'Status returned by he5_gdwrlattr():  ',status
+ 
+ 		 endif
+diff --git a/samples/he5_gd_writedataF_64.f b/samples/he5_gd_writedataF_64.f
+index eff04f5..62a7398 100755
+--- a/samples/he5_gd_writedataF_64.f
++++ b/samples/he5_gd_writedataF_64.f
+@@ -77,26 +77,26 @@ c           ------------------------------
+ 
+ 		attr4 = "ABCDEFGH"
+ 		count(1) = 8
+-		status = he5_gdwrattr(gdid,"GLOBAL_CHAR_ATTR",HE5T_NATIVE_CHAR,
+-	1	count,attr4)
++		status = he5_gdwrattr(gdid,"GLOBAL_CHAR_ATTR"
++     &               ,HE5T_NATIVE_CHAR,count,attr4)
+ 	write(*,*) 'Status returned by he5_gdwrattr():  ',status
+ 
+ 		attr4 = "111"
+ 		count(1) = 3
+-		status = he5_gdwrgattr(gdid,"GLOBAL_CHAR_ATTR_1",HE5T_NATIVE_CHAR,
+-	1	count,attr4)
++		status = he5_gdwrgattr(gdid,"GLOBAL_CHAR_ATTR_1"
++     &               ,HE5T_NATIVE_CHAR,count,attr4)
+ 	write(*,*) 'Status returned by he5_gdwrgattr():  ',status
+ 
+ 		attr4 = "222222"
+ 		count(1) = 6
+-		status = he5_ehwrglatt(gdfid,"GLOBAL_CHAR_ATTR_2",HE5T_NATIVE_CHAR,
+-	1	count,attr4)
++		status = he5_ehwrglatt(gdfid,"GLOBAL_CHAR_ATTR_2"
++     &               ,HE5T_NATIVE_CHAR,count,attr4)
+ 	write(*,*) 'Status returned by he5_ehwrglatt():  ',status
+ 
+ 		attr5 = "abcdefgh111111111111"
+ 		count(1) = 20
+-		status = he5_gdwrlattr(gdid,"Vegetation","LocalAttribute_0",
+-	1	HE5T_NATIVE_CHAR,count,attr5)
++		status = he5_gdwrlattr(gdid,"Vegetation"
++     &               ,"LocalAttribute_0",HE5T_NATIVE_CHAR,count,attr5)
+ 	write(*,*) 'Status returned by he5_gdwrlattr():  ',status
+ 
+ 		 endif
+diff --git a/samples/he5_sw_writedataF_32.f b/samples/he5_sw_writedataF_32.f
+index 7abab9b..fedd49a 100755
+--- a/samples/he5_sw_writedataF_32.f
++++ b/samples/he5_sw_writedataF_32.f
+@@ -173,20 +173,21 @@ c     Write Global Attribute
+ c     ----------------------
+ 			attr4 = "ABCDEFGH"
+ 			count(1) = 8
+-			status = he5_swwrattr(swid,"GLOBAL_CHAR_ATTR",HE5T_NATIVE_CHAR,
+-	1	count,attr4)
++			status = he5_swwrattr(swid,"GLOBAL_CHAR_ATTR"
++     &                       ,HE5T_NATIVE_CHAR,count,attr4)
+ 	write(*,*) 'Status returned by he5_swwrattr():  ',status
+ 
+ 			attr4 = "111"
+ 			count(1) = 3
+-			status = he5_swwrgattr(swid,"GLOBAL_CHAR_ATTR_1",HE5T_NATIVE_CHAR,
+-	1	count,attr4)
++			status = he5_swwrgattr(swid,"GLOBAL_CHAR_ATTR_1"
++     &                       ,HE5T_NATIVE_CHAR,count,attr4)
+ 	write(*,*) 'Status returned by he5_swwrgattr():  ',status
+ 
+ 			attr4 = "222222"
+ 			count(1) = 6
+-			status = he5_ehwrglatt(swfid,"GLOBAL_CHAR_ATTR_2",HE5T_NATIVE_CHAR,
+-	1	count,attr4)
++			status = he5_ehwrglatt(swfid
++     &                       ,"GLOBAL_CHAR_ATTR_2",HE5T_NATIVE_CHAR
++     &                       ,count,attr4)
+ 	write(*,*) 'Status returned by he5_ehwrglatt():  ',status
+ 
+ c     Write Local Attribute
+diff --git a/samples/he5_sw_writedataF_64.f b/samples/he5_sw_writedataF_64.f
+index 79e34bd..e5d74cb 100755
+--- a/samples/he5_sw_writedataF_64.f
++++ b/samples/he5_sw_writedataF_64.f
+@@ -162,25 +162,27 @@ c     Write Global Attribute
+ c     ----------------------
+ 			attr4 = "ABCDEFGH"
+ 			count(1) = 8
+-			status = he5_swwrattr(swid,"GLOBAL_CHAR_ATTR",HE5T_NATIVE_CHAR,
+-	1	count,attr4)
++			status = he5_swwrattr(swid,"GLOBAL_CHAR_ATTR"
++     &                       ,HE5T_NATIVE_CHAR,count,attr4)
+ 
+ 			attr4 = "111"
+ 			count(1) = 3		
+-			status = he5_swwrgattr(swid,"GLOBAL_CHAR_ATTR_1",HE5T_NATIVE_CHAR,
+-	1	count,attr4)
++			status = he5_swwrgattr(swid,"GLOBAL_CHAR_ATTR_1"
++     &                       ,HE5T_NATIVE_CHAR,count,attr4)
+ 
+ 			attr4 = "222222"
+ 			count(1) = 6
+-			status = he5_ehwrglatt(swfid,"GLOBAL_CHAR_ATTR_2",HE5T_NATIVE_CHAR,
+-	1	count,attr4)
++			status = he5_ehwrglatt(swfid
++     &                       ,"GLOBAL_CHAR_ATTR_2",HE5T_NATIVE_CHAR
++     &                       ,count,attr4)
+ 
+ c     Write Local Attribute
+ c     ---------------------
+ 			attr5 = "abababababababababab"
+ 			count(1) = 20
+-			status = he5_swwrlattr(swid,"Density","LocalAttribute_0",
+-	1	HE5T_NATIVE_CHAR,count,attr5)
++			status = he5_swwrlattr(swid,"Density"
++     &                       ,"LocalAttribute_0",HE5T_NATIVE_CHAR,count
++     &                       ,attr5)
+ 
+ 	      
+ 		 endif
+-- 
+2.10.0
+

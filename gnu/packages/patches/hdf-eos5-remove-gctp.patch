@@ -1,0 +1,55 @@
+Don't build/install/use bundled gctp code/headers.
+
+* cproj.h, proj.h: part of GCTP, therefore already present.
+* HE5_config.h, tutils.h: used for library building and testing.
+
+diff --git a/Makefile.in b/Makefile.in
+index f160d0d..367b537 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -206,7 +206,7 @@ LIBGCTP = $(top_builddir)/gctp/src/libGctp.la
+ @TESTDRIVERS_CONDITIONAL_TRUE@TESTDRIVERS = testdrivers
+ @INSTALL_INCLUDE_CONDITIONAL_FALSE@INCLUDE = 
+ @INSTALL_INCLUDE_CONDITIONAL_TRUE@INCLUDE = include
+-SUBDIRS = gctp src $(INCLUDE) samples $(TESTDRIVERS)
++SUBDIRS = src $(INCLUDE) samples $(TESTDRIVERS)
+ all: all-recursive
+ 
+ .SUFFIXES:
+diff --git a/samples/Makefile.in b/samples/Makefile.in
+index 59331dd..64fda89 100644
+--- a/samples/Makefile.in
++++ b/samples/Makefile.in
+@@ -206,7 +206,6 @@ he5_gd_datainfo_SOURCES = he5_gd_datainfo.c
+ he5_gd_datainfo_OBJECTS = he5_gd_datainfo.$(OBJEXT)
+ he5_gd_datainfo_LDADD = $(LDADD)
+ am__DEPENDENCIES_1 = $(top_builddir)/src/libhe5_hdfeos.la
+-am__DEPENDENCIES_2 = $(top_builddir)/gctp/src/libGctp.la
+ he5_gd_datainfo_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+ 	$(am__DEPENDENCIES_2)
+ he5_gd_defexternalfld_SOURCES = he5_gd_defexternalfld.c
+@@ -1093,7 +1092,7 @@ sharedstatedir = @sharedstatedir@
+ sysconfdir = @sysconfdir@
+ target_alias = @target_alias@
+ LIBHDFEOS5 = $(top_builddir)/src/libhe5_hdfeos.la
+-LIBGCTP = $(top_builddir)/gctp/src/libGctp.la
++LIBGCTP =
+ 
+ # Boilerplate definitions file
+ 
+diff --git a/include/Makefile.in b/include/Makefile.in
+index a572128..64dabb5 100644
+--- a/include/Makefile.in
++++ b/include/Makefile.in
+@@ -190,8 +190,7 @@ LIBGCTP = $(top_builddir)/gctp/src/libGctp.la
+ # Boilerplate include
+ 
+ # Headers to install
+-include_HEADERS = HE5_GctpFunc.h HE5_HdfEosDef.h HE5_config.h cproj.h ease.h \
+-                  isin.h proj.h tutils.h cfortHdf.h
++include_HEADERS = HE5_GctpFunc.h HE5_HdfEosDef.h ease.h isin.h cfortHdf.h
+ 
+ all: HE5_config.h
+ 	$(MAKE) $(AM_MAKEFLAGS) all-am
+-- 
+2.10.0
