@@ -165,7 +165,9 @@ be output in text, PostScript, PDF or HTML.")
        ("which" ,which) ; for tests/Examples/base-Ex.R
        ("xz" ,xz)))
     (inputs
-     `(("cairo" ,cairo)
+     `(;; We need not only cairo here, but pango to ensure that tests for the
+       ;; "cairo" bitmapType plotting backend succeed.
+       ("pango" ,pango)
        ("curl" ,curl)
        ("tzdata" ,tzdata)
        ("gfortran" ,gfortran)
