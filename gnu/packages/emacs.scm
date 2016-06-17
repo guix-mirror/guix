@@ -1356,6 +1356,27 @@ front-ends.  Company comes with many back-ends, e.g. @code{company-elisp}.
 These are distributed in separate files and can be used individually.")
     (license license:gpl3+)))
 
+(define-public emacs-multiple-cursors
+  (package
+    (name "emacs-multiple-cursors")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/magnars/multiple-cursors.el/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hihihlvcvzayg5fnqzcg45fhvlmq6xlq58syy00rjwbry9w389k"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/magnars/multiple-cursors.el")
+    (synopsis "Multiple cursors for Emacs")
+    (description
+     "This package adds support to Emacs for editing text with multiple
+simultaneous cursors.")
+    (license license:gpl3+)))
+
 (define-public typo
   (package
     (name "emacs-typo")
