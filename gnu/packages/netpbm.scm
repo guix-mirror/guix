@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -114,10 +114,17 @@
              (display "ZLIB = libz.so\n" f)
              (display (string-append "LDFLAGS += -Wl,-rpath=" %output "/lib") f)
              (close-port f))
+
            (let ((rgb (string-append (assoc-ref inputs "xorg-rgb")
                                      "/share/X11/rgb.txt")))
              (substitute* "pm_config.in.h"
-               (("/usr/share/X11/rgb.txt") rgb)))
+               (("/usr/share/X11/rgb.txt") rgb))
+
+             ;; Our Ghostscript no longer provides the 'gs' command, only
+             ;; 'gsc', so look for that instead.
+             (substitute* "converter/other/pstopnm.c"
+               (("\"%s/gs\"")
+                "\"%s/gsc\"")))
            #t))
        (add-before 'check 'setup-check
          (lambda _
