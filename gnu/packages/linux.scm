@@ -2423,7 +2423,9 @@ Bluetooth audio output devices like headphones or loudspeakers.")
     (arguments
      '(#:configure-flags
        (let ((out (assoc-ref %outputs "out")))
-         (list "--enable-library"
+         (list "--sysconfdir=/etc"
+               "--localstatedir=/var"
+               "--enable-library"
                "--disable-systemd"
                ;; Install dbus/udev files to the correct location.
                (string-append "--with-dbusconfdir=" out "/etc")
