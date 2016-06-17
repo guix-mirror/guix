@@ -49,7 +49,7 @@
        #:configure-flags '("-DBUILD_TESTS=ON")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (inputs
+    (propagated-inputs
      `(("qtbase" ,qtbase))) ; according to Qt5Xdg.pc
     (home-page "https://github.com/lxde/libqtxdg")
     (synopsis "Qt implementation of freedesktop.org xdg specifications")
