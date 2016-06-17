@@ -9465,6 +9465,11 @@ Data type representing the configuration of dicod.
 @item @code{dico} (default: @var{dico})
 Package object of the GNU Dico dictionary server.
 
+@item @code{interfaces} (default: @var{'("localhost")})
+This is the list of IP addresses and ports and possibly socket file
+names to listen to (@pxref{Server Settings, @code{listen} directive,,
+dico, GNU Dico Manual}).
+
 @item @code{databases} (default: @var{(list %dicod-database:gcide)})
 List of @code{<dicod-database>} objects denoting dictionaries to be served.
 @end table
