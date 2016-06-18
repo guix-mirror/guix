@@ -705,6 +705,55 @@ inspired by the SCSH regular expression system.")
 Guile's foreign function interface.")
     (license gpl3+)))
 
+(define-public guile-sqlite3
+  (let ((commit "607721fe1174a299e45d457acacf94eefb964071"))
+    (package
+      (name "guile-sqlite3")
+      (version (string-append "0.0-0." (string-take commit 7)))
+
+      ;; XXX: Gitorious being dead, this is not a reliable home page.
+      (home-page "https://www.gitorious.org/guile-sqlite3/guile-sqlite3.git/")
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url home-page)
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "09gaffhh5rawz5kdmqx2ahvj1ngvxddp469r18bmjz3sz8p0slj2"))
+                (file-name (string-append name "-" version "-checkout"))
+                (modules '((guix build utils)))
+                (snippet
+                 ;; Upgrade 'Makefile.am' to the current way of doing things.
+                 '(substitute* "Makefile.am"
+                    (("TESTS_ENVIRONMENT")
+                     "TEST_LOG_COMPILER")))))
+
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)))
+      (inputs
+       `(("guile" ,guile-2.0)
+         ("sqlite" ,sqlite)))
+      (arguments
+       '(#:phases (modify-phases %standard-phases
+                    (add-before 'configure 'autoreconf
+                      (lambda _
+                        (zero? (system* "autoreconf" "-vfi"))))
+                    (add-before 'build 'set-sqlite3-file-name
+                      (lambda* (#:key inputs #:allow-other-keys)
+                        (substitute* "sqlite3.scm"
+                          (("\"libsqlite3\"")
+                           (string-append "\"" (assoc-ref inputs "sqlite")
+                                          "/lib/libsqlite3\"")))
+                        #t)))))
+      (synopsis "Access SQLite databases from Guile")
+      (description
+       "This package provides Guile bindings to the SQLite database system.")
+      (license gpl3+))))
+
 (define-public haunt
   (package
     (name "haunt")
