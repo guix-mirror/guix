@@ -716,6 +716,49 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
 oscillators and stereo effects.")
     (license license:gpl2+)))
 
+(define-public amsynth
+  (package
+    (name "amsynth")
+    (version "1.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/amsynth/amsynth/releases/"
+                           "download/release-" version
+                           "/amsynth-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "07dp9dl38g9krjqxxh89l2z42z08yzrl57cx95b1l67xnxwjp5k3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-flags
+           (lambda _
+             ;; Compile with C++11, required by gtkmm.
+             (setenv "CXXFLAGS" "-std=c++11")
+             #t)))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("libsndfile" ,libsndfile)
+       ("gtk+" ,gtk+-2)
+       ("gtkmm" ,gtkmm-2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://amsynth.github.io")
+    (synopsis "Analog modeling synthesizer")
+    (description
+     "amsynth is an easy-to-use software synthesizer with a classic
+subtractive synthesizer topology.  Its features include: dual
+oscillators (sine, saw, square, noise) with hard sync; 12 and 24 dB/oct
+resonant filters (low-pass, high-pass, band-pass, notch); mono, poly, legato
+keyboard modes; dual ADSR envelope generators for filter and amplitude; LFO
+which can modulate the oscillators, filter, and amplitude; distortion and
+reverb effects.")
+    (license license:gpl2+)))
+
 (define-public setbfree
   (package
     (name "setbfree")
