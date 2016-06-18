@@ -1717,6 +1717,33 @@ features found in other packages it also brings many improvements as
 well as completely new features.")
     (license license:gpl3+)))
 
+(define-public emacs-hydra
+  (package
+    (name "emacs-hydra")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/abo-abo/hydra/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19ynkjlg3jj7x90xxbz885324h6nkxmzlb2c2c95xkr20zckn0lk"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/abo-abo/hydra")
+    (synopsis "Make Emacs bindings that stick around")
+    (description
+     "This package can be used to tie related commands into a family of short
+bindings with a common prefix---a Hydra.  Once you summon the Hydra (through
+the prefixed binding), all the heads can be called in succession with only a
+short extension.  Any binding that isn't the Hydra's head vanquishes the
+Hydra.  Note that the final binding, besides vanquishing the Hydra, will still
+serve its original purpose, calling the command assigned to it.  This makes
+the Hydra very seamless; it's like a minor mode that disables itself
+automatically.")
+    (license license:gpl3+)))
+
 (define-public emacs-clojure-mode
   (package
     (name "emacs-clojure-mode")
