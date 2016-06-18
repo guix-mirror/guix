@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1830,3 +1831,31 @@ supported players in addition to this package.")
 of modern, widely supported codecs.")
     ;; Most under GPL version 2 or later, and portions under BSD 3 Clause
     (license (list license:gpl2+ license:bsd-3))))
+
+(define-public openh264
+  (package
+    (name "openh264")
+    (version "1.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/cisco/"
+                                  name "/archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ix2fhk62i4q4kbnkl0gfk4x53vxqavsn0pck1pashr566zhglv5"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("nasm" ,nasm)
+       ("python" ,python)))
+    (arguments
+     '(#:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:test-target "test"
+       #:phases (modify-phases %standard-phases
+                  ;; no configure script
+                  (delete 'configure))))
+    (home-page "http://www.openh264.org/")
+    (synopsis "H264 decoder library")
+    (description
+     "Openh264 is a library which can decode H264 video streams.")
+    (license license:bsd-2)))
