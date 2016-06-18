@@ -1646,6 +1646,27 @@ that it correctly finds RFCs even when a space appears before the
 number.")
     (license license:gpl3+)))
 
+(define-public emacs-org-bullets
+  (package
+    (name "emacs-org-bullets")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/sabof/org-bullets/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1dyxvpb73vj80v8br2q9rf255hfphrgaw91fbvwdcd735np9pcnh"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/sabof/org-bullets")
+    (synopsis "Show bullets in org-mode as UTF-8 characters")
+    (description
+     "This package provides an Emacs minor mode causing bullets in
+@code{org-mode} to be rendered as UTF-8 characters.")
+    (license license:gpl3+)))
+
 (define-public emacs-zenburn-theme
   (package
     (name "emacs-zenburn-theme")
