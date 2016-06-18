@@ -1744,6 +1744,33 @@ the Hydra very seamless; it's like a minor mode that disables itself
 automatically.")
     (license license:gpl3+)))
 
+(define-public emacs-ivy
+  (package
+    (name "emacs-ivy")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/abo-abo/swiper/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18nqwl05is71dzswnvpfhlg7b0v3apvbsfxrwab9c0apwavi892q"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-hydra" ,emacs-hydra)))
+    (home-page "http://oremacs.com/swiper/")
+    (synopsis "Incremental vertical completion for Emacs")
+    (description
+     "This package provides @code{ivy-read} as an alternative to
+@code{completing-read} and similar functions.  No attempt is made to determine
+the best candidate.  Instead, the user can navigate candidates with
+@code{ivy-next-line} and @code{ivy-previous-line}.  The matching is done by
+splitting the input text by spaces and re-building it into a regular
+expression.")
+    (license license:gpl3+)))
+
 (define-public emacs-clojure-mode
   (package
     (name "emacs-clojure-mode")
