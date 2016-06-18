@@ -1045,4 +1045,31 @@ programming interface is presented regardless of which database system is used.
 It currently supports MySQL, Postgres and SQLite3.")
     (license gpl2+)))
 
+(define-public guile-dbd-sqlite3
+  (package
+    (name "guile-dbd-sqlite3")
+    (version "2.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://download.gna.org/guile-dbi/guile-dbd-sqlite3-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0rg71jchxd2y8x496s8zmfmikr5g8zxi8zv2ar3f7a23pph92iw2"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sqlite" ,sqlite)
+       ("zlib" ,(@ (gnu packages compression) zlib))))
+    (propagated-inputs
+     `(("guile-dbi" ,guile-dbi)))
+    (synopsis "Guile DBI driver for SQLite")
+    (home-page "https://github.com/jkalbhenn/guile-dbd-sqlite3")
+    (description
+     "guile-dbi is a library for Guile that provides a convenient interface to
+SQL databases.  This package implements the interface for SQLite.")
+    (license gpl2+)))
+
 ;;; guile.scm ends here
