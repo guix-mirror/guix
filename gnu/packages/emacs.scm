@@ -1800,6 +1800,31 @@ such as the positions of characters, words, line beginnings, links, or
 windows.")
     (license license:gpl3+)))
 
+(define-public emacs-ace-window
+  (package
+    (name "emacs-ace-window")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/abo-abo/ace-window/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p2sgfl5dml4zbd6ldql6lm2m9vmd236ah996ni32x254s48j5pn"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-avy" ,emacs-avy)))
+    (home-page "https://github.com/abo-abo/ace-window")
+    (synopsis "Quickly switch windows in Emacs")
+    (description
+     "@code{ace-window} is meant to replace @code{other-window}.
+In fact, when there are only two windows present, @code{other-window} is
+called.  If there are more, each window will have its first character
+highlighted.  Pressing that character will switch to that window.")
+    (license license:gpl3+)))
+
 (define-public emacs-clojure-mode
   (package
     (name "emacs-clojure-mode")
