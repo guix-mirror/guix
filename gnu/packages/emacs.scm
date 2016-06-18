@@ -1851,6 +1851,36 @@ lines that match the current text being edited.  This gives you the effect of
 a temporary @code{keep-lines} or @code{occur}.")
     (license license:gpl3+)))
 
+(define-public emacs-lispy
+  (package
+    (name "emacs-lispy")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/abo-abo/lispy/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15gig95cvamw5zlw99cxggd27c18b9scznjj97gvjn2zbljcaqzl"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ace-window" ,emacs-ace-window)
+       ("emacs-iedit" ,emacs-iedit)
+       ("emacs-ivy" ,emacs-ivy)
+       ("emacs-hydra" ,emacs-hydra)))
+    (home-page "https://github.com/abo-abo/lispy")
+    (synopsis "Modal S-expression editing")
+    (description
+     "Due to the structure of Lisp syntax it's very rare for the programmer to
+want to insert characters right before \"(\" or right after \")\".  Thus
+unprefixed printable characters can be used to call commands when the point is
+at one of these special locations.  Lispy provides unprefixed keybindings for
+S-expression editing when point is at the beginning or end of an
+S-expression.")
+    (license license:gpl3+)))
+
 (define-public emacs-clojure-mode
   (package
     (name "emacs-clojure-mode")
