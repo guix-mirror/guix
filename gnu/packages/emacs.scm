@@ -1771,6 +1771,35 @@ splitting the input text by spaces and re-building it into a regular
 expression.")
     (license license:gpl3+)))
 
+(define-public emacs-avy
+  (package
+    (name "emacs-avy")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/abo-abo/avy/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wdrq512h25ymzjbf2kbsdymvd2ryfwzb6bh5bc3yv7q203im796"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/abo-abo/avy")
+    (synopsis "Tree-based completion for Emacs")
+    (description
+     "This package provides a generic completion method based on building a
+balanced decision tree with each candidate being a leaf.  To traverse the tree
+from the root to a desired leaf, typically a sequence of @code{read-key} can
+be used.
+
+In order for @code{read-key} to make sense, the tree needs to be visualized
+appropriately, with a character at each branch node.  So this completion
+method works only for things that you can see on your screen, all at once,
+such as the positions of characters, words, line beginnings, links, or
+windows.")
+    (license license:gpl3+)))
+
 (define-public emacs-clojure-mode
   (package
     (name "emacs-clojure-mode")
