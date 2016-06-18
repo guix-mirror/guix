@@ -41,6 +41,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/apl.scm				\
   %D%/packages/apr.scm				\
   %D%/packages/aspell.scm			\
+  %D%/packages/assembly.scm			\
   %D%/packages/attr.scm				\
   %D%/packages/audacity.scm			\
   %D%/packages/audio.scm			\
