@@ -689,7 +689,7 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
 (define-public synthv1
   (package
     (name "synthv1")
-    (version "0.7.4")
+    (version "0.7.5")
     (source (origin
               (method url-fetch)
               (uri
@@ -697,7 +697,7 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "16n0v4jk0ilirq84rrildvdwqxgxav78rk58ilhl622v5n893c7w"))))
+                "0h5zja78phf9705i9g54zh61iczb24iv7rxhljyms30sjgajig1y"))))
     (build-system gnu-build-system)
     ;; There are no tests.
     (arguments `(#:tests? #f))

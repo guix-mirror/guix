@@ -4,7 +4,7 @@
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015, 2016 Eric Bavier <bavier@member.fsf.org>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -248,6 +248,29 @@ decompression.")
       (license (license:non-copyleft "file://LICENSE"
                                   "See LICENSE in the distribution."))
       (home-page "http://www.bzip.org/"))))
+
+(define-public lbzip2
+  (package
+    (name "lbzip2")
+    (version "2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.lbzip2.org/lbzip2-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1sahaqc5bw4i0iyri05syfza4ncf5cml89an033fspn97klmxis6"))))
+    (build-system gnu-build-system)
+    (synopsis "Parallel bzip2 compression utility")
+    (description
+     "lbzip2 is a multi-threaded compression utility with support for the
+bzip2 compressed file format.  lbzip2 can process standard bz2 files in
+parallel.  It uses POSIX threading model (pthreads), which allows it to take
+full advantage of symmetric multiprocessing (SMP) systems.  It has been proven
+to scale linearly, even to over one hundred processor cores.  lbzip2 is fully
+compatible with bzip2 – both at file format and command line level.")
+    (home-page "http://www.lbzip2.org/")
+    (license license:gpl3+)))
 
 (define-public pbzip2
   (package

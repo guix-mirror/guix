@@ -1325,6 +1325,50 @@ view the build status of those servers' build jobs, and possibly to trigger
 build jobs.")
     (license license:gpl3+)))
 
+(define-public emacs-company
+  (package
+    (name "emacs-company")
+    (version "0.8.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/company-mode/company-mode/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1vwmbqm7h4lrszv2qxy6fqzznm9raigi84cadx982c9m7shp0zzz"))))
+    (build-system emacs-build-system)
+    (home-page "http://company-mode.github.io/")
+    (synopsis "Modular text completion framework")
+    (description
+     "Company is a modular completion mechanism.  Modules for retrieving
+completion candidates are called back-ends, modules for displaying them are
+front-ends.  Company comes with many back-ends, e.g. @code{company-elisp}.
+These are distributed in separate files and can be used individually.")
+    (license license:gpl3+)))
+
+(define-public emacs-multiple-cursors
+  (package
+    (name "emacs-multiple-cursors")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/magnars/multiple-cursors.el/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hihihlvcvzayg5fnqzcg45fhvlmq6xlq58syy00rjwbry9w389k"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/magnars/multiple-cursors.el")
+    (synopsis "Multiple cursors for Emacs")
+    (description
+     "This package adds support to Emacs for editing text with multiple
+simultaneous cursors.")
+    (license license:gpl3+)))
+
 (define-public typo
   (package
     (name "emacs-typo")

@@ -361,16 +361,16 @@ security, and applying best practice development processes.")
 (define-public python-acme
   (package
     (name "python-acme")
-    (version "0.8.0")
+    (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                      "https://pypi.python.org/packages/"
-                     "45/17/6fdcede92c7fe4d9c1ab9d7513ded5aa969a0b9c90f3d7b3b074cd37e898/"
+                     "f5/7a/11a99b5d1d1c692f6eed27cfab69e6ba4d2f0c2a461d2607e6a930ff2c68/"
                      "acme-" version ".tar.gz"))
       (sha256
         (base32
-         "1nk48p0pi6xmqpsqjvw6xkx5vv4vl33yzq67fpr33ci8fra6pa6z"))))
+         "17vx2miczpd8ww4xizmc0nca2c7jf04wnhfnswx2bxhb537lmsnk"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -423,16 +423,16 @@ security, and applying best practice development processes.")
 (define-public certbot
   (package
     (name "certbot")
-    (version "0.8.0")
+    (version "0.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
                      "https://pypi.python.org/packages/"
-                     "da/b8/fa6d7f0f8c0d37944ca4a1940b1e933fc6673498995a45db03c034bb11dd/"
+                     "a2/3b/4756e6a0ceb14e084042a2a65c615d68d25621c6fd446d0fc10d14c4ce7d/"
                      name "-" version ".tar.gz"))
               (sha256
                (base32
-                "052338jdiy8dniskqxm2hzbca084ms0xqnjicshl6cpvhjs70g1w"))))
+                "0w972cf2mk74aji5d8dylg3jw6wczg01gb4asf3ndv8c64yxza3c"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2

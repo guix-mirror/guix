@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +38,7 @@
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages suckless)
+  #:use-module (gnu packages linux)
   #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module (guix store)
@@ -49,6 +51,7 @@
             geoclue-application
             %standard-geoclue-applications
             geoclue-service
+            bluetooth-service
             polkit-service
             elogind-configuration
             elogind-service
@@ -343,6 +346,38 @@ site} for more information."
             (wifi-submission-url wifi-submission-url)
             (submission-nick submission-nick)
             (applications applications))))
+
+
+;;;
+;;; Bluetooth.
+;;;
+
+(define (bluetooth-shepherd-service bluez)
+  "Return a shepherd service for @command{bluetoothd}."
+  (shepherd-service
+   (provision '(bluetooth))
+   (requirement '(dbus-system udev))
+   (documentation "Run the bluetoothd daemon.")
+   (start #~(make-forkexec-constructor
+             (string-append #$bluez "/libexec/bluetooth/bluetoothd")))
+   (stop #~(make-kill-destructor))))
+
+(define bluetooth-service-type
+  (service-type
+   (name 'bluetooth)
+   (extensions
+    (list (service-extension dbus-root-service-type list)
+          (service-extension udev-service-type list)
+          (service-extension shepherd-root-service-type
+                             (compose list bluetooth-shepherd-service))))))
+
+(define* (bluetooth-service #:key (bluez bluez))
+  "Return a service that runs the @command{bluetoothd} daemon, which manages
+all the Bluetooth devices and provides a number of D-Bus interfaces.
+
+Users need to be in the @code{lp} group to access the D-Bus service.
+"
+  (service bluetooth-service-type bluez))
 
 
 ;;;

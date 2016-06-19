@@ -20,6 +20,7 @@
 ;;; Copyright © 2016 Danny Milosavljevic <dannym+a@scratchpost.org>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
+;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -9272,3 +9273,30 @@ specified in POSIX.1-2001 and POSIX.1-2008.")
     (inherit (package-with-python2
               (strip-python2-variant python-wcwidth)))
     (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
+
+(define-public python2-jsonrpclib
+  (package
+    (name "python2-jsonrpclib")
+    (version "0.1.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://pypi.python.org/packages/source/j/jsonrpclib/"
+                    "jsonrpclib-" version ".tar.gz"))
+              (sha256
+               (base32
+                "02vgirw2bcgvpcxhv5hf3yvvb4h5wzd1lpjx8na5psdmaffj6l3z"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)))
+    (arguments
+     `(#:tests? #f
+       #:python ,python-2))
+    (home-page "https://github.com/joshmarshall/jsonrpclib/")
+    (synopsis "Implementation of JSON-RPC specification for Python")
+    (description
+     "This library is an implementation of the JSON-RPC specification.
+It supports both the original 1.0 specification, as well as the
+new (proposed) 2.0 spec, which includes batch submission, keyword arguments,
+etc.")
+    (license asl2.0)))
