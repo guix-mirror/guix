@@ -21,7 +21,7 @@
   #:use-module (gnu system)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
-  #:export (backdoor-service-type
+  #:export (marionette-service-type
             marionette-operating-system))
 
 ;;; Commentary:
@@ -112,7 +112,7 @@
 (define marionette-service-type
   ;; This is the type of the "marionette" service, allowing a guest system to
   ;; be manipulated from the host.  This marionette REPL is essentially a
-  ;; universal marionette.
+  ;; universal backdoor.
   (service-type (name 'marionette-repl)
                 (extensions
                  (list (service-extension shepherd-root-service-type
