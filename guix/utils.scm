@@ -727,9 +727,12 @@ be determined."
           ;; the absolute file name by looking at %LOAD-PATH; doing this at
           ;; run time rather than expansion time is necessary to allow files
           ;; to be moved on the file system.
-          (if (string-prefix? "/" file-name)
-              (dirname file-name)
-              #`(absolute-dirname #,file-name)))
+          (cond ((not file-name)
+                 #f)                ;raising an error would upset Geiser users
+                ((string-prefix? "/" file-name)
+                 (dirname file-name))
+                (else
+                 #`(absolute-dirname #,file-name))))
          (_
           #f))))))
 
