@@ -2396,3 +2396,54 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
 your way through an underground cave system in search of the Grue.  Can you
 capture it and get out alive?")
     (license license:agpl3+)))
+
+(define-public warzone2100
+  (package
+    (name "warzone2100")
+    (version "3.1.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/" name
+                                  "/releases/" version "/" name "-" version
+                                  ".tar.xz"))
+              (sha256
+               (base32
+                "0hm49i2knvvg3wlnryv7h4m84s3qa7jfyym5yy6365sx8wzcrai1"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'set-paths 'set-sdl-paths
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (setenv "CPATH"
+                              (string-append (assoc-ref inputs "sdl-union")
+                                             "/include/SDL"))
+                      #t)))))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("unzip" ,unzip)
+                     ("zip" ,zip)))
+    (inputs `(("fontconfig" ,fontconfig)
+              ("freetype" ,freetype)
+              ("fribidi" ,fribidi)
+              ("glew" ,glew)
+              ("libtheora" ,libtheora)
+              ("libvorbis" ,libvorbis)
+              ("libxrandr" ,libxrandr)
+              ("openal" ,openal)
+              ("physfs" ,physfs)
+              ("qt", qt-4)
+              ("quesoglc" ,quesoglc)
+              ("sdl-union" ,(sdl-union))))
+    (home-page "http://wz2100.net")
+    (synopsis "3D Real-time strategy and real-time tactics game")
+    (description
+     "Warzone 2100 offers campaign, multi-player, and single-player skirmish
+modes. An extensive tech tree with over 400 different technologies, combined
+with the unit design system, allows for a wide variety of possible units and
+tactics.")
+    ; Everything is GPLv2+ unless otherwise specified in COPYING.NONGPL
+    (license (list license:bsd-3
+                   license:cc0
+                   license:cc-by-sa3.0
+                   license:expat
+                   license:gpl2+
+                   license:lgpl2.1+))))
