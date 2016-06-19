@@ -188,6 +188,18 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
     (home-page
      "http://www.oracle.com/us/products/database/berkeley-db/overview/index.html")))
 
+(define-public bdb-5.3
+  (package (inherit bdb)
+    (name "bdb")
+    (version "5.3.28")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.oracle.com/berkeley-db/db-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0a1n5hbl7027fbz5lm0vp0zzfp1hmxnz14wx3zl9563h83br5ag0"))))))
+
 (define-public mysql
   (package
     (name "mysql")
