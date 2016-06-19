@@ -54,7 +54,7 @@
              (base32
               "0044p20hx07fwgw2mbwj1fkx04615hhs1qyx4mawj2bhqvrnppnp"))))
    (build-system gnu-build-system)
-   (inputs `(("bdb" ,bdb)
+   (inputs `(("bdb" ,bdb-5.3)
              ("openssl" ,openssl)
              ("cyrus-sasl" ,cyrus-sasl)
              ("groff" ,groff)
