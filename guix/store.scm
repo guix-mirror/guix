@@ -1061,24 +1061,19 @@ Return #t on success.
 Use with care as it directly modifies the store!  This is primarily meant to
 be used internally by the daemon's build hook."
   ;; Currently this is implemented by calling out to the fine C++ blob.
-  (catch 'system-error
-    (lambda ()
-      (let ((pipe (apply open-pipe* OPEN_WRITE %guix-register-program
-                         `(,@(if prefix
-                                 `("--prefix" ,prefix)
-                                 '())
-                           ,@(if state-directory
-                                 `("--state-directory" ,state-directory)
-                                 '())))))
-        (and pipe
-             (begin
-               (format pipe "~a~%~a~%~a~%"
-                       path (or deriver "") (length references))
-               (for-each (cut format pipe "~a~%" <>) references)
-               (zero? (close-pipe pipe))))))
-    (lambda args
-      ;; Failed to run %GUIX-REGISTER-PROGRAM.
-      #f)))
+  (let ((pipe (apply open-pipe* OPEN_WRITE %guix-register-program
+                     `(,@(if prefix
+                             `("--prefix" ,prefix)
+                             '())
+                       ,@(if state-directory
+                             `("--state-directory" ,state-directory)
+                             '())))))
+    (and pipe
+         (begin
+           (format pipe "~a~%~a~%~a~%"
+                   path (or deriver "") (length references))
+           (for-each (cut format pipe "~a~%" <>) references)
+           (zero? (close-pipe pipe))))))
 
 
 ;;;
