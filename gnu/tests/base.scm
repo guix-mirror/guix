@@ -30,7 +30,8 @@
   #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (srfi srfi-1)
-  #:export (%test-basic-os))
+  #:export (run-basic-test
+            %test-basic-os))
 
 (define %simple-os
   (operating-system
@@ -56,6 +57,108 @@
                  %base-user-accounts))))
 
 
+(define* (run-basic-test os command #:optional (name "basic"))
+  "Return a derivation called NAME that tests basic features of the OS started
+using COMMAND, a gexp that evaluates to a list of strings.  Compare some
+properties of running system to what's declared in OS, an <operating-system>."
+  (define test
+    #~(begin
+        (use-modules (gnu build marionette)
+                     (srfi srfi-1)
+                     (srfi srfi-26)
+                     (srfi srfi-64)
+                     (ice-9 match))
+
+        (define marionette
+          (make-marionette #$command))
+
+        (mkdir #$output)
+        (chdir #$output)
+
+        (test-begin "basic")
+
+        (test-assert "uname"
+          (match (marionette-eval '(uname) marionette)
+            (#("Linux" "komputilo" version _ "x86_64")
+             (string-prefix? #$(package-version
+                                (operating-system-kernel os))
+                             version))))
+
+        (test-assert "shell and user commands"
+          ;; Is everything in $PATH?
+          (zero? (marionette-eval '(system "
+. /etc/profile
+set -e -x
+guix --version
+ls --version
+grep --version
+info --version")
+                                  marionette)))
+
+        (test-assert "accounts"
+          (let ((users (marionette-eval '(begin
+                                           (use-modules (ice-9 match))
+                                           (let loop ((result '()))
+                                             (match (getpw)
+                                               (#f (reverse result))
+                                               (x  (loop (cons x result))))))
+                                        marionette)))
+            (lset= string=?
+                   (map passwd:name users)
+                   (list
+                    #$@(map user-account-name
+                            (operating-system-user-accounts os))))))
+
+        (test-assert "shepherd services"
+          (let ((services (marionette-eval '(begin
+                                              (use-modules (gnu services herd))
+                                              (call-with-values current-services
+                                                append))
+                                           marionette)))
+            (lset= eq?
+                   (pk 'services services)
+                   '(root #$@(operating-system-shepherd-service-names
+                              (virtualized-operating-system os '()))))))
+
+        (test-equal "login on tty1"
+          "root\n"
+          (begin
+            (marionette-control "sendkey ctrl-alt-f1" marionette)
+            ;; Wait for the 'term-tty1' service to be running (using
+            ;; 'start-service' is the simplest and most reliable way to do
+            ;; that.)
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'term-tty1))
+             marionette)
+
+            ;; Now we can type.
+            (marionette-type "root\n\nid -un > logged-in\n" marionette)
+
+            ;; It can take a while before the shell commands are executed.
+            (let loop ((i 0))
+              (unless (or (file-exists? "/root/logged-in") (> i 15))
+                (sleep 1)
+                (loop (+ i 1))))
+            (marionette-eval '(use-modules (rnrs io ports)) marionette)
+            (marionette-eval '(call-with-input-file "/root/logged-in"
+                                get-string-all)
+                             marionette)))
+
+        (test-assert "screendump"
+          (begin
+            (marionette-control (string-append "screendump " #$output
+                                               "/tty1.ppm")
+                                marionette)
+            (file-exists? "tty1.ppm")))
+
+        (test-end)
+        (exit (= (test-runner-fail-count (test-runner-current)) 0))))
+
+  (gexp->derivation name test
+                    #:modules '((gnu build marionette))))
+
 (define %test-basic-os
   ;; Monadic derivation that instruments %SIMPLE-OS, runs it in a VM, and runs
   ;; a series of basic functionality tests.
@@ -65,100 +168,4 @@
                                                     (guix combinators))))
                        (run   (system-qemu-image/shared-store-script
                                os #:graphic? #f)))
-    (define test
-      #~(begin
-          (use-modules (gnu build marionette)
-                       (srfi srfi-1)
-                       (srfi srfi-26)
-                       (srfi srfi-64)
-                       (ice-9 match))
-
-          (define marionette
-            (make-marionette (list #$run)))
-
-          (mkdir #$output)
-          (chdir #$output)
-
-          (test-begin "basic")
-
-          (test-assert "uname"
-            (match (marionette-eval '(uname) marionette)
-              (#("Linux" "komputilo" version _ "x86_64")
-               (string-prefix? #$(package-version
-                                  (operating-system-kernel os))
-                               version))))
-
-          (test-assert "shell and user commands"
-            ;; Is everything in $PATH?
-            (zero? (marionette-eval '(system "
-. /etc/profile
-set -e -x
-guix --version
-ls --version
-grep --version
-info --version")
-                                    marionette)))
-
-          (test-assert "accounts"
-            (let ((users (marionette-eval '(begin
-                                             (use-modules (ice-9 match))
-                                             (let loop ((result '()))
-                                               (match (getpw)
-                                                 (#f (reverse result))
-                                                 (x  (loop (cons x result))))))
-                                          marionette)))
-              (lset= string=?
-                     (map passwd:name users)
-                     (list
-                      #$@(map user-account-name
-                              (operating-system-user-accounts os))))))
-
-          (test-assert "shepherd services"
-            (let ((services (marionette-eval '(begin
-                                                (use-modules (gnu services herd))
-                                                (call-with-values current-services
-                                                  append))
-                                             marionette)))
-              (lset= eq?
-                     (pk 'services services)
-                     '(root #$@(operating-system-shepherd-service-names
-                                (virtualized-operating-system os '()))))))
-
-          (test-equal "login on tty1"
-            "root\n"
-            (begin
-              (marionette-control "sendkey ctrl-alt-f1" marionette)
-              ;; Wait for the 'term-tty1' service to be running (using
-              ;; 'start-service' is the simplest and most reliable way to do
-              ;; that.)
-              (marionette-eval
-               '(begin
-                  (use-modules (gnu services herd))
-                  (start-service 'term-tty1))
-               marionette)
-
-              ;; Now we can type.
-              (marionette-type "root\n\nid -un > logged-in\n" marionette)
-
-              ;; It can take a while before the shell commands are executed.
-              (let loop ((i 0))
-                (unless (or (file-exists? "/root/logged-in") (> i 15))
-                  (sleep 1)
-                  (loop (+ i 1))))
-              (marionette-eval '(use-modules (rnrs io ports)) marionette)
-              (marionette-eval '(call-with-input-file "/root/logged-in"
-                                  get-string-all)
-                               marionette)))
-
-          (test-assert "screendump"
-            (begin
-              (marionette-control (string-append "screendump " #$output
-                                                 "/tty1.ppm")
-                                  marionette)
-              (file-exists? "tty1.ppm")))
-
-          (test-end)
-          (exit (= (test-runner-fail-count (test-runner-current)) 0))))
-
-    (gexp->derivation "basic" test
-                      #:modules '((gnu build marionette)))))
+    (run-basic-test os #~(list #$run))))
