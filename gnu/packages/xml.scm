@@ -4,7 +4,7 @@
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
@@ -154,6 +154,7 @@ project (but it is usable outside of the Gnome platform).")
   (package
     (name "libxslt")
     (version "1.1.28")
+    (replacement libxslt/fixed)  ; CVE-2016-1683 and CVE-2016-1684
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://xmlsoft.org/libxslt/libxslt-"
@@ -173,6 +174,19 @@ project (but it is usable outside of the Gnome platform).")
      "Libxslt is an XSLT C library developed for the GNOME project.  It is
 based on libxml for XML parsing, tree manipulation and XPath support.")
     (license license:x11)))
+
+(define-public libxslt/fixed
+  (package
+    (inherit libxslt)
+    (source
+     (let ((version "1.1.29"))
+       (origin
+         (method url-fetch)
+         (uri (string-append "ftp://xmlsoft.org/libxslt/libxslt-"
+                             version ".tar.gz"))
+         (sha256
+          (base32
+           "1klh81xbm9ppzgqk339097i39b7fnpmlj8lzn8bpczl3aww6x5xm")))))))
 
 (define-public perl-xml-parser
   (package
