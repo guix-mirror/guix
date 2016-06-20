@@ -17,8 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (run-system-tests)
-  #:use-module (gnu tests base)
-  #:use-module (gnu tests install)
+  #:use-module (gnu tests)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix derivations)
@@ -45,14 +44,16 @@
                 lst)
          (lift1 reverse %store-monad))))
 
-(define %system-tests
-  (list %test-basic-os
-        %test-installed-os))
-
 (define (run-system-tests . args)
+  (define tests
+    (all-system-tests))
+
+  (format (current-error-port) "Running ~a system tests...~%"
+          (length tests))
+
   (with-store store
     (run-with-store store
-      (mlet* %store-monad ((drv (sequence %store-monad %system-tests))
+      (mlet* %store-monad ((drv (mapm %store-monad system-test-value tests))
                            (out -> (map derivation->output-path drv)))
         (mbegin %store-monad
           (show-what-to-build* drv)

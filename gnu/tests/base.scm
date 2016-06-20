@@ -161,16 +161,20 @@ info --version")
                     #:modules '((gnu build marionette))))
 
 (define %test-basic-os
-  ;; Monadic derivation that instruments %SIMPLE-OS, runs it in a VM, and runs
-  ;; a series of basic functionality tests.
-  (mlet* %store-monad ((os -> (marionette-operating-system
-                               %simple-os
-                               #:imported-modules '((gnu services herd)
-                                                    (guix combinators))))
-                       (run   (system-qemu-image/shared-store-script
-                               os #:graphic? #f)))
-    ;; XXX: Add call to 'virtualized-operating-system' to get the exact same
-    ;; set of services as the OS produced by
-    ;; 'system-qemu-image/shared-store-script'.
-    (run-basic-test (virtualized-operating-system os '())
-                    #~(list #$run))))
+  (system-test
+   (name "basic")
+   (description
+    "Instrument %SIMPLE-OS, run it in a VM, and runs a series of basic
+functionality tests.")
+   (value
+    (mlet* %store-monad ((os -> (marionette-operating-system
+                                 %simple-os
+                                 #:imported-modules '((gnu services herd)
+                                                      (guix combinators))))
+                         (run   (system-qemu-image/shared-store-script
+                                 os #:graphic? #f)))
+      ;; XXX: Add call to 'virtualized-operating-system' to get the exact same
+      ;; set of services as the OS produced by
+      ;; 'system-qemu-image/shared-store-script'.
+      (run-basic-test (virtualized-operating-system os '())
+                      #~(list #$run))))))

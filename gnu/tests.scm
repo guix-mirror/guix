@@ -18,12 +18,28 @@
 
 (define-module (gnu tests)
   #:use-module (guix gexp)
+  #:use-module (guix utils)
+  #:use-module (guix records)
   #:use-module (gnu system)
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
+  #:use-module ((gnu packages) #:select (scheme-modules))
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9 gnu)
+  #:use-module (ice-9 match)
   #:export (marionette-service-type
             marionette-operating-system
-            define-os-with-source))
+            define-os-with-source
+
+            system-test
+            system-test?
+            system-test-name
+            system-test-value
+            system-test-description
+            system-test-location
+
+            fold-system-tests
+            all-system-tests))
 
 ;;; Commentary:
 ;;;
@@ -146,5 +162,55 @@ the system under test."
          '(begin
             (use-modules modules ...)
             (operating-system fields ...)))))))
+
+
+;;;
+;;; Tests.
+;;;
+
+(define-record-type* <system-test> system-test make-system-test
+  system-test?
+  (name        system-test-name)                  ;string
+  (value       system-test-value)                 ;%STORE-MONAD value
+  (description system-test-description)           ;string
+  (location    system-test-location (innate)      ;<location>
+               (default (and=> (current-source-location)
+                               source-properties->location))))
+
+(define (write-system-test test port)
+  (match test
+    (($ <system-test> name _ _ ($ <location> file line))
+     (format port "#<system-test ~a ~a:~a ~a>"
+             name file line
+             (number->string (object-address test) 16)))
+    (($ <system-test> name)
+     (format port "#<system-test ~a ~a>" name
+             (number->string (object-address test) 16)))))
+
+(set-record-type-printer! <system-test> write-system-test)
+
+(define (test-modules)
+  "Return the list of modules that define system tests."
+  (scheme-modules (dirname (search-path %load-path "guix.scm"))
+                  "gnu/tests"))
+
+(define (fold-system-tests proc seed)
+  "Invoke PROC on each system test, passing it the test and the previous
+result."
+  (fold (lambda (module result)
+          (fold (lambda (thing result)
+                  (if (system-test? thing)
+                      (proc thing result)
+                      result))
+                result
+                (module-map (lambda (sym var)
+                              (false-if-exception (variable-ref var)))
+                            module)))
+        '()
+        (test-modules)))
+
+(define (all-system-tests)
+  "Return the list of system tests."
+  (reverse (fold-system-tests cons '())))
 
 ;;; tests.scm ends here

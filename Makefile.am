@@ -334,7 +334,6 @@ check-local:
 endif !CAN_RUN_TESTS
 
 check-system: $(GOBJECTS)
-	$(AM_V_at)echo "Running system tests..."
 	$(AM_V_at)$(top_builddir)/pre-inst-env			\
 	   $(GUILE) --no-auto-compile				\
 	   -e '(@@ (run-system-tests) run-system-tests)'	\

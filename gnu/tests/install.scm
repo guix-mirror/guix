@@ -185,21 +185,25 @@ reboot\n"))
 
 
 (define %test-installed-os
-  ;; Test basic functionality of an OS installed like one would do by hand.
-  ;; This test is expensive in terms of CPU and storage usage since we need to
-  ;; build (current-guix) and then store a couple of full system images.
-  (mlet %store-monad ((image  (run-install))
-                      (system (current-system)))
-    (run-basic-test %minimal-os
-                    #~(let ((image #$image))
-                        ;; First we need a writable copy of the image.
-                        (format #t "copying image '~a'...~%" image)
-                        (copy-file image "disk.img")
-                        (chmod "disk.img" #o644)
-                        (list (string-append #$qemu-minimal "/bin/"
-                                             #$(qemu-command system))
-                              "-enable-kvm" "-no-reboot" "-m" "256"
-                              "-drive" "file=disk.img,if=virtio"))
-                    "installed-os")))
+  (system-test
+   (name "installed-os")
+   (description
+    "Test basic functionality of an OS installed like one would do by hand.
+This test is expensive in terms of CPU and storage usage since we need to
+build (current-guix) and then store a couple of full system images.")
+   (value
+    (mlet %store-monad ((image  (run-install))
+                        (system (current-system)))
+      (run-basic-test %minimal-os
+                      #~(let ((image #$image))
+                          ;; First we need a writable copy of the image.
+                          (format #t "copying image '~a'...~%" image)
+                          (copy-file image "disk.img")
+                          (chmod "disk.img" #o644)
+                          (list (string-append #$qemu-minimal "/bin/"
+                                               #$(qemu-command system))
+                                "-enable-kvm" "-no-reboot" "-m" "256"
+                                "-drive" "file=disk.img,if=virtio"))
+                      "installed-os")))))
 
 ;;; install.scm ends here
