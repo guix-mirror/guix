@@ -6946,13 +6946,16 @@ with python-requests.")
 (define-public python-click-threading
   (package
     (name "python-click-threading")
-    (version "0.1.2")
+    (version "0.2.0")
     (source (origin
              (method url-fetch)
-             (uri (pypi-uri "click-threading" version))
+             (uri (string-append
+                    "https://pypi.python.org/packages/"
+                    "fe/b7/e7f609d18a2a351cb71616adcf54df1acd82f83cb9b5936935a4d20e2c23/"
+                    "click-threading-" version ".tar.gz"))
              (sha256
               (base32
-               "0jmrv4334lfxa2ss53c06dafdwqbk1pb3ihd26izn5igw1bm8145"))))
+               "18bcqikxwb3drb8rf60cclxkxw52521b38ax3byah6j8cn8y9p4j"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-click" ,python-click)))
