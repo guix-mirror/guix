@@ -18,6 +18,7 @@
 
 (define-module (run-system-tests)
   #:use-module (gnu tests base)
+  #:use-module (gnu tests install)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix derivations)
@@ -45,7 +46,8 @@
          (lift1 reverse %store-monad))))
 
 (define %system-tests
-  (list %test-basic-os))
+  (list %test-basic-os
+        %test-installed-os))
 
 (define (run-system-tests . args)
   (with-store store

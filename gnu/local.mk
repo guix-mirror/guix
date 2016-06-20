@@ -409,7 +409,8 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/vm.scm				\
 						\
   %D%/tests.scm					\
-  %D%/tests/base.scm
+  %D%/tests/base.scm				\
+  %D%/tests/install.scm
 
 
 patchdir = $(guilemoduledir)/%D%/packages/patches

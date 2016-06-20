@@ -22,7 +22,8 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:export (marionette-service-type
-            marionette-operating-system))
+            marionette-operating-system
+            define-os-with-source))
 
 ;;; Commentary:
 ;;;
@@ -126,5 +127,24 @@ in a virtual machine--i.e., controlled from the host system."
     (inherit os)
     (services (cons (service marionette-service-type imported-modules)
                     (operating-system-user-services os)))))
+
+(define-syntax define-os-with-source
+  (syntax-rules (use-modules operating-system)
+    "Define two variables: OS containing the given operating system, and
+SOURCE containing the source to define OS as an sexp.
+
+This is convenient when we need both the <operating-system> object so we can
+instantiate it, and the source to create it so we can store in in a file in
+the system under test."
+    ((_ (os source)
+        (use-modules modules ...)
+        (operating-system fields ...))
+     (begin
+       (define os
+         (operating-system fields ...))
+       (define source
+         '(begin
+            (use-modules modules ...)
+            (operating-system fields ...)))))))
 
 ;;; tests.scm ends here
