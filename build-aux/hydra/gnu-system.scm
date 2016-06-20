@@ -182,6 +182,7 @@ system.")
                      (mbegin %store-monad
                        (set-current-system system)
                        (set-grafting #f)
+                       (set-guile-for-build (default-guile))
                        (system-test-value test)))))))
 
   (if (member system %guixsd-supported-systems)
