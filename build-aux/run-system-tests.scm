@@ -24,6 +24,7 @@
   #:use-module (guix ui)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-34)
+  #:use-module (ice-9 match)
   #:export (run-system-tests))
 
 (define (built-derivations* drv)
@@ -46,7 +47,17 @@
 
 (define (run-system-tests . args)
   (define tests
-    (all-system-tests))
+    ;; Honor the 'TESTS' environment variable so that one can select a subset
+    ;; of tests to run in the usual way:
+    ;;
+    ;;   make check-system TESTS=installed-os
+    (match (getenv "TESTS")
+      (#f
+       (all-system-tests))
+      ((= string-tokenize (tests ...))
+       (filter (lambda (test)
+                 (member (system-test-name test) tests))
+               (all-system-tests)))))
 
   (format (current-error-port) "Running ~a system tests...~%"
           (length tests))
