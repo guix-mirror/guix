@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Rene Saavedra <rennes@openmailbox.org>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Clément Lassieur <clement@lassieur.org>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2899,14 +2900,14 @@ applications.")
 (define-public perl-uri
   (package
     (name "perl-uri")
-    (version "1.67")
+    (version "1.71")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://cpan/authors/id/E/ET/ETHER/"
                                  "URI-" version ".tar.gz"))
              (sha256
               (base32
-               "0ki7i830gs0cwwwjsyv3s6yy1l76ym8pfqp0lp7vw0j9bwyx923h"))))
+               "05a1ck1bhvqkkk690xhsxf7276dnagk96qkh2jy4prrrgw6wm3lw"))))
     (build-system perl-build-system)
     (license (package-license perl))
     (synopsis "Perl Uniform Resource Identifiers (absolute and relative)")
