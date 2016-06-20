@@ -518,8 +518,8 @@ following forms:
   (add-before <old-phase-name> <new-phase-name> <new-phase>)
   (add-after <old-phase-name> <new-phase-name> <new-phase>)
 
-Where every <*-phase-name> is an automatically quoted symbol, and <new-phase>
-an expression evaluating to a procedure."
+Where every <*-phase-name> is an expression evaluating to a symbol, and
+<new-phase> an expression evaluating to a procedure."
   (let* ((phases* phases)
          (phases* (%modify-phases phases* mod-spec))
          ...)
