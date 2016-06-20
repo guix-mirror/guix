@@ -295,21 +295,19 @@ data types.")
 
 (define-public python-3.4
   (package (inherit python-2)
-    (version "3.4.3")
+    (version "3.4.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
               (patches (search-patches
                         "python-fix-tests.patch"
-                        ;; XXX Try removing this patch for python > 3.4.3
-                        "python-disable-ssl-test.patch"
                         "python-3-deterministic-build-info.patch"
                         "python-3-search-paths.patch"))
               (patch-flags '("-p0"))
               (sha256
                (base32
-                "1f4nm4z08sy0kqwisvv95l02crv6dyysdmx44p1mz3bn6csrdcxm"))))
+                "12l9klp778wklxmckhghniy5hklss8r26995pyd00qbllk4b2r7f"))))
     (arguments (substitute-keyword-arguments (package-arguments python-2)
                  ((#:tests? _) #t)))
     (native-search-paths
@@ -342,14 +340,12 @@ data types.")
   (package (inherit python)
     (name "python-minimal")
     (outputs '("out"))
-    (arguments
-     (substitute-keyword-arguments (package-arguments python)
-       ((#:configure-flags cf)
-        `(append ,cf '("--without-system-ffi")))))
 
+    ;; Build fails due to missing ctypes without libffi.
     ;; OpenSSL is a mandatory dependency of Python 3.x, for urllib;
     ;; zlib is required by 'zipimport', used by pip.
-    (inputs `(("openssl" ,openssl)
+    (inputs `(("libffi" ,libffi)
+              ("openssl" ,openssl)
               ("zlib" ,zlib)))))
 
 (define* (wrap-python3 python
