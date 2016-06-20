@@ -2163,13 +2163,17 @@ is used by the Requests library to verify HTTPS requests.")
 (define-public python-click
   (package
     (name "python-click")
-    (version "6.2")
+    (version "6.6")
     (source
      (origin
        (method url-fetch)
-         (uri (pypi-uri "click" version))
+         (uri (string-append
+                "https://pypi.python.org/packages/"
+                "7a/00/c14926d8232b36b08218067bcd5853caefb4737cda3f0a47437151344792/"
+                "click-" version ".tar.gz"))
        (sha256
-        (base32 "10kavbisnk9m93jl2wi34pw7ryr2qbxshh2cysxwxd7bymqgz87v"))))
+        (base32
+         "1sggipyz52crrybwbr9xvwxd4aqigvplf53k9w3ygxmzivd1jsnc"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
