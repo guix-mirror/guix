@@ -199,14 +199,14 @@ without requiring the source code to be rewritten.")
 (define-public guile-next
   (package (inherit guile-2.0)
     (name "guile-next")
-    (version "2.1.2")
+    (version "2.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://alpha.gnu.org/gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0p971k3v04jj5klnv145g4172cpcp90arf0wvxxj2aqkg16j9m9c"))
+                "1k48wqca2hrsbfq4ssiv4pg9jwlqncs5iwwxklk2bnczi7lavv78"))
               (modules '((guix build utils)))
 
               ;; Remove the pre-built object files.  Instead, build everything
