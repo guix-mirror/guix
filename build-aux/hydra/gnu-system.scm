@@ -59,6 +59,7 @@
              (gnu system)
              (gnu system vm)
              (gnu system install)
+             (gnu tests)
              (srfi srfi-1)
              (srfi srfi-26)
              (ice-9 match))
@@ -129,6 +130,9 @@ SYSTEM."
          (file (string-append dir "/demo-os.scm")))
     (read-operating-system file)))
 
+(define %guixsd-supported-systems
+  '("x86_64-linux" "i686-linux"))
+
 (define (qemu-jobs store system)
   "Return a list of jobs that build QEMU images for SYSTEM."
   (define (->alist drv)
@@ -150,7 +154,7 @@ system.")
   (define MiB
     (expt 2 20))
 
-  (if (member system '("x86_64-linux" "i686-linux"))
+  (if (member system %guixsd-supported-systems)
       (list (->job 'qemu-image
                    (run-with-store store
                      (mbegin %store-monad
@@ -165,6 +169,23 @@ system.")
                        (system-disk-image installation-os
                                           #:disk-image-size
                                           (* 1024 MiB))))))
+      '()))
+
+(define (system-test-jobs store system)
+  "Return a list of jobs for the system tests."
+  (define (->job test)
+    (let ((name (string->symbol
+                 (string-append "test." (system-test-name test)
+                                "." system))))
+      `(,name . ,(lambda ()
+                   (run-with-store store
+                     (mbegin %store-monad
+                       (set-current-system system)
+                       (set-grafting #f)
+                       (system-test-value test)))))))
+
+  (if (member system %guixsd-supported-systems)
+      (map ->job (all-system-tests))
       '()))
 
 (define (tarball-jobs store system)
@@ -274,6 +295,7 @@ valid."
                                                 system))))
                        (append (filter-map job all)
                                (qemu-jobs store system)
+                               (system-test-jobs store system)
                                (tarball-jobs store system)
                                (cross-jobs system))))
                     ((core)
