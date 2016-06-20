@@ -79,10 +79,12 @@ properties of running system to what's declared in OS, an <operating-system>."
 
         (test-assert "uname"
           (match (marionette-eval '(uname) marionette)
-            (#("Linux" "komputilo" version _ "x86_64")
-             (string-prefix? #$(package-version
-                                (operating-system-kernel os))
-                             version))))
+            (#("Linux" host-name version _ "x86_64")
+             (and (string=? host-name
+                            #$(operating-system-host-name os))
+                  (string-prefix? #$(package-version
+                                     (operating-system-kernel os))
+                                  version)))))
 
         (test-assert "shell and user commands"
           ;; Is everything in $PATH?
@@ -117,8 +119,7 @@ info --version")
                                            marionette)))
             (lset= eq?
                    (pk 'services services)
-                   '(root #$@(operating-system-shepherd-service-names
-                              (virtualized-operating-system os '()))))))
+                   '(root #$@(operating-system-shepherd-service-names os)))))
 
         (test-equal "login on tty1"
           "root\n"
@@ -168,4 +169,8 @@ info --version")
                                                     (guix combinators))))
                        (run   (system-qemu-image/shared-store-script
                                os #:graphic? #f)))
-    (run-basic-test os #~(list #$run))))
+    ;; XXX: Add call to 'virtualized-operating-system' to get the exact same
+    ;; set of services as the OS produced by
+    ;; 'system-qemu-image/shared-store-script'.
+    (run-basic-test (virtualized-operating-system os '())
+                    #~(list #$run))))
