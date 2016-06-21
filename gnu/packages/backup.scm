@@ -136,7 +136,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
 (define-public libarchive
   (package
     (name "libarchive")
-    (version "3.2.0")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
@@ -144,7 +144,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "11xabdpmvdmcdkidigmqh4ymhra95lr7ipcys4hdq0gzf7ylbkkv"))))
+         "1lngng84k1kkljl74q0cdqc3s82vn2kimfm02dgm4d6m7x71mvkj"))))
     (build-system gnu-build-system)
     ;; TODO: Add -L/path/to/nettle in libarchive.pc.
     (inputs
@@ -175,7 +175,10 @@ backups (called chunks) to allow easy burning to CD/DVD.")
                 (zero? (system* "./libarchive_test" "^test_*_disk*"))
                 (zero? (system* "./bsdcpio_test" "^test_owner_parse"))
                 (zero? (system* "./bsdtar_test"))))
-         %standard-phases))))
+         %standard-phases))
+       ;; libarchive/test/test_write_format_gnutar_filenames.c needs to be
+       ;; compiled with C99 or C11 or a gnu variant.
+       #:configure-flags '("CFLAGS=-O2 -g -std=c99")))
     (home-page "http://libarchive.org/")
     (synopsis "Multi-format archive and compression library")
     (description
