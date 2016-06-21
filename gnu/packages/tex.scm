@@ -3,6 +3,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -55,27 +56,27 @@
 (define texlive-extra-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2015/texlive-20150523-extra.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2016/texlive-20160523-extra.tar.xz")
     (sha256 (base32
-              "1dkhhacga8h1v2m9xv1w02glbdda2m8lfp1la1y1zb9yjj8jsa6i"))))
+              "0q4a92zmwhn4ry6xgrp4k8wq11ax2sg9rg9yrsrdkr719y0x887a"))))
 
 (define texlive-texmf-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2015/texlive-20150523-texmf.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2016/texlive-20160523-texmf.tar.xz")
     (sha256 (base32
-              "1a3hpcg6x69ysqx432v6sk4alg0x34813cwk41frmvzprdajpyqy"))))
+              "0mfp6kq1p2ys5ni9czx9xl0xh264axri25vqw37yzk8jn3py9l08"))))
 
 (define texlive-bin
   (package
    (name "texlive-bin")
-   (version "2015")
+   (version "2016")
    (source
     (origin
      (method url-fetch)
-      (uri "ftp://tug.org/historic/systems/texlive/2015/texlive-20150521-source.tar.xz")
+      (uri "ftp://tug.org/historic/systems/texlive/2016/texlive-20160523-source.tar.xz")
       (sha256 (base32
-               "0sa6kmz4jwhv6lw702gxszhhjkvw071wba0ngk1c76g8vixwv6zd"))))
+               "07kb8rsw8d42wy3fj1qgqj26y92spx1lbhx6z73wwdb3msnvh4i9"))))
    (build-system gnu-build-system)
    (inputs
     `(("texlive-extra-src" ,texlive-extra-src)
@@ -171,7 +172,7 @@ This package contains the binaries.")
 (define texlive-texmf
   (package
    (name "texlive-texmf")
-   (version "2015")
+   (version "2016")
    (source texlive-texmf-src)
    (build-system gnu-build-system)
    (inputs
@@ -220,6 +221,7 @@ This package contains the binaries.")
                 (system* "updmap-sys" "--nohash" "--syncwithtrees")
                 (system* "mktexlsr")
                 (system* "fmtutil-sys" "--all")))))))
+   (properties `((max-silent-time . 9600))) ; don't time out while grafting
    (synopsis "TeX Live, a package of the TeX typesetting system")
    (description
     "TeX Live provides a comprehensive TeX document production system.
@@ -234,7 +236,7 @@ This package contains the complete tree of texmf-dist data.")
 (define-public texlive
   (package
    (name "texlive")
-   (version "2015")
+   (version "2016")
    (source #f)
    (build-system trivial-build-system)
    (inputs `(("bash" ,bash) ; for wrap-program
