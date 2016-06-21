@@ -173,17 +173,29 @@ system.")
 
 (define (system-test-jobs store system)
   "Return a list of jobs for the system tests."
+  (define (test->thunk test)
+    (lambda ()
+      (define drv
+        (run-with-store store
+          (mbegin %store-monad
+            (set-current-system system)
+            (set-grafting #f)
+            (set-guile-for-build (default-guile))
+            (system-test-value test))))
+
+      `((derivation . ,(derivation-file-name drv))
+        (description . ,(format #f "GuixSD '~a' system test"
+                                (system-test-name test)))
+        (long-description . ,(system-test-description test))
+        (license . ,gpl3+)
+        (home-page . ,%guix-home-page-url)
+        (maintainers . ("bug-guix@gnu.org")))))
+
   (define (->job test)
     (let ((name (string->symbol
                  (string-append "test." (system-test-name test)
                                 "." system))))
-      `(,name . ,(lambda ()
-                   (run-with-store store
-                     (mbegin %store-monad
-                       (set-current-system system)
-                       (set-grafting #f)
-                       (set-guile-for-build (default-guile))
-                       (system-test-value test)))))))
+      (cons name (test->thunk test))))
 
   (if (member system %guixsd-supported-systems)
       (map ->job (all-system-tests))
