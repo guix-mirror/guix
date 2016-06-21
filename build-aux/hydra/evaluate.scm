@@ -49,6 +49,17 @@ values."
                  (/ (time-nanosecond time) 1e9)))
       (apply values results))))
 
+(define (assert-valid-job job thing)
+  "Raise an error if THING is not an alist with a valid 'derivation' entry.
+Otherwise return THING."
+  (unless (and (list? thing)
+               (and=> (assoc-ref thing 'derivation)
+                      (lambda (value)
+                        (and (string? value)
+                             (string-suffix? ".drv" value)))))
+    (error "job did not produce a valid alist" job thing))
+  thing)
+
 
 ;; Without further ado...
 (match (command-line)
@@ -83,7 +94,9 @@ values."
            (map (lambda (job thunk)
                   (format (current-error-port) "evaluating '~a'... " job)
                   (force-output (current-error-port))
-                  (cons job (call-with-time-display thunk)))
+                  (cons job
+                        (assert-valid-job job
+                                          (call-with-time-display thunk))))
                 names thunks)))
         port))))
   ((command _ ...)
