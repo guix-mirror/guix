@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,8 +22,13 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
-  #:use-module (gnu packages documentation))
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages check)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages documentation)
+  #:use-module (gnu packages pkg-config))
 
 (define-public cereal
   (package
@@ -72,3 +78,48 @@
 arbitrary data types and reversibly turns them into different representations,
 such as compact binary encodings, XML, or JSON.")
     (license license:bsd-3)))
+
+
+(define-public msgpack
+  (package
+    (name "msgpack")
+    (version "1.4.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://github.com/msgpack/msgpack-c/releases/download/"
+         "cpp-" version "/msgpack-" version ".tar.gz"))
+       (snippet
+        '(let ((p (open-file "msgpack.pc.in" "a")))
+           (begin
+             (display
+              (string-append "Requires: " "zlib" "\n") p)
+             (close-output-port p))))
+       (sha256
+        (base32
+         "0bpjfh9vz0n2k93mph3x15clmigkgs223xfn8h12ymrh5gsi5ica"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("googletest" ,googletest)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("zlib" ,zlib))) ;; Msgpack installs two headers (zbuffer.h,
+    ;; zbuffer.hpp) which #include <zlib.h>.  However, 'guix gc --references'
+    ;; does not detect a store reference to zlib since these headers are not
+    ;; compiled.
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'autoconf
+           (lambda _
+             (system* "autoreconf" "-vfi"))))))
+    (home-page "http://www.msgpack.org")
+    (synopsis "Binary serialization library")
+    (description "Msgpack is a library for C/C++ that implements binary
+serialization.")
+    (license license:boost1.0)))
