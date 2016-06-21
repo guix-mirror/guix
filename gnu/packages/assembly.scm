@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
@@ -90,3 +91,24 @@ Mach-O, RDOFF2, COFF, Win32, and Win64 object formats, and generates source
 debugging information in STABS, DWARF 2, and CodeView 8 formats.")
     (license (license:non-copyleft "file://COPYING"
                                    "See COPYING in the distribution."))))
+
+(define-public lightning
+  (package
+    (name "lightning")
+    (version "2.1.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/lightning/lightning-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "19j9nwl88k660045s40cbz5zrl1wpd2mcxnnc8qqnnaj311a58qz"))))
+    (build-system gnu-build-system)
+    (synopsis "Library for generating assembly code at runtime")
+    (description
+     "GNU Lightning is a library that generates assembly language code at
+run-time.  Thus, it is useful in creating Just-In-Time compilers.  It
+abstracts over the target CPU by exposing a standardized RISC instruction set
+to the clients.")
+    (home-page "http://www.gnu.org/software/lightning/")
+    (license gpl3+)))

@@ -206,7 +206,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/libusb.scm			\
   %D%/packages/libunwind.scm			\
   %D%/packages/libupnp.scm			\
-  %D%/packages/lightning.scm			\
   %D%/packages/links.scm			\
   %D%/packages/linux.scm			\
   %D%/packages/lirc.scm				\
