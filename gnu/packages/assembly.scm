@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,7 +25,9 @@
   #:use-module (guix packages)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages texinfo))
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages xml))
 
 (define-public nasm
   (package
@@ -59,3 +63,31 @@ complex.  It supports all currently known x86 architectural extensions, and
 has strong support for macros.")
     (supported-systems '("x86_64-linux" "i686-linux"))
     (license license:bsd-3)))
+
+(define-public yasm
+  (package
+    (name "yasm")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.tortall.net/projects/yasm/releases/yasm-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0gv0slmm0qpq91za3v2v9glff3il594x5xsrbgab7xcmnh0ndkix"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("python" ,python-wrapper)
+       ("xmlto" ,xmlto)))
+    (home-page "http://yasm.tortall.net/")
+    (synopsis "Rewrite of the NASM assembler")
+    (description
+     "Yasm is a complete rewrite of the NASM assembler.
+
+Yasm currently supports the x86 and AMD64 instruction sets, accepts NASM
+and GAS assembler syntaxes, outputs binary, ELF32, ELF64, 32 and 64-bit
+Mach-O, RDOFF2, COFF, Win32, and Win64 object formats, and generates source
+debugging information in STABS, DWARF 2, and CodeView 8 formats.")
+    (license (license:non-copyleft "file://COPYING"
+                                   "See COPYING in the distribution."))))
