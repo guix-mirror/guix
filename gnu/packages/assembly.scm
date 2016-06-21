@@ -23,7 +23,7 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
-  #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages python)
@@ -39,17 +39,16 @@
                                   version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "12bl6vc5sjp9nnhf0iwy6l27vq783y0rxrjpp8sy84h5cb7a3fwx"))))
+                "12bl6vc5sjp9nnhf0iwy6l27vq783y0rxrjpp8sy84h5cb7a3fwx"))
+              (patches (search-patches "nasm-no-ps-pdf.patch"))))
     (build-system gnu-build-system)
-    (native-inputs `(("ghostscript" ,ghostscript) ; ps2pdf
-                     ("perl" ,perl)  ;for test target
+    (native-inputs `(("perl" ,perl)  ;for doc and test target
                      ("texinfo" ,texinfo)))
     (arguments
      `(#:test-target "test"
        #:phases (modify-phases %standard-phases
                   (add-after 'install 'install-info
                     (lambda _
-                      ;; FIXME: The PDF and PS files are not reproducible.
                       (zero? (system* "make" "install_doc")))))))
     (home-page "http://www.nasm.us/")
     (synopsis "80x86 and x86-64 assembler")
