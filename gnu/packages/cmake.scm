@@ -37,7 +37,7 @@
 (define-public cmake
   (package
     (name "cmake")
-    (version "3.5.0")
+    (version "3.5.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.cmake.org/files/v"
@@ -45,7 +45,7 @@
                                  "/cmake-" version ".tar.gz"))
              (sha256
               (base32
-               "1yly38mpk2s08b4rglp9xcw5pxalk0whp9hrcg7j8qpxlkc3mj4j"))
+               "0ap6nlmv6nda942db43k9k9mhnm5dm3fsapzvy0vh6wq7l6l3n4j"))
              (patches (search-patches "cmake-fix-tests.patch"))))
     (build-system gnu-build-system)
     (arguments
