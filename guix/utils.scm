@@ -637,7 +637,7 @@ output port, and PROC's result is returned."
 
 (define (cache-directory)
   "Return the cache directory for Guix, by default ~/.cache/guix."
-  (or (getenv "XDG_CONFIG_HOME")
+  (or (getenv "XDG_CACHE_HOME")
       (and=> (or (getenv "HOME")
                  (passwd:dir (getpwuid (getuid))))
              (cut string-append <> "/.cache/guix"))))
