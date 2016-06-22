@@ -620,6 +620,31 @@ Upon failure, please email @email{bug-guix@@gnu.org} and attach the
 as well as version numbers of the dependencies (@pxref{Requirements}) in
 your message.
 
+Guix also comes with a whole-system test suite that tests complete
+GuixSD operating system instances.  It can only run on systems where
+Guix is already installed, using:
+
+@example
+make check-system
+@end example
+
+@noindent
+or, again, by defining @code{TESTS} to select a subset of tests to run:
+
+@example
+make check-system TESTS="basic mcron"
+@end example
+
+These system tests are defined in the @code{(gnu tests @dots{})}
+modules.  They work by running the operating systems under test with
+lightweight instrumentation in a virtual machine (VM).  They can be
+computationally intensive or rather cheap, depending on whether
+substitutes are available for their dependencies (@pxref{Substitutes}).
+Some of them require a lot of storage space to hold VM images.
+
+Again in case of test failures, please send @email{bug-guix@@gnu.org}
+all the details.
+
 @node Setting Up the Daemon
 @section Setting Up the Daemon
 
