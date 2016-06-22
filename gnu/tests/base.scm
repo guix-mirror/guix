@@ -81,12 +81,13 @@ properties of running system to what's declared in OS, an <operating-system>."
 
         (test-assert "uname"
           (match (marionette-eval '(uname) marionette)
-            (#("Linux" host-name version _ "x86_64")
+            (#("Linux" host-name version _ architecture)
              (and (string=? host-name
                             #$(operating-system-host-name os))
                   (string-prefix? #$(package-version
                                      (operating-system-kernel os))
-                                  version)))))
+                                  version)
+                  (string-prefix? architecture %host-type)))))
 
         (test-assert "shell and user commands"
           ;; Is everything in $PATH?
@@ -166,7 +167,7 @@ info --version")
   (system-test
    (name "basic")
    (description
-    "Instrument %SIMPLE-OS, run it in a VM, and runs a series of basic
+    "Instrument %SIMPLE-OS, run it in a VM, and run a series of basic
 functionality tests.")
    (value
     (mlet* %store-monad ((os -> (marionette-operating-system
