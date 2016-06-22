@@ -482,7 +482,7 @@ for example from a shell script.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.12.2")
+   (version "3.13.0")
    (source (origin
             (method url-fetch)
             ;; TODO: Download from sqlite.org once this bug :
@@ -513,7 +513,7 @@ for example from a shell script.")
                    ))
             (sha256
              (base32
-              "1fwss0i2lixv39b27gkqiibdd2syym90wh3qbiaxnfgxk867f07x"))))
+              "0sq88jbwsk48i41f7m7rkw9xvijq011nsbs7pl49s31inck70yg2"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments
