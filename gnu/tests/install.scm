@@ -200,10 +200,13 @@ build (current-guix) and then store a couple of full system images.")
                           (format #t "copying image '~a'...~%" image)
                           (copy-file image "disk.img")
                           (chmod "disk.img" #o644)
-                          (list (string-append #$qemu-minimal "/bin/"
-                                               #$(qemu-command system))
-                                "-enable-kvm" "-no-reboot" "-m" "256"
-                                "-drive" "file=disk.img,if=virtio"))
+                          `(,(string-append #$qemu-minimal "/bin/"
+                                            #$(qemu-command system))
+                            ,@(if (file-exists? "/dev/kvm")
+                                  '("-enable-kvm")
+                                  '())
+                            "-no-reboot" "-m" "256"
+                            "-drive" "file=disk.img,if=virtio"))
                       "installed-os")))))
 
 ;;; install.scm ends here
