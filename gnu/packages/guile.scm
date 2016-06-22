@@ -42,6 +42,7 @@
   #:use-module (gnu packages ed)
   #:use-module (gnu packages base)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages python)
@@ -420,6 +421,55 @@ tasks on a schedule, such as every hour or every Monday.  Mcron is written in
 Guile, so its configuration can be written in Scheme; the original cron
 format is also supported.")
     (license gpl3+)))
+
+(define-public mcron2
+  ;; This is mthl's mcron development branch, not yet merged in mcron.
+  (let ((commit "31baff1a5187d8ddc89324cbe42dbeffc309c962"))
+    (package
+      (inherit mcron)
+      (name "mcron2")
+      (version (string-append (package-version mcron) "-0."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://notabug.org/mthl/mcron/")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1h5wxy997hxi718hpx419c23q09939kbxrjbbq54lv0cgw1bb63z"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)
+         ("help2man" ,help2man)))
+      (arguments
+       `(#:modules ((ice-9 match) (ice-9 ftw)
+                    ,@%gnu-build-system-modules)
+
+         #:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'bootstrap
+                      (lambda _
+                        (zero? (system* "autoreconf" "-vfi"))))
+                    (add-after 'install 'wrap-mcron
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        ;; Wrap the 'mcron' command to refer to the right
+                        ;; modules.
+                        (let* ((out  (assoc-ref outputs "out"))
+                               (bin  (string-append out "/bin"))
+                               (site (string-append
+                                      out "/share/guile/site")))
+                          (match (scandir site)
+                            (("." ".." version)
+                             (let ((modules (string-append site "/" version)))
+                               (wrap-program (string-append bin "/mcron")
+                                 `("GUILE_LOAD_PATH" ":" prefix
+                                   (,modules))
+                                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                                   (,modules)))
+                               #t))))))))))))
 
 (define-public guile-lib
   (package
