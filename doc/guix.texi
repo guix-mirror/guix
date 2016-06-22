@@ -204,6 +204,7 @@ System Configuration
 Services
 
 * Base Services::               Essential system services.
+* Scheduled Job Execution::     The mcron service.
 * Networking Services::         Network setup, SSH daemon, etc.
 * X Window::                    Graphical display.
 * Desktop Services::            D-Bus and desktop services.
@@ -7185,6 +7186,7 @@ declaration.
 
 @menu
 * Base Services::               Essential system services.
+* Scheduled Job Execution::     The mcron service.
 * Networking Services::         Network setup, SSH daemon, etc.
 * X Window::                    Graphical display.
 * Desktop Services::            D-Bus and desktop services.
@@ -7461,6 +7463,82 @@ This assumes that @file{/etc/guix} already contains a signing key pair as
 created by @command{guix archive --generate-key} (@pxref{Invoking guix
 archive}).  If that is not the case, the service will fail to start.
 @end deffn
+
+
+@node Scheduled Job Execution
+@subsubsection Scheduled Job Execution
+
+@cindex cron
+@cindex scheduling jobs
+The @code{(gnu services mcron)} module provides an interface to
+GNU@tie{}mcron, a daemon to run jobs at scheduled times (@pxref{Top,,,
+mcron, GNU@tie{}mcron}).  GNU@tie{}mcron is similar to the traditional
+Unix @command{cron} daemon; the main difference is that it is
+implemented in Guile Scheme, which provides a lot of flexibility when
+specifying the scheduling of jobs and their actions.
+
+For example, to define an operating system that runs the
+@command{updatedb} (@pxref{Invoking updatedb,,, find, Finding Files})
+and the @command{guix gc} commands (@pxref{Invoking guix gc}) daily:
+
+@lisp
+(use-modules (guix) (gnu) (gnu services mcron))
+
+(define updatedb-job
+  ;; Run 'updatedb' at 3 AM every day.
+  #~(job '(next-hour '(3))
+         "updatedb --prunepaths='/tmp /var/tmp /gnu/store'"))
+
+(define garbage-collector-job
+  ;; Collect garbage 5 minutes after midnight every day.
+  #~(job "5 0 * * *"            ;Vixie cron syntax
+         "guix gc -F 1G"))
+
+(operating-system
+  ;; @dots{}
+  (services (cons (mcron-service (list garbage-collector-job
+                                       updatedb-job))
+                  %base-services)))
+@end lisp
+
+@xref{Guile Syntax, mcron job specifications,, mcron, GNU@tie{}mcron},
+for more information on mcron job specifications.  Below is the
+reference of the mcron service.
+
+@deffn {Scheme Procedure} mcron-service @var{jobs} [#:mcron @var{mcron2}]
+Return an mcron service running @var{mcron} that schedules @var{jobs}, a
+list of gexps denoting mcron job specifications.
+
+This is a shorthand for:
+@example
+  (service mcron-service-type
+           (mcron-configuration (mcron mcron) (jobs jobs)))
+@end example
+@end deffn
+
+@defvr {Scheme Variable} mcron-service-type
+This is the type of the @code{mcron} service, whose value is an
+@code{mcron-configuration} object.
+
+This service type can be the target of a service extension that provides
+it additional job specifications (@pxref{Service Composition}).  In
+other words, it is possible to define services that provide addition
+mcron jobs to run.
+@end defvr
+
+@deftp {Data Type} mcron-configuration
+Data type representing the configuration of mcron.
+
+@table @asis
+@item @code{mcron} (default: @var{mcron2})
+The mcron package to use.
+
+@item @code{jobs}
+This is a list of gexps (@pxref{G-Expressions}), where each gexp
+corresponds to an mcron job specification (@pxref{Syntax, mcron job
+specifications,, mcron, GNU@tie{}mcron}).
+@end table
+@end deftp
 
 
 @node Networking Services

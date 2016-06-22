@@ -24,6 +24,7 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu system vm)
   #:use-module (gnu services)
+  #:use-module (gnu services mcron)
   #:use-module (gnu services shepherd)
   #:use-module (guix gexp)
   #:use-module (guix store)
@@ -31,7 +32,8 @@
   #:use-module (guix packages)
   #:use-module (srfi srfi-1)
   #:export (run-basic-test
-            %test-basic-os))
+            %test-basic-os
+            %test-mcron))
 
 (define %simple-os
   (operating-system
@@ -178,3 +180,105 @@ functionality tests.")
       ;; 'system-qemu-image/shared-store-script'.
       (run-basic-test (virtualized-operating-system os '())
                       #~(list #$run))))))
+
+
+;;;
+;;; Mcron.
+;;;
+
+(define %mcron-os
+  ;; System with an mcron service, with one mcron job for "root" and one mcron
+  ;; job for an unprivileged user (note: #:user is an 'mcron2' thing.)
+  (let ((job1 #~(job next-second-from
+                     (lambda ()
+                       (call-with-output-file "witness"
+                         (lambda (port)
+                           (display (list (getuid) (getgid)) port))))))
+        (job2 #~(job next-second-from
+                     (lambda ()
+                       (call-with-output-file "witness"
+                         (lambda (port)
+                           (display (list (getuid) (getgid)) port))))
+                     #:user "alice"))
+        (job3 #~(job next-second-from             ;to test $PATH
+                     "touch witness-touch")))
+    (operating-system
+      (inherit %simple-os)
+      (services (cons (mcron-service (list job1 job2 job3))
+                      (operating-system-user-services %simple-os))))))
+
+(define (run-mcron-test name)
+  (mlet* %store-monad ((os ->   (marionette-operating-system
+                                 %mcron-os
+                                 #:imported-modules '((gnu services herd)
+                                                      (guix combinators))))
+                       (command (system-qemu-image/shared-store-script
+                                 os #:graphic? #f)))
+    (define test
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (srfi srfi-64)
+                       (ice-9 match))
+
+          (define marionette
+            (make-marionette (list #$command)))
+
+          (define (wait-for-file file)
+            ;; Wait until FILE exists in the guest; 'read' its content and
+            ;; return it.
+            (marionette-eval
+             `(let loop ((i 10))
+                (cond ((file-exists? ,file)
+                       (call-with-input-file ,file read))
+                      ((> i 0)
+                       (sleep 1)
+                       (loop (- i 1)))
+                      (else
+                       (error "file didn't show up" ,file))))
+             marionette))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "mcron")
+
+          (test-eq "service running"
+            'running!
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+                (start-service 'mcron)
+                'running!)
+             marionette))
+
+          ;; Make sure root's mcron job runs, has its cwd set to "/root", and
+          ;; runs with the right UID/GID.
+          (test-equal "root's job"
+            '(0 0)
+            (wait-for-file "/root/witness"))
+
+          ;; Likewise for Alice's job.  We cannot know what its GID is since
+          ;; it's chosen by 'groupadd', but it's strictly positive.
+          (test-assert "alice's job"
+            (match (wait-for-file "/home/alice/witness")
+              ((1000 gid)
+               (>= gid 100))))
+
+          ;; Last, the job that uses a command; allows us to test whether
+          ;; $PATH is sane.  (Note that 'marionette-eval' stringifies objects
+          ;; that don't have a read syntax, hence the string.)
+          (test-equal "root's job with command"
+            "#<eof>"
+            (wait-for-file "/root/witness-touch"))
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0))))
+
+    (gexp->derivation name test
+                      #:modules '((gnu build marionette)))))
+
+(define %test-mcron
+  (system-test
+   (name "mcron")
+   (description "Make sure the mcron service works as advertised.")
+   (value (run-mcron-test name))))
