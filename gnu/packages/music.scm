@@ -1508,7 +1508,7 @@ websites such as Libre.fm.")
        ("python2-rarfile" ,python2-rarfile)
        ("python2-responses" ,python2-responses)))
     ;; TODO: Install optional plugins and dependencies.
-    (propagated-inputs
+    (inputs
      `(("python2-enum34" ,python2-enum34)
        ("python2-jellyfish" ,python2-jellyfish)
        ("python2-munkres" ,python2-munkres)
