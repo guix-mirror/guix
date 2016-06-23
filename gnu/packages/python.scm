@@ -21,6 +21,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
+;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -9291,3 +9292,27 @@ It supports both the original 1.0 specification, as well as the
 new (proposed) 2.0 spec, which includes batch submission, keyword arguments,
 etc.")
     (license asl2.0)))
+
+(define-public python-chai
+  (package
+    (name "python-chai")
+    (version "1.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "chai" version))
+              (sha256
+               (base32
+                "016kf3irrclpkpvcm7q0gmkfibq7jgy30a9v73pp42bq9h9a32bl"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/agoragames/chai")
+    (synopsis "Mocking framework for Python")
+    (description
+     "Chai provides an api for mocking, stubbing and spying your python
+objects, patterned after the Mocha library for Ruby.")
+    (license bsd-3)))
+
+(define-public python2-chai
+  (package-with-python2 python-chai))
+
