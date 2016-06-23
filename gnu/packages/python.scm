@@ -9419,3 +9419,26 @@ docstring and colored output.")
 (define-public python2-cleo
   (package-with-python2 python-cleo))
 
+(define-public python-lazy-object-proxy
+  (package
+    (name "python-lazy-object-proxy")
+    (version "1.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "lazy-object-proxy" version))
+              (sha256
+               (base32
+                "0s22aqqkdscyh8sjspyyax7qa1aiz8p4midrnyf39717fhfczm6x"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/ionelmc/python-lazy-object-proxy")
+    (synopsis "Lazy object proxy for python")
+    (description
+     "Lazy object proxy is an object that wraps a callable but defers the call
+until the object is actually required, and caches the result of said call.")
+    (license bsd-2)))
+
+(define-public python2-lazy-object-proxy
+  (package-with-python2 python-lazy-object-proxy))
+
