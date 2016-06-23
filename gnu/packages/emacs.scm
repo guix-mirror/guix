@@ -2384,3 +2384,25 @@ Lua programing language}.")
      "This Emacs package provides modes for ebuild, eclass, eblit, GLEP42
 news items, openrc and runscripts.")
     (license license:gpl2+)))
+
+(define-public emacs-writegood-mode
+  (package
+    (name "emacs-writegood-mode")
+    (version "2.0.2")
+    (home-page "http://github.com/bnbeckwith/writegood-mode")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1nnjn1r669hvvzfycllwap4w04m8rfsk4nzcg8057m1f263kj31b"))
+              (file-name (string-append name "-checkout"))))
+    (build-system emacs-build-system)
+    (synopsis "Polish up poor writing on the fly")
+    (description
+     "This minor mode tries to find and highlight problems with your writing
+in English as you type.  It primarily detects \"weasel words\" and abuse of
+passive voice.")
+    (license license:gpl3+)))
