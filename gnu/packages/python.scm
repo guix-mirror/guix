@@ -9468,3 +9468,35 @@ It supports TSIG authenticated messages and EDNS0.")
 (define-public python2-dnspython
   (package-with-python2 python-dnspython))
 
+(define-public python-email-validator
+  (package
+    (name "python-email-validator")
+    (version "1.0.1")
+    (source
+     (origin (method url-fetch)
+             (uri (pypi-uri "email_validator" version))
+             (sha256
+              (base32
+               "0mn8jg5h8ifl8w6a6m0hq8kbk0mzw9vm054qfamkn89b3npz52qw"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'use-dnspython
+           (lambda _
+             (substitute* "setup.py"
+               (("dnspython3") "dnspython"))
+             #t)))))
+    (native-inputs
+     `(("python-dnspython" ,python-dnspython)
+       ("python-idna" ,python-idna)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/JoshData/python-email-validator")
+    (synopsis "Email address validation library for Python")
+    (description
+     "This library validates email address syntax and deliverability.")
+    (license cc0)))
+
+(define-public python2-email-validator
+  (package-with-python2 python-email-validator))
+
