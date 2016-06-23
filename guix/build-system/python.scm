@@ -48,7 +48,7 @@
   "Return a URI string for the Python package hosted on the Python Package
 Index (PyPI) corresponding to NAME and VERSION.  EXTENSION is the file name
 extension, such as '.tar.gz'."
-  (string-append "https://pypi.python.org/packages/source/"
+  (string-append "https://pypi.io/packages/source/"
                  (string-take name 1) "/" name "/"
                  name "-" version extension))
 

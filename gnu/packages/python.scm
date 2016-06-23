@@ -9097,10 +9097,7 @@ to provide a high-level synchronous API on top of the libev event loop.")
     (version "16.2.0")
     (source (origin
               (method url-fetch)
-              (uri (list (pypi-uri "Twisted" version ".tar.bz2") ; 404
-                         (string-append
-                          "https://pypi.io/packages/source/T/Twisted/"
-                          "Twisted-" version ".tar.bz2")))
+              (uri (pypi-uri "Twisted" version ".tar.bz2"))
               (sha256
                (base32
                 "0ydxrp9myw1mvsz3qfzx5579y5llmqa82pxvqchgp5syczffi450"))))
