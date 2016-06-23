@@ -9391,3 +9391,31 @@ Wikipedia code samples at
 (define-public python2-pylev
   (package-with-python2 python-pylev))
 
+(define-public python-cleo
+  (package
+    (name "python-cleo")
+    (version "0.4.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "cleo" version))
+              (sha256
+               (base32
+                "1k2dcl6mqpn5bljyl6w42rqyd9mb3y9kh2mg7m2x3kfjwvg0rpva"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-psutil" ,python-psutil)
+       ("python-pylev" ,python-pylev)
+       ("python-setuptools" ,python-setuptools)
+       ;; For testing
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/sdispater/cleo")
+    (synopsis "Command-line arguments library for Python")
+    (description
+     "Cleo allows you to create command-line commands with signature in
+docstring and colored output.")
+    (license license:expat)))
+
+(define-public python2-cleo
+  (package-with-python2 python-cleo))
+
