@@ -9442,3 +9442,29 @@ until the object is actually required, and caches the result of said call.")
 (define-public python2-lazy-object-proxy
   (package-with-python2 python-lazy-object-proxy))
 
+(define-public python-dnspython
+  (package
+  (name "python-dnspython")
+  (version "1.14.0")
+  (source (origin
+            (method url-fetch)
+            (uri (string-append "http://www.dnspython.org/kits/"
+                                version "/dnspython-" version ".tar.gz"))
+            (sha256
+             (base32
+              "1z472r63gdqsxhsxj3plr5vs478yf4303vrqxxpsccc940g441hl"))))
+  (build-system python-build-system)
+  (arguments '(#:tests? #f)) ; XXX: requires internet access
+  (native-inputs
+   `(("python-setuptools" ,python-setuptools)))
+  (home-page "http://www.dnspython.org")
+  (synopsis "DNS toolkit for Python")
+  (description
+   "dnspython is a DNS toolkit for Python.  It supports almost all record
+types.  It can be used for queries, zone transfers, and dynamic updates.
+It supports TSIG authenticated messages and EDNS0.")
+  (license license:expat)))
+
+(define-public python2-dnspython
+  (package-with-python2 python-dnspython))
+
