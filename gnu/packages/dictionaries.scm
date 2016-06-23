@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
@@ -22,6 +22,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages base)
   #:use-module (gnu packages texinfo)
@@ -114,4 +115,26 @@ acronyms distributed as an info document.")
 be used via the GNU Dico program or accessed online at
 http://gcide.gnu.org.ua/")
     (home-page "http://gcide.gnu.org.ua/")
+    (license gpl3+)))
+
+(define-public diction
+  ;; Not quite a dictionary, not quite a spell checker either…
+  (package
+    (name "diction")
+    (version "1.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/diction/diction-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1xi4l1x1vvzmzmbhpx0ghmfnwwrhabjwizrpyylmy3fzinzz3him"))))
+    (build-system gnu-build-system)
+    (synopsis "Identifies wordy and commonly misused phrases")
+    (description
+     "A package providing two classic Unix commands, style and diction.
+Diction is used to identify wordy and commonly misused phrases in a
+body of text.  Style instead analyzes surface aspects of a written
+work, such as sentence length and other readability measures.")
+    (home-page "https://www.gnu.org/software/diction/")
     (license gpl3+)))
