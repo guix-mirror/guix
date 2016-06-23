@@ -9344,3 +9344,27 @@ datetime type.")
 (define-public python2-arrow
   (package-with-python2 python-arrow))
 
+(define-public python-inflection
+  (package
+    (name "python-inflection")
+    (version "0.3.1")
+    (source
+     (origin (method url-fetch)
+             (uri (pypi-uri "inflection" version))
+             (sha256
+              (base32
+               "1jhnxgnw8y3mbzjssixh6qkc7a3afc4fygajhqrqalnilyvpzshq"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://github.com/jpvanhal/inflection")
+    (synopsis "Python string transformation library")
+    (description
+     "Inflection is a string transformation library.  It singularizes
+and pluralizes English words, and transforms strings from CamelCase to
+underscored string.")
+    (license license:expat)))
+
+(define-public python2-inflection
+  (package-with-python2 python-inflection))
+
