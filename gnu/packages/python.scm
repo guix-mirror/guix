@@ -9368,3 +9368,26 @@ underscored string.")
 (define-public python2-inflection
   (package-with-python2 python-inflection))
 
+(define-public python-pylev
+  (package
+    (name "python-pylev")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pylev" version))
+              (sha256
+               (base32
+                "1hz1x9blsbxya1y9nnhnwwdnqmakxi9mc0jkwj0rn6b1h44i0f86"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://github.com/toastdriven/pylev")
+    (synopsis "Levenshtein distance implementation in Python")
+    (description "Pure Python Levenshtein implementation, based off the
+Wikipedia code samples at
+@url{http://en.wikipedia.org/wiki/Levenshtein_distance}.")
+    (license bsd-3)))
+
+(define-public python2-pylev
+  (package-with-python2 python-pylev))
+
