@@ -69,16 +69,16 @@ then
     fi
 
     # The configuration directory, for import/export signing keys.
-    NIX_CONF_DIR="@GUIX_TEST_ROOT@/etc"
-    if [ ! -d "$NIX_CONF_DIR" ]
+    GUIX_CONFIGURATION_DIRECTORY="@GUIX_TEST_ROOT@/etc"
+    if [ ! -d "$GUIX_CONFIGURATION_DIRECTORY" ]
     then
 	# Copy the keys so that the secret key has the right permissions (the
 	# daemon errors out when this is not the case.)
-	mkdir -p "$NIX_CONF_DIR"
+	mkdir -p "$GUIX_CONFIGURATION_DIRECTORY"
 	cp "@abs_top_srcdir@/tests/signing-key.sec"	\
 	    "@abs_top_srcdir@/tests/signing-key.pub"	\
-	    "$NIX_CONF_DIR"
-	chmod 400 "$NIX_CONF_DIR/signing-key.sec"
+	    "$GUIX_CONFIGURATION_DIRECTORY"
+	chmod 400 "$GUIX_CONFIGURATION_DIRECTORY/signing-key.sec"
     fi
 
     # A place to store data of the substituter.
@@ -100,7 +100,7 @@ then
 	NIX_LOCALSTATE_DIR NIX_LOG_DIR NIX_STATE_DIR NIX_DB_DIR	\
 	NIX_ROOT_FINDER GUIX_BINARY_SUBSTITUTE_URL		\
         GUIX_ALLOW_UNAUTHENTICATED_SUBSTITUTES			\
-        NIX_CONF_DIR XDG_CACHE_HOME NIXPKGS
+        GUIX_CONFIGURATION_DIRECTORY XDG_CACHE_HOME NIXPKGS
 
     # Launch the daemon without chroot support because is may be
     # unavailable, for instance if we're not running as root.
