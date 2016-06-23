@@ -9316,3 +9316,31 @@ objects, patterned after the Mocha library for Ruby.")
 (define-public python2-chai
   (package-with-python2 python-chai))
 
+(define-public python-arrow
+  (package
+    (name "python-arrow")
+    (version "0.8.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "arrow" version))
+              (sha256
+               (base32
+                "1bz7hkdgpqcjs866y58z8jywpy7al0f4rxdr00bh2l5qddyw245j"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-dateutil" ,python-dateutil-2)
+       ;; For testing
+       ("python-chai" ,python-chai)
+       ("python-simplejson" ,python-simplejson)))
+    (home-page "https://github.com/crsmithdev/arrow/")
+    (synopsis "Dates and times for Python")
+    (description
+     "Arrow is a Python library to creating, manipulating, formatting and
+converting dates, times, and timestamps.  It implements and updates the
+datetime type.")
+    (license asl2.0)))
+
+(define-public python2-arrow
+  (package-with-python2 python-arrow))
+
