@@ -9500,3 +9500,25 @@ It supports TSIG authenticated messages and EDNS0.")
 (define-public python2-email-validator
   (package-with-python2 python-email-validator))
 
+(define-public python-ukpostcodeparser
+  (package
+    (name "python-ukpostcodeparser")
+    (version "1.0.3")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "UkPostcodeParser" version))
+              (sha256
+               (base32
+                "1jwg9z4rz51mcka1821rwgycsd0mcicyp1kiwjfa2kvg8bm9p2qd"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/hamstah/ukpostcodeparser")
+    (synopsis "UK Postcode parser for Python")
+    (description
+     "This library provides the @code{parse_uk_postcode} function for
+parsing UK postcodes.")
+    (license license:expat)))
+
+(define-public python2-ukpostcodeparser
+  (package-with-python2 python-ukpostcodeparser))
