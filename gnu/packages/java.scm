@@ -58,15 +58,15 @@
 (define-public java-swt
   (package
     (name "java-swt")
-    (version "4.5")
+    (version "4.6")
     (source
      ;; The types of many variables and procedures differ in the sources
      ;; dependent on whether the target architecture is a 32-bit system or a
      ;; 64-bit system.  Instead of patching the sources on demand in a build
      ;; phase we download either the 32-bit archive (which mostly uses "int"
      ;; types) or the 64-bit archive (which mostly uses "long" types).
-     (let ((hash32 "03mhzraikcs4fsz7d3h5af9pw1bbcfd6dglsvbk2ciwimy9zj30q")
-           (hash64 "1qq0pjll6030v4ml0hifcaaik7sx3fl7ghybfdw95vsvxafwp2ff")
+     (let ((hash32 "0jmx1h65wqxsyjzs64i2z6ryiynllxzm13cq90fky2qrzagcw1ir")
+           (hash64 "0wnd01xssdq9pgx5xqh5lfiy3dmk60dzzqdxzdzf883h13692lgy")
            (file32 "x86")
            (file64 "x86_64"))
        (let-values (((hash file)
@@ -78,7 +78,7 @@
            (uri (string-append
                  "http://ftp-stud.fht-esslingen.de/pub/Mirrors/"
                  "eclipse/eclipse/downloads/drops4/R-" version
-                 "-201506032000/swt-" version "-gtk-linux-" file ".zip"))
+                 "-201606061100/swt-" version "-gtk-linux-" file ".zip"))
            (sha256 (base32 hash))))))
     (build-system ant-build-system)
     (arguments
