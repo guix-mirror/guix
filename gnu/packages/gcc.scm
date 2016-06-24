@@ -718,7 +718,8 @@ as the 'native-search-paths' field."
                                        name "-" version ".tar.gz")))
              (sha256
               (base32
-               "13d9cqa5rzhbjq0xf0b2dyxag7pqa72xj9dhsa03m8ccr1a4npq9"))))
+               "13d9cqa5rzhbjq0xf0b2dyxag7pqa72xj9dhsa03m8ccr1a4npq9"))
+             (patches (search-patches "isl-0.11.1-aarch64-support.patch"))))
     (build-system gnu-build-system)
     (inputs `(("gmp" ,gmp)))
     (home-page "http://isl.gforge.inria.fr/")

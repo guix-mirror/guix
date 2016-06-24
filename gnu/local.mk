@@ -598,6 +598,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/ilmbase-fix-tests.patch			\
   %D%/packages/patches/inkscape-drop-wait-for-targets.patch	\
   %D%/packages/patches/irrlicht-mesa-10.patch			\
+  %D%/packages/patches/isl-0.11.1-aarch64-support.patch	\
   %D%/packages/patches/jansson-CVE-2016-4425.patch		\
   %D%/packages/patches/jasper-CVE-2007-2721.patch		\
   %D%/packages/patches/jasper-CVE-2008-3520.patch		\
