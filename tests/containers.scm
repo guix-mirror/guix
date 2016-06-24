@@ -30,15 +30,18 @@
 
 ;; Skip these tests unless user namespaces are available and the setgroups
 ;; file (introduced in Linux 3.19 to address a security issue) exists.
-(unless (and (user-namespace-supported?)
-             (unprivileged-user-namespace-supported?)
-             (setgroups-supported?))
-  (test-skip 7))
+(define (skip-if-unsupported)
+  (unless (and (user-namespace-supported?)
+               (unprivileged-user-namespace-supported?)
+               (setgroups-supported?))
+    (test-skip 1)))
 
+(skip-if-unsupported)
 (test-assert "call-with-container, exit with 0 when there is no error"
   (zero?
    (call-with-container '() (const #t) #:namespaces '(user))))
 
+(skip-if-unsupported)
 (test-assert "call-with-container, user namespace"
   (zero?
    (call-with-container '()
@@ -47,6 +50,7 @@
        (assert-exit (and (zero? (getuid)) (zero? (getgid)))))
      #:namespaces '(user))))
 
+(skip-if-unsupported)
 (test-assert "call-with-container, uts namespace"
   (zero?
    (call-with-container '()
@@ -57,6 +61,7 @@
        (primitive-exit 0))
      #:namespaces '(user uts))))
 
+(skip-if-unsupported)
 (test-assert "call-with-container, pid namespace"
   (zero?
    (call-with-container '()
@@ -72,6 +77,7 @@
               (status:exit-val status)))))))
      #:namespaces '(user pid))))
 
+(skip-if-unsupported)
 (test-assert "call-with-container, mnt namespace"
   (zero?
    (call-with-container '(("none" device "/testing" "tmpfs" () #f #f))
@@ -79,6 +85,7 @@
        (assert-exit (file-exists? "/testing")))
      #:namespaces '(user mnt))))
 
+(skip-if-unsupported)
 (test-equal "call-with-container, mnt namespace, wrong bind mount"
   `(system-error ,ENOENT)
   ;; An exception should be raised; see <http://bugs.gnu.org/23306>.
@@ -91,12 +98,14 @@
     (lambda args
       (list 'system-error (system-error-errno args)))))
 
+(skip-if-unsupported)
 (test-assert "call-with-container, all namespaces"
   (zero?
    (call-with-container '()
      (lambda ()
        (primitive-exit 0)))))
 
+(skip-if-unsupported)
 (test-assert "container-excursion"
   (call-with-temporary-directory
    (lambda (root)
