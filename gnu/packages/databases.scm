@@ -86,6 +86,7 @@
        ("automake" ,automake)
        ("gettext" ,gnu-gettext)
        ("libtool" ,libtool)
+       ("pcre" ,pcre "bin")                       ;for 'pcre-config'
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)
@@ -94,7 +95,6 @@
        ("raptor2" ,raptor2)
        ("readline" ,readline)
        ("avahi" ,avahi)
-       ("pcre" ,pcre)
        ("cyrus-sasl" ,cyrus-sasl)
        ("openssl" ,openssl)
        ("util-linux" ,util-linux)))

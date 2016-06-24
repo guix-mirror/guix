@@ -84,10 +84,10 @@
               (base32
                "0hrpy6gjwma0kba7p7m61vwh82qcnkf08123lrwpg257m93hnrmc"))))
     (build-system gnu-build-system)
+    (native-inputs `(("pcre" ,pcre "bin")))       ;for 'pcre-config'
     (inputs `(("apr" ,apr)
               ("apr-util" ,apr-util)
               ("openssl" ,openssl)
-              ("pcre" ,pcre)
               ("perl" ,perl))) ; needed to run bin/apxs
     (arguments
      `(#:test-target "test"
