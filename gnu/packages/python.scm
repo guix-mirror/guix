@@ -9617,3 +9617,41 @@ mocks, stubs and fakes.")
 (define-public python2-flexmock
   (package-with-python2 python-flexmock))
 
+(define-public python-orator
+  (package
+    (name "python-orator")
+    (version "0.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "orator" version))
+              (sha256
+               (base32
+                "1li49irsqha17nrda4nsb48biyy0rarp9pphf0jpqwm5zr8hv569"))))
+    (build-system python-build-system)
+    (arguments '(#:tests? #f)) ; no tests
+    (native-inputs
+     `(("python-arrow" ,python-arrow)
+       ("python-blinker" ,python-blinker)
+       ("python-cleo" ,python-cleo)
+       ("python-fake-factory" ,python-fake-factory)
+       ("python-inflection" ,python-inflection)
+       ("python-lazy-object-proxy" ,python-lazy-object-proxy)
+       ("python-pyaml" ,python-pyaml)
+       ("python-setuptools" ,python-setuptools)
+       ("python-simplejson" ,python-simplejson)
+       ("python-wrapt" ,python-wrapt)))
+    (home-page "https://orator-orm.com/")
+    (synopsis "ActiveRecord ORM for Python")
+    (description
+     "Orator provides a simple ActiveRecord-like Object Relational Mapping
+implementation for Python.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-orator))))))
+
+(define-public python2-orator
+  (let ((base (package-with-python2 (strip-python2-variant python-orator))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-ipaddress" ,python2-ipaddress)
+         ,@(package-native-inputs base))))))
