@@ -9569,3 +9569,28 @@ addresses, and phone numbers.")
        `(("python2-ipaddress" ,python2-ipaddress)
          ,@(package-native-inputs base))))))
 
+(define-public python-pyaml
+  (package
+    (name "python-pyaml")
+    (version "15.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pyaml" version))
+              (sha256
+               (base32
+                "1f5m28vkh4ksq3d80d8mmd2z8wxvc3mgy2pmrv2751dm2xgznm4w"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-pyyaml" ,python-pyyaml)))
+    (home-page "https://github.com/mk-fg/pretty-yaml")
+    (synopsis "YAML pretty-print library for Python")
+    (description
+     "pyaml is a PyYAML based python module to produce pretty and readable
+YAML-serialized data.")
+    (license (non-copyleft "http://www.wtfpl.net/txt/copying/"))))
+
+(define-public python2-pyaml
+  (package-with-python2 python-pyaml))
+
