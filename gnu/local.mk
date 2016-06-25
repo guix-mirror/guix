@@ -10,6 +10,7 @@
 # Copyright © 2016, 2017 Ricardo Wurmus <rekado@elephly.net>
 # Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 # Copyright © 2016, 2017 Alex Vong <alexvong1995@gmail.com>
+# Copyright © 2016, 2017 Efraim Flashner <efraim@flashner.co.il>
 #
 # This file is part of GNU Guix.
 #
@@ -992,6 +993,7 @@ bootstrapdir = $(guilemoduledir)/%D%/packages/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux
 bootstrap_i686_linuxdir = $(bootstrapdir)/i686-linux
 bootstrap_armhf_linuxdir = $(bootstrapdir)/armhf-linux
+bootstrap_aarch64_linuxdir = $(bootstrapdir)/aarch64-linux
 bootstrap_mips64el_linuxdir = $(bootstrapdir)/mips64el-linux
 
 dist_bootstrap_x86_64_linux_DATA =		\
@@ -1012,6 +1014,12 @@ dist_bootstrap_armhf_linux_DATA =		\
   %D%/packages/bootstrap/armhf-linux/tar	\
   %D%/packages/bootstrap/armhf-linux/xz
 
+dist_bootstrap_aarch64_linux_DATA =		\
+  %D%/packages/bootstrap/aarch64-linux/bash	\
+  %D%/packages/bootstrap/aarch64-linux/mkdir	\
+  %D%/packages/bootstrap/aarch64-linux/tar	\
+  %D%/packages/bootstrap/aarch64-linux/xz
+
 dist_bootstrap_mips64el_linux_DATA =		\
   %D%/packages/bootstrap/mips64el-linux/bash	\
   %D%/packages/bootstrap/mips64el-linux/mkdir	\
@@ -1026,6 +1034,8 @@ nodist_bootstrap_i686_linux_DATA =					\
   %D%/packages/bootstrap/i686-linux/guile-2.0.9.tar.xz
 nodist_bootstrap_armhf_linux_DATA =					\
   %D%/packages/bootstrap/armhf-linux/guile-2.0.11.tar.xz
+nodist_bootstrap_aarch64_linux_DATA =					\
+  %D%/packages/bootstrap/aarch64-linux/guile-2.0.14.tar.xz
 nodist_bootstrap_mips64el_linux_DATA =					\
   %D%/packages/bootstrap/mips64el-linux/guile-2.0.9.tar.xz
 
@@ -1038,6 +1048,7 @@ DISTCLEANFILES =				\
   $(nodist_bootstrap_x86_64_linux_DATA)		\
   $(nodist_bootstrap_i686_linux_DATA)		\
   $(nodist_bootstrap_armhf_linux_DATA)		\
+  $(nodist_bootstrap_aarch64_linux_DATA)		\
   $(nodist_bootstrap_mips64el_linux_DATA)
 
 # Method to download a file from an external source.
@@ -1058,6 +1069,10 @@ DOWNLOAD_FILE =								\
 	$(AM_V_DL)$(MKDIR_P) `dirname "$@"`;	\
 	$(DOWNLOAD_FILE) "$@"			\
 	  "e551d05d4d385d6706ab8d574856a087758294dc90ab4c06e70a157a685e23d6"
+%D%/packages/bootstrap/aarch64-linux/guile-2.0.14.tar.xz:
+	$(AM_V_DL)$(MKDIR_P) `dirname "$@"`;	\
+	$(DOWNLOAD_FILE) "$@"			\
+	  "3939909f24dcb955621aa7f81ecde6844bea8a083969c2d275c55699af123ebe"
 %D%/packages/bootstrap/mips64el-linux/guile-2.0.9.tar.xz:
 	$(AM_V_DL)$(MKDIR_P) `dirname "$@"`;	\
 	$(DOWNLOAD_FILE) "$@" 			\

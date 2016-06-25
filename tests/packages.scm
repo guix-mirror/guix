@@ -380,6 +380,8 @@
   (let* ((file   (search-bootstrap-binary (match (%current-system)
                                             ("armhf-linux"
                                              "guile-2.0.11.tar.xz")
+                                            ("aarch64-linux"
+                                             "guile-2.0.14.tar.xz")
                                             (_
                                              "guile-2.0.9.tar.xz"))
                                           (%current-system)))
