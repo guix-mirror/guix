@@ -9594,3 +9594,26 @@ YAML-serialized data.")
 (define-public python2-pyaml
   (package-with-python2 python-pyaml))
 
+(define-public python-flexmock
+  (package
+    (name "python-flexmock")
+    (version "0.10.2")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "flexmock" version))
+              (sha256
+               (base32
+                "0arc6njvs6i9v9hgvzk5m50296g7zy5m9d7pyb43vdsdgxrci5gy"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://flexmock.readthedocs.org")
+    (synopsis "Testing library for Python")
+    (description
+     "flexmock is a testing library for Python that makes it easy to create
+mocks, stubs and fakes.")
+    (license bsd-3)))
+
+(define-public python2-flexmock
+  (package-with-python2 python-flexmock))
+
