@@ -441,7 +441,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/automake-regexp-syntax.patch		\
   %D%/packages/patches/avahi-localstatedir.patch		\
   %D%/packages/patches/avidemux-install-to-lib.patch		\
-  %D%/packages/patches/avrdude-fix-libusb.patch			\
   %D%/packages/patches/awesome-reproducible-png.patch		\
   %D%/packages/patches/bash-completion-directories.patch	\
   %D%/packages/patches/beets-image-test-failure.patch		\
