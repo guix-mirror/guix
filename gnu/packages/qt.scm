@@ -660,7 +660,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtserialport
   (package (inherit qtsvg)
     (name "qtserialport")
-    (version "5.6.1")
+    (version "5.6.1-1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -669,9 +669,11 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1hp63cgqhps6y1k041lzhcb2b0rcpcmszabnn293q5ilbvla4x0b"))))
+               "135cbgghxk0c6dblmyyrw6znfb9m8sac9hhyc2dm6vq7vzy8id52"))))
     (native-inputs `(("perl" ,perl)))
-    (inputs `(("qtbase" ,qtbase)))))
+    (inputs
+     `(("qtbase" ,qtbase)
+       ("eudev" ,eudev)))))
 
 (define-public qtwebchannel
   (package (inherit qtsvg)
