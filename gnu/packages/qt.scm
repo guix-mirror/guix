@@ -697,7 +697,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtlocation
   (package (inherit qtsvg)
     (name "qtlocation")
-    (version "5.6.1")
+    (version "5.6.1-1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -706,7 +706,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0qahs7a2n3l4h0bl8bnwci9mzy1vra3zncnzr40csic9ys67ddfk"))))
+               "0my4pbcxa58yzvdh65l5qx99ln03chjr5c3ml5v37wfk7nx23k69"))))
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)
