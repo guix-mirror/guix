@@ -3869,7 +3869,7 @@ data types as well.")
 (define-public vsearch
   (package
     (name "vsearch")
-    (version "1.11.2")
+    (version "2.0.0")
     (source
      (origin
        (method url-fetch)
@@ -3879,7 +3879,7 @@ data types as well.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0vnjcws9rdf5r14y9f10iq46yvrwsg0h502v954rd9nd50ras01m"))
+         "1sd57abgx077icqrbj36jq9q7pdpzc6dbics2pn1555kisq2jhfh"))
        (modules '((guix build utils)))
        (snippet
         '(begin
