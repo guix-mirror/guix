@@ -525,7 +525,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtdeclarative
   (package (inherit qtsvg)
     (name "qtdeclarative")
-    (version "5.6.1")
+    (version "5.6.1-1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -534,7 +534,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1d2217kxk85kpi7ls08b41hqzy26hvch8m4cgzq6km5sqi5zvz0j"))))
+               "094gx5mzqzcga97y7ihf052b6i5iv512lh7m0702m5q94nsn1pqw"))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
