@@ -7507,27 +7507,45 @@ Unix @command{cron} daemon; the main difference is that it is
 implemented in Guile Scheme, which provides a lot of flexibility when
 specifying the scheduling of jobs and their actions.
 
-For example, to define an operating system that runs the
+The example below defines an operating system that runs the
 @command{updatedb} (@pxref{Invoking updatedb,,, find, Finding Files})
-and the @command{guix gc} commands (@pxref{Invoking guix gc}) daily:
+and the @command{guix gc} commands (@pxref{Invoking guix gc}) daily, as
+well as the @command{mkid} command on behalf of an unprivileged user
+(@pxref{mkid invocation,,, idutils, ID Database Utilities}).  It uses
+gexps to introduce job definitions that are passed to mcron
+(@pxref{G-Expressions}).
 
 @lisp
 (use-modules (guix) (gnu) (gnu services mcron))
+(use-package-modules base idutils)
 
 (define updatedb-job
-  ;; Run 'updatedb' at 3 AM every day.
+  ;; Run 'updatedb' at 3AM every day.  Here we write the
+  ;; job's action as a Scheme procedure.
   #~(job '(next-hour '(3))
-         "updatedb --prunepaths='/tmp /var/tmp /gnu/store'"))
+         (lambda ()
+           (execl (string-append #$findutils "/bin/updatedb")
+                  "updatedb"
+                  "--prunepaths=/tmp /var/tmp /gnu/store"))))
 
 (define garbage-collector-job
   ;; Collect garbage 5 minutes after midnight every day.
+  ;; The job's action is a shell command.
   #~(job "5 0 * * *"            ;Vixie cron syntax
          "guix gc -F 1G"))
+
+(define idutils-jobs
+  ;; Update the index database as user "charlie" at 12:15PM
+  ;; and 19:15PM.  This runs from the user's home directory.
+  #~(job '(next-minute-from (next-hour '(12 19)) '(15))
+         (string-append #$idutils "/bin/mkid src")
+         #:user "charlie"))
 
 (operating-system
   ;; @dots{}
   (services (cons (mcron-service (list garbage-collector-job
-                                       updatedb-job))
+                                       updatedb-job
+                                       idutils-job))
                   %base-services)))
 @end lisp
 
