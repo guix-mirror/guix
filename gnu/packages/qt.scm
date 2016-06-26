@@ -436,7 +436,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtsvg
   (package (inherit qtbase)
     (name "qtsvg")
-    (version "5.6.1")
+    (version "5.6.1-1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -445,7 +445,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "08ca5g46g75acy27jfnvnalmcias5hxmjp7491v3y4k9y7a4ybpi"))))
+               "1w0jvhgaiddafcms2nv8wl1klg07lncmjwm1zhdw3l6rxi9071sw"))))
     (native-inputs `(("perl" ,perl)))
     (inputs
      `(("mesa" ,mesa)
