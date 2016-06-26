@@ -605,7 +605,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtmultimedia
   (package (inherit qtsvg)
     (name "qtmultimedia")
-    (version "5.6.1")
+    (version "5.6.1-1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -614,7 +614,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "058523c2qra3d8fq46ygcndnkrbwlh316zy28s2cr5pjr5gmnjyj"))))
+               "0paffx0614ivjbf87lr9klpbqik6r1pzbc14l41np6d9jv3dqa2f"))))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
