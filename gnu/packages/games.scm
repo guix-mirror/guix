@@ -2447,3 +2447,48 @@ tactics.")
                    license:expat
                    license:gpl2+
                    license:lgpl2.1+))))
+
+(define-public starfighter
+  (package
+    (name "starfighter")
+    (version "1.5.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://savannah/starfighter/"
+                    (version-major+minor version) "/"
+                    name "-" version "-src.tar.gz"))
+              (sha256
+               (base32
+                "1qc0hhw9m8sy3n9fips52c7aph3w8a8pdl4n45yaasgxzbvpn9xg"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no check target
+       #:make-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "PREFIX=" out)
+               (string-append "BINDIR=" out "/bin/")))
+       #:phases
+       (modify-phases %standard-phases
+         ;; no configure script
+         (delete 'configure))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sdl2" ,sdl2)
+       ("sdl2-image" ,sdl2-image)
+       ("sdl2-mixer" ,sdl2-mixer)))
+    (home-page "http://starfighter.nongnu.org/")
+    (synopsis "2D scrolling shooter game")
+    (description
+     "In the year 2579, the intergalactic weapons corporation, WEAPCO, has
+dominated the galaxy.  Guide Chris Bainfield and his friend Sid Wilson on
+their quest to liberate the galaxy from the clutches of WEAPCO.  Along the
+way, you will encounter new foes, make new allies, and assist local rebels
+in strikes against the evil corporation.")
+    ;; gfx and music are under CC-BY 3.0, CC-BY-SA 3.0, CC0 or Public Domain.
+    (license (list license:gpl3+
+                   license:cc-by3.0
+                   license:cc-by-sa3.0
+                   license:cc0
+                   license:public-domain))))
