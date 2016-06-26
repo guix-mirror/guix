@@ -755,7 +755,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 (define-public mpv
   (package
     (name "mpv")
-    (version "0.17.0")
+    (version "0.18.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -763,7 +763,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
                     ".tar.gz"))
               (sha256
                (base32
-                "0vms3viwqcwl1mrgmf2yy4c69fvv7xpbkyrl693l6zpwynqd4b30"))
+                "0az0zqb2rakak51zsvfqzj9a8jiqpvc61jxap8hjdkkb9y6n6mmn"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system waf-build-system)
     (native-inputs
@@ -818,7 +818,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
           (lambda* (#:key inputs #:allow-other-keys)
             (copy-file (assoc-ref inputs "waf") "waf")
             (setenv "CC" "gcc"))))
-       #:configure-flags (list "--enable-gpl3" "--enable-zsh-comp")
+       #:configure-flags (list "--enable-zsh-comp")
        ;; No check function defined.
        #:tests? #f))
     (home-page "https://mpv.io/")
