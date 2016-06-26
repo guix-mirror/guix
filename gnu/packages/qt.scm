@@ -509,7 +509,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtxmlpatterns
   (package (inherit qtsvg)
     (name "qtxmlpatterns")
-    (version "5.6.1")
+    (version "5.6.1-1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -518,7 +518,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0q412jv3xbg7v05b8pbahifwx17gzlp96s90akh6zwhpm8i6xx34"))))
+               "1966rrk7f6c55k57j33rffdjs77kk4mawrnnl8yv1ckcirxc3np1"))))
     (native-inputs `(("perl" ,perl)))
     (inputs `(("qtbase" ,qtbase)))))
 
