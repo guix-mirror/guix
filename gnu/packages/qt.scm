@@ -717,7 +717,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qttools
   (package (inherit qtsvg)
     (name "qttools")
-    (version "5.6.1")
+    (version "5.6.1-1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -726,7 +726,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0wbzq60d7lkvlb7b5lqcw87qgy6kyjz1npjavz8f4grdxsaqi8vp"))))
+               "0haic027a2d7p7k8xz83fbvci4a4dln34360rlwgy7hlyy5m4nip"))))
     (native-inputs
      `(("perl" ,perl)
        ("qtdeclarative" ,qtdeclarative)))
