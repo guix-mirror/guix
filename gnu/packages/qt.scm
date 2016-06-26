@@ -469,7 +469,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
 (define-public qtimageformats
   (package (inherit qtsvg)
     (name "qtimageformats")
-    (version "5.6.1")
+    (version "5.6.1-1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://download.qt.io/official_releases/qt/"
@@ -478,7 +478,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "020v1148433zx4g87z2r8fgff32n0laajxqqsja1l3yzz7jbrwvl"))))
+               "1p98acvsm3azka2by1ph4gdb31qbnndrr5k5wns4xk2d760y8ifc"))))
     (native-inputs `())
     (inputs
      `(("libmng" ,libmng)
