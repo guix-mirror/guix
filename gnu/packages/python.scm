@@ -9104,8 +9104,9 @@ to provide a high-level synchronous API on top of the libev event loop.")
                 "0ydxrp9myw1mvsz3qfzx5579y5llmqa82pxvqchgp5syczffi450"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-zope-interface" ,python-zope-interface)))
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-zope-interface" ,python-zope-interface)))
     (home-page "https://twistedmatrix.com/")
     (synopsis "Asynchronous networking framework written in Python")
     (description
