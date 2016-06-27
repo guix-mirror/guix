@@ -9332,10 +9332,11 @@ objects, patterned after the Mocha library for Ruby.")
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)
-       ("python-dateutil" ,python-dateutil-2)
        ;; For testing
        ("python-chai" ,python-chai)
        ("python-simplejson" ,python-simplejson)))
+    (propagated-inputs
+     `(("python-dateutil" ,python-dateutil-2)))
     (home-page "https://github.com/crsmithdev/arrow/")
     (synopsis "Dates and times for Python")
     (description
