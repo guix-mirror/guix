@@ -104,7 +104,8 @@
 
            (start #~(make-forkexec-constructor
                      (list (string-append #$avahi "/sbin/avahi-daemon")
-                           "--syslog" "-f" #$config)))
+                           "--daemonize" "-f" #$config)
+                     #:pid-file "/var/run/avahi-daemon/pid"))
            (stop #~(make-kill-destructor))))))
 
 (define avahi-service-type
