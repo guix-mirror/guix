@@ -9572,9 +9572,9 @@ addresses, and phone numbers.")
                                      python-fake-factory))))
     (package
       (inherit base)
-      (native-inputs
+      (propagated-inputs
        `(("python2-ipaddress" ,python2-ipaddress)
-         ,@(package-native-inputs base))))))
+         ,@(package-propagated-inputs base))))))
 
 (define-public python-pyaml
   (package
