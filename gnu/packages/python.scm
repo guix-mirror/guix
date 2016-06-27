@@ -9221,9 +9221,10 @@ programming errors.")
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; XXX: needs zookeeper, kafka, etc.
     (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
      `(("python-gevent" ,python-gevent)
        ("python-kazoo" ,python-kazoo)
-       ("python-setuptools" ,python-setuptools)
        ("python-tabulate" ,python-tabulate)))
     (inputs
      `(("librdkafka" ,librdkafka)))
