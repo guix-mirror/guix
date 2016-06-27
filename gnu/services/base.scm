@@ -81,6 +81,7 @@
             nscd-service-type
             nscd-service
             syslog-service
+            syslog-service-type
             %default-syslog.conf
 
             guix-configuration
@@ -94,6 +95,7 @@
             gpm-service-type
             gpm-service
 
+            urandom-seed-service-type
             urandom-seed-service
 
             %base-services))
