@@ -790,6 +790,11 @@ the tty to run, among other things."
                                           "/sbin/nscd")
                            "-f" #$nscd.conf "--foreground")
 
+                     ;; Wait for the PID file.  However, the PID file is
+                     ;; written before nscd is actually listening on its
+                     ;; socket (XXX).
+                     #:pid-file "/var/run/nscd/nscd.pid"
+
                      #:environment-variables
                      (list (string-append "LD_LIBRARY_PATH="
                                           (string-join
