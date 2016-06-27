@@ -9660,6 +9660,6 @@ implementation for Python.")
   (let ((base (package-with-python2 (strip-python2-variant python-orator))))
     (package
       (inherit base)
-      (native-inputs
+      (propagated-inputs
        `(("python2-ipaddress" ,python2-ipaddress)
-         ,@(package-native-inputs base))))))
+         ,@(package-propagated-inputs base))))))
