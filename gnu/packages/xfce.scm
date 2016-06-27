@@ -28,6 +28,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages calendar)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
@@ -43,6 +44,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages photo)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages popt)
   #:use-module (gnu packages pulseaudio))
 
 (define-public gtk-xfce-engine
@@ -814,4 +816,36 @@ the desktop wallpaper.")
     (description
      "This is a task manager for the Xfce desktop.  It displays the CPU and
 memory usage graphically, and it can display processes as a tree.")
+    (license gpl2+)))
+
+(define-public orage
+  (package
+    (name "orage")
+    (version "4.12.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://archive.xfce.org/src/apps/"
+                                  name "/" (version-major+minor version) "/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0qlhvnl2m33vfxqlbkic2nmfpwyd4mq230jzhs48cg78392amy9w"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("libical" ,libical)
+       ("libnotify" ,libnotify)
+       ("popt" ,popt)
+       ("xfce4-panel" ,xfce4-panel)))
+    (home-page "http://www.xfce.org/projects/")
+    (synopsis "Simple calendar application with reminders")
+    (description
+     "This is a simple calendar application for the Xfce desktop.  Orage has
+alarms and uses the iCalendar format, making it compatible with many other
+calendar applications.  It also includes a panel clock plugin and an
+international clock application capable of simultaneously showing clocks from
+several different time zones.")
     (license gpl2+)))
