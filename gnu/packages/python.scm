@@ -9493,9 +9493,10 @@ It supports TSIG authenticated messages and EDNS0.")
                (("dnspython3") "dnspython"))
              #t)))))
     (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
      `(("python-dnspython" ,python-dnspython)
-       ("python-idna" ,python-idna)
-       ("python-setuptools" ,python-setuptools)))
+       ("python-idna" ,python-idna)))
     (home-page "https://github.com/JoshData/python-email-validator")
     (synopsis "Email address validation library for Python")
     (description
