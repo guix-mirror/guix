@@ -9551,13 +9551,14 @@ parsing UK postcodes.")
            (delete-file "faker/tests/ne_np/__init__.py")
            #t)))))
   (native-inputs
-   `(("python-dateutil" ,python-dateutil-2)
-     ("python-setuptools" ,python-setuptools)
-     ("python-six" ,python-six)
+   `(("python-setuptools" ,python-setuptools)
      ;; For testing
      ("python-email-validator" ,python-email-validator)
      ("python-mock" ,python-mock)
      ("python-ukpostcodeparser" ,python-ukpostcodeparser)))
+  (propagated-inputs
+   `(("python-dateutil" ,python-dateutil-2)
+     ("python-six" ,python-six)))
   (home-page "http://github.com/joke2k/faker")
   (synopsis "Python package that generates fake data")
   (description
