@@ -9637,6 +9637,8 @@ mocks, stubs and fakes.")
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; no tests
     (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
      `(("python-arrow" ,python-arrow)
        ("python-blinker" ,python-blinker)
        ("python-cleo" ,python-cleo)
@@ -9644,7 +9646,6 @@ mocks, stubs and fakes.")
        ("python-inflection" ,python-inflection)
        ("python-lazy-object-proxy" ,python-lazy-object-proxy)
        ("python-pyaml" ,python-pyaml)
-       ("python-setuptools" ,python-setuptools)
        ("python-simplejson" ,python-simplejson)
        ("python-wrapt" ,python-wrapt)))
     (home-page "https://orator-orm.com/")
