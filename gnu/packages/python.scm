@@ -9407,12 +9407,13 @@ Wikipedia code samples at
                 "1k2dcl6mqpn5bljyl6w42rqyd9mb3y9kh2mg7m2x3kfjwvg0rpva"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python-psutil" ,python-psutil)
-       ("python-pylev" ,python-pylev)
-       ("python-setuptools" ,python-setuptools)
+     `(("python-setuptools" ,python-setuptools)
        ;; For testing
        ("python-mock" ,python-mock)
        ("python-pytest" ,python-pytest)))
+    (propagated-inputs
+     `(("python-psutil" ,python-psutil)
+       ("python-pylev" ,python-pylev)))
     (home-page "https://github.com/sdispater/cleo")
     (synopsis "Command-line arguments library for Python")
     (description
