@@ -9191,8 +9191,9 @@ data in Python.")
     (build-system python-build-system)
     (arguments '(#:tests? #f)) ; XXX: needs zookeeper
     (native-inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-six" ,python-six)))
+     `(("python-setuptools" ,python-setuptools)))
+    (propagated-inputs
+     `(("python-six" ,python-six)))
     (home-page "https://kazoo.readthedocs.org")
     (synopsis "High-level Zookeeper client library")
     (description
