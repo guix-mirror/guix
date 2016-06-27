@@ -57,7 +57,7 @@
   #:use-module (gnu packages telephony)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages version-control)
-  #:use-module (gnu packages yasm)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages xml))
 
 (define-public orc

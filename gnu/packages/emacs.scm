@@ -1638,6 +1638,27 @@ that it correctly finds RFCs even when a space appears before the
 number.")
     (license license:gpl3+)))
 
+(define-public emacs-org-bullets
+  (package
+    (name "emacs-org-bullets")
+    (version "0.2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/sabof/org-bullets/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1dyxvpb73vj80v8br2q9rf255hfphrgaw91fbvwdcd735np9pcnh"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/sabof/org-bullets")
+    (synopsis "Show bullets in org-mode as UTF-8 characters")
+    (description
+     "This package provides an Emacs minor mode causing bullets in
+@code{org-mode} to be rendered as UTF-8 characters.")
+    (license license:gpl3+)))
+
 (define-public emacs-zenburn-theme
   (package
     (name "emacs-zenburn-theme")
@@ -1686,6 +1707,170 @@ and the like.  Some of these packages include autopair, textmate,
 wrap-region, electric-pair-mode, paredit and others.  With the basic
 features found in other packages it also brings many improvements as
 well as completely new features.")
+    (license license:gpl3+)))
+
+(define-public emacs-hydra
+  (package
+    (name "emacs-hydra")
+    (version "0.13.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/abo-abo/hydra/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "19ynkjlg3jj7x90xxbz885324h6nkxmzlb2c2c95xkr20zckn0lk"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/abo-abo/hydra")
+    (synopsis "Make Emacs bindings that stick around")
+    (description
+     "This package can be used to tie related commands into a family of short
+bindings with a common prefix---a Hydra.  Once you summon the Hydra (through
+the prefixed binding), all the heads can be called in succession with only a
+short extension.  Any binding that isn't the Hydra's head vanquishes the
+Hydra.  Note that the final binding, besides vanquishing the Hydra, will still
+serve its original purpose, calling the command assigned to it.  This makes
+the Hydra very seamless; it's like a minor mode that disables itself
+automatically.")
+    (license license:gpl3+)))
+
+(define-public emacs-ivy
+  (package
+    (name "emacs-ivy")
+    (version "0.8.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/abo-abo/swiper/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "18nqwl05is71dzswnvpfhlg7b0v3apvbsfxrwab9c0apwavi892q"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-hydra" ,emacs-hydra)))
+    (home-page "http://oremacs.com/swiper/")
+    (synopsis "Incremental vertical completion for Emacs")
+    (description
+     "This package provides @code{ivy-read} as an alternative to
+@code{completing-read} and similar functions.  No attempt is made to determine
+the best candidate.  Instead, the user can navigate candidates with
+@code{ivy-next-line} and @code{ivy-previous-line}.  The matching is done by
+splitting the input text by spaces and re-building it into a regular
+expression.")
+    (license license:gpl3+)))
+
+(define-public emacs-avy
+  (package
+    (name "emacs-avy")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/abo-abo/avy/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1wdrq512h25ymzjbf2kbsdymvd2ryfwzb6bh5bc3yv7q203im796"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/abo-abo/avy")
+    (synopsis "Tree-based completion for Emacs")
+    (description
+     "This package provides a generic completion method based on building a
+balanced decision tree with each candidate being a leaf.  To traverse the tree
+from the root to a desired leaf, typically a sequence of @code{read-key} can
+be used.
+
+In order for @code{read-key} to make sense, the tree needs to be visualized
+appropriately, with a character at each branch node.  So this completion
+method works only for things that you can see on your screen, all at once,
+such as the positions of characters, words, line beginnings, links, or
+windows.")
+    (license license:gpl3+)))
+
+(define-public emacs-ace-window
+  (package
+    (name "emacs-ace-window")
+    (version "0.9.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/abo-abo/ace-window/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1p2sgfl5dml4zbd6ldql6lm2m9vmd236ah996ni32x254s48j5pn"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-avy" ,emacs-avy)))
+    (home-page "https://github.com/abo-abo/ace-window")
+    (synopsis "Quickly switch windows in Emacs")
+    (description
+     "@code{ace-window} is meant to replace @code{other-window}.
+In fact, when there are only two windows present, @code{other-window} is
+called.  If there are more, each window will have its first character
+highlighted.  Pressing that character will switch to that window.")
+    (license license:gpl3+)))
+
+(define-public emacs-iedit
+  (package
+    (name "emacs-iedit")
+    (version "0.9.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/victorhge/iedit/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "00v86zllcsivmiibigbr91qij2zdf1lr9db8z8again1sn63wkdj"))))
+    (build-system emacs-build-system)
+    (home-page "http://www.emacswiki.org/emacs/Iedit")
+    (synopsis "Edit multiple regions in the same way simultaneously")
+    (description
+     "This package is an Emacs minor mode and allows you to edit one
+occurrence of some text in a buffer (possibly narrowed) or region, and
+simultaneously have other occurrences edited in the same way.
+
+You can also use Iedit mode as a quick way to temporarily show only the buffer
+lines that match the current text being edited.  This gives you the effect of
+a temporary @code{keep-lines} or @code{occur}.")
+    (license license:gpl3+)))
+
+(define-public emacs-lispy
+  (package
+    (name "emacs-lispy")
+    (version "0.26.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/abo-abo/lispy/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "15gig95cvamw5zlw99cxggd27c18b9scznjj97gvjn2zbljcaqzl"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-ace-window" ,emacs-ace-window)
+       ("emacs-iedit" ,emacs-iedit)
+       ("emacs-ivy" ,emacs-ivy)
+       ("emacs-hydra" ,emacs-hydra)))
+    (home-page "https://github.com/abo-abo/lispy")
+    (synopsis "Modal S-expression editing")
+    (description
+     "Due to the structure of Lisp syntax it's very rare for the programmer to
+want to insert characters right before \"(\" or right after \")\".  Thus
+unprefixed printable characters can be used to call commands when the point is
+at one of these special locations.  Lispy provides unprefixed keybindings for
+S-expression editing when point is at the beginning or end of an
+S-expression.")
     (license license:gpl3+)))
 
 (define-public emacs-clojure-mode
@@ -2191,3 +2376,25 @@ Lua programing language}.")
      "This Emacs package provides modes for ebuild, eclass, eblit, GLEP42
 news items, openrc and runscripts.")
     (license license:gpl2+)))
+
+(define-public emacs-writegood-mode
+  (package
+    (name "emacs-writegood-mode")
+    (version "2.0.2")
+    (home-page "http://github.com/bnbeckwith/writegood-mode")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "1nnjn1r669hvvzfycllwap4w04m8rfsk4nzcg8057m1f263kj31b"))
+              (file-name (string-append name "-checkout"))))
+    (build-system emacs-build-system)
+    (synopsis "Polish up poor writing on the fly")
+    (description
+     "This minor mode tries to find and highlight problems with your writing
+in English as you type.  It primarily detects \"weasel words\" and abuse of
+passive voice.")
+    (license license:gpl3+)))

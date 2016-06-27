@@ -1474,13 +1474,17 @@ websites such as Libre.fm.")
 (define-public beets
   (package
     (name "beets")
-    (version "1.3.17")
+    (version "1.3.18")
     (source (origin
               (method url-fetch)
-              (uri (pypi-uri name version))
+              (uri (string-append
+                     "https://pypi.python.org/packages/"
+                     "14/6f/c9c79c5339ab3ecced265ca18adbf5bae3d4058bae737b6164d738fb4d2c/"
+                     name "-" version ".tar.gz"))
+              (patches (search-patches "beets-image-test-failure.patch"))
               (sha256
                (base32
-                "0yg7sp18sdpszkinhb0bi6yinbn316jy1baxrwiw0m4byrj3rr6c"))))
+                "09pgyywa5llbc36y0lrr21ywgsp8m2zx6p8ncf8hxik28knd5kld"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2 ; only Python 2 is supported
@@ -1504,7 +1508,7 @@ websites such as Libre.fm.")
        ("python2-rarfile" ,python2-rarfile)
        ("python2-responses" ,python2-responses)))
     ;; TODO: Install optional plugins and dependencies.
-    (propagated-inputs
+    (inputs
      `(("python2-enum34" ,python2-enum34)
        ("python2-jellyfish" ,python2-jellyfish)
        ("python2-munkres" ,python2-munkres)

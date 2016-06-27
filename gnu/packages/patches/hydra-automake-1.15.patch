@@ -23,7 +23,7 @@ Automake's parallel test harness.
 -  HYDRA_HOME="$(top_srcdir)/src"			\
 -  HYDRA_CONFIG=						\
 -  NIX_REMOTE=						\
--  NIX_CONF_DIR="$(abs_builddir)/nix/etc/nix"		\
+-  GUIX_CONFIGURATION_DIRECTORY="$(abs_builddir)/nix/etc/nix"		\
 -  NIX_STATE_DIR="$(abs_builddir)/nix/var/nix"		\
 -  NIX_MANIFESTS_DIR="$(abs_builddir)/nix/var/nix/manifests"	\
 -  NIX_STORE_DIR="$(abs_builddir)/nix/store"			\
@@ -39,7 +39,7 @@ Automake's parallel test harness.
 +  HYDRA_HOME="$(top_srcdir)/src"; export HYDRA_HOME;	\
 +  HYDRA_CONFIG=; export HYDRA_CONFIG;			\
 +  NIX_REMOTE=; export NIX_REMOTE;			\
-+  NIX_CONF_DIR="$(abs_builddir)/nix/etc/nix"; export NIX_CONF_DIR; \
++  GUIX_CONFIGURATION_DIRECTORY="$(abs_builddir)/nix/etc/nix"; export GUIX_CONFIGURATION_DIRECTORY; \
 +  NIX_STATE_DIR="$(abs_builddir)/nix/var/nix"; export NIX_STATE_DIR; \
 +  NIX_MANIFESTS_DIR="$(abs_builddir)/nix/var/nix/manifests"; export NIX_MANIFESTS_DIR; \
 +  NIX_STORE_DIR="$(abs_builddir)/nix/store"; export NIX_STORE_DIR; \

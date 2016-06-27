@@ -59,8 +59,8 @@
   (or (getenv "NIX_STATE_DIR") "@guix_localstatedir@/guix"))
 
 (define %config-directory
-  ;; This must match `NIX_CONF_DIR' as defined in `nix/local.mk'.
-  (or (getenv "NIX_CONF_DIR") "@guix_sysconfdir@/guix"))
+  ;; This must match `GUIX_CONFIGURATION_DIRECTORY' as defined in `nix/local.mk'.
+  (or (getenv "GUIX_CONFIGURATION_DIRECTORY") "@guix_sysconfdir@/guix"))
 
 (define %guix-register-program
   ;; The 'guix-register' program.

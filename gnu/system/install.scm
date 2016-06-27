@@ -208,8 +208,7 @@ the user's target storage device rather than on the RAM disk."
   "Return a list of tuples representing configuration templates to add to
 /etc."
   (define (file f)
-    (local-file (search-path %load-path
-                             (string-append "gnu/system/examples/" f))))
+    (local-file (string-append "examples/" f)))
 
   (define directory
     (computed-file "configuration-templates"

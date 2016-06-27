@@ -73,6 +73,7 @@
             setuid-program-service-type
             profile-service-type
             firmware-service-type
+            gc-root-service-type
 
             %boot-service
             %activation-service
@@ -486,6 +487,33 @@ kernel."
                 (extensions
                  (list (service-extension activation-service-type
                                           firmware->activation-gexp)))
+                (compose concatenate)
+                (extend append)))
+
+(define (gc-roots->system-entry roots)
+  "Return an entry in the system's output containing symlinks to ROOTS."
+  (mlet %store-monad ((entry (gexp->derivation
+                              "gc-roots"
+                              #~(let ((roots '#$roots))
+                                  (mkdir #$output)
+                                  (chdir #$output)
+                                  (for-each symlink
+                                            roots
+                                            (map number->string
+                                                 (iota (length roots))))))))
+    (return (if (null? roots)
+                '()
+                `(("gc-roots" ,entry))))))
+
+(define gc-root-service-type
+  ;; A service to associate extra garbage-collector roots to the system.  This
+  ;; is a simple hack that guarantees that the system retains references to
+  ;; the given list of roots.  Roots must be "lowerable" objects like
+  ;; packages, or derivations.
+  (service-type (name 'gc-roots)
+                (extensions
+                 (list (service-extension system-service-type
+                                          gc-roots->system-entry)))
                 (compose concatenate)
                 (extend append)))
 

@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -149,7 +150,7 @@ autotools system.")
       `(("libxfont" ,libxfont)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Convert X font from BDF to PCF")
     (description
      "BDFtoPCF is a font compiler for the X server and font server.  It
@@ -174,7 +175,7 @@ which can be read by any architecture.")
             "07hvfm84scz8zjw14riiln2v4w03jlhp756ypwhq27g48jmic8a6"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg BigReqsProto protocol headers")
     (description
      "Big Requests Extension defines a protocol to enable the use of
@@ -201,7 +202,7 @@ requests that exceed 262140 bytes in length.")
       `(("fixesproto" ,fixesproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg CompositeProto protocol headers")
     (description
      "Composite Extension contains header files and documentation for
@@ -225,7 +226,7 @@ the damage protocol.")
             "0nzwr5pv9hg7c21n995pdiv0zqhs91yz3r8rn3aska4ykcp12z2w"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg DamageProto protocol headers")
     (description
      "Damage Extension contains header files and documentation for
@@ -249,7 +250,7 @@ the damage protocol.")
             "02b5x9dkgajizm8dqyx2w6hmqx3v25l67mgf35nj6sz0lgk52877"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg DMXProto protocol headers")
     (description
      "DMX (Distributed Multihead X) Extension defines a protocol for clients
@@ -273,7 +274,7 @@ servers making up a large display.")
           (base32
             "015az1vfdqmil1yay5nlsmpf6cf7vcbpslxjb72cfkzlvrv59dgr"))))
     (build-system gnu-build-system)
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg DRI2Proto protocol headers")
     (description
      "Direct Rendering Infrastructure 2 Extension defines a protocol to
@@ -296,7 +297,7 @@ requiring data to be passed through the X server.")
           (base32
             "0x609xvnl8jky5m8jdklw4nymx3irkv32w99dfd8nl800bblkgh1"))))
     (build-system gnu-build-system)
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg DRI3Proto protocol headers")
     (description
      "Direct Rendering Infrastructure 3 Extension provides mechanisms to
@@ -326,7 +327,7 @@ provided.")
       `(("mkfontscale" ,mkfontscale)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg font encoding files")
     (description "Xorg font encoding files.")
     (license license:public-domain)))
@@ -358,7 +359,7 @@ provided.")
         ;; install fonts into subdirectory of package output instead of
         ;; font-util-?.?.?/share/fonts/X11
         (string-append "--with-fontrootdir=" %output "/share/fonts/X11"))))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg adobe-100dpi fonts")
     (description "Xorg adobe-100dpi fonts.")
     (license license:x11)))
@@ -388,7 +389,7 @@ provided.")
     (arguments
       `(#:configure-flags (list
         (string-append "--with-fontrootdir=" %output "/share/fonts/X11"))))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg adobe-75dpi fonts")
     (description "Xorg adobe-75dpi fonts.")
     (license license:x11)))
@@ -433,7 +434,7 @@ provided.")
                                        (format p "0~%"))))
                                  '("75dpi" "100dpi" "misc" "cyrillic"))
                        #t))))))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg font aliases")
     (description
      "This package provides some common aliases for Xorg fonts.
@@ -461,7 +462,7 @@ For example: '6x10', '9x15bold', etc.")
         ("bdftopcf" ,bdftopcf)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg arabic-misc font")
     (description "Xorg arabic-misc font.")
     (license license:x11)))
@@ -498,7 +499,7 @@ For example: '6x10', '9x15bold', etc.")
         ("bdftopcf" ,bdftopcf)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg cronyx-cyrillic font")
     (description "Xorg cronyx-cyrillic font.")
     (license license:x11)))
@@ -531,7 +532,7 @@ For example: '6x10', '9x15bold', etc.")
         ("bdftopcf" ,bdftopcf)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg dec-misc font")
     (description "Xorg dec-misc font.")
     (license license:x11)))
@@ -560,7 +561,7 @@ For example: '6x10', '9x15bold', etc.")
         ("bdftopcf" ,bdftopcf)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg isas-misc font")
     (description "Xorg isas-misc font.")
     (license license:x11)))
@@ -590,7 +591,7 @@ For example: '6x10', '9x15bold', etc.")
         ("bdftopcf" ,bdftopcf)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg micro-misc font")
     (description "Xorg micro-misc font.")
     (license license:public-domain)))
@@ -616,7 +617,7 @@ For example: '6x10', '9x15bold', etc.")
         ("bdftopcf" ,bdftopcf)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg misc-cyrillic fonts")
     (description "Xorg misc-cyrillic fonts.")
     (license license:x11)))
@@ -641,7 +642,7 @@ For example: '6x10', '9x15bold', etc.")
       `(("mkfontdir" ,mkfontdir)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg misc-ethiopic fonts")
     (description "Xorg misc-ethiopic fonts.")
     (license license:x11)))
@@ -675,7 +676,7 @@ For example: '6x10', '9x15bold', etc.")
     (arguments
       `(#:configure-flags (list
         (string-append "--with-fontrootdir=" %output "/share/fonts/X11"))))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg misc-misc fonts")
     (description "Xorg misc-misc fixed fonts.")
     (license license:public-domain)))
@@ -701,7 +702,7 @@ For example: '6x10', '9x15bold', etc.")
         ("bdftopcf" ,bdftopcf)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg mutt-misc fonts")
     (description "Xorg mutt-misc fonts.")
     (license license:x11)))
@@ -731,7 +732,7 @@ For example: '6x10', '9x15bold', etc.")
     (arguments
       `(#:configure-flags (list
         (string-append "--with-fontrootdir=" %output "/share/fonts/X11"))))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg schumacher-misc fonts")
     (description "Xorg schumacher-misc fonts.")
     (license license:x11)))
@@ -757,7 +758,7 @@ For example: '6x10', '9x15bold', etc.")
         ("bdftopcf" ,bdftopcf)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg screen-cyrillic fonts")
     (description "Xorg screen-cyrillic fonts.")
     (license license:x11)))
@@ -783,7 +784,7 @@ For example: '6x10', '9x15bold', etc.")
         ("bdftopcf" ,bdftopcf)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg sony-misc fonts")
     (description "Xorg sony-misc fonts.")
     (license license:x11)))
@@ -809,7 +810,7 @@ For example: '6x10', '9x15bold', etc.")
         ("bdftopcf" ,bdftopcf)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg sun-misc fonts")
     (description "Xorg sun-misc fonts.")
     (license license:x11)))
@@ -831,7 +832,7 @@ For example: '6x10', '9x15bold', etc.")
             "08drjb6cf84pf5ysghjpb4i7xkd2p86k3wl2a0jxs1jif6qbszma"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg font utilities")
     (description
      "Xorg font package creation/installation utilities.")
@@ -858,7 +859,7 @@ For example: '6x10', '9x15bold', etc.")
         ("bdftopcf" ,bdftopcf)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg winitzki-cyrillic font")
     (description "Xorg winitzki-cyrillic font.")
     (license license:public-domain)))
@@ -883,7 +884,7 @@ For example: '6x10', '9x15bold', etc.")
       `(("mkfontdir" ,mkfontdir)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg xfree86-type1 font")
     (description "Xorg xfree86-type1 font.")
     (license license:x11)))
@@ -905,7 +906,7 @@ For example: '6x10', '9x15bold', etc.")
             "1f2sdsd74y34nnaf4m1zlcbhyv8xb6irnisc99f84c4ivnq4d415"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg FontsProto protocol headers")
     (description
      "Fonts Extension contains header files and documentation for
@@ -929,7 +930,7 @@ the fonts protocol.")
             "0h5ykmcddwid5qj6sbrszgkcypwn3mslvswxpgy2n2iixnyr9amd"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg GLProto protocol headers")
     (description
      "OpenGL Extension defines a protocol for the client to send 3D
@@ -956,7 +957,7 @@ rendering commands to the X server.")
       `(("libice" ,libice)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "ICE authority file utility")
     (description
      "ICEAuth program is used to edit and display the authorization
@@ -982,7 +983,7 @@ authentication records.")
             "1lf1jlxp0fc8h6fjdffhd084dqab94966l1zm3rwwsis0mifwiss"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg InputProto protocol headers")
     (description
      "Input Extension defines a protocol to provide additional input
@@ -1006,7 +1007,7 @@ devices management such as graphic tablets.")
             "0mxqj1pzhjpz9495vrjnpi10kv2n1s4vs7di0sh3yvipfq5j30pq"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg KBProto protocol headers")
     (description
      "X Keyboard (XKB) Extension defines a protocol to provide a number
@@ -1040,7 +1041,7 @@ of new capabilities and controls for text keyboards.")
         ("dmxproto" ,dmxproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg DMX library")
     (description
      "DMX (Distributed Multihead X) extension library.")
@@ -1092,7 +1093,7 @@ synchronization between the X server and direct-rendering clients.")
         ("xproto" ,xproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg font encoding library")
     (description "Xorg font encoding library.")
     (license license:x11)))
@@ -1119,7 +1120,7 @@ synchronization between the X server and direct-rendering clients.")
         ("fontsproto" ,fontsproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Font Service client library")
     (description
      "Font Service client library is used by clients of X Font
@@ -1147,7 +1148,7 @@ themselves.")
       `(("zlib" ,zlib)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg PCI access library")
     (description "Xorg Generic PCI access library.")
     (license license:x11)))
@@ -1169,7 +1170,7 @@ themselves.")
             "16bjv3in19l84hbri41iayvvg4ls9gv1ma0x0qlbmwy67i7dbdim"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Library with pthread stubs")
     (description
      "This library provides weak aliases for pthread functions not
@@ -1202,7 +1203,7 @@ hit when running single-threaded.")
         ("util-linux" ,util-linux)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Session Management library")
     (description "Xorg Session Management library.")
     (license license:x11)))
@@ -1230,7 +1231,7 @@ hit when running single-threaded.")
         ("windowswmproto" ,windowswmproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg WindowsWM library")
     (description
      "Cygwin/X rootless window management extension.
@@ -1263,7 +1264,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
         ("compositeproto" ,compositeproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Composite library")
     (description
      "Client library for the Composite extension to the X11 protocol.")
@@ -1289,7 +1290,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
       `(("xproto" ,xproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Display Manager Control Protocol library")
     (description "Xorg Display Manager Control Protocol library.")
     (license license:x11)))
@@ -1320,7 +1321,7 @@ with the Cygwin XWin server when running X11 in a rootless mode.")
         ("xproto" ,xproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg FreeType library")
     (description
      "Xorg FreeType library connects X applications with the FreeType font
@@ -1348,7 +1349,7 @@ configuration files.")
       `(("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XKB file handling library")
     (description "Xorg XKB file handling library.")
     (license license:x11)))
@@ -1375,7 +1376,7 @@ configuration files.")
         ("libxext" ,libxext)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Xmu library")
     (description
      "Xmu library contains miscellaneous utilities and is not part of the
@@ -1408,7 +1409,7 @@ treat it as part of their software base when porting.")
         ("libxext" ,libxext)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XPM library")
     (description "XPM (X Pixmap) image file format library.")
     (license license:x11)))
@@ -1436,7 +1437,7 @@ treat it as part of their software base when porting.")
         ("resourceproto" ,resourceproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Resource extension library")
     (description "X Resource extension library.")
     (license license:x11)))
@@ -1464,7 +1465,7 @@ treat it as part of their software base when porting.")
       `(("scrnsaverproto" ,scrnsaverproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Screen Saver library")
     (description "X11 Screen Saver extension client library.")
     (license license:x11)))
@@ -1492,7 +1493,7 @@ treat it as part of their software base when porting.")
         ("libxext" ,libxext)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XFree86-DGA library")
     (description "Client library for the XFree86-DGA extension.")
     (license license:x11)))
@@ -1520,7 +1521,7 @@ treat it as part of their software base when porting.")
       `(("libfontenc" ,libfontenc)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Convert terminal I/O from legacy encodings to UTF-8")
     (description
      "Luit is a filter that can be run between an arbitrary application and
@@ -1548,7 +1549,7 @@ input from UTF-8 into the locale's encoding.")
     (inputs
       `(("xproto" ,xproto)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg makedepend utility")
     (description
      "Makedepend is an utility for creating dependencies in makefiles.")
@@ -1577,7 +1578,7 @@ input from UTF-8 into the locale's encoding.")
         ("libfontenc" ,libfontenc)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Create an index of scalable font files for X server")
     (description
      "MkFontScale creates the 'fonts.scale' and 'fonts.dir' index files used
@@ -1600,7 +1601,7 @@ by the legacy X11 font system.")
           (base32
             "1kir51aqg9cwazs14ivcldcn3mzadqgykc9cg87rm40zf947sb41"))))
     (build-system gnu-build-system)
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg PresentProto protocol headers")
     (description
      "Present Extension provides a way for applications to update their
@@ -1626,7 +1627,7 @@ mechanism than copying the contents of the source pixmap.")
             "06liap8n4s25sgp27d371cc7yg9a08dxcr3pmdjp761vyin3360j"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg PrintProto protocol headers")
     (description
      "Print Extension defines a protocol for a portable,
@@ -1650,7 +1651,7 @@ network-transparent printing system.")
             "0s4496z61y5q45q20gldwpf788b9nsa8hb13gnck1mwwwwrmarsc"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg RandRProto protocol headers")
     (description
      "Resize and Rotate Extension defines a protocol for clients to
@@ -1675,7 +1676,7 @@ window of a screen.")
             "0w3kgr1zabwf79bpc28dcnj0fpni6r53rpi82ngjbalj5s6m8xx7"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg RecordProto protocol headers")
     (description
      "Record Extension defines a protocol for the recording and playback
@@ -1699,7 +1700,7 @@ of user actions in the X Window System.")
             "0dr5xw6s0qmqg0q5pdkb4jkdhaja0vbfqla79qh5j1xjj9dmlwq6"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg RenderProto protocol headers")
     (description
      "Rendering Extension defines a protcol for a digital image composition
@@ -1723,7 +1724,7 @@ as the foundation of a new rendering model within the X Window System.")
             "0638iyfiiyjw1hg3139pai0j6m65gkskrvd9684zgc6ydcx00riw"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg ResourceProto protocol headers")
     (description
      "Resource Extension defines a protocol that allows a client to
@@ -1747,7 +1748,7 @@ query the X server about its usage of various resources.")
             "0rfdbfwd35d761xkfifcscx56q0n56043ixlmv70r4v4l66hmdwb"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg ScrnSaverProto protocol headers")
     (description
      "Screen Saver Extension defines a protocol to control screensaver
@@ -1774,7 +1775,7 @@ features and to query screensaver info on specific windows.")
       `(("xproto" ,xproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Register X sessions in system utmp/utmpx databases")
     (description
      "SessReg is a simple program for managing utmp/wtmp entries for X
@@ -1809,7 +1810,7 @@ used with other display managers such as gdm or kdm.")
        (list (string-append "--with-xkb-config-root="
                             (assoc-ref %build-inputs "xkeyboard-config")
                             "/share/X11/xkb"))))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Set the keyboard using the X Keyboard Extension")
     (description
      "Setxkbmap is an X11 client to change the keymaps in the X server
@@ -1838,7 +1839,7 @@ listed on the command line.")
         ("libxmu" ,libxmu)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Session Manager Proxy")
     (description
      "SMProxy allows X applications that do not support X11R6 session
@@ -1878,7 +1879,7 @@ management to participate in an X11R6 session.")
                         (delete-file "share/util-macros/INSTALL")
                         (rmdir "share/util-macros"))))
                   %standard-phases))))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg autoconf macros")
     (description
      "This package provides a set of autoconf macros used by the
@@ -1903,7 +1904,7 @@ generate new versions of their configure scripts with autoconf.")
             "1dnlkd9nb0m135lgd6hd61vc29sdyarsyya8aqpx7z10p261dbld"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg VideoProto protocol headers")
     (description
      "Video Extension provides a protocol for a video output mechanism,
@@ -1927,7 +1928,7 @@ mainly to rescale video playback in the video controller hardware.")
             "0syjxgy4m8l94qrm03nvn5k6bkxc8knnlld1gbllym97nvnv0ny0"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg WindowsWMProto protocol headers")
     (description
      "WindowsWM Extension defines a protocol, used for coordination between
@@ -1959,7 +1960,7 @@ server.")
         ("libxrender" ,libxrender)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "X server performance benchmarker")
     (description
      "X11Perf is a simple performance benchmarker for the Xorg X server.")
@@ -1992,7 +1993,7 @@ server.")
     ;; FIXME: The test suite needs http://liw.fi/cmdtest/
     (arguments `(#:tests? #f))
 
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "X authority file utility")
     (description
      "XAuth program is used to edit and display the authorization
@@ -2020,7 +2021,7 @@ information used in connecting to the X server.")
        ("xcb-util" ,xcb-util)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Control display backlight")
     (description
      "Xbacklight is used to adjust the backlight brightness where
@@ -2046,7 +2047,7 @@ the same way.")
             "178ym90kwidia6nas4qr5n5yqh698vv8r02js0r4vg3b6lsb0w9n"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "X bitmaps")
     (description
      "xbitmaps provides basic bitmaps (little pictures) used by some
@@ -2071,7 +2072,7 @@ legacy X clients.")
     (build-system gnu-build-system)
     (native-inputs
       `(("pkg-config" ,pkg-config) ("python" ,python-minimal-wrapper)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "XML-XCB protocol descriptions")
     (description
      "XCB-Proto provides the XML-XCB protocol descriptions that libxcb
@@ -2102,7 +2103,7 @@ generators in individual language bindings.")
             "1pyjv45wivnwap2wvsbrzdvjc5ql8bakkbkrvcv6q9bjjf33ccmi"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XCMiscProto protocol headers")
     (description
      "XC-MISC Extension defines a protocol that provides Xlib two ways
@@ -2129,7 +2130,7 @@ to query the server for available resource IDs.")
       `(("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Device Color Characterization utility")
     (description
      "XCMSDB is used to load, query, or remove Device Color
@@ -2164,7 +2165,7 @@ X11 Inter-Client Communication Conventions Manual (ICCCM).")
        (list (string-append "--with-cursordir="
                             (assoc-ref %outputs "out")
                             "/share/icons"))))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Default Xorg cursors")
     (description
      "This package provides a default set of cursor themes for the Xorg
@@ -2192,7 +2193,7 @@ X server: 'handhelds', 'redglass' and 'whiteglass'.")
         ("libpng" ,libpng)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Create an X cursor file from PNG images")
     (description
      "XCursorGen prepares X11 cursor sets for use with libXcursor.")
@@ -2227,7 +2228,7 @@ X server: 'handhelds', 'redglass' and 'whiteglass'.")
         ("libdmx" ,libdmx)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg display information utility")
     (description
      "Xdpyinfo is used to display information about an X server: the
@@ -2258,7 +2259,7 @@ available.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Query DRI configuration information")
     (description
      "XDRIInfo is used to query configuration information of X11
@@ -2288,7 +2289,7 @@ DRI (Direct Rendering Infrastructure) drivers.")
         ("libx11" ,libx11)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Print contents of X events")
     (description
      "XEv creates a window and then asks the X server to send it X11
@@ -2317,7 +2318,7 @@ usage.")
             "1c2vma9gqgc2v06rfxdiqgwhxmzk2cbmknwf1ng3m76vr0xb5x7k"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XExtProto protocol headers")
     (description
      "XExtProto provides the following extensions: DOUBLE-BUFFER, DPMS,
@@ -2379,7 +2380,7 @@ devices, thus making direct access unnecessary.")
        (list (string-append "--with-sdkdir="
                             (assoc-ref %outputs "out")
                             "/include/xorg"))))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Generic input driver for X server")
     (description
      "xf86-input-evdev is a generic input driver for the Xorg X server.
@@ -2409,7 +2410,7 @@ including most mice, keyboards, tablets and touchscreens.")
     (inputs
      `(("libinput" ,libinput)
        ("xorg-server" ,xorg-server)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Input driver for X server based on libinput")
     (description
      "xf86-input-libinput is an input driver for the Xorg X server based
@@ -2439,7 +2440,7 @@ provide all features that libinput supports it does little beyond.")
        (list (string-append "--with-sdkdir="
                             (assoc-ref %outputs "out")
                             "/include/xorg"))))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Joystick input driver for X server")
     (description
      "xf86-input-joystick is a joystick input driver for the Xorg X server.
@@ -2464,7 +2465,7 @@ It is used to cotrol the pointer with a joystick device.")
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Keyboard input driver for X server")
     (description
      "xf86-input-keyboard is a keyboard input driver for the Xorg X server.")
@@ -2493,7 +2494,7 @@ It is used to cotrol the pointer with a joystick device.")
        (list (string-append "--with-sdkdir="
                             (assoc-ref %outputs "out")
                             "/include/xorg"))))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Mouse input driver for X server")
     (description
      "xf86-input-mouse is a mouse input driver for the Xorg X server.
@@ -2532,7 +2533,7 @@ as USB mice.")
              (string-append "--with-xorg-conf-dir="
                             (assoc-ref %outputs "out")
                             "/share/X11/xorg.conf.d"))))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Touchpad input driver for X server")
     (description
      "xf86-input-synaptics is a touchpad driver for the Xorg X server.")
@@ -2556,7 +2557,7 @@ as USB mice.")
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Void (null) input driver for X server")
     (description
      "xf86-input-void is a null input driver for the Xorg X server.")
@@ -2581,7 +2582,7 @@ as USB mice.")
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Ark Logic video driver for X server")
     (description
      "xf86-video-ark is an Ark Logic video driver for the Xorg X server.")
@@ -2607,7 +2608,7 @@ as USB mice.")
 ;;     (build-system gnu-build-system)
 ;;     (inputs `(("xorg-server" ,xorg-server)))
 ;;     (native-inputs `(("pkg-config" ,pkg-config)))
-;;     (home-page "http://www.x.org/wiki/")
+;;     (home-page "https://www.x.org/wiki/")
 ;;     (synopsis "ASpeed Technologies video driver for X server")
 ;;     (description
 ;;      "xf86-video-ast is an ASpeed Technologies video driver for the Xorg
@@ -2635,7 +2636,7 @@ as USB mice.")
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments `(#:configure-flags `("--disable-glamor"))) ; TODO: Enable glamor
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "ATI Radeon video driver for X server")
     (description
      "xf86-video-ati is an ATI Radeon video driver for the Xorg
@@ -2660,7 +2661,7 @@ X server.")
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Cirrus Logic video driver for X server")
     (description
      "xf86-video-cirrus is a Cirrus Logic video driver for the Xorg
@@ -2689,7 +2690,7 @@ X server.")
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Framebuffer device video driver for X server")
     (description
      "xf86-video-fbdev is a video driver for the Xorg X server for
@@ -2719,7 +2720,7 @@ framebuffer device.")
      ;; This driver is only supported on i686 systems.
      (filter (lambda (system) (string-prefix? "i686-" system))
              %supported-systems))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "AMD Geode GX/LX video driver for X server")
     (description
      "xf86-video-geode is an Xorg X server video driver for the AMD
@@ -2749,7 +2750,7 @@ compositing.  Both support Xv overlay and dynamic rotation with XRandR.")
 ;;     (build-system gnu-build-system)
 ;;     (inputs `(("pkg-config" ,pkg-config)
 ;;               ("xorg-server" ,xorg-server)))
-;;     (home-page "http://www.x.org/wiki/")
+;;     (home-page "https://www.x.org/wiki/")
 ;;     (synopsis "Glide video driver for X server")
 ;;     (description
 ;;      "xf86-video-glide is a Glide video driver for the Xorg X server.")
@@ -2775,7 +2776,7 @@ compositing.  Both support Xv overlay and dynamic rotation with XRandR.")
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "GLINT/Permedia video driver for X server")
     (description
      "xf86-video-glint is a GLINT/Permedia video driver for the Xorg
@@ -2801,7 +2802,7 @@ X server.")
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "I128 video driver for X server")
     (description
      "xf86-video-i128 is an I128 (Imagine 128) video driver for the Xorg
@@ -2819,7 +2820,7 @@ X server.")
          ;; there's no current tarball
          (method git-fetch)
          (uri (git-reference
-               (url "http://anongit.freedesktop.org/git/xorg/driver/xf86-video-intel.git")
+               (url "https://anongit.freedesktop.org/git/xorg/driver/xf86-video-intel.git")
                (commit commit)))
          (sha256
           (base32
@@ -2846,7 +2847,7 @@ X server.")
                     (add-after 'unpack 'bootstrap
                       (lambda _
                         (zero? (system* "autoreconf" "-vfi")))))))
-      (home-page "http://www.x.org/wiki/")
+      (home-page "https://www.x.org/wiki/")
       (synopsis "Intel video driver for X server")
       (description
        "xf86-video-intel is a 2D graphics driver for the Xorg X server.
@@ -2875,7 +2876,7 @@ It supports a variety of Intel graphics chipsets.")
               ("xorg-server" ,xorg-server)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Mach64 video driver for X server")
     (description
      "xf86-video-mach64 is a video driver for the Xorg X server.
@@ -2905,7 +2906,7 @@ the same level of support for generic VGA or 8514/A adapters.")
               ("xf86driproto" ,xf86driproto)
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Matrox video driver for X server")
     (description
      "xf86-video-mga is a Matrox video driver for the Xorg X server.")
@@ -2930,7 +2931,7 @@ the same level of support for generic VGA or 8514/A adapters.")
               ("libx11" ,libx11)
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "\"Modesetting\" video driver for X server")
     (description
      "This is a generic \"modesetting\" video driver, that relies on the Linux
@@ -2955,7 +2956,7 @@ kernel mode setting (KMS).")
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "NeoMagic video driver for X server")
     (description
      "xf86-video-neomagic is a NeoMagic video driver for the Xorg X server.")
@@ -2981,7 +2982,7 @@ kernel mode setting (KMS).")
 ;;     (build-system gnu-build-system)
 ;;     (inputs `(("xorg-server" ,xorg-server)))
 ;;     (native-inputs `(("pkg-config" ,pkg-config)))
-;;     (home-page "http://www.x.org/wiki/")
+;;     (home-page "https://www.x.org/wiki/")
 ;;     (synopsis "Newport video driver for X server")
 ;;     (description
 ;;      "xf86-video-newport is an Xorg X server video driver for the SGI
@@ -3007,7 +3008,7 @@ kernel mode setting (KMS).")
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "NVIDIA video driver for X server")
     (description
      "This package contains Xorg support for the NVIDIA GeForce 8 series of
@@ -3065,7 +3066,7 @@ graphics cards.")
               ("xorg-server" ,xorg-server)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Openchrome video driver for X server")
     (description
      "xf86-video-openchrome is a video driver for the Xorg X server.
@@ -3093,7 +3094,7 @@ UniChrome Pro and Chrome9 integrated graphics processors.")
               ("xf86driproto" ,xf86driproto)
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "ATI Rage 128 video driver for X server")
     (description
      "xf86-video-r128 is a video driver for the Xorg X server.
@@ -3120,7 +3121,7 @@ This driver is intended for ATI Rage 128 based cards.")
               ("xf86driproto" ,xf86driproto)
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Savage video driver for X server")
     (description
      "xf86-video-savage is an S3 Savage video driver for the Xorg X server.")
@@ -3144,7 +3145,7 @@ This driver is intended for ATI Rage 128 based cards.")
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Silicon Motion video driver for X server")
     (description
      "xf86-video-siliconmotion is a Silicon Motion video driver for the
@@ -3173,7 +3174,7 @@ Xorg X server.")
               ("xorg-server" ,xorg-server)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Sis video driver for X server")
     (description
      "xf86-video-SiS is a SiS video driver for the Xorg X server.
@@ -3198,7 +3199,7 @@ This driver supports SiS chipsets of 300/315/330/340 series.")
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "GX/TurboGX video driver for X server")
     (description
      "xf86-video-suncg6 is a GX/TurboGX video driver for the Xorg X server.")
@@ -3222,7 +3223,7 @@ This driver supports SiS chipsets of 300/315/330/340 series.")
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "SUNFFB video driver for X server")
     (description
      "xf86-video-sunffb is a SUNFFB video driver for the Xorg X server.")
@@ -3248,7 +3249,7 @@ This driver supports SiS chipsets of 300/315/330/340 series.")
               ("xf86driproto" ,xf86driproto)
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "3Dfx video driver for X server")
     (description
      "xf86-video-tdfx is a 3Dfx video driver for the Xorg X server.")
@@ -3274,7 +3275,7 @@ This driver supports SiS chipsets of 300/315/330/340 series.")
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "TGA video driver for X server")
     (description
      "xf86-video-tga is a TGA (DEC 21030) video driver for the Xorg
@@ -3300,7 +3301,7 @@ X server.")
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Trident video driver for X server")
     (description
      "xf86-video-trident is a Trident video driver for the Xorg X server.")
@@ -3328,7 +3329,7 @@ X server.")
     (build-system gnu-build-system)
     (inputs `(("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "VESA video driver for X server")
     (description
      "xf86-video-vesa is a generic VESA video driver for the Xorg
@@ -3357,7 +3358,7 @@ X server.")
               ("xorg-server" ,xorg-server)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "VMware SVGA video driver for X server")
     (description
      "xf86-video-vmware is a VMware SVGA video driver for the Xorg X server.")
@@ -3391,7 +3392,7 @@ xf86-video-voodoo/patch/?id=9172ae566a0e85313fc80ab62b4455393eefe593")
     (inputs `(("xf86dgaproto" ,xf86dgaproto)
               ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Voodoo/Voodoo2 video driver for X server")
     (description
      "xf86-video-voodoo is a Voodoo video driver for the Xorg X server.")
@@ -3417,7 +3418,7 @@ xf86-video-voodoo/patch/?id=9172ae566a0e85313fc80ab62b4455393eefe593")
           (base32
             "0j0n7sj5xfjpmmgx6n5x556rw21hdd18fwmavp95wps7qki214ms"))))
     (build-system gnu-build-system)
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XF86BigFontProto protocol headers")
     (description
      "XFree86 Bigfont Extension contains header files and documentation
@@ -3440,7 +3441,7 @@ for the XF86BigFontProto protocol.")
           (base32
             "0l4hx48207mx0hp09026r6gy9nl3asbq0c75hri19wp1118zcpmc"))))
     (build-system gnu-build-system)
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XF86DGAProto protocol headers")
     (description
      "XFree86 Direct Graphic Access Extension defines a protocol for
@@ -3463,7 +3464,7 @@ direct linear framebuffer access.")
           (base32
             "07v69m0g2dfzb653jni4x656jlr7l84c1k39j8qc8vfb45r8sjww"))))
     (build-system gnu-build-system)
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XF86DRIProto protocol headers")
     (description
      "XFree86 Direct Rendering Infrastructure Extension defines a
@@ -3487,7 +3488,7 @@ requiring data to be passed through the X server.")
           (base32
             "0w47d7gfa8zizh2bshdr2rffvbr4jqjv019mdgyh6cmplyd4kna5"))))
     (build-system gnu-build-system)
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XF86VidModeProto protocol headers")
     (description
      "XFree86 Video Mode Extension defines a protocol for dynamically
@@ -3515,7 +3516,7 @@ configuring modelines and gamma.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Alter a monitor's gamma correction")
     (description
      "XGamma is used to query and alter the gamma correction of a
@@ -3544,7 +3545,7 @@ monitor via the X video mode extension.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg server access control utility")
     (description
      "XHost is used to manage the list of host names or user names
@@ -3568,7 +3569,7 @@ allowed to make connections to the X server.")
             "0ns8abd27x7gbp4r44z3wc5k9zqxxj8zjnazqpcyr4n17nxp8xcp"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XineramaProto protocol headers")
     (description
      "Xinerama Extension allows clients to query information about multiple
@@ -3607,7 +3608,7 @@ alternative implementations like XRandR or TwinView.")
         ("inputproto" ,inputproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Configure input devices for X server")
     (description
      "XInput is used to configure and test XInput devices.")
@@ -3635,7 +3636,7 @@ alternative implementations like XRandR or TwinView.")
         ("libx11" ,libx11)))
     (native-inputs
         `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Compile XKB keyboard description")
     (description
      "xkbcomp keymap compiler converts a description of an XKB keymap
@@ -3684,7 +3685,7 @@ make keyboards more accessible to people with physical impairments.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "XKB event daemon demo")
     (description
      "XKB event daemon listens for the specified XKB events and executes
@@ -3714,7 +3715,7 @@ requested commands if they occur.")
         ("inputproto" ,inputproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "XKB utilities")
     (description
      "XKBUtils is a collection of small utilities for X Keyboard (XKB)
@@ -3750,7 +3751,7 @@ extension to the X11 protocol.  It includes:
     (native-inputs
       `(("intltool" ,intltool)
         ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XKB configuration files")
     (description
      "xkeyboard-config provides a database for X Keyboard (XKB) Extension.
@@ -3780,7 +3781,7 @@ can be combined together using the 'rules' component of this database.")
         ("libx11" ,libx11)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Kill a client by its X resource")
     (description
      "XKill is used to force the X server to close connections to
@@ -3808,7 +3809,7 @@ programs that have displayed undesired windows on a user's screen.")
       `(("libxcb" ,libxcb)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "List interned X server atoms")
     (description
      "XLsAtoms is used to list the interned atoms defined on X server.")
@@ -3834,7 +3835,7 @@ programs that have displayed undesired windows on a user's screen.")
       `(("libxcb" ,libxcb)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "List client applications running on a display")
     (description
      "XLsClients is used to list information about the client programs
@@ -3862,7 +3863,7 @@ running on X server.")
        ("libx11" ,libx11)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "List fonts available from an X server")
     (description
      "xlsfonts lists fonts available from an X server via the X11 core
@@ -3891,7 +3892,7 @@ protocol.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Modify keymaps and button mappings on X server")
     (description
      "Xmodmap is used to display and edit the keyboard modifier map and
@@ -3922,7 +3923,7 @@ tastes.")
             "0k5pffyi5bx8dmfn033cyhgd3gf6viqj3x769fqixifwhbgy2777"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg SGML documentation tools")
     (description
     "This package provides a common set of SGML entities and XML/CSS style
@@ -3955,7 +3956,7 @@ refers to the included common xorg.css stylesheet.")
         ("libx11" ,libx11)))
     (native-inputs
         `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Print an X window dump from xwd")
     (description
      "XPr takes as input a window dump file produced by xwd and formats
@@ -3983,7 +3984,7 @@ it for output on various types of printers.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Display X server properties")
     (description
      "xprop is used to display and/or set window and font properties of
@@ -4012,7 +4013,7 @@ an X server.")
         ("libx11" ,libx11)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Command line interface to X RandR extension")
     (description
      "xrandr - primitive command line interface to X11 Resize, Rotate,
@@ -4040,7 +4041,7 @@ and Reflect (RandR) extension.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "X server resource database utility")
     (description
      "XRDB is used to get or set the contents of the RESOURCE_MANAGER
@@ -4070,7 +4071,7 @@ file.")
       `(("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Refresh all or part of an X screen")
     (description
      "Xrefresh is a simple X program that causes all or part of your
@@ -4101,7 +4102,7 @@ up your screen.")
         ("libx11" ,libx11)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "User preference utility for X server")
     (description
      "XSet is used to set various user preference options of the display.")
@@ -4129,7 +4130,7 @@ up your screen.")
         ("xbitmaps" ,xbitmaps)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Root window parameter setting utility for X server")
     (description
      "XSetRoot allows you to tailor the appearance of the root window on
@@ -4153,7 +4154,7 @@ a display running X server.")
             "00c3ph17acnsch3gbdmx33b9ifjnl5w7vx8hrmic1r1cjcv3pgdd"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Network Transport layer library")
     (description
      "Xtrans is a library of code that is shared among various X packages to
@@ -4184,7 +4185,7 @@ libICE, the X font server, and related components.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Print out X-Video extension adaptor information")
     (description
      "XVInfo is used to print out the capabilities of any video adaptors
@@ -4214,7 +4215,7 @@ extension.")
         ("xproto" ,xproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Dump current contents of X window or screen to file")
     (description
      "Xwd is used to store window images in a specially formatted dump
@@ -4246,7 +4247,7 @@ dump and twice whenthe dump is completed.")
         ("xproto" ,xproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Window information utility for X server")
     (description
      "XWinInfo is used to print out information about windows on an X server.
@@ -4274,7 +4275,7 @@ Various information is displayed depending on which options are selected.")
         ("libx11" ,libx11)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Display an X window dump from xwd")
     (description
      "Xwud is used to display in a window an image saved in a specially
@@ -4327,7 +4328,7 @@ formatted dump file, such as produced by xwd.")
       `(("xextproto" ,xextproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg FixesProto protocol headers")
     (description
      "Fixes Extension makes changes to many areas of the protocol to resolve
@@ -4359,7 +4360,7 @@ cannot be adequately worked around on the client side of the wire.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Damage Extension library")
     (description "Xorg library for the XDamage extension.")
     (license license:x11)))
@@ -4387,7 +4388,7 @@ cannot be adequately worked around on the client side of the wire.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Common extensions library")
     (description
      "Library for common extensions to the X11 protocol.")
@@ -4416,7 +4417,7 @@ cannot be adequately worked around on the client side of the wire.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Xinerama protocol library")
     (description "API for Xinerama extension to X11 protocol.")
     (license license:x11)))
@@ -4444,7 +4445,7 @@ cannot be adequately worked around on the client side of the wire.")
         ("libxext" ,libxext)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Print Client library")
     (description "Xorg Print Client library.")
     (license license:x11)))
@@ -4472,7 +4473,7 @@ cannot be adequately worked around on the client side of the wire.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Render Extension library")
     (description "Library for the Render Extension to the X11 protocol.")
     (license license:x11)))
@@ -4501,7 +4502,7 @@ cannot be adequately worked around on the client side of the wire.")
         ("inputproto" ,inputproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg library for Xtest and Record extensions")
     (description
      "libXtst provides the Xlib-based client API for the XTEST & RECORD
@@ -4540,7 +4541,7 @@ protocol and arbitrary X extension protocol.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XVideo Extension library")
     (description "Library for the X Video Extension to the X11 protocol.")
     (license license:x11)))
@@ -4565,7 +4566,7 @@ protocol and arbitrary X extension protocol.")
       `(("mkfontscale" ,mkfontscale)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Create an index of X font files in a directory")
     (description
      "MkFontDir creates the 'fonts.dir' files needed by the legacy X
@@ -4593,7 +4594,7 @@ script around the mkfontscale program.")
       `(("util-macros" ,util-macros))) ; to get util-macros in (almost?) all package inputs
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg X11Proto protocol headers")
     (description
      "XProto provides the headers and specification documents defining
@@ -4629,7 +4630,7 @@ common definitions and porting layer.")
       `(("xtrans" ,xtrans)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Inter-Client Exchange library")
     (description "Xorg Inter-Client Exchange library.")
     (license license:x11)))
@@ -4654,7 +4655,7 @@ common definitions and porting layer.")
       `(("xproto" ,xproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Authorization library")
     (description
      "libXau provides an authorization library for individual access to
@@ -4683,7 +4684,7 @@ an X Window System display.")
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Fixes Extension library")
     (description "Library for the XFixes Extension to the X11 protocol.")
     (license license:x11)))
@@ -4714,7 +4715,7 @@ an X Window System display.")
         ("xtrans" ,xtrans)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Font handling library")
     (description
      "libXfont provides the core of the legacy X11 font system, handling the
@@ -4750,7 +4751,7 @@ new API's in libXft, or the legacy API's in libX11.")
       `(("xproto" ,xproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Input Extension library")
     (description "Library for the XInput Extension to the X11 protocol.")
     (license license:x11)))
@@ -4780,7 +4781,7 @@ new API's in libXft, or the legacy API's in libX11.")
         ("xproto" ,xproto)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Resize and Rotate Extension library")
     (description
      "Library for the Resize and Rotate Extension to the X11 protocol.")
@@ -4810,7 +4811,7 @@ new API's in libXft, or the legacy API's in libX11.")
         ("libx11" ,libx11)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XvMC library")
     (description "Xorg XvMC library.")
     (license license:x11)))
@@ -4838,7 +4839,7 @@ new API's in libXft, or the legacy API's in libX11.")
       `(("libx11" ,libx11)))
     (native-inputs
        `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XF86 Video Mode Extension library")
     (description
      "Library for the XFree86 Video Mode Extension Extension to the X11
@@ -4873,7 +4874,7 @@ protocol.")
         ("python" ,python-minimal-wrapper)))
     (arguments
      `(#:configure-flags '("--enable-xkb")))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "The X C Binding (XCB) library")
     (description
      "libxcb provides an interface to the X Window System protocol,
@@ -4984,7 +4985,7 @@ over Xlib, including:
                      (("\\$\\(MKDIR_P\\).*logdir.*")
                       "true\n")))
                  %standard-phases)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg implementation of the X Window System")
     (description
      "This package provides the Xorg X server itself.
@@ -5032,7 +5033,7 @@ draggable titlebars and borders.")
         ("xtrans" ,xtrans)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Core X11 protocol client library")
     (description "Xorg Core X11 protocol client library.")
     (license license:x11)))
@@ -5062,7 +5063,7 @@ draggable titlebars and borders.")
         ("xproto" ,xproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Cursor management library")
     (description "Xorg Cursor management library.")
     (license license:x11)))
@@ -5097,7 +5098,7 @@ draggable titlebars and borders.")
       `(("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg XToolkit Intrinsics library")
     (description "Xorg XToolkit Intrinsics library.")
     (license license:x11)))
@@ -5127,7 +5128,7 @@ draggable titlebars and borders.")
       `(("xproto" ,xproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Xaw library")
     (description
      "Xaw is the X Athena Widget Set based on the X Toolkit
@@ -5151,7 +5152,7 @@ Intrinsics (Xt) Library.")
      `(("libxcb" ,libxcb)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://cgit.freedesktop.org/xcb/util/")
+    (home-page "https://cgit.freedesktop.org/xcb/util/")
     (synopsis "Core XCB utility functions")
     (description
      "The XCB util module provides a number of libraries which sit on
@@ -5190,7 +5191,7 @@ The XCB util module provides the following libraries:
      `(("libxcb" ,libxcb)
        ("xcb-util-renderutil" ,xcb-util-renderutil)
        ("xcb-util-image" ,xcb-util-image)))
-    (home-page "http://cgit.freedesktop.org/xcb/util-cursor/")
+    (home-page "https://cgit.freedesktop.org/xcb/util-cursor/")
     (synopsis "Port of libxcursor")
     (description "XCB-util-cursor is a port of libxcursor.")
     (license
@@ -5218,7 +5219,7 @@ The XCB util module provides the following libraries:
      `(("xcb-util" ,xcb-util)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://cgit.freedesktop.org/xcb/util-image/")
+    (home-page "https://cgit.freedesktop.org/xcb/util-image/")
     (synopsis "XCB port of Xlib's XImage and XShmImage")
     (description
      "The XCB util module provides a number of libraries which sit on
@@ -5250,7 +5251,7 @@ The XCB util-image module provides the following library:
      `(("libxcb" ,libxcb)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://cgit.freedesktop.org/xcb/util-keysyms/")
+    (home-page "https://cgit.freedesktop.org/xcb/util-keysyms/")
     (synopsis "Standard X constants and conversion to/from keycodes")
     (description
      "The XCB util module provides a number of libraries which sit on
@@ -5282,7 +5283,7 @@ The XCB util-keysyms module provides the following library:
      `(("libxcb" ,libxcb)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://cgit.freedesktop.org/xcb/util-renderutil/")
+    (home-page "https://cgit.freedesktop.org/xcb/util-renderutil/")
     (synopsis "Convenience functions for the Render extension")
     (description
      "The XCB util module provides a number of libraries which sit on
@@ -5315,7 +5316,7 @@ The XCB util-renderutil module provides the following library:
     (native-inputs
      `(("m4" ,m4)
        ("pkg-config" ,pkg-config)))
-    (home-page "http://cgit.freedesktop.org/xcb/util-wm/")
+    (home-page "https://cgit.freedesktop.org/xcb/util-wm/")
     (synopsis "Client and window-manager helpers for ICCCM and EWMH")
     (description
      "The XCB util modules provides a number of libraries which sit on
@@ -5385,7 +5386,7 @@ user-friendly mechanism to start the X server.")
      `(("libx11" ,libx11)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
+    (home-page "https://www.x.org/wiki/")
     (synopsis "Xorg Xaw3d library")
     (description
      "Xaw is the X 3D Athena Widget Set based on the X Toolkit
@@ -5470,7 +5471,7 @@ perl programs to display windows and graphics on X11 servers.")
        ;; there's no current tarball
        (method git-fetch)
        (uri (git-reference
-             (url "http://anongit.freedesktop.org/git/xorg/app/xcompmgr.git")
+             (url "https://anongit.freedesktop.org/git/xorg/app/xcompmgr.git")
              (commit (string-append name "-" version))))
        (sha256
         (base32
@@ -5498,6 +5499,6 @@ perl programs to display windows and graphics on X11 servers.")
     (description "xcompmgr is a sample compositing manager for X servers
 supporting the XFIXES, DAMAGE, RENDER, and COMPOSITE extensions.  It enables
 basic eye-candy effects.")
-    (home-page "http://cgit.freedesktop.org/xorg/app/xcompmgr/")
+    (home-page "https://cgit.freedesktop.org/xorg/app/xcompmgr/")
     (license (license:x11-style
-              "http://cgit.freedesktop.org/xorg/app/xcompmgr/tree/COPYING"))))
+              "https://cgit.freedesktop.org/xorg/app/xcompmgr/tree/COPYING"))))

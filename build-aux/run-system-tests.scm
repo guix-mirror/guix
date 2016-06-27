@@ -17,13 +17,14 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (run-system-tests)
-  #:use-module (gnu tests base)
+  #:use-module (gnu tests)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix derivations)
   #:use-module (guix ui)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-34)
+  #:use-module (ice-9 match)
   #:export (run-system-tests))
 
 (define (built-derivations* drv)
@@ -44,13 +45,26 @@
                 lst)
          (lift1 reverse %store-monad))))
 
-(define %system-tests
-  (list %test-basic-os))
-
 (define (run-system-tests . args)
+  (define tests
+    ;; Honor the 'TESTS' environment variable so that one can select a subset
+    ;; of tests to run in the usual way:
+    ;;
+    ;;   make check-system TESTS=installed-os
+    (match (getenv "TESTS")
+      (#f
+       (all-system-tests))
+      ((= string-tokenize (tests ...))
+       (filter (lambda (test)
+                 (member (system-test-name test) tests))
+               (all-system-tests)))))
+
+  (format (current-error-port) "Running ~a system tests...~%"
+          (length tests))
+
   (with-store store
     (run-with-store store
-      (mlet* %store-monad ((drv (sequence %store-monad %system-tests))
+      (mlet* %store-monad ((drv (mapm %store-monad system-test-value tests))
                            (out -> (map derivation->output-path drv)))
         (mbegin %store-monad
           (show-what-to-build* drv)

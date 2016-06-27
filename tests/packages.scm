@@ -797,7 +797,7 @@
                  #:guile-for-build (%guile-for-build))))
     (build-derivations %store (list prof))
     (string-match (format #f "^export XML_CATALOG_FILES=\"~a/xml/+bar/baz/catalog\\.xml\"\n"
-                          (derivation->output-path prof))
+                          (regexp-quote (derivation->output-path prof)))
                   (with-output-to-string
                     (lambda ()
                       (guix-package "-p" (derivation->output-path prof)

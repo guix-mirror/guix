@@ -42,6 +42,7 @@
   #:use-module (gnu packages ed)
   #:use-module (gnu packages base)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages python)
@@ -200,14 +201,14 @@ without requiring the source code to be rewritten.")
 (define-public guile-next
   (package (inherit guile-2.0)
     (name "guile-next")
-    (version "2.1.2")
+    (version "2.1.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "ftp://alpha.gnu.org/gnu/guile/guile-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "0p971k3v04jj5klnv145g4172cpcp90arf0wvxxj2aqkg16j9m9c"))
+                "1k48wqca2hrsbfq4ssiv4pg9jwlqncs5iwwxklk2bnczi7lavv78"))
               (modules '((guix build utils)))
 
               ;; Remove the pre-built object files.  Instead, build everything
@@ -421,6 +422,55 @@ tasks on a schedule, such as every hour or every Monday.  Mcron is written in
 Guile, so its configuration can be written in Scheme; the original cron
 format is also supported.")
     (license gpl3+)))
+
+(define-public mcron2
+  ;; This is mthl's mcron development branch, not yet merged in mcron.
+  (let ((commit "31baff1a5187d8ddc89324cbe42dbeffc309c962"))
+    (package
+      (inherit mcron)
+      (name "mcron2")
+      (version (string-append (package-version mcron) "-0."
+                              (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://notabug.org/mthl/mcron/")
+                      (commit commit)))
+                (sha256
+                 (base32
+                  "1h5wxy997hxi718hpx419c23q09939kbxrjbbq54lv0cgw1bb63z"))
+                (file-name (string-append name "-" version "-checkout"))))
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("pkg-config" ,pkg-config)
+         ("texinfo" ,texinfo)
+         ("help2man" ,help2man)))
+      (arguments
+       `(#:modules ((ice-9 match) (ice-9 ftw)
+                    ,@%gnu-build-system-modules)
+
+         #:phases (modify-phases %standard-phases
+                    (add-after 'unpack 'bootstrap
+                      (lambda _
+                        (zero? (system* "autoreconf" "-vfi"))))
+                    (add-after 'install 'wrap-mcron
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        ;; Wrap the 'mcron' command to refer to the right
+                        ;; modules.
+                        (let* ((out  (assoc-ref outputs "out"))
+                               (bin  (string-append out "/bin"))
+                               (site (string-append
+                                      out "/share/guile/site")))
+                          (match (scandir site)
+                            (("." ".." version)
+                             (let ((modules (string-append site "/" version)))
+                               (wrap-program (string-append bin "/mcron")
+                                 `("GUILE_LOAD_PATH" ":" prefix
+                                   (,modules))
+                                 `("GUILE_LOAD_COMPILED_PATH" ":" prefix
+                                   (,modules)))
+                               #t))))))))))))
 
 (define-public guile-lib
   (package
@@ -1007,5 +1057,70 @@ a given C interface, G-Wrap will automatically generate the C code that
 provides access to that interface and its types from the Scheme level.")
     (home-page "http://www.nongnu.org/g-wrap/index.html")
     (license lgpl2.1+)))
+
+(define-public guile-dbi
+  (package
+    (name "guile-dbi")
+    (version "2.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://download.gna.org/guile-dbi/guile-dbi-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "116njrprhgrsv1qm904sp3b02rq01fx639r433d657gyhw3x159n"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append
+              "--with-guile-site-dir=" %output "/share/guile/site/2.0"))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'patch-extension-path
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out     (assoc-ref outputs "out"))
+                    (dbi.scm (string-append
+                              out "/share/guile/site/2.0/dbi/dbi.scm"))
+                    (ext     (string-append out "/lib/libguile-dbi")))
+               (substitute* dbi.scm (("libguile-dbi") ext))
+               #t))))))
+    (propagated-inputs
+     `(("guile" ,guile-2.0)))
+    (synopsis "Guile database abstraction layer")
+    (home-page "http://home.gna.org/guile-dbi/guile-dbi.html")
+    (description
+     "guile-dbi is a library for Guile that provides a convenient interface to
+SQL databases.  Database programming with guile-dbi is generic in that the same
+programming interface is presented regardless of which database system is used.
+It currently supports MySQL, Postgres and SQLite3.")
+    (license gpl2+)))
+
+(define-public guile-dbd-sqlite3
+  (package
+    (name "guile-dbd-sqlite3")
+    (version "2.1.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://download.gna.org/guile-dbi/guile-dbd-sqlite3-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0rg71jchxd2y8x496s8zmfmikr5g8zxi8zv2ar3f7a23pph92iw2"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("sqlite" ,sqlite)
+       ("zlib" ,(@ (gnu packages compression) zlib))))
+    (propagated-inputs
+     `(("guile-dbi" ,guile-dbi)))
+    (synopsis "Guile DBI driver for SQLite")
+    (home-page "https://github.com/jkalbhenn/guile-dbd-sqlite3")
+    (description
+     "guile-dbi is a library for Guile that provides a convenient interface to
+SQL databases.  This package implements the interface for SQLite.")
+    (license gpl2+)))
 
 ;;; guile.scm ends here

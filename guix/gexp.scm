@@ -856,8 +856,10 @@ and in the current monad setting (system type, etc.)"
 
 (define %utils-module
   ;; This file provides 'mkdir-p', needed to implement 'imported-files' and
-  ;; other primitives below.
-  (local-file (search-path %load-path "guix/build/utils.scm")
+  ;; other primitives below.  Note: We give the file name relative to this
+  ;; file you are currently reading; 'search-path' could return a file name
+  ;; relative to the current working directory.
+  (local-file "build/utils.scm"
               "build-utils.scm"))
 
 (define* (imported-files files

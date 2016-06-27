@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
@@ -55,8 +55,8 @@
 
 (define* (qemu-command #:optional (system %host-type))
   "Return the default name of the QEMU command for SYSTEM."
-  (let ((cpu (substring %host-type 0
-                        (string-index %host-type #\-))))
+  (let ((cpu (substring system 0
+                        (string-index system #\-))))
     (string-append "qemu-system-"
                    (if (string-match "^i[3456]86$" cpu)
                        "i386"

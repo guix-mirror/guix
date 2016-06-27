@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Jessica Tallon <tsyesika@tsyesika.se>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -295,3 +296,39 @@ Synchronization is possible using the integrated git support, which commits
 changes to your password database to a git repository that can be managed
 through the pass command.")
     (license license:gpl2+)))
+
+(define-public argon2
+  (package
+    (name "argon2")
+    (version "20160406")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://codeload.github.com/P-H-C/phc-winner-"
+         name "/tar.gz/" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0g6wa94sh639xl1qc8z21q43r1mp8y77r1zf8nwx5pfsxd8fmyzv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:make-flags '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda _
+             (let ((out (assoc-ref %outputs "out")))
+               (install-file "argon2" (string-append out "/bin"))
+               (install-file "libargon2.a" (string-append out "/lib"))
+               (install-file "libargon2.so" (string-append out "/lib"))
+               (copy-recursively "include"
+                                 (string-append out "/include"))))))))
+    (home-page "https://www.argon2.com/")
+    (synopsis "Password hashing library")
+    (description "Argon2 provides a key derivation function that was declared
+winner of the 2015 Password Hashing Competition.")
+    (license license:cc0)))

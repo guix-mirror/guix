@@ -323,14 +323,14 @@ mashups, office (web agendas, mail clients, ...), etc.")
 (define-public chicken
   (package
     (name "chicken")
-    (version "4.10.0")
+    (version "4.11.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://code.call-cc.org/releases/"
                                  version "/chicken-" version ".tar.gz"))
              (sha256
               (base32
-               "16w96jrhb6qf62fgznk53f55yhfv81damghdjn31k5hirnmza1qf"))))
+               "12ddyiikqknpr8h6llsxbg2fz75xnayvcnsvr1cwv8xnjn7jpp73"))))
     (build-system gnu-build-system)
     (arguments
      `(#:modules ((guix build gnu-build-system)

@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,8 +21,14 @@
 
 (define-module (gnu packages crypto)
   #:use-module (gnu packages)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages libbsd)
+  #:use-module (gnu packages nettle)
+  #:use-module (gnu packages password-utils)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages tls)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -88,3 +95,55 @@ OpenBSD tool of the same name.")
                    (non-copyleft "file://base64.c"
                                  "See base64.c in the distribution for
                                  the license from IBM.")))))
+
+
+(define-public opendht
+  (package
+    (name "opendht")
+    (version "0.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://github.com/savoirfairelinux/" name
+         "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (delete-file-recursively "src/argon2")
+           (substitute* "src/Makefile.am"
+             (("./argon2/libargon2.la") "")
+             (("SUBDIRS = argon2") ""))
+           (substitute* "src/crypto.cpp"
+             (("argon2/argon2.h") "argon2.h"))
+           (substitute* "configure.ac"
+             (("src/argon2/Makefile") ""))))
+       (sha256
+        (base32
+         "09yvkmbqbym3b5md4n96qc1s9sf2n8ji404hagih45rmsj49599x"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gnutls" ,gnutls)
+       ("nettle" ,nettle)
+       ("msgpack" ,msgpack)
+       ("readline" ,readline)
+       ("argon2" ,argon2)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("pkg-config" ,pkg-config)
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (arguments
+     `(#:configure-flags '("--disable-tools" "--disable-python")
+       #:phases (modify-phases %standard-phases
+                  (add-before 'configure 'autoconf
+                    (lambda _
+                      (zero? (system* "autoreconf" "-vfi")))))))
+    (home-page "https://github.com/savoirfairelinux/opendht/")
+    (synopsis "Distributed Hash Table (DHT) library")
+    (description "OpenDHT is a Distributed Hash Table (DHT) library.  It may
+be used to manage peer-to-peer network connections as needed for real time
+communication.")
+    (license gpl3)))

@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2016 David Thompson <davet@gnu.org>
+;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -152,10 +154,11 @@ store in '.el' files."
 (define (emacs-inputs-el-directories dirs)
   "Build the list of Emacs Lisp directories from the Emacs package directory
 DIRS."
-  (map (lambda (d)
-         (string-append d %install-suffix "/"
-                        (store-directory->elpa-name-version d)))
-       dirs))
+  (append-map (lambda (d)
+                (list (string-append d "/share/emacs/site-lisp")
+                      (string-append d %install-suffix "/"
+                                     (store-directory->elpa-name-version d))))
+              dirs))
 
 (define (package-name-version->elpa-name-version name-ver)
   "Convert the Guix package NAME-VER to the corresponding ELPA name-version

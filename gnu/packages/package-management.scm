@@ -21,9 +21,11 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
+  #:use-module ((guix build utils) #:select (with-directory-excursion))
   #:use-module ((guix licenses) #:select (gpl2+ gpl3+ lgpl2.1+ asl2.0))
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
@@ -48,7 +50,12 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages gnuzilla)
   #:use-module (gnu packages cpio)
-  #:use-module (gnu packages tls))
+  #:use-module (gnu packages tls)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
+  #:use-module (ice-9 popen)
+  #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 match))
 
 (define (boot-guile-uri arch)
   "Return the URI for the bootstrap Guile tarball for ARCH."
@@ -245,6 +252,73 @@ the Nix package manager.")
          ,@(package-native-inputs guix-0.10.0))))))
 
 (define-public guix guix-devel)
+
+(define (source-file? file stat)
+  "Return true if FILE is likely a source file, false if it is a typical
+generated file."
+  (define (wrong-extension? file)
+    (or (string-suffix? "~" file)
+        (member (file-extension file)
+                '("o" "a" "lo" "so" "go"))))
+
+  (match (basename file)
+    ((or ".git" "autom4te.cache" "configure" "Makefile" "Makefile.in" ".libs")
+     #f)
+    ((? wrong-extension?)
+     #f)
+    (_
+     #t)))
+
+(define (make-git-predicate directory)
+  "Return a predicate that returns true if a file is part of the Git checkout
+living at DIRECTORY.  Upon Git failure, return #f instead of a predicate."
+  (define (parent-directory? thing directory)
+    ;; Return #t if DIRECTORY is the parent of THING.
+    (or (string-suffix? thing directory)
+        (and (string-index thing #\/)
+             (parent-directory? (dirname thing) directory))))
+
+  (let* ((pipe        (with-directory-excursion directory
+                        (open-pipe* OPEN_READ "git" "ls-files")))
+         (files       (let loop ((lines '()))
+                        (match (read-line pipe)
+                          ((? eof-object?)
+                           (reverse lines))
+                          (line
+                           (loop (cons line lines))))))
+         (status      (close-pipe pipe)))
+    (and (zero? status)
+         (lambda (file stat)
+           (match (stat:type stat)
+             ('directory
+              ;; 'git ls-files' does not list directories, only regular files,
+              ;; so we need this special trick.
+              (any (cut parent-directory? <> file) files))
+             ((or 'regular 'symlink)
+              (any (cut string-suffix? <> file) files))
+             (_
+              #f))))))
+
+(define-public current-guix
+  (let ((select? (delay (or (make-git-predicate
+                             (string-append (current-source-directory)
+                                            "/../.."))
+                            source-file?))))
+    (lambda ()
+      "Return a package representing Guix built from the current source tree.
+This works by adding the current source tree to the store (after filtering it
+out) and returning a package that uses that as its 'source'."
+      (package
+        (inherit guix)
+        (version (string-append (package-version guix) "+"))
+        (source (local-file "../.." "guix-current"
+                            #:recursive? #t
+                            #:select? (force select?)))))))
+
+
+;;;
+;;; Other tools.
+;;;
 
 (define-public nix
   (package

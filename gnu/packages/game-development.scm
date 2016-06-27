@@ -34,6 +34,8 @@
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages documentation)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages fribidi)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnunet)
   #:use-module (gnu packages guile)
@@ -432,3 +434,28 @@ It offers the following features:
   import into a database.
 @end enumerate")
     (license license:gpl2+)))
+
+(define-public quesoglc
+  (package
+    (name "quesoglc")
+    (version "0.7.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/" name "/" version "/"
+                                  name "-" version "-free.tar.bz2"))
+              (sha256
+               (base32
+                "08ddhywdy2qg17m592ng3yr0p1ih96irg8wg729g75hsxxq9ipks"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("fontconfig" ,fontconfig)
+              ("freeglute" ,freeglut)
+              ("fribidi" ,fribidi)
+              ("glew" ,glew)))
+    (home-page "http://quesoglc.sourceforge.net")
+    (synopsis "Implementation of the OpenGL Character Renderer (GLC)")
+    (description
+     "The OpenGL Character Renderer (GLC) is a state machine that provides
+OpenGL programs with character rendering services via an application programming
+interface (API).")
+    (license (list license:expat license:lgpl2.1+))))

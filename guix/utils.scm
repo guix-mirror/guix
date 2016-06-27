@@ -637,10 +637,11 @@ output port, and PROC's result is returned."
 
 (define (cache-directory)
   "Return the cache directory for Guix, by default ~/.cache/guix."
-  (or (getenv "XDG_CONFIG_HOME")
-      (and=> (or (getenv "HOME")
-                 (passwd:dir (getpwuid (getuid))))
-             (cut string-append <> "/.cache/guix"))))
+  (string-append (or (getenv "XDG_CACHE_HOME")
+                     (and=> (or (getenv "HOME")
+                                (passwd:dir (getpwuid (getuid))))
+                            (cut string-append <> "/.cache")))
+                 "/guix"))
 
 (define (readlink* file)
   "Call 'readlink' until the result is not a symlink."
@@ -702,6 +703,18 @@ output port, and PROC's result is returned."
 ;;; Source location.
 ;;;
 
+(define (absolute-dirname file)
+  "Return the absolute name of the directory containing FILE, or #f upon
+failure."
+  (match (search-path %load-path file)
+    (#f #f)
+    ((? string? file)
+     ;; If there are relative names in %LOAD-PATH, FILE can be relative and
+     ;; needs to be canonicalized.
+     (if (string-prefix? "/" file)
+         (dirname file)
+         (canonicalize-path (dirname file))))))
+
 (define-syntax current-source-directory
   (lambda (s)
     "Return the absolute name of the current directory, or #f if it could not
@@ -711,11 +724,16 @@ be determined."
        (match (assq 'filename (syntax-source s))
          (('filename . (? string? file-name))
           ;; If %FILE-PORT-NAME-CANONICALIZATION is 'relative, then FILE-NAME
-          ;; can be relative.  In that case, we try to find out the absolute
-          ;; file name by looking at %LOAD-PATH.
-          (if (string-prefix? "/" file-name)
-              (dirname file-name)
-              (and=> (search-path %load-path file-name) dirname)))
+          ;; can be relative.  In that case, we try to find out at run time
+          ;; the absolute file name by looking at %LOAD-PATH; doing this at
+          ;; run time rather than expansion time is necessary to allow files
+          ;; to be moved on the file system.
+          (cond ((not file-name)
+                 #f)                ;raising an error would upset Geiser users
+                ((string-prefix? "/" file-name)
+                 (dirname file-name))
+                (else
+                 #`(absolute-dirname #,file-name))))
          (_
           #f))))))
 

@@ -45,6 +45,7 @@
             %package-module-path
 
             fold-packages
+            scheme-modules                    ;XXX: for lack of a better place
 
             find-packages-by-name
             find-best-packages-by-name
@@ -158,8 +159,8 @@ returned list is sorted in alphabetical order."
       (map string->symbol
            (string-tokenize (string-drop-right file 4) not-slash)))))
 
-(define* (package-modules directory #:optional sub-directory)
-  "Return the list of modules that provide packages for the distribution.
+(define* (scheme-modules directory #:optional sub-directory)
+  "Return the list of Scheme modules available under DIRECTORY.
 Optionally, narrow the search to SUB-DIRECTORY."
   (define prefix-len
     (string-length directory))
@@ -184,9 +185,9 @@ search."
   (fold-right (lambda (spec result)
                 (match spec
                   ((? string? directory)
-                   (append (package-modules directory) result))
+                   (append (scheme-modules directory) result))
                   ((directory . sub-directory)
-                   (append (package-modules directory sub-directory)
+                   (append (scheme-modules directory sub-directory)
                            result))))
               '()
               path))

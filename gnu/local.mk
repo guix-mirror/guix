@@ -41,6 +41,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/apl.scm				\
   %D%/packages/apr.scm				\
   %D%/packages/aspell.scm			\
+  %D%/packages/assembly.scm			\
   %D%/packages/attr.scm				\
   %D%/packages/audacity.scm			\
   %D%/packages/audio.scm			\
@@ -108,6 +109,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/engineering.scm			\
   %D%/packages/enlightenment.scm		\
   %D%/packages/entr.scm				\
+  %D%/packages/erlang.scm			\
   %D%/packages/fcitx.scm			\
   %D%/packages/feh.scm                          \
   %D%/packages/figlet.scm			\
@@ -205,7 +207,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/libusb.scm			\
   %D%/packages/libunwind.scm			\
   %D%/packages/libupnp.scm			\
-  %D%/packages/lightning.scm			\
   %D%/packages/links.scm			\
   %D%/packages/linux.scm			\
   %D%/packages/lirc.scm				\
@@ -363,7 +364,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/xdisorg.scm			\
   %D%/packages/xorg.scm				\
   %D%/packages/xfce.scm				\
-  %D%/packages/yasm.scm				\
   %D%/packages/yubico.scm			\
   %D%/packages/zile.scm				\
   %D%/packages/zip.scm				\
@@ -378,6 +378,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/dict.scm				\
   %D%/services/lirc.scm				\
   %D%/services/mail.scm				\
+  %D%/services/mcron.scm			\
   %D%/services/networking.scm			\
   %D%/services/shepherd.scm			\
   %D%/services/herd.scm				\
@@ -409,7 +410,8 @@ GNU_SYSTEM_MODULES =				\
   %D%/build/vm.scm				\
 						\
   %D%/tests.scm					\
-  %D%/tests/base.scm
+  %D%/tests/base.scm				\
+  %D%/tests/install.scm
 
 
 patchdir = $(guilemoduledir)/%D%/packages/patches
@@ -442,6 +444,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/avrdude-fix-libusb.patch			\
   %D%/packages/patches/awesome-reproducible-png.patch		\
   %D%/packages/patches/bash-completion-directories.patch	\
+  %D%/packages/patches/beets-image-test-failure.patch		\
   %D%/packages/patches/bigloo-gc-shebangs.patch			\
   %D%/packages/patches/binutils-ld-new-dtags.patch		\
   %D%/packages/patches/binutils-loongson-workaround.patch	\
@@ -656,6 +659,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/mumps-build-parallelism.patch		\
   %D%/packages/patches/mupen64plus-ui-console-notice.patch	\
   %D%/packages/patches/mutt-store-references.patch		\
+  %D%/packages/patches/nasm-no-ps-pdf.patch			\
   %D%/packages/patches/net-tools-bitrot.patch			\
   %D%/packages/patches/netcdf-config-date.patch			\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
@@ -741,6 +745,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/rpm-CVE-2014-8118.patch			\
   %D%/packages/patches/rsem-makefile.patch			\
   %D%/packages/patches/ruby-concurrent-ignore-broken-test.patch	\
+  %D%/packages/patches/ruby-puma-ignore-broken-test.patch       \
   %D%/packages/patches/ruby-symlinkfix.patch                    \
   %D%/packages/patches/ruby-tzinfo-data-ignore-broken-test.patch\
   %D%/packages/patches/rush-CVE-2013-6889.patch			\

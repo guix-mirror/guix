@@ -67,7 +67,7 @@ void Settings::processEnvironment()
     nixLogDir = canonPath(getEnv("NIX_LOG_DIR", NIX_LOG_DIR));
     nixStateDir = canonPath(getEnv("NIX_STATE_DIR", NIX_STATE_DIR));
     nixDBPath = getEnv("NIX_DB_DIR", nixStateDir + "/db");
-    nixConfDir = canonPath(getEnv("NIX_CONF_DIR", NIX_CONF_DIR));
+    nixConfDir = canonPath(getEnv("GUIX_CONFIGURATION_DIRECTORY", GUIX_CONFIGURATION_DIRECTORY));
     nixLibexecDir = canonPath(getEnv("NIX_LIBEXEC_DIR", NIX_LIBEXEC_DIR));
     nixBinDir = canonPath(getEnv("NIX_BIN_DIR", NIX_BIN_DIR));
     nixDaemonSocketFile = canonPath(nixStateDir + DEFAULT_SOCKET_PATH);

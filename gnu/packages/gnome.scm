@@ -2,7 +2,7 @@
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
@@ -3840,7 +3840,7 @@ metadata in photo and video files of various formats.")
 (define-public shotwell
   (package
     (name "shotwell")
-    (version "0.22.1")
+    (version "0.23.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
@@ -3848,7 +3848,7 @@ metadata in photo and video files of various formats.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1a9lx9a7p6fgaf838xlw98f73xxyxmg6jmm29830lsl8ynbhq9bk"))))
+                "12imip32mav0zqg1fh4xm6zk4qsgg2435xsyb6ljz47i37zk6kg2"))))
     (build-system glib-or-gtk-build-system)
     (arguments
      `(#:tests? #f ;no "check" target
@@ -3876,7 +3876,7 @@ metadata in photo and video files of various formats.")
        ("libraw" ,libraw)
        ("json-glib" ,json-glib)
        ("rest" ,rest)
-       ("webkitgtk" ,webkitgtk-2.4)
+       ("webkitgtk" ,webkitgtk)
        ("sqlite" ,sqlite)
        ("libsoup" ,libsoup)
        ("libxml2" ,libxml2)

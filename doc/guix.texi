@@ -204,6 +204,7 @@ System Configuration
 Services
 
 * Base Services::               Essential system services.
+* Scheduled Job Execution::     The mcron service.
 * Networking Services::         Network setup, SSH daemon, etc.
 * X Window::                    Graphical display.
 * Desktop Services::            D-Bus and desktop services.
@@ -619,6 +620,31 @@ Upon failure, please email @email{bug-guix@@gnu.org} and attach the
 as well as version numbers of the dependencies (@pxref{Requirements}) in
 your message.
 
+Guix also comes with a whole-system test suite that tests complete
+GuixSD operating system instances.  It can only run on systems where
+Guix is already installed, using:
+
+@example
+make check-system
+@end example
+
+@noindent
+or, again, by defining @code{TESTS} to select a subset of tests to run:
+
+@example
+make check-system TESTS="basic mcron"
+@end example
+
+These system tests are defined in the @code{(gnu tests @dots{})}
+modules.  They work by running the operating systems under test with
+lightweight instrumentation in a virtual machine (VM).  They can be
+computationally intensive or rather cheap, depending on whether
+substitutes are available for their dependencies (@pxref{Substitutes}).
+Some of them require a lot of storage space to hold VM images.
+
+Again in case of test failures, please send @email{bug-guix@@gnu.org}
+all the details.
+
 @node Setting Up the Daemon
 @section Setting Up the Daemon
 
@@ -682,8 +708,13 @@ Bash syntax and the @code{shadow} commands):
 @noindent
 The number of build users determines how many build jobs may run in
 parallel, as specified by the @option{--max-jobs} option
-(@pxref{Invoking guix-daemon, @option{--max-jobs}}).  The
-@code{guix-daemon} program may then be run as @code{root} with the
+(@pxref{Invoking guix-daemon, @option{--max-jobs}}).  To use
+@command{guix system vm} and related commands, you may need to add the
+build users to the @code{kvm} group so they can access @file{/dev/kvm},
+using @code{-G guixbuild,kvm} instead of @code{-G guixbuild}
+(@pxref{Invoking guix system}).
+
+The @code{guix-daemon} program may then be run as @code{root} with the
 following command@footnote{If your machine uses the systemd init system,
 dropping the @file{@var{prefix}/lib/systemd/system/guix-daemon.service}
 file in @file{/etc/systemd/system} will ensure that
@@ -7185,6 +7216,7 @@ declaration.
 
 @menu
 * Base Services::               Essential system services.
+* Scheduled Job Execution::     The mcron service.
 * Networking Services::         Network setup, SSH daemon, etc.
 * X Window::                    Graphical display.
 * Desktop Services::            D-Bus and desktop services.
@@ -7461,6 +7493,100 @@ This assumes that @file{/etc/guix} already contains a signing key pair as
 created by @command{guix archive --generate-key} (@pxref{Invoking guix
 archive}).  If that is not the case, the service will fail to start.
 @end deffn
+
+
+@node Scheduled Job Execution
+@subsubsection Scheduled Job Execution
+
+@cindex cron
+@cindex scheduling jobs
+The @code{(gnu services mcron)} module provides an interface to
+GNU@tie{}mcron, a daemon to run jobs at scheduled times (@pxref{Top,,,
+mcron, GNU@tie{}mcron}).  GNU@tie{}mcron is similar to the traditional
+Unix @command{cron} daemon; the main difference is that it is
+implemented in Guile Scheme, which provides a lot of flexibility when
+specifying the scheduling of jobs and their actions.
+
+The example below defines an operating system that runs the
+@command{updatedb} (@pxref{Invoking updatedb,,, find, Finding Files})
+and the @command{guix gc} commands (@pxref{Invoking guix gc}) daily, as
+well as the @command{mkid} command on behalf of an unprivileged user
+(@pxref{mkid invocation,,, idutils, ID Database Utilities}).  It uses
+gexps to introduce job definitions that are passed to mcron
+(@pxref{G-Expressions}).
+
+@lisp
+(use-modules (guix) (gnu) (gnu services mcron))
+(use-package-modules base idutils)
+
+(define updatedb-job
+  ;; Run 'updatedb' at 3AM every day.  Here we write the
+  ;; job's action as a Scheme procedure.
+  #~(job '(next-hour '(3))
+         (lambda ()
+           (execl (string-append #$findutils "/bin/updatedb")
+                  "updatedb"
+                  "--prunepaths=/tmp /var/tmp /gnu/store"))))
+
+(define garbage-collector-job
+  ;; Collect garbage 5 minutes after midnight every day.
+  ;; The job's action is a shell command.
+  #~(job "5 0 * * *"            ;Vixie cron syntax
+         "guix gc -F 1G"))
+
+(define idutils-jobs
+  ;; Update the index database as user "charlie" at 12:15PM
+  ;; and 19:15PM.  This runs from the user's home directory.
+  #~(job '(next-minute-from (next-hour '(12 19)) '(15))
+         (string-append #$idutils "/bin/mkid src")
+         #:user "charlie"))
+
+(operating-system
+  ;; @dots{}
+  (services (cons (mcron-service (list garbage-collector-job
+                                       updatedb-job
+                                       idutils-job))
+                  %base-services)))
+@end lisp
+
+@xref{Guile Syntax, mcron job specifications,, mcron, GNU@tie{}mcron},
+for more information on mcron job specifications.  Below is the
+reference of the mcron service.
+
+@deffn {Scheme Procedure} mcron-service @var{jobs} [#:mcron @var{mcron2}]
+Return an mcron service running @var{mcron} that schedules @var{jobs}, a
+list of gexps denoting mcron job specifications.
+
+This is a shorthand for:
+@example
+  (service mcron-service-type
+           (mcron-configuration (mcron mcron) (jobs jobs)))
+@end example
+@end deffn
+
+@defvr {Scheme Variable} mcron-service-type
+This is the type of the @code{mcron} service, whose value is an
+@code{mcron-configuration} object.
+
+This service type can be the target of a service extension that provides
+it additional job specifications (@pxref{Service Composition}).  In
+other words, it is possible to define services that provide addition
+mcron jobs to run.
+@end defvr
+
+@deftp {Data Type} mcron-configuration
+Data type representing the configuration of mcron.
+
+@table @asis
+@item @code{mcron} (default: @var{mcron2})
+The mcron package to use.
+
+@item @code{jobs}
+This is a list of gexps (@pxref{G-Expressions}), where each gexp
+corresponds to an mcron job specification (@pxref{Syntax, mcron job
+specifications,, mcron, GNU@tie{}mcron}).
+@end table
+@end deftp
 
 
 @node Networking Services
@@ -10121,12 +10247,14 @@ a list of available debugging commands.
 @end table
 @end table
 
-Note that all the actions above, except @code{build} and @code{init},
-rely on KVM support in the Linux-Libre kernel.  Specifically, the
-machine should have hardware virtualization support, the corresponding
+@quotation Note
+All the actions above, except @code{build} and @code{init},
+can use KVM support in the Linux-libre kernel.  Specifically, if the
+machine has hardware virtualization support, the corresponding
 KVM kernel module should be loaded, and the @file{/dev/kvm} device node
 must exist and be readable and writable by the user and by the
-build users of the daemon.
+build users of the daemon (@pxref{Build Environment Setup}).
+@end quotation
 
 Once you have built, configured, re-configured, and re-re-configured
 your GuixSD installation, you may find it useful to list the operating

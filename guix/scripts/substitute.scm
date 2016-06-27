@@ -94,10 +94,15 @@
 ;;; Code:
 
 (define %narinfo-cache-directory
-  ;; A local cache of narinfos, to avoid going to the network.
-  (or (and=> (getenv "XDG_CACHE_HOME")
-             (cut string-append <> "/guix/substitute"))
-      (string-append %state-directory "/substitute/cache")))
+  ;; A local cache of narinfos, to avoid going to the network.  Most of the
+  ;; time, 'guix substitute' is called by guix-daemon as root and stores its
+  ;; cached data in /var/guix/….  However, when invoked from 'guix challenge'
+  ;; as a user, it stores its cache in ~/.cache.
+  (if (zero? (getuid))
+      (or (and=> (getenv "XDG_CACHE_HOME")
+                 (cut string-append <> "/guix/substitute"))
+          (string-append %state-directory "/substitute/cache"))
+      (string-append (cache-directory) "/substitute")))
 
 (define %allow-unauthenticated-substitutes?
   ;; Whether to allow unchecked substitutes.  This is useful for testing
@@ -501,17 +506,10 @@ indicates that PATH is unavailable at CACHE-URL."
               (value ,(and=> narinfo narinfo->string))))
 
   (let ((file (narinfo-cache-file cache-url path)))
-    (catch 'system-error
-      (lambda ()
-        (mkdir-p (dirname file))
-        (with-atomic-file-output file
-          (lambda (out)
-            (write (cache-entry cache-url narinfo) out))))
-      (lambda args
-        ;; We may not have write access to the local cache when called from an
-        ;; unprivileged process such as 'guix challenge'.
-        (unless (= EACCES (system-error-errno args))
-          (apply throw args)))))
+    (mkdir-p (dirname file))
+    (with-atomic-file-output file
+      (lambda (out)
+        (write (cache-entry cache-url narinfo) out))))
 
   narinfo)
 

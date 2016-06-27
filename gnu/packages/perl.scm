@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5092,7 +5093,7 @@ testing exception-throwing code with about the same amount of typing.")
 (define-public perl-test-harness
   (package
     (name "perl-test-harness")
-    (version "3.35")
+    (version "3.36")
     (source
      (origin
        (method url-fetch)
@@ -5100,7 +5101,7 @@ testing exception-throwing code with about the same amount of typing.")
                            "Test-Harness-" version ".tar.gz"))
        (sha256
         (base32
-         "06l29y1bpizb9vd9g49lgi0wzj1xy4rsk42ahdj3fpgqnvb9wp05"))))
+         "0gmnjss0hjkyiwvgby50nl5nzv254pn7fjqqdysjil21n09nymp7"))))
     (build-system perl-build-system)
     (arguments
      `(#:phases (alist-cons-before

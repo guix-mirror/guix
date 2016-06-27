@@ -3939,6 +3939,70 @@ part of the Prawn PDF generator.")
     ;; for details."
     (license (list license:gpl2 license:gpl3 license:ruby))))
 
+(define-public ruby-puma
+  (package
+    (name "ruby-puma")
+    (version "3.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       ;; Fetch from GitHub because distributed gem does not contain tests.
+       (uri (string-append "https://github.com/puma/puma/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "10svyj2jk949y1dmkxyzipk1ddzl4iz9limrcws1zhpganpvq3j8"))
+       ;; Ignore broken test reported upstream.
+       ;; https://github.com/puma/puma/issues/995
+       (patches (search-patches "ruby-puma-ignore-broken-test.patch"))))
+    (build-system ruby-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'build 'fix-gemspec
+           (lambda _
+             (substitute* "puma.gemspec"
+               (("git ls-files") "find * |sort"))
+             #t)))))
+    (native-inputs
+     `(("ruby-hoe" ,ruby-hoe)
+       ("ruby-rake-compiler" ,ruby-rake-compiler)
+       ("ruby-hoe-git" ,ruby-hoe-git)
+       ("ruby-rack" ,ruby-rack)))
+    (synopsis "Simple, concurrent HTTP server for Ruby/Rack")
+    (description
+     "Puma is a simple, fast, threaded, and highly concurrent HTTP 1.1 server
+for Ruby/Rack applications.  Puma is intended for use in both development and
+production environments.  In order to get the best throughput, it is highly
+recommended that you use a Ruby implementation with real threads like Rubinius
+or JRuby.")
+    (home-page "http://puma.io")
+    (license license:expat)))
+
+(define-public ruby-hoe-git
+  (package
+    (name "ruby-hoe-git")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "hoe-git" version))
+       (sha256
+        (base32
+         "10jmmbjm0lkglwxbn4rpqghgg1ipjxrswm117n50adhmy8yij650"))))
+    (build-system ruby-build-system)
+    (propagated-inputs
+     `(("ruby-hoe" ,ruby-hoe)
+       ("git" ,git)))
+    (synopsis "Hoe plugins for tighter Git integration")
+    (description
+     "This package provides a set of Hoe plugins for tighter Git integration.
+It provides tasks to automate release tagging and pushing and changelog
+generation.")
+    (home-page "http://github.com/jbarnette/hoe-git")
+    (license license:expat)))
+
 (define-public ruby-sequel
   (package
     (name "ruby-sequel")

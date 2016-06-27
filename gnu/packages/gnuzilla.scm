@@ -48,7 +48,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
-  #:use-module (gnu packages yasm)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xdisorg)

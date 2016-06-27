@@ -1681,3 +1681,30 @@ controller, or compare the network bandwidth numbers directly with the disk
 throughput (in the same interval).")
     (home-page "http://dag.wiee.rs/home-made/dstat/")
     (license license:gpl2+)))
+
+(define-public thefuck
+  (package
+    (name "thefuck")
+    (version "3.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/nvbn/thefuck/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0g4s2vkpl0mqhkdkbzib07qr4xf0cq25fvhdhna52290qgd69pwf"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (inputs
+     `(("python-colorama" ,python-colorama)
+       ("python-decorator" ,python-decorator)
+       ("python-psutil" ,python-psutil)
+       ("python-six" ,python-six)))
+    (home-page "https://github.com/nvbn/thefuck")
+    (synopsis "Correct mistyped console command")
+    (description
+     "The Fuck tries to match a rule for a previous, mistyped command, creates
+a new command using the matched rule, and runs it.")
+    (license license:x11)))
