@@ -7767,7 +7767,7 @@ The @code{(gnu services avahi)} provides the following definition.
 @deffn {Scheme Procedure} avahi-service [#:avahi @var{avahi}] @
           [#:host-name #f] [#:publish? #t] [#:ipv4? #t] @
           [#:ipv6? #t] [#:wide-area? #f] @
-          [#:domains-to-browse '()]
+          [#:domains-to-browse '()] [#:debug? #f]
 Return a service that runs @command{avahi-daemon}, a system-wide
 mDNS/DNS-SD responder that allows for service discovery and
 "zero-configuration" host name lookups (see @uref{http://avahi.org/}), and
