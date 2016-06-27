@@ -150,6 +150,27 @@ info --version")
                                 get-string-all)
                              marionette)))
 
+        (test-assert "host name resolution"
+          (match (marionette-eval
+                  '(begin
+                     ;; Wait for nscd or our requests go through it.
+                     (use-modules (gnu services herd))
+                     (start-service 'nscd)
+
+                     (list (getaddrinfo "localhost")
+                           (getaddrinfo #$(operating-system-host-name os))))
+                  marionette)
+            ((((? vector?) ..1) ((? vector?) ..1))
+             #t)
+            (x
+             (pk 'failure x #f))))
+
+        (test-equal "host not found"
+          #f
+          (marionette-eval
+           '(false-if-exception (getaddrinfo "does-not-exist"))
+           marionette))
+
         (test-assert "screendump"
           (begin
             (marionette-control (string-append "screendump " #$output
