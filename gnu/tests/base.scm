@@ -22,10 +22,15 @@
   #:use-module (gnu system grub)
   #:use-module (gnu system file-systems)
   #:use-module (gnu system shadow)
+  #:use-module (gnu system nss)
   #:use-module (gnu system vm)
   #:use-module (gnu services)
+  #:use-module (gnu services base)
+  #:use-module (gnu services dbus)
+  #:use-module (gnu services avahi)
   #:use-module (gnu services mcron)
   #:use-module (gnu services shepherd)
+  #:use-module (gnu services networking)
   #:use-module (guix gexp)
   #:use-module (guix store)
   #:use-module (guix monads)
@@ -33,7 +38,8 @@
   #:use-module (srfi srfi-1)
   #:export (run-basic-test
             %test-basic-os
-            %test-mcron))
+            %test-mcron
+            %test-nss-mdns))
 
 (define %simple-os
   (operating-system
@@ -304,3 +310,140 @@ functionality tests.")
    (name "mcron")
    (description "Make sure the mcron service works as advertised.")
    (value (run-mcron-test name))))
+
+
+;;;
+;;; Avahi and NSS-mDNS.
+;;;
+
+(define %avahi-os
+  (operating-system
+    (inherit %simple-os)
+    (name-service-switch %mdns-host-lookup-nss)
+    (services (cons* (avahi-service #:debug? #t)
+                     (dbus-service)
+                     (dhcp-client-service)        ;needed for multicast
+
+                     ;; Enable heavyweight debugging output.
+                     (modify-services (operating-system-user-services
+                                       %simple-os)
+                       (nscd-service-type config
+                                          => (nscd-configuration
+                                              (inherit config)
+                                              (debug-level 3)
+                                              (log-file "/dev/console")))
+                       (syslog-service-type config
+                                            =>
+                                            (plain-file
+                                             "syslog.conf"
+                                             "*.* /dev/console\n")))))))
+
+(define (run-nss-mdns-test)
+  ;; Test resolution of '.local' names via libc.  Start the marionette service
+  ;; *after* nscd.  Failing to do that, libc will try to connect to nscd,
+  ;; fail, then never try again (see '__nss_not_use_nscd_hosts' in libc),
+  ;; leading to '.local' resolution failures.
+  (mlet* %store-monad ((os -> (marionette-operating-system
+                               %avahi-os
+                               #:requirements '(nscd)
+                               #:imported-modules '((gnu services herd)
+                                                    (guix combinators))))
+                       (run   (system-qemu-image/shared-store-script
+                               os #:graphic? #f)))
+    (define mdns-host-name
+      (string-append (operating-system-host-name os)
+                     ".local"))
+
+    (define test
+      #~(begin
+          (use-modules (gnu build marionette)
+                       (srfi srfi-1)
+                       (srfi srfi-64)
+                       (ice-9 match))
+
+          (define marionette
+            (make-marionette (list #$run)))
+
+          (mkdir #$output)
+          (chdir #$output)
+
+          (test-begin "avahi")
+
+          (test-assert "wait for services"
+            (marionette-eval
+             '(begin
+                (use-modules (gnu services herd))
+
+                (start-service 'nscd)
+
+                ;; XXX: Work around a race condition in nscd: nscd creates its
+                ;; PID file before it is listening on its socket.
+                (let ((sock (socket PF_UNIX SOCK_STREAM 0)))
+                  (let try ()
+                    (catch 'system-error
+                      (lambda ()
+                        (connect sock AF_UNIX "/var/run/nscd/socket")
+                        (close-port sock)
+                        (format #t "nscd is ready~%"))
+                      (lambda args
+                        (format #t "waiting for nscd...~%")
+                        (usleep 500000)
+                        (try)))))
+
+                ;; Wait for the other useful things.
+                (start-service 'avahi-daemon)
+                (start-service 'networking)
+
+                #t)
+             marionette))
+
+          (test-equal "avahi-resolve-host-name"
+            0
+            (marionette-eval
+             '(system*
+               "/run/current-system/profile/bin/avahi-resolve-host-name"
+               "-v" #$mdns-host-name)
+             marionette))
+
+          (test-equal "avahi-browse"
+            0
+            (marionette-eval
+             '(system* "avahi-browse" "-avt")
+             marionette))
+
+          (test-assert "getaddrinfo .local"
+            ;; Wait for the 'avahi-daemon' service and perform a resolution.
+            (match (marionette-eval
+                    '(getaddrinfo #$mdns-host-name)
+                    marionette)
+              (((? vector? addrinfos) ..1)
+               (pk 'getaddrinfo addrinfos)
+               (and (any (lambda (ai)
+                           (= AF_INET (addrinfo:fam ai)))
+                         addrinfos)
+                    (any (lambda (ai)
+                           (= AF_INET6 (addrinfo:fam ai)))
+                         addrinfos)))))
+
+          (test-assert "gethostbyname .local"
+            (match (pk 'gethostbyname
+                       (marionette-eval '(gethostbyname #$mdns-host-name)
+                                        marionette))
+              ((? vector? result)
+               (and (string=? (hostent:name result) #$mdns-host-name)
+                    (= (hostent:addrtype result) AF_INET)))))
+
+
+          (test-end)
+          (exit (= (test-runner-fail-count (test-runner-current)) 0))))
+
+    (gexp->derivation "nss-mdns" test
+                      #:modules '((gnu build marionette)))))
+
+(define %test-nss-mdns
+  (system-test
+   (name "nss-mdns")
+   (description
+    "Test Avahi's multicast-DNS implementation, and in particular, test its
+glibc name service switch (NSS) module.")
+   (value (run-nss-mdns-test))))
