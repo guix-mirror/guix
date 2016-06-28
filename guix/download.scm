@@ -328,7 +328,8 @@ in the store."
                             #:modules '((guix build download)
                                         (guix build utils)
                                         (guix ftp-client)
-                                        (guix base32))
+                                        (guix base32)
+                                        (guix base64))
 
                             ;; Use environment variables and a fixed script
                             ;; name so there's only one script in store for

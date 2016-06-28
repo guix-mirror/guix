@@ -23,9 +23,11 @@
   #:use-module (web http)
   #:use-module ((web client) #:hide (open-socket-for-uri))
   #:use-module (web response)
+  #:use-module (guix base64)
   #:use-module (guix ftp-client)
   #:use-module (guix build utils)
   #:use-module (rnrs io ports)
+  #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
@@ -598,14 +600,22 @@ FILE on success."
         (string>? (version) "2.0.7")))
 
   (define headers
-    '(;; Some web sites, such as http://dist.schmorp.de, would block you if
+    `(;; Some web sites, such as http://dist.schmorp.de, would block you if
       ;; there's no 'User-Agent' header, presumably on the assumption that
       ;; you're a spammer.  So work around that.
       (User-Agent . "GNU Guile")
 
       ;; Some servers, such as https://alioth.debian.org, return "406 Not
       ;; Acceptable" when not explicitly told that everything is accepted.
-      (Accept . "*/*")))
+      (Accept . "*/*")
+
+      ;; Basic authentication, if needed.
+      ,@(match (uri-userinfo uri)
+          ((? string? str)
+           `((Authorization . ,(string-append "Basic "
+                                              (base64-encode
+                                               (string->utf8 str))))))
+          (_ '()))))
 
   (let*-values (((connection)
                  (open-connection-for-uri uri #:timeout timeout))
