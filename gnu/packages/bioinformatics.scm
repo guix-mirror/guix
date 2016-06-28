@@ -2486,7 +2486,7 @@ sequences).")
 (define-public metabat
   (package
     (name "metabat")
-    (version "0.26.1")
+    (version "0.26.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2495,31 +2495,40 @@ sequences).")
               (file-name (string-append name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0vgrhbaxg4dkxyax2kbigak7w0arhqvw0szwp6gd9wmyilc44kfa"))))
+                "1vpfvgsn8wdsv1g7z73zxcncskx7dy7bw5msg1hhibk25ay11pyg"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          (add-after 'unpack 'fix-includes
-                    (lambda _
-                      (substitute* "SConstruct"
-                        (("/include/bam/bam.h")
-                         "/include/samtools/bam.h"))
-                      (substitute* "src/BamUtils.h"
-                        (("^#include \"bam/bam\\.h\"")
-                         "#include \"samtools/bam.h\"")
-                        (("^#include \"bam/sam\\.h\"")
-                         "#include \"samtools/sam.h\""))
-                      (substitute* "src/KseqReader.h"
-                        (("^#include \"bam/kseq\\.h\"")
-                         "#include \"samtools/kseq.h\""))
-                      #t))
+           (lambda _
+             (substitute* "src/BamUtils.h"
+               (("^#include \"bam/bam\\.h\"")
+                "#include \"samtools/bam.h\"")
+               (("^#include \"bam/sam\\.h\"")
+                "#include \"samtools/sam.h\""))
+             (substitute* "src/KseqReader.h"
+               (("^#include \"bam/kseq\\.h\"")
+                "#include \"htslib/kseq.h\""))
+             #t))
          (add-after 'unpack 'fix-scons
-                    (lambda _
-                      (substitute* "SConstruct" ; Do not distribute README
-                        (("^env\\.Install\\(idir_prefix, 'README\\.md'\\)")
-                         ""))
-                      #t))
+            (lambda* (#:key inputs #:allow-other-keys)
+              (substitute* "SConstruct"
+                (("^htslib_dir = 'samtools'")
+                 (string-append "hitslib_dir = '"
+                                (assoc-ref inputs "htslib")
+                                "'"))
+                (("^samtools_dir = 'samtools'")
+                 (string-append "samtools_dir = '"
+                                (assoc-ref inputs "htslib")
+                                "'"))
+                (("^findStaticOrShared\\('bam', hts_lib")
+                 (string-append "findStaticOrShared('bam', '"
+                                (assoc-ref inputs "samtools")
+                                "/lib'"))
+                ;; Do not distribute README.
+                (("^env\\.Install\\(idir_prefix, 'README\\.md'\\)") ""))
+              #t))
          (delete 'configure)
          (replace 'build
                   (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -2529,16 +2538,10 @@ sequences).")
                                      "PREFIX="
                                      (assoc-ref outputs "out"))
                                     (string-append
-                                     "HTSLIB_DIR="
-                                     (assoc-ref inputs "htslib"))
-                                    (string-append
-                                     "SAMTOOLS_DIR="
-                                     (assoc-ref inputs "samtools"))
-                                    (string-append
                                      "BOOST_ROOT="
                                      (assoc-ref inputs "boost"))
                                     "install"))))
-         ;; check and install carried out during build phase
+         ;; Check and install are carried out during build phase.
          (delete 'check)
          (delete 'install))))
     (inputs
