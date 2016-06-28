@@ -211,9 +211,17 @@ exception-handling library.")
                 "0ca2j526n4wlamrxb85y2jrgcv0gf21b3a19rr0gh4rjqkv1581n"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* (find-files "." "tmpDir\\.h")
-                  (("\"/var/tmp/\"")
-                   "\"/tmp/\"")))
+               '(begin
+                  (substitute* (find-files "." "tmpDir\\.h")
+                    (("\"/var/tmp/\"")
+                     "\"/tmp/\""))
+
+                  ;; Install 'ImfStdIO.h'.  Reported at
+                  ;; <https://lists.nongnu.org/archive/html/openexr-devel/2016-06/msg00001.html>
+                  ;; and <https://github.com/openexr/openexr/pull/184>.
+                  (substitute* "IlmImf/Makefile.in"
+                    (("ImfIO\\.h")
+                     "ImfIO.h ImfStdIO.h"))))
               (patches (search-patches "openexr-missing-samples.patch"))))
     (build-system gnu-build-system)
     (arguments
