@@ -322,6 +322,8 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                 ;; passing "-system-sqlite".
                 (delete-file-recursively "src/3rdparty/sqlite")))))
     (build-system gnu-build-system)
+    (propagated-inputs
+     `(("mesa" ,mesa)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("cups" ,cups)
@@ -349,7 +351,6 @@ developers using C++ or QML, a CSS & JavaScript like language.")
        ("libxrender" ,libxrender)
        ("libxslt" ,libxslt)
        ("libxtst" ,libxtst)
-       ("mesa" ,mesa)
        ("mtdev" ,mtdev)
        ("mysql" ,mysql)
        ("nss" ,nss)
@@ -446,6 +447,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (sha256
               (base32
                "1w0jvhgaiddafcms2nv8wl1klg07lncmjwm1zhdw3l6rxi9071sw"))))
+    (propagated-inputs `())
     (native-inputs `(("perl" ,perl)))
     (inputs
      `(("mesa" ,mesa)
