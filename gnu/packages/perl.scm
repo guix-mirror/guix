@@ -988,26 +988,23 @@ options.")
   (package
     (name "perl-config-ini")
     (version "0.025")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append
-             "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Config-INI-"
-             version
-             ".tar.gz"))
-       (sha256
-        (base32
-         "0clphq6a17chvb663fvjnxqvyvh26g03x0fl4bg9vy4ibdnzg2v2"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/R/RJ/RJBS/Config-INI-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0clphq6a17chvb663fvjnxqvyvh26g03x0fl4bg9vy4ibdnzg2v2"))))
     (build-system perl-build-system)
     (inputs
      `(("perl-mixin-linewise" ,perl-mixin-linewise)
        ("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)
        ("perl-sub-exporter" ,perl-sub-exporter)))
-    (home-page
-     "http://search.cpan.org/dist/Config-INI")
+    (home-page "http://search.cpan.org/dist/Config-INI")
     (synopsis "Simple .ini-file format reader and writer")
-    (description "Config::INI provides a module that facilates the reading and
-writing of .ini style configuration files.")
+    (description "@code{Config::INI} is a module that facilates the reading
+and writing of @code{.ini}-style configuration files.")
     (license (package-license perl))))
 
 (define-public perl-context-preserve
@@ -2464,6 +2461,26 @@ programs on systems under which the `which' program wasn't implemented in the
 shell.")
     (home-page (string-append "http://search.cpan.org/~adamk/"
                               "File-Which-" version))
+    (license (package-license perl))))
+
+(define-public perl-file-zglob
+  (package
+    (name "perl-file-zglob")
+    (version "0.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/T/TO/TOKUHIROM/File-Zglob-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "16v61rn0yimpv5kp6b20z2f1c93n5kpsyjvr0gq4w2dc43gfvc8w"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/File-Zglob")
+    (synopsis "Extended Unix style glob functionality")
+    (description "@code{File::Zglob} provides a traditional Unix @code{glob}
+functionality; it returns a list of file names that match the given pattern.
+For instance, it supports the @code{**/*.pm} form.")
     (license (package-license perl))))
 
 (define-public perl-getopt-long-descriptive
