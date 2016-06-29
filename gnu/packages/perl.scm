@@ -2979,6 +2979,31 @@ from various sources.  For instance, it contains all IANA types and the
 knowledge of Apache.")
     (license (package-license perl))))
 
+(define-public perl-mixin-linewise
+  (package
+    (name "perl-mixin-linewise")
+    (version "0.108")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/R/RJ/RJBS/Mixin-Linewise-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1wmfr19w9y8qys7b32mnj1vmps7qwdahqas71a9p62ac8xw0dwkx"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)
+       ("perl-sub-exporter" ,perl-sub-exporter)))
+    (home-page "http://search.cpan.org/dist/Mixin-Linewise")
+    (synopsis "Write your linewise code for handles; this does the rest")
+    (description "It's boring to deal with opening files for IO, converting
+strings to handle-like objects, and all that.  With
+@code{Mixin::Linewise::Readers} and @code{Mixin::Linewise::Writers}, you can
+just write a method to handle handles, and methods for handling strings and
+file names are added for you.")
+    (license (package-license perl))))
+
 (define-public perl-module-build-tiny
   (package
     (name "perl-module-build-tiny")
