@@ -4952,6 +4952,35 @@ Built using @code{Test::Builder}, it was designed to work with other
 @code{Test::Differences}, @code{Test::Exception}, etc.).")
     (license (package-license perl))))
 
+(define-public perl-test-class-most
+  (package
+    (name "perl-test-class-most")
+    (version "0.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/O/OV/OVID/Test-Class-Most-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1zvx9hil0mg0pnb8xfa4m0xgjpvh8s5gnbyprq3xwpdsdgcdwk33"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (inputs
+     `(("perl-test-class" ,perl-test-class)
+       ("perl-test-most" ,perl-test-most)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-mro-compat" ,perl-mro-compat)))
+    (home-page "http://search.cpan.org/dist/Test-Class-Most")
+    (synopsis "Test classes the easy way")
+    (description "@code{Test::Class::Most} provides some more convenience when
+using @code{Test::Class}.")
+    (license (package-license perl))))
+
 (define-public perl-test-cleannamespaces
   (package
     (name "perl-test-cleannamespaces")
