@@ -424,7 +424,7 @@ into separate processes; and more.")
 (define-public blast+
   (package
     (name "blast+")
-    (version "2.2.31")
+    (version "2.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -432,7 +432,7 @@ into separate processes; and more.")
                     version "/ncbi-blast-" version "+-src.tar.gz"))
               (sha256
                (base32
-                "19gq6as4k1jrgsd26158ads6h7v4jca3h4r5dzg1y0m6ya50x5ph"))
+                "14n9jik6vhiwjd3m7bach4xj1pzfn0szbsbyfxybd9l9cc43b6mb"))
               (modules '((guix build utils)))
               (snippet
                '(begin
