@@ -829,7 +829,7 @@ provides an optional IDE-like error list.")
 
 (define-public emms
   (package
-    (name "emms")
+    (name "emacs-emms")
     (version "4.1")
     (source (origin
               (method url-fetch)
