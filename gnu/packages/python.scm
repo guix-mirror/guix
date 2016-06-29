@@ -9664,3 +9664,40 @@ implementation for Python.")
       (propagated-inputs
        `(("python2-ipaddress" ,python2-ipaddress)
          ,@(package-propagated-inputs base))))))
+
+(define-public python-prompt-toolkit
+ (package
+  (name "python-prompt-toolkit")
+  (version "1.0.3")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "https://pypi.python.org/packages/"
+             "8d/de/412f23919929c01e6b55183e124623f705e4b91796d3d2dce2cb53d595ad/"
+             "prompt_toolkit-" version ".tar.gz"))
+      (sha256
+        (base32
+          "18lbmmkyjf509klc3217lq0x863pfzix779zx5kp9lms1iph4pl0"))))
+  (build-system python-build-system)
+  (inputs `(("python-wcwidth" ,python-wcwidth)
+            ("python-pygments" ,python-pygments)))
+  (native-inputs `(("python-six" ,python-six)))
+  (home-page "https://github.com/jonathanslenders/python-prompt-toolkit")
+  (synopsis "Library for building command line interfaces in Python")
+  (description
+    "Prompt-Toolkit is a library for building interactive command line
+interfaces in Python.  It's like GNU Readline but it also features syntax
+highlighting while typing, out-of-the-box multi-line input editing, advanced
+code completion, incremental search, support for Chinese double-width
+characters, mouse support, and auto suggestions.")
+  (license bsd-3)
+  (properties `((python2-variant . ,(delay python2-prompt-toolkit))))))
+
+(define-public python2-prompt-toolkit
+  (let ((base (package-with-python2 (strip-python2-variant python-prompt-toolkit))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
