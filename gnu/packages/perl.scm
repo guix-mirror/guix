@@ -984,6 +984,32 @@ some enhancements such as here-documents, C-style comments, and multiline
 options.")
     (license (package-license perl))))
 
+(define-public perl-config-ini
+  (package
+    (name "perl-config-ini")
+    (version "0.025")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://cpan.metacpan.org/authors/id/R/RJ/RJBS/Config-INI-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0clphq6a17chvb663fvjnxqvyvh26g03x0fl4bg9vy4ibdnzg2v2"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-mixin-linewise" ,perl-mixin-linewise)
+       ("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)
+       ("perl-sub-exporter" ,perl-sub-exporter)))
+    (home-page
+     "http://search.cpan.org/dist/Config-INI")
+    (synopsis "Simple .ini-file format reader and writer")
+    (description "Config::INI provides a module that facilates the reading and
+writing of .ini style configuration files.")
+    (license (package-license perl))))
+
 (define-public perl-context-preserve
   (package
     (name "perl-context-preserve")
