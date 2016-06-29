@@ -941,6 +941,29 @@ light user interface.")
     (home-page "http://www.gnu.org/software/emms/")
     (license license:gpl3+)))
 
+(define-public emacs-emms-player-mpv
+  (package
+    (name "emacs-emms-player-mpv")
+    (version "0.0.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/dochang/emms-player-mpv/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01wj410dpx25b3i8781i2j9c6nlvzvvphy9qgh7zfpmyz6a3wsm4"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emms" ,emms)))
+    (home-page "https://github.com/dochang/emms-player-mpv/")
+    (synopsis "Mpv support for EMMS")
+    (description
+     "This package provides an EMMS player that uses mpv.  It supports pause
+and seeking.")
+    (license license:gpl3+)))
+
 
 ;;;
 ;;; Miscellaneous.
