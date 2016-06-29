@@ -183,7 +183,7 @@ without requiring the source code to be rewritten.")
            (files '("share/guile/site/2.0")))
           (search-path-specification
            (variable "GUILE_LOAD_COMPILED_PATH")
-           (files '("lib/guile/2.0/ccache"
+           (files '("lib/guile/2.0/site-ccache"
                     "share/guile/site/2.0")))))
 
    (synopsis "Scheme implementation intended especially for extensions")
@@ -226,7 +226,7 @@ without requiring the source code to be rewritten.")
             (files '("share/guile/site/2.2")))
            (search-path-specification
             (variable "GUILE_LOAD_COMPILED_PATH")
-            (files '("lib/guile/2.2/ccache"
+            (files '("lib/guile/2.2/site-ccache"
                      "share/guile/site/2.2")))))))
 
 (define-public guile-for-guile-emacs
