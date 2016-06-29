@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4918,6 +4919,37 @@ screen size, and retrieval/modification of the control characters.")
     (description "Test::Base gives a way to trivially write your own test
 framework base class.  It concentrates on offering reusable data driven
 patterns, so that you can write tests with a minimum of code.")
+    (license (package-license perl))))
+
+(define-public perl-test-class
+  (package
+    (name "perl-test-class")
+    (version "0.50")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Test-Class-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0l0kk5jvxjkic2jkf1r7v41irb344aasnzr3f5ygjgxgiknm9489"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (inputs
+     `(("perl-module-runtime" ,perl-module-runtime)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (home-page "http://search.cpan.org/dist/Test-Class")
+    (synopsis "Easily create test classes in an xUnit/JUnit style")
+    (description "@code{Test::Class} provides a simple way of creating classes
+and objects to test your code in an xUnit style.
+
+Built using @code{Test::Builder}, it was designed to work with other
+@code{Test::Builder} based modules (@code{Test::More},
+@code{Test::Differences}, @code{Test::Exception}, etc.).")
     (license (package-license perl))))
 
 (define-public perl-test-cleannamespaces
