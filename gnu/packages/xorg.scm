@@ -4631,7 +4631,17 @@ protocol and arbitrary X extension protocol.")
           (base32
             "0c3563kw9fg15dpgx4dwvl12qz6sdqdns1pxa574hc7i5m42mman"))))
     (build-system gnu-build-system)
-    (propagated-inputs
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-mkfontdir
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/mkfontdir")
+               `("PATH" ":" prefix
+                 (,(string-append (assoc-ref inputs "mkfontscale")
+                                  "/bin")))))))))
+    (inputs
       `(("mkfontscale" ,mkfontscale)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
