@@ -63,6 +63,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages less)
   #:use-module (gnu packages lisp)
+  #:use-module (gnu packages logging)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages xorg)
@@ -644,10 +645,7 @@ interfaces.")
     (build-system cmake-build-system)
     (arguments
      ;; TODO: Build HTML user documentation and install separately.
-     ;; XXX: Use the embedded "miniglog" as a replacement for
-     ;; <https://github.com/google/glog>.  TODO: Use Glog when it's available.
-     '(#:configure-flags '("-DMINIGLOG=ON"
-                           "-DBUILD_EXAMPLES=OFF"
+     '(#:configure-flags '("-DBUILD_EXAMPLES=OFF"
                            "-DBUILD_SHARED_LIBS=ON")
 
        #:phases (modify-phases %standard-phases
@@ -665,6 +663,7 @@ interfaces.")
        ("blas" ,openblas)
        ("lapack" ,lapack)
        ("suitesparse" ,suitesparse)
+       ("glog" ,glog)
        ("gflags" ,gflags)))
     (synopsis "C++ library for solving large optimization problems")
     (description
