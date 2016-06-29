@@ -4136,6 +4136,29 @@ up inheritance from those modules at the same time.")
 directory specifications in a cross-platform manner.")
     (license (package-license perl))))
 
+(define-public perl-perlio-utf8_strict
+  (package
+    (name "perl-perlio-utf8-strict")
+    (version "0.006")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/L/LE/LEONT/PerlIO-utf8_strict-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0qnmiflirfq10jkmrxyy81ch6hzyndfzxqf8maif0fy44kk1004q"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (home-page
+     "http://search.cpan.org/dist/PerlIO-utf8_strict")
+    (synopsis "Fast and correct UTF-8 IO")
+    (description "@code{PerlIO::utf8_strict} provides a fast and correct UTF-8
+PerlIO layer.  Unlike Perl's default @code{:utf8} layer it checks the input
+for correctness.")
+    (license (package-license perl))))
+
 (define-public perl-pod-coverage
   (package
     (name "perl-pod-coverage")
