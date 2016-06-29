@@ -2792,6 +2792,30 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
 allowing data to be efficiently communicated between processes.")
     (license (package-license perl))))
 
+(define-public perl-ipc-system-simple
+  (package
+    (name "perl-ipc-system-simple")
+    (version "1.25")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/P/PJ/PJF/IPC-System-Simple-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0fsdb81shjj4hifyyzvj7vpkhq5jrfhlcpw2xbjfi1mqz8fsmdpi"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/IPC-System-Simple")
+    (synopsis "Run commands simply, with detailed diagnostics")
+    (description "Calling Perl's in-built @code{system} function is easy,
+determining if it was successful is hard.  Let's face it, @code{$?} isn't the
+nicest variable in the world to play with, and even if you do check it,
+producing a well-formatted error string takes a lot of work.
+
+@code{IPC::System::Simple} takes the hard work out of calling external
+commands.")
+    (license (package-license perl))))
+
 (define-public perl-json
   (package
     (name "perl-json")
