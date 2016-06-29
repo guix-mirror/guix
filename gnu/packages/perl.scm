@@ -2530,6 +2530,29 @@ vaguely inspired by John Ousterhout's Tk_ParseArgv.")
                               "Getopt-Tabular-" version))
     (license (package-license perl))))
 
+(define-public perl-guard
+  (package
+    (name "perl-guard")
+    (version "1.023")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/Guard-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1p6i9mfmbs9cw40jqdv71ihv2xfi0vvlv8bdv2810gf93zwxvi1l"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Guard")
+    (synopsis "Safe cleanup blocks implemented as guards")
+    (description "@code{Guard} implements so-called @dfn{guards}.  A guard is
+something (usually an object) that \"guards\" a resource, ensuring that it is
+cleaned up when expected.
+
+Specifically, this module supports two different types of guards: guard
+objects, which execute a given code block when destroyed, and scoped guards,
+which are tied to the scope exit.")
+    (license (package-license perl))))
+
 (define-public perl-hash-merge
   (package
     (name "perl-hash-merge")
