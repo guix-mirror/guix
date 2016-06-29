@@ -5632,15 +5632,15 @@ can combine fields into a CSV string and parse a CSV string into fields.")
 (define-public perl-text-diff
   (package
     (name "perl-text-diff")
-    (version "1.41")
+    (version "1.44")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/O/OV/OVID/"
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
                            "Text-Diff-" version ".tar.gz"))
        (sha256
         (base32
-         "1ynjsa4sr1yvyh65sdfvahaafglibz70j8b6rj01cg1iisj50zx6"))))
+         "041v92zla2acdc433f47giridf6p820sdczs7x5d71fhsyza1xsp"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-algorithm-diff" ,perl-algorithm-diff)))
