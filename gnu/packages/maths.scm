@@ -658,12 +658,13 @@ interfaces.")
                       #t)))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glog" ,glog)))                           ;for #include <glog/glog.h>
     (inputs
      `(("eigen" ,eigen)
        ("blas" ,openblas)
        ("lapack" ,lapack)
        ("suitesparse" ,suitesparse)
-       ("glog" ,glog)
        ("gflags" ,gflags)))
     (synopsis "C++ library for solving large optimization problems")
     (description
