@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,8 +22,10 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages))
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages autotools))
 
 (define-public log4cpp
   (package
@@ -45,3 +48,43 @@ IDSA and other destinations.  It is modeled after the Log4j Java library,
 staying as close to their API as is reasonable.")
     (home-page "http://log4cpp.sourceforge.net/")
     (license license:lgpl2.1+)))
+
+(define-public glog
+  (package
+    (name "glog")
+    (version "0.3.4")
+    (home-page "https://github.com/google/glog")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url home-page)
+                    (commit (string-append "v" version))))
+              (sha256
+               (base32
+                "0ym5g15m7c8kjfr2c3zq6bz08ghin2d1r1nb6v2vnkfh1vn945x1"))
+              (file-name (string-append name "-" version "-checkout"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)                             ;for tests
+       ("autoconf" ,(autoconf-wrapper))
+       ("automake" ,automake)
+       ("libtool" ,libtool)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-before 'configure 'add-automake-files
+                    (lambda _
+                      ;; The 'test-driver' file is a dangling symlink to
+                      ;; /usr/share/automake; replace it.  We can't just run
+                      ;; 'automake -ac' because it complains about version
+                      ;; mismatch, so run the whole thing.
+                      (delete-file "test-driver")
+                      (delete-file "configure")   ;it's read-only
+                      (zero? (system* "autoreconf" "-vfi")))))))
+    (synopsis "C++ logging library")
+    (description
+     "Google glog is a library that implements application-level logging.
+This library provides logging APIs based on C++-style streams and various
+helper macros.  You can log a message by simply streaming things to log at a
+particular severity level.  It allows logging to be controlled from the
+command line.")
+    (license license:bsd-3)))
