@@ -2244,6 +2244,32 @@ singular and eigenvalue decompositions, as well as for principal component
 analysis of large sparse or dense matrices.")
     (license (list license:gpl2+ license:gpl3+))))
 
+(define-public r-glmnet
+  (package
+   (name "r-glmnet")
+   (version "2.0-5")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (cran-uri "glmnet" version))
+     (sha256
+      (base32
+       "1cbpzmbv837fvq88rgn6mgzgr9f1wqp9fg8gh2kkmngvr1957a9c"))))
+   (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
+   (propagated-inputs
+    `(("r-foreach" ,r-foreach)))
+   (home-page "http://www.jstatsoft.org/v33/i01")
+   (synopsis "Lasso and elastic-net regularized generalized linear models")
+   (description
+    "The glmnet package provides efficient procedures for fitting the entire
+lasso or elastic-net regularization path for linear and Poisson regression, as
+well as logistic, multinomial, Cox, multiple-response Gaussian and grouped
+multinomial models.  The algorithm uses cyclical coordinate descent in a
+path-wise fashion.")
+   (license license:gpl2+)))
+
 (define-public r-pkgmaker
   (package
     (name "r-pkgmaker")
