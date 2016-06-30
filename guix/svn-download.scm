@@ -41,8 +41,10 @@
 (define-record-type* <svn-reference>
   svn-reference make-svn-reference
   svn-reference?
-  (url      svn-reference-url)                    ; string
-  (revision svn-reference-revision))              ; number
+  (url       svn-reference-url)                    ; string
+  (revision  svn-reference-revision)               ; number
+  (user-name svn-reference-user-name (default #f))
+  (password  svn-reference-password (default #f)))
 
 (define (subversion-package)
   "Return the default Subversion package."
@@ -62,7 +64,9 @@ HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if #f."
         (svn-fetch '#$(svn-reference-url ref)
                    '#$(svn-reference-revision ref)
                    #$output
-                   #:svn-command (string-append #+svn "/bin/svn"))))
+                   #:svn-command (string-append #+svn "/bin/svn")
+                   #:user-name #$(svn-reference-user-name ref)
+                   #:password #$(svn-reference-password ref))))
 
   (mlet %store-monad ((guile (package->derivation guile system)))
     (gexp->derivation (or name "svn-checkout") build
