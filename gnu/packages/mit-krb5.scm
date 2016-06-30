@@ -51,9 +51,9 @@
        ;; Likewise with tests.
        #:parallel-tests? #f
 
-       ;; XXX: On i686, 'kdb5_util' hangs on an fcntl/F_SETLKW call while
-       ;; running the tests in 'src/tests'.
-       #:tests? ,(not (string=? (%current-system) "i686-linux"))
+       ;; XXX: On 32-bit systems, 'kdb5_util' hangs on an fcntl/F_SETLKW call
+       ;; while running the tests in 'src/tests'.
+       #:tests? ,(string=? (%current-system) "x86_64-linux")
 
        #:phases
        (modify-phases %standard-phases
