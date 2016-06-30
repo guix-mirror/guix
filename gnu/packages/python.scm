@@ -9261,7 +9261,8 @@ wide-character codes.  It is useful for those implementing a terminal emulator,
 or programs that carefully produce output to be interpreted by one.  It is a
 Python implementation of the @code{wcwidth} and @code{wcswidth} C functions
 specified in POSIX.1-2001 and POSIX.1-2008.")
-  (license license:expat)))
+  (license license:expat)
+  (properties `((python2-variant . ,(delay python2-wcwidth))))))
 
 (define-public python2-wcwidth
   (package
