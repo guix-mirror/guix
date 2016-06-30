@@ -42,37 +42,36 @@
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-replace
-        'configure
-        (lambda _ (zero? (system* "make" "defconfig")))
-        (alist-replace
-         'check
-         (lambda _
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _ (zero? (system* "make" "defconfig"))))
+         (replace 'check
+           (lambda _
            (substitute* '("testsuite/du/du-s-works"
-                          "testsuite/du/du-works")
-             (("/bin") "/etc"))  ; there is no /bin but there is a /etc
+                           "testsuite/du/du-works")
+               (("/bin") "/etc"))  ; there is no /bin but there is a /etc
 
            ;; There is no /usr/bin or /bin - replace it with /gnu/store
            (substitute* "testsuite/cpio.tests"
-              (("/usr/bin") (%store-directory))
-              (("usr") (car (filter (negate string-null?)
-                                    (string-split (%store-directory) #\/)))))
+               (("/usr/bin") (%store-directory))
+               (("usr") (car (filter (negate string-null?)
+                                       (string-split (%store-directory) #\/)))))
 
            (substitute* "testsuite/date/date-works-1"
-             (("/bin/date") (which "date")))
+               (("/bin/date") (which "date")))
 
            ;; The pidof tests assume that pid 1 is called "init" but that is not
            ;; true in guix build environment
            (substitute* "testsuite/pidof.tests"
-             (("-s init") "-s $(cat /proc/1/comm)"))
+               (("-s init") "-s $(cat /proc/1/comm)"))
 
            (substitute* "testsuite/grep.tests"
-             ;; The subject of this test is buggy.  It is known by upstream (fixed in git)
-             ;; So mark it with SKIP_KNOWN_BUGS like the others.
-             ;; Presumably it wasn't known at the time of release ...
-             ;; (It is strange that they release software which they know to have bugs)
-             (("testing \"grep -w \\^str doesn't match str not at the beginning\"")
-              "test x\"$SKIP_KNOWN_BUGS\" = x\"\" && testing \"grep -w ^str doesn't match str not at the beginning\""))
+               ;; The subject of this test is buggy.  It is known by upstream (fixed in git)
+               ;; So mark it with SKIP_KNOWN_BUGS like the others.
+               ;; Presumably it wasn't known at the time of release ...
+               ;; (It is strange that they release software which they know to have bugs)
+               (("testing \"grep -w \\^str doesn't match str not at the beginning\"")
+               "test x\"$SKIP_KNOWN_BUGS\" = x\"\" && testing \"grep -w ^str doesn't match str not at the beginning\""))
 
            ;; This test cannot possibly pass.
            ;; It is trying to test that "which ls" returns "/bin/ls" when PATH is not set.
@@ -84,16 +83,14 @@
                            ;; "V=1"
                            "SKIP_KNOWN_BUGS=1"
                            "SKIP_INTERNET_TESTS=1"
-                           "check")))
-         (alist-replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (zero?
-               (system* "make"
-                        (string-append "CONFIG_PREFIX=" out)
-                        "install"))))
-          %standard-phases)))))
+                           "check"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero?
+                (system* "make"
+                         (string-append "CONFIG_PREFIX=" out)
+                         "install"))))))))
     (native-inputs `(("perl" ,perl) ; needed to generate the man pages (pod2man)
                      ;; The following are needed by the tests.
                      ("inetutils" ,inetutils)
