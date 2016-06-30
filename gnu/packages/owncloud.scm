@@ -41,7 +41,20 @@
        (uri (string-append "https://download.owncloud.com/desktop/stable/"
                            "owncloudclient-" version ".tar.xz"))
        (sha256
-        (base32 "0m0pxv12w72qqgxim9fh8w3bgkgnhpjyay8ldll3nnzq1jmhk09n"))))
+        (base32 "0m0pxv12w72qqgxim9fh8w3bgkgnhpjyay8ldll3nnzq1jmhk09n"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; only allows bundled libcrashreporter-qt
+           (delete-file-recursively "src/3rdparty/libcrashreporter-qt")
+           ;; we already package qtkeychain and sqlite
+           (delete-file-recursively "src/3rdparty/qtkeychain")
+           (delete-file-recursively "src/3rdparty/sqlite3")
+           ;; qjson is packaged, qprogessindicator, qlockedfile, qtokenizer and
+           ;; qtsingleapplication have not yet been packaged, but all are
+           ;; explicitly used from the 3rdparty folder during build.
+           ;; We can also remove the macgoodies folder
+           (delete-file-recursively "src/3rdparty/qtmacgoodies")))))
     (build-system cmake-build-system)
     (arguments
      `(#:phases
