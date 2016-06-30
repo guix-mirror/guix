@@ -709,7 +709,7 @@ and to return information on pronunciations, meanings and synonyms.")
 (define-public libreoffice
   (package
     (name "libreoffice")
-    (version "5.0.5.2")
+    (version "5.1.4.2")
     (source
      (origin
       (method url-fetch)
@@ -718,7 +718,7 @@ and to return information on pronunciations, meanings and synonyms.")
           "http://download.documentfoundation.org/libreoffice/src/"
           (version-prefix version 3) "/libreoffice-" version ".tar.xz"))
       (sha256 (base32
-               "120vcxpxzs0za76fyfry281ysv6d1ianb37d1yq8py8chkdjkrqy"))))
+               "11c30y9gvsy5h3nh9pnciq57gi99plrmr6qp8hhdk2l5xmwlmrfa"))))
     (build-system gnu-build-system)
     (native-inputs
      `(;; autoreconf is run by the LibreOffice build system, since after
@@ -730,7 +730,7 @@ and to return information on pronunciations, meanings and synonyms.")
        ("cppunit" ,cppunit)
        ("flex" ,flex)
        ("pkg-config" ,pkg-config)
-       ("python" ,python)
+       ("python" ,python-wrapper)
        ("which" ,which)))
     (inputs
      `(("bluez" ,bluez)
@@ -851,6 +851,8 @@ and to return information on pronunciations, meanings and synonyms.")
           "--disable-coinmp"
           "--disable-firebird-sdbc" ; embedded firebird
           "--disable-gltf"
+          "--without-doxygen"
+          "--disable-gtk3"
           "--disable-liblangtag")))
     (home-page "https://www.libreoffice.org/")
     (synopsis "Office suite")
