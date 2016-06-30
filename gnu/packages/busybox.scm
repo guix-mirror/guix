@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 John Darrington  <jmd@gnu.org>
+;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,15 +30,15 @@
 (define-public busybox
   (package
     (name "busybox")
-    (version "1.22.1")
+    (version "1.25.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.busybox.net/downloads/" name "-"
+                    "https://www.busybox.net/downloads/" name "-"
                     version ".tar.bz2"))
               (sha256
                (base32
-                "12v7nri79v8gns3inmz4k24q7pcnwi00hybs0wddfkcy1afh42xf"))))
+                "1z52mh6prhd6v47qryz4rvng5r1z0am6masrnigq06zfhmlf03ss"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
@@ -96,11 +97,12 @@
     (native-inputs `(("perl" ,perl) ; needed to generate the man pages (pod2man)
                      ;; The following are needed by the tests.
                      ("inetutils" ,inetutils)
+                     ("which" ,(@ (gnu packages base) which))
                      ("zip" ,zip)))
     (synopsis "Many common UNIX utilities in a single executable")
     (description "BusyBox combines tiny versions of many common UNIX utilities
 into a single small executable.  It provides a fairly complete environment for
 any small or embedded system.")
-    (home-page "http://www.busybox.net")
+    (home-page "https://www.busybox.net")
     ;; Some files are gplv2+
     (license gpl2)))
