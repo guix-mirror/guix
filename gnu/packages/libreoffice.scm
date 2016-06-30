@@ -94,14 +94,14 @@ their dependencies automatically upon calculation.")
 (define-public orcus
   (package
     (name "orcus")
-    (version "0.7.1")
+    (version "0.9.2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "http://kohei.us/files/" name "/src/lib"
                           name "-" version ".tar.xz"))
       (sha256 (base32
-               "0hva4qalg3dk6n1118ncr5fy8cqnj2f7fwldw7aa04124rj6p104"))))
+               "170racjz7s7yxza722hxsqc12788w57qnp6x6j2692pzp3qzjjfx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
