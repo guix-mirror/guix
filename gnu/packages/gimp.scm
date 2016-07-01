@@ -130,6 +130,7 @@ buffers.")
               (uri (string-append "http://download.gimp.org/pub/gimp/v"
                                   (version-major+minor version)
                                   "/gimp-" version ".tar.bz2"))
+              (patches (search-patches "gimp-CVE-2016-4994.patch"))
               (sha256
                (base32
                 "1dsgazia9hmab8cw3iis7s69dvqyfj5wga7ds7w2q5mms1xqbqwm"))))
