@@ -9700,3 +9700,30 @@ the PNG, JPEG, JPEG 2000, and GIF formats.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
+
+(define-public python-alabaster
+  (package
+    (name "python-alabaster")
+    (version "0.7.8")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "alabaster" version))
+              (sha256
+               (base32
+                "1zqz9hsvnmpjklmir6g7rxlv2fslrgsnwb91r9sgz4n1zja1pjx1"))))
+    (build-system python-build-system)
+    (synopsis "Default theme for the Sphinx documentation system")
+    (description "Alabaster is a responsive and configurable theme for the
+Sphinx documentation system.  It is compatible with Python 2 and 3, and it is
+the default Sphinx theme.")
+    (home-page "https://github.com/bitprophet/alabaster")
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-alabaster))))))
+
+(define-public python2-alabaster
+  (let ((base (package-with-python2 (strip-python2-variant python-alabaster))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
