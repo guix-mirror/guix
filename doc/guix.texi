@@ -13,6 +13,7 @@
 Copyright @copyright{} 2012, 2013, 2014, 2015, 2016 Ludovic Courtès@*
 Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@*
 Copyright @copyright{} 2013 Nikita Karetnikov@*
+Copyright @copyright{} 2014, 2015, 2016 Alex Kost@*
 Copyright @copyright{} 2015, 2016 Mathieu Lirzin@*
 Copyright @copyright{} 2014 Pierre-Antoine Rault@*
 Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
@@ -1207,6 +1208,24 @@ for Chinese languages:
 @example
 guix package -i font-adobe-source-han-sans:cn
 @end example
+
+Older programs such as @command{xterm} do not use Fontconfig and instead
+rely on server-side font rendering.  Such programs require to specify a
+full name of a font using XLFD (X Logical Font Description), like this:
+
+@example
+-*-dejavu sans-medium-r-normal-*-*-100-*-*-*-*-*-1
+@end example
+
+To be able to use such full names for the TrueType fonts installed in
+your Guix profile, you need to extend the font path of the X server:
+
+@example
+xset +fp ~/.guix-profile/share/fonts/truetype
+@end example
+
+After that, you can run @code{xlsfonts} (from @code{xlsfonts} package)
+to make sure your TrueType fonts are listed there.
 
 @subsection X.509 Certificates
 
