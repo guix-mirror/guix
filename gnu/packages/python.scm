@@ -2677,22 +2677,33 @@ reStructuredText.")
 (define-public python-sphinx
   (package
     (name "python-sphinx")
-    (version "1.2.3")
+    (version "1.4.4")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/S/Sphinx/Sphinx-"
-             version ".tar.gz"))
+       (uri (pypi-uri "Sphinx" version))
        (sha256
         (base32
-         "011xizm3jnmf4cvs5i6kgf6c5nn046h79i8j0vd0f27yw9j3p4wl"))))
+         "185zklh44fhrwp1dg6251g3w6zmssh5jzvbz8pvmkg9l6wvxdzry"))))
     (build-system python-build-system)
     (inputs
-     `(("python-setuptools" ,python-setuptools)
-       ("python-jinja2" ,python-jinja2)
+     `(
+       ("python-alabaster" ,python-alabaster)
+       ("python-babel" ,python-babel)
        ("python-docutils" ,python-docutils)
-       ("python-pygments" ,python-pygments)))
+       ("python-imagesize" ,python-imagesize)
+       ("python-jinja2" ,python-jinja2)
+       ("python-pygments" ,python-pygments)
+       ("python-pytz" ,python-pytz)
+       ("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)))
+
+    ;; Several packages that use Sphinx want to use these propagated
+    ;; dependencies when using Sphinx.  Rather than add them to all the Sphinx
+    ;; users, we propagate them from Sphinx.
+    (propagated-inputs
+     `(("python-pytz" ,python-pytz)
+       ("python-snowballstemmer" ,python-snowballstemmer)))
     (home-page "http://sphinx-doc.org/")
     (synopsis "Python documentation generator")
     (description "Sphinx is a tool that makes it easy to create documentation
