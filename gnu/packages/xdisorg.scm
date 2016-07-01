@@ -914,7 +914,7 @@ demos.  It also acts as a nice screen locker.")
 (define-public rofi
   (package
     (name "rofi")
-    (version "1.0.1")
+    (version "1.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/DaveDavenport/rofi/"
@@ -922,7 +922,7 @@ demos.  It also acts as a nice screen locker.")
                                   version "/rofi-" version ".tar.xz"))
               (sha256
                (base32
-                "01jxml9vk4cw7pngpan7dipmb98s6ibh6f0023lw3hbgxy650637"))))
+                "1l8vl0mh7i0b1ycifqpg6392f5i4qxlv003m126skfk6fnlfq8hn"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
