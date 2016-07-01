@@ -8308,13 +8308,13 @@ commands into documents, helping you to keep your command examples up to date.")
 (define-public python-sphinx-repoze-autointerface
   (package
     (name "python-sphinx-repoze-autointerface")
-    (version "0.7.1")
+    (version "0.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "repoze.sphinx.autointerface" version))
               (sha256
                (base32
-                "016mv3wbylw278wl7z33y2liyra8ljp08zq1g0anzadh1an5zvwp"))))
+                "08ycivzf7bh4a1zcyp31hbyqs1b2c9r26raa3vxjwwmbfqr3iw4f"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-docutils" ,python-docutils)
