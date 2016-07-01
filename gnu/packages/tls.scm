@@ -6,7 +6,7 @@
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;

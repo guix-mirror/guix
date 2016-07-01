@@ -16,7 +16,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2016 Rodger Fox <thylakoid@openmailbox.org>
 ;;; Copyright © 2016 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
-;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>

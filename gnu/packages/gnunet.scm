@@ -3,7 +3,6 @@
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Ni* Gillmann <ng@niasterisk.space>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>

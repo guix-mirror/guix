@@ -5,7 +5,6 @@
 ;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
-;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;; Copyright © 2016 Chris Marusich <cmmarusich@gmail.com>
 ;;; Copyright © 2015, 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 humanitiesNerd <catonano@gmail.com>

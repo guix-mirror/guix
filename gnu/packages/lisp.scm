@@ -3,7 +3,7 @@
 ;;; Copyright © 2015 Taylan Ulrich Bayırlı/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
-;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
