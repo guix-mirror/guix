@@ -22,6 +22,7 @@
 ;;; Copyright © 2016 Hartmut Goebel <h.goebel@crazy-compilers.com>
 ;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
+;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -4487,6 +4488,30 @@ features useful for text console applications.")
 
 (define-public python2-urwid
   (package-with-python2 python-urwid))
+
+(define-public python-urwidtrees
+  (package
+    (name "python-urwidtrees")
+    (version "1.0.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "urwidtrees" version))
+        (sha256
+          (base32
+            "1zcvy12s7h3fazf33d6y7b4v19p8hg95xqwhqlmw6jz9fq76v9h8"))))
+    (build-system python-build-system)
+    (arguments
+     '(#:tests? #f)) ; no tests
+    (inputs `(("python-urwid" ,python-urwid)))
+    (home-page "https://github.com/pazz/urwidtrees")
+    (synopsis "Tree widgets for urwid")
+    (description "Urwidtrees is a Widget Container API for the @code{urwid}
+toolkit.  Use it to build trees of widgets.")
+    (license gpl3+)))
+
+(define-public python2-urwidtrees
+  (package-with-python2 python-urwidtrees))
 
 (define-public python-dbus
   (package
