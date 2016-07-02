@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
+;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1705,3 +1706,34 @@ throughput (in the same interval).")
      "The Fuck tries to match a rule for a previous, mistyped command, creates
 a new command using the matched rule, and runs it.")
     (license license:x11)))
+
+(define-public di
+  (package
+    (name "di")
+    (version "4.42")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
+       (sha256
+        (base32 "1i6m9zdnidn8268q1lz9fd8payk7s4pgwh5zlam9rr4dy6h6a67n"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; Obscure test failures.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'setup-environment
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "CC" "gcc")
+             (setenv "prefix" (assoc-ref outputs "out"))
+             #t)))
+       #:make-flags (list "--environment-overrides")))
+    (home-page "https://www.gentoo.com/di/")
+    (synopsis "Advanced df like disk information utility")
+    (description
+     "'di' is a disk information utility, displaying everything
+(and more) that your @code{df} command does.  It features the ability to
+display your disk usage in whatever format you prefer.  It is designed to be
+highly portable.  Great for heterogenous networks.")
+    (license license:zlib)))
