@@ -2640,6 +2640,31 @@ dependencies for CPAN distributions.  These dependencies get bundled into the
 inc directory within a distribution and are used by Makefile.PL or Build.PL.")
     (license asl2.0)))
 
+(define-public perl-io-captureoutput
+  (package
+    (name "perl-io-captureoutput")
+    (version "1.1104")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DA/DAGOLDEN/IO-CaptureOutput-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0c437zvzpqi8f0h3nmblwdi2bvsb92b7g30fndr7my9qnky35izw"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/IO-CaptureOutput")
+    (synopsis "Capture STDOUT and STDERR from Perl code, subprocesses or XS")
+    (description "@code{IO::CaptureOutput} provides routines for capturing
+@code{STDOUT} and @code{STDERR} from perl subroutines, forked system
+calls (e.g. @code{system()}, @code{fork()}) and from XS or C modules.
+
+This module is no longer recommended by its maintainer.  Users are advised to
+try @code{Capture::Tiny} instead.")
+    (license (package-license perl))))
+
 (define-public perl-io-interactive
   (package
     (name "perl-io-interactive")
