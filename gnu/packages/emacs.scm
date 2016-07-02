@@ -561,6 +561,31 @@ operations.")
 support for Git-SVN.")
     (license license:gpl3+)))
 
+(define-public emacs-magit-popup
+  (package
+    (name "emacs-magit-popup")
+    (version (package-version magit))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://raw.githubusercontent.com/magit/magit/"
+                    version "/lisp/magit-popup.el"))
+              (file-name (string-append "magit-popup-" version ".el"))
+              (sha256
+               (base32
+                "144nl7j5mn86ccan6qxgg40bsxpkbc83vwnhd5y657gqki74972r"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/magit/magit")
+    (synopsis "Define prefix-infix-suffix command combos")
+    (description
+     "This library implements a generic interface for toggling switches and
+setting options and then invoking an Emacs command which does something with
+these arguments.  The prototypical use is for the command to call an external
+process, passing on the arguments as command line arguments.")
+    (license license:gpl3+)))
+
 (define-public haskell-mode
   (package
     (name "haskell-mode")
