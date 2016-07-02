@@ -168,7 +168,7 @@
        "http://x.cs.pu.edu.tw/"
        "ftp://ftp.is.co.za/pub/x.org")            ; South Africa
       (cpan                              ; from http://www.cpan.org/SITES.html
-       "http://cpan.enstimac.fr/"
+       "http://mirror.ibcp.fr/pub/CPAN/"
        "ftp://ftp.ciril.fr/pub/cpan/"
        "ftp://artfiles.org/cpan.org/"
        "http://www.cpan.org/"
