@@ -3010,6 +3010,30 @@ one: logging, exceptions, and translations.")
 List::Util or List::MoreUtils defines, with preference to List::Util.")
     (license (package-license perl))))
 
+(define-public perl-list-compare
+  (package
+    (name "perl-list-compare")
+    (version "0.53")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/J/JK/JKEENAN/List-Compare-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0l451yqhx1hlm7f2c3bjsl3n8w6l1jngrxzyfm2d8d9iggv4zgzx"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-io-captureoutput" ,perl-io-captureoutput)))
+    (home-page "http://search.cpan.org/dist/List-Compare")
+    (synopsis "Compare elements of two or more lists")
+    (description "@code{List::Compare} provides a module to perform
+comparative operations on two or more lists.  Provided operations include
+intersections, unions, unique elements, complements and many more.")
+    (license (package-license perl))))
+
 (define-public perl-list-moreutils
   (package
     (name "perl-list-moreutils")
