@@ -66,8 +66,9 @@
                   (home-directory "/home/alice"))
                  %base-user-accounts))
     (services (cons (service marionette-service-type
-                             '((gnu services herd)
-                               (guix combinators)))
+                             (marionette-configuration
+                              (imported-modules '((gnu services herd)
+                                                  (guix combinators)))))
                     %base-services))))
 
 (define (operating-system-with-current-guix os)
