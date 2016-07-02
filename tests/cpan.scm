@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -96,5 +97,15 @@
                  hash))
       (x
        (pk 'fail x #f)))))
+
+(test-equal "source-url-http"
+  ((@@ (guix import cpan) fix-source-url)
+   "http://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")
+  "mirror://cpan/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")
+
+(test-equal "source-url-https"
+  ((@@ (guix import cpan) fix-source-url)
+   "https://cpan.metacpan.org/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")
+  "mirror://cpan/authors/id/T/TE/TEST/Foo-Bar-0.1.tar.gz")
 
 (test-end "cpan")
