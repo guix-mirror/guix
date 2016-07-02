@@ -373,14 +373,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "3.0.2")
+    (version "3.1.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "08sjp4dxgcinmv9ly7nm24swmn2cnbbhvph44ihlplf4n33kr542"))))
+               "1nris3flwqd4v4b65yrrv9aqhsab7cb9lfp4wpxz6bi0m3r13g3i"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
