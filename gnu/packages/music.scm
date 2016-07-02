@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1594,3 +1595,30 @@ for improved Amiga ProTracker 2/3 compatibility.")
 formats, including most audio formats recognized by FFMpeg.")
     (home-page "http://moc.daper.net")
     (license license:gpl2+)))
+
+(define-public midicsv
+  (package
+    (name "midicsv")
+    (version "1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.fourmilab.ch/webtools/midicsv/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vvhk2nf9ilfw0wchmxy8l13hbw9cnpz079nsx5srsy4nnd78nkw"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases (delete 'configure))
+       #:make-flags (list "CC=gcc" (string-append "INSTALL_DEST=" %output))))
+    (synopsis "Convert MIDI files to and from CSV")
+    (description
+     "Midicsv reads a standard MIDI file and decodes it into a comma-separated
+value file (CSV), which preserves all the information in the MIDI file.  The
+ASCII CSV file may be loaded into a spreadsheet or database application, or
+processed by a program to transform the MIDI data (for example, to key
+transpose a composition or extract a track from a multi-track sequence).  A
+CSV file in the format created by midicsv may be converted back into a
+standard MIDI file with the csvmidi program.")
+    (home-page "http://www.fourmilab.ch/webtools/midicsv/")
+    (license license:public-domain)))
