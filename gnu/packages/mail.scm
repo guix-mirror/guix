@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -395,6 +396,40 @@ repository and Maildir/IMAP as LOCAL repository.")
 Maildir-format.  Mu's purpose in life is to help you to quickly find the
 messages you need; in addition, it allows you to view messages, extract
 attachments, create new maildirs, and so on.")
+    (license gpl3+)))
+
+(define-public alot
+  (package
+    (name "alot")
+    (version "0.3.7")
+    (source (origin
+              (method url-fetch)
+              ; v0.3.7 not on PyPi yet, so use github instead
+              (uri (string-append "https://github.com/pazz/alot/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append "alot-" version ".tar.gz"))
+              (sha256
+               (base32
+                "09md9llg38r6xby8l0y0zf8nhlh91cr4xs0r15b294hhp8hl2bgx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       ; python 3 is unsupported, more info:
+       ; https://github.com/pazz/alot/blob/0.3.7/docs/source/faq.rst
+       #:python ,python-2))
+    (inputs
+     `(("python2-magic" ,python2-magic)
+       ("python2-configobj" ,python2-configobj)
+       ("python2-twisted" ,python2-twisted)
+       ("python2-urwid" ,python2-urwid)
+       ("python2-urwidtrees" ,python2-urwidtrees)
+       ("python2-pygpgme" ,python2-pygpgme)
+       ("python2-notmuch" ,python2-notmuch)))
+    (home-page "https://github.com/pazz/alot")
+    (synopsis "Commandline MUA using notmuch")
+    (description
+     "Alot is an experimental terminal mail user agent (MUA) based on
+@code{notmuch} mail.  It is written in Python using the @code{urwid} toolkit.")
     (license gpl3+)))
 
 (define-public notmuch
