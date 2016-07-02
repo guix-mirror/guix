@@ -3059,6 +3059,39 @@ intersections, unions, unique elements, complements and many more.")
 functionality on lists which is not going to go into List::Util.")
     (license (package-license perl))))
 
+(define-public perl-list-someutils
+  (package
+    (name "perl-list-someutils")
+    (version "0.52")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DR/DROLSKY/List-SomeUtils-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1b450jyxaa6q2yl0cdhknr3c2a5s7b9b18ccnwac625c681r130y"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-leaktrace" ,perl-test-leaktrace)))
+    (inputs
+     `(("perl-exporter-tiny" ,perl-exporter-tiny)
+       ("perl-module-implementation"
+        ,perl-module-implementation)))
+    (home-page "http://search.cpan.org/dist/List-SomeUtils")
+    (synopsis "Provide the stuff missing in List::Util")
+    (description "@code{List::SomeUtils} provides some trivial but commonly
+needed functionality on lists which is not going to go into @code{List::Util}.
+
+All of the below functions are implementable in only a couple of lines of Perl
+code.  Using the functions from this module however should give slightly
+better performance as everything is implemented in C.  The pure-Perl
+implementation of these functions only serves as a fallback in case the C
+portions of this module couldn't be compiled on this machine.")
+    (license (package-license perl))))
+
 (define-public perl-memoize-expirelru
   (package
     (name "perl-memoize-expirelru")
