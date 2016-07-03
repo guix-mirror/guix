@@ -34,18 +34,21 @@
 (define-public exiv2                              ; XXX: move elsewhere?
   (package
     (name "exiv2")
-    (version "0.23")
+    (version "0.25")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.exiv2.org/exiv2-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "04bbg2cg6mgcyz435zamx37sp5zw44n2alb59ki1daz71f851yl1"))))
+               "197g6vgcpyf9p2cwn5p5hb1r714xsk1v4p96f5pv1z8mi9vzq2y8"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f))                    ; no `check' target
     (propagated-inputs
-     `(("expat" ,expat) ("zlib" ,zlib)))
+     `(("expat" ,expat)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("intltool" ,intltool)))
     (home-page "http://www.exiv2.org/")
     (synopsis "Library and command-line utility to manage image metadata")
     (description
