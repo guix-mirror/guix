@@ -1139,14 +1139,14 @@ characters can be replaced as well, as can UTF-8 characters.")
 (define-public testdisk
   (package
     (name "testdisk")
-    (version "6.14")
+    (version "7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.cgsecurity.org/testdisk-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0v1jap83f5h99zv01v3qmqm160d36n4ysi0gyq7xzb3mqgmw75x5"))))
+                "0ba4wfz2qrf60vwvb1qsq9l6j0pgg81qgf7fh22siaz649mkpfq0"))))
     (build-system gnu-build-system)
     (inputs
      `(("ntfs-3g" ,ntfs-3g)
