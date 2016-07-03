@@ -1419,17 +1419,15 @@ UnionFS-FUSE additionally supports copy-on-write.")
 (define-public sshfs-fuse
   (package
     (name "sshfs-fuse")
-    (version "2.5")
+    (version "2.8")
     (source (origin
               (method url-fetch)
-              (uri (let ((version-with-underscores
-                          (string-join (string-split version #\.) "_")))
-                     (string-append "https://github.com/libfuse/sshfs/releases/"
-                                    "download/sshfs_" version-with-underscores
-                                    "/sshfs-fuse-" version ".tar.gz")))
+              (uri (string-append "https://github.com/libfuse/sshfs/releases/"
+                                  "download/sshfs_" version
+                                  "/sshfs-" version ".tar.gz"))
               (sha256
                (base32
-                "0gp6qr33l2p0964j0kds0dfmvyyf5lpgsn11daf0n5fhwm9185z9"))))
+                "08mdd4rs7yys7hmyig6i08qlid76p17xlvrh64k7wsrfs1s92s3z"))))
     (build-system gnu-build-system)
     (inputs
      `(("fuse" ,fuse)
