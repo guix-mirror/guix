@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2724,3 +2725,25 @@ from userspace.")
 commonly found on Microsoft Windows.  It is implemented as a FUSE file system.
 The package provides additional NTFS tools.")
     (license license:gpl2+)))
+
+(define-public rng-tools
+  (package
+    (name "rng-tools")
+    (version "5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                "http://downloads.sourceforge.net/sourceforge/gkernel/"
+                "rng-tools-" version ".tar.gz"))
+              (sha256
+               (base32
+                "13h7lc8wl9khhvkr0i3bl5j9bapf8anhqis1lcnwxg1vc2v058b0"))))
+    (build-system gnu-build-system)
+    (synopsis "Random number generator daemon")
+    (description
+     "Monitor a hardware random number generator, and supply entropy
+from that to the system kernel's @file{/dev/random} machinery.")
+    (home-page "http://sourceforge.net/projects/gkernel")
+    ;; The source package is offered under the GPL2+, but the files
+    ;; 'rngd_rdrand.c' and 'rdrand_asm.S' are only available under the GPL2.
+    (license (list license:gpl2 license:gpl2+))))
