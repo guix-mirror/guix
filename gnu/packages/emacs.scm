@@ -672,7 +672,7 @@ the body are let-bound and this search is done at compile time.")
 (define-public flycheck
   (package
     (name "emacs-flycheck")
-    (version "0.23")
+    (version "28")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -680,7 +680,7 @@ the body are let-bound and this search is done at compile time.")
                     version "/flycheck-" version ".tar"))
               (sha256
                (base32
-                "1n2cifzsl5dbv42l82bi3y1vk6q33msi8dd4bj7b9nvnl9jfjj5b"))))
+                "1yjxivk11d7w39zfhj2xr4h6xhwx1aj6yhyzd63rjrad7xpjfl86"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
