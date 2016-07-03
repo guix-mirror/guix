@@ -1874,7 +1874,7 @@ constant parts of it.")
 (define-public openlibm
   (package
     (name "openlibm")
-    (version "0.4.1")
+    (version "0.5.1")
     (source
      (origin
        (method url-fetch)
@@ -1883,7 +1883,7 @@ constant parts of it.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0cwqqqlblj3kzp9aq1wnpfs1fl0qd1wp1xzm5shb09w06i4rh9nn"))))
+         "11czx2z7nh6dfpz45s3xl7v38hw36jxzxfvny454bk3if14pfakq"))))
     (build-system gnu-build-system)
     (arguments
      `(#:make-flags
