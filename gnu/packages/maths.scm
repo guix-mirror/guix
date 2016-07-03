@@ -1911,7 +1911,7 @@ environments.")
 (define-public openspecfun
   (package
     (name "openspecfun")
-    (version "0.4")
+    (version "0.5.2")
     (source
      (origin
        (method url-fetch)
@@ -1920,7 +1920,7 @@ environments.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0nsa3jjmlhcqkw5ba5ypbn3n0c8b6lc22zzlxnmxkxi9shhdx65z"))))
+         "1y5b2h6f2k72536kym3vzy3li3bhpd23x463g7hdmjdi3cncavz1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f  ;no "check" target
