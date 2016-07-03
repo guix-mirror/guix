@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +32,7 @@
   #:use-module (gnu system mapped-devices)
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
-                #:select (eudev kbd e2fsprogs lvm2 fuse alsa-utils crda gpm))
+                #:select (alsa-utils crda eudev e2fsprogs fuse gpm kbd lvm2 rng-tools))
   #:use-module ((gnu packages base)
                 #:select (canonical-package glibc))
   #:use-module (gnu packages package-management)
@@ -97,6 +98,8 @@
 
             urandom-seed-service-type
             urandom-seed-service
+            rngd-service-type
+            rngd-service
 
             %base-services))
 
@@ -486,7 +489,47 @@ stopped before 'kill' is called."
 (define (urandom-seed-service)
   (service urandom-seed-service-type #f))
 
-
+
+;;;
+;;; Add hardware random number generator to entropy pool.
+;;;
+
+(define-record-type* <rngd-configuration>
+  rngd-configuration make-rngd-configuration
+  rngd-configuration?
+  (rng-tools rngd-configuration-rng-tools)        ;package
+  (device    rngd-configuration-device))          ;string
+
+(define rngd-service-type
+  (shepherd-service-type
+    'rngd
+    (lambda (config)
+      (define rng-tools (rngd-configuration-rng-tools config))
+      (define device (rngd-configuration-device config))
+
+      (define rngd-command
+        (list #~(string-append #$rng-tools "/sbin/rngd")
+              "-f" "-r" device))
+
+      (shepherd-service
+        (documentation "Add TRNG to entropy pool.")
+        (requirement '(udev))
+        (provision '(trng))
+        (start #~(make-forkexec-constructor #$@rngd-command))
+        (stop #~(make-kill-destructor))))))
+
+(define* (rngd-service #:key
+                       (rng-tools rng-tools)
+                       (device "/dev/hwrng"))
+  "Return a service that runs the @command{rngd} program from @var{rng-tools}
+to add @var{device} to the kernel's entropy pool.  The service will fail if
+@var{device} does not exist."
+  (service rngd-service-type
+           (rngd-configuration
+            (rng-tools rng-tools)
+            (device device))))
+
+
 ;;;
 ;;; System-wide environment variables.
 ;;;

@@ -7494,6 +7494,13 @@ created by @command{guix archive --generate-key} (@pxref{Invoking guix
 archive}).  If that is not the case, the service will fail to start.
 @end deffn
 
+@anchor{rngd-service}
+@deffn {Scheme Procedure} rngd-service [#:rng-tools @var{rng-tools}] @
+            [#:device "/dev/hwrng"]
+Return a service that runs the @command{rngd} program from @var{rng-tools}
+to add @var{device} to the kernel's entropy pool.  The service will fail if
+@var{device} does not exist.
+@end deffn
 
 @node Scheduled Job Execution
 @subsubsection Scheduled Job Execution
