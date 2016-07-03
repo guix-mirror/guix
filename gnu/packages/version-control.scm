@@ -367,7 +367,7 @@ write native speed custom Git applications in any language with bindings.")
 (define-public cgit
   (package
     (name "cgit")
-    (version "0.12")
+    (version "1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -375,7 +375,7 @@ write native speed custom Git applications in any language with bindings.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1dx54hgfyabmg9nm5qp6d01f54nlbqbbdwhwl0llb9imjf237qif"))))
+                "0kbh835p7dl4h88qv55fyfh1za09cgnqh63rii325w9215hm95x8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; XXX: fail to build the in-source git.
