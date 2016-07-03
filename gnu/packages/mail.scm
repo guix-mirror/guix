@@ -546,14 +546,14 @@ useful features.")
 (define-public libetpan
   (package
     (name "libetpan")
-    (version "1.6")
+    (version "1.7.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/dinhviethoa/" name
                    "/archive/" version ".tar.gz"))
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
-               (base32 "05qyqx2c1ppb1jnrs3m52i60f9xlxfxdmb9dnwg4vqjv8kwv2qkr"))))
+               (base32 "081ixgj3skglq9i7v0jb835lmfx21zi4i5b7997igwr0lj174y9j"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,(autoconf-wrapper))
                      ("automake" ,automake)
@@ -566,7 +566,8 @@ useful features.")
        ("openssl" ,openssl)))
     (inputs
      `(("curl" ,curl)
-       ("expat" ,expat)))
+       ("expat" ,expat)
+       ("zlib" ,zlib)))
     (arguments
       '(#:phases (alist-cons-after
                   'unpack 'autogen
