@@ -192,7 +192,8 @@
     (propagated-inputs
      `(("gnutls" ,gnutls)                         ;for 'guix download' & co.
        ("guile-json" ,guile-json)
-       ("geiser" ,geiser)))                       ;for guix.el
+       ("geiser" ,geiser)                         ;for guix.el
+       ("emacs-magit-popup" ,emacs-magit-popup))) ;for "M-x guix" command
 
     (home-page "http://www.gnu.org/software/guix")
     (synopsis "Functional package manager for installed software packages and versions")
