@@ -1,16 +1,17 @@
-SubprocessTest.SetWithLots fails with:
-  Raise [ulimit -n] well above 1025 to make this test go.
-Skip it.
+From 67d6b9262efad99f8aad63ab81efc8e689748766 Mon Sep 17 00:00:00 2001
+From: Efraim Flashner <efraim@flashner.co.il>
+Date: Sun, 3 Jul 2016 11:55:43 +0300
+Subject: [PATCH] patch
 
-SubprocessTest.InterruptChild fails when using 'system*':
-  *** Failure in src/subprocess_test.cc:83
-  ExitInterrupted == subproc->Finish()
-I can pass it by using 'system' instead of 'system*' when building locally,
-but it still failed on Hydra.  Skip it.
+---
+ src/subprocess_test.cc | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---- ninja-1.5.3.orig/src/subprocess_test.cc	2015-01-15 10:34:28.859522176 +0800
-+++ ninja-1.5.3/src/subprocess_test.cc	2015-01-15 10:37:52.969572075 +0800
-@@ -72,6 +72,7 @@
+diff --git a/src/subprocess_test.cc b/src/subprocess_test.cc
+index ee16190..a537c11 100644
+--- a/src/subprocess_test.cc
++++ b/src/subprocess_test.cc
+@@ -72,6 +72,7 @@ TEST_F(SubprocessTest, NoSuchCommand) {
  
  #ifndef _WIN32
  
@@ -18,7 +19,7 @@ but it still failed on Hydra.  Skip it.
  TEST_F(SubprocessTest, InterruptChild) {
    Subprocess* subproc = subprocs_.Add("kill -INT $$");
    ASSERT_NE((Subprocess *) 0, subproc);
-@@ -82,6 +83,7 @@
+@@ -82,6 +83,7 @@ TEST_F(SubprocessTest, InterruptChild) {
  
    EXPECT_EQ(ExitInterrupted, subproc->Finish());
  }
@@ -26,7 +27,7 @@ but it still failed on Hydra.  Skip it.
  
  TEST_F(SubprocessTest, InterruptParent) {
    Subprocess* subproc = subprocs_.Add("kill -INT $PPID ; sleep 1");
-@@ -169,6 +171,7 @@
+@@ -217,6 +219,7 @@ TEST_F(SubprocessTest, SetWithMulti) {
  // OS X's process limit is less than 1025 by default
  // (|sysctl kern.maxprocperuid| is 709 on 10.7 and 10.8 and less prior to that).
  #if !defined(__APPLE__) && !defined(_WIN32)
@@ -34,11 +35,14 @@ but it still failed on Hydra.  Skip it.
  TEST_F(SubprocessTest, SetWithLots) {
    // Arbitrary big number; needs to be over 1024 to confirm we're no longer
    // hostage to pselect.
-@@ -196,6 +199,7 @@
+@@ -245,6 +248,7 @@ TEST_F(SubprocessTest, SetWithLots) {
    }
    ASSERT_EQ(kNumProcs, subprocs_.finished_.size());
  }
 +#endif
- #endif  // !__APPLE__ && !_WIN32 
+ #endif  // !__APPLE__ && !_WIN32
  
  // TODO: this test could work on Windows, just not sure how to simply
+-- 
+2.9.0
+
