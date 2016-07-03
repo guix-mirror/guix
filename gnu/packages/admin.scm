@@ -1149,9 +1149,10 @@ characters can be replaced as well, as can UTF-8 characters.")
                 "0v1jap83f5h99zv01v3qmqm160d36n4ysi0gyq7xzb3mqgmw75x5"))))
     (build-system gnu-build-system)
     (inputs
-     `(;; ("ntfs" ,ntfs)
+     `(("ntfs-3g" ,ntfs-3g)
        ("util-linux" ,util-linux)
        ("openssl" ,openssl)
+       ;; FIXME: add reiserfs
        ("zlib" ,zlib)
        ("e2fsprogs" ,e2fsprogs)
        ("libjpeg" ,libjpeg)
