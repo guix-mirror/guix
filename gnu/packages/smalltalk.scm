@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,10 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages libffi)
+  #:use-module (gnu packages libsigsegv)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages zip))
 
 (define-public smalltalk
@@ -36,7 +41,13 @@
        (base32
         "1k2ssrapfzhngc7bg1zrnd9n2vyxp9c9m70byvsma6wapbvib6l1"))))
     (build-system gnu-build-system)
-    (inputs `(("zip" ,zip)))
+    (native-inputs
+     `(("libffi" ,libffi)
+       ("libltdl" ,libltdl)
+       ("libsigsegv" ,libsigsegv)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("zip" ,zip)))
     (arguments
      `(#:phases (alist-cons-before
                  'configure 'fix-libc
@@ -46,7 +57,7 @@
                        (("@LIBC_SO_NAME@") "libc.so")
                        (("@LIBC_SO_DIR@")  (string-append libc "/lib")))))
                 %standard-phases)))
-    (home-page "https://www.gnu.org/software/smalltalk/")
+    (home-page "http://smalltalk.gnu.org/")
     (synopsis "Smalltalk environment")
     (description
      "GNU Smalltalk is a free implementation of the Smalltalk language.  It
