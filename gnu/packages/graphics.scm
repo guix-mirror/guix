@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -139,15 +140,15 @@ application can be customized via its API for Python scripting.")
 (define-public cgal
   (package
     (name "cgal")
-    (version "4.6.3")
+    (version "4.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://gforge.inria.fr/frs/download.php/file/"
-                    "35139/CGAL-4.6.3.tar.xz"))
+                    "https://github.com/CGAL/cgal/releases/download/releases/"
+                    "CGAL-" version "/CGAL-" version ".tar.xz"))
               (sha256
                (base32
-                "08gwjjh0qz3fakj1y2nsl2qvb0qv5lc7k1pxwjkagh37hxxh4f73"))))
+                "1c41yzl2jg3d6zx5k0iccwqwibp950q7dr7z7pp4xi9wlph3c87s"))))
     (build-system cmake-build-system)
     (arguments
      '(;; "RelWithDebInfo" is not supported.
