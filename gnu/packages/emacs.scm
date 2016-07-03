@@ -1493,7 +1493,7 @@ constants and units into an Emacs buffer.")
 (define-public emacs-slime
   (package
     (name "emacs-slime")
-    (version "2.15")
+    (version "2.18")
     (source
      (origin
        (file-name (string-append name "-" version ".tar.gz"))
@@ -1503,7 +1503,7 @@ constants and units into an Emacs buffer.")
              version ".tar.gz"))
        (sha256
         (base32
-         "0l2z6l2xm78mhh0nczkrmzh2ddb1n911ij9xb6q40zwvx4f8blds"))))
+         "146avwbwr6mw0nmgyihx8gkr0mv6al7a73igzxvysj62000cqvlj"))))
     (build-system emacs-build-system)
     (native-inputs
      `(("texinfo" ,texinfo)))
