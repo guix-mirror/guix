@@ -2281,7 +2281,7 @@ Dust.js, React/JSX, Angularjs, ejs, etc.")
 (define-public emacs-helm
   (package
     (name "emacs-helm")
-    (version "1.9.6")
+    (version "1.9.8")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -2290,7 +2290,7 @@ Dust.js, React/JSX, Angularjs, ejs, etc.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0fc897rwf1fm2m7jrsikkgcyzhngfcysxfmzchpwzfj6v9sb5rl9"))))
+                "019dpzr6l83k1fgxn40aqxjvrpz4dl5d9vi7fc5wjnifmxaqxia6"))))
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-async" ,emacs-async)
