@@ -569,16 +569,15 @@ server, collect the answer, and finally decoding the XML to Perl.")
 (define-public pugixml
   (package
     (name "pugixml")
-    (version "1.6")
+    (version "1.7")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://github.com/zeux/pugixml/archive/v"
-                          version ".tar.gz"))
-      (file-name (string-append name "-" version ".tar.gz"))
+      (uri (string-append "https://github.com/zeux/pugixml/releases/download/v"
+                          version "/pugixml-" version ".tar.gz"))
       (sha256
        (base32
-        "0czbcv9aqf2rw3s9cljz2wb1f4zbhd07wnj7ykklklccl0ipfnwi"))))
+        "1jpml475kbhs1aqwa48g2cbfxlrb9qp115m2j9yryxhxyr30vqgv"))))
     (build-system cmake-build-system)
     (arguments
      `(#:tests? #f
