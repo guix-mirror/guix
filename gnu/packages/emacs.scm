@@ -2076,6 +2076,28 @@ Emacs default configuration in uncontroversial ways that nearly everyone can
 agree upon.")
     (license license:gpl3+)))
 
+(define-public emacs-eprime
+  (let ((commit "17a481af26496be91c07139a9bfc05cfe722506f"))
+    (package
+      (name "emacs-eprime")
+      (version (string-append "20140513-" (string-take commit 7)))
+      (source (origin
+                (method url-fetch)
+                (uri (string-append "https://raw.githubusercontent.com"
+                                    "/AndrewHynes/eprime-mode/"
+                                    commit "/eprime-mode.el"))
+                (file-name (string-append "eprime-" version ".el"))
+                (sha256
+                 (base32
+                  "0v68lggkyq7kbcr9zyi573m2g2x251xy3jadlaw8kx02l8krwq8d"))))
+      (build-system emacs-build-system)
+      (home-page "https://github.com/AndrewHynes/eprime-mode")
+      (synopsis "E-prime checking mode for Emacs")
+      (description "This package provides an E-prime checking mode for Emacs
+that highlights non-conforming text.  The subset of the English language called
+E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
+      (license license:gpl3+))))
+
 (define-public emacs-smex
   (package
     (name "emacs-smex")
