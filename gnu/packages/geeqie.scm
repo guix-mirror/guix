@@ -22,12 +22,13 @@
   #:use-module (guix download)
   #:use-module ((guix licenses) #:prefix l:)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages ghostscript)
-  #:use-module (gnu packages compression)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml))
 
 (define-public exiv2                              ; XXX: move elsewhere?
@@ -61,16 +62,23 @@ and XMP metadata of images in various formats.")
 (define-public geeqie
   (package
     (name "geeqie")
-    (version "1.1")
+    (version "1.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/BestImageViewer/geeqie/"
-                                 "archive/" version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
+                                 "releases/download/v" version "/geeqie-"
+                                 version ".tar.xz"))
              (sha256
               (base32
-               "1kzy39z9505xkayyx7rjj2wda76xy3ch1s5z35zn8yli54ffhi2m"))))
+               "0gzc82sy66pbsmq7lnmq4y37zqad1zfwfls3ik3dmfm8s5nmcvsb"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'autogen
+           (lambda _
+             (setenv "NOCONFIGURE" "true")
+             (zero? (system* "sh" "autogen.sh")))))))
     (inputs
      `(;; ("libchamplain" ,libchamplain)
        ("lcms" ,lcms)
@@ -78,7 +86,10 @@ and XMP metadata of images in various formats.")
        ("libpng" ,libpng)
        ("gtk+" ,gtk+-2)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("glib" ,glib "bin") ; glib-gettextize
+       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (home-page "http://www.geeqie.org/")
     (synopsis "Lightweight GTK+ based image viewer")
