@@ -6,6 +6,7 @@
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Eric Dvorsak <eric@dvorsak.fr>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Nils Gillmann <niasterisk@grrlz.net>
 ;;; Copyright © 2016 Jookia <166291@gmail.com>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
@@ -599,15 +600,15 @@ languages, plus Greek and Cyrillic.")
 (define-public font-gnu-unifont
   (package
     (name "font-gnu-unifont")
-    (version "8.0.01")
+    (version "9.0.01")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://gnu/unifont/unifont-8.0.01/unifont-"
+                    "mirror://gnu/unifont/unifont-" version "/unifont-"
                     version ".tar.gz"))
               (sha256
                (base32
-                "176bzc2y3i49xavrmbyyz5lkqp0qq3bkj7rjrl197kib873by82b"))))
+                "14z4lx6asa94i73m19lsdgzqjn9xzi8320h3dafvzq9ima94pm9b"))))
     (build-system gnu-build-system)
     (outputs '("out" ; TrueType version
                "pcf" ; PCF (bitmap) version
