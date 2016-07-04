@@ -23,6 +23,7 @@
 ;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6664,16 +6665,14 @@ facilities for defining, registering and looking up components.")
 (define-public python2-pythondialog
   (package
     (name "python2-pythondialog")
-    (version "3.3.0")
+    (version "3.4.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/p/"
-                           "python2-pythondialog/python2-pythondialog-"
-                           version ".tar.gz"))
+       (uri (pypi-uri "python2-pythondialog" version))
        (sha256
         (base32
-         "1yhkagsh99bfi592ymczf8rnw8rk6n9hdqy3dd98m3yrx8zmjvry"))))
+         "0d8k7lxk50imdyx85lv8j98i4c93a71iwpapnl1506rpkbm9qvd9"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
