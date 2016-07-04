@@ -7091,7 +7091,17 @@ minimal and fast API targetting the following uses:
     (description "The pytest-cache plugin provides tools to rerun failures from
 the last py.test invocation.")
     (home-page "https://bitbucket.org/hpk42/pytest-cache/")
-    (license license:expat)))
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-pytest-cache))))))
+
+(define-public python2-pytest-cache
+  (let ((pytest-cache (package-with-python2
+                        (strip-python2-variant python-pytest-cache))))
+    (package
+      (inherit pytest-cache)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs pytest-cache))))))
 
 (define-public python-pytest-localserver
   (package
