@@ -4469,6 +4469,25 @@ names in their natural, rather than lexicographic, order.")
 coding changes and predict coding outcomes.")
     (license license:artistic2.0)))
 
+(define-public r-limma
+  (package
+    (name "r-limma")
+    (version "3.28.14")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "limma" version))
+              (sha256
+               (base32
+                "1jgn66ajafhjlqpfcw2p85h6ah8mgmz66znmsw6pcapia7d34akw"))))
+    (build-system r-build-system)
+    (home-page "http://bioinf.wehi.edu.au/limma")
+    (synopsis "Package for linear models for microarray and RNA-seq data")
+    (description "This package can be used for the analysis of gene expression
+studies, especially the use of linear models for analysing designed experiments
+and the assessment of differential expression.  The analysis methods apply to
+different technologies, including microarrays, RNA-seq, and quantitative PCR.")
+    (license license:gpl2+)))
+
 (define-public r-xvector
   (package
     (name "r-xvector")
