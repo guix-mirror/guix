@@ -2492,3 +2492,39 @@ in strikes against the evil corporation.")
                    license:cc-by-sa3.0
                    license:cc0
                    license:public-domain))))
+
+(define-public chromium-bsu
+  (package
+    (name "chromium-bsu")
+    (version "0.9.15.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/" name
+                                  "/Chromium B.S.U. source code/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "01c4mki0rpz6wrqbf18fj4vd7axln5v0xqm80cyksbv63g04s6w6"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'set-paths 'set-sdl-paths
+                             (lambda* (#:key inputs #:allow-other-keys)
+                               (setenv "CPATH"
+                                       (string-append (assoc-ref inputs "sdl-union")
+                                                      "/include/SDL"))
+                               #t)))))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("glu" ,glu)
+              ("quesoglc" ,quesoglc)
+              ("sdl-union" ,(sdl-union (list sdl sdl-image sdl-mixer)))))
+    (home-page "http://chromium-bsu.sourceforge.net/")
+    (synopsis "Fast-paced, arcade-style, top-scrolling space shooter")
+    (description
+     "In this game you are the captain of the cargo ship Chromium B.S.U. and
+are responsible for delivering supplies to the troops on the front line.  Your
+ship has a small fleet of robotic fighters which you control from the relative
+safety of the Chromium vessel.")
+    ;; Clarified Artistic License for everything but sound, which is covered
+    ;; by the Expat License.
+    (license (list license:clarified-artistic license:expat))))
