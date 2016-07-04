@@ -4437,6 +4437,31 @@ translation between different chromosome sequence naming conventions (e.g.,
 names in their natural, rather than lexicographic, order.")
     (license license:artistic2.0)))
 
+(define-public r-edger
+  (package
+    (name "r-edger")
+    (version "3.14.0")
+    (source (origin
+              (method url-fetch)
+              (uri (bioconductor-uri "edgeR" version))
+              (sha256
+               (base32
+                "14vrygy7rz5ngaap4kgkvr3j18y5l6m742n79h68plk6iqgmsskn"))))
+    (properties `((upstream-name . "edgeR")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-limma" ,r-limma)))
+    (home-page "http://bioinf.wehi.edu.au/edgeR")
+    (synopsis "EdgeR does empirical analysis of digital gene expression data")
+    (description "This package can do differential expression analysis of
+RNA-seq expression profiles with biological replication.  It implements a range
+of statistical methodology based on the negative binomial distributions,
+including empirical Bayes estimation, exact tests, generalized linear models
+and quasi-likelihood tests.  It be applied to differential signal analysis of
+other types of genomic data that produce counts, including ChIP-seq, SAGE and
+CAGE.")
+    (license license:gpl2+)))
+
 (define-public r-variantannotation
   (package
     (name "r-variantannotation")
