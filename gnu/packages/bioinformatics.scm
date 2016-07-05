@@ -50,6 +50,8 @@
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gd)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
@@ -58,6 +60,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages popt)
@@ -73,6 +76,7 @@
   #:use-module (gnu packages vim)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages zip)
   #:use-module (srfi srfi-1))
 
@@ -5471,6 +5475,69 @@ two-dimensional genome scans.")
     (description "This package uses the source code of zlib-1.2.5 to create
 libraries for systems that do not have these available via other means.")
     (license license:artistic2.0)))
+
+(define-public emboss
+  (package
+    (name "emboss")
+    (version "6.5.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://emboss.open-bio.org/pub/EMBOSS/old/"
+                                  (version-major+minor version) ".0/"
+                                  "EMBOSS-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0vsmz96gc411yj2iyzdrsmg4l2n1nhgmp7vrgzlxx3xixv9xbf0q"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-hpdf="
+                            (assoc-ref %build-inputs "libharu")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-checks
+           (lambda _
+             ;; The PNGDRIVER tests check for the presence of libgd, libpng
+             ;; and zlib, but assume that they are all found at the same
+             ;; prefix.
+             (substitute* "configure.in"
+               (("CHECK_PNGDRIVER")
+                "LIBS=\"$LIBS -lgd -lpng -lz -lm\"
+AC_DEFINE([PLD_png], [1], [Define to 1 if PNG support is available])
+AM_CONDITIONAL(AMPNG, true)"))
+             #t))
+         (add-after 'unpack 'disable-update-check
+           (lambda _
+             ;; At build time there is no connection to the Internet, so
+             ;; looking for updates will not work.
+             (substitute* "Makefile.am"
+               (("\\$\\(bindir\\)/embossupdate") ""))
+             #t))
+         (add-before 'configure 'autogen
+           (lambda _ (zero? (system* "autoreconf" "-vif")))))))
+    (inputs
+     `(("perl" ,perl)
+       ("libpng" ,libpng)
+       ("gd" ,gd)
+       ("libx11" ,libx11)
+       ("libharu" ,libharu)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)
+       ("libtool" ,libtool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://emboss.sourceforge.net")
+    (synopsis "Molecular biology analysis suite")
+    (description "EMBOSS is the \"European Molecular Biology Open Software
+Suite\".  EMBOSS is an analysis package specially developed for the needs of
+the molecular biology (e.g. EMBnet) user community.  The software
+automatically copes with data in a variety of formats and even allows
+transparent retrieval of sequence data from the web.  It also provides a
+number of libraries for the development of software in the field of molecular
+biology.  EMBOSS also integrates a range of currently available packages and
+tools for sequence analysis into a seamless whole.")
+    (license license:gpl2+)))
 
 (define-public piranha
   ;; There is no release tarball for the latest version.  The latest commit is
