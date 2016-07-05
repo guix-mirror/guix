@@ -610,6 +610,30 @@ multidimensional conditioning system and a consistent interface to map data to
 aesthetic attributes.")
     (license license:gpl2+)))
 
+(define-public r-gdtools
+  (package
+    (name "r-gdtools")
+    (version "0.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gdtools" version))
+       (sha256
+        (base32
+         "1bmnf9d677f2jy8jnb9ymjz1qzm4yrd0qp6k5qrrly06jfffyx7g"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)))
+    (home-page "http://cran.r-project.org/web/packages/gdtools")
+    (synopsis "Utilities for graphical rendering")
+    (description
+     "The @code{gdtools} package provides functionalities to get font metrics
+and to generate base64 encoded string from raster matrix.")
+    (license license:gpl3)))
+
 (define-public r-assertthat
   (package
     (name "r-assertthat")
