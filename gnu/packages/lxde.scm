@@ -93,7 +93,7 @@ able to change themes, icons, and fonts used by GTK+ applications.")
 (define-public lxrandr
   (package
     (name "lxrandr")
-    (version "0.3.0")
+    (version "0.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/project/lxde/LXRandR"
@@ -102,7 +102,7 @@ able to change themes, icons, and fonts used by GTK+ applications.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0xkbqv66hisbxkvnf7y5kwqbhrq26f49wd7w6ylhnjlccpnylg8q"))))
+                "0khqi42paqg82jllb2kza4arf3fafzgq90fhyr3rw3d9hn23763d"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)))
     (native-inputs `(("intltool"   ,intltool)
