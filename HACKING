@@ -35,6 +35,10 @@ upgrading GnuTLS or GLib.)  We have a mailing list for commit notifications
 (guix-commits@gnu.org), so people can notice.  Before pushing your changes,
 make sure to run ‘git pull --rebase’.
 
+All commits that are pushed to the central repository on Savannah should be
+signed with a PGP key, and the public key should be uploaded to your user
+account on Savannah.
+
 For anything else, please post to guix-devel@gnu.org and leave time for a
 review, without committing anything.  If you didn’t receive any reply
 after two weeks, and if you’re confident, it’s OK to commit.
