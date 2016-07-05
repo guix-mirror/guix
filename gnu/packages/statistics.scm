@@ -634,6 +634,31 @@ aesthetic attributes.")
 and to generate base64 encoded string from raster matrix.")
     (license license:gpl3)))
 
+(define-public r-svglite
+  (package
+    (name "r-svglite")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "svglite" version))
+       (sha256
+        (base32
+         "11ryicjglfi6jvkk4jgg5kra42qbs5z2zid7jjhlslpjcljfwc70"))))
+    (build-system r-build-system)
+    (native-inputs  `(("r-rcpp" ,r-rcpp)))
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-gdtools" ,r-gdtools)))
+    (home-page "https://github.com/hadley/svglite")
+    (synopsis "SVG graphics device")
+    (description
+     "@code{svglite} is a graphics device that produces clean
+@dfn{SVG} (Scalable Vector Graphics) output, suitable for use on the web, or
+hand editing.  Compared to the built-in @code{svg()}, @code{svglite} is
+considerably faster, produces smaller files, and leaves text as is.")
+    (license license:gpl2+)))
+
 (define-public r-assertthat
   (package
     (name "r-assertthat")
