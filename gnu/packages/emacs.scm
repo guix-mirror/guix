@@ -1329,6 +1329,28 @@ Expectations, but it can be used in other contexts.")
 definitions for testing with the Ecukes framework.")
     (license license:gpl3+)))
 
+(define-public emacs-expand-region
+  (package
+    (name "emacs-expand-region")
+    (version "0.10.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/magnars/expand-region.el"
+                           "/archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zfiaqyb3zqiyqjkpqsjw660j09805nqsg25q6ars2h8gs0rnvxb"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/magnars/expand-region.el")
+    (synopsis "Increase selected region by semantic units")
+    (description
+     "Expand region increases the selected region by semantic units.  Just
+keep pressing the key until it selects what you want.  There's also
+@code{er/contract-region} if you expand too far.")
+    (license license:gpl3+)))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
