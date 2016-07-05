@@ -5539,6 +5539,52 @@ biology.  EMBOSS also integrates a range of currently available packages and
 tools for sequence analysis into a seamless whole.")
     (license license:gpl2+)))
 
+(define-public bits
+  (let ((revision "1")
+        (commit "3cc4567896d9d6442923da944beb704750a08d2d"))
+    (package
+      (name "bits")
+      ;; The version is 2.13.0 even though no release archives have been
+      ;; published as yet.
+      (version (string-append "2.13.0-" revision "." (string-take commit 9)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "https://github.com/arq5x/bits.git")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "17n2kffk4kmhivd8c98g2vr6y1s23vbg4sxlxs689wni66797hbs"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:tests? #f ;no tests included
+         #:phases
+         (modify-phases %standard-phases
+           (delete 'configure)
+           (add-after 'unpack 'remove-cuda
+             (lambda _
+               (substitute* "Makefile"
+                 ((".*_cuda") "")
+                 (("(bits_test_intersections) \\\\" _ match) match))
+               #t))
+           (replace 'install
+             (lambda* (#:key outputs #:allow-other-keys)
+               (copy-recursively
+                "bin" (string-append (assoc-ref outputs "out") "/bin"))
+               #t)))))
+      (inputs
+       `(("gsl" ,gsl)
+         ("zlib" ,zlib)))
+      (home-page "https://github.com/arq5x/bits")
+      (synopsis "Implementation of binary interval search algorithm")
+      (description "This package provides an implementation of the
+BITS (Binary Interval Search) algorithm, an approach to interval set
+intersection.  It is especially suited for the comparison of diverse genomic
+datasets and the exploration of large datasets of genome
+intervals (e.g. genes, sequence alignments).")
+      (license license:gpl2))))
+
 (define-public piranha
   ;; There is no release tarball for the latest version.  The latest commit is
   ;; older than one year at the time of this writing.
