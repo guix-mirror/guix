@@ -9,6 +9,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6067,6 +6068,26 @@ system.")
     (description "Throwable is a role for classes that are meant to be thrown
 as exceptions to standard program flow.")
     (license (package-license perl))))
+
+(define-public perltidy
+  (package
+    (name "perltidy")
+    (version "20160302")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/perltidy/Perl-Tidy-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "19yw63yh5s3pq7k3nkw6nsamg5b8vvwyhgbizslgxg0mqgc4xl3d"))))
+    (build-system perl-build-system)
+    (home-page "http://perltidy.sourceforge.net/")
+    (synopsis "Perl script tidier")
+    (description "This package contains a Perl script which indents and
+reformats Perl scripts to make them easier to read.   The formatting can be
+controlled with command line parameters.  The default parameter settings
+approximately follow the suggestions in the Perl Style Guide.")
+    (license gpl2+)))
 
 (define-public perl-tie-ixhash
   (package
