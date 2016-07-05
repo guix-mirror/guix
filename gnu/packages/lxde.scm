@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,14 +72,14 @@ libFM file management library.")))
 (define-public lxappearance
   (package
     (name "lxappearance")
-    (version "0.6.1")
+    (version "0.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/project/lxde/"
                                   "LXAppearance/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1phnv1b2jdj2vlibjyc9z01izcf3k5zxj8glsaf0i3vh77zqmqq9"))))
+                "07r0xbi6504zjnbpan7zrn7gi4j0kbsqqfpj8v2x94gr05p16qj4"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)))
     (native-inputs `(("intltool"   ,intltool)
