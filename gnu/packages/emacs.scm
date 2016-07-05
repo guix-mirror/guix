@@ -1351,6 +1351,27 @@ keep pressing the key until it selects what you want.  There's also
 @code{er/contract-region} if you expand too far.")
     (license license:gpl3+)))
 
+(define-public emacs-fill-column-indicator
+  (package
+    (name "emacs-fill-column-indicator")
+    (version "1.81")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/alpaker/Fill-Column-Indicator"
+                           "/archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1xwyqbjbbicmvhlb85vg4j5snwy1vd7rfk89ws4viws5ljkhhyg8"))))
+    (build-system emacs-build-system)
+    (home-page "https://www.emacswiki.org/emacs/FillColumnIndicator")
+    (synopsis "Graphically indicate the fill column")
+    (description
+     "Fill-column-indicator graphically indicates the location of the fill
+column by drawing a thin line down the length of the editing window.")
+    (license license:gpl3+)))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
