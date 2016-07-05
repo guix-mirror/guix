@@ -168,7 +168,7 @@ performance, all instances of the terminal are sharing a single process.")
 (define-public menu-cache
   (package
     (name "menu-cache")
-    (version "1.0.0")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/project/lxde/" name "/"
@@ -176,7 +176,7 @@ performance, all instances of the terminal are sharing a single process.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1bws84fiwk3anp30hcr0lw1xw5cgp44x5ik2yv2ijcgxpcvz8zgz"))))
+                "0ngxvwfj9drabqi3lyzgpi0d0za6431sy2ijb010filrj54jdiqa"))))
     (build-system gnu-build-system)
     (inputs `(("glib"  ,glib)
               ("libfm" ,libfm-extra)))
