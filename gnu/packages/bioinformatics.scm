@@ -5720,3 +5720,32 @@ group or two ChIP groups run under different conditions.")
       (description "This program compares version strings.  It intends to be a
 replacement for strverscmp.")
       (license license:gpl3+))))
+
+(define-public multiqc
+  (package
+    (name "multiqc")
+    (version "0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "multiqc" version))
+       (sha256
+        (base32
+         "0avw11h63ldpxy5pizc3wl1wa01ha7q10wb240nggsjz3jaqvyiy"))))
+    (build-system python-build-system)
+    (propagated-inputs
+     `(("python-jinja2" ,python-jinja2)
+       ("python-simplejson" ,python-simplejson)
+       ("python-pyyaml" ,python-pyyaml)
+       ("python-click" ,python-click)
+       ("python-matplotlib" ,python-matplotlib)
+       ("python-numpy" ,python-numpy)))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://multiqc.info")
+    (synopsis "Aggregate bioinformatics analysis reports")
+    (description
+     "MultiQC is a tool to aggregate bioinformatics results across many
+samples into a single report.  It contains modules for a large number of
+common bioinformatics tools.")
+    (license license:gpl3)))
