@@ -1574,6 +1574,26 @@ read from small to large monitors by using colors, a prefix feature, and smart
 truncation.")
     (license license:gpl2+)))
 
+(define-public emacs-shell-switcher
+  (package
+    (name "emacs-shell-switcher")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/DamienCassou/shell-switcher"
+                           "/archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1c23mfkdqz2g9rixd9smm323vzlvhzz3ng34ambcqjfq309qb2nz"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/DamienCassou/shell-switcher")
+    (synopsis "Provide fast switching between shell buffers")
+    (description
+     "This package provides commands to quickly switch between shell buffers.")
+    (license license:gpl3+)))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
