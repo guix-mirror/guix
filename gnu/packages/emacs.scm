@@ -1372,6 +1372,26 @@ keep pressing the key until it selects what you want.  There's also
 column by drawing a thin line down the length of the editing window.")
     (license license:gpl3+)))
 
+(define-public emacs-znc
+  (package
+    (name "emacs-znc")
+    (version "0.0.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://marmalade-repo.org/packages/znc-"
+                           version ".el"))
+       (sha256
+        (base32
+         "1d8lqvybgyazin5z0g1c4l3rg1vzrrvf0saqs53jr1zcdg0lianh"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/sshirokov/ZNC.el")
+    (synopsis "Make ERC and ZNC get along better")
+    (description
+     "This is a thin wrapper around @code{erc} that enables one to use the ZNC
+IRC bouncer with ERC.")
+    (license license:expat)))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
