@@ -76,14 +76,14 @@
 (define-public httpd
   (package
     (name "httpd")
-    (version "2.4.16")
+    (version "2.4.23")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/httpd/httpd-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0hrpy6gjwma0kba7p7m61vwh82qcnkf08123lrwpg257m93hnrmc"))))
+               "0n2yx3gjlpr4kgqx845fj6amnmg25r2l6a7rzab5hxnpmar985hc"))))
     (build-system gnu-build-system)
     (inputs `(("apr" ,apr)
               ("apr-util" ,apr-util)
