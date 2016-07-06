@@ -774,7 +774,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-sigusr1.patch			\
   %D%/packages/patches/slurm-configure-remove-nonfree-contribs.patch \
   %D%/packages/patches/soprano-find-clucene.patch		\
-  %D%/packages/patches/sudo-CVE-2015-5602.patch			\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
   %D%/packages/patches/synfig-build-fix.patch			\
   %D%/packages/patches/t1lib-CVE-2010-2642.patch		\

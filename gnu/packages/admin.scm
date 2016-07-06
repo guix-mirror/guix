@@ -789,18 +789,17 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.15")
+    (version "1.8.17p1")
     (source (origin
               (method url-fetch)
               (uri
-               (list (string-append "http://www.sudo.ws/sudo/dist/sudo-"
+               (list (string-append "https://www.sudo.ws/sudo/dist/sudo-"
                                     version ".tar.gz")
                      (string-append "ftp://ftp.sudo.ws/pub/sudo/OLD/sudo-"
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0263gi6i19fyzzc488n0qw3m518i39f6a7qmrfvahk9j10bkh5j3"))
-              (patches (search-patches "sudo-CVE-2015-5602.patch"))))
+                "1k2mn65l1kmsxm8wh0gjxy496xhbpiimbpm6yv6kw6snzc3xg466"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -849,7 +848,7 @@ system administrator.")
      `(("groff" ,groff)
        ("linux-pam" ,linux-pam)
        ("coreutils" ,coreutils)))
-    (home-page "http://www.sudo.ws/")
+    (home-page "https://www.sudo.ws/")
     (synopsis "Run commands as root")
     (description
      "Sudo (su \"do\") allows a system administrator to delegate authority to
