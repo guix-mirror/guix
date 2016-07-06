@@ -1417,6 +1417,27 @@ be even more useful for people new to lisp who have not yet learned to
 subconsciously blend out the parentheses.")
     (license license:gpl3+)))
 
+(define-public emacs-page-break-lines
+  (package
+    (name "emacs-page-break-lines")
+    (version "0.11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/purcell/page-break-lines/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1zzhziq5kbrm9rxk30kx2glz455fp1blqxg8cpcf6l8xl3w8z4pg"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/purcell/page-break-lines")
+    (synopsis "Display page breaks as tidy horizontal lines")
+    (description
+     "This library provides a global mode which displays form feed characters
+as horizontal rules.")
+    (license license:gpl3+)))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
