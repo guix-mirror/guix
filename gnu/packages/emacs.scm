@@ -1438,6 +1438,27 @@ subconsciously blend out the parentheses.")
 as horizontal rules.")
     (license license:gpl3+)))
 
+(define-public emacs-simple-httpd
+  (package
+    (name "emacs-simple-httpd")
+    (version "1.4.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/skeeto/emacs-web-server/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "01r7h3imnj4qx1m53a2wjafvbylcyz5f9r2rg2cs7ky3chlg220r"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/skeeto/emacs-http-server")
+    (synopsis "HTTP server in pure Emacs Lisp")
+    (description
+     "This package provides a simple HTTP server written in Emacs Lisp to
+serve files and directory listings.")
+    (license license:unlicense)))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
