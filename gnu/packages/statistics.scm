@@ -1448,6 +1448,32 @@ and environmental data in the framework of Euclidean exploratory methods.")
 files in R.  It is built on top of the libxml2 C library.")
     (license license:gpl2+)))
 
+(define-public r-multitaper
+  (package
+    (name "r-multitaper")
+    (version "1.0-11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "multitaper" version))
+       (sha256
+        (base32
+         "1s0lmjzpyd7zmc2p1ywv5fm7qkq357p70b76gw9wjlms6d81j1n4"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://github.com/wesleyburr/multitaper/")
+    (synopsis "Multitaper spectral analysis tools")
+    (description
+     "This package implements multitaper spectral estimation
+techniques using prolate spheroidal sequences (Slepians) and sine
+tapers for time series analysis.  It includes an adaptive weighted
+multitaper spectral estimate, a coherence estimate, Thomson's Harmonic
+F-test, and complex demodulation.  The Slepians sequences are
+generated efficiently using a tridiagonal matrix solution, and
+jackknifed confidence intervals are available for most estimates.")
+    (license license:gpl2+)))
+
 (define-public r-rversions
   (package
     (name "r-rversions")
