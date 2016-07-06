@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -206,7 +207,10 @@ This package contains the binaries.")
                 ;; Register SHARE as TEXMFROOT in texmf.cnf.
                 (substitute* texmfcnf
                   (("TEXMFROOT = \\$SELFAUTOPARENT")
-                  (string-append "TEXMFROOT = " share)))
+                   (string-append "TEXMFROOT = " share))
+                  (("TEXMFLOCAL = \\$SELFAUTOGRANDPARENT/texmf-local")
+                   "TEXMFLOCAL = $SELFAUTODIR/share/texmf-local")
+                  (("!!\\$TEXMFLOCAL") "$TEXMFLOCAL"))
                 ;; Register paths in texmfcnf.lua, needed for context.
                 (substitute* (string-append texmfroot "/texmfcnf.lua")
                   (("selfautodir:") out)
@@ -242,6 +246,10 @@ This package contains the complete tree of texmf-dist data.")
    (inputs `(("bash" ,bash) ; for wrap-program
              ("texlive-bin" ,texlive-bin)
              ("texlive-texmf" ,texlive-texmf)))
+   (native-search-paths
+    (list (search-path-specification
+           (variable "TEXMFLOCAL")
+           (files '("share/texmf-local")))))
    (arguments
     `(#:modules ((guix build utils))
       #:builder
@@ -353,6 +361,10 @@ This package contains a small subset of the texmf-dist data.")))
    (inputs
     `(("texlive-texmf" ,texlive-texmf-minimal)
       ,@(alist-delete "texlive-texmf" (package-inputs texlive))))
+   (native-search-paths
+    (list (search-path-specification
+           (variable "TEXMFLOCAL")
+           (files '("share/texmf-local")))))
    (description
     "TeX Live provides a comprehensive TeX document production system.
 It includes all the major TeX-related programs, macro packages, and fonts
