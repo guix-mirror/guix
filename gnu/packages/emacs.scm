@@ -1485,6 +1485,27 @@ evaluated in the browser, just like Emacs does with an inferior Lisp process
 in Lisp modes.")
     (license license:unlicense)))
 
+(define-public emacs-rich-minority
+  (package
+    (name "emacs-rich-minority")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Malabarba/rich-minority/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1l0cb0q7kyi88nwfqd542psnkgwnjklpzc5rx32gzd3lkwkrbr8v"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/Malabarba/rich-minority")
+    (synopsis "Clean-up and beautify the list of minor modes")
+    (description
+     "This Emacs package hides and/or highlights minor modes in the
+mode-line.")
+    (license license:gpl2+)))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
