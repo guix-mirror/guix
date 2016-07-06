@@ -33,6 +33,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
@@ -828,6 +829,34 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 fork of mplayer2 and MPlayer.  It shares some features with the former
 projects while introducing many more.")
     (license license:gpl2+)))
+
+(define-public gnome-mpv
+  (package
+    (name "gnome-mpv")
+    (version "0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/gnome-mpv/gnome-mpv/releases"
+                           "/download/v" version "/gnome-mpv-" version
+                           ".tar.xz"))
+       (sha256
+        (base32
+         "06pgxl6f3kkgxv8nlmyl7gy3pg55sqf8vgr8m6426mlpm4p3qdn0"))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libepoxy" ,libepoxy)
+       ("mpv" ,mpv)))
+    (build-system glib-or-gtk-build-system)
+    (home-page "https://github.com/gnome-mpv/gnome-mpv")
+    (synopsis "GTK+ frontend for the mpv media player")
+    (description "GNOME MPV is a simple GTK+ frontend for the mpv media player.
+GNOME MPV interacts with mpv via the client API exported by libmpv, allowing
+access to mpv's powerful playback capabilities.")
+    (license license:gpl3+)))
 
 (define-public libvpx
   (package
