@@ -1459,6 +1459,32 @@ as horizontal rules.")
 serve files and directory listings.")
     (license license:unlicense)))
 
+(define-public emacs-skewer-mode
+  (package
+    (name "emacs-skewer-mode")
+    (version "1.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/skeeto/skewer-mode/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "07jpz374j0j964szy3zznrkyja2kpdl3xa87wh7349mzxivqxdx0"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-simple-httpd" ,emacs-simple-httpd)
+       ("emacs-js2-mode" ,emacs-js2-mode)))
+    (home-page "https://github.com/skeeto/skewer-mode")
+    (synopsis "Live web development in Emacs")
+    (description
+     "Skewer-mode provides live interaction with JavaScript, CSS, and HTML in
+a web browser.  Expressions are sent on-the-fly from an editing buffer to be
+evaluated in the browser, just like Emacs does with an inferior Lisp process
+in Lisp modes.")
+    (license license:unlicense)))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
