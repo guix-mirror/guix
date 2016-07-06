@@ -1506,6 +1506,30 @@ in Lisp modes.")
 mode-line.")
     (license license:gpl2+)))
 
+(define-public emacs-smart-mode-line
+  (package
+    (name "emacs-smart-mode-line")
+    (version "2.10.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/Malabarba/smart-mode-line/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0i9wajabrrsjzwd842q0m2611kf0q31p9hg1pdj81177gynkw8l8"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-rich-minority" ,emacs-rich-minority)))
+    (home-page "http://github.com/Malabarba/smart-mode-line")
+    (synopsis "Color-coded smart mode-line.")
+    (description
+     "Smart Mode Line is a mode-line theme for Emacs.  It aims to be easy to
+read from small to large monitors by using colors, a prefix feature, and smart
+truncation.")
+    (license license:gpl2+)))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
