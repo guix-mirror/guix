@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -818,7 +819,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
           (lambda* (#:key inputs #:allow-other-keys)
             (copy-file (assoc-ref inputs "waf") "waf")
             (setenv "CC" "gcc"))))
-       #:configure-flags (list "--enable-zsh-comp")
+       #:configure-flags (list "--enable-libmpv-shared" "--enable-zsh-comp")
        ;; No check function defined.
        #:tests? #f))
     (home-page "https://mpv.io/")
