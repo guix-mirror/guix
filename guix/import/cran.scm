@@ -148,16 +148,17 @@ empty list when the FIELD cannot be found."
                         (string-any char-set:whitespace item)))
                   (map string-trim-both items))))))
 
+(define (guix-name name)
+  "Return a Guix package name for a given R package name."
+  (string-append "r-" (string-map (match-lambda
+                                    (#\_ #\-)
+                                    (#\. #\-)
+                                    (chr (char-downcase chr)))
+                                  name)))
+
 (define (description->package repository meta)
   "Return the `package' s-expression for an R package published on REPOSITORY
 from the alist META, which was derived from the R package's DESCRIPTION file."
-  (define (guix-name name)
-    (string-append "r-" (string-map (match-lambda
-                                      (#\_ #\-)
-                                      (#\. #\-)
-                                      (chr (char-downcase chr)))
-                                    name)))
-
   (let* ((base-url   (case repository
                        ((cran)         %cran-url)
                        ((bioconductor) %bioconductor-url)))
