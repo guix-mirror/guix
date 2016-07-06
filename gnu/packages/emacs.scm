@@ -1766,6 +1766,28 @@ features found in other packages it also brings many improvements as
 well as completely new features.")
     (license license:gpl3+)))
 
+(define-public emacs-hl-todo
+  (package
+    (name "emacs-hl-todo")
+    (version "1.7.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://raw.githubusercontent.com/tarsius/hl-todo/"
+                    version "/hl-todo.el"))
+              (sha256
+               (base32
+                "18zydm43zajlglhgr0bhdkd4pln27amd063k2ql6p1mvyam3j8ia"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/tarsius/hl-todo")
+    (synopsis "Emacs mode to highlight TODO and similar keywords")
+    (description
+     "This package provides an Emacs mode to highlight TODO and similar
+keywords in comments and strings.  This package also provides commands for
+moving to the next or previous keyword and to invoke @code{occur} with a
+regexp that matches all known keywords.")
+    (license license:gpl3+)))
+
 (define-public emacs-hydra
   (package
     (name "emacs-hydra")
