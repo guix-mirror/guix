@@ -3266,15 +3266,14 @@ that client code uses to construct the grammar directly in Python code.")
 (define-public python-numexpr
   (package
     (name "python-numexpr")
-    (version "2.4.4")
+    (version "2.6.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/"
-                           "n/numexpr/numexpr-" version ".tar.gz"))
+       (uri (pypi-uri "numexpr" version))
        (sha256
         (base32
-         "0nsnff5312fm38w6dm34bw7ghfqqy8vl9gig0al963h4mz8zm8nz"))))
+         "0i6iagl2hhbr8q4qzbbjd859v5806vqylq87fq7pi914ps6d6cag"))))
     (build-system python-build-system)
     (arguments `(#:tests? #f))          ; no tests included
     (propagated-inputs
