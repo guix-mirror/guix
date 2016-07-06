@@ -46,6 +46,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages pkg-config)
@@ -67,6 +68,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages scheme)
+  #:use-module (gnu packages statistics)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages mp3)
   #:use-module (guix utils)
@@ -2097,6 +2099,43 @@ agree upon.")
 that highlights non-conforming text.  The subset of the English language called
 E-Prime forbids the use of the \"to be\" form to strengthen your writing.")
       (license license:gpl3+))))
+
+(define-public emacs-ess
+  (package
+    (name "emacs-ess")
+    (version "16.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ess.r-project.org/downloads/ess/ess-"
+                                  version ".tgz"))
+              (sha256
+               (base32
+                "0w7mbbajn377gdmvnd21mpyr368b2ia46gq6cb99y4y5rspf9pcg"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There is no test suite.
+       #:make-flags (list (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'more-shebang-patching
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "Makeconf"
+               (("SHELL = /bin/sh")
+                (string-append "SHELL = " (which "sh")))))))))
+    (inputs
+     `(("emacs" ,emacs-minimal)
+       ("r" ,r)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("texinfo" ,texinfo)
+       ("texlive" ,texlive)))
+    (home-page "http://ess.r-project.org/")
+    (synopsis "Emacs mode for statistical analysis programs")
+    (description "Emacs Speaks Statistics (ESS) is an add-on package for GNU
+Emacs.  It is designed to support editing of scripts and interaction with
+various statistical analysis programs such as R and OpenBUGS.")
+    (license license:gpl2+)))
 
 (define-public emacs-smex
   (package
