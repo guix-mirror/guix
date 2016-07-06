@@ -1405,6 +1405,25 @@ diagnostic tests of convergence to the equilibrium distribution of the Markov
 chain.")
     (license license:gpl2+)))
 
+(define-public r-ade4
+  (package
+    (name "r-ade4")
+    (version "1.7-4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "ade4" version))
+        (sha256
+          (base32
+            "17sbicash7z4b63dlrbaf8xx2pbwh62vykzvhdjs43h8jkl881y7"))))
+    (build-system r-build-system)
+    (home-page "http://pbil.univ-lyon1.fr/ADE-4")
+    (synopsis "Multivariate data analysis and graphical display")
+    (description
+     "The ade4 package contains data analysis functions to analyze ecological
+and environmental data in the framework of Euclidean exploratory methods.")
+    (license license:gpl2+)))
+
 (define-public r-xml2
   (package
     (name "r-xml2")
