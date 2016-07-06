@@ -1392,6 +1392,31 @@ column by drawing a thin line down the length of the editing window.")
 IRC bouncer with ERC.")
     (license license:expat)))
 
+(define-public emacs-paren-face
+  (package
+    (name "emacs-paren-face")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/tarsius/paren-face/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0y4qrhxa9332vsvr999jg7qj1ymnfgwpf591yi4a4jgg90pm7qnn"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/tarsius/paren-face")
+    (synopsis "Face for parentheses in lisp modes")
+    (description
+     "This library defines a face named @code{parenthesis} used just for
+parentheses.  The intended purpose of this face is to make parentheses less
+visible in Lisp code by dimming them.  Lispers probably don't need to be
+constantly made aware of the existence of the parentheses.  Dimming them might
+be even more useful for people new to lisp who have not yet learned to
+subconsciously blend out the parentheses.")
+    (license license:gpl3+)))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
