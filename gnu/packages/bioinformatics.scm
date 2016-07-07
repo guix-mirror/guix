@@ -2384,6 +2384,9 @@ working with DNA shotgun sequencing data from genomes, transcriptomes,
 metagenomes and single cells.  Khmer can make de novo assemblies faster, and
 sometimes better.  Khmer can also identify and fix problems with shotgun
 data.")
+    ;; When building on i686, armhf and mips64el, we get the following error:
+    ;; error: ['khmer', 'khmer.tests', 'oxli'] require 64-bit operating system
+    (supported-systems '("x86_64-linux"))
     (license license:bsd-3)))
 
 (define-public macs
