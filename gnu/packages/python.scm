@@ -367,18 +367,18 @@ instead of @command{python3}.")))
 (define-public python-psutil
   (package
     (name "python-psutil")
-    (version "3.3.0")
+    (version "4.3.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "psutil" version))
        (sha256
         (base32
-         "11bd1555vf2ibjnmqf64im5cp55vcqfq45ccinm9ll3bs68na6s2"))))
+         "1w4r09fvn6kd80m5mx4ws1wz100brkaq6hzzpwrns8cgjzjpl6c6"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
-    (home-page "https://pypi.python.org/pypi/psutil/")
+    (home-page "https://www.github.com/giampaolo/psutil")
     (synopsis "Library for retrieving information on running processes")
     (description
      "psutil (Python system and process utilities) is a library for retrieving
