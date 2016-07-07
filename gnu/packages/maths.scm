@@ -1208,74 +1208,56 @@ porting.")
 (define-public superlu
   (package
     (name "superlu")
-    (version "4.3")
+    (version "5.2.1")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://crd-legacy.lbl.gov/~xiaoye/SuperLU/"
                            "superlu_" version ".tar.gz"))
        (sha256
-        (base32 "10b785s9s4x0m9q7ihap09275pq4km3k2hk76jiwdfdr5qr2168n"))))
-    (build-system gnu-build-system)
+        (base32 "0qzlb7cd608q62kyppd0a8c65l03vrwqql6gsm465rky23b6dyr8"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Replace the non-free implementation of MC64 with a stub adapted
+        ;; from Debian
+        '(begin
+           (use-modules (ice-9 regex)
+                        (ice-9 rdelim))
+           (call-with-output-file "SRC/mc64ad.c"
+             (lambda (port)
+               (display "
+#include <stdio.h>
+#include <stdlib.h>
+void mc64id_(int *a) {
+  fprintf (stderr, \"SuperLU: non-free MC64 not available.  Aborting.\\n\");
+  abort ();
+}
+void mc64ad_ (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
+              int *h, int *i, int *j, int *k, double *l, int *m, int *n) {
+  fprintf (stderr, \"SuperLU: non-free MC64 not available.  Aborting.\\n\");
+  abort ();
+}\n" port)))
+           ;; Remove the corresponding license verbiage.  MC64 license follows
+           ;; a "------" line separator.
+           (with-atomic-file-replacement "License.txt"
+             (let ((rx (make-regexp "-{8}")))
+               (lambda (in out)
+                 (let loop ()
+                   (let ((line (read-line in 'concat)))
+                    (unless (regexp-exec rx line)
+                      (display line out)
+                      (loop)))))))))))
+    (build-system cmake-build-system)
     (native-inputs
      `(("tcsh" ,tcsh)))
     (inputs
-     `(("lapack" ,lapack)
+     `(("blas" ,openblas)
        ("gfortran" ,gfortran)))
     (arguments
-     `(#:parallel-build? #f
-       #:tests? #f                      ;tests are run as part of `make all`
-       #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key inputs outputs #:allow-other-keys)
-          (call-with-output-file "make.inc"
-            (lambda (port)
-              (format port "
-PLAT        =
-SuperLUroot = ~a
-SUPERLULIB  = ~a/lib/libsuperlu.a
-TMGLIB      = libtmglib.a
-BLASDEF     = -DUSE_VENDOR_BLAS
-BLASLIB     = -L~a/lib -lblas
-LIBS        = $(SUPERLULIB) $(BLASLIB)
-ARCH        = ar
-ARCHFLAGS   = cr
-RANLIB      = ranlib
-CC          = gcc
-PIC         = -fPIC
-CFLAGS      = -O3 -DPRNTlevel=0 $(PIC)
-NOOPTS      = -O0 $(PIC)
-FORTRAN     = gfortran
-FFLAGS      = -O2 $(PIC)
-LOADER      = $(CC)
-CDEFS       = -DAdd_"
-                      (getcwd)
-                      (assoc-ref outputs "out")
-                      (assoc-ref inputs "lapack")))))
-        (alist-cons-before
-         'build 'create-install-directories
-         (lambda* (#:key outputs #:allow-other-keys)
-           (for-each
-            (lambda (dir)
-              (mkdir-p (string-append (assoc-ref outputs "out")
-                                      "/" dir)))
-            '("lib" "include")))
-         (alist-replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            ;; Library is placed in lib during the build phase.  Copy over
-            ;; headers to include.
-            (let* ((out    (assoc-ref outputs "out"))
-                   (incdir (string-append out "/include")))
-              (for-each (lambda (file)
-                          (let ((base (basename file)))
-                            (format #t "installing `~a' to `~a'~%"
-                                    base incdir)
-                            (copy-file file
-                                       (string-append incdir "/" base))))
-                        (find-files "SRC" ".*\\.h$"))))
-          %standard-phases)))))
+     `(#:configure-flags '("-Denable_blaslib:BOOL=NO" ;do not use internal cblas
+                           "-DTPL_BLAS_LIBRARIES=openblas"
+                           "-DBUILD_SHARED_LIBS:BOOL=YES"
+                           "-DCMAKE_INSTALL_LIBDIR=lib")))
     (home-page "http://crd-legacy.lbl.gov/~xiaoye/SuperLU/")
     (synopsis "Supernodal direct solver for sparse linear systems")
     (description
@@ -1285,7 +1267,9 @@ The library is written in C and is callable from either C or Fortran.  The
 library routines perform an LU decomposition with partial pivoting and
 triangular system solves through forward and back substitution.  The library
 also provides threshold-based ILU factorization preconditioners.")
-    (license license:bsd-3)))
+    (license (list license:bsd-3
+                   license:gpl2+        ;EXAMPLE/*fgmr.c
+                   (license:fsf-free "file://SRC/colamd.h")))))
 
 (define-public superlu-dist
   (package
