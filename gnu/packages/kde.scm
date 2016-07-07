@@ -70,7 +70,8 @@ cards.")
      `(#:tests? #f)) ; both tests fail, require display
     (inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)
+       ("qttools" ,qttools)))
     (home-page "https://techbase.kde.org/Projects/Snorenotify")
     (synopsis "Qt notification framework")
     (description "Snorenotify is a multi platform Qt notification framework.
