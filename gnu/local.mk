@@ -674,6 +674,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/nasm-no-ps-pdf.patch			\
   %D%/packages/patches/net-tools-bitrot.patch			\
   %D%/packages/patches/netcdf-config-date.patch			\
+  %D%/packages/patches/netsurf-about.patch			\
   %D%/packages/patches/ngircd-handle-zombies.patch		\
   %D%/packages/patches/ngircd-no-dns-in-tests.patch		\
   %D%/packages/patches/ninja-tests.patch			\

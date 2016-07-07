@@ -52,12 +52,17 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages databases)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages mit-krb5)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gperf)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages base)
   #:use-module (gnu packages perl)
@@ -3388,4 +3393,115 @@ playback of HTTP request/response traces.")
     (description "Woof (Web Offer One File) is a small simple web server that
 can easily be invoked on a single file.  Your partner can access the file with
 tools they trust (e.g. wget).")
+    (license l:gpl2+)))
+
+(define-public netsurf
+  (package
+    (name "netsurf")
+    (version "3.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://download.netsurf-browser.org/"
+                           "netsurf/releases/source-full/netsurf-all-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1vdldzcv42wykajmw8vbql0f1yd44gbx30kywfrrh2x3064ly609"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           (substitute* "Makefile"
+             ;; Do not clobber PKG_CONFIG_PATH from the environment
+             (("PKG_CONFIG_PATH = \\$")
+              "PKG_CONFIG_PATH := $(PKG_CONFIG_PATH):$")
+             ;; Honor make variables
+             (("shell cc") "shell $(CC)"))))
+       (patches (search-patches "netsurf-about.patch"))))
+    (build-system glib-or-gtk-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("perl" ,perl)
+       ("perl-html-parser" ,perl-html-parser)
+       ("flex" ,flex)
+       ("bison" ,bison)))
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("gperf" ,gperf)
+       ("curl" ,curl)
+       ("openssl" ,openssl)
+       ("libpng" ,libpng)
+       ("libjpeg" ,libjpeg)
+       ("expat" ,expat)))
+    (arguments
+     `(#:make-flags `("CC=gcc" "BUILD_CC=gcc"
+                      ,(string-append "PREFIX=" %output))
+       #:parallel-build? #f         ;parallel builds not supported
+       #:tests? #f                  ;no way to easily run from release tarball
+       #:modules ((ice-9 rdelim)
+                  (ice-9 match)
+                  (srfi srfi-1)
+                  (sxml simple)
+                  ,@%glib-or-gtk-build-system-modules)
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _
+             (call-with-output-file "netsurf/Makefile.config"
+               (lambda (port)
+                 (format port "~
+                         NETSURF_GTK_RESOURCES := $(PREFIX)/share/netsurf/~@
+                         ")))
+             #t))
+         (add-after 'build 'adjust-welcome
+           (lambda _
+             ;; First, fix some unended tags and simple substitutions
+             (substitute* "netsurf/gtk/res/welcome.html"
+               (("<(img|input)([^>]*)>" _ tag contents)
+                (string-append "<" tag contents " />"))
+               (("Licence") "License") ;prefer GNU spelling
+               ((" open source") ", free software")
+               (("web&nbsp;site") "website")
+               ;; Prefer privacy-respecting default search engine
+               (("www.google.co.uk") "www.duckduckgo.com/html")
+               (("Google Search") "DuckDuckGo Search")
+               (("name=\"btnG\"") ""))
+             ;; Remove default links so it doesn't seem we're endorsing them
+             (with-atomic-file-replacement "netsurf/gtk/res/welcome.html"
+               (lambda (in out)
+                 ;; Leave the DOCTYPE header as is
+                 (display (read-line in 'concat) out)
+                 (sxml->xml
+                  (let rec ((sxml (xml->sxml in)))
+                    ;; We'd like to use sxml-match here, but it can't
+                    ;; match against generic tag symbols...
+                    (match sxml
+                      (`(div (@ (class "links")) . ,rest)
+                       '())
+                      ((x ...)
+                       (map rec x))
+                      (x x)))
+                  out)))
+             #t))
+         (add-after 'install 'install-more
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (desktop (string-append out "/share/applications/"
+                                            "netsurf.desktop")))
+               (mkdir-p (dirname desktop))
+               (copy-file "netsurf/gtk/res/netsurf-gtk.desktop"
+                          desktop)
+               (substitute* desktop
+                 (("netsurf-gtk") (string-append out "/bin/netsurf"))
+                 (("netsurf.png") (string-append out "/share/netsurf/"
+                                                 "netsurf.xpm")))
+               (install-file "netsurf/Docs/netsurf-gtk.1"
+                             (string-append out "/share/man/man1/"))
+               #t))))))
+    (home-page "https://www.netsurf-browser.org")
+    (synopsis "Web browser")
+    (description
+     "NetSurf is a lightweight web browser that has its own layout and
+rendering engine entirely written from scratch.  It is small and capable of
+handling many of the web standards in use today.")
     (license l:gpl2+)))
