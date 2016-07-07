@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -670,14 +671,14 @@ compact configuration syntax.")
 (define-public rxvt-unicode
   (package
     (name "rxvt-unicode")
-    (version "9.21")
+    (version "9.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://dist.schmorp.de/rxvt-unicode/Attic/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "0swmi308v5yxsddrdhvi4cch88k2bbs2nffpl5j5m2f55gbhw9vm"))))
+                "1pddjn5ynblwfrdmskylrsxb9vfnk3w4jdnq2l8xn2pspkljhip9"))))
     (build-system gnu-build-system)
     (arguments
      ;; This sets the destination when installing the necessary terminal
