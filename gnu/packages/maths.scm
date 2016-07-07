@@ -829,30 +829,28 @@ ASCII text files using Gmsh's own scripting language.")
          ,(string-append "--with-superlu-lib="
                          (assoc-ref %build-inputs "superlu") "/lib/libsuperlu.a"))
        #:phases
-       (alist-replace
-        'configure
-        ;; PETSc's configure script is actually a python script, so we can't
-        ;; run it with bash.
-        (lambda* (#:key outputs (configure-flags '())
-                  #:allow-other-keys)
-          (let* ((prefix (assoc-ref outputs "out"))
-                 (flags `(,(string-append "--prefix=" prefix)
-                          ,@configure-flags)))
-            (format #t "build directory: ~s~%" (getcwd))
-            (format #t "configure flags: ~s~%" flags)
-            (zero? (apply system* "./configure" flags))))
-        (alist-cons-after
-         'configure 'clean-local-references
-         ;; Try to keep build directory names from leaking into compiled code
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let ((out (assoc-ref outputs "out")))
-             (substitute* (find-files "." "^petsc(conf|machineinfo).h$")
-               (((getcwd)) out))))
-         (alist-cons-after
-          'install 'clean-install
+       (modify-phases %standard-phases
+        (replace 'configure
+          ;; PETSc's configure script is actually a python script, so we can't
+          ;; run it with bash.
+          (lambda* (#:key outputs (configure-flags '())
+                          #:allow-other-keys)
+            (let* ((prefix (assoc-ref outputs "out"))
+                   (flags `(,(string-append "--prefix=" prefix)
+                            ,@configure-flags)))
+              (format #t "build directory: ~s~%" (getcwd))
+              (format #t "configure flags: ~s~%" flags)
+              (zero? (apply system* "./configure" flags)))))
+        (add-after 'configure 'clean-local-references
+          ;; Try to keep build directory names from leaking into compiled code
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (substitute* (find-files "." "^petsc(conf|machineinfo).h$")
+                (((getcwd)) out)))))
+        (add-after 'install 'clean-install
           ;; Try to keep installed files from leaking build directory names.
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((out     (assoc-ref outputs "out")))
+            (let ((out (assoc-ref outputs "out")))
               (substitute* (map (lambda (file)
                                   (string-append out "/lib/petsc/conf/" file))
                                 '("petscvariables" "PETScConfig.cmake"))
@@ -869,8 +867,7 @@ ASCII text files using Gmsh's own scripting language.")
                         '("configure.log" "make.log" "gmake.log"
                           "test.log" "error.log" "RDict.db"
                           ;; Once installed, should uninstall with Guix
-                          "uninstall.py"))))
-          %standard-phases)))))
+                          "uninstall.py"))))))))
     (home-page "http://www.mcs.anl.gov/petsc")
     (synopsis "Library to solve PDEs")
     (description "PETSc, pronounced PET-see (the S is silent), is a suite of
