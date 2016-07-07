@@ -38,7 +38,7 @@
 (define-public llvm
   (package
     (name "llvm")
-    (version "3.7.1")
+    (version "3.8.1")
     (source
      (origin
       (method url-fetch)
@@ -46,7 +46,7 @@
                           version "/llvm-" version ".src.tar.xz"))
       (sha256
        (base32
-        "1masakdp9g2dan1yrazg7md5am2vacbkb3nahb3dchpc1knr8xxy"))))
+        "1ybmnid4pw2hxn12ax5qa5kl1ldfns0njg8533y3mzslvd5cx0kf"))))
     (build-system cmake-build-system)
     (native-inputs
      `(("python" ,python-2) ;bytes->str conversion in clang>=3.7 needs python-2
@@ -85,8 +85,8 @@ of programming tools as well as libraries with equivalent functionality.")
      `(("llvm" ,llvm)))
     (arguments
      `(;; Don't use '-g' during the build to save space.
-       #:build-type "Release"))
-
+       #:build-type "Release"
+       #:tests? #f))                    ; Tests require gtest
     (home-page "http://compiler-rt.llvm.org")
     (synopsis "Runtime library for Clang/LLVM")
     (description
@@ -99,7 +99,8 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
     ;; <http://compiler-rt.llvm.org/> doesn't list MIPS as supported.
     (supported-systems (delete "mips64el-linux" %supported-systems))))
 
-(define (clang-from-llvm llvm clang-runtime hash)
+(define* (clang-from-llvm llvm clang-runtime hash
+                          #:key (patches '("clang-libc-search-path.patch")))
   (package
     (name "clang")
     (version (package-version llvm))
@@ -109,7 +110,7 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
        (uri (string-append "http://llvm.org/releases/"
                            version "/cfe-" version ".src.tar.xz"))
        (sha256 (base32 hash))
-       (patches (search-patches "clang-libc-search-path.patch"))))
+       (patches (map search-patch patches))))
     ;; Using cmake allows us to treat llvm as an external library.  There
     ;; doesn't seem to be any way to do this with clang's autotools-based
     ;; build system.
@@ -182,10 +183,32 @@ code analysis tools.")
 (define-public clang-runtime
   (clang-runtime-from-llvm
    llvm
-   "10c1mz2q4bdq9bqfgr3dirc6hz1h3sq8573srd5q5lr7m7j6jiwx"))
+   "0p0y85c7izndbpg2l816z7z7558axq11d5pwkm4h11sdw7d13w0d"))
 
 (define-public clang
   (clang-from-llvm llvm clang-runtime
+                   "1prc72xmkgx8wrzmrr337776676nhsp1qd3mw2bvb22bzdnq7lsc"
+                   #:patches '("clang-3.8-libc-search-path.patch")))
+
+(define-public llvm-3.7
+  (package (inherit llvm)
+    (version "3.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://llvm.org/releases/"
+                           version "/llvm-" version ".src.tar.xz"))
+       (sha256
+        (base32
+         "1masakdp9g2dan1yrazg7md5am2vacbkb3nahb3dchpc1knr8xxy"))))))
+
+(define-public clang-runtime-3.7
+  (clang-runtime-from-llvm
+   llvm-3.7
+   "10c1mz2q4bdq9bqfgr3dirc6hz1h3sq8573srd5q5lr7m7j6jiwx"))
+
+(define-public clang-3.7
+  (clang-from-llvm llvm-3.7 clang-runtime-3.7
                    "0x065d0w9b51xvdjxwfzjxng0gzpbx45fgiaxpap45ragi61dqjn"))
 
 (define-public llvm-3.6
