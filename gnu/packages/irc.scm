@@ -72,14 +72,16 @@
                            "-DUSE_QT5=ON" ; default is qt4
                            "-DWITH_KDE=OFF" ; no to integration
                            "-DWITH_OXYGEN=ON" ; on=embed icons
-                           "-DWITH_WEBKIT=ON") ; wants qtwebkit, in qt5
+                           "-DWITH_WEBKIT=OFF") ; qtwebkit isn't packaged
        #:tests? #f)) ; no test target
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("extra-cmake-modules" ,extra-cmake-modules)
        ("oxygen-icons" ,oxygen-icons)
        ("qca" ,qca)
-       ("qt", qt)
+       ("qtbase", qtbase)
+       ("qttools" ,qttools)
+       ("qtscript" ,qtscript)
        ("snorenotify" ,snorenotify)
        ("zlib" ,zlib)))
     (home-page "http://quassel-irc.org/")
