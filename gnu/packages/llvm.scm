@@ -2,6 +2,7 @@
 ;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Dennis Mungai <dmngaie@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +29,8 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages bootstrap)           ;glibc-dynamic-linker
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml))
@@ -48,9 +51,13 @@
     (native-inputs
      `(("python" ,python-wrapper)
        ("perl"   ,perl)))
+    (inputs
+     `(("libffi" ,libffi)
+       ("zlib" ,zlib)))
     (arguments
      `(#:configure-flags '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
-                           "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE")))
+                           "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
+                           "-DLLVM_ENABLE_FFI:BOOL=TRUE")))
     (home-page "http://www.llvm.org")
     (synopsis "Optimizing compiler infrastructure")
     (description
