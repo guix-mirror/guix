@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;;
@@ -183,7 +183,7 @@ code analysis tools.")
 
 (define-public llvm-3.5
   (package (inherit llvm)
-    (version "3.5.0")
+    (version "3.5.2")
     (source
      (origin
        (method url-fetch)
@@ -191,13 +191,13 @@ code analysis tools.")
                            version "/llvm-" version ".src.tar.xz"))
        (sha256
         (base32
-         "00swb43mzlvda8306arlg2jw7g6k3acwfccgf1k4c2pgd3rrkq98"))))))
+         "0xf5q17kkxsrm2gsi93h4pwlv663kji73r2g4asb97klsmb626a4"))))))
 
 (define-public clang-runtime-3.5
   (clang-runtime-from-llvm
    llvm-3.5
-   "0dl1kbrhz96djsxqr61iw5h788s7ncfpfb7aayixky1bhdaydcx4"))
+   "1hsdnzzdr5kglz6fnv3lcsjs222zjsy14y8ax9dy6zqysanplbal"))
 
 (define-public clang-3.5
   (clang-from-llvm llvm-3.5 clang-runtime-3.5
-                   "12yv3jwdjcbkrx7zjm8wh4jrvb59v8fdw4mnmz3zc1jb00p9k07w"))
+                   "0846h8vn3zlc00jkmvrmy88gc6ql6014c02l4jv78fpvfigmgssg"))
