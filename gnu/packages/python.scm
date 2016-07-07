@@ -6892,16 +6892,14 @@ tables.")
 (define-public python-websocket-client
   (package
     (name "python-websocket-client")
-    (version "0.34.0")
+    (version "0.37.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/w"
-                           "/websocket-client/websocket_client-"
-                           version ".tar.gz"))
+       (uri (pypi-uri "websocket_client" version))
        (sha256
         (base32
-         "1prdx6d49f1cff17kzj15bnz09palfdgc1m5dkq9jd4mr90n4ak8"))))
+         "0h9glp1jll3z76ly3kg08aqgxqk0a68p4zi9yn50353bh5nj92v7"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-six" ,python-six))) ; for tests
