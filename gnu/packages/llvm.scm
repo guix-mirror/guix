@@ -20,7 +20,7 @@
 
 (define-module (gnu packages llvm)
   #:use-module (guix packages)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
@@ -60,7 +60,7 @@ languages.  It currently supports compilation of C and C++ programs, using
 front-ends derived from GCC 4.0.1.  A new front-end for the C family of
 languages is in development.  The compiler infrastructure includes mirror sets
 of programming tools as well as libraries with equivalent functionality.")
-    (license ncsa)))
+    (license license:ncsa)))
 
 (define (clang-runtime-from-llvm llvm hash)
   (package
@@ -87,7 +87,7 @@ of programming tools as well as libraries with equivalent functionality.")
 functions for C and C++ programs.  It also provides header files that allow C
 and C++ source code to interface with the \"sanitization\" passes of the clang
 compiler.  In LLVM this library is called \"compiler-rt\".")
-    (license ncsa)
+    (license license:ncsa)
 
     ;; <http://compiler-rt.llvm.org/> doesn't list MIPS as supported.
     (supported-systems (delete "mips64el-linux" %supported-systems))))
@@ -170,7 +170,7 @@ compiler.  In LLVM this library is called \"compiler-rt\".")
 Objective-C++ programming languages.  It uses LLVM as its back end.  The Clang
 project includes the Clang front end, the Clang static analyzer, and several
 code analysis tools.")
-    (license ncsa)))
+    (license license:ncsa)))
 
 (define-public clang-runtime
   (clang-runtime-from-llvm
