@@ -418,17 +418,14 @@ detection, and lossless compression.")
 (define-public borg
   (package
     (name "borg")
-    (version "1.0.3")
+    (version "1.0.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                     "https://pypi.python.org/packages/"
-                     "c9/c6/1efc338724b054d4d264dfeadfcba11cefa6c3c50f474cec91b8f0c21d3a"
-                     "/borgbackup-" version ".tar.gz"))
+              (uri (pypi-uri "borgbackup" version))
 
               (sha256
                (base32
-                "0kzr0xa00yjfxx27aipli67qg5ffj52yrnqhpf3sdy6k5wzwaybs"))))
+                "1dxn9p4xm0zd32xzzd9hs4a542db34clykrrnnv3hrdnc394895p"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
