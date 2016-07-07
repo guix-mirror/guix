@@ -92,14 +92,14 @@ version of libusb to run with newer libusb.")
 (define-public python-pyusb
   (package
     (name "python-pyusb")
-    (version "1.0.0rc1")
+    (version "1.0.0")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "pyusb" version))
+       (uri (pypi-uri "PyUSB" version))
        (sha256
         (base32
-         "07cjq11qhngzjd746k7688s6y2x7lpj669fxqfsiy985rg0jsn7j"))))
+         "0s2k4z06fapd5vp1gnrlf8a9sjpc03p9974lzw5k6ky39akzyd2v"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f  ;no tests
