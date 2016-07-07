@@ -44,7 +44,7 @@
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("openssl" ,openssl)
-       ("qt" ,qt)))
+       ("qtbase" ,qtbase)))
     (home-page "http://delta.affinix.com/qca/")
     (synopsis "Libraries for the Qt Cryptographic Architecture")
     (description "The Qt Cryptographic Architecture (QCA) provides a
