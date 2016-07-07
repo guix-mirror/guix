@@ -38,7 +38,7 @@
 (define-public llvm
   (package
     (name "llvm")
-    (version "3.6.2")
+    (version "3.7.1")
     (source
      (origin
       (method url-fetch)
@@ -46,10 +46,10 @@
                           version "/llvm-" version ".src.tar.xz"))
       (sha256
        (base32
-        "153vcvj8gvgwakzr4j0kndc0b7wn91c2g1vy2vg24s6spxcc23gn"))))
+        "1masakdp9g2dan1yrazg7md5am2vacbkb3nahb3dchpc1knr8xxy"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("python" ,python-wrapper)
+     `(("python" ,python-2) ;bytes->str conversion in clang>=3.7 needs python-2
        ("perl"   ,perl)))
     (inputs
      `(("libffi" ,libffi)
@@ -182,10 +182,31 @@ code analysis tools.")
 (define-public clang-runtime
   (clang-runtime-from-llvm
    llvm
-   "11qx8d3pbfqjaj2x207pvlvzihbs1z2xbw4crpz7aid6h1yz6bqg"))
+   "10c1mz2q4bdq9bqfgr3dirc6hz1h3sq8573srd5q5lr7m7j6jiwx"))
 
 (define-public clang
   (clang-from-llvm llvm clang-runtime
+                   "0x065d0w9b51xvdjxwfzjxng0gzpbx45fgiaxpap45ragi61dqjn"))
+
+(define-public llvm-3.6
+  (package (inherit llvm)
+    (version "3.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://llvm.org/releases/"
+                           version "/llvm-" version ".src.tar.xz"))
+       (sha256
+        (base32
+         "153vcvj8gvgwakzr4j0kndc0b7wn91c2g1vy2vg24s6spxcc23gn"))))))
+
+(define-public clang-runtime-3.6
+  (clang-runtime-from-llvm
+   llvm-3.6
+   "11qx8d3pbfqjaj2x207pvlvzihbs1z2xbw4crpz7aid6h1yz6bqg"))
+
+(define-public clang-3.6
+  (clang-from-llvm llvm-3.6 clang-runtime-3.6
                    "1wwr8s6lzr324hv4s1k6na4j5zv6n9kdhi14s4kb9b13d93814df"))
 
 (define-public llvm-3.5
