@@ -98,16 +98,16 @@ bind processes, and much more.")
 (define-public openmpi
   (package
     (name "openmpi")
-    (version "1.10.1")
+    (version "1.10.3")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://www.open-mpi.org/software/ompi/v"
+      (uri (string-append "https://www.open-mpi.org/software/ompi/v"
                           (version-major+minor version)
                           "/downloads/openmpi-" version ".tar.bz2"))
       (sha256
        (base32
-        "14p4px9a3qzjc22lnl6braxrcrmd9rgmy7fh4qpanawn2pgfq6br"))))
+        "0k95ri9f8kzx5vhzrdbzn59rn2324fs4a96w5v8jy20j8dkbp13l"))))
     (build-system gnu-build-system)
     (inputs
      `(("hwloc" ,hwloc)
