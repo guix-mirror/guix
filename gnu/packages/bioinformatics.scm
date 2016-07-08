@@ -3863,6 +3863,8 @@ by seed clustering and stitching procedure.  In addition to unbiased de novo
 detection of canonical junctions, STAR can discover non-canonical splices and
 chimeric (fusion) transcripts, and is also capable of mapping full-length RNA
 sequences.")
+    ;; Only 64-bit systems are supported according to the README.
+    (supported-systems '("x86_64-linux" "mips64el-linux"))
     ;; STAR is licensed under GPLv3 or later; htslib is MIT-licensed.
     (license license:gpl3+)))
 
