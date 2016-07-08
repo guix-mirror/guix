@@ -1281,6 +1281,30 @@ also provides threshold-based ILU factorization preconditioners.")
                            "superlu_dist_" version ".tar.gz"))
        (sha256
         (base32 "1hnak09yxxp026blq8zhrl7685yip16svwngh1wysqxf8z48vzfj"))
+              (modules '((guix build utils)))
+       (snippet
+        ;; Replace the non-free implementation of MC64 with a stub
+        '(begin
+           (use-modules (ice-9 regex)
+                        (ice-9 rdelim))
+           (call-with-output-file "SRC/mc64ad.c"
+             (lambda (port)
+               (display "
+#include <stdio.h>
+#include <stdlib.h>
+void mc64id_(int *a) {
+  fprintf (stderr, \"SuperLU_DIST: non-free MC64 not available.  Aborting.\\n\");
+  abort ();
+}
+void mc64ad_ (int *a, int *b, int *c, int *d, int *e, double *f, int *g,
+              int *h, int *i, int *j, int *k, double *l, int *m, int *n) {
+  fprintf (stderr, \"SuperLU_DIST: non-free MC64 not available.  Aborting.\\n\");
+  abort ();
+}\n" port)))
+           (delete-file "SRC/mc64ad.f.bak")
+           (substitute* "SRC/util.c"    ;adjust default algorithm
+             (("RowPerm[[:blank:]]*=[[:blank:]]*LargeDiag")
+              "RowPerm = NOROWPERM"))))
        (patches (search-patches "superlu-dist-scotchmetis.patch"))))
     (build-system gnu-build-system)
     (native-inputs
