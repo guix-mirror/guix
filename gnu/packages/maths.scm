@@ -797,7 +797,7 @@ ASCII text files using Gmsh's own scripting language.")
 (define-public petsc
   (package
     (name "petsc")
-    (version "3.6.2")
+    (version "3.7.2")
     (source
      (origin
       (method url-fetch)
@@ -805,7 +805,7 @@ ASCII text files using Gmsh's own scripting language.")
       (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
                           "petsc-lite-" version ".tar.gz"))
       (sha256
-       (base32 "13h0m5f9xsdpps4lsp59iz2m7zkapwavq2zfkfvs3ab6sndla0l9"))))
+       (base32 "0jfrq6rd4zagw1iimz05m2w91k0jvz3qbik1lk8pqcxw3rvdqk5d"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)
@@ -848,14 +848,15 @@ ASCII text files using Gmsh's own scripting language.")
                 ;; Prevent build directory from leaking into compiled code
                 (((getcwd)) out)
                 ;; Scrub timestamp for reproducibility
-                ((".*Libraries compiled on.*") "")))))
+                ((".*Libraries compiled on.*") ""))
+              #t)))
         (add-after 'install 'clean-install
           ;; Try to keep installed files from leaking build directory names.
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (substitute* (map (lambda (file)
                                   (string-append out "/lib/petsc/conf/" file))
-                                '("petscvariables" "PETScConfig.cmake"))
+                                '("petscvariables"))
                 (((getcwd)) out))
               ;; Make compiler references point to the store
               (substitute* (string-append out "/lib/petsc/conf/petscvariables")
@@ -868,8 +869,10 @@ ASCII text files using Gmsh's own scripting language.")
                               (delete-file f))))
                         '("configure.log" "make.log" "gmake.log"
                           "test.log" "error.log" "RDict.db"
+                          "PETScBuildInternal.cmake"
                           ;; Once installed, should uninstall with Guix
-                          "uninstall.py"))))))))
+                          "uninstall.py"))
+              #t))))))
     (home-page "http://www.mcs.anl.gov/petsc")
     (synopsis "Library to solve PDEs")
     (description "PETSc, pronounced PET-see (the S is silent), is a suite of
