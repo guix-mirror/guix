@@ -128,7 +128,20 @@ bind processes, and much more.")
                            ,(string-append "--with-valgrind="
                                            (assoc-ref %build-inputs "valgrind"))
                            ,(string-append "--with-hwloc="
-                                           (assoc-ref %build-inputs "hwloc")))))
+                                           (assoc-ref %build-inputs "hwloc")))
+       #:phases (modify-phases %standard-phases
+                  (add-before 'build 'scrub-timestamps ;reproducibility
+                    (lambda _
+                      (substitute* '("ompi/tools/ompi_info/param.c"
+                                     "orte/tools/orte-info/param.c"
+                                     "oshmem/tools/oshmem_info/param.c")
+                        ((".*(Built|Configured) on.*") ""))
+                      #t))
+                  (add-after 'install 'remove-logs ;reproducibility
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (for-each delete-file (find-files out "config.log"))
+                        #t))))))
     (home-page "http://www.open-mpi.org")
     (synopsis "MPI-2 implementation")
     (description
