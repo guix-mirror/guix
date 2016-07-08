@@ -30,6 +30,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages certs)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages cups)
   #:use-module (gnu packages compression)
@@ -262,7 +263,8 @@ build process and its dependencies, whereas Make uses Makefile format.")
        #:modules ((guix build utils)
                   (guix build gnu-build-system)
                   (ice-9 popen)
-                  (ice-9 rdelim))
+                  (ice-9 rdelim)
+                  (srfi srfi-19))
 
        #:configure-flags
        (let* ((gcjdir (assoc-ref %build-inputs "gcj"))
@@ -521,7 +523,47 @@ build process and its dependencies, whereas Make uses Makefile format.")
                    (jdk (assoc-ref outputs "jdk")))
                (copy-recursively "openjdk.build/docs" doc)
                (copy-recursively "openjdk.build/j2re-image" jre)
-               (copy-recursively "openjdk.build/j2sdk-image" jdk)))))))
+               (copy-recursively "openjdk.build/j2sdk-image" jdk))))
+         ;; By default IcedTea only generates an empty keystore.  In order to
+         ;; be able to use certificates in Java programs we need to generate a
+         ;; keystore from a set of certificates.  For convenience we use the
+         ;; certificates from the nss-certs package.
+         (add-after 'install 'install-keystore
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((keystore  "cacerts")
+                    (certs-dir (string-append (assoc-ref inputs "nss-certs")
+                                              "/etc/ssl/certs"))
+                    (keytool   (string-append (assoc-ref outputs "jdk")
+                                              "/bin/keytool")))
+               (define (import-cert cert)
+                 (format #t "Importing certificate ~a\n" (basename cert))
+                 (let* ((port (open-pipe* OPEN_WRITE keytool
+                                          "-import"
+                                          "-alias" (basename cert)
+                                          "-keystore" keystore
+                                          "-storepass" "changeit"
+                                          "-file" cert)))
+                   (display "yes\n" port)
+                   (when (not (zero? (status:exit-val (close-pipe port))))
+                     (error "failed to import" cert))))
+
+               ;; This is necessary because the certificate directory contains
+               ;; files with non-ASCII characters in their names.
+               (setlocale LC_ALL "en_US.utf8")
+               (setenv "LC_ALL" "en_US.utf8")
+
+               (for-each import-cert (find-files certs-dir "\\.pem$"))
+               (mkdir-p (string-append (assoc-ref outputs "out")
+                                       "/lib/security"))
+               (mkdir-p (string-append (assoc-ref outputs "jdk")
+                                       "/jre/lib/security"))
+               (install-file keystore
+                             (string-append (assoc-ref outputs "out")
+                                            "/lib/security"))
+               (install-file keystore
+                             (string-append (assoc-ref outputs "jdk")
+                                            "/jre/lib/security"))
+               #t))))))
     (native-inputs
      `(("ant" ,ant)
        ("alsa-lib" ,alsa-lib)
@@ -544,6 +586,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
        ("libxslt" ,libxslt) ;for xsltproc
        ("mit-krb5" ,mit-krb5)
        ("nss" ,nss)
+       ("nss-certs" ,nss-certs)
        ("libx11" ,libx11)
        ("libxcomposite" ,libxcomposite)
        ("libxt" ,libxt)
@@ -789,6 +832,9 @@ build process and its dependencies, whereas Make uses Makefile format.")
              (delete 'patch-paths)
              (delete 'set-additional-paths)
              (delete 'patch-patches)
+             ;; FIXME: This phase is needed but fails with this version of
+             ;; IcedTea.
+             (delete 'install-keystore)
              (replace 'install
                (lambda* (#:key outputs #:allow-other-keys)
                  (let ((doc (string-append (assoc-ref outputs "doc")
