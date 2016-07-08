@@ -923,7 +923,7 @@ scientific applications modeled by partial differential equations.")
 (define-public slepc
   (package
     (name "slepc")
-    (version "3.6.2")
+    (version "3.7.1")
     (source
      (origin
        (method url-fetch)
@@ -932,7 +932,7 @@ scientific applications modeled by partial differential equations.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "1pv5iqz2kc8sj49zsabyz4arnfpana8mjrhq31vzgk16xldk3d1a"))))
+         "1hijlmrvxvfqslnx8yydzw5xqbsn1yy02g32w0hln1z3cgr1c0k7"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("python" ,python-2)))
@@ -948,8 +948,7 @@ scientific applications modeled by partial differential equations.")
                          (assoc-ref %build-inputs "arpack") "/lib"))
        #:phases
        (modify-phases %standard-phases
-         (replace
-          'configure
+         (replace 'configure
           ;; configure is a python script, so we can't run it with bash.
           (lambda* (#:key inputs outputs (configure-flags '())
                     #:allow-other-keys)
@@ -961,8 +960,7 @@ scientific applications modeled by partial differential equations.")
               (setenv "SLEPC_DIR" (getcwd))
               (setenv "PETSC_DIR" (assoc-ref inputs "petsc"))
               (zero? (apply system* "./configure" flags)))))
-         (add-after
-          'install 'delete-doc
+         (add-after 'install 'delete-doc
           ;; TODO: SLEPc installs HTML documentation alongside headers in
           ;; $out/include.  We'd like to move them to share/doc, but delete
           ;; them for now, as they are incomplete and installing the complete
@@ -970,8 +968,7 @@ scientific applications modeled by partial differential equations.")
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((out (assoc-ref outputs "out")))
               (for-each delete-file (find-files out "\\.html$")))))
-         (add-after
-          'install 'clean-install
+         (add-after 'install 'clean-install
           ;; Clean up unnecessary build logs from installation.
           (lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
