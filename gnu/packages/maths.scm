@@ -842,11 +842,13 @@ ASCII text files using Gmsh's own scripting language.")
               (format #t "configure flags: ~s~%" flags)
               (zero? (apply system* "./configure" flags)))))
         (add-after 'configure 'clean-local-references
-          ;; Try to keep build directory names from leaking into compiled code
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               (substitute* (find-files "." "^petsc(conf|machineinfo).h$")
-                (((getcwd)) out)))))
+                ;; Prevent build directory from leaking into compiled code
+                (((getcwd)) out)
+                ;; Scrub timestamp for reproducibility
+                ((".*Libraries compiled on.*") "")))))
         (add-after 'install 'clean-install
           ;; Try to keep installed files from leaking build directory names.
           (lambda* (#:key inputs outputs #:allow-other-keys)
