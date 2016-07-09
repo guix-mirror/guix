@@ -54,6 +54,7 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages fltk)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages game-development)
   #:use-module (gnu packages gettext)
@@ -2643,3 +2644,50 @@ your child be creative.")
      "This package contains a set of \"Rubber Stamp\" images which can be used
 with the \"Stamp\" tool within Tux Paint.")
     (license license:gpl2+)))
+
+(define-public tuxpaint-config
+  (package
+    (name "tuxpaint-config")
+    (version "0.0.13")                  ;keep VER_DATE below in sync
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/tuxpaint/tuxpaint-config/"
+                           version "/tuxpaint-config-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1z12s46mvy87qs3vgq9m0ki9pp21zqc52mmgphahpihw3s7haf6v"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gnu-gettext)))
+    (inputs
+     `(("fltk" ,fltk)
+       ("libpaper" ,libpaper)
+       ;; TODO: Should the following be propagated by fltk?
+       ("libx11" ,libx11)
+       ("libxft" ,libxft)
+       ("mesa" ,mesa)))
+    (arguments
+     `(#:make-flags `("VER_DATE=2014-08-23"
+                      "CONFDIR=/etc/tuxpaint" ;don't write to store
+                      ,(string-append "PREFIX=" %output)
+                      "GNOME_PREFIX=$(PREFIX)")
+       #:tests? #f                      ;no tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)   ;no configure phase
+                  (add-before 'install 'gzip-no-name
+                    (lambda* _
+                      (substitute* "Makefile"
+                        ;; tuxpaint-config compresses its own documentation;
+                        ;; make sure it uses flags for reproducibility.
+                        (("gzip") "gzip --no-name"))))
+                  (add-before 'install 'make-install-dirs
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (mkdir-p (string-append out "/bin"))
+                        #t))))))
+    (home-page (package-home-page tuxpaint))
+    (synopsis "Configure Tux Paint")
+    (description
+     "Tux Paint Config is a graphical configuration editor for Tux Paint.")
+    (license license:gpl2)))            ;no "or later" present
