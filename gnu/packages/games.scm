@@ -57,9 +57,11 @@
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages game-development)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libcanberra)
@@ -69,6 +71,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages netpbm)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages xorg)
@@ -93,9 +96,7 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages tcl)
-  #:use-module (gnu packages fribidi)
   #:use-module (gnu packages xdisorg)
-  #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system cmake)
@@ -2530,3 +2531,78 @@ safety of the Chromium vessel.")
     ;; Clarified Artistic License for everything but sound, which is covered
     ;; by the Expat License.
     (license (list license:clarified-artistic license:expat))))
+
+(define-public tuxpaint
+  (package
+    (name "tuxpaint")
+    (version "0.9.22")                  ;keep VER_DATE below in sync
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/tuxpaint/tuxpaint/"
+                           version "/tuxpaint-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qrbrdck9yxpcg3si6jb9i11w8lw9h4hqad0pfaxgyiniqpr7gca"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove win32 directory which contains binary dll's and the
+           ;; deprecated visualc directory.
+           (for-each delete-file-recursively '("win32" "visualc"))
+           (substitute* "Makefile"
+             ;; Do not rely on $(GPERF) being an absolute file name
+             (("\\[ -x \\$\\(GPERF\\) \\]")
+              "$(GPERF) --version >/dev/null 2>&1"))))
+       (patches (search-patches "tuxpaint-stamps-path.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gperf" ,gperf)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("fribidi" ,fribidi)
+       ("gettext" ,gnu-gettext)
+       ("libpng" ,libpng)
+       ("librsvg" ,librsvg)
+       ("libpaper" ,libpaper)
+       ("netpbm" ,netpbm)
+       ("sdl" ,(sdl-union (list sdl sdl-mixer sdl-ttf sdl-image)))))
+    ;; TODO: Use system fonts rather than those in data/fonts
+    (arguments
+     `(#:make-flags `("VER_DATE=2014-08-23"
+                      "GPERF=gperf" "CC=gcc"
+                      "SDL_PCNAME=sdl SDL_image SDL_mixer SDL_ttf"
+                      ,(string-append "PREFIX=" %output)
+                      "GNOME_PREFIX=$(PREFIX)"
+                      "COMPLETIONDIR=$(PREFIX)/etc/bash_completion.d")
+       #:tests? #f                      ;No tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)   ;no configure phase
+                  (add-after 'install 'fix-import
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (net (assoc-ref inputs "netpbm"))
+                             (tpi (string-append out "/bin/tuxpaint-import")))
+                        (substitute* tpi
+                          ;; Point to installation prefix so that the default
+                          ;; configure file is found.
+                          (("/usr/local") out))
+                        ;; tuxpaint-import uses a bunch of programs from
+                        ;; netpbm, so make sure it knows where those are
+                        (wrap-program tpi
+                          `("PATH" ":" prefix
+                            (,(string-append net "/bin"))))))))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "TUXPAINT_STAMPS_PATH")
+            (files '("share/tuxpaint/stamps")))))
+    (home-page "http://www.tuxpaint.org")
+    (synopsis "Drawing software for children")
+    (description
+     "Tux Paint is a free drawing program designed for young children (kids
+ages 3 and up).  It has a simple, easy-to-use interface; fun sound effects;
+and an encouraging cartoon mascot who helps guide children as they use the
+program.  It provides a blank canvas and a variety of drawing tools to help
+your child be creative.")
+    (license license:gpl2+)))
