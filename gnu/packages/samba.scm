@@ -99,14 +99,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.3.8")
+    (version "4.3.11")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.samba.org/samba/ftp/stable/samba-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "041b5frh4ikcka922aqhqjvlv4w2s7jycyykpvsknj0a79ncd79p"))))
+               "1v2grwivm6rasz1ganbybs0ikz1lydaniy65kxf1v8rl1qqngach"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -150,7 +150,7 @@ anywhere.")
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2))) ; incompatible with Python 3
-    (home-page "http://www.samba.org/")
+    (home-page "https://www.samba.org/")
     (synopsis
      "The standard Windows interoperability suite of programs for GNU and Unix")
     (description
