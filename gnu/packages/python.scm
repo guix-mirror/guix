@@ -9724,3 +9724,31 @@ characters, mouse support, and auto suggestions.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
+
+(define-public python-jedi
+  (package
+    (name "python-jedi")
+    (version "0.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (pypi-uri "jedi" version))
+        (sha256
+          (base32
+            "0c8x962ynpx001fdvp07m2q5jk4igkxbj3rmnydavphvlgxijk1v"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/davidhalter/jedi")
+    (synopsis
+      "Autocompletion for Python that can be used for text editors")
+    (description
+      "Jedi is an autocompletion tool for Python that can be used for text editors.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-jedi))))))
+
+(define-public python2-jedi
+  (let ((base (package-with-python2 (strip-python2-variant python-jedi))))
+    (package
+      (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
