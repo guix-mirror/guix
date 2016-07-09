@@ -2606,3 +2606,40 @@ and an encouraging cartoon mascot who helps guide children as they use the
 program.  It provides a blank canvas and a variety of drawing tools to help
 your child be creative.")
     (license license:gpl2+)))
+
+(define-public tuxpaint-stamps
+  (package
+    (name "tuxpaint-stamps")
+    (version "2014.08.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/tuxpaint/tuxpaint-stamps/"
+                           (string-map (λ (x) (if (eq? x #\.) #\- x)) version)
+                           "/tuxpaint-stamps-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rhlwrjz44wp269v3rid4p8pi0i615pzifm1ym6va64gn1bms06q"))))
+    (build-system trivial-build-system)
+    (native-inputs
+     `(("tar" ,tar)
+       ("gzip" ,gzip)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+                   (setenv "PATH"
+                           (string-append
+                            (assoc-ref %build-inputs "tar") "/bin" ":"
+                            (assoc-ref %build-inputs "gzip") "/bin"))
+                   (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
+                   (chdir (string-append ,name "-" ,version))
+                   (let ((dir (string-append %output "/share/tuxpaint/stamps")))
+                     (mkdir-p dir)
+                     (copy-recursively "stamps" dir)))))
+    (home-page (package-home-page tuxpaint))
+    (synopsis "Stamp images for Tux Paint")
+    (description
+     "This package contains a set of \"Rubber Stamp\" images which can be used
+with the \"Stamp\" tool within Tux Paint.")
+    (license license:gpl2+)))
