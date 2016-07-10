@@ -940,15 +940,15 @@ YouTube.com and a few more sites.")
 (define-public libbluray
   (package
     (name "libbluray")
-    (version "0.9.2")
+    (version "0.9.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.videolan.org/videolan/"
+              (uri (string-append "https://download.videolan.org/videolan/"
                                   name "/" version "/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1sp71j4agcsg17g6b85cqz78pn5vknl5pl39rvr6mkib5ps99jgg"))))
+                "1q1whviqv5sr9nr372h31zwid1rvbfbx3z4lzr8lnj25xha6cdm6"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags '("--disable-bdjava")))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -956,7 +956,7 @@ YouTube.com and a few more sites.")
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("libxml2" ,libxml2)))
-    (home-page "http://www.videolan.org/developers/libbluray.html")
+    (home-page "https://www.videolan.org/developers/libbluray.html")
     (synopsis "Blu-Ray Disc playback library")
     (description
      "libbluray is a library designed for Blu-Ray Disc playback for media
