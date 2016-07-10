@@ -35,6 +35,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages libbsd)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages linux)
@@ -698,3 +699,37 @@ arithmetic in Perl.")
   (description "Crypt::OpenSSL::Random is a OpenSSL/LibreSSL pseudo-random
 number generator")
   (license (package-license perl))))
+
+(define-public acme-client
+  (package
+    (name "acme-client")
+    (version "0.1.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://kristaps.bsd.lv/" name "/"
+                                  "snapshots/" name "-portable-"
+                                  version ".tgz"))
+              (sha256
+               (base32
+                "09pipyfk448gxqr7ci56gsq5la8wlydv7wwn9wk0zgjxmlh7h6fb"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f ; no test suite
+       #:make-flags
+       (list "CC=gcc"
+             (string-append "PREFIX=" (assoc-ref %outputs "out")))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; no './configure' script
+    (inputs
+     `(("libbsd" ,libbsd)
+       ("libressl" ,libressl)))
+    (synopsis "Let's Encrypt client by the OpenBSD project")
+    (description "acme-client is a Let's Encrypt client implemented in C.  It
+uses a modular design, and attempts to secure itself by dropping privileges and
+operating in a chroot where possible.  acme-client is developed on OpenBSD and
+then ported to the GNU / Linux environment.")
+    (home-page "https://kristaps.bsd.lv/acme-client/")
+    ;; acme-client is distributed under the ISC license, but the files 'jsmn.h'
+    ;; and 'jsmn.c' are distributed under the Expat license.
+    (license (list license:isc license:expat))))
