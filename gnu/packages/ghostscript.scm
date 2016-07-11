@@ -182,7 +182,12 @@ printing, and psresize, for adjusting page sizes.")
                             (number->string (parallel-job-count))))))
         (replace 'install
           (lambda _
-            (zero? (system* "make" "soinstall")))))))
+            (zero? (system* "make" "soinstall"))))
+        (add-after 'install 'create-gs-symlink
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              ;; some programs depend on having a 'gs' binary available
+              (symlink "gsc" (string-append out "/bin/gs"))))))))
    (synopsis "PostScript and PDF interpreter")
    (description
     "Ghostscript is an interpreter for the PostScript language and the PDF
