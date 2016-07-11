@@ -24,12 +24,15 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
@@ -187,6 +190,65 @@ server and embedded PowerPC, and S390 guests.")
     ;; Remove dependencies on optional libraries, notably GUI libraries.
     (inputs (fold alist-delete (package-inputs qemu)
                   '("libusb" "mesa" "sdl" "spice" "virglrenderer")))))
+
+(define-public libosinfo
+  (package
+    (name "libosinfo")
+    (version "0.3.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://fedorahosted.org/releases/l/i/libosinfo/libosinfo-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "151qrzmafxww5yfamrr7phk8217xmihfhazpb597vdv87na75cjh"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'copy-ids
+           (lambda* (#:key inputs #:allow-other-keys)
+             (copy-file (assoc-ref inputs "pci.ids") "data/pci.ids")
+             (copy-file (assoc-ref inputs "usb.ids") "data/usb.ids")
+             #t)))))
+    (inputs
+     `(("libsoup" ,libsoup)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("gobject-introspection" ,gobject-introspection)))
+    (native-inputs
+     `(("check" ,check)
+       ("glib" ,glib "bin")  ; glib-mkenums, etc.
+       ("gtk-doc" ,gtk-doc)
+       ("vala" ,vala)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("pci.ids"
+        ,(origin
+           (method url-fetch)
+           (uri "http://pciids.sourceforge.net/v2.2/pci.ids")
+           (sha256
+            (base32
+             "0h8v0lrlrxkfnjiwnwiq86zyvb8qa2n3844dp1m01lh2nb2fliqw"))))
+       ("usb.ids"
+        ,(origin
+           (method url-fetch)
+           (uri "http://linux-usb.cvs.sourceforge.net/viewvc/linux-usb/htdocs/usb.ids?revision=1.539")
+           (sha256
+            (base32
+             "0w9ila7662lzpx416lqy69zx6gfwq2xiigwd5fdyqcrg3dj07m80"))))))
+    (home-page "https://libosinfo.org/")
+    (synopsis "Operating system information database")
+    (description "libosinfo is a GObject based library API for managing
+information about operating systems, hypervisors and the (virtual) hardware
+devices they can support.  It includes a database containing device metadata
+and provides APIs to match/identify optimal devices for deploying an operating
+system on a hypervisor.  Via GObject Introspection, the API is available in
+all common programming languages.  Vala bindings are also provided.")
+    ;; The library files are released under LGPLv2.1 or later; the source
+    ;; files in the "tools" directory are released under GPLv2+.
+    (license (list lgpl2.1+ gpl2+))))
 
 (define-public libvirt
   (package
