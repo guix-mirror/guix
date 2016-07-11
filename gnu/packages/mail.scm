@@ -705,12 +705,12 @@ delivery.")
        ("gzip" ,gzip)
        ("bzip2" ,bzip2)
        ("xz" ,xz)
-       ("pcre" ,pcre)
        ("perl" ,perl)
        ("libxt" ,libxt)
        ("libxaw" ,libxaw)))
     (native-inputs
-     `(("perl" ,perl)))
+     `(("pcre" ,pcre "bin")
+       ("perl" ,perl)))
     (arguments
      '(#:phases
        (alist-replace
