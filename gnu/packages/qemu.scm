@@ -320,3 +320,51 @@ capabilities of recent versions of Linux.  The library aims at providing long
 term stable C API initially for the Xen paravirtualization but should be able
 to integrate other virtualization mechanisms if needed.")
     (license lgpl2.1+)))
+
+(define-public libvirt-glib
+  (package
+    (name "libvirt-glib")
+    (version "0.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://libvirt.org/libvirt/glib/"
+                                  "libvirt-glib-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1pahj8qa7k2307sd57rwqwq1hijya02v0sxk91hl3cw48niimcf3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-tests
+           (lambda _
+             (substitute* "tests/test-events.c"
+               (("/bin/true") (which "true")))
+             #t)))))
+    (inputs
+     `(("libxml2" ,libxml2)
+       ("libvirt" ,libvirt)
+       ("gobject-introspection" ,gobject-introspection)
+       ("glib" ,glib)
+       ("openssl" ,openssl)
+       ("cyrus-sasl" ,cyrus-sasl)
+       ("lvm2" ,lvm2) ; for libdevmapper
+       ("libyajl" ,libyajl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)
+       ("glib" ,glib "bin")
+       ("vala" ,vala)))
+    (home-page "http://libvirt.org")
+    (synopsis "GLib wrapper around libvirt")
+    (description "libvirt-glib wraps the libvirt library to provide a
+high-level object-oriented API better suited for glib-based applications, via
+three libraries:
+
+@enumerate
+@item libvirt-glib - GLib main loop integration & misc helper APIs
+@item libvirt-gconfig - GObjects for manipulating libvirt XML documents
+@item libvirt-gobject - GObjects for managing libvirt objects
+@end enumerate
+")
+    (license lgpl2.1+)))
