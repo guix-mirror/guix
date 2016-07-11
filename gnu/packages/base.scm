@@ -732,7 +732,16 @@ GLIBC/HURD for a Hurd host"
               (sha256
                (base32
                 "1f135546j34s9bfkydmx2nhh9vwxlx60jldi80zmsnln6wj3dsxf"))
-              (patches (search-patches "glibc-ldd-x86_64.patch"))))))
+              (patches (search-patches "glibc-ldd-x86_64.patch"))))
+    (arguments
+      (substitute-keyword-arguments (package-arguments glibc)
+        ((#:phases phases)
+         `(modify-phases ,phases
+            (add-before 'configure 'fix-pwd
+              (lambda _
+                ;; Use `pwd' instead of `/bin/pwd' for glibc-2.21
+                (substitute* "configure"
+                  (("/bin/pwd") "pwd"))))))))))
 
 (define-public glibc-locales
   (package
