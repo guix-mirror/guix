@@ -49,6 +49,7 @@
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xml)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:select (gpl2 lgpl2.1+))
   #:use-module (guix packages)
@@ -368,3 +369,39 @@ three libraries:
 @end enumerate
 ")
     (license lgpl2.1+)))
+
+(define-public python-libvirt
+  (package
+    (name "python-libvirt")
+    (version "2.0.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "libvirt-python" version))
+              (sha256
+               (base32
+                "0h0x5lpsx97bvw20pzfcsdmmivximddq4qmn8fk0n55dqv0wn5kq"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-nosetests-path
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "setup.py"
+               (("sys.executable, \"/usr/bin/nosetests\"")
+                (string-append "\"" (which "bash") "\", \""
+                               (which "nosetests") "\"")))
+             #t)))))
+    (inputs
+     `(("libvirt" ,libvirt)
+       ("python-lxml" ,python-lxml)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("python-nose" ,python-nose)))
+    (home-page "http://libvirt.org")
+    (synopsis "Python bindings to libvirt")
+    (description "This package provides Python bindings to the libvirt
+virtualization library.")
+    (license lgpl2.1+)))
+
+(define-public python2-libvirt
+  (package-with-python2 python-libvirt))
