@@ -9727,25 +9727,3 @@ the default Sphinx theme.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
-
-(define-public python-snowballstemmer
-  (package
-    (name "python-snowballstemmer")
-    (version "1.2.1")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "snowballstemmer" version))
-              (sha256
-               (base32
-                "0a0idq4y5frv7qsg2x62jd7rd272749xk4x99misf5rcifk2d7wi"))))
-    (build-system python-build-system)
-    (arguments
-     `(#:tests? #f)) ; no test suite
-    (synopsis "Snowball stemming library collection for Python")
-    (description "This package provides 16 stemmer algorithms generated from
-Snowball algorithms.")
-    (home-page "https://github.com/shibukawa/snowball_py")
-    (license bsd-2)))
-
-(define-public python2-snowballstemmer
-  (package-with-python2 python-snowballstemmer))
