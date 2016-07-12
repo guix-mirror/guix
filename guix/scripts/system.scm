@@ -362,7 +362,7 @@ it atomically, and then run OS's activation script."
        ;; The activation script may modify '%load-path' & co., so protect
        ;; against that.  This is necessary to ensure that
        ;; 'upgrade-shepherd-services' gets to see the right modules when it
-       ;; computes derivations with (gexp->derivation #:modules …).
+       ;; computes derivations with 'gexp->derivation'.
        (save-load-path-excursion
         (primitive-load (derivation->output-path script))))
 

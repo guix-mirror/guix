@@ -601,26 +601,26 @@
       ((one (text-file "one" (random-text)))
        (two (gexp->derivation "two"
                               #~(symlink #$one #$output:chbouib)))
-       (drv (gexp->derivation "ref-graphs"
-                              #~(begin
-                                  (use-modules (guix build store-copy))
-                                  (with-output-to-file #$output
-                                    (lambda ()
-                                      (write (call-with-input-file "guile"
-                                               read-reference-graph))))
-                                  (with-output-to-file #$output:one
-                                    (lambda ()
-                                      (write (call-with-input-file "one"
-                                               read-reference-graph))))
-                                  (with-output-to-file #$output:two
-                                    (lambda ()
-                                      (write (call-with-input-file "two"
-                                               read-reference-graph)))))
+       (build -> (with-imported-modules '((guix build store-copy)
+                                          (guix build utils))
+                   #~(begin
+                       (use-modules (guix build store-copy))
+                       (with-output-to-file #$output
+                         (lambda ()
+                           (write (call-with-input-file "guile"
+                                    read-reference-graph))))
+                       (with-output-to-file #$output:one
+                         (lambda ()
+                           (write (call-with-input-file "one"
+                                    read-reference-graph))))
+                       (with-output-to-file #$output:two
+                         (lambda ()
+                           (write (call-with-input-file "two"
+                                    read-reference-graph)))))))
+       (drv (gexp->derivation "ref-graphs" build
                               #:references-graphs `(("one" ,one)
                                                     ("two" ,two "chbouib")
-                                                    ("guile" ,%bootstrap-guile))
-                              #:modules '((guix build store-copy)
-                                          (guix build utils))))
+                                                    ("guile" ,%bootstrap-guile))))
        (ok? (built-derivations (list drv)))
        (guile-drv  (package->derivation %bootstrap-guile))
        (bash       (interned-file (search-bootstrap-binary "bash"
