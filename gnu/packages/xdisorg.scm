@@ -127,14 +127,14 @@ avoiding password prompts when X11 forwarding has already been setup.")
 (define-public libxkbcommon
   (package
     (name "libxkbcommon")
-    (version "0.5.0")
+    (version "0.6.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://xkbcommon.org/download/" name "-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "176ii5dn2wh74q48sd8ac37ljlvgvp5f506glr96z6ibfhj7igch"))))
+               "0q47xa1szlxwgvwmhv4b7xwawnykz1hnc431d84nj8dlh2q8f22v"))))
     (build-system gnu-build-system)
     (inputs
      `(("libx11" ,libx11)
