@@ -52,12 +52,14 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
   #:use-module (gnu packages machine-learning)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ncurses)
@@ -73,6 +75,7 @@
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tbb)
   #:use-module (gnu packages tex)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
@@ -657,6 +660,45 @@ library provides population genetics-related modules.")
        "Bio++ is a set of C++ libraries for Bioinformatics, including sequence
 analysis, phylogenetics, molecular evolution and population genetics.  This
 library provides sequence-related modules.")
+      (license license:cecill-c))))
+
+(define-public bppsuite
+  ;; The last release was in 2014 and the recommended way to install from source
+  ;; is to clone the git repository, so we do this.
+  ;; http://biopp.univ-montp2.fr/wiki/index.php/Main_Page
+  (let ((commit "c516147f57aa50961121cd505bed52cd7603698b"))
+    (package
+      (name "bppsuite")
+      (version (string-append "2.2.0-1." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "http://biopp.univ-montp2.fr/git/bppsuite")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1y87pxvw0jxjizhq2dr9g2r91md45k1p9ih2sl1yy1y3p934l2kb"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:parallel-build? #f
+         #:tests? #f)) ; There are no tests.
+      (native-inputs
+       `(("groff" ,groff)
+         ("man-db" ,man-db)
+         ("texinfo" ,texinfo)))
+      (inputs
+       `(("bpp-core" ,bpp-core)
+         ("bpp-seq" ,bpp-seq)
+         ("bpp-phyl" ,bpp-phyl)
+         ("bpp-phyl" ,bpp-popgen)
+         ("gcc" ,gcc-5)))
+      (home-page "http://biopp.univ-montp2.fr")
+      (synopsis "Bioinformatics tools written with the Bio++ libraries")
+      (description
+       "Bio++ is a set of C++ libraries for Bioinformatics, including sequence
+analysis, phylogenetics, molecular evolution and population genetics.  This
+package provides command line tools using the Bio++ library.")
       (license license:cecill-c))))
 
 (define-public blast+
