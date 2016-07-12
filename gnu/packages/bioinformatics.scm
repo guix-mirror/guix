@@ -592,6 +592,39 @@ analysis, phylogenetics, molecular evolution and population genetics.  This
 library provides phylogenetics-related modules.")
       (license license:cecill-c))))
 
+(define-public bpp-popgen
+  ;; The last release was in 2014 and the recommended way to install from source
+  ;; is to clone the git repository, so we do this.
+  ;; http://biopp.univ-montp2.fr/wiki/index.php/Main_Page
+  (let ((commit "e472bac9b1a148803895d747cd6d0c5904f85d9f"))
+    (package
+      (name "bpp-popgen")
+      (version (string-append "2.2.0-1." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "http://biopp.univ-montp2.fr/git/bpp-popgen")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "0yn82dzn1n5629nzja68xfrhi655709rjanyryb36vzkmymy6dw5"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:parallel-build? #f
+         #:tests? #f)) ; There are no tests.
+      (inputs
+       `(("bpp-core" ,bpp-core)
+         ("bpp-seq" ,bpp-seq)
+         ("gcc" ,gcc-5)))
+      (home-page "http://biopp.univ-montp2.fr")
+      (synopsis "Bio++ population genetics library")
+      (description
+       "Bio++ is a set of C++ libraries for Bioinformatics, including sequence
+analysis, phylogenetics, molecular evolution and population genetics.  This
+library provides population genetics-related modules.")
+      (license license:cecill-c))))
+
 (define-public bpp-seq
   ;; The last release was in 2014 and the recommended way to install from source
   ;; is to clone the git repository, so we do this.
