@@ -522,6 +522,39 @@ into separate processes; and more.")
     (inputs
      `(("python2-numpy" ,python2-numpy)))))
 
+(define-public bpp-core
+  ;; The last release was in 2014 and the recommended way to install from source
+  ;; is to clone the git repository, so we do this.
+  ;; http://biopp.univ-montp2.fr/wiki/index.php/Main_Page
+  (let ((commit "7d8bced0d1a87291ea8dd7046b7fb5ff9c35c582"))
+    (package
+      (name "bpp-core")
+      (version (string-append "2.2.0-1." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "http://biopp.univ-montp2.fr/git/bpp-core")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "10djsq5vlnkilv436gnmh4irpk49v29pa69r6xiryg32xmvn909j"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:parallel-build? #f))
+      (inputs
+       `(("gcc" ,gcc-5))) ; Compilation of bpp-phyl fails with GCC 4.9 so we
+                          ; compile all of the bpp packages with GCC 5.
+      (home-page "http://biopp.univ-montp2.fr")
+      (synopsis "C++ libraries for Bioinformatics")
+      (description
+       "Bio++ is a set of C++ libraries for Bioinformatics, including sequence
+analysis, phylogenetics, molecular evolution and population genetics.  It is
+Object Oriented and is designed to be both easy to use and computer efficient.
+Bio++ intends to help programmers to write computer expensive programs, by
+providing them a set of re-usable tools.")
+      (license license:cecill-c))))
+
 (define-public blast+
   (package
     (name "blast+")
