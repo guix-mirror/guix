@@ -3380,6 +3380,46 @@ format.  It runs quickly, in an unsupervised fashion, handles gaps, handles
 partial genes, and identifies translation initiation sites.")
     (license license:gpl3+)))
 
+(define-public raxml
+  (package
+    (name "raxml")
+    (version "8.2.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "https://github.com/stamatak/standard-RAxML/archive/v"
+         version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1pv8p2fy67y21a9y4cm7xpvxqjwz2v4201flfjshdq1p8j52rqf7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; There are no tests.
+       ;; Use 'standard' Makefile rather than SSE or AVX ones.
+       #:make-flags (list "-f" "Makefile.HYBRID.gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (executable "raxmlHPC-HYBRID"))
+               (install-file executable bin)
+               (symlink (string-append bin "/" executable) "raxml"))
+             #t)))))
+    (inputs
+     `(("openmpi" ,openmpi)))
+    (home-page "http://sco.h-its.org/exelixis/web/software/raxml/index.html")
+    (synopsis "Randomized Axelerated Maximum Likelihood phylogenetic trees")
+    (description
+     "RAxML is a tool for phylogenetic analysis and post-analysis of large
+phylogenies.")
+    (license license:gpl2+)))
+
 (define-public rsem
   (package
     (name "rsem")
