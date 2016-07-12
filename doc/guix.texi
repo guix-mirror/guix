@@ -2697,8 +2697,9 @@ file name explicitly because the default is not very descriptive.
 A list of file names containing patches to be applied to the source.
 
 @item @code{snippet} (default: @code{#f})
-A quoted piece of code that will be run in the source directory to make
-any modifications, which is sometimes more convenient than a patch.
+A G-expression (@pxref{G-Expressions}) or S-expression that will be run
+in the source directory.  This is a convenient way to modify the source,
+sometimes more convenient than a patch.
 
 @item @code{patch-flags} (default: @code{'("-p1")})
 A list of command-line flags that should be passed to the @code{patch}
@@ -2712,10 +2713,6 @@ such as GNU@tie{}Patch.
 @item @code{modules} (default: @code{'()})
 A list of Guile modules that should be loaded during the patching
 process and while running the code in the @code{snippet} field.
-
-@item @code{imported-modules} (default: @code{'()})
-The list of Guile modules to import in the patch derivation, for use by
-the @code{snippet}.
 
 @item @code{patch-guile} (default: @code{#f})
 The Guile package that should be used in the patching process.  When
