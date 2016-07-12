@@ -1283,6 +1283,28 @@ strings.")
 files and directories.")
     (license license:gpl3+)))
 
+(define-public emacs-el-mock
+  (package
+    (name "emacs-el-mock")
+    (version "1.25.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/rejeep/el-mock.el/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "16xw94n58xxn3zvgyj72bmzs0k5lkvswjmzs79ws9n7rzdivb38b"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/rejeep/el-mock.el")
+    (synopsis "Tiny mock and stub framework in Emacs Lisp")
+    (description
+     "Emacs Lisp Mock is a library for mocking and stubbing using readable
+syntax.  Most commonly Emacs Lisp Mock is used in conjunction with Emacs Lisp
+Expectations, but it can be used in other contexts.")
+    (license license:gpl3+)))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
