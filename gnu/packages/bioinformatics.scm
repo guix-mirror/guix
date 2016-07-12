@@ -555,6 +555,43 @@ Bio++ intends to help programmers to write computer expensive programs, by
 providing them a set of re-usable tools.")
       (license license:cecill-c))))
 
+(define-public bpp-phyl
+  ;; The last release was in 2014 and the recommended way to install from source
+  ;; is to clone the git repository, so we do this.
+  ;; http://biopp.univ-montp2.fr/wiki/index.php/Main_Page
+  (let ((commit "0c07167b629f68b569bf274d1ad0c4af83276ae2"))
+    (package
+      (name "bpp-phyl")
+      (version (string-append "2.2.0-1." (string-take commit 7)))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "http://biopp.univ-montp2.fr/git/bpp-phyl")
+                      (commit commit)))
+                (file-name (string-append name "-" version "-checkout"))
+                (sha256
+                 (base32
+                  "1ssjgchzwj3iai26kyly7gwkdv8sk59nqhkb1wpap3sf5m6kyllh"))))
+      (build-system cmake-build-system)
+      (arguments
+       `(#:parallel-build? #f
+         ;; If out-of-source, test data is not copied into the build directory
+         ;; so the tests fail.
+         #:out-of-source? #f))
+      (inputs
+       `(("bpp-core" ,bpp-core)
+         ("bpp-seq" ,bpp-seq)
+         ;; GCC 4.8 fails due to an 'internal compiler error', so we use a more
+         ;; modern GCC.
+         ("gcc" ,gcc-5)))
+      (home-page "http://biopp.univ-montp2.fr")
+      (synopsis "Bio++ phylogenetic Library")
+      (description
+       "Bio++ is a set of C++ libraries for Bioinformatics, including sequence
+analysis, phylogenetics, molecular evolution and population genetics.  This
+library provides phylogenetics-related modules.")
+      (license license:cecill-c))))
+
 (define-public bpp-seq
   ;; The last release was in 2014 and the recommended way to install from source
   ;; is to clone the git repository, so we do this.
