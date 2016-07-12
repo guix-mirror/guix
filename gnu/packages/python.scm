@@ -9674,29 +9674,3 @@ implementation for Python.")
       (native-inputs
        `(("python2-ipaddress" ,python2-ipaddress)
          ,@(package-native-inputs base))))))
-
-(define-public python-imagesize
-  (package
-    (name "python-imagesize")
-    (version "0.7.1")
-    (source (origin
-              (method url-fetch)
-              (uri (pypi-uri "imagesize" version))
-              (sha256
-               (base32
-                "0qk07k0z4241lkzzjji7z4da04pcvg7bfc4xz1934zlqhwmwdcha"))))
-    (build-system python-build-system)
-    (synopsis "Calculate the size of an image")
-    (description "This Python module returns the size of an image.  It supports
-the PNG, JPEG, JPEG 2000, and GIF formats.")
-    (home-page "https://github.com/shibukawa/imagesize_py")
-    (license license:expat)
-    (properties `((python2-variant . ,(delay python2-imagesize))))))
-
-(define-public python2-imagesize
-  (let ((base (package-with-python2 (strip-python2-variant python-imagesize))))
-    (package
-      (inherit base)
-      (native-inputs
-       `(("python2-setuptools" ,python2-setuptools)
-         ,@(package-native-inputs base))))))
