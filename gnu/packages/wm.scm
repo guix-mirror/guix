@@ -393,7 +393,6 @@ experience.")
                "1m910lr7wkw2dgzmirfvz7dasfswhhccdf65l21iiciv24c3w1bb"))
              (modules '((guix build utils)
                         (srfi srfi-19)))
-             (imported-modules '((guix build utils)))
              (snippet
               ;; Remove non-reproducible timestamp and use the date of the
               ;; source file instead.

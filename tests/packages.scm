@@ -335,7 +335,6 @@
                        ("patch" ,%bootstrap-coreutils&co)))
                     (patch-guile %bootstrap-guile)
                     (modules '((guix build utils)))
-                    (imported-modules modules)
                     (snippet '(begin
                                 ;; We end up in 'bin', because it's the first
                                 ;; directory, alphabetically.  Not a very good
