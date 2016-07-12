@@ -65,6 +65,7 @@
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages parallel)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -3379,6 +3380,121 @@ metagenomes, providing gene predictions in GFF3, Genbank, or Sequin table
 format.  It runs quickly, in an unsupervised fashion, handles gaps, handles
 partial genes, and identifies translation initiation sites.")
     (license license:gpl3+)))
+
+(define-public roary
+  (package
+    (name "roary")
+    (version "3.6.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/A/AJ/AJPAGE/Bio-Roary-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0g0pzcv8y7n2w8q7c9q0a7s2ghkwci6w8smg9mjw4agad5cd7yaw"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (delete 'build)
+         (replace 'check
+           (lambda _
+             ;; The tests are not run by default, so we run each test file
+             ;; directly.
+             (setenv "PATH" (string-append (getcwd) "/bin" ":"
+                                           (getenv "PATH")))
+             (setenv "PERL5LIB" (string-append (getcwd) "/lib" ":"
+                                               (getenv "PERL5LIB")))
+             (zero? (length (filter (lambda (file)
+                                      (display file)(display "\n")
+                                      (not (zero? (system* "perl" file))))
+                                    (find-files "t" ".*\\.t$"))))))
+         (replace 'install
+           ;; There is no 'install' target in the Makefile.
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (perl (string-append out "/lib/perl5/site_perl"))
+                    (roary-plots "contrib/roary_plots"))
+               (mkdir-p bin)
+               (mkdir-p perl)
+               (copy-recursively "bin" bin)
+               (copy-recursively "lib" perl)
+               #t)))
+         (add-after 'install 'wrap-programs
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (perl5lib (getenv "PERL5LIB"))
+                    (path (getenv "PATH")))
+               (for-each (lambda (prog)
+                           (let ((binary (string-append out "/" prog)))
+                             (wrap-program binary
+                               `("PERL5LIB" ":" prefix
+                                 (,(string-append perl5lib ":" out
+                                                  "/lib/perl5/site_perl"))))
+                             (wrap-program binary
+                               `("PATH" ":" prefix
+                                 (,(string-append path ":" out "/bin"))))))
+                         (find-files "bin" ".*[^R]$"))
+               (let ((file
+                      (string-append out "/bin/roary-create_pan_genome_plots.R"))
+                     (r-site-lib (getenv "R_LIBS_SITE"))
+                     (coreutils-path
+                      (string-append (assoc-ref inputs "coreutils") "/bin")))
+                 (wrap-program file
+                   `("R_LIBS_SITE" ":" prefix
+                     (,(string-append r-site-lib ":" out "/site-library/"))))
+                 (wrap-program file
+                   `("PATH" ":" prefix
+                     (,(string-append coreutils-path ":" out "/bin"))))))
+             #t)))))
+    (native-inputs
+     `(("perl-env-path" ,perl-env-path)
+       ("perl-test-files" ,perl-test-files)
+       ("perl-test-most" ,perl-test-most)
+       ("perl-test-output" ,perl-test-output)))
+    (inputs
+     `(("perl-array-utils" ,perl-array-utils)
+       ("bioperl" ,bioperl-minimal)
+       ("perl-exception-class" ,perl-exception-class)
+       ("perl-file-find-rule" ,perl-file-find-rule)
+       ("perl-file-grep" ,perl-file-grep)
+       ("perl-file-slurper" ,perl-file-slurper)
+       ("perl-file-which" ,perl-file-which)
+       ("perl-graph" ,perl-graph)
+       ("perl-graph-readwrite" ,perl-graph-readwrite)
+       ("perl-log-log4perl" ,perl-log-log4perl)
+       ("perl-moose" ,perl-moose)
+       ("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)
+       ("perl-text-csv" ,perl-text-csv)
+       ("bedtools" ,bedtools)
+       ("cd-hit" ,cd-hit)
+       ("blast+" ,blast+)
+       ("mcl" ,mcl)
+       ("parallel" ,parallel)
+       ("prank" ,prank)
+       ("mafft" ,mafft)
+       ("fasttree" ,fasttree)
+       ("grep" ,grep)
+       ("sed" ,sed)
+       ("gawk" ,gawk)
+       ("r" ,r)
+       ("r-ggplot2" ,r-ggplot2)
+       ("coreutils" ,coreutils)))
+    (home-page "http://sanger-pathogens.github.io/Roary")
+    (synopsis "High speed stand-alone pan genome pipeline")
+    (description
+     "Roary is a high speed stand alone pan genome pipeline, which takes
+annotated assemblies in GFF3 format (produced by the Prokka program) and
+calculates the pan genome.  Using a standard desktop PC, it can analyse
+datasets with thousands of samples, without compromising the quality of the
+results.  128 samples can be analysed in under 1 hour using 1 GB of RAM and a
+single processor.  Roary is not intended for metagenomics or for comparing
+extremely diverse sets of genomes.")
+    (license license:gpl3)))
 
 (define-public raxml
   (package
