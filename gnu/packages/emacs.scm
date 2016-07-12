@@ -2073,6 +2073,30 @@ number.")
 It is built on top of the custom theme support in Emacs 24 or later.")
     (license license:gpl3+)))
 
+(define-public emacs-solarized-theme
+  (package
+    (name "emacs-solarized-theme")
+    (version "1.2.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/bbatsov/solarized-emacs/"
+                                  "archive/v"  version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ha3slc6d9wi9ilkhmwrzkvf308n6ph7b0k69pk369s9304awxzx"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)
+       ("emacs-s" ,emacs-s)))
+    (home-page "http://github.com/bbatsov/solarized-emacs")
+    (synopsis "Port of the Solarized theme for Emacs")
+    (description
+     "Solarized for Emacs is a port of the Solarized theme for Vim.  This
+package provides a light and a dark variant.")
+    (license license:gpl3+)))
+
 (define-public emacs-smartparens
   (package
     (name "emacs-smartparens")
