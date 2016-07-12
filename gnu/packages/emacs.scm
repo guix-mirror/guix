@@ -1412,6 +1412,30 @@ IRC bouncer with ERC.")
 Emacs shell script.")
     (license license:expat)))
 
+(define-public emacs-undercover
+  (package
+    (name "emacs-undercover")
+    (version "0.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/sviridov/undercover.el/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0f48fi0xnbsqs382rgh85m9mq1wdnr0yib7as9xhwzvq0hsr5m0a"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-dash" ,emacs-dash)
+       ("emacs-shut-up" ,emacs-shut-up)))
+    (home-page "https://github.com/sviridov/undercover.el")
+    (synopsis "Test coverage library for Emacs Lisp")
+    (description
+     "Undercover is a test coverage library for software written in Emacs
+Lisp.")
+    (license license:expat)))
+
 (define-public emacs-paren-face
   (package
     (name "emacs-paren-face")
