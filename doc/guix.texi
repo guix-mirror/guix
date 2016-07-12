@@ -3898,10 +3898,9 @@ This is the declarative counterpart of @code{text-file}.
 @end deffn
 
 @deffn {Scheme Procedure} computed-file @var{name} @var{gexp} @
-          [#:modules '()] [#:options '(#:local-build? #t)]
+          [#:options '(#:local-build? #t)]
 Return an object representing the store item @var{name}, a file or
-directory computed by @var{gexp}.  @var{modules} specifies the set of
-modules visible in the execution context of @var{gexp}.  @var{options}
+directory computed by @var{gexp}.  @var{options}
 is a list of additional arguments to pass to @code{gexp->derivation}.
 
 This is the declarative counterpart of @code{gexp->derivation}.
