@@ -258,6 +258,21 @@ intervals from multiple files in widely-used genomic file formats such as BAM,
 BED, GFF/GTF, VCF.")
     (license license:gpl2)))
 
+;; Later releases of bedtools produce files with more columns than
+;; what Ribotaper expects.
+(define-public bedtools-2.18
+  (package (inherit bedtools)
+    (name "bedtools")
+    (version "2.18.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/arq5x/bedtools2/"
+                                  "archive/v" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "05vrnr8yp7swfagshzpgqmzk1blnwnq8pq5pckzi1m26w98d63vf"))))))
+
 (define-public bioawk
   (package
     (name "bioawk")
