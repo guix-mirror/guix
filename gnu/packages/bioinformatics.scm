@@ -52,6 +52,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages image)
   #:use-module (gnu packages imagemagick)
@@ -1995,6 +1996,36 @@ extraction of data from document summaries or other results that are returned
 in structured XML format.  This can eliminate the need for writing custom
 software to answer ad hoc questions.")
     (license license:public-domain)))
+
+(define-public exonerate
+  (package
+    (name "exonerate")
+    (version "2.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append
+         "http://ftp.ebi.ac.uk/pub/software/vertebrategenomics/exonerate/"
+         "exonerate-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0hj0m9xygiqsdxvbg79wq579kbrx1mdrabi2bzqz2zn9qwfjcjgq"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:parallel-build? #f)) ; Building in parallel fails on some machines.
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)))
+    (home-page
+     "https://www.ebi.ac.uk/about/vertebrate-genomics/software/exonerate")
+    (synopsis "Generic tool for biological sequence alignment")
+    (description
+     "Exonerate is a generic tool for pairwise sequence comparison.  It allows
+the alignment of sequences using a many alignment models, either exhaustive
+dynamic programming or a variety of heuristics.")
+    (license license:gpl3)))
 
 (define-public express
   (package
