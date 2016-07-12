@@ -33,6 +33,7 @@
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages statistics)
@@ -199,6 +200,36 @@ additional Python bindings implementing a wide range of types of @dfn{Hidden
 Markov Models} (HMM) and algorithms: discrete, continous emissions, basic
 training, HMM clustering, HMM mixtures.")
       (license license:lgpl2.0+))))
+
+(define-public mcl
+  (package
+    (name "mcl")
+    (version "14.137")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://micans.org/mcl/src/mcl-"
+                    (string-replace-substring version "." "-")
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "15xlax3z31lsn62vlg94hkm75nm40q4679amnfg13jm8m2bnhy5m"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list "--enable-blast")))
+    (inputs
+     `(("perl" ,perl)))
+    (home-page "http://micans.org/mcl/")
+    (synopsis "Clustering algorithm for graphs")
+    (description
+     "The MCL algorithm is short for the @dfn{Markov Cluster Algorithm}, a
+fast and scalable unsupervised cluster algorithm for graphs (also known as
+networks) based on simulation of (stochastic) flow in graphs.")
+    ;; In the LICENCE file and web page it says "The software is licensed
+    ;; under the GNU General Public License, version 3.", but in several of
+    ;; the source code files it suggests GPL3 or later.
+    ;; http://listserver.ebi.ac.uk/pipermail/mcl-users/2016/000376.html
+    (license license:gpl3)))
 
 (define-public randomjungle
   (package
