@@ -64,14 +64,14 @@
 (define-public arandr
   (package
     (name "arandr")
-    (version "0.1.8")
+    (version "0.1.9")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://christian.amsuess.com/tools/" name
                                   "/files/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0d574mbmhaqmh7kivaryj2hpghz6xkvic9ah43s1hf385y7c33kd"))))
+                "1i3f1agixxbfy4kxikb2b241p7c2lg73cl9wqfvlwz3q6zf5faxv"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2     ;incompatible with python 3
