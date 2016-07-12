@@ -1392,6 +1392,26 @@ column by drawing a thin line down the length of the editing window.")
 IRC bouncer with ERC.")
     (license license:expat)))
 
+(define-public emacs-shut-up
+  (package
+    (name "emacs-shut-up")
+    (version "0.3.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/cask/shut-up/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "09kzrjdkb569iviyg7ydwq44yh84m3f9hkl7jizfrlk0w4gz67d1"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/cask/shut-up")
+    (synopsis "Silence Emacs")
+    (description "This package silences most output of Emacs when running an
+Emacs shell script.")
+    (license license:expat)))
+
 (define-public emacs-paren-face
   (package
     (name "emacs-paren-face")
