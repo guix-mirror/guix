@@ -244,6 +244,27 @@ manipulate, read, and write Zip archive files.")
     (home-page "http://search.cpan.org/~phred/Archive-Zip-1.37/lib/Archive/Zip.pm")
     (license (package-license perl))))
 
+(define-public perl-array-utils
+  (package
+    (name "perl-array-utils")
+    (version "0.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/Z/ZM/ZMIJ/Array/Array-Utils-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0w1pwvnjdpb0n6k07zbknxwx6v7y75p4jxrs594pjhwvrmzippc9"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Array-Utils")
+    (synopsis "Small utils for array manipulation")
+    (description "@code{Array::Utils} is a small pure-perl module containing
+list manipulation routines.")
+    (license (package-license perl))))
+
 (define-public perl-base
   (package
     (name "perl-base")
