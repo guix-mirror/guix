@@ -49,11 +49,16 @@
        ("perl" ,perl)))
     (arguments
      `(#:configure-flags
-       ;; By default, man and info pages are put in PREFIX/{man,info},
-       ;; but we want them in PREFIX/share/{man,info}.
        (let ((out (assoc-ref %outputs "out")))
-         (list (string-append "--mandir=" out "/share/man")
-               (string-append "--infodir=" out "/share/info")))))
+         (list
+          ;; By default, man and info pages are put in PREFIX/{man,info},
+          ;; but we want them in PREFIX/share/{man,info}.
+          (string-append "--mandir=" out "/share/man")
+          (string-append "--infodir=" out "/share/info")
+
+          ;; By default, screen supports 16 colors, but we want 256 when
+          ;; ~/.screenrc contains 'term xterm-256color'
+          "--enable-colors256"))))
     (home-page "http://www.gnu.org/software/screen/")
     (synopsis "Full-screen window manager providing multiple terminals")
     (description
