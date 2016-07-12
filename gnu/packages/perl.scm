@@ -2281,6 +2281,29 @@ types Perl-related files, or replicating search queries run on a distribution
 in various parts of the CPAN ecosystem.")
     (license (package-license perl))))
 
+(define-public perl-file-grep
+  (package
+    (name "perl-file-grep")
+    (version "0.02")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/MN/MNEYLON/File-Grep-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0cjnz3ak7s3x3y3q48xb9ka2q9d7xvch58vy80hqa9xn9qkiabj6"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/File-Grep")
+    (synopsis "Matches patterns in a series of files")
+    (description "@code{File::Grep} provides similar functionality as perl's
+builtin @code{grep}, @code{map}, and @code{foreach} commands, but iterating
+over a passed filelist instead of arrays.  While trivial, this module can
+provide a quick dropin when such functionality is needed.")
+    (license (package-license perl))))
+
 (define-public perl-file-homedir
   (package
     (name "perl-file-homedir")
