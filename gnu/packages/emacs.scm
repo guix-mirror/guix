@@ -710,7 +710,8 @@ the body are let-bound and this search is done at compile time.")
     (build-system emacs-build-system)
     (propagated-inputs
      `(("emacs-dash" ,emacs-dash)
-       ("emacs-let-alist" ,let-alist)))
+       ("emacs-let-alist" ,let-alist)
+       ("emacs-seq" ,emacs-seq)))
     (home-page "https://www.flycheck.org")
     (synopsis "On-the-fly syntax checking")
     (description
