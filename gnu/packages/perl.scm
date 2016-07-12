@@ -2306,6 +2306,28 @@ that arise trying to find them consistently across a wide variety of
 platforms.")
     (license (package-license perl))))
 
+(define-public perl-file-path
+  (package
+    (name "perl-file-path")
+    (version "2.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/R/RI/RICHE/File-Path-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0znihrlcnlpa0ziml0hkq9s59p1bjd2a6khgx2accdf16w6imxmv"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/File-Path")
+    (synopsis "Create or remove directory trees")
+    (description "This module provide a convenient way to create directories
+of arbitrary depth and to delete an entire directory subtree from the
+filesystem.")
+    (license (package-license perl))))
+
 (define-public perl-file-list
   (package
     (name "perl-file-list")
