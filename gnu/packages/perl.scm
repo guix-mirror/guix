@@ -2423,6 +2423,29 @@ files with a simple call.  It also has a subroutine for reading the list of
 file names in a directory.")
     (license (package-license perl))))
 
+(define-public perl-file-slurper
+  (package
+    (name "perl-file-slurper")
+    (version "0.008")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/L/LE/LEONT/File-Slurper-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0cyjspspms6zyjcqz9v18dbs574g085h2jzjh41xvsrc1qa8bxhh"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)))
+    (home-page "http://search.cpan.org/dist/File-Slurper")
+    (synopsis "Simple, sane and efficient module to slurp a file")
+    (description "This module provides functions for fast and correct file
+slurping and spewing.  All functions are optionally exported.")
+    (license (package-license perl))))
+
 (define-public perl-file-slurp-tiny
   (package
     (name "perl-file-slurp-tiny")
