@@ -2717,14 +2717,16 @@ sources.")
 (define-public python-sphinx-rtd-theme
   (package
     (name "python-sphinx-rtd-theme")
-    (version "0.1.9")
+    (version "0.1.6")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "sphinx_rtd_theme" version))
+       (uri (string-append "https://pypi.python.org/packages/source/s/"
+                           "sphinx_rtd_theme/sphinx_rtd_theme-"
+                           version ".tar.gz"))
        (sha256
         (base32
-         "18d0r63w7jpdrk4q5qy26n08vdlmnj9sar93akwjphyambw4cf17"))))
+         "19nw3rn7awplcdrz63kg1njqwkbymfg9lwn7l2grhdyhyr2gaa8g"))))
     (build-system python-build-system)
     (arguments
      `(;; With standard flags, the install phase attempts to create a zip'd
