@@ -2124,6 +2124,33 @@ moving to the next or previous keyword and to invoke @code{occur} with a
 regexp that matches all known keywords.")
     (license license:gpl3+)))
 
+(define-public emacs-perspective
+  (package
+    (name "emacs-perspective")
+    (version "1.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/nex3/perspective-el/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "078ahh0kmhdylq5ib9c81c76kz1n02xwc83pm729d00i84ibviic"))))
+    (build-system emacs-build-system)
+    (home-page "http://github.com/nex3/perspective-el")
+    (synopsis "Switch between named \"perspectives\"")
+    (description
+     "This package provides tagged workspaces in Emacs, similar to workspaces in
+windows managers such as Awesome and XMonad.  @code{perspective.el} provides
+multiple workspaces (or \"perspectives\") for each Emacs frame.  Each
+perspective is composed of a window configuration and a set of buffers.
+Switching to a perspective activates its window configuration, and when in a
+perspective only its buffers are available by default.")
+    ;; This package is released under the same license as Emacs (GPLv3+) or
+    ;; the Expat license.
+    (license license:gpl3+)))
+
 (define-public emacs-hydra
   (package
     (name "emacs-hydra")
