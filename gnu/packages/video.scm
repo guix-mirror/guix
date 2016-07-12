@@ -26,6 +26,8 @@
 
 (define-module (gnu packages video)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -1403,7 +1405,21 @@ be used for realtime video capture via Linux-specific APIs.")
                (base32
                 "18fycg7xlj2i89wdb9c5js0bnl964s1lpmnvmfyj11zi9k061wsg"))))
     (build-system cmake-build-system)
-    (arguments '(#:tests? #f)) ; no tests
+    (arguments
+     `(#:tests? #f ; no tests
+       ,@(if (any (cute string-prefix? <> (or (%current-target-system)
+                                              (%current-system)))
+                  '("arm" "mips"))
+           '(#:phases
+             (modify-phases %standard-phases
+             (add-after 'unpack 'remove-architecture-specific-instructions
+               ;; non-Intel platforms fail to build with the architecture
+               ;; specific compiler flags included by default.
+               (lambda _
+                 (substitute* "libobs/CMakeLists.txt"
+                              (("if\\(NOT MSVC\\)") "if(MSVC)"))
+                 #t))))
+           '())))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
