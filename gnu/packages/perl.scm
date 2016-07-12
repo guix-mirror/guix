@@ -2551,6 +2551,27 @@ vaguely inspired by John Ousterhout's Tk_ParseArgv.")
                               "Getopt-Tabular-" version))
     (license (package-license perl))))
 
+(define-public perl-graph
+  (package
+    (name "perl-graph")
+    (version "0.9704")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/J/JH/JHI/Graph-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "099a1gca0wj5zs0cffncjqp2mjrdlk9i6325ks89ml72gfq8wpij"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Graph")
+    (synopsis "Graph data structures and algorithms")
+    (description "This is @code{Graph}, a Perl module for dealing with graphs,
+the abstract data structures.")
+    (license (package-license perl))))
+
 (define-public perl-guard
   (package
     (name "perl-guard")
