@@ -1,3 +1,4 @@
+
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2015 Andreas Enge <andreas@enge.fr>
@@ -9,6 +10,7 @@
 ;;; Copyright © 2015 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -150,6 +152,38 @@ project (but it is usable outside of the Gnome platform).")
      "Libxslt is an XSLT C library developed for the GNOME project.  It is
 based on libxml for XML parsing, tree manipulation and XPath support.")
     (license license:x11)))
+
+(define-public perl-graph-readwrite
+  (package
+    (name "perl-graph-readwrite")
+    (version "2.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/N/NE/NEILB/Graph-ReadWrite-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1wjni212nfz9irp19nx9if1lj3w9cybpdbzhii4g8macpryjj7ci"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-graph" ,perl-graph)
+       ("perl-parse-yapp" ,perl-parse-yapp)
+       ("perl-xml-parser" ,perl-xml-parser)
+       ("perl-xml-writer" ,perl-xml-writer)))
+    (home-page "http://search.cpan.org/dist/Graph-ReadWrite")
+    (synopsis "Modules for reading and writing directed graphs")
+    (description "This is a collection of perl classes for reading and writing
+directed graphs in a variety of file formats.  The graphs are represented in
+Perl using Jarkko Hietaniemi's @code{Graph} classes.
+
+There are two base classes. @code{Graph::Reader} is the base class for classes
+which read a graph file and create an instance of the Graph class.
+@code{Graph::Writer} is the base class for classes which take an instance of
+the @code{Graph} class and write it out in a specific file format.")
+    (license (package-license perl))))
 
 (define-public perl-xml-parser
   (package
