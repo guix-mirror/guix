@@ -1305,6 +1305,30 @@ syntax.  Most commonly Emacs Lisp Mock is used in conjunction with Emacs Lisp
 Expectations, but it can be used in other contexts.")
     (license license:gpl3+)))
 
+(define-public emacs-espuds
+  (package
+    (name "emacs-espuds")
+    (version "0.3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/ecukes/espuds/"
+                           "archive/v" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0xv551376pbmh735a3zjwc9z4qdx6ngj1vpq3xqjpn0a1rwjyn4k"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)
+       ("emacs-dash" ,emacs-dash)
+       ("emacs-f" ,emacs-f)))
+    (home-page "http://github.com/ecukes/espuds")
+    (synopsis "Common step definitions for Ecukes")
+    (description "Espuds is a collection of the most commonly used step
+definitions for testing with the Ecukes framework.")
+    (license license:gpl3+)))
+
 (define-public emacs-ob-ipython
   (package
     (name "emacs-ob-ipython")
