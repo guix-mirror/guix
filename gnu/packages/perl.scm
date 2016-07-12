@@ -6588,6 +6588,27 @@ YAML-style files, written with as little code as possible, reducing load time
 and memory overhead.")
     (license (package-license perl))))
 
+(define-public perl-parse-yapp
+  (package
+    (name "perl-parse-yapp")
+    (version "1.05")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/F/FD/FDESAR/Parse-Yapp-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0azjqqf4m7nkfgmmj4q77vy9sdgg01wn8xxv40bq3pis93xnr2i2"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Parse-Yapp")
+    (synopsis "Generate and use LALR parsers")
+    (description "This package compiles yacc-like @dfn{Look Ahead LR} (LALR)
+grammars to generate Perl object oriented parser modules.")
+    (license (package-license perl))))
+
 
 ;;; Some packaged modules need versions of core modules that are newer than
 ;;; those in our perl 5.16.1.
