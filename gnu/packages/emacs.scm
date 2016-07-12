@@ -1851,6 +1851,30 @@ identifiers in the MIT-Scheme documentation.")
 constants and units into an Emacs buffer.")
     (license license:gpl2+)))
 
+(define-public emacs-tagedit
+  (package
+    (name "emacs-tagedit")
+    (version "1.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/magnars/tagedit/"
+                           "archive/" version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1apfnann4qklfdsmdi7icjsj18x7gwx8d83iqr4z25clszz95xfq"))))
+    (build-system emacs-build-system)
+    (propagated-inputs
+     `(("emacs-s" ,emacs-s)
+       ("emacs-dash" ,emacs-dash)))
+    (home-page "https://github.com/magnars/tagedit")
+    (synopsis "Some paredit-like features for html-mode")
+    (description
+     "This package provides a collection of paredit-like functions for editing
+in @code{html-mode}.")
+    (license license:gpl3+)))
+
 (define-public emacs-slime
   (package
     (name "emacs-slime")
