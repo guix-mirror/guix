@@ -639,7 +639,7 @@ Guile will work for XBindKeys.")
 (define-public sxhkd
   (package
     (name "sxhkd")
-    (version "0.5.5")
+    (version "0.5.6")
     (source
      (origin
        (file-name (string-append name "-" version ".tar.gz"))
@@ -649,7 +649,7 @@ Guile will work for XBindKeys.")
              version ".tar.gz"))
        (sha256
         (base32
-         "04s3y2bq9502gw72jj3y2zsh96yj3qg2av3zsa8ahd2farvrysg6"))))
+         "15grmzpxz5fqlbfg2slj7gb7r6nzkvjmflmbkqx7mlby9pm6wdkj"))))
     (build-system gnu-build-system)
     (inputs
      `(("asciidoc" ,asciidoc)
