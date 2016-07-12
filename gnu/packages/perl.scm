@@ -10,6 +10,7 @@
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
+;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -6513,6 +6514,33 @@ operations (such as access, assignment or destruction) that can be applied to
 it.  With this module, you can add your own magic to any variable without
 having to write a single line of XS.")
     (license (package-license perl))))
+
+(define-public perl-xml-writer
+  (package
+    (name "perl-xml-writer")
+    (version "0.625")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/J/JO/JOSEPHW/XML-Writer-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1gjzs570i67ywbv967g8ylb5sg59clwmyrl2yix3jl70dhn55070"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/XML-Writer")
+    (synopsis "Easily generate well-formed, namespace-aware XML")
+    (description "@code{XML::Writer} is a simple Perl module for writing XML
+documents: it takes care of constructing markup and escaping data correctly.
+By default, it also performs a significant amount of well-formedness checking
+on the output to make certain (for example) that start and end tags match,
+that there is exactly one document element, and that there are not duplicate
+attribute names.")
+    ;; Redistribution and use in source and compiled forms, with or without
+    ;; modification, are permitted under any circumstances.  No warranty.
+    (license public-domain)))
 
 (define-public perl-yaml
   (package
