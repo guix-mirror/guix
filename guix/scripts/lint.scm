@@ -359,7 +359,22 @@ warning for PACKAGE mentionning the FIELD."
                 (probe-uri uri #:timeout 3)))     ;wait at most 3 seconds
     (case status
       ((http-response)
-       (or (= 200 (response-code argument))
+       (if (= 200 (response-code argument))
+           (match (response-content-length argument)
+             ((? number? length)
+              ;; As of July 2016, SourceForge returns 200 (instead of 404)
+              ;; with a small HTML page upon failure.  Attempt to detect such
+              ;; malicious behavior.
+              (or (> length 1000)
+                  (begin
+                    (emit-warning package
+                                  (format #f
+                                          (_ "URI ~a returned \
+suspiciously small file (~a bytes)")
+                                          (uri->string uri)
+                                          length))
+                    #f)))
+             (_ #t))
            (begin
              (emit-warning package
                            (format #f
