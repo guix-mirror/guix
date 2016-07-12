@@ -3259,6 +3259,58 @@ the phenotype as it models the data.")
 generated using the PacBio Iso-Seq protocol.")
       (license license:bsd-3))))
 
+(define-public prank
+  (package
+    (name "prank")
+    (version "150803")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://wasabiapp.org/download/prank/prank.source."
+                    version ".tgz"))
+              (sha256
+               (base32
+                "0am4z94fs3w2n5xpfls9zda61vq7qqz4q2i7b9hlsxz5q4j3kfm4"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-src-dir
+            (lambda _
+              (chdir "src")
+              #t))
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin"))
+                    (man (string-append out "/share/man/man1"))
+                    (path (string-append
+                           (assoc-ref %build-inputs "mafft") "/bin:"
+                           (assoc-ref %build-inputs "exonerate") "/bin:"
+                           (assoc-ref %build-inputs "bppsuite") "/bin")))
+               (install-file "prank" bin)
+               (wrap-program (string-append bin "/prank")
+                 `("PATH" ":" prefix (,path)))
+               (install-file "prank.1" man))
+             #t)))))
+    (inputs
+     `(("mafft" ,mafft)
+       ("exonerate" ,exonerate)
+       ("bppsuite" ,bppsuite)))
+    (home-page "http://wasabiapp.org/software/prank/")
+    (synopsis "Probabilistic multiple sequence alignment program")
+    (description
+     "PRANK is a probabilistic multiple sequence alignment program for DNA,
+codon and amino-acid sequences.  It is based on a novel algorithm that treats
+insertions correctly and avoids over-estimation of the number of deletion
+events.  In addition, PRANK borrows ideas from maximum likelihood methods used
+in phylogenetics and correctly takes into account the evolutionary distances
+between sequences.  Lastly, PRANK allows for defining a potential structure
+for sequences to be aligned and then, simultaneously with the alignment,
+predicts the locations of structural units in the sequences.")
+    (license license:gpl2+)))
+
 (define-public pyicoteo
   (package
     (name "pyicoteo")
