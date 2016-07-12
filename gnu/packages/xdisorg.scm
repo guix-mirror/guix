@@ -297,7 +297,7 @@ and Matrox.")
 (define-public mtdev
   (package
     (name "mtdev")
-    (version "1.1.3")
+    (version "1.1.5")
     (source
       (origin
         (method url-fetch)
@@ -305,8 +305,8 @@ and Matrox.")
                "http://bitmath.org/code/mtdev/mtdev-"
                version ".tar.bz2"))
         (sha256
-          (base32
-            "159ndzwfpw0xr8mw4lhl47w9c2krshlfrscs7k6n186vknv2hk3d"))))
+         (base32
+          "0zxs7shzgbalkvlaiibi25bd902rbmkv9n1lww6q8j3ri9qdaxv6"))))
     (build-system gnu-build-system)
     (home-page "http://bitmath.org/code/mtdev/")
     (synopsis "Multitouch protocol translation library")
