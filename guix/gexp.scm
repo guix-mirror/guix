@@ -56,7 +56,6 @@
             program-file?
             program-file-name
             program-file-gexp
-            program-file-modules
             program-file-guile
 
             scheme-file
@@ -296,29 +295,25 @@ This is the declarative counterpart of 'gexp->derivation'."
      (apply gexp->derivation name gexp options))))
 
 (define-record-type <program-file>
-  (%program-file name gexp modules guile)
+  (%program-file name gexp guile)
   program-file?
   (name       program-file-name)                  ;string
   (gexp       program-file-gexp)                  ;gexp
-  (modules    program-file-modules)               ;list of module names
   (guile      program-file-guile))                ;package
 
-(define* (program-file name gexp
-                       #:key (modules '()) (guile #f))
+(define* (program-file name gexp #:key (guile #f))
   "Return an object representing the executable store item NAME that runs
-GEXP.  GUILE is the Guile package used to execute that script, and MODULES is
-the list of modules visible to that script.
+GEXP.  GUILE is the Guile package used to execute that script.
 
 This is the declarative counterpart of 'gexp->script'."
-  (%program-file name gexp modules guile))
+  (%program-file name gexp guile))
 
 (define-gexp-compiler (program-file-compiler (file program-file?)
                                              system target)
   ;; Compile FILE by returning a derivation that builds the script.
   (match file
-    (($ <program-file> name gexp modules guile)
+    (($ <program-file> name gexp guile)
      (gexp->script name gexp
-                   #:modules modules
                    #:guile (or guile (default-guile))))))
 
 (define-record-type <scheme-file>
@@ -1000,13 +995,11 @@ they can refer to each other."
                             %load-compiled-path)))))))
 
 (define* (gexp->script name exp
-                       #:key (modules '()) (guile (default-guile)))
-  "Return an executable script NAME that runs EXP using GUILE with MODULES in
-its search path."
-  (define %modules
-    (append (gexp-modules exp) modules))
-
-  (mlet %store-monad ((set-load-path (load-path-expression %modules)))
+                       #:key (guile (default-guile)))
+  "Return an executable script NAME that runs EXP using GUILE, with EXP's
+imported modules in its search path."
+  (mlet %store-monad ((set-load-path
+                       (load-path-expression (gexp-modules exp))))
     (gexp->derivation name
                       (gexp
                        (call-with-output-file (ungexp output)

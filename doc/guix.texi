@@ -3908,7 +3908,7 @@ This is the declarative counterpart of @code{gexp->derivation}.
 
 @deffn {Monadic Procedure} gexp->script @var{name} @var{exp}
 Return an executable script @var{name} that runs @var{exp} using
-@var{guile} with @var{modules} in its search path.
+@var{guile}, with @var{exp}'s imported modules in its search path.
 
 The example below builds a script that simply invokes the @command{ls}
 command:
@@ -3934,10 +3934,10 @@ executable file @file{/gnu/store/@dots{}-list-files} along these lines:
 @end deffn
 
 @deffn {Scheme Procedure} program-file @var{name} @var{exp} @
-          [#:modules '()] [#:guile #f]
+          [#:guile #f]
 Return an object representing the executable store item @var{name} that
 runs @var{gexp}.  @var{guile} is the Guile package used to execute that
-script, and @var{modules} is the list of modules visible to that script.
+script.
 
 This is the declarative counterpart of @code{gexp->script}.
 @end deffn
