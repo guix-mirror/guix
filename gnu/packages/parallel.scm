@@ -5,6 +5,7 @@
 ;;; Copyright © 2016 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,7 +55,31 @@
        (base32
         "08gm0i9vj2nz8qgqi98z00myypgb3dni0s5yf3l17fp8h78fp4g3"))))
     (build-system gnu-build-system)
-    (inputs `(("perl" ,perl)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-bin-sh
+           (lambda _
+             (for-each
+              (lambda (file)
+                (substitute* file
+                  ;; Patch hard coded '/bin/sh' in the lin ending in:
+                  ;; $Global::shell = $ENV{'PARALLEL_SHELL'} ||
+                  ;;  parent_shell($$) || $ENV{'SHELL'} || "/bin/sh";
+                  (("/bin/sh\\\";\n$") (string-append (which "sh") "\";\n"))
+                  ;; Patch call to 'ps' and 'perl' commands.
+                  ((" ps ") (string-append " " (which "ps") " "))
+                  ((" perl -") (string-append " " (which "perl") " -"))))
+              (list "src/parallel" "src/sem"))))
+         (add-after 'install 'post-install-test
+           (lambda* (#:key outputs #:allow-other-keys)
+             (zero? (system* (string-append
+                              (assoc-ref outputs "out") "/bin/parallel")
+                             "echo"
+                             ":::" "1" "2" "3")))))))
+    (inputs
+     `(("perl" ,perl)
+       ("procps" ,procps)))
     (home-page "http://www.gnu.org/software/parallel/")
     (synopsis "Build and execute command lines in parallel")
     (description
