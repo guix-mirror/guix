@@ -273,6 +273,36 @@ BED, GFF/GTF, VCF.")
                (base32
                 "05vrnr8yp7swfagshzpgqmzk1blnwnq8pq5pckzi1m26w98d63vf"))))))
 
+(define-public ribotaper
+  (package
+    (name "ribotaper")
+    (version "1.3.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://ohlerlab.mdc-berlin.de/"
+                                  "files/RiboTaper/RiboTaper_Version_"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0ykjbps1y3z3085q94npw8i9x5gldc6shy8vlc08v76zljsm07hv"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("bedtools" ,bedtools-2.18)
+       ("samtools" ,samtools-0.1)
+       ("r" ,r)
+       ("r-foreach" ,r-foreach)
+       ("r-xnomial" ,r-xnomial)
+       ("r-domc" ,r-domc)
+       ("r-multitaper" ,r-multitaper)
+       ("r-seqinr" ,r-seqinr)))
+    (home-page "https://ohlerlab.mdc-berlin.de/software/RiboTaper_126/")
+    (synopsis "Define translated ORFs using ribosome profiling data")
+    (description
+     "Ribotaper is a method for defining translated @dfn{open reading
+frames} (ORFs) using ribosome profiling (ribo-seq) data.  This package
+provides the Ribotaper pipeline.")
+    (license license:gpl3+)))
+
 (define-public bioawk
   (package
     (name "bioawk")
