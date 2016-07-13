@@ -2958,6 +2958,37 @@ either uses the first module it finds or throws an error.")
 versa.")
     (license (package-license perl))))
 
+(define-public perl-log-any
+  (package
+    (name "perl-log-any")
+    (version "1.040")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/Log-Any-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0r1q7cclgwl24gzdnjzvd8y0r7j17dngjk492x35w198zhdj2ncp"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Log-Any")
+    (synopsis "Bringing loggers and listeners together")
+    (description "@code{Log::Any} provides a standard log production API for
+modules.  @code{Log::Any::Adapter} allows applications to choose the mechanism
+for log consumption, whether screen, file or another logging mechanism like
+@code{Log::Dispatch} or @code{Log::Log4perl}.
+
+A CPAN module uses @code{Log::Any} to get a log producer object.  An
+application, in turn, may choose one or more logging mechanisms via
+@code{Log::Any::Adapter}, or none at all.
+
+@code{Log::Any} has a very tiny footprint and no dependencies beyond Perl
+itself, which makes it appropriate for even small CPAN modules to use.  It
+defaults to 'null' logging activity, so a module can safely log without
+worrying about whether the application has chosen (or will ever choose) a
+logging mechanism.")
+    (license (package-license perl))))
+
 (define-public perl-log-report-optional
   (package
     (name "perl-log-report-optional")
