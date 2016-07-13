@@ -237,6 +237,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/mg.scm				\
   %D%/packages/mit-krb5.scm			\
   %D%/packages/moe.scm				\
+  %D%/packages/mono.scm				\
   %D%/packages/moreutils.scm			\
   %D%/packages/mpd.scm				\
   %D%/packages/mp3.scm				\
