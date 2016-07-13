@@ -22,7 +22,7 @@
   #:use-module (gnu services)
   #:use-module (gnu services shepherd)
   #:use-module (gnu system pam)
-  #:use-module (gnu packages lsh)
+  #:use-module (gnu packages ssh)
   #:use-module (srfi srfi-26)
   #:export (lsh-service))
 
