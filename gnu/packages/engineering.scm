@@ -121,13 +121,12 @@ plans and designs.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases
-       ;; tests require a writable HOME
-       (alist-cons-before
-        'check 'set-home
-        (lambda _
-          (setenv "HOME" (getenv "TMPDIR")))
-        %standard-phases
-        )
+       (modify-phases %standard-phases
+         ;; tests require a writable HOME
+         (add-before 'check 'set-home
+           (lambda _
+             (setenv "HOME" (getenv "TMPDIR"))
+             #t)))
        #:configure-flags
        (let ((pcb (assoc-ref %build-inputs "pcb")))
          (list (string-append "--with-pcb-datadir=" pcb "/share")
