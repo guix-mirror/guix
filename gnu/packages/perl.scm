@@ -2989,6 +2989,31 @@ worrying about whether the application has chosen (or will ever choose) a
 logging mechanism.")
     (license (package-license perl))))
 
+(define-public perl-log-any-adapter-log4perl
+  (package
+    (name "perl-log-any-adapter-log4perl")
+    (version "0.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DA/DAGOLDEN/Log-Any-Adapter-Log4perl-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0xf4fnrsznvg0hf36q481124ja1hp3lybki1xjgnk82z9990jmxn"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-log-any" ,perl-log-any)
+       ("perl-log-log4perl" ,perl-log-log4perl)))
+    (home-page
+     "http://search.cpan.org/dist/Log-Any-Adapter-Log4perl")
+    (synopsis "Log::Any adapter for Log::Log4perl")
+    (description "@code{Log::Any::Adapter::Log4perl} provides a
+@code{Log::Any} adapter using @code{Log::Log4perl} for logging.")
+    (license (package-license perl))))
+
 (define-public perl-log-log4perl
   (package
     (name "perl-log-log4perl")
