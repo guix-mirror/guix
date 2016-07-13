@@ -108,16 +108,16 @@ plans and designs.")
 (define-public geda-gaf
   (package
     (name "geda-gaf")
-    (version "1.8.2")
+    (version "1.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://ftp.geda-project.org/geda-gaf/stable/v"
+                    "http://ftp.geda-project.org/geda-gaf/unstable/v"
                     (version-major+minor version) "/"
                     version "/geda-gaf-" version ".tar.gz"))
               (sha256
                (base32
-                "08dpa506xk4gjbbi8vnxcb640wq4ihlgmhzlssl52nhvxwx7gx5v"))))
+                "14mk45pfz11v54q66gafw2l68n1p5ssvvjmdm8ffgc8x1w5ajfrz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
