@@ -126,7 +126,8 @@
          (name "nobody")
          (uid 65534)
          (group "nogroup")
-         (home-directory "/var/empty")
+         (shell #~(string-append #$shadow "/sbin/nologin"))
+         (home-directory "/nonexistent")
          (system? #t))))
 
 (define (default-skeletons)
