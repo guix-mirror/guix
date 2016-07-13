@@ -36,6 +36,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
   #:use-module (gnu packages)
+  #:use-module (gnu packages assembly)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages base)
@@ -834,3 +835,39 @@ also be used to apply such patches.  xdelta is similar to @command{diff} and
 @command{patch}, but is not limited to plain text and does not generate
 human-readable output.")
     (license license:asl2.0)))
+
+(define-public lrzip
+  (package
+    (name "lrzip")
+    (version "0.630")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "http://ck.kolivas.org/apps/lrzip/lrzip-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "01ykxliqw4cavx9f2gawxfa9wf52cjy1qx28cnkrh6i3lfzzcq94"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(;; nasm is only required when building for 32-bit x86 platforms
+       ,@(if (string-prefix? "i686" (or (%current-target-system)
+                                        (%current-system)))
+             `(("nasm" ,nasm))
+             '())
+       ("perl" ,perl)))
+    (inputs
+     `(("bzip2" ,bzip2)
+       ("lzo" ,lzo)
+       ("zlib" ,zlib)))
+    (home-page "http://ck.kolivas.org/apps/lrzip/")
+    (synopsis "Large file compressor with a very high compression ratio")
+    (description "lrzip is a compression utility that uses long-range
+redundancy reduction to improve the subsequent compression ratio of
+larger files.  It can then further compress the result with the ZPAQ or
+LZMA algorithms for maximum compression, or LZO for maximum speed.  This
+choice between size or speed allows for either better compression than
+even LZMA can provide, or a higher speed than gzip while compressing as
+well as bzip2.")
+    (license (list license:gpl3+
+                   license:public-domain)))) ; most files in lzma/
