@@ -7754,7 +7754,7 @@ In addition, @var{extra-settings} specifies a string to append to the
 configuration file.
 @end deffn
 
-Furthermore, @code{(gnu services ssh)} provides the following service.
+Furthermore, @code{(gnu services ssh)} provides the following services.
 
 @deffn {Scheme Procedure} lsh-service [#:host-key "/etc/lsh/host-key"] @
        [#:daemonic? #t] [#:interfaces '()] [#:port-number 22] @
@@ -7791,6 +7791,47 @@ root.
 
 The other options should be self-descriptive.
 @end deffn
+
+@deffn {Scheme Procedure} dropbear-service [@var{config}]
+Run the @uref{https://matt.ucc.asn.au/dropbear/dropbear.html,Dropbear SSH
+daemon} with the given @var{config}, a @code{<dropbear-configuration>}
+object.
+
+For example, to specify a Dropbear service listening on port 1234, add
+this call to the operating system's @code{services} field:
+
+@example
+(dropbear-service (dropbear-configuration
+                    (port-number 1234)))
+@end example
+@end deffn
+
+@deftp {Data Type} dropbear-configuration
+This data type represents the configuration of a Dropbear SSH daemon.
+
+@table @asis
+@item @code{dropbear} (default: @var{dropbear})
+The Dropbear package to use.
+
+@item @code{port-number} (default: 22)
+The TCP port where the daemon waits for incoming connections.
+
+@item @code{syslog-output?} (default: @code{#t})
+Whether to enable syslog output.
+
+@item @code{pid-file} (default: @code{"/var/run/dropbear.pid"})
+File name of the daemon's PID file.
+
+@item @code{root-login?} (default: @code{#f})
+Whether to allow @code{root} logins.
+
+@item @code{allow-empty-passwords?} (default: @code{#f})
+Whether to allow empty passwords.
+
+@item @code{password-authentication?} (default: @code{#t})
+Whether to enable password-based authentication.
+@end table
+@end deftp
 
 @defvr {Scheme Variable} %facebook-host-aliases
 This variable contains a string for use in @file{/etc/hosts}
