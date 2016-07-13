@@ -187,6 +187,7 @@ System Installation
 * USB Stick Installation::      Preparing the installation medium.
 * Preparing for Installation::  Networking, partitioning, etc.
 * Proceeding with the Installation::  The real thing.
+* Installing GuixSD in a VM::   GuixSD playground.
 * Building the Installation Image::  How this comes to be.
 
 System Configuration
@@ -6029,7 +6030,7 @@ to join!  @xref{Contributing}, for information about how you can help.
 @section System Installation
 
 @cindex Guix System Distribution
-This section explains how to install the Guix System Distribution
+This section explains how to install the Guix System Distribution (GuixSD)
 on a machine.  The Guix package manager can
 also be installed on top of a running GNU/Linux system,
 @pxref{Installation}.
@@ -6054,6 +6055,7 @@ available.
 * USB Stick Installation::      Preparing the installation medium.
 * Preparing for Installation::  Networking, partitioning, etc.
 * Proceeding with the Installation::  The real thing.
+* Installing GuixSD in a VM::   GuixSD playground.
 * Building the Installation Image::  How this comes to be.
 @end menu
 
@@ -6198,6 +6200,9 @@ Access to @file{/dev/sdX} usually requires root privileges.
 Once this is done, you should be able to reboot the system and boot from
 the USB stick.  The latter usually requires you to get in the BIOS' boot
 menu, where you can choose to boot from the USB stick.
+
+@xref{Installing GuixSD in a VM}, if, instead, you would like to install
+GuixSD in a virtual machine (VM).
 
 @node Preparing for Installation
 @subsection Preparing for Installation
@@ -6455,6 +6460,54 @@ unless your configuration specifies otherwise
 Join us on @code{#guix} on the Freenode IRC network or on
 @file{guix-devel@@gnu.org} to share your experience---good or not so
 good.
+
+@node Installing GuixSD in a VM
+@subsection Installing GuixSD in a Virtual Machine
+
+@cindex virtual machine, GuixSD installation
+If you'd like to install GuixSD in a virtual machine (VM) rather than on
+your beloved machine, this section is for you.
+
+To boot a @uref{http://qemu.org/,QEMU} VM for installing GuixSD in a
+disk image, follow these steps:
+
+@enumerate
+@item
+First, retrieve the GuixSD installation image as described previously
+(@pxref{USB Stick Installation}).
+
+@item
+Create a disk image that will hold the installed system.  To make a
+qcow2-formatted disk image, use the @command{qemu-img} command:
+
+@example
+qemu-img create -f qcow2 guixsd.img 5G
+@end example
+
+This will create a 5GB file.
+
+@item
+Boot the USB installation image in an VM:
+
+@example
+qemu-system-x86_64 -m 1024 -smp 1 \
+  -net default -net nic,model=virtio -boot menu=on \
+  -drive file=guixsd.img \
+  -drive file=guixsd-usb-install-@value{VERSION}.@var{system}
+@end example
+
+In the VM console, quickly press the @kbd{F12} key to enter the boot
+menu.  Then press the @kbd{2} key and the @kbd{RET} key to validate your
+selection.
+
+@item
+You're now root in the VM, proceed with the installation process.
+@xref{Preparing for Installation}, and follow the instructions.
+@end enumerate
+
+Once installation is complete, you can boot the system that's on your
+@file{guixsd.img} image.  @xref{Running GuixSD in a VM}, for how to do
+that.
 
 @node Building the Installation Image
 @subsection Building the Installation Image
