@@ -2989,6 +2989,29 @@ worrying about whether the application has chosen (or will ever choose) a
 logging mechanism.")
     (license (package-license perl))))
 
+(define-public perl-log-log4perl
+  (package
+    (name "perl-log-log4perl")
+    (version "1.47")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/M/MS/MSCHILLI/Log-Log4perl-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0vxraq9navx5mgf8y8g6l5rbl3dv2ml8bishka5m69hj07nxs0ch"))))
+    (build-system perl-build-system)
+    (home-page
+     "http://search.cpan.org/dist/Log-Log4perl")
+    (synopsis "Log4j implementation for Perl")
+    (description "@code{Log::Log4perl} lets you remote-control and fine-tune
+the logging behaviour of your system from the outside.  It implements the
+widely popular (Java-based) Log4j logging package in pure Perl.")
+    (license (package-license perl))))
+
 (define-public perl-log-report-optional
   (package
     (name "perl-log-report-optional")
