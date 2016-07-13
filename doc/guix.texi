@@ -2669,6 +2669,7 @@ Examples include:
 download a file from the HTTP, HTTPS, or FTP URL specified in the
 @code{uri} field;
 
+@vindex git-fetch
 @item @var{git-fetch} from @code{(guix git-download)}
 clone the Git version control repository, and check out the revision
 specified in the @code{uri} field as a @code{git-reference} object; a
@@ -2685,6 +2686,10 @@ specified in the @code{uri} field as a @code{git-reference} object; a
 A bytevector containing the SHA-256 hash of the source.  Typically the
 @code{base32} form is used here to generate the bytevector from a
 base-32 string.
+
+You can obtain this information using @code{guix download}
+(@pxref{Invoking guix download}) or @code{guix hash} (@pxref{Invoking
+guix hash}).
 
 @item @code{file-name} (default: @code{#f})
 The file name under which the source code should be saved.  When this is
@@ -4569,6 +4574,17 @@ hash (@pxref{Invoking guix archive}).
 @c FIXME: Replace xref above with xref to an ``Archive'' section when
 @c it exists.
 
+@vindex git-fetch
+As an example, here is how you would compute the hash of a Git checkout,
+which is useful when using the @code{git-fetch} method (@pxref{origin
+Reference}):
+
+@example
+$ git clone http://example.org/foo.git
+$ cd foo
+$ rm -rf .git
+$ guix hash -r .
+@end example
 @end table
 
 @node Invoking guix import
