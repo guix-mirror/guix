@@ -4114,13 +4114,13 @@ child application and control it as if a human were typing commands.")
 (define-public python-setuptools-scm
   (package
     (name "python-setuptools-scm")
-    (version "1.9.0")
+    (version "1.11.1")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "setuptools_scm" version))
               (sha256
                (base32
-                "0y24bl893zk6nrklbvdrlmpkalf214zjn6k1xrglljd29rrn4wxi"))))
+                "1gqr73i150yzj3mz32854vj93x07yr52kn8fdckwa41ll8wgficc"))))
     (build-system python-build-system)
     (native-inputs `(("python-setuptools" ,python-setuptools)))
     (home-page "https://github.com/pypa/setuptools_scm/")
