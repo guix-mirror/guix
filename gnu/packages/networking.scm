@@ -31,11 +31,13 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages adns)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages audio)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages check)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages linux)
@@ -376,3 +378,37 @@ sniffer}, that lets you capture and interactively browse the contents of
 network frames.")
     (license license:gpl2+)
     (home-page "https://www.wireshark.org/")))
+
+(define-public httping
+  (package
+    (name "httping")
+    (version "2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://www.vanheusden.com/httping/httping-"
+                           version ".tgz"))
+       (sha256
+        (base32
+         "1110r3gpsj9xmybdw7w4zkhj3zmn5mnv2nq0ijbvrywbn019zdfs"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gnu-gettext)))
+    (inputs
+     `(("fftw" ,fftw)
+       ("ncurses" ,ncurses)
+       ("openssl" ,openssl)))
+    (arguments
+     `(#:make-flags (list "CC=gcc"
+                          (string-append "DESTDIR=" (assoc-ref %outputs "out"))
+                          "PREFIX=")
+       #:tests? #f)) ; no tests
+    (home-page "https://www.vanheusden.com/httping/")
+    (synopsis "Web server latency and throughput monitor")
+    (description
+     "httping measures how long it takes to connect to a web server, send an
+HTTP(S) request, and receive the reply headers.  It is somewhat similar to
+@command{ping}, but can be used even in cases where ICMP traffic is blocked
+by firewalls or when you want to monitor the response time of the actual web
+application stack itself.")
+    (license license:gpl2)))        ; with permission to link with OpenSSL
