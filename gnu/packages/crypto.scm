@@ -29,7 +29,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages serialization)
   #:use-module (gnu packages tls)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -54,7 +54,7 @@
     (description
      "Sodium is a new easy-to-use high-speed software library for network
 communication, encryption, decryption, signatures, etc.")
-    (license isc)
+    (license license:isc)
     (home-page "http://libsodium.org")))
 
 (define-public signify
@@ -91,10 +91,11 @@ OpenBSD tool of the same name.")
     (home-page "https://github.com/aperezdc/signify")
     ;; This package includes third-party code that was originally released under
     ;; various non-copyleft licenses. See the source files for clarification.
-    (license (list bsd-3 bsd-4 expat isc public-domain
-                   (non-copyleft "file://base64.c"
-                                 "See base64.c in the distribution for
-                                 the license from IBM.")))))
+    (license (list license:bsd-3 license:bsd-4 license:expat license:isc
+                   license:public-domain (license:non-copyleft
+                                          "file://base64.c"
+                                          "See base64.c in the distribution for
+                                           the license from IBM.")))))
 
 
 (define-public opendht
@@ -146,4 +147,4 @@ OpenBSD tool of the same name.")
     (description "OpenDHT is a Distributed Hash Table (DHT) library.  It may
 be used to manage peer-to-peer network connections as needed for real time
 communication.")
-    (license gpl3)))
+    (license license:gpl3)))
