@@ -112,14 +112,14 @@ as well as the classic centralized workflow.")
   ;; Keep in sync with 'git-manpages'!
   (package
    (name "git")
-   (version "2.9.0")
+   (version "2.9.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "02dl8yvvl7m4zy39s0xmqr958ah7krvkv94lmx4vz3wl95wsj7zl"))))
+              "18l2jb4bkp9ljz6p2aviwzxqyzza9z3v6h1pnkz7kjf1fay61zp8"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -292,7 +292,7 @@ everything from small to very large projects with speed and efficiency.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0ic4zs4axkkwa44nqv5iihj3q2nm42kx0j8scnfp1z93m6pw31fw"))))
+                "1v9icsf85vvrrg7fakm91d11q23rvnh6dq4b4c4ya8v95z00mg8p"))))
     (build-system trivial-build-system)
     (arguments
      '(#:modules ((guix build utils))
