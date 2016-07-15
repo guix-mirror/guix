@@ -47,6 +47,10 @@
              (uri (string-append
                    "https://github.com/libgd/libgd/releases/download/gd-"
                    version "/libgd-" version ".tar.xz"))
+             (patches (search-patches "gd-CVE-2016-5766.patch"
+                                      "gd-CVE-2016-6128.patch"
+                                      "gd-CVE-2016-6132.patch"
+                                      "gd-CVE-2016-6214.patch"))
              (sha256
               (base32
                "1311g5mva2xlzqv3rjqjc4jjkn5lzls4skvr395h633zw1n7b7s8"))))
