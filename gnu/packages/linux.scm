@@ -1861,9 +1861,14 @@ country-specific regulations for the wireless spectrum.")
     (version "3.3.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "ftp://ftp.netroedge.com/pub/lm-sensors/lm_sensors-"
-                    version ".tar.bz2"))
+              (uri (list (string-append
+                           "ftp://ftp.netroedge.com/pub/lm-sensors/"
+                           "lm_sensors-" version ".tar.bz2")
+                         (string-append
+                           "http://pkgs.fedoraproject.org/repo/pkgs/"
+                           "lm_sensors/lm_sensors-3.3.5.tar.bz2/"
+                           "da506dedceb41822e64865f6ba34828a/"
+                           "lm_sensors-3.3.5.tar.bz2")))
               (sha256
                (base32
                 "1ksgrynxgrq590nb2fwxrl1gwzisjkqlyg3ljfd1al0ibrk6mbjx"))
