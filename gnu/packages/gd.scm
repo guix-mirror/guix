@@ -40,7 +40,7 @@
     ;; Note: With libgd.org now pointing to github.com, genuine old
     ;; tarballs are no longer available.  Notably, versions 2.0.x are
     ;; missing.
-    (version "2.2.1")
+    (version "2.2.2")
 
     (source (origin
              (method url-fetch)
@@ -49,7 +49,7 @@
                    version "/libgd-" version ".tar.xz"))
              (sha256
               (base32
-               "0xmrqka1ggqgml84xbmkw1y0r0lg7qn657v5b1my8pry92p651vh"))))
+               "1311g5mva2xlzqv3rjqjc4jjkn5lzls4skvr395h633zw1n7b7s8"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
