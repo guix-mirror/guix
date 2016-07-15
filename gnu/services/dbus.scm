@@ -169,7 +169,8 @@ includes the @code{etc/dbus-1/system.d} directories of each package listed in
             (requirement '(user-processes))
             (start #~(make-forkexec-constructor
                       (list (string-append #$dbus "/bin/dbus-daemon")
-                            "--nofork" "--system")))
+                            "--nofork" "--system")
+                      #:pid-file "/var/run/dbus/pid"))
             (stop #~(make-kill-destructor)))))))
 
 (define dbus-root-service-type
