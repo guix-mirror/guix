@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
@@ -32,6 +34,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
   #:use-module (gnu packages xml))
 
@@ -201,3 +204,33 @@ traversing network address translators (NATs) and firewalls.")
      "Tinc is a VPN that uses tunnelling and encryption to create a secure
 private network between hosts on the internet.")
     (license license:gpl2+)))
+
+(define-public sshuttle
+  (package
+    (name "sshuttle")
+    (version "0.78.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri name version))
+       (sha256
+        (base32
+         "0g1dpqigz02vafzh84z5990lnj9d95raknav0xmf0va7rr41d9q3"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-pytest-runner" ,python-pytest-runner)
+       ("python-setuptools-scm" ,python-setuptools-scm)
+       ;; For tests only.
+       ("python-mock" ,python-mock)
+       ("python-pytest" ,python-pytest)))
+    (home-page "https://github.com/sshuttle/sshuttle")
+    (synopsis "VPN that transparently forwards connections over SSH")
+    (description "sshuttle creates an encrypted virtual private network (VPN)
+connection to any remote server to which you have secure shell (SSH) access.
+The only requirement is a suitable version of Python on the server;
+administrative privileges are required only on the client.  Unlike most VPNs,
+sshuttle forwards entire sessions, not packets, using kernel transparent
+proxying.  This makes it faster and more reliable than SSH's own tunneling and
+port forwarding features.  It can forward both TCP and UDP traffic, including
+DNS domain name queries.")
+    (license license:lgpl2.0))) ; incorrectly identified as GPL in ‘setup.py’
