@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,17 +30,15 @@
 (define-public vtk
   (package
     (name "vtk")
-    (version "6.1.0")
+    (version "7.1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.vtk.org/files/release/"
-                                  (substring version 0
-                                             (string-rindex version #\.))
+                                  (version-major+minor version)
                                   "/VTK-" version ".tar.gz"))
               (sha256
                (base32
-                "0d7shccdkyj4mbh2riilslgx3gd28in4c7xpm0lxa1ln8w5g2zdx"))
-              (patches (search-patches "vtk-mesa-10.patch"))))
+                "0yj96z58haan77gzilnqp7xpf8hg5jk11a3jx55p2ksd400s0gjz"))))
     (build-system cmake-build-system)
     (arguments
      ;; Build without '-g' to save space.
