@@ -21,11 +21,19 @@
 (define-module (gnu packages vtk)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:select (bsd-3))
+  #:use-module (guix utils)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages gl))
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages serialization)
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg))
 
 (define-public vtk
   (package
@@ -41,15 +49,36 @@
                 "0yj96z58haan77gzilnqp7xpf8hg5jk11a3jx55p2ksd400s0gjz"))))
     (build-system cmake-build-system)
     (arguments
-     ;; Build without '-g' to save space.
-     '(#:configure-flags '("-DCMAKE_BUILD_TYPE=Release")
+     '(#:build-type "Release"           ;Build without '-g' to save space.
+       ;; -DVTK_USE_SYSTEM_NETCDF:BOOL=TRUE requires netcdf_cxx
+       #:configure-flags '("-DVTK_USE_SYSTEM_EXPAT:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_FREETYPE:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_HDF5:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_JPEG:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_JSONCPP:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_LIBXML2:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_OGGTHEORA:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_PNG:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_TIFF:BOOL=TRUE"
+                           "-DVTK_USE_SYSTEM_ZLIB:BOOL=TRUE")
        #:tests? #f))                              ;XXX: no "test" target
     (inputs
      `(("libXt" ,libxt)
        ("xproto" ,xproto)
        ("libX11" ,libx11)
+       ("libxml2" ,libxml2)
        ("mesa" ,mesa)
-       ("glu" ,glu)))
+       ("glu" ,glu)
+       ("expat" ,expat)
+       ("freetype" ,freetype)
+       ("hdf5" ,hdf5)
+       ("jpeg" ,libjpeg)
+       ("jsoncpp" ,jsoncpp)
+       ("libogg" ,libogg)
+       ("libtheora" ,libtheora)
+       ("png" ,libpng)
+       ("tiff" ,libtiff)
+       ("zlib" ,zlib)))
     (home-page "http://www.vtk.org/")
     (synopsis "Libraries for 3D computer graphics")
     (description
