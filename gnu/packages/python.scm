@@ -2013,14 +2013,14 @@ have failed since the last commit or what tests are currently failing.")
 (define-public python-coverage
   (package
     (name "python-coverage")
-    (version "4.0.3")
+    (version "4.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "coverage" version))
        (sha256
         (base32
-         "0qjlja8ny4gcfp8abqfwdrvr8qw9kr69lkja0b4cqqbsdmdjgcc5"))))
+         "01rbr4br4lsk0lwn8fb96zwd2xr4f0mg1w7iq3j11i8f5ig2nqs1"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)))
