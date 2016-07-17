@@ -10,6 +10,7 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -796,3 +797,39 @@ respectively, based on the reference implementation from Google.")
     (description "Extracts files out of Microsoft Cabinet (.cab) archives")
     ;; Some source files specify gpl2+, lgpl2+, however COPYING is gpl3.
     (license license:gpl3+)))
+
+(define-public xdelta
+  (package
+    (name "xdelta")
+    (version "3.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/jmacd/xdelta/archive/v"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "17g2pbbqy6h20qgdjq7ykib7kg5ajh8fwbsfgyjqg8pwg19wy5bm"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (snippet
+        ;; This file isn't freely distributable and has no effect on building.
+        '(delete-file "xdelta3/draft-korn-vcdiff.txt"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'enter-build-directory
+           (lambda _ (chdir "xdelta3")))
+         (add-before 'configure 'autoconf
+           (lambda _ (zero? (system* "autoreconf" "-vfi")))))))
+    (home-page "http://xdelta.com")
+    (synopsis "Delta encoder for binary files")
+    (description "xdelta encodes only the differences between two binary files
+using the VCDIFF algorithm and patch file format described in RFC 3284.  It can
+also be used to apply such patches.  xdelta is similar to @command{diff} and
+@command{patch}, but is not limited to plain text and does not generate
+human-readable output.")
+    (license license:asl2.0)))
