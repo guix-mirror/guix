@@ -1656,7 +1656,6 @@ data and settings.")
       (inputs
        `(("gsl" ,gsl)
          ("lapack" ,lapack)
-         ("lapack" ,lapack "lapacke")
          ("openblas" ,openblas)
          ("perl" ,perl)
          ("gfortran" ,gfortran "lib")))
