@@ -2066,14 +2066,13 @@ backported from Python 2.7 for Python 2.4+.")
 (define-public behave
   (package
     (name "behave")
-    (version "1.2.4")
+    (version "1.2.5")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://pypi.python.org/packages/source/b/"
-                                 name "/" name "-" version ".tar.gz"))
+             (uri (pypi-uri "behave" version ".tar.bz2"))
              (sha256
               (base32
-               "1v2rfy8xnf0rk7cj4cgr7lam4015d458i7bg0xqs9czfv6njlm14"))))
+               "1iypp6z46r19n4xmgx6m1lwmlpfjh8vapq8izigrqlaarvp2y64c"))))
     (build-system python-build-system)
     (inputs
      `(("python-setuptools" ,python-setuptools)
