@@ -5562,6 +5562,31 @@ Test::Exception.  It does much less, but should allow greater flexibility in
 testing exception-throwing code with about the same amount of typing.")
     (license (package-license perl))))
 
+(define-public perl-test-files
+  (package
+    (name "perl-test-files")
+    (version "0.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/P/PH/PHILCROW/Test-Files-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1zn33yigznq7i1jr4yjr4lxvc6bn7znkbqdzj7slhc146pqapkln"))))
+    (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-algorithm-diff" ,perl-algorithm-diff)
+       ("perl-text-diff" ,perl-text-diff)))
+    (home-page "http://search.cpan.org/dist/Test-Files")
+    (synopsis "Ease software testing with files and directories")
+    (description "This library provides functions to enable testing of files
+and directories.  For instance, the @code{file_ok} helper can test whether the
+contents of a file is equal to a particular string.")
+    (license (package-license perl))))
+
 (define-public perl-test-harness
   (package
     (name "perl-test-harness")
