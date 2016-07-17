@@ -1122,15 +1122,14 @@ after Andy Lester’s Perl module WWW::Mechanize.")
 (define-public python-simplejson
   (package
     (name "python-simplejson")
-    (version "3.3.0")
+    (version "3.8.2")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://pypi.python.org/packages/source/s/simplejson/simplejson-"
-                          version ".tar.gz"))
+      (uri (pypi-uri "simplejson" version))
       (sha256
        (base32
-        "07wsry5j44l5zzm74l4j2bvasiq8n5m32f31n2p7c68i5vc6p2ks"))))
+        "0zylrnax8b6r0ndgni4w9c599fi6wm9vx5g6k3ddqfj3932kk16m"))))
     (build-system python-build-system)
     (home-page "http://simplejson.readthedocs.org/en/latest/")
     (synopsis
