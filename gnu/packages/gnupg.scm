@@ -59,7 +59,7 @@
        (base32
         "0kdq2cbnk84fr4jqcv689rlxpbyl6bda2cn6y3ll19v3mlydpnxp"))))
     (build-system gnu-build-system)
-    (home-page "http://gnupg.org")
+    (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
     (description
      "Libgpg-error is a small library that defines common error values
@@ -95,7 +95,7 @@ Daemon and possibly more in the future.")
        (list (string-append "--with-gpg-error-prefix="
                             (assoc-ref %build-inputs "libgpg-error-host")))))
     (outputs '("out" "debug"))
-    (home-page "http://gnupg.org/")
+    (home-page "https://gnupg.org/")
     (synopsis "Cryptographic function library")
     (description
      "Libgcrypt is a general-purpose cryptographic library.  It provides the
@@ -133,7 +133,7 @@ generation.")
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error) ("pth" ,pth)))
-    (home-page "http://gnupg.org")
+    (home-page "https://gnupg.org")
     (synopsis
      "IPC library used by GnuPG and related software")
     (description
@@ -170,7 +170,7 @@ provided.")
                    '())
              (string-append "--with-gpg-error-prefix="
                             (assoc-ref %build-inputs "libgpg-error")))))
-    (home-page "http://www.gnupg.org")
+    (home-page "https://www.gnupg.org")
     (synopsis "CMS and X.509 access library")
     (description
      "KSBA (pronounced Kasbah) is a library to make X.509 certificates
@@ -194,7 +194,7 @@ specifications are building blocks of S/MIME and TLS.")
        (base32
         "12n0nvhw4fzwp0k7gjv3rc6pdml0qiinbbfiz4ilg6pl5kdxvnvd"))))
     (build-system gnu-build-system)
-    (home-page "http://www.gnupg.org")
+    (home-page "https://www.gnupg.org")
     (synopsis "Non-preemptive thread library")
     (description
      "Npth is a library to provide the GNU Pth API and thus a non-preemptive
@@ -241,7 +241,7 @@ compatible to GNU Pth.")
           (substitute* "tests/openpgp/defs.inc"
             (("/bin/pwd") (which "pwd"))))
        %standard-phases)))
-    (home-page "http://gnupg.org/")
+    (home-page "https://gnupg.org/")
     (synopsis "GNU Privacy Guard")
     (description
      "The GNU Privacy Guard is a complete implementation of the OpenPGP
@@ -331,7 +331,7 @@ libskba (working with X.509 certificates and CMS data).")
      `(("gnupg" ,gnupg-2.0)
        ("libassuan" ,libassuan)))
     (arguments '(#:make-flags '("GPG=gpg2")))
-    (home-page "http://www.gnupg.org/related_software/gpgme/")
+    (home-page "https://www.gnupg.org/related_software/gpgme/")
     (synopsis "Library providing simplified access to GnuPG functionality")
     (description
      "GnuPG Made Easy (GPGME) is a library designed to make access to GnuPG
@@ -417,7 +417,7 @@ decrypt messages using the OpenPGP format by making use of GPGME.")
                                     "test_gnupg.py" "--no-doctests")))))))
     (native-inputs
      `(("gnupg" ,gnupg-1)))
-    (home-page "http://packages.python.org/python-gnupg/index.html")
+    (home-page "https://packages.python.org/python-gnupg/index.html")
     (synopsis "Wrapper for the GNU Privacy Guard")
     (description
       "This module allows easy access to GnuPG’s key management, encryption
@@ -465,7 +465,7 @@ to the process.
 pius-keyring-mgr and pius-party-worksheet help organisers of
 PGP keysigning parties.")
    (license license:gpl2)
-   (home-page "http://www.phildev.net/pius/index.shtml")))
+   (home-page "https://www.phildev.net/pius/index.shtml")))
 
 (define-public signing-party
   (package
@@ -565,7 +565,7 @@ including tools for signing keys, keyring analysis, and party preparation.
    ;; and caff and gpgsigs: bsd-3, see
    ;; http://packages.debian.org/changelogs/pool/main/s/signing-party/current/copyright
    (license license:gpl2)
-   (home-page "http://pgp-tools.alioth.debian.org/")))
+   (home-page "https://pgp-tools.alioth.debian.org/")))
 
 (define-public pinentry-tty
   (package
