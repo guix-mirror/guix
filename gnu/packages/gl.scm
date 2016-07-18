@@ -192,7 +192,7 @@ also known as DXTn or DXTC) for Mesa.")
 (define-public mesa
   (package
     (name "mesa")
-    (version "11.0.9")
+    (version "12.0.0")
     (source
       (origin
         (method url-fetch)
@@ -200,7 +200,7 @@ also known as DXTn or DXTC) for Mesa.")
                             version "/mesa-" version ".tar.xz"))
         (sha256
          (base32
-          "009b3nq8ly5nzy9cxi9cxf4qasrhggjz0v0q87rwq5kaqvqjy9m1"))))
+          "1ikxaj4avz29ch403bblq3l47g1r6hp4har94i8r664k44jw1400"))))
     (build-system gnu-build-system)
     (propagated-inputs
       `(("glproto" ,glproto)
@@ -213,19 +213,20 @@ also known as DXTn or DXTC) for Mesa.")
         ("libxxf86vm" ,libxxf86vm)))
     ;; TODO: Add vdpau.
     (inputs
-      `(("udev" ,eudev)
+      `(("expat" ,expat)
         ("dri2proto" ,dri2proto)
         ("dri3proto" ,dri3proto)
-        ("presentproto" ,presentproto)
-        ("expat" ,expat)
         ("libva" ,(force libva-without-mesa))
         ("libxml2" ,libxml2)
         ;; TODO: Add 'libxml2-python' for OpenGL ES 1.1 and 2.0 support
         ("libxvmc" ,libxvmc)
         ("makedepend" ,makedepend)
-        ("s2tc" ,s2tc)))
+        ("presentproto" ,presentproto)
+        ("s2tc" ,s2tc)
+        ("udev" ,eudev)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      `(("pkg-config" ,pkg-config)
+        ("python" ,python-2)))
     (arguments
      `(#:configure-flags
        '(;; drop r300 from default gallium drivers, as it requires llvm
@@ -249,8 +250,10 @@ also known as DXTn or DXTC) for Mesa.")
        #:phases (alist-cons-after
                  'unpack 'patch-create_test_cases
                  (lambda _
-                   (substitute* "src/glsl/tests/lower_jumps/create_test_cases.py"
-                     (("/usr/bin/env bash") (which "bash"))))
+                   (substitute* "src/compiler/glsl/tests/lower_jumps/create_test_cases.py"
+                     (("/usr/bin/env bash") (which "bash")))
+                   (substitute* "src/intel/genxml/gen_pack_header.py"
+                     (("/usr/bin/env python2") (which "python"))))
                  (alist-cons-before
                   'build 'fix-dlopen-libnames
                   (lambda* (#:key inputs outputs #:allow-other-keys)
