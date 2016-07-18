@@ -317,12 +317,12 @@ emulation to complete hardware acceleration for modern GPUs.")
     (method url-fetch)
     (uri (string-append "ftp://ftp.freedesktop.org/pub/mesa/demos/" version
                         "/mesa-demos-" version ".tar.bz2"))
-    (sha256 (base32 "14msj0prbl3ljwd24yaqv9pz1xzicdmqgg616xxlppbdh6syrgz4"))))
+    (sha256 (base32 "1vqb7s5m3fcg2csbiz45mha1pys2xx6rhw94fcyvapqdpm5iawy1"))))
 
 (define-public mesa-utils
   (package
     (name "mesa-utils")
-    (version "8.2.0")
+    (version "8.3.0")
     (source (mesa-demos-source version))
     (build-system gnu-build-system)
     (inputs
@@ -332,12 +332,7 @@ emulation to complete hardware acceleration for modern GPUs.")
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (arguments
-     '(;; XXX: fails to build against latest mesa:
-       ;;   eglut.c: error: 'EGL_SCREEN_BIT_MESA' undeclared
-       ;;
-       ;; <https://bugs.freedesktop.org/show_bug.cgi?id=91643>
-       #:configure-flags '("--disable-egl")
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
          (replace
           'install
