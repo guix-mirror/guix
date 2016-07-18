@@ -22,7 +22,7 @@
 (define-module (gnu packages gl)
   #:use-module (ice-9 match)
   #:use-module (guix build utils)
-  #:use-module ((guix licenses) #:prefix l:)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -71,7 +71,7 @@ matrices for creating perspective and orthographic projections,
 positioning a camera, and selection/picking, Rendering of disk,
 cylinder, and sphere primitives, Interpreting OpenGL error values
 as ASCII text.")
-    (license (l:x11-style "http://directory.fsf.org/wiki/License:SGIFreeBv2"))))
+    (license (license:x11-style "http://directory.fsf.org/wiki/License:SGIFreeBv2"))))
 
 (define-public freeglut
   (package
@@ -112,7 +112,7 @@ GLUT (and hence freeglut) allows the user to create and manage windows
 containing OpenGL contexts on a wide range of platforms and also read
 the mouse, keyboard and joystick functions.  Freeglut is released under
 the X-Consortium license.")
-    (license l:x11)))
+    (license license:x11)))
 
 (define-public ftgl
   (package
@@ -138,7 +138,7 @@ the X-Consortium license.")
      "FTGL is a font rendering library for OpenGL applications.  Supported
 rendering modes are: Bitmaps, Anti-aliased pixmaps, Texture maps, Outlines,
 Polygon meshes, and Extruded polygon meshes.")
-    (license l:x11)))
+    (license license:x11)))
 
 (define-public s2tc
   (package
@@ -170,7 +170,7 @@ Polygon meshes, and Extruded polygon meshes.")
     (description
      "S2TC is a patent-free implementation of S3 Texture Compression (S3TC,
 also known as DXTn or DXTC) for Mesa.")
-    (license l:expat)))
+    (license license:expat)))
 
 ;;; Mesa needs LibVA headers to build its Gallium-based VA API implementation;
 ;;; LibVA itself depends on Mesa.  We use the following to solve the circular
@@ -287,7 +287,7 @@ also known as DXTn or DXTC) for Mesa.")
 a system for rendering interactive 3D graphics.  A variety of device drivers
 allows Mesa to be used in many different environments ranging from software
 emulation to complete hardware acceleration for modern GPUs.")
-    (license l:x11)))
+    (license license:x11)))
 
 (define-public mesa-headers
   (package
@@ -355,7 +355,7 @@ emulation to complete hardware acceleration for modern GPUs.")
      "The mesa-utils package contains several utility tools for Mesa: glxdemo,
 glxgears, glxheads, and glxinfo.")
     ;; glxdemo is public domain; others expat.
-    (license (list l:expat l:public-domain))))
+    (license (list license:expat license:public-domain))))
 
 (define-public glew
   (package
@@ -399,7 +399,7 @@ glxgears, glxheads, and glxinfo.")
 loading library.  GLEW provides efficient run-time mechanisms for determining
 which OpenGL extensions are supported on the target platform.  OpenGL core and
 extension functionality is exposed in a single header file.")
-    (license l:bsd-3)))
+    (license license:bsd-3)))
 
 (define-public guile-opengl
   (package
@@ -445,7 +445,7 @@ extension functionality is exposed in a single header file.")
     (description
      "Guile-OpenGL is a library for Guile that provides bindings to the
 OpenGL graphics API.")
-    (license l:lgpl3+)))
+    (license license:lgpl3+)))
 
 (define-public libepoxy
   (package
@@ -502,7 +502,7 @@ OpenGL graphics API.")
     (synopsis "A library for handling OpenGL function pointer management")
     (description
      "A library for handling OpenGL function pointer management.")
-    (license l:x11)))
+    (license license:x11)))
 
 (define-public soil
   (package
@@ -544,4 +544,4 @@ OpenGL graphics API.")
     (description
      "SOIL is a tiny C library used primarily for uploading textures into
 OpenGL.")
-    (license l:public-domain)))
+    (license license:public-domain)))
