@@ -223,7 +223,8 @@ also known as DXTn or DXTC) for Mesa.")
         ("makedepend" ,makedepend)
         ("presentproto" ,presentproto)
         ("s2tc" ,s2tc)
-        ("udev" ,eudev)))
+        ("udev" ,eudev)
+        ("wayland" ,wayland)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ("python" ,python-2)))
@@ -233,12 +234,16 @@ also known as DXTn or DXTC) for Mesa.")
          "--with-gallium-drivers=r600,svga,swrast,nouveau"
          ;; Enable various optional features.  TODO: opencl requires libclc,
          ;; omx requires libomxil-bellagio
-         "--with-egl-platforms=x11,drm"
+         "--with-egl-platforms=x11,drm,wayland"
          "--enable-glx-tls"        ;Thread Local Storage, improves performance
          ;; "--enable-opencl"
          ;; "--enable-omx"
          "--enable-osmesa"
          "--enable-xa"
+         ;; features required by wayland
+         "--enable-gles2"
+         "--enable-gbm"
+         "--enable-shared-glapi"
 
          ;; on non-intel systems, drop i915 and i965
          ;; from the default dri drivers
