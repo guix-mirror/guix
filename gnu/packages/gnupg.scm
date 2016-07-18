@@ -319,12 +319,12 @@ libskba (working with X.509 certificates and CMS data).")
        ("readline" ,readline)
        ("libgpg-error" ,libgpg-error)))
     (arguments
-     `(#:phases (alist-cons-after
-                 'unpack 'patch-check-sh
-                 (lambda _
-                   (substitute* "checks/Makefile.in"
-                     (("/bin/sh") (which "bash"))))
-                 %standard-phases)))))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-check-sh
+           (lambda _
+             (substitute* "checks/Makefile.in"
+               (("/bin/sh") (which "bash"))))))))))
 
 (define-public gpgme
   (package
