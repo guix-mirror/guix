@@ -47,7 +47,6 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tls)
-  #:use-module (gnu packages valgrind)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xorg))
 
@@ -93,7 +92,6 @@
        ("mesa" ,mesa)
        ("printproto" ,printproto)
        ("scrnsaverproto" ,scrnsaverproto)
-       ("valgrind" ,valgrind)
        ("xextproto" ,xextproto)
        ("xinput" ,xinput)
        ("xpr" ,xpr)
