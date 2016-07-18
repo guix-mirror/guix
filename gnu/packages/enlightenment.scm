@@ -116,12 +116,11 @@
     (arguments
      `(#:configure-flags '("--disable-silent-rules")
        #:phases
-       (alist-cons-before
-        'configure 'patch-config-files
-        (lambda _
-          (substitute* "po/Makefile.in.in"
-            (("/bin/sh") (which "bash"))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (add-before 'configure 'patch-config-files
+           (lambda _
+             (substitute* "po/Makefile.in.in"
+                          (("/bin/sh") (which "bash"))))))))
     (home-page "http://www.enlightenment.org")
     (synopsis "Enlightenment Foundation Libraries")
     (description
