@@ -231,7 +231,7 @@ also known as DXTn or DXTC) for Mesa.")
     (arguments
      `(#:configure-flags
        '(;; drop r300 from default gallium drivers, as it requires llvm
-         "--with-gallium-drivers=r600,svga,swrast,nouveau"
+         "--with-gallium-drivers=r600,svga,swrast,nouveau,virgl"
          ;; Enable various optional features.  TODO: opencl requires libclc,
          ;; omx requires libomxil-bellagio
          "--with-egl-platforms=x11,drm,wayland"
