@@ -308,6 +308,17 @@ AC_DEFUN([GUIX_LIBGCRYPT_LIBDIR], [
   $1="$guix_cv_libgcrypt_libdir"
 ])
 
+dnl GUIX_LIBZ_LIBDIR VAR
+dnl
+dnl Attempt to determine libz's LIBDIR; store the result in VAR.
+AC_DEFUN([GUIX_LIBZ_LIBDIR], [
+  AC_REQUIRE([PKG_PROG_PKG_CONFIG])
+  AC_CACHE_CHECK([zlib's library directory],
+    [guix_cv_libz_libdir],
+    [guix_cv_libz_libdir="`$PKG_CONFIG zlib --variable=libdir 2> /dev/null`"])
+  $1="$guix_cv_libz_libdir"
+])
+
 dnl GUIX_CURRENT_LOCALSTATEDIR
 dnl
 dnl Determine the localstatedir of an existing Guix installation and set
