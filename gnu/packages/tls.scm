@@ -122,7 +122,6 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (replacement gnutls/fixed)
     (version "3.4.7")
     (source (origin
              (method url-fetch)
@@ -194,13 +193,6 @@ required structures.")
     (license license:lgpl2.1+)
     (properties '((ftp-server . "ftp.gnutls.org")
                   (ftp-directory . "/gcrypt/gnutls")))))
-
-(define-public gnutls/fixed
-  (package
-    (inherit gnutls)
-    (source (origin
-              (inherit (package-source gnutls))
-              (patches (search-patches "gnutls-fix-stale-test.patch"))))))
 
 (define-public openssl
   (package
