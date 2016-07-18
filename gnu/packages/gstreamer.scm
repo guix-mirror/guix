@@ -336,7 +336,7 @@ par compared to the rest.")
 (define-public gst-plugins-ugly
   (package
     (name "gst-plugins-ugly")
-    (version "1.8.0")
+    (version "1.8.2")
     (source
      (origin
        (method url-fetch)
@@ -344,7 +344,7 @@ par compared to the rest.")
                            name "/" name "-" version ".tar.xz"))
        (sha256
         (base32
-         "137b6kqykh5nwbmiv28nn1pc1d2x2rb2xxg382pc9pa9gpxpyrak"))))
+         "1b58s7z430cbbaw8mgy87kslbpmj3xmm66wsr7bddhcgm6i36nww"))))
     (build-system gnu-build-system)
     (inputs
      `(("gst-plugins-base" ,gst-plugins-base)
