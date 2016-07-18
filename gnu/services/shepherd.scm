@@ -175,7 +175,7 @@ assertion failure."
                           (&message
                            (message
                             (format #f (_ "service '~a' requires '~a', \
-which is undefined")
+which is not provided by any service")
                                     (match (shepherd-service-provision service)
                                       ((head . _) head)
                                       (_          service))
