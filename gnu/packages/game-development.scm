@@ -7,6 +7,7 @@
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -341,6 +342,46 @@ windows, accepting user input, loading data, drawing images, playing sounds,
 etc.")
     (home-page "http://liballeg.org")
     (license license:giftware)))
+
+(define-public allegro
+  (package
+    (name "allegro")
+    (version "5.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.gna.org/allegro/allegro/"
+                                  version "/allegro-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1mwzgzc4nb5k5zkbq7yrc6hg63yxq3wk69lmjag1h19x8b6njnmg"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ; there are no tests
+    (inputs
+     ;; FIXME: Add the following optional inputs: xinput2, opensl, dumb
+     `(("flac" ,flac)
+       ("freetype" ,freetype)
+       ("glu" ,glu)
+       ("gtk" ,gtk+-2)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libtheora" ,libtheora)
+       ("libvorbis" ,libvorbis)
+       ("libxcursor" ,libxcursor)
+       ("libxinerama" ,libxinerama)
+       ("libxrandr" ,libxrandr)
+       ("mesa" ,mesa)
+       ("openal" ,openal)
+       ("physfs" ,physfs)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (synopsis "Game programming library")
+    (description "Allegro is a library mainly aimed at video game and
+multimedia programming.  It handles common, low-level tasks such as creating
+windows, accepting user input, loading data, drawing images, playing sounds,
+etc.")
+    (home-page "http://liballeg.org")
+    (license license:bsd-3)))
 
 (define-public aseprite
   (package
