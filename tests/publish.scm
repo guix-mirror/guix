@@ -28,12 +28,15 @@
   #:use-module (guix store)
   #:use-module (guix base32)
   #:use-module (guix base64)
+  #:use-module ((guix records) #:select (recutils->alist))
   #:use-module ((guix serialization) #:select (restore-file))
   #:use-module (guix pk-crypto)
+  #:use-module (guix zlib)
   #:use-module (web uri)
   #:use-module (web client)
   #:use-module (web response)
   #:use-module (rnrs bytevectors)
+  #:use-module (ice-9 binary-ports)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
@@ -52,20 +55,28 @@
   (call-with-values (lambda () (http-get uri))
     (lambda (response body) body)))
 
+(define (http-get-port uri)
+  (call-with-values (lambda () (http-get uri #:streaming? #t))
+    (lambda (response port) port)))
+
 (define (publish-uri route)
   (string-append "http://localhost:6789" route))
 
 ;; Run a local publishing server in a separate thread.
 (call-with-new-thread
  (lambda ()
-   (guix-publish "--port=6789"))) ; attempt to avoid port collision
+   (guix-publish "--port=6789" "-C0")))       ;attempt to avoid port collision
 
-;; Wait until the server is accepting connections.
-(let ((conn (socket PF_INET SOCK_STREAM 0)))
-  (let loop ()
-    (unless (false-if-exception
-             (connect conn AF_INET (inet-pton AF_INET "127.0.0.1") 6789))
-      (loop))))
+(define (wait-until-ready port)
+  ;; Wait until the server is accepting connections.
+  (let ((conn (socket PF_INET SOCK_STREAM 0)))
+    (let loop ()
+      (unless (false-if-exception
+               (connect conn AF_INET (inet-pton AF_INET "127.0.0.1") port))
+        (loop)))))
+
+;; Wait until the two servers are ready.
+(wait-until-ready 6789)
 
 
 (test-begin "publish")
@@ -144,6 +155,40 @@ References: ~%"
                    (string-append "/nar/" (basename %item)))))))
        (call-with-input-string nar (cut restore-file <> temp)))
      (call-with-input-file temp read-string))))
+
+(unless (zlib-available?)
+  (test-skip 1))
+(test-equal "/nar/gzip/*"
+  "bar"
+  (call-with-temporary-output-file
+   (lambda (temp port)
+     (let ((nar (http-get-port
+                 (publish-uri
+                  (string-append "/nar/gzip/" (basename %item))))))
+       (call-with-gzip-input-port nar
+         (cut restore-file <> temp)))
+     (call-with-input-file temp read-string))))
+
+(unless (zlib-available?)
+  (test-skip 1))
+(test-equal "/*.narinfo with compression"
+  `(("StorePath" . ,%item)
+    ("URL" . ,(string-append "nar/gzip/" (basename %item)))
+    ("Compression" . "gzip"))
+  (let ((thread (call-with-new-thread
+                 (lambda ()
+                   (guix-publish "--port=6799" "-C5")))))
+    (wait-until-ready 6799)
+    (let* ((url  (string-append "http://localhost:6799/"
+                                (store-path-hash-part %item) ".narinfo"))
+           (body (http-get-port url)))
+      (filter (lambda (item)
+                (match item
+                  (("Compression" . _) #t)
+                  (("StorePath" . _)  #t)
+                  (("URL" . _) #t)
+                  (_ #f)))
+              (recutils->alist body)))))
 
 (test-equal "/nar/ with properly encoded '+' sign"
   "Congrats!"

@@ -5644,6 +5644,18 @@ accept connections from any interface.
 Change privileges to @var{user} as soon as possible---i.e., once the
 server socket is open and the signing key has been read.
 
+@item --compression[=@var{level}]
+@itemx -C [@var{level}]
+Compress data using the given @var{level}.  When @var{level} is zero,
+disable compression.  The range 1 to 9 corresponds to different gzip
+compression levels: 1 is the fastest, and 9 is the best (CPU-intensive).
+The default is 3.
+
+Note compression occurs on the fly and the compressed streams are not
+cached.  Thus, to reduce load on the machine that runs @command{guix
+publish}, it may be a good idea to choose a low compression level, or to
+run @command{guix publish} behind a caching proxy.
+
 @item --ttl=@var{ttl}
 Produce @code{Cache-Control} HTTP headers that advertise a time-to-live
 (TTL) of @var{ttl}.  @var{ttl} must denote a duration: @code{5d} means 5
