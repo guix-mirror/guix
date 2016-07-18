@@ -1,0 +1,34 @@
+Disable part of the gdimagerotate test on architectures such as i686
+where intermediate floating-point operations are done with 80-bit long
+doubles, and typically later rounded to 64-bit doubles.  This double
+rounding causes small differences in the resulting pixel values
+compared with other architectures, causing the image comparison to
+fail.
+
+Patch by Mark H Weaver <mhw@netris.org>.
+
+--- libgd-2.2.2/tests/gdimagerotate/bug00067.c	1969-12-31 19:00:00.000000000 -0500
++++ libgd-2.2.2/tests/gdimagerotate/bug00067.c	2016-07-18 12:19:19.885423132 -0400
+@@ -1,5 +1,6 @@
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <float.h>
+ #include "gd.h"
+ 
+ #include "gdtest.h"
+@@ -41,6 +42,7 @@
+ 			return 1;
+ 		}
+ 
++#if FLT_EVAL_METHOD != 2
+ 		sprintf(filename, "bug00067_%03d_exp.png", angle);
+ 		path = gdTestFilePath2("gdimagerotate", filename);
+ 		if (!gdAssertImageEqualsToFile(path, exp)) {
+@@ -48,6 +50,7 @@
+ 			error += 1;
+ 		}
+ 		free(path);
++#endif
+ 
+ 		gdImageDestroy(exp);
+ 	}

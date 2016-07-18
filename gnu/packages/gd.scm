@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2016 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
@@ -47,7 +47,8 @@
              (uri (string-append
                    "https://github.com/libgd/libgd/releases/download/gd-"
                    version "/libgd-" version ".tar.xz"))
-             (patches (search-patches "gd-CVE-2016-5766.patch"
+             (patches (search-patches "gd-fix-test-on-i686.patch"
+                                      "gd-CVE-2016-5766.patch"
                                       "gd-CVE-2016-6128.patch"
                                       "gd-CVE-2016-6132.patch"
                                       "gd-CVE-2016-6214.patch"))

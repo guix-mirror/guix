@@ -514,6 +514,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gd-CVE-2016-6128.patch			\
   %D%/packages/patches/gd-CVE-2016-6132.patch			\
   %D%/packages/patches/gd-CVE-2016-6214.patch			\
+  %D%/packages/patches/gd-fix-test-on-i686.patch		\
   %D%/packages/patches/gegl-CVE-2012-4433.patch			\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghostscript-CVE-2015-3228.patch		\
