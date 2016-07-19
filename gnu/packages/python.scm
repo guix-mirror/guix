@@ -7971,14 +7971,14 @@ layouts.")
 (define-public python-pyquery
   (package
     (name "python-pyquery")
-    (version "1.2.11")
+    (version "1.2.13")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "pyquery" version))
        (sha256
         (base32
-         "1ikz1387nsp0pp7mzzr6ip9n5gr67acpap24yn33987v7fkjp0sa"))))
+         "0j9fsisip21qv4xljsg5dmni1pgpvwrjyyhhql0glydc4bs5rjgv"))))
     (build-system python-build-system)
     (propagated-inputs
      `(("python-lxml" ,python-lxml)
