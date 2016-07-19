@@ -4685,17 +4685,14 @@ options.")
 (define-public python-cssselect
   (package
     (name "python-cssselect")
-    (version "0.9.1")
+    (version "0.9.2")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-              "https://pypi.python.org/packages/source/c/cssselect/cssselect-"
-              version
-              ".tar.gz"))
+        (uri (pypi-uri "cssselect" version))
         (sha256
-          (base32
-            "10h623qnp6dp1191jri7lvgmnd4yfkl36k9smqklp1qlf3iafd85"))))
+         (base32
+          "1xg6gbva1yswghiycmgincv6ab4bn7hpm720ndbj40h8xycmnfvi"))))
     (build-system python-build-system)
     (inputs
       `(("python-setuptools" ,python-setuptools)))
