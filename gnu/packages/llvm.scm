@@ -57,7 +57,10 @@
     (arguments
      `(#:configure-flags '("-DCMAKE_SKIP_BUILD_RPATH=FALSE"
                            "-DCMAKE_BUILD_WITH_INSTALL_RPATH=FALSE"
-                           "-DLLVM_ENABLE_FFI:BOOL=TRUE")))
+                           "-DLLVM_ENABLE_FFI:BOOL=TRUE")
+
+       ;; Don't use '-g' during the build, to save space.
+       #:build-type "Release"))
     (home-page "http://www.llvm.org")
     (synopsis "Optimizing compiler infrastructure")
     (description
