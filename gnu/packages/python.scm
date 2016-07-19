@@ -4655,17 +4655,14 @@ converts incoming documents to Unicode and outgoing documents to UTF-8.")
 (define-public python2-cssutils
   (package
     (name "python2-cssutils")
-    (version "1.0")
+    (version "1.0.1")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append
-              "https://pypi.python.org/packages/source/c/cssutils/cssutils-"
-              version
-              ".zip"))
+        (uri (pypi-uri "cssutils" version))
         (sha256
-          (base32
-            "1bwim1353r4hqiir73sn4sc43y7ymh09qx0kly7vj048blppc125"))))
+         (base32
+          "0qwha9x1wml2qmipbcz03gndnlwhzrjdvw9i09si247a90l8p8fq"))))
     (build-system python-build-system)
     (native-inputs
       `(("python2-mock" ,python2-mock) ; for the tests
