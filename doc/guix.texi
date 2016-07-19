@@ -546,6 +546,10 @@ Installing
 allow you to use the @command{guix import pypi} command (@pxref{Invoking
 guix import}).  It is of
 interest primarily for developers and not for casual users.
+
+@item
+When @url{http://zlib.net, zlib} is available, @command{guix publish}
+can compress build byproducts (@pxref{Invoking guix publish}).
 @end itemize
 
 Unless @code{--disable-daemon} was passed to @command{configure}, the
@@ -5651,7 +5655,7 @@ disable compression.  The range 1 to 9 corresponds to different gzip
 compression levels: 1 is the fastest, and 9 is the best (CPU-intensive).
 The default is 3.
 
-Note compression occurs on the fly and the compressed streams are not
+Compression occurs on the fly and the compressed streams are not
 cached.  Thus, to reduce load on the machine that runs @command{guix
 publish}, it may be a good idea to choose a low compression level, or to
 run @command{guix publish} behind a caching proxy.
