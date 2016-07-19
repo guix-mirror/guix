@@ -127,8 +127,14 @@ Publish ~a over HTTP.\n") %store-directory)
                     (0
                      (alist-cons 'compression %no-compression result))
                     (level
-                     (alist-cons 'compression (compression 'gzip level)
-                                 result)))))
+                     (if (zlib-available?)
+                         (alist-cons 'compression
+                                     (compression 'gzip level)
+                                     result)
+                         (begin
+                           (warning (_ "zlib support is missing; \
+compression disabled~%"))
+                           result))))))
         (option '("ttl") #t #f
                 (lambda (opt name arg result)
                   (let ((duration (string->duration arg)))
