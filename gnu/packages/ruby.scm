@@ -4125,12 +4125,17 @@ call.")
          (add-before 'check 'rake-compile
            ;; Fix the test error described at
            ;; https://github.com/ruby-concurrency/concurrent-ruby/pull/408
-           (lambda _ (zero? (system* "rake" "compile")))))))
+           (lambda _ (zero? (system* "rake" "compile"))))
+         (add-before 'check 'remove-timecop-dependency
+           ;; Remove timecop-dependent tests as having timecop as a depedency
+           ;; causes circular depedencies.
+           (lambda _
+             (delete-file "spec/concurrent/executor/timer_set_spec.rb")
+             (delete-file "spec/concurrent/scheduled_task_spec.rb")
+             #t)))))
     (native-inputs
      `(("ruby-rake-compiler" ,ruby-rake-compiler)
-       ("ruby-yard" ,ruby-yard)
-       ("ruby-rspec" ,ruby-rspec)
-       ("ruby-timecop" ,ruby-timecop)))
+       ("ruby-rspec" ,ruby-rspec)))
     (synopsis "Concurrency tools for Ruby")
     (description
      "This library provides modern concurrency tools including agents,
