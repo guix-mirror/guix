@@ -39,13 +39,28 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (%facebook-host-aliases
+            static-networking
             static-networking-service
+            static-networking-service-type
             dhcp-client-service
             %ntp-servers
+
+            ntp-configuration
+            ntp-configuration?
             ntp-service
+            ntp-service-type
+
+            tor-configuration
+            tor-configuration?
             tor-hidden-service
             tor-service
+            tor-service-type
+
+            bitlbee-configuration
+            bitlbee-configuration?
             bitlbee-service
+            bitlbee-service-type
+
             wicd-service
             network-manager-service
             connman-service))

@@ -94,11 +94,17 @@
             guix-publish-configuration?
             guix-publish-service
             guix-publish-service-type
+
+            gpm-configuration
+            gpm-configuration?
             gpm-service-type
             gpm-service
 
             urandom-seed-service-type
             urandom-seed-service
+
+            rngd-configuration
+            rngd-configuration?
             rngd-service-type
             rngd-service
             pam-limits-service-type

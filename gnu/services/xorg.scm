@@ -48,6 +48,8 @@
             slim-service-type
             slim-service
 
+            screen-locker
+            screen-locker?
             screen-locker-service-type
             screen-locker-service))
 

@@ -25,7 +25,10 @@
   #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (srfi srfi-26)
-  #:export (lsh-service
+  #:export (lsh-configuration
+            lsh-configuration?
+            lsh-service
+            lsh-service-type
 
             dropbear-configuration
             dropbear-configuration?
