@@ -23,7 +23,7 @@
 
 (define-module (gnu packages scheme)
   #:use-module (gnu packages)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:hide (openssl))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -48,6 +48,8 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages image)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages gl)
   #:use-module (ice-9 match))
 
 (define (mit-scheme-source-directory system version)
@@ -477,15 +479,25 @@ implementation techniques and as an expository tool.")
          %standard-phases))
        #:tests? #f                                ; XXX: how to run them?
        ))
-    (inputs `(("libffi" ,libffi)
-              ("glib" ,glib)                      ; for DrRacket
-              ("cairo" ,cairo)
-              ("pango" ,pango)
-              ("libjpeg" ,libjpeg-8)
-              ("fontconfig" ,fontconfig)
-              ("gdk-pixbuf" ,gdk-pixbuf)
-              ("gtk" ,gtk+-2)
-              ("sqlite" ,sqlite)))                ;needed to build the doc
+    (inputs
+     `(("libffi" ,libffi)
+       ;; Hardcode dynamically loaded libraries for better functionality.
+       ;; sqlite and libraries for `racket/draw' are needed to build the doc.
+       ("cairo" ,cairo)
+       ("fontconfig" ,fontconfig)
+       ("glib" ,glib)
+       ("glu" ,glu)
+       ("gmp" ,gmp)
+       ("gtk+" ,gtk+)  ; propagates gdk-pixbuf+svg
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("mesa" ,mesa)
+       ("mpfr" ,mpfr)
+       ("openssl" ,openssl)
+       ("pango" ,pango)
+       ("sqlite" ,sqlite)
+       ("unixodbc" ,unixodbc)))
     (home-page "http://racket-lang.org")
     (synopsis "Implementation of Scheme and related languages")
     (description
