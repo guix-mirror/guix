@@ -2120,14 +2120,11 @@ Optimization occurs at build time.  For this reason, the library is built on
 the machine where it is installed, without resorting to pre-built substitutes.
 
 Before building the library, CPU throttling should be disabled.  This can be
-done in the BIOS, or, on GNU/Linux, with the following commands:
+done in the BIOS, or, on GNU/Linux, with the following command:
 
-cpufreq-selector -g performance -c 0
-...
-cpufreq-selector -g performance -c N-1
+# cpupower --governor performance
 
-where N is the number of cores of your CPU.  Failure to do so will result in a
-library with poor performance.")
+Failure to do so will result in a library with poor performance.")
     (license license:bsd-3)))
 
 (define-public glm
