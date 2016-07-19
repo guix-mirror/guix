@@ -2536,22 +2536,26 @@ you about the changes.")
 (define-public ruby-activesupport
   (package
     (name "ruby-activesupport")
-    (version "4.2.4")
+    (version "5.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "activesupport" version))
        (sha256
         (base32
-         "19n38rj6r1gyxgka18qvcxyla0fwan8a5p3ghq0pp8aj93sbmr6f"))))
+         "0k7zhnz0aw1ym8phs10r85f91ja45vsd058fm9v0h2k0igw12cpf"))))
     (build-system ruby-build-system)
     (arguments
-     '(#:tests? #f)) ; no tests
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             ;; There is no tests, instead attempt to load the library.
+             (zero? (system* "ruby" "-Ilib" "-r" "active_support")))))))
     (propagated-inputs
-     `(("ruby-i18n" ,ruby-i18n)
-       ("ruby-json" ,ruby-json)
+     `(("ruby-concurrent" ,ruby-concurrent)
+       ("ruby-i18n" ,ruby-i18n)
        ("ruby-minitest" ,ruby-minitest)
-       ("ruby-thread-safe" ,ruby-thread-safe)
        ("ruby-tzinfo" ,ruby-tzinfo)
        ("ruby-tzinfo-data" ,ruby-tzinfo-data)))
     (synopsis "Ruby on Rails utility library")
