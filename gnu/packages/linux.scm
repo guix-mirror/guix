@@ -2752,3 +2752,41 @@ from that to the system kernel's @file{/dev/random} machinery.")
     ;; The source package is offered under the GPL2+, but the files
     ;; 'rngd_rdrand.c' and 'rdrand_asm.S' are only available under the GPL2.
     (license (list license:gpl2 license:gpl2+))))
+
+(define-public cpupower
+  (package
+    (name "cpupower")
+    (version (package-version linux-libre))
+    (source (package-source linux-libre))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'enter-subdirectory
+                    (lambda _
+                      (chdir "tools/power/cpupower")))
+                  (delete 'configure)
+                  (add-before 'build 'fix-makefiles
+                    (lambda _
+                      (substitute* "Makefile"
+                        (("/usr/") "/")
+                        (("/bin/(install|pwd)" _ command) command))
+                      (substitute* "bench/Makefile"
+                        (("\\$\\(CC\\) -o") "$(CC) $(LDFLAGS) -o")))))
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list (string-append "DESTDIR=" out)
+                            (string-append "LDFLAGS=-Wl,-rpath=" out "/lib")
+                            "docdir=/share/doc/cpupower"
+                            "confdir=$(docdir)/examples"
+                            ;; The Makefile recommends the following changes
+                            "DEBUG=false"
+                            "PACKAGE_BUGREPORT=bug-guix@gnu.org"))
+       #:tests? #f)) ;no tests
+    (native-inputs `(("gettext" ,gnu-gettext)))
+    (inputs `(("pciutils" ,pciutils)))
+    (home-page (package-home-page linux-libre))
+    (synopsis "CPU frequency and voltage scaling tools for Linux")
+    (description
+     "cpupower is a set of user-space tools that use the cpufreq feature of the
+Linux kernel to retrieve and control processor features related to power saving,
+such as frequency and voltage scaling.")
+    (license license:gpl2)))
