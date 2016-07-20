@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,6 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix svn-download)
   #:use-module (guix utils)
   #:use-module (guix build utils)
   #:use-module (guix build-system cmake)
@@ -1798,29 +1798,36 @@ associated functions (eg. contiguous and non-contiguous submatrix views).")
                 "1cdpjxb0fz5f28y5qrqgpw53s7qi8s2v3al9lfdldqxngb21vpx8"))))))
 
 (define-public muparser
-  (package
-    (name "muparser")
-    (version "2.2.5")
-    (source
-     (origin
-       (method svn-fetch)
-       (uri (svn-reference
-             (url "http://muparser.googlecode.com/svn/trunk/")
-             (revision 34)))
-       (sha256
-        (base32
-         "1d6bdbhx9zj3srwj3m7c9hvr18gnx1fx43h6d25my7q85gicpcwn"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:configure-flags '("--enable-samples=no")
-       #:tests? #f)) ;no "check" target
-    (home-page "http://muparser.beltoforion.de/")
-    (synopsis "Fast parser library for mathematical expressions")
-    (description
-     "muParser is an extensible high performance math parser library.  It is
-based on transforming an expression into a bytecode and precalculating
-constant parts of it.")
-    (license license:expat)))
+  ;; When switching download sites, muparser re-issued a 2.2.5 release with a
+  ;; different hash. In order to make `guix package --upgrade` work correctly,
+  ;; we set a Guix packaging revision.
+  ;; When the next version of muparser is released, we can remove
+  ;; UPSTREAM-VERSION and REVISION and use the plain VERSION.
+  (let ((upstream-version "2.2.5")
+        (revision "2"))
+    (package
+      (name "muparser")
+      (version (string-append upstream-version "-" revision))
+      (source
+       (origin
+         (method url-fetch)
+         (uri (string-append "https://github.com/beltoforion/muparser/archive/v"
+                             upstream-version ".tar.gz"))
+         (file-name (string-append name "-" version ".tar.gz"))
+         (sha256
+          (base32
+           "0277qsi5l23jsck1vhn383bmvc2n9l4a1dl5r9bf7hvjv9ayyrh6"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:configure-flags '("--enable-samples=no")
+         #:tests? #f)) ;no "check" target
+      (home-page "http://muparser.beltoforion.de/")
+      (synopsis "Fast parser library for mathematical expressions")
+      (description
+       "muParser is an extensible high performance math parser library.  It is
+based on transforming an expression into a bytecode and precalculating constant
+parts of it.")
+      (license license:expat))))
 
 (define-public openblas
   (package
