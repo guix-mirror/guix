@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -84,16 +85,16 @@ program to exhibit a bug.")
 (define-public c-reduce
   (package
     (name "c-reduce")
-    (version "2.3.0")
+    (version "2.5.0")
     (source
      (origin
       (method url-fetch)
       (uri (list
-            (string-append "http://embed.cs.utah.edu/creduce/"
+            (string-append "https://embed.cs.utah.edu/creduce/"
                            "creduce-" version ".tar.gz")))
       (sha256
        (base32
-        "0r9lvnifjcnsrkrk8k4mha1kmmb93jya7alm523ck59y3173bpi0"))
+        "1r23lhzq3dz8vi2dalxk5las8bf0av2w94hxxbs61pr73m77ik9d"))
       (modules '((guix build utils)))
       (snippet
        '(substitute* "clang_delta/TransformationManager.cpp"
@@ -131,7 +132,7 @@ program to exhibit a bug.")
                                 "file-which"      "getopt-tabular"
                                 "regex-common"    "sys-cpu"))))))
                  %standard-phases)))
-    (home-page "http://embed.cs.utah.edu/creduce")
+    (home-page "https://embed.cs.utah.edu/creduce")
     (synopsis "Reducer for interesting code")
     (description
      "C-Reduce is a tool that takes a large C or C++ program that has a
