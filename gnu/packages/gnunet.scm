@@ -3,7 +3,6 @@
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;; Copyright © 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Ni* Gillmann <ng@niasterisk.space>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
@@ -154,13 +153,16 @@ and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.45.0")
+   (version "7.48.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append "https://gnunet.org/sites/default/files/gnurl-"
-                                version ".tar.bz2"))
+            (uri (let ((version-with-underscores
+                        (string-join (string-split version #\.) "_")))
+                   (string-append "https://gnunet.org/sites/default/files/"
+                                  name "-" version-with-underscores ".tar.bz2")))
             (sha256
-             (base32 "0hd8w4wyjwagd4k6vm6srphqbmysz08rcwf8z7f4b2d6d2yrn3mm"))))
+             (base32
+              "14gch4rdibrc8qs4mijsczxvl45dsclf234g17dk6c8nc2s4bm0a"))))
    (build-system gnu-build-system)
    (inputs `(("gnutls" ,gnutls)
              ("libidn" ,libidn)

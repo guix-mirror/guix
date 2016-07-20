@@ -150,6 +150,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/gnustep.scm			\
   %D%/packages/gnuzilla.scm			\
   %D%/packages/gnu-pw-mgr.scm			\
+  %D%/packages/golang.scm			\
   %D%/packages/gperf.scm			\
   %D%/packages/gprolog.scm			\
   %D%/packages/gps.scm				\
@@ -214,7 +215,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/llvm.scm				\
   %D%/packages/lout.scm				\
   %D%/packages/logging.scm			\
-  %D%/packages/lsh.scm				\
   %D%/packages/lsof.scm				\
   %D%/packages/lua.scm				\
   %D%/packages/lxde.scm				\
@@ -441,7 +441,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/automake-test-gzip-warning.patch		\
   %D%/packages/patches/avahi-localstatedir.patch		\
   %D%/packages/patches/avidemux-install-to-lib.patch		\
-  %D%/packages/patches/avrdude-fix-libusb.patch			\
   %D%/packages/patches/awesome-reproducible-png.patch		\
   %D%/packages/patches/bash-completion-directories.patch	\
   %D%/packages/patches/beets-image-test-failure.patch		\
@@ -454,6 +453,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/cdparanoia-fpic.patch			\
   %D%/packages/patches/chmlib-inttypes.patch			\
   %D%/packages/patches/clang-libc-search-path.patch		\
+  %D%/packages/patches/clang-3.8-libc-search-path.patch		\
   %D%/packages/patches/clucene-pkgconfig.patch			\
   %D%/packages/patches/cmake-fix-tests.patch			\
   %D%/packages/patches/cpio-gets-undeclared.patch		\
@@ -511,10 +511,16 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
   %D%/packages/patches/gcc-5.0-libvtv-runpath.patch		\
+  %D%/packages/patches/gd-CVE-2016-5766.patch			\
+  %D%/packages/patches/gd-CVE-2016-6128.patch			\
+  %D%/packages/patches/gd-CVE-2016-6132.patch			\
+  %D%/packages/patches/gd-CVE-2016-6214.patch			\
+  %D%/packages/patches/gd-fix-test-on-i686.patch		\
   %D%/packages/patches/gegl-CVE-2012-4433.patch			\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghostscript-CVE-2015-3228.patch		\
   %D%/packages/patches/ghostscript-runpath.patch		\
+  %D%/packages/patches/gimp-CVE-2016-4994.patch			\
   %D%/packages/patches/glib-networking-ssl-cert-file.patch	\
   %D%/packages/patches/glib-tests-timer.patch			\
   %D%/packages/patches/glibc-bootstrap-system.patch		\
@@ -590,6 +596,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/jasper-CVE-2016-2089.patch		\
   %D%/packages/patches/jasper-CVE-2016-2116.patch		\
   %D%/packages/patches/jbig2dec-ignore-testtest.patch		\
+  %D%/packages/patches/khmer-use-libraries.patch                \
   %D%/packages/patches/kmod-module-directory.patch		\
   %D%/packages/patches/ldc-disable-tests.patch			\
   %D%/packages/patches/lftp-dont-save-unknown-host-fingerprint.patch \
@@ -603,7 +610,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/libdrm-symbol-check.patch		\
   %D%/packages/patches/libevent-dns-tests.patch			\
   %D%/packages/patches/libextractor-ffmpeg-3.patch		\
-  %D%/packages/patches/libmtp-devices.patch			\
   %D%/packages/patches/liboop-mips64-deplibs-fix.patch		\
   %D%/packages/patches/libotr-test-auth-fix.patch		\
   %D%/packages/patches/liblxqt-include.patch			\
@@ -673,7 +679,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/ocaml-CVE-2015-8869.patch		\
   %D%/packages/patches/ocaml-findlib-make-install.patch	\
   %D%/packages/patches/openexr-missing-samples.patch		\
-  %D%/packages/patches/openimageio-boost-1.60.patch		\
   %D%/packages/patches/openjpeg-CVE-2015-6581.patch		\
   %D%/packages/patches/openjpeg-use-after-free-fix.patch	\
   %D%/packages/patches/openssh-CVE-2015-8325.patch		\
@@ -729,6 +734,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-2.7-source-date-epoch.patch	\
   %D%/packages/patches/python-3-deterministic-build-info.patch	\
   %D%/packages/patches/python-3-search-paths.patch		\
+  %D%/packages/patches/python-dendropy-exclude-failing-tests.patch \
   %D%/packages/patches/python-disable-ssl-test.patch		\
   %D%/packages/patches/python-fix-tests.patch			\
   %D%/packages/patches/python-ipython-inputhook-ctype.patch	\
@@ -760,7 +766,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/slim-sigusr1.patch			\
   %D%/packages/patches/slurm-configure-remove-nonfree-contribs.patch \
   %D%/packages/patches/soprano-find-clucene.patch		\
-  %D%/packages/patches/sudo-CVE-2015-5602.patch			\
   %D%/packages/patches/superlu-dist-scotchmetis.patch		\
   %D%/packages/patches/synfig-build-fix.patch			\
   %D%/packages/patches/t1lib-CVE-2010-2642.patch		\

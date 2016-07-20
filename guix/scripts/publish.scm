@@ -27,6 +27,7 @@
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-2)
+  #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
@@ -45,6 +46,7 @@
   #:use-module (guix pk-crypto)
   #:use-module (guix store)
   #:use-module (guix serialization)
+  #:use-module (guix zlib)
   #:use-module (guix ui)
   #:use-module (guix scripts)
   #:export (guix-publish))
@@ -58,6 +60,9 @@ Publish ~a over HTTP.\n") %store-directory)
       --listen=HOST      listen on the network interface for HOST"))
   (display (_ "
   -u, --user=USER        change privileges to USER as soon as possible"))
+  (display (_ "
+  -C, --compression[=LEVEL]
+                         compress archives at LEVEL"))
   (display (_ "
       --ttl=TTL          announce narinfos can be cached for TTL seconds"))
   (display (_ "
@@ -78,6 +83,20 @@ Publish ~a over HTTP.\n") %store-directory)
     (lambda (key error)
       (leave (_ "lookup of host '~a' failed: ~a~%")
              host (gai-strerror error)))))
+
+;; Nar compression parameters.
+(define-record-type <compression>
+  (compression type level)
+  compression?
+  (type   compression-type)
+  (level  compression-level))
+
+(define %no-compression
+  (compression 'none 0))
+
+(define %default-gzip-compression
+  ;; Since we compress on the fly, default to fast compression.
+  (compression 'gzip 3))
 
 (define %options
   (list (option '(#\h "help") #f #f
@@ -102,6 +121,20 @@ Publish ~a over HTTP.\n") %store-directory)
                     (()
                      (leave (_ "lookup of host '~a' returned nothing")
                             name)))))
+        (option '(#\C "compression") #f #t
+                (lambda (opt name arg result)
+                  (match (if arg (string->number* arg) 3)
+                    (0
+                     (alist-cons 'compression %no-compression result))
+                    (level
+                     (if (zlib-available?)
+                         (alist-cons 'compression
+                                     (compression 'gzip level)
+                                     result)
+                         (begin
+                           (warning (_ "zlib support is missing; \
+compression disabled~%"))
+                           result))))))
         (option '("ttl") #t #f
                 (lambda (opt name arg result)
                   (let ((duration (string->duration arg)))
@@ -117,6 +150,12 @@ Publish ~a over HTTP.\n") %store-directory)
 
 (define %default-options
   `((port . 8080)
+
+    ;; Default to fast & low compression.
+    (compression . ,(if (zlib-available?)
+                        %default-gzip-compression
+                        %no-compression))
+
     (address . ,(make-socket-address AF_INET INADDR_ANY 0))
     (repl . #f)))
 
@@ -152,12 +191,20 @@ Publish ~a over HTTP.\n") %store-directory)
 (define base64-encode-string
   (compose base64-encode string->utf8))
 
-(define (narinfo-string store store-path key)
+(define* (narinfo-string store store-path key
+                         #:key (compression %no-compression))
   "Generate a narinfo key/value string for STORE-PATH; an exception is raised
-if STORE-PATH is invalid.  The narinfo is signed with KEY."
+if STORE-PATH is invalid.  Produce a URL that corresponds to COMPRESSION.  The
+narinfo is signed with KEY."
   (let* ((path-info  (query-path-info store store-path))
-         (url        (encode-and-join-uri-path (list "nar"
-                                                     (basename store-path))))
+         (url        (encode-and-join-uri-path
+                      `("nar"
+                        ,@(match compression
+                            (($ <compression> 'none)
+                             '())
+                            (($ <compression> type)
+                             (list (symbol->string type))))
+                        ,(basename store-path))))
          (hash       (bytevector->nix-base32-string
                       (path-info-hash path-info)))
          (size       (path-info-nar-size path-info))
@@ -166,13 +213,16 @@ if STORE-PATH is invalid.  The narinfo is signed with KEY."
                       " "))
          (deriver    (path-info-deriver path-info))
          (base-info  (format #f
-                             "StorePath: ~a
+                             "\
+StorePath: ~a
 URL: ~a
-Compression: none
+Compression: ~a
 NarHash: sha256:~a
 NarSize: ~d
 References: ~a~%"
-                             store-path url hash size references))
+                             store-path url
+                             (compression-type compression)
+                             hash size references))
          ;; Do not render a "Deriver" or "System" line if we are rendering
          ;; info for a derivation.
          (info       (if (not deriver)
@@ -209,7 +259,8 @@ References: ~a~%"
                         (format port "~a: ~a~%" key value)))
                       %nix-cache-info))))
 
-(define* (render-narinfo store request hash #:key ttl)
+(define* (render-narinfo store request hash
+                         #:key ttl (compression %no-compression))
   "Render metadata for the store path corresponding to HASH.  If TTL is true,
 advertise it as the maximum validity period (in seconds) via the
 'Cache-Control' header.  This allows 'guix substitute' to cache it for an
@@ -222,18 +273,35 @@ appropriate duration."
                         `((cache-control (max-age . ,ttl)))
                         '()))
                 (cut display
-                     (narinfo-string store store-path (force %private-key))
-                     <>)))))
+                  (narinfo-string store store-path (force %private-key)
+                                  #:compression compression)
+                  <>)))))
 
-(define (render-nar store request store-item)
+;; XXX: Declare the 'Guix-Compression' HTTP header, which is in fact for
+;; internal consumption: it allows us to pass the compression info to
+;; 'http-write', as part of the workaround to <http://bugs.gnu.org/21093>.
+(declare-header! "Guix-Nar-Compression"
+                 (lambda (str)
+                   (match (call-with-input-string str read)
+                     (('compression type level)
+                      (compression type level))))
+                 compression?
+                 (lambda (compression port)
+                   (match compression
+                     (($ <compression> type level)
+                      (write `(compression ,type ,level) port)))))
+
+(define* (render-nar store request store-item
+                     #:key (compression %no-compression))
   "Render archive of the store path corresponding to STORE-ITEM."
   (let ((store-path (string-append %store-directory "/" store-item)))
     ;; The ISO-8859-1 charset *must* be used otherwise HTTP clients will
     ;; interpret the byte stream as UTF-8 and arbitrarily change invalid byte
     ;; sequences.
     (if (valid-path? store store-path)
-        (values '((content-type . (application/x-nix-archive
-                                   (charset . "ISO-8859-1"))))
+        (values `((content-type . (application/x-nix-archive
+                                   (charset . "ISO-8859-1")))
+                  (guix-nar-compression . ,compression))
                 ;; XXX: We're not returning the actual contents, deferring
                 ;; instead to 'http-write'.  This is a hack to work around
                 ;; <http://bugs.gnu.org/21093>.
@@ -282,6 +350,28 @@ example: \"/foo/bar\" yields '(\"foo\" \"bar\")."
           (values)
           (apply throw args)))))
 
+(define-syntax-rule (swallow-zlib-error exp ...)
+  "Swallow 'zlib-error' exceptions raised by EXP..."
+  (catch 'zlib-error
+    (lambda ()
+      exp ...)
+    (const #f)))
+
+(define (nar-response-port response)
+  "Return a port on which to write the body of RESPONSE, the response of a
+/nar request, according to COMPRESSION."
+  (match (assoc-ref (response-headers response) 'guix-nar-compression)
+    (($ <compression> 'gzip level)
+     ;; Note: We cannot used chunked encoding here because
+     ;; 'make-gzip-output-port' wants a file port.
+     (make-gzip-output-port (response-port response)
+                            #:level level
+                            #:buffer-size (* 64 1024)))
+    (($ <compression> 'none)
+     (response-port response))
+    (#f
+     (response-port response))))
+
 (define (http-write server client response body)
   "Write RESPONSE and BODY to CLIENT, possibly in a separate thread to avoid
 blocking."
@@ -293,16 +383,20 @@ blocking."
       (lambda ()
         (let* ((response (write-response (sans-content-length response)
                                          client))
-               (port     (response-port response)))
+               (port     (begin
+                           (force-output client)
+                           (nar-response-port response))))
           ;; XXX: Given our ugly workaround for <http://bugs.gnu.org/21093> in
           ;; 'render-nar', BODY here is just the file name of the store item.
           ;; We call 'write-file' from here because we know that's the only
           ;; way to avoid building the whole nar in memory, which could
           ;; quickly become a real problem.  As a bonus, we even do
           ;; sendfile(2) directly from the store files to the socket.
-          (swallow-EPIPE
-           (write-file (utf8->string body) port))
-          (close-port port)
+          (swallow-zlib-error
+           (swallow-EPIPE
+            (write-file (utf8->string body) port)))
+          (swallow-zlib-error
+           (close-port port))
           (values)))))
     (_
      ;; Handle other responses sequentially.
@@ -316,7 +410,10 @@ blocking."
   http-write
   (@@ (web server http) http-close))
 
-(define* (make-request-handler store #:key narinfo-ttl)
+(define* (make-request-handler store
+                               #:key
+                               narinfo-ttl
+                               (compression %no-compression))
   (lambda (request body)
     (format #t "~a ~a~%"
             (request-method request)
@@ -330,16 +427,37 @@ blocking."
           (((= extract-narinfo-hash (? string? hash)))
            ;; TODO: Register roots for HASH that will somehow remain for
            ;; NARINFO-TTL.
-           (render-narinfo store request hash #:ttl narinfo-ttl))
+           (render-narinfo store request hash
+                           #:ttl narinfo-ttl
+                           #:compression compression))
+
+          ;; Use different URLs depending on the compression type.  This
+          ;; guarantees that /nar URLs remain valid even when 'guix publish'
+          ;; is restarted with different compression parameters.
+
           ;; /nar/<store-item>
           (("nar" store-item)
-           (render-nar store request store-item))
+           (render-nar store request store-item
+                       #:compression %no-compression))
+          ;; /nar/gzip/<store-item>
+          (("nar" "gzip" store-item)
+           (if (zlib-available?)
+               (render-nar store request store-item
+                           #:compression
+                           (match compression
+                             (($ <compression> 'gzip)
+                              compression)
+                             (_
+                              %default-gzip-compression)))
+               (not-found request)))
           (_ (not-found request)))
         (not-found request))))
 
 (define* (run-publish-server socket store
-                             #:key narinfo-ttl)
-  (run-server (make-request-handler store #:narinfo-ttl narinfo-ttl)
+                             #:key (compression %no-compression) narinfo-ttl)
+  (run-server (make-request-handler store
+                                    #:narinfo-ttl narinfo-ttl
+                                    #:compression compression)
               concurrent-http-server
               `(#:socket ,socket)))
 
@@ -378,6 +496,7 @@ blocking."
            (user    (assoc-ref opts 'user))
            (port    (assoc-ref opts 'port))
            (ttl     (assoc-ref opts 'narinfo-ttl))
+           (compression (assoc-ref opts 'compression))
            (address (let ((addr (assoc-ref opts 'address)))
                       (make-socket-address (sockaddr:fam addr)
                                            (sockaddr:addr addr)
@@ -404,4 +523,6 @@ consider using the '--user' option!~%")))
       (when repl-port
         (repl:spawn-server (repl:make-tcp-server-socket #:port repl-port)))
       (with-store store
-        (run-publish-server socket store #:narinfo-ttl ttl)))))
+        (run-publish-server socket store
+                            #:compression compression
+                            #:narinfo-ttl ttl)))))

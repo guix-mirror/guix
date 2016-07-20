@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,7 +29,7 @@
 (define-public ninja
   (package
     (name "ninja")
-    (version "1.5.3")
+    (version "1.7.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/martine/ninja/"
@@ -36,7 +37,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1h3yfwcfl61v493vna6jia2fizh8rpig7qw2504cvkr6gid3p5bw"))
+                "06dy2dc1aafm61ynw9gzig88la3km9dsh53bxf4mnw7l7kjisn2i"))
               (patches (search-patches "ninja-zero-mtime.patch"
                                        "ninja-tests.patch"))))
     (build-system gnu-build-system)
@@ -69,7 +70,7 @@
               (install-file "ninja" bin)
               (install-file "doc/manual.asciidoc" doc)
               #t))))))
-    (home-page "http://martine.github.io/ninja/")
+    (home-page "https://ninja-build.org/")
     (synopsis "Small build system")
     (description
      "Ninja is a small build system with a focus on speed.  It differs from

@@ -58,14 +58,14 @@ a flexible and convenient way.")
 (define-public man-db
   (package
     (name "man-db")
-    (version "2.7.1")
+    (version "2.7.5")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://savannah/man-db/man-db-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "03ly0hbpgjnag576rgccanaisn7f6422q5qxrj64vyzslc2651y4"))))
+                "056a3il7agfazac12yggcg4gf412yq34k065im0cpfxbcw6xskaw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -129,7 +129,7 @@ the traditional flat-text whatis databases.")
 (define-public man-pages
   (package
     (name "man-pages")
-    (version "4.04")
+    (version "4.06")
     (source (origin
               (method url-fetch)
               (uri
@@ -142,7 +142,7 @@ the traditional flat-text whatis databases.")
                     "man-pages-" version ".tar.xz")))
               (sha256
                (base32
-                "0v8zxq4scfixy3pjpw9ankvv5v8frv62khv4xm1jpkswyq6rbqcg"))))
+                "0vv056k9yyf05dqal9m2pq3pv9c8lnp7i5rjxvcnic6aq7vyrafb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-delete 'configure %standard-phases)
@@ -168,7 +168,7 @@ Linux kernel and C library interfaces employed by user-space programs.")
 (define-public help2man
   (package
     (name "help2man")
-    (version "1.47.3")
+    (version "1.47.4")
     (source
      (origin
       (method url-fetch)
@@ -176,7 +176,7 @@ Linux kernel and C library interfaces employed by user-space programs.")
                           version ".tar.xz"))
       (sha256
        (base32
-        "0miqq77ssk5rgsc9xlv7k5n2wk2c5wv2m1kh4zhbwrggfmjaycn2"))))
+        "0lvp4306f5nq08f3snffs5pp1zwv8l35z6f5g0dds51zs6bzdv6l"))))
     (build-system gnu-build-system)
     (arguments `(;; There's no `check' target.
                  #:tests? #f))

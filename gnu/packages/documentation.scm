@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014, 2016 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,9 +28,11 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages python)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages docbook)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages xml)
   #:autoload   (gnu packages zip) (unzip))
@@ -115,3 +118,38 @@ generate both TeX output for high-quality hardcopies or HTML output for online
 brwosing.  The documentation is extracted directly from the C/C++/IDL source
 or Java class files.")
     (license gpl2+)))
+
+(define-public scrollkeeper
+  (package
+    (name "scrollkeeper")
+    (version "0.3.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/scrollkeeper/scrollkeeper-"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "1bfxwxc1ngh11v36z899sz9qam366r050fhkyb5adv65lb1x62sa"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-xml-catalog="
+                            (assoc-ref %build-inputs "docbook-xml")
+                            "/xml/dtd/docbook/catalog.xml"))))
+    (inputs
+     `(("perl" ,perl)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ;; The configure script checks for either version 4.2 or 4.1.2.
+       ("docbook-xml" ,docbook-xml-4.2)))
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (home-page "http://scrollkeeper.sourceforge.net/")
+    (synopsis "Open Documentation Cataloging Project")
+    (description "ScrollKeeper is a cataloging system for documentation on open
+systems.  It manages documentation metadata as specified by the Open Source
+Metadata Framework and provides a simple API to allow help browsers to find,
+sort, and search the document catalog.  It will also be able to communicate
+with catalog servers on the Net to search for documents which are not on the
+local system.")
+    (license lgpl2.1+)))

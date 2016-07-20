@@ -17,6 +17,7 @@ Copyright @copyright{} 2015, 2016 Mathieu Lirzin@*
 Copyright @copyright{} 2014 Pierre-Antoine Rault@*
 Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
 Copyright @copyright{} 2015, 2016 Leo Famulari@*
+Copyright @copyright{} 2015, 2016 Ricardo Wurmus@*
 Copyright @copyright{} 2016 Ben Woodcroft@*
 Copyright @copyright{} 2016 Chris Marusich@*
 Copyright @copyright{} 2016 Efraim Flashner
@@ -546,6 +547,10 @@ Installing
 allow you to use the @command{guix import pypi} command (@pxref{Invoking
 guix import}).  It is of
 interest primarily for developers and not for casual users.
+
+@item
+When @url{http://zlib.net, zlib} is available, @command{guix publish}
+can compress build byproducts (@pxref{Invoking guix publish}).
 @end itemize
 
 Unless @code{--disable-daemon} was passed to @command{configure}, the
@@ -2669,6 +2674,7 @@ Examples include:
 download a file from the HTTP, HTTPS, or FTP URL specified in the
 @code{uri} field;
 
+@vindex git-fetch
 @item @var{git-fetch} from @code{(guix git-download)}
 clone the Git version control repository, and check out the revision
 specified in the @code{uri} field as a @code{git-reference} object; a
@@ -2686,6 +2692,10 @@ A bytevector containing the SHA-256 hash of the source.  Typically the
 @code{base32} form is used here to generate the bytevector from a
 base-32 string.
 
+You can obtain this information using @code{guix download}
+(@pxref{Invoking guix download}) or @code{guix hash} (@pxref{Invoking
+guix hash}).
+
 @item @code{file-name} (default: @code{#f})
 The file name under which the source code should be saved.  When this is
 @code{#f}, a sensible default value will be used in most cases.  In case
@@ -2697,8 +2707,9 @@ file name explicitly because the default is not very descriptive.
 A list of file names containing patches to be applied to the source.
 
 @item @code{snippet} (default: @code{#f})
-A quoted piece of code that will be run in the source directory to make
-any modifications, which is sometimes more convenient than a patch.
+A G-expression (@pxref{G-Expressions}) or S-expression that will be run
+in the source directory.  This is a convenient way to modify the source,
+sometimes more convenient than a patch.
 
 @item @code{patch-flags} (default: @code{'("-p1")})
 A list of command-line flags that should be passed to the @code{patch}
@@ -2712,10 +2723,6 @@ such as GNU@tie{}Patch.
 @item @code{modules} (default: @code{'()})
 A list of Guile modules that should be loaded during the patching
 process and while running the code in the @code{snippet} field.
-
-@item @code{imported-modules} (default: @code{'()})
-The list of Guile modules to import in the patch derivation, for use by
-the @code{snippet}.
 
 @item @code{patch-guile} (default: @code{#f})
 The Guile package that should be used in the patching process.  When
@@ -3697,6 +3704,30 @@ In the example above, the native build of @var{coreutils} is used, so
 that @command{ln} can actually run on the host; but then the
 cross-compiled build of @var{emacs} is referenced.
 
+@cindex imported modules, for gexps
+@findex with-imported-modules
+Another gexp feature is @dfn{imported modules}: sometimes you want to be
+able to use certain Guile modules from the ``host environment'' in the
+gexp, so those modules should be imported in the ``build environment''.
+The @code{with-imported-modules} form allows you to express that:
+
+@example
+(let ((build (with-imported-modules '((guix build utils))
+               #~(begin
+                   (use-modules (guix build utils))
+                   (mkdir-p (string-append #$output "/bin"))))))
+  (gexp->derivation "empty-dir"
+                    #~(begin
+                        #$build
+                        (display "success!\n")
+                        #t)))
+@end example
+
+@noindent
+In this example, the @code{(guix build utils)} module is automatically
+pulled into the isolated build environment of our gexp, such that
+@code{(use-modules (guix build utils))} works as expected.
+
 The syntactic form to construct gexps is summarized below.
 
 @deffn {Scheme Syntax} #~@var{exp}
@@ -3756,6 +3787,16 @@ G-expressions created by @code{gexp} or @code{#~} are run-time objects
 of the @code{gexp?} type (see below.)
 @end deffn
 
+@deffn {Scheme Syntax} with-imported-modules @var{modules} @var{body}@dots{}
+Mark the gexps defined in @var{body}@dots{} as requiring @var{modules}
+in their execution environment.  @var{modules} must be a list of Guile
+module names, such as @code{'((guix build utils) (guix build gremlin))}.
+
+This form has @emph{lexical} scope: it has an effect on the gexps
+directly defined in @var{body}@dots{}, but not on those defined, say, in
+procedures called from @var{body}@dots{}.
+@end deffn
+
 @deffn {Scheme Procedure} gexp? @var{obj}
 Return @code{#t} if @var{obj} is a G-expression.
 @end deffn
@@ -3781,7 +3822,9 @@ stored in a file called @var{script-name}.  When @var{target} is true,
 it is used as the cross-compilation target triplet for packages referred
 to by @var{exp}.
 
-Make @var{modules} available in the evaluation context of @var{exp};
+@var{modules} is deprecated in favor of @code{with-imported-modules}.
+Its meaning is to
+make @var{modules} available in the evaluation context of @var{exp};
 @var{modules} is a list of names of Guile modules searched in
 @var{module-path} to be copied in the store, compiled, and made available in
 the load path during the execution of @var{exp}---e.g., @code{((guix
@@ -3862,10 +3905,9 @@ This is the declarative counterpart of @code{text-file}.
 @end deffn
 
 @deffn {Scheme Procedure} computed-file @var{name} @var{gexp} @
-          [#:modules '()] [#:options '(#:local-build? #t)]
+          [#:options '(#:local-build? #t)]
 Return an object representing the store item @var{name}, a file or
-directory computed by @var{gexp}.  @var{modules} specifies the set of
-modules visible in the execution context of @var{gexp}.  @var{options}
+directory computed by @var{gexp}.  @var{options}
 is a list of additional arguments to pass to @code{gexp->derivation}.
 
 This is the declarative counterpart of @code{gexp->derivation}.
@@ -3873,7 +3915,7 @@ This is the declarative counterpart of @code{gexp->derivation}.
 
 @deffn {Monadic Procedure} gexp->script @var{name} @var{exp}
 Return an executable script @var{name} that runs @var{exp} using
-@var{guile} with @var{modules} in its search path.
+@var{guile}, with @var{exp}'s imported modules in its search path.
 
 The example below builds a script that simply invokes the @command{ls}
 command:
@@ -3899,16 +3941,20 @@ executable file @file{/gnu/store/@dots{}-list-files} along these lines:
 @end deffn
 
 @deffn {Scheme Procedure} program-file @var{name} @var{exp} @
-          [#:modules '()] [#:guile #f]
+          [#:guile #f]
 Return an object representing the executable store item @var{name} that
 runs @var{gexp}.  @var{guile} is the Guile package used to execute that
-script, and @var{modules} is the list of modules visible to that script.
+script.
 
 This is the declarative counterpart of @code{gexp->script}.
 @end deffn
 
-@deffn {Monadic Procedure} gexp->file @var{name} @var{exp}
+@deffn {Monadic Procedure} gexp->file @var{name} @var{exp} @
+            [#:set-load-path? #t]
 Return a derivation that builds a file @var{name} containing @var{exp}.
+When @var{set-load-path?} is true, emit code in the resulting file to
+set @code{%load-path} and @code{%load-compiled-path} to honor
+@var{exp}'s imported modules.
 
 The resulting file holds references to all the dependencies of @var{exp}
 or a subset thereof.
@@ -4533,6 +4579,17 @@ hash (@pxref{Invoking guix archive}).
 @c FIXME: Replace xref above with xref to an ``Archive'' section when
 @c it exists.
 
+@vindex git-fetch
+As an example, here is how you would compute the hash of a Git checkout,
+which is useful when using the @code{git-fetch} method (@pxref{origin
+Reference}):
+
+@example
+$ git clone http://example.org/foo.git
+$ cd foo
+$ rm -rf .git
+$ guix hash -r .
+@end example
 @end table
 
 @node Invoking guix import
@@ -5591,6 +5648,18 @@ accept connections from any interface.
 @itemx -u @var{user}
 Change privileges to @var{user} as soon as possible---i.e., once the
 server socket is open and the signing key has been read.
+
+@item --compression[=@var{level}]
+@itemx -C [@var{level}]
+Compress data using the given @var{level}.  When @var{level} is zero,
+disable compression.  The range 1 to 9 corresponds to different gzip
+compression levels: 1 is the fastest, and 9 is the best (CPU-intensive).
+The default is 3.
+
+Compression occurs on the fly and the compressed streams are not
+cached.  Thus, to reduce load on the machine that runs @command{guix
+publish}, it may be a good idea to choose a low compression level, or to
+run @command{guix publish} behind a caching proxy.
 
 @item --ttl=@var{ttl}
 Produce @code{Cache-Control} HTTP headers that advertise a time-to-live
@@ -7494,6 +7563,41 @@ created by @command{guix archive --generate-key} (@pxref{Invoking guix
 archive}).  If that is not the case, the service will fail to start.
 @end deffn
 
+@anchor{rngd-service}
+@deffn {Scheme Procedure} rngd-service [#:rng-tools @var{rng-tools}] @
+            [#:device "/dev/hwrng"]
+Return a service that runs the @command{rngd} program from @var{rng-tools}
+to add @var{device} to the kernel's entropy pool.  The service will fail if
+@var{device} does not exist.
+@end deffn
+
+@anchor{pam-limits-service}
+@cindex session limits
+@cindex ulimit
+@cindex priority
+@deffn {Scheme Procedure} pam-limits-service [#:limits @var{limits}]
+
+Return a service that installs a configuration file for the
+@uref{http://linux-pam.org/Linux-PAM-html/sag-pam_limits.html,
+@code{pam_limits} module}.  The procedure optionally takes a list of
+@code{pam-limits-entry} values, which can be used to specify
+@code{ulimit} limits and nice priority limits to user sessions.
+
+The following limits definition sets two hard and soft limits for all
+login sessions of users in the @code{realtime} group:
+
+@example
+(pam-limits-service
+ (list
+  (pam-limits-entry "@@realtime" 'both 'rtprio 99)
+  (pam-limits-entry "@@realtime" 'both 'memlock 'unlimited)))
+@end example
+
+The first entry increases the maximum realtime priority for
+non-privileged processes; the second entry lifts any restriction of the
+maximum address space that can be locked in memory.  These settings are
+commonly used for real-time audio systems.
+@end deffn
 
 @node Scheduled Job Execution
 @subsubsection Scheduled Job Execution
@@ -7602,7 +7706,7 @@ Protocol (DHCP) client, on all the non-loopback network interfaces.
 @end deffn
 
 @deffn {Scheme Procedure} static-networking-service @var{interface} @var{ip} @
-       [#:gateway #f] [#:name-services @code{'()}]
+       [#:gateway #f] [#:name-servers @code{'()}]
 Return a service that starts @var{interface} with address @var{ip}.  If
 @var{gateway} is true, it must be a string specifying the default network
 gateway.
@@ -7695,7 +7799,7 @@ In addition, @var{extra-settings} specifies a string to append to the
 configuration file.
 @end deffn
 
-Furthermore, @code{(gnu services ssh)} provides the following service.
+Furthermore, @code{(gnu services ssh)} provides the following services.
 
 @deffn {Scheme Procedure} lsh-service [#:host-key "/etc/lsh/host-key"] @
        [#:daemonic? #t] [#:interfaces '()] [#:port-number 22] @
@@ -7733,6 +7837,47 @@ root.
 The other options should be self-descriptive.
 @end deffn
 
+@deffn {Scheme Procedure} dropbear-service [@var{config}]
+Run the @uref{https://matt.ucc.asn.au/dropbear/dropbear.html,Dropbear SSH
+daemon} with the given @var{config}, a @code{<dropbear-configuration>}
+object.
+
+For example, to specify a Dropbear service listening on port 1234, add
+this call to the operating system's @code{services} field:
+
+@example
+(dropbear-service (dropbear-configuration
+                    (port-number 1234)))
+@end example
+@end deffn
+
+@deftp {Data Type} dropbear-configuration
+This data type represents the configuration of a Dropbear SSH daemon.
+
+@table @asis
+@item @code{dropbear} (default: @var{dropbear})
+The Dropbear package to use.
+
+@item @code{port-number} (default: 22)
+The TCP port where the daemon waits for incoming connections.
+
+@item @code{syslog-output?} (default: @code{#t})
+Whether to enable syslog output.
+
+@item @code{pid-file} (default: @code{"/var/run/dropbear.pid"})
+File name of the daemon's PID file.
+
+@item @code{root-login?} (default: @code{#f})
+Whether to allow @code{root} logins.
+
+@item @code{allow-empty-passwords?} (default: @code{#f})
+Whether to allow empty passwords.
+
+@item @code{password-authentication?} (default: @code{#t})
+Whether to enable password-based authentication.
+@end table
+@end deftp
+
 @defvr {Scheme Variable} %facebook-host-aliases
 This variable contains a string for use in @file{/etc/hosts}
 (@pxref{Host Names,,, libc, The GNU C Library Reference Manual}).  Each
@@ -7767,7 +7912,7 @@ The @code{(gnu services avahi)} provides the following definition.
 @deffn {Scheme Procedure} avahi-service [#:avahi @var{avahi}] @
           [#:host-name #f] [#:publish? #t] [#:ipv4? #t] @
           [#:ipv6? #t] [#:wide-area? #f] @
-          [#:domains-to-browse '()]
+          [#:domains-to-browse '()] [#:debug? #f]
 Return a service that runs @command{avahi-daemon}, a system-wide
 mDNS/DNS-SD responder that allows for service discovery and
 "zero-configuration" host name lookups (see @uref{http://avahi.org/}), and
@@ -9973,15 +10118,11 @@ program.  That gives a lot of flexibility.  The
 program to run in that initrd.
 
 @deffn {Monadic Procedure} expression->initrd @var{exp} @
-       [#:guile %guile-static-stripped] [#:name "guile-initrd"] @
-       [#:modules '()]
+       [#:guile %guile-static-stripped] [#:name "guile-initrd"]
 Return a derivation that builds a Linux initrd (a gzipped cpio archive)
 containing @var{guile} and that evaluates @var{exp}, a G-expression,
 upon booting.  All the derivations referenced by @var{exp} are
 automatically copied to the initrd.
-
-@var{modules} is a list of Guile module names to be embedded in the
-initrd.
 @end deffn
 
 @node GRUB Configuration
@@ -10804,10 +10945,6 @@ where @var{service-name} is one of the symbols in @var{provision}
 @item @code{modules} (default: @var{%default-modules})
 This is the list of modules that must be in scope when @code{start} and
 @code{stop} are evaluated.
-
-@item @code{imported-modules} (default: @var{%default-imported-modules})
-This is the list of modules to import in the execution environment of
-the Shepherd.
 
 @end table
 @end deftp

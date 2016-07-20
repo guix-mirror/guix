@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Peter Feigl <peter.feigl@nexoid.at>
+;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -789,18 +790,17 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.15")
+    (version "1.8.17p1")
     (source (origin
               (method url-fetch)
               (uri
-               (list (string-append "http://www.sudo.ws/sudo/dist/sudo-"
+               (list (string-append "https://www.sudo.ws/sudo/dist/sudo-"
                                     version ".tar.gz")
                      (string-append "ftp://ftp.sudo.ws/pub/sudo/OLD/sudo-"
                                     version ".tar.gz")))
               (sha256
                (base32
-                "0263gi6i19fyzzc488n0qw3m518i39f6a7qmrfvahk9j10bkh5j3"))
-              (patches (search-patches "sudo-CVE-2015-5602.patch"))))
+                "1k2mn65l1kmsxm8wh0gjxy496xhbpiimbpm6yv6kw6snzc3xg466"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags
@@ -849,7 +849,7 @@ system administrator.")
      `(("groff" ,groff)
        ("linux-pam" ,linux-pam)
        ("coreutils" ,coreutils)))
-    (home-page "http://www.sudo.ws/")
+    (home-page "https://www.sudo.ws/")
     (synopsis "Run commands as root")
     (description
      "Sudo (su \"do\") allows a system administrator to delegate authority to
@@ -1139,19 +1139,20 @@ characters can be replaced as well, as can UTF-8 characters.")
 (define-public testdisk
   (package
     (name "testdisk")
-    (version "6.14")
+    (version "7.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.cgsecurity.org/testdisk-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0v1jap83f5h99zv01v3qmqm160d36n4ysi0gyq7xzb3mqgmw75x5"))))
+                "0ba4wfz2qrf60vwvb1qsq9l6j0pgg81qgf7fh22siaz649mkpfq0"))))
     (build-system gnu-build-system)
     (inputs
-     `(;; ("ntfs" ,ntfs)
+     `(("ntfs-3g" ,ntfs-3g)
        ("util-linux" ,util-linux)
        ("openssl" ,openssl)
+       ;; FIXME: add reiserfs
        ("zlib" ,zlib)
        ("e2fsprogs" ,e2fsprogs)
        ("libjpeg" ,libjpeg)
@@ -1345,17 +1346,14 @@ of supported upstream metrics systems simultaneously.")
 (define-public ansible
   (package
     (name "ansible")
-    (version "1.9.2")
+    (version "2.1.0.0")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "https://pypi.python.org/packages/source/a/ansible/ansible-"
-             version
-             ".tar.gz"))
+       (uri (pypi-uri "ansible" version))
        (sha256
         (base32
-         "007fzgsqaahb0y4gjdxxmir9kcni7wph2z14jhqgpz88idrz8pn2"))))
+         "1bfc2xiplpad6f2nwi48y0kps7xqnsll85dlz63cy8k5bysl6d20"))))
     (build-system python-build-system)
     (native-inputs
      `(("python2-setuptools" ,python2-setuptools)
@@ -1708,3 +1706,34 @@ throughput (in the same interval).")
      "The Fuck tries to match a rule for a previous, mistyped command, creates
 a new command using the matched rule, and runs it.")
     (license license:x11)))
+
+(define-public di
+  (package
+    (name "di")
+    (version "4.42")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://gentoo.com/di/di-" version ".tar.gz"))
+       (sha256
+        (base32 "1i6m9zdnidn8268q1lz9fd8payk7s4pgwh5zlam9rr4dy6h6a67n"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; Obscure test failures.
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (add-before 'build 'setup-environment
+           (lambda* (#:key outputs #:allow-other-keys)
+             (setenv "CC" "gcc")
+             (setenv "prefix" (assoc-ref outputs "out"))
+             #t)))
+       #:make-flags (list "--environment-overrides")))
+    (home-page "https://www.gentoo.com/di/")
+    (synopsis "Advanced df like disk information utility")
+    (description
+     "'di' is a disk information utility, displaying everything
+(and more) that your @code{df} command does.  It features the ability to
+display your disk usage in whatever format you prefer.  It is designed to be
+highly portable.  Great for heterogenous networks.")
+    (license license:zlib)))

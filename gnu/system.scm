@@ -81,6 +81,8 @@
             operating-system-mapped-devices
             operating-system-file-systems
             operating-system-store-file-system
+            operating-system-user-mapped-devices
+            operating-system-boot-mapped-devices
             operating-system-activation-script
             operating-system-user-accounts
             operating-system-shepherd-service-names
@@ -208,8 +210,9 @@ as 'needed-for-boot'."
   "Return a file system among FILE-SYSTEMS that uses DEVICE, or #f."
   (let ((target (string-append "/dev/mapper/" (mapped-device-target device))))
     (find (lambda (fs)
-            (and (eq? 'device (file-system-title fs))
-                 (string=? (file-system-device fs) target)))
+            (or (member device (file-system-dependencies fs))
+                (and (eq? 'device (file-system-title fs))
+                     (string=? (file-system-device fs) target))))
           file-systems)))
 
 (define (operating-system-user-mapped-devices os)
@@ -731,7 +734,8 @@ this file is the reconstruction of GRUB menu entries for old configurations."
                                    (kernel #$(operating-system-kernel os))
                                    (kernel-arguments
                                     #$(operating-system-kernel-arguments os))
-                                   (initrd #$initrd)))))
+                                   (initrd #$initrd))
+                #:set-load-path? #f)))
 
 
 ;;;

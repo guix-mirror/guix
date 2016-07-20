@@ -99,27 +99,23 @@
        "http://www.centervenus.com/mirrors/nongnu/"
        "http://download.savannah.gnu.org/releases-noredirect/")
       (sourceforge ; https://sourceforge.net/p/forge/documentation/Mirrors/
-       "http://prdownloads.sourceforge.net/"
-       "http://heanet.dl.sourceforge.net/sourceforge/"
-       "http://dfn.dl.sourceforge.net/sourceforge/"
-       "http://freefr.dl.sourceforge.net/sourceforge/"
-       "http://internode.dl.sourceforge.net/sourceforge/"
-       "http://iweb.dl.sourceforge.net/sourceforge/"
-       "http://jaist.dl.sourceforge.net/sourceforge/"
-       "http://kaz.dl.sourceforge.net/sourceforge/"
-       "http://kent.dl.sourceforge.net/sourceforge/"
-       "http://liquidtelecom.dl.sourceforge.net/sourceforge/"
-       "http://nbtelecom.dl.sourceforge.net/sourceforge/"
-       "http://nchc.dl.sourceforge.net/sourceforge/"
-       "http://ncu.dl.sourceforge.net/sourceforge/"
-       "http://netcologne.dl.sourceforge.net/sourceforge/"
-       "http://netix.dl.sourceforge.net/sourceforge/"
-       "http://pilotfiber.dl.sourceforge.net/sourceforge/"
-       "http://superb-sea2.dl.sourceforge.net/sourceforge/"
-       "http://tenet.dl.sourceforge.net/sourceforge/"
-       "http://ufpr.dl.sourceforge.net/sourceforge/"
-       "http://vorboss.dl.sourceforge.net/sourceforge/"
-       "http://netassist.dl.sourceforge.net/sourceforge/")
+       "http://ufpr.dl.sourceforge.net/project/"
+       "http://heanet.dl.sourceforge.net/project/"
+       "http://freefr.dl.sourceforge.net/project/"
+       "http://internode.dl.sourceforge.net/project/"
+       "http://jaist.dl.sourceforge.net/project/"
+       "http://kent.dl.sourceforge.net/project/"
+       "http://liquidtelecom.dl.sourceforge.net/project/"
+       "http://nbtelecom.dl.sourceforge.net/project/"
+       "http://nchc.dl.sourceforge.net/project/"
+       "http://ncu.dl.sourceforge.net/project/"
+       "http://netcologne.dl.sourceforge.net/project/"
+       "http://netix.dl.sourceforge.net/project/"
+       "http://pilotfiber.dl.sourceforge.net/project/"
+       "http://superb-sea2.dl.sourceforge.net/project/"
+       "http://tenet.dl.sourceforge.net/project/"
+       "http://vorboss.dl.sourceforge.net/project/"
+       "http://netassist.dl.sourceforge.net/project/")
       (kernel.org
        "http://www.all.kernel.org/pub/"
        "http://ramses.wh2.tu-dresden.de/pub/mirrors/kernel.org/"
@@ -168,7 +164,7 @@
        "http://x.cs.pu.edu.tw/"
        "ftp://ftp.is.co.za/pub/x.org")            ; South Africa
       (cpan                              ; from http://www.cpan.org/SITES.html
-       "http://cpan.enstimac.fr/"
+       "http://mirror.ibcp.fr/pub/CPAN/"
        "ftp://ftp.ciril.fr/pub/cpan/"
        "ftp://artfiles.org/cpan.org/"
        "http://www.cpan.org/"
@@ -286,33 +282,39 @@ in the store."
          (any https? url)))))
 
   (define builder
-    #~(begin
-        #+(if need-gnutls?
+    (with-imported-modules '((guix build download)
+                             (guix build utils)
+                             (guix ftp-client)
+                             (guix base32)
+                             (guix base64))
+      #~(begin
+          #+(if need-gnutls?
 
-              ;; Add GnuTLS to the inputs and to the load path.
-              #~(eval-when (load expand eval)
-                  (set! %load-path
-                        (cons (string-append #+(gnutls-package)
-                                             "/share/guile/site/"
-                                             (effective-version))
-                              %load-path)))
-              #~#t)
+                ;; Add GnuTLS to the inputs and to the load path.
+                #~(eval-when (load expand eval)
+                    (set! %load-path
+                      (cons (string-append #+(gnutls-package)
+                                           "/share/guile/site/"
+                                           (effective-version))
+                            %load-path)))
+                #~#t)
 
-        (use-modules (guix build download)
-                     (guix base32))
+          (use-modules (guix build download)
+                       (guix base32))
 
-        (let ((value-from-environment (lambda (variable)
-                                        (call-with-input-string
-                                            (getenv variable)
-                                          read))))
-          (url-fetch (value-from-environment "guix download url")
-                     #$output
-                     #:mirrors (call-with-input-file #$%mirror-file read)
+          (let ((value-from-environment (lambda (variable)
+                                          (call-with-input-string
+                                              (getenv variable)
+                                            read))))
+            (url-fetch (value-from-environment "guix download url")
+                       #$output
+                       #:mirrors (call-with-input-file #$%mirror-file read)
 
-                     ;; Content-addressed mirrors.
-                     #:hashes (value-from-environment "guix download hashes")
-                     #:content-addressed-mirrors
-                     (primitive-load #$%content-addressed-mirror-file)))))
+                       ;; Content-addressed mirrors.
+                       #:hashes
+                       (value-from-environment "guix download hashes")
+                       #:content-addressed-mirrors
+                       (primitive-load #$%content-addressed-mirror-file))))))
 
   (let ((uri (and (string? url) (string->uri url))))
     (if (or (and (string? url) (not uri))
@@ -325,10 +327,6 @@ in the store."
                             #:system system
                             #:hash-algo hash-algo
                             #:hash hash
-                            #:modules '((guix build download)
-                                        (guix build utils)
-                                        (guix ftp-client)
-                                        (guix base32))
 
                             ;; Use environment variables and a fixed script
                             ;; name so there's only one script in store for

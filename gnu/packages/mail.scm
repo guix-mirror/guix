@@ -14,6 +14,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -397,6 +398,40 @@ messages you need; in addition, it allows you to view messages, extract
 attachments, create new maildirs, and so on.")
     (license gpl3+)))
 
+(define-public alot
+  (package
+    (name "alot")
+    (version "0.3.7")
+    (source (origin
+              (method url-fetch)
+              ; v0.3.7 not on PyPi yet, so use github instead
+              (uri (string-append "https://github.com/pazz/alot/archive/"
+                                  version ".tar.gz"))
+              (file-name (string-append "alot-" version ".tar.gz"))
+              (sha256
+               (base32
+                "09md9llg38r6xby8l0y0zf8nhlh91cr4xs0r15b294hhp8hl2bgx"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       ; python 3 is unsupported, more info:
+       ; https://github.com/pazz/alot/blob/0.3.7/docs/source/faq.rst
+       #:python ,python-2))
+    (inputs
+     `(("python2-magic" ,python2-magic)
+       ("python2-configobj" ,python2-configobj)
+       ("python2-twisted" ,python2-twisted)
+       ("python2-urwid" ,python2-urwid)
+       ("python2-urwidtrees" ,python2-urwidtrees)
+       ("python2-pygpgme" ,python2-pygpgme)
+       ("python2-notmuch" ,python2-notmuch)))
+    (home-page "https://github.com/pazz/alot")
+    (synopsis "Commandline MUA using notmuch")
+    (description
+     "Alot is an experimental terminal mail user agent (MUA) based on
+@code{notmuch} mail.  It is written in Python using the @code{urwid} toolkit.")
+    (license gpl3+)))
+
 (define-public notmuch
   (package
     (name "notmuch")
@@ -519,7 +554,7 @@ and search library.")
 (define-public getmail
   (package
     (name "getmail")
-    (version "4.48.0")
+    (version "4.49.0")
     (source
      (origin
        (method url-fetch)
@@ -527,7 +562,7 @@ and search library.")
                            name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0k5rm5kag14izng2ajcagvli9sns5mzvkyfa65ri4xymxs91wi29"))))
+         "1m0yzxd05fklwbmjj1n2q4sx397c1j5qi9a0r5fv3h8pplz4lv0w"))))
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no tests
@@ -546,14 +581,14 @@ useful features.")
 (define-public libetpan
   (package
     (name "libetpan")
-    (version "1.6")
+    (version "1.7.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://github.com/dinhviethoa/" name
                    "/archive/" version ".tar.gz"))
              (file-name (string-append name "-" version ".tar.gz"))
              (sha256
-               (base32 "05qyqx2c1ppb1jnrs3m52i60f9xlxfxdmb9dnwg4vqjv8kwv2qkr"))))
+               (base32 "081ixgj3skglq9i7v0jb835lmfx21zi4i5b7997igwr0lj174y9j"))))
     (build-system gnu-build-system)
     (native-inputs `(("autoconf" ,(autoconf-wrapper))
                      ("automake" ,automake)
@@ -566,7 +601,8 @@ useful features.")
        ("openssl" ,openssl)))
     (inputs
      `(("curl" ,curl)
-       ("expat" ,expat)))
+       ("expat" ,expat)
+       ("zlib" ,zlib)))
     (arguments
       '(#:phases (alist-cons-after
                   'unpack 'autogen

@@ -99,14 +99,14 @@ anywhere.")
 (define-public samba
   (package
     (name "samba")
-    (version "4.3.8")
+    (version "4.3.11")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.samba.org/samba/ftp/stable/samba-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "041b5frh4ikcka922aqhqjvlv4w2s7jycyykpvsknj0a79ncd79p"))))
+               "1v2grwivm6rasz1ganbybs0ikz1lydaniy65kxf1v8rl1qqngach"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -150,7 +150,7 @@ anywhere.")
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2))) ; incompatible with Python 3
-    (home-page "http://www.samba.org/")
+    (home-page "https://www.samba.org/")
     (synopsis
      "The standard Windows interoperability suite of programs for GNU and Unix")
     (description
@@ -165,14 +165,14 @@ Desktops into Active Directory environments using the winbind daemon.")
 (define-public talloc
   (package
     (name "talloc")
-    (version "2.1.5")
+    (version "2.1.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/talloc/talloc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1pfx3kmj973hpacfw46fzfnjd7ms1j03ifkc30wk930brx8ffcrq"))))
+                "01m0kzndciyj43z1zd2nc61xqgh9knjv0w7lk1rrrlj8irr4w58r"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -202,14 +202,14 @@ destructors.  It is the core memory allocator used in Samba.")
 (define-public tevent
   (package
     (name "tevent")
-    (version "0.9.26")
+    (version "0.9.28")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/tevent/tevent-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1gbh6d2m49j1v2hkaiyrh8bj02i5wxd4hqayzk2g44yyivbi8b16"))))
+                "0a9ml52jjnzz7qg9z750mavlvs1yibjwrzy4yl55dc95j0vm7n84"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -237,14 +237,14 @@ many event types, including timers, signals, and the classic file descriptor eve
 (define-public ldb
   (package
     (name "ldb")
-    (version "1.1.24")
+    (version "1.1.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://www.samba.org/ftp/ldb/ldb-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "08ab66qzigfsfxqdvp6lx1knwsl3sqsww309xbq17l7hfcjgbsa5"))))
+                "1rmjv12pf57vga8s5z9p9d90rlfckc1lqjbcp89r83cq5fkwfhw8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

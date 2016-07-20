@@ -8,6 +8,8 @@
 ;;; Copyright © 2016 Jochem Raat <jchmrt@riseup.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
+;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1000,6 +1002,29 @@ configs, but you can also just use simple name/value pairs in your config
 files.  In addition to the capabilities of an Apache config file it supports
 some enhancements such as here-documents, C-style comments, and multiline
 options.")
+    (license (package-license perl))))
+
+(define-public perl-config-ini
+  (package
+    (name "perl-config-ini")
+    (version "0.025")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/R/RJ/RJBS/Config-INI-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0clphq6a17chvb663fvjnxqvyvh26g03x0fl4bg9vy4ibdnzg2v2"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-mixin-linewise" ,perl-mixin-linewise)
+       ("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)
+       ("perl-sub-exporter" ,perl-sub-exporter)))
+    (home-page "http://search.cpan.org/dist/Config-INI")
+    (synopsis "Simple .ini-file format reader and writer")
+    (description "@code{Config::INI} is a module that facilates the reading
+and writing of @code{.ini}-style configuration files.")
     (license (package-license perl))))
 
 (define-public perl-context-preserve
@@ -2458,6 +2483,26 @@ shell.")
                               "File-Which-" version))
     (license (package-license perl))))
 
+(define-public perl-file-zglob
+  (package
+    (name "perl-file-zglob")
+    (version "0.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/T/TO/TOKUHIROM/File-Zglob-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "16v61rn0yimpv5kp6b20z2f1c93n5kpsyjvr0gq4w2dc43gfvc8w"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/File-Zglob")
+    (synopsis "Extended Unix style glob functionality")
+    (description "@code{File::Zglob} provides a traditional Unix @code{glob}
+functionality; it returns a list of file names that match the given pattern.
+For instance, it supports the @code{**/*.pm} form.")
+    (license (package-license perl))))
+
 (define-public perl-getopt-long-descriptive
   (package
     (name "perl-getopt-long-descriptive")
@@ -2503,6 +2548,29 @@ usage (help) messages, data validation, and a few other useful features.")
 vaguely inspired by John Ousterhout's Tk_ParseArgv.")
     (home-page (string-append "http://search.cpan.org/~gward/"
                               "Getopt-Tabular-" version))
+    (license (package-license perl))))
+
+(define-public perl-guard
+  (package
+    (name "perl-guard")
+    (version "1.023")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/ML/MLEHMANN/Guard-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1p6i9mfmbs9cw40jqdv71ihv2xfi0vvlv8bdv2810gf93zwxvi1l"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Guard")
+    (synopsis "Safe cleanup blocks implemented as guards")
+    (description "@code{Guard} implements so-called @dfn{guards}.  A guard is
+something (usually an object) that \"guards\" a resource, ensuring that it is
+cleaned up when expected.
+
+Specifically, this module supports two different types of guards: guard
+objects, which execute a given code block when destroyed, and scoped guards,
+which are tied to the scope exit.")
     (license (package-license perl))))
 
 (define-public perl-hash-merge
@@ -2591,6 +2659,31 @@ compilation.  Import::Into provides global methods to make this painless.")
 dependencies for CPAN distributions.  These dependencies get bundled into the
 inc directory within a distribution and are used by Makefile.PL or Build.PL.")
     (license asl2.0)))
+
+(define-public perl-io-captureoutput
+  (package
+    (name "perl-io-captureoutput")
+    (version "1.1104")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DA/DAGOLDEN/IO-CaptureOutput-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0c437zvzpqi8f0h3nmblwdi2bvsb92b7g30fndr7my9qnky35izw"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/IO-CaptureOutput")
+    (synopsis "Capture STDOUT and STDERR from Perl code, subprocesses or XS")
+    (description "@code{IO::CaptureOutput} provides routines for capturing
+@code{STDOUT} and @code{STDERR} from perl subroutines, forked system
+calls (e.g. @code{system()}, @code{fork()}) and from XS or C modules.
+
+This module is no longer recommended by its maintainer.  Users are advised to
+try @code{Capture::Tiny} instead.")
+    (license (package-license perl))))
 
 (define-public perl-io-interactive
   (package
@@ -2742,6 +2835,30 @@ Perlish API and none of the bloat and rarely used features of IPC::Run.")
     (synopsis "Lightweight interface to shared memory")
     (description "IPC::ShareLite provides a simple interface to shared memory,
 allowing data to be efficiently communicated between processes.")
+    (license (package-license perl))))
+
+(define-public perl-ipc-system-simple
+  (package
+    (name "perl-ipc-system-simple")
+    (version "1.25")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/P/PJ/PJF/IPC-System-Simple-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0fsdb81shjj4hifyyzvj7vpkhq5jrfhlcpw2xbjfi1mqz8fsmdpi"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/IPC-System-Simple")
+    (synopsis "Run commands simply, with detailed diagnostics")
+    (description "Calling Perl's in-built @code{system} function is easy,
+determining if it was successful is hard.  Let's face it, @code{$?} isn't the
+nicest variable in the world to play with, and even if you do check it,
+producing a well-formatted error string takes a lot of work.
+
+@code{IPC::System::Simple} takes the hard work out of calling external
+commands.")
     (license (package-license perl))))
 
 (define-public perl-json
@@ -2913,6 +3030,30 @@ one: logging, exceptions, and translations.")
 List::Util or List::MoreUtils defines, with preference to List::Util.")
     (license (package-license perl))))
 
+(define-public perl-list-compare
+  (package
+    (name "perl-list-compare")
+    (version "0.53")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/J/JK/JKEENAN/List-Compare-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0l451yqhx1hlm7f2c3bjsl3n8w6l1jngrxzyfm2d8d9iggv4zgzx"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-io-captureoutput" ,perl-io-captureoutput)))
+    (home-page "http://search.cpan.org/dist/List-Compare")
+    (synopsis "Compare elements of two or more lists")
+    (description "@code{List::Compare} provides a module to perform
+comparative operations on two or more lists.  Provided operations include
+intersections, unions, unique elements, complements and many more.")
+    (license (package-license perl))))
+
 (define-public perl-list-moreutils
   (package
     (name "perl-list-moreutils")
@@ -2936,6 +3077,39 @@ List::Util or List::MoreUtils defines, with preference to List::Util.")
     (synopsis "Provide the stuff missing in List::Util")
     (description "List::MoreUtils provides some trivial but commonly needed
 functionality on lists which is not going to go into List::Util.")
+    (license (package-license perl))))
+
+(define-public perl-list-someutils
+  (package
+    (name "perl-list-someutils")
+    (version "0.52")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DR/DROLSKY/List-SomeUtils-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1b450jyxaa6q2yl0cdhknr3c2a5s7b9b18ccnwac625c681r130y"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-leaktrace" ,perl-test-leaktrace)))
+    (inputs
+     `(("perl-exporter-tiny" ,perl-exporter-tiny)
+       ("perl-module-implementation"
+        ,perl-module-implementation)))
+    (home-page "http://search.cpan.org/dist/List-SomeUtils")
+    (synopsis "Provide the stuff missing in List::Util")
+    (description "@code{List::SomeUtils} provides some trivial but commonly
+needed functionality on lists which is not going to go into @code{List::Util}.
+
+All of the below functions are implementable in only a couple of lines of Perl
+code.  Using the functions from this module however should give slightly
+better performance as everything is implemented in C.  The pure-Perl
+implementation of these functions only serves as a fallback in case the C
+portions of this module couldn't be compiled on this machine.")
     (license (package-license perl))))
 
 (define-public perl-memoize-expirelru
@@ -2995,6 +3169,31 @@ MIME messages on Internet.")
     (description "This module provides a list of known mime-types, combined
 from various sources.  For instance, it contains all IANA types and the
 knowledge of Apache.")
+    (license (package-license perl))))
+
+(define-public perl-mixin-linewise
+  (package
+    (name "perl-mixin-linewise")
+    (version "0.108")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/R/RJ/RJBS/Mixin-Linewise-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1wmfr19w9y8qys7b32mnj1vmps7qwdahqas71a9p62ac8xw0dwkx"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-perlio-utf8_strict" ,perl-perlio-utf8_strict)
+       ("perl-sub-exporter" ,perl-sub-exporter)))
+    (home-page "http://search.cpan.org/dist/Mixin-Linewise")
+    (synopsis "Write your linewise code for handles; this does the rest")
+    (description "It's boring to deal with opening files for IO, converting
+strings to handle-like objects, and all that.  With
+@code{Mixin::Linewise::Readers} and @code{Mixin::Linewise::Writers}, you can
+just write a method to handle handles, and methods for handling strings and
+file names are added for you.")
     (license (package-license perl))))
 
 (define-public perl-module-build-tiny
@@ -4154,6 +4353,29 @@ up inheritance from those modules at the same time.")
 directory specifications in a cross-platform manner.")
     (license (package-license perl))))
 
+(define-public perl-perlio-utf8_strict
+  (package
+    (name "perl-perlio-utf8-strict")
+    (version "0.006")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/L/LE/LEONT/PerlIO-utf8_strict-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0qnmiflirfq10jkmrxyy81ch6hzyndfzxqf8maif0fy44kk1004q"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (home-page
+     "http://search.cpan.org/dist/PerlIO-utf8_strict")
+    (synopsis "Fast and correct UTF-8 IO")
+    (description "@code{PerlIO::utf8_strict} provides a fast and correct UTF-8
+PerlIO layer.  Unlike Perl's default @code{:utf8} layer it checks the input
+for correctness.")
+    (license (package-license perl))))
+
 (define-public perl-pod-coverage
   (package
     (name "perl-pod-coverage")
@@ -4939,6 +5161,66 @@ framework base class.  It concentrates on offering reusable data driven
 patterns, so that you can write tests with a minimum of code.")
     (license (package-license perl))))
 
+(define-public perl-test-class
+  (package
+    (name "perl-test-class")
+    (version "0.50")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://cpan.metacpan.org/authors/id/E/ET/ETHER/Test-Class-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "0l0kk5jvxjkic2jkf1r7v41irb344aasnzr3f5ygjgxgiknm9489"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-exception" ,perl-test-exception)))
+    (inputs
+     `(("perl-module-runtime" ,perl-module-runtime)
+       ("perl-mro-compat" ,perl-mro-compat)
+       ("perl-try-tiny" ,perl-try-tiny)))
+    (home-page "http://search.cpan.org/dist/Test-Class")
+    (synopsis "Easily create test classes in an xUnit/JUnit style")
+    (description "@code{Test::Class} provides a simple way of creating classes
+and objects to test your code in an xUnit style.
+
+Built using @code{Test::Builder}, it was designed to work with other
+@code{Test::Builder} based modules (@code{Test::More},
+@code{Test::Differences}, @code{Test::Exception}, etc.).")
+    (license (package-license perl))))
+
+(define-public perl-test-class-most
+  (package
+    (name "perl-test-class-most")
+    (version "0.08")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/O/OV/OVID/Test-Class-Most-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1zvx9hil0mg0pnb8xfa4m0xgjpvh8s5gnbyprq3xwpdsdgcdwk33"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)))
+    (inputs
+     `(("perl-test-class" ,perl-test-class)
+       ("perl-test-most" ,perl-test-most)
+       ("perl-module-runtime" ,perl-module-runtime)
+       ("perl-try-tiny" ,perl-try-tiny)
+       ("perl-mro-compat" ,perl-mro-compat)))
+    (home-page "http://search.cpan.org/dist/Test-Class-Most")
+    (synopsis "Test classes the easy way")
+    (description "@code{Test::Class::Most} provides some more convenience when
+using @code{Test::Class}.")
+    (license (package-license perl))))
+
 (define-public perl-test-cleannamespaces
   (package
     (name "perl-test-cleannamespaces")
@@ -5651,15 +5933,15 @@ can combine fields into a CSV string and parse a CSV string into fields.")
 (define-public perl-text-diff
   (package
     (name "perl-text-diff")
-    (version "1.41")
+    (version "1.44")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/O/OV/OVID/"
+       (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
                            "Text-Diff-" version ".tar.gz"))
        (sha256
         (base32
-         "1ynjsa4sr1yvyh65sdfvahaafglibz70j8b6rj01cg1iisj50zx6"))))
+         "041v92zla2acdc433f47giridf6p820sdczs7x5d71fhsyza1xsp"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-algorithm-diff" ,perl-algorithm-diff)))
@@ -5805,6 +6087,26 @@ system.")
     (description "Throwable is a role for classes that are meant to be thrown
 as exceptions to standard program flow.")
     (license (package-license perl))))
+
+(define-public perltidy
+  (package
+    (name "perltidy")
+    (version "20160302")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/perltidy/Perl-Tidy-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "19yw63yh5s3pq7k3nkw6nsamg5b8vvwyhgbizslgxg0mqgc4xl3d"))))
+    (build-system perl-build-system)
+    (home-page "http://perltidy.sourceforge.net/")
+    (synopsis "Perl script tidier")
+    (description "This package contains a Perl script which indents and
+reformats Perl scripts to make them easier to read.   The formatting can be
+controlled with command line parameters.  The default parameter settings
+approximately follow the suggestions in the Perl Style Guide.")
+    (license gpl2+)))
 
 (define-public perl-tie-ixhash
   (package

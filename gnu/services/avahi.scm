@@ -42,6 +42,8 @@
   avahi-configuration?
   (avahi             avahi-configuration-avahi    ;<package>
                      (default avahi))
+  (debug?            avahi-configuration-debug?   ;Boolean
+                     (default #f))
   (host-name         avahi-configuration-host-name) ;string
   (publish?          avahi-configuration-publish?)  ;Boolean
   (ipv4?             avahi-configuration-ipv4?)     ;Boolean
@@ -96,6 +98,7 @@
 (define (avahi-shepherd-service config)
   "Return a list of <shepherd-service> for CONFIG."
   (let ((config (configuration-file config))
+        (debug? (avahi-configuration-debug? config))
         (avahi  (avahi-configuration-avahi config)))
     (list (shepherd-service
            (documentation "Run the Avahi mDNS/DNS-SD responder.")
@@ -104,7 +107,10 @@
 
            (start #~(make-forkexec-constructor
                      (list (string-append #$avahi "/sbin/avahi-daemon")
-                           "--syslog" "-f" #$config)))
+                           "--daemonize"
+                           #$@(if debug? #~("--debug") #~())
+                           "-f" #$config)
+                     #:pid-file "/var/run/avahi-daemon/pid"))
            (stop #~(make-kill-destructor))))))
 
 (define avahi-service-type
@@ -127,7 +133,7 @@
                          (service-extension profile-service-type
                                             avahi-package))))))
 
-(define* (avahi-service #:key (avahi avahi)
+(define* (avahi-service #:key (avahi avahi) debug?
                         host-name
                         (publish? #t)
                         (ipv4? #t) (ipv6? #t)
@@ -155,7 +161,7 @@ Boolean values @var{ipv4?} and @var{ipv6?} determine whether to use IPv4/IPv6
 sockets."
   (service avahi-service-type
            (avahi-configuration
-            (avahi avahi) (host-name host-name)
+            (avahi avahi) (debug? debug?) (host-name host-name)
             (publish? publish?) (ipv4? ipv4?) (ipv6? ipv6?)
             (wide-area? wide-area?)
             (domains-to-browse domains-to-browse))))

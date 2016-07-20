@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2016 Alex Sassmannshausen <alex@pompo.co>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -99,6 +100,13 @@ or #f on failure.  MODULE should be e.g. \"Test::Script\""
 (define (cpan-home name)
   (string-append "http://search.cpan.org/dist/" name))
 
+(define (fix-source-url download-url)
+  "Return a new download URL based on DOWNLOAD-URL which now uses our mirrors,
+if the original's domain was metacpan."
+  (regexp-substitute/global #f "http[s]?://cpan.metacpan.org" download-url
+                            'pre "mirror://cpan" 'post))
+
+
 (define %corelist
   (delay
     (let* ((perl (with-store store
@@ -183,10 +191,7 @@ META."
        (list (list guix-name
                    (list 'quasiquote inputs))))))
 
-  (define source-url
-    (regexp-substitute/global #f "http://cpan.metacpan.org"
-                              (assoc-ref meta "download_url")
-                              'pre "mirror://cpan" 'post))
+  (define source-url (fix-source-url (assoc-ref meta "download_url")))
 
   (let ((tarball (with-store store
                    (download-to-store store source-url))))

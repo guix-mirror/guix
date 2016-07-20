@@ -112,14 +112,14 @@ as well as the classic centralized workflow.")
   ;; Keep in sync with 'git-manpages'!
   (package
    (name "git")
-   (version "2.9.0")
+   (version "2.9.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "02dl8yvvl7m4zy39s0xmqr958ah7krvkv94lmx4vz3wl95wsj7zl"))))
+              "18l2jb4bkp9ljz6p2aviwzxqyzza9z3v6h1pnkz7kjf1fay61zp8"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
@@ -294,7 +294,7 @@ everything from small to very large projects with speed and efficiency.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "0ic4zs4axkkwa44nqv5iihj3q2nm42kx0j8scnfp1z93m6pw31fw"))))
+                "1v9icsf85vvrrg7fakm91d11q23rvnh6dq4b4c4ya8v95z00mg8p"))))
     (build-system trivial-build-system)
     (arguments
      '(#:modules ((guix build utils))
@@ -369,7 +369,7 @@ write native speed custom Git applications in any language with bindings.")
 (define-public cgit
   (package
     (name "cgit")
-    (version "0.12")
+    (version "1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -377,7 +377,7 @@ write native speed custom Git applications in any language with bindings.")
                     version ".tar.xz"))
               (sha256
                (base32
-                "1dx54hgfyabmg9nm5qp6d01f54nlbqbbdwhwl0llb9imjf237qif"))))
+                "0kbh835p7dl4h88qv55fyfh1za09cgnqh63rii325w9215hm95x8"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; XXX: fail to build the in-source git.
@@ -608,14 +608,14 @@ control to Git repositories.")
 (define-public mercurial
   (package
     (name "mercurial")
-    (version "3.8.1")
+    (version "3.8.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.mercurial-scm.org/"
                                  "release/mercurial-" version ".tar.gz"))
              (sha256
               (base32
-               "156m6269xdqq7mpw01c6b065k29xnb8b9lyzn1b0nlz5il2izkps"))))
+               "19ixvxgifx48lxp9vdmsf88nnjsxl035ahmp3iw1vyilkpqkwbjb"))))
     (build-system python-build-system)
     (arguments
      `(;; Restrict to Python 2, as Python 3 would require

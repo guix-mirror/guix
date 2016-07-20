@@ -29,15 +29,22 @@
 ;;; Code:
 
 (define* (svn-fetch url revision directory
-                    #:key (svn-command "svn"))
+                    #:key (svn-command "svn")
+                    (user-name #f)
+                    (password #f))
   "Fetch REVISION from URL into DIRECTORY.  REVISION must be an integer, and a
 valid Subversion revision.  Return #t on success, #f otherwise."
-  (and (zero? (system* svn-command "checkout" "--non-interactive"
-                       ;; Trust the server certificate.  This is OK as we
-                       ;; verify the checksum later.  This can be removed when
-                       ;; ca-certificates package is added.
-                       "--trust-server-cert" "-r" (number->string revision)
-                       url directory))
+  (and (zero? (apply system* svn-command
+                     "checkout" "--non-interactive"
+                     ;; Trust the server certificate.  This is OK as we
+                     ;; verify the checksum later.  This can be removed when
+                     ;; ca-certificates package is added.
+                     "--trust-server-cert" "-r" (number->string revision)
+                     `(,@(if (and user-name password)
+                             (list (string-append "--username=" user-name)
+                                   (string-append "--password=" password))
+                             '())
+                       ,url ,directory)))
        (with-directory-excursion directory
          (begin
            ;; The contents of '.svn' vary as a function of the current status

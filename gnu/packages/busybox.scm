@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2014 John Darrington  <jmd@gnu.org>
+;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,49 +30,48 @@
 (define-public busybox
   (package
     (name "busybox")
-    (version "1.22.1")
+    (version "1.25.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.busybox.net/downloads/" name "-"
+                    "https://www.busybox.net/downloads/" name "-"
                     version ".tar.bz2"))
               (sha256
                (base32
-                "12v7nri79v8gns3inmz4k24q7pcnwi00hybs0wddfkcy1afh42xf"))))
+                "1z52mh6prhd6v47qryz4rvng5r1z0am6masrnigq06zfhmlf03ss"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-replace
-        'configure
-        (lambda _ (zero? (system* "make" "defconfig")))
-        (alist-replace
-         'check
-         (lambda _
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda _ (zero? (system* "make" "defconfig"))))
+         (replace 'check
+           (lambda _
            (substitute* '("testsuite/du/du-s-works"
-                          "testsuite/du/du-works")
-             (("/bin") "/etc"))  ; there is no /bin but there is a /etc
+                           "testsuite/du/du-works")
+               (("/bin") "/etc"))  ; there is no /bin but there is a /etc
 
            ;; There is no /usr/bin or /bin - replace it with /gnu/store
            (substitute* "testsuite/cpio.tests"
-              (("/usr/bin") (%store-directory))
-              (("usr") (car (filter (negate string-null?)
-                                    (string-split (%store-directory) #\/)))))
+               (("/usr/bin") (%store-directory))
+               (("usr") (car (filter (negate string-null?)
+                                       (string-split (%store-directory) #\/)))))
 
            (substitute* "testsuite/date/date-works-1"
-             (("/bin/date") (which "date")))
+               (("/bin/date") (which "date")))
 
            ;; The pidof tests assume that pid 1 is called "init" but that is not
            ;; true in guix build environment
            (substitute* "testsuite/pidof.tests"
-             (("-s init") "-s $(cat /proc/1/comm)"))
+               (("-s init") "-s $(cat /proc/1/comm)"))
 
            (substitute* "testsuite/grep.tests"
-             ;; The subject of this test is buggy.  It is known by upstream (fixed in git)
-             ;; So mark it with SKIP_KNOWN_BUGS like the others.
-             ;; Presumably it wasn't known at the time of release ...
-             ;; (It is strange that they release software which they know to have bugs)
-             (("testing \"grep -w \\^str doesn't match str not at the beginning\"")
-              "test x\"$SKIP_KNOWN_BUGS\" = x\"\" && testing \"grep -w ^str doesn't match str not at the beginning\""))
+               ;; The subject of this test is buggy.  It is known by upstream (fixed in git)
+               ;; So mark it with SKIP_KNOWN_BUGS like the others.
+               ;; Presumably it wasn't known at the time of release ...
+               ;; (It is strange that they release software which they know to have bugs)
+               (("testing \"grep -w \\^str doesn't match str not at the beginning\"")
+               "test x\"$SKIP_KNOWN_BUGS\" = x\"\" && testing \"grep -w ^str doesn't match str not at the beginning\""))
 
            ;; This test cannot possibly pass.
            ;; It is trying to test that "which ls" returns "/bin/ls" when PATH is not set.
@@ -83,24 +83,23 @@
                            ;; "V=1"
                            "SKIP_KNOWN_BUGS=1"
                            "SKIP_INTERNET_TESTS=1"
-                           "check")))
-         (alist-replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (zero?
-               (system* "make"
-                        (string-append "CONFIG_PREFIX=" out)
-                        "install"))))
-          %standard-phases)))))
+                           "check"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (zero?
+                (system* "make"
+                         (string-append "CONFIG_PREFIX=" out)
+                         "install"))))))))
     (native-inputs `(("perl" ,perl) ; needed to generate the man pages (pod2man)
                      ;; The following are needed by the tests.
                      ("inetutils" ,inetutils)
+                     ("which" ,(@ (gnu packages base) which))
                      ("zip" ,zip)))
     (synopsis "Many common UNIX utilities in a single executable")
     (description "BusyBox combines tiny versions of many common UNIX utilities
 into a single small executable.  It provides a fairly complete environment for
 any small or embedded system.")
-    (home-page "http://www.busybox.net")
+    (home-page "https://www.busybox.net")
     ;; Some files are gplv2+
     (license gpl2)))

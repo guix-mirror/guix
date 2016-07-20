@@ -3,6 +3,7 @@
 ;;; Copyright © 2015 Tomáš Čech <sleep_walker@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -139,15 +140,15 @@ application can be customized via its API for Python scripting.")
 (define-public cgal
   (package
     (name "cgal")
-    (version "4.6.3")
+    (version "4.8.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://gforge.inria.fr/frs/download.php/file/"
-                    "35139/CGAL-4.6.3.tar.xz"))
+                    "https://github.com/CGAL/cgal/releases/download/releases/"
+                    "CGAL-" version "/CGAL-" version ".tar.xz"))
               (sha256
                (base32
-                "08gwjjh0qz3fakj1y2nsl2qvb0qv5lc7k1pxwjkagh37hxxh4f73"))))
+                "1c41yzl2jg3d6zx5k0iccwqwibp950q7dr7z7pp4xi9wlph3c87s"))))
     (build-system cmake-build-system)
     (arguments
      '(;; "RelWithDebInfo" is not supported.
@@ -211,9 +212,17 @@ exception-handling library.")
                 "0ca2j526n4wlamrxb85y2jrgcv0gf21b3a19rr0gh4rjqkv1581n"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* (find-files "." "tmpDir\\.h")
-                  (("\"/var/tmp/\"")
-                   "\"/tmp/\"")))
+               '(begin
+                  (substitute* (find-files "." "tmpDir\\.h")
+                    (("\"/var/tmp/\"")
+                     "\"/tmp/\""))
+
+                  ;; Install 'ImfStdIO.h'.  Reported at
+                  ;; <https://lists.nongnu.org/archive/html/openexr-devel/2016-06/msg00001.html>
+                  ;; and <https://github.com/openexr/openexr/pull/184>.
+                  (substitute* "IlmImf/Makefile.in"
+                    (("ImfIO\\.h")
+                     "ImfIO.h ImfStdIO.h"))))
               (patches (search-patches "openexr-missing-samples.patch"))))
     (build-system gnu-build-system)
     (arguments
@@ -246,7 +255,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
 (define-public openimageio
   (package
     (name "openimageio")
-    (version "1.5.18")
+    (version "1.6.15")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OpenImageIO/oiio/"
@@ -254,8 +263,7 @@ storage of the \"EXR\" file format for storing 16-bit floating-point images.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0mn7cz19mn8dcrhkq15h25gl20ammr1wz0j2j3c2vxs6ph7zn8jy"))
-              (patches (search-patches "openimageio-boost-1.60.patch"))))
+                "144crq0205d0w5aq4iglh2rhzf54a8rv3pksy6d533b75w5d7rq7"))))
     (build-system cmake-build-system)
     ;; FIXME: To run all tests successfully, test image sets from multiple
     ;; third party sources have to be present.  For details see

@@ -90,12 +90,11 @@ programmer devices.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0frxg0q09nrm95z7ymzddx7ysl77ilfbdix1m81d9jjpiv5bm64y"))
-      (patches (search-patches "avrdude-fix-libusb.patch"))))
+        "0frxg0q09nrm95z7ymzddx7ysl77ilfbdix1m81d9jjpiv5bm64y"))))
     (build-system gnu-build-system)
     (inputs
      `(("libelf" ,libelf)
-       ("libusb" ,libusb)
+       ("libusb" ,libusb-compat)
        ("libftdi" ,libftdi)))
     (native-inputs
      `(("bison" ,bison)

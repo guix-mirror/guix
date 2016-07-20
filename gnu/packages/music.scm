@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -713,6 +714,49 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
     (description
      "Synthv1 is an old-school subtractive polyphonic synthesizer with four
 oscillators and stereo effects.")
+    (license license:gpl2+)))
+
+(define-public amsynth
+  (package
+    (name "amsynth")
+    (version "1.6.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/amsynth/amsynth/releases/"
+                           "download/release-" version
+                           "/amsynth-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "07dp9dl38g9krjqxxh89l2z42z08yzrl57cx95b1l67xnxwjp5k3"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'set-flags
+           (lambda _
+             ;; Compile with C++11, required by gtkmm.
+             (setenv "CXXFLAGS" "-std=c++11")
+             #t)))))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("jack" ,jack-1)
+       ("lv2" ,lv2)
+       ("libsndfile" ,libsndfile)
+       ("gtk+" ,gtk+-2)
+       ("gtkmm" ,gtkmm-2)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://amsynth.github.io")
+    (synopsis "Analog modeling synthesizer")
+    (description
+     "amsynth is an easy-to-use software synthesizer with a classic
+subtractive synthesizer topology.  Its features include: dual
+oscillators (sine, saw, square, noise) with hard sync; 12 and 24 dB/oct
+resonant filters (low-pass, high-pass, band-pass, notch); mono, poly, legato
+keyboard modes; dual ADSR envelope generators for filter and amplitude; LFO
+which can modulate the oscillators, filter, and amplitude; distortion and
+reverb effects.")
     (license license:gpl2+)))
 
 (define-public setbfree
@@ -1594,3 +1638,30 @@ for improved Amiga ProTracker 2/3 compatibility.")
 formats, including most audio formats recognized by FFMpeg.")
     (home-page "http://moc.daper.net")
     (license license:gpl2+)))
+
+(define-public midicsv
+  (package
+    (name "midicsv")
+    (version "1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.fourmilab.ch/webtools/midicsv/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1vvhk2nf9ilfw0wchmxy8l13hbw9cnpz079nsx5srsy4nnd78nkw"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases (delete 'configure))
+       #:make-flags (list "CC=gcc" (string-append "INSTALL_DEST=" %output))))
+    (synopsis "Convert MIDI files to and from CSV")
+    (description
+     "Midicsv reads a standard MIDI file and decodes it into a comma-separated
+value file (CSV), which preserves all the information in the MIDI file.  The
+ASCII CSV file may be loaded into a spreadsheet or database application, or
+processed by a program to transform the MIDI data (for example, to key
+transpose a composition or extract a track from a multi-track sequence).  A
+CSV file in the format created by midicsv may be converted back into a
+standard MIDI file with the csvmidi program.")
+    (home-page "http://www.fourmilab.ch/webtools/midicsv/")
+    (license license:public-domain)))

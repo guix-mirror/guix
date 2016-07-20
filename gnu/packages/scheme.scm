@@ -400,7 +400,7 @@ implementation techniques and as an expository tool.")
 (define-public racket
   (package
     (name "racket")
-    (version "6.2.1")
+    (version "6.5")
     (source (origin
              (method url-fetch)
              (uri (list (string-append "http://mirror.racket-lang.org/installers/"
@@ -410,7 +410,7 @@ implementation techniques and as an expository tool.")
                          version "/racket/racket-" version "-src-unix.tgz")))
              (sha256
               (base32
-               "0555j63k7fs10iv0icmivlxpzgp6s7gwcbfddmbwxlf2rk80qhq0"))))
+               "0gvh7i5k87mg1gpqk8gaq50ja9ksbhnvdqn7qqh0n17byidd6999"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases

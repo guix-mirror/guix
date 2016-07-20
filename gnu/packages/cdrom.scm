@@ -130,14 +130,14 @@ libcdio.")
 (define-public xorriso
   (package
     (name "xorriso")
-    (version "1.4.2")
+    (version "1.4.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/xorriso/xorriso-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1cq4a0904lnz6nygbgarnlq49cz4qnfdyvz90s3nfk5as7gbwhr8"))))
+               "1izv8dvwacyh432vv1rm6lyjrq0v205kyakfra6iwa146c9m9fgr"))))
     (build-system gnu-build-system)
     (inputs
      `(("acl" ,acl)
@@ -145,7 +145,7 @@ libcdio.")
        ("bzip2" ,bzip2)
        ("zlib" ,zlib)
        ("libcdio" ,libcdio)))
-    (home-page "http://www.gnu.org/software/xorriso/")
+    (home-page "https://www.gnu.org/software/xorriso/")
     (synopsis "Create, manipulate, burn ISO-9660 filesystems")
     (description
      "GNU Xorriso is a tool for copying files to and from ISO 9660 Rock

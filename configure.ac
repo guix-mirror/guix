@@ -189,6 +189,17 @@ AC_SUBST([LIBGCRYPT_LIBDIR])
 
 GUIX_ASSERT_LIBGCRYPT_USABLE
 
+dnl Library name of zlib suitable for 'dynamic-link'.
+GUIX_LIBZ_LIBDIR([libz_libdir])
+if test "x$libz_libdir" = "x"; then
+  LIBZ="libz"
+else
+  LIBZ="$libz_libdir/libz"
+fi
+AC_MSG_CHECKING([for zlib's shared library name])
+AC_MSG_RESULT([$LIBZ])
+AC_SUBST([LIBZ])
+
 AC_CACHE_SAVE
 
 m4_include([config-daemon.ac])

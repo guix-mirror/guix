@@ -7,6 +7,7 @@
 ;;; Copyright © 2015 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Alex Vong <alexvong1995@gmail.com>
+;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,8 @@
 
 (define-module (gnu packages video)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -32,6 +35,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system python)
   #:use-module (guix build-system waf)
   #:use-module (gnu packages)
@@ -373,14 +377,14 @@ standards (MPEG-2, MPEG-4 ASP/H.263, MPEG-4 AVC/H.264, and VC-1/VMW3).")
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "3.0.2")
+    (version "3.1.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "08sjp4dxgcinmv9ly7nm24swmn2cnbbhvph44ihlplf4n33kr542"))))
+               "1nris3flwqd4v4b65yrrv9aqhsab7cb9lfp4wpxz6bi0m3r13g3i"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
@@ -539,14 +543,14 @@ audio/video codec library.")
 (define-public ffmpeg-2.8
   (package
     (inherit ffmpeg)
-    (version "2.8.6")
+    (version "2.8.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1yh7dvm7zwdlsspdaq524s5qaggma5md9h95qc4kvb5dmyyyvg15"))))
+               "0z0mcj2q3ysp9qdn1ks03g5sn2zxyr06vxs4al0m4b5b3in8mglp"))))
     (arguments
      (substitute-keyword-arguments (package-arguments ffmpeg)
        ((#:configure-flags flags)
@@ -818,7 +822,7 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
           (lambda* (#:key inputs #:allow-other-keys)
             (copy-file (assoc-ref inputs "waf") "waf")
             (setenv "CC" "gcc"))))
-       #:configure-flags (list "--enable-zsh-comp")
+       #:configure-flags (list "--enable-libmpv-shared" "--enable-zsh-comp")
        ;; No check function defined.
        #:tests? #f))
     (home-page "https://mpv.io/")
@@ -827,6 +831,34 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
 fork of mplayer2 and MPlayer.  It shares some features with the former
 projects while introducing many more.")
     (license license:gpl2+)))
+
+(define-public gnome-mpv
+  (package
+    (name "gnome-mpv")
+    (version "0.9")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/gnome-mpv/gnome-mpv/releases"
+                           "/download/v" version "/gnome-mpv-" version
+                           ".tar.xz"))
+       (sha256
+        (base32
+         "06pgxl6f3kkgxv8nlmyl7gy3pg55sqf8vgr8m6426mlpm4p3qdn0"))))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libepoxy" ,libepoxy)
+       ("mpv" ,mpv)))
+    (build-system glib-or-gtk-build-system)
+    (home-page "https://github.com/gnome-mpv/gnome-mpv")
+    (synopsis "GTK+ frontend for the mpv media player")
+    (description "GNOME MPV is a simple GTK+ frontend for the mpv media player.
+GNOME MPV interacts with mpv via the client API exported by libmpv, allowing
+access to mpv's powerful playback capabilities.")
+    (license license:gpl3+)))
 
 (define-public libvpx
   (package
@@ -910,15 +942,15 @@ YouTube.com and a few more sites.")
 (define-public libbluray
   (package
     (name "libbluray")
-    (version "0.9.2")
+    (version "0.9.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.videolan.org/videolan/"
+              (uri (string-append "https://download.videolan.org/videolan/"
                                   name "/" version "/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1sp71j4agcsg17g6b85cqz78pn5vknl5pl39rvr6mkib5ps99jgg"))))
+                "1q1whviqv5sr9nr372h31zwid1rvbfbx3z4lzr8lnj25xha6cdm6"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags '("--disable-bdjava")))
     (native-inputs `(("pkg-config" ,pkg-config)))
@@ -926,7 +958,7 @@ YouTube.com and a few more sites.")
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("libxml2" ,libxml2)))
-    (home-page "http://www.videolan.org/developers/libbluray.html")
+    (home-page "https://www.videolan.org/developers/libbluray.html")
     (synopsis "Blu-Ray Disc playback library")
     (description
      "libbluray is a library designed for Blu-Ray Disc playback for media
@@ -1363,7 +1395,7 @@ be used for realtime video capture via Linux-specific APIs.")
 (define-public obs
   (package
     (name "obs")
-    (version "0.14.2")
+    (version "0.15.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/jp9000/obs-studio"
@@ -1371,9 +1403,23 @@ be used for realtime video capture via Linux-specific APIs.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1cb8naa67kfnnngkzv1wpd4y241j29ggnk1w7jgnymp9j8dny1xl"))))
+                "18fycg7xlj2i89wdb9c5js0bnl964s1lpmnvmfyj11zi9k061wsg"))))
     (build-system cmake-build-system)
-    (arguments '(#:tests? #f)) ; no tests
+    (arguments
+     `(#:tests? #f ; no tests
+       ,@(if (any (cute string-prefix? <> (or (%current-target-system)
+                                              (%current-system)))
+                  '("arm" "mips"))
+           '(#:phases
+             (modify-phases %standard-phases
+             (add-after 'unpack 'remove-architecture-specific-instructions
+               ;; non-Intel platforms fail to build with the architecture
+               ;; specific compiler flags included by default.
+               (lambda _
+                 (substitute* "libobs/CMakeLists.txt"
+                              (("if\\(NOT MSVC\\)") "if(MSVC)"))
+                 #t))))
+           '())))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

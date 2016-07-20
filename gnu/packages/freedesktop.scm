@@ -82,14 +82,14 @@ freedesktop.org project.")
 (define-public libinput
   (package
     (name "libinput")
-    (version "1.3.0")
+    (version "1.4.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://freedesktop.org/software/libinput/"
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1sn1s1bz06fa49izqkqf519sjclsvhf42i6slzx1w5hx4vxpb2lr"))))
+                "085lcxy111j8r1lwyghsc6zrysqh0vg8xip5axxsdl8r8n3i1vvn"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
@@ -99,7 +99,7 @@ freedesktop.org project.")
      `(("libevdev" ,libevdev)
        ("mtdev" ,mtdev)
        ("libwacom" ,libwacom)))
-    (home-page "http://www.freedesktop.org/wiki/Software/libinput/")
+    (home-page "https://www.freedesktop.org/wiki/Software/libinput/")
     (synopsis "Input devices handling library")
     (description
      "Libinput is a library to handle input devices for display servers and

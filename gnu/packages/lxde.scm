@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,14 +72,14 @@ libFM file management library.")))
 (define-public lxappearance
   (package
     (name "lxappearance")
-    (version "0.6.1")
+    (version "0.6.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/project/lxde/"
                                   "LXAppearance/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1phnv1b2jdj2vlibjyc9z01izcf3k5zxj8glsaf0i3vh77zqmqq9"))))
+                "07r0xbi6504zjnbpan7zrn7gi4j0kbsqqfpj8v2x94gr05p16qj4"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)))
     (native-inputs `(("intltool"   ,intltool)
@@ -92,7 +93,7 @@ able to change themes, icons, and fonts used by GTK+ applications.")
 (define-public lxrandr
   (package
     (name "lxrandr")
-    (version "0.3.0")
+    (version "0.3.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/project/lxde/LXRandR"
@@ -101,7 +102,7 @@ able to change themes, icons, and fonts used by GTK+ applications.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0xkbqv66hisbxkvnf7y5kwqbhrq26f49wd7w6ylhnjlccpnylg8q"))))
+                "0khqi42paqg82jllb2kza4arf3fafzgq90fhyr3rw3d9hn23763d"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)))
     (native-inputs `(("intltool"   ,intltool)
@@ -118,7 +119,7 @@ or external monitor.")
 (define-public lxtask
   (package
     (name "lxtask")
-    (version "0.1.6")
+    (version "0.1.7")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/project/lxde/LXTask"
@@ -127,7 +128,7 @@ or external monitor.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ia3i430lpwgl2kch6sl1za8qf96wc4fkcv91yhdzgnzafcnm3gp"))))
+                "1zihhvzsg9bl6k0gv7jwx6cgsi3rmcagvnmshc1h0mjq2immmdph"))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)))
     (native-inputs `(("intltool"   ,intltool)
@@ -167,7 +168,7 @@ performance, all instances of the terminal are sharing a single process.")
 (define-public menu-cache
   (package
     (name "menu-cache")
-    (version "1.0.0")
+    (version "1.0.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/project/lxde/" name "/"
@@ -175,7 +176,7 @@ performance, all instances of the terminal are sharing a single process.")
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "1bws84fiwk3anp30hcr0lw1xw5cgp44x5ik2yv2ijcgxpcvz8zgz"))))
+                "0ngxvwfj9drabqi3lyzgpi0d0za6431sy2ijb010filrj54jdiqa"))))
     (build-system gnu-build-system)
     (inputs `(("glib"  ,glib)
               ("libfm" ,libfm-extra)))

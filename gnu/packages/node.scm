@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2015, 2016 David Thompson <davet@gnu.org>
+;;; Copyright © 2016 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -99,7 +100,23 @@
                (zero? (apply system*
                              (string-append (assoc-ref inputs "python")
                                             "/bin/python")
-                             "configure" flags))))))))
+                             "configure" flags)))))
+         (replace 'patch-shebangs
+           (lambda* (#:key outputs #:allow-other-keys #:rest all)
+             ;; Work around <http://bugs.gnu.org/23723>.
+             (let* ((patch  (assoc-ref %standard-phases 'patch-shebangs))
+                    (npm    (string-append (assoc-ref outputs "out")
+                                           "/bin/npm"))
+                    (target (readlink npm)))
+               (and (apply patch all)
+                    (with-directory-excursion (dirname npm)
+                      ;; Turn NPM into a symlink to TARGET again, which 'npm'
+                      ;; relies on for the resolution of relative file names
+                      ;; in JS files.
+                      (delete-file target)
+                      (rename-file npm target)
+                      (symlink target npm)
+                      #t))))))))
     (native-inputs
      `(("python" ,python-2)
        ("perl" ,perl)

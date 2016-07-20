@@ -126,17 +126,19 @@
          (name "nobody")
          (uid 65534)
          (group "nogroup")
-         (home-directory "/var/empty")
+         (shell #~(string-append #$shadow "/sbin/nologin"))
+         (home-directory "/nonexistent")
          (system? #t))))
 
 (define (default-skeletons)
   "Return the default skeleton files for /etc/skel.  These files are copied by
 'useradd' in the home directory of newly created user accounts."
   (define copy-guile-wm
-    #~(begin
-        (use-modules (guix build utils))
-        (copy-file (car (find-files #$guile-wm "wm-init-sample.scm"))
-                   #$output)))
+    (with-imported-modules '((guix build utils))
+      #~(begin
+          (use-modules (guix build utils))
+          (copy-file (car (find-files #$guile-wm "wm-init-sample.scm"))
+                     #$output))))
 
   (let ((profile (plain-file "bash_profile" "\
 # Honor per-interactive-shell startup file
@@ -170,8 +172,7 @@ alias ll='ls -l'\n"))
         (zlogin    (plain-file "zlogin" "\
 # Honor system-wide environment variables
 source /etc/profile\n"))
-        (guile-wm  (computed-file "guile-wm" copy-guile-wm
-                                  #:modules '((guix build utils))))
+        (guile-wm  (computed-file "guile-wm" copy-guile-wm))
         (xdefaults (plain-file "Xdefaults" "\
 XTerm*utf8: always
 XTerm*metaSendsEscape: true\n"))
@@ -188,22 +189,22 @@ set debug-file-directory ~/.guix-profile/lib/debug\n")))
 (define (skeleton-directory skeletons)
   "Return a directory containing SKELETONS, a list of name/derivation tuples."
   (computed-file "skel"
-                 #~(begin
-                     (use-modules (ice-9 match)
-                                  (guix build utils))
+                 (with-imported-modules '((guix build utils))
+                   #~(begin
+                       (use-modules (ice-9 match)
+                                    (guix build utils))
 
-                     (mkdir #$output)
-                     (chdir #$output)
+                       (mkdir #$output)
+                       (chdir #$output)
 
-                     ;; Note: copy the skeletons instead of symlinking
-                     ;; them like 'file-union' does, because 'useradd'
-                     ;; would just copy the symlinks as is.
-                     (for-each (match-lambda
-                                 ((target source)
-                                  (copy-recursively source target)))
-                               '#$skeletons)
-                     #t)
-                 #:modules '((guix build utils))))
+                       ;; Note: copy the skeletons instead of symlinking
+                       ;; them like 'file-union' does, because 'useradd'
+                       ;; would just copy the symlinks as is.
+                       (for-each (match-lambda
+                                   ((target source)
+                                    (copy-recursively source target)))
+                                 '#$skeletons)
+                       #t))))
 
 (define (assert-valid-users/groups users groups)
   "Raise an error if USERS refer to groups not listed in GROUPS."

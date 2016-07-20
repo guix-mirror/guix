@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2014, 2015 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,16 +29,16 @@
 (define-public conkeror
   (package
     (name "conkeror")
-    (version "1.0pre1.20150730")
+    (version "1.0.3")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append "http://repo.or.cz/w/conkeror.git/snapshot/"
-                              "a1f7e879b129df5cf14ea4ce80a9c1407380ed58"
-                              ".tar.gz")) ; tag: debian-1.0--pre-1+git150730-1
+               (string-append "http://repo.or.cz/conkeror.git/snapshot/"
+                              version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1q45hc30733gz3ca2ixvw0rzzcbi7rlay7gx7kvzjv17a030nyk0"))))
+                "0ybmincxw3msnrfpby9gnckbq2x94c7fra2m66zham54cjc7mav3"))))
     (build-system gnu-build-system)
     (inputs `(("icecat" ,icecat)))
     (arguments

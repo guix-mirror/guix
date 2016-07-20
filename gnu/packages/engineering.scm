@@ -58,7 +58,7 @@
 (define-public librecad
   (package
     (name "librecad")
-    (version "2.0.11")
+    (version "2.1.1")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -67,7 +67,7 @@
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0jda23qspziph6fwgq1q3nmnllbgn9kwfpjylv1f0wa7c5l85gh5"))))
+                "132vv9pzbx64zmbnikyg06d4j47yzlmwi4mywxnd9gkaik4yd2kb"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
@@ -108,26 +108,25 @@ plans and designs.")
 (define-public geda-gaf
   (package
     (name "geda-gaf")
-    (version "1.8.2")
+    (version "1.9.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://ftp.geda-project.org/geda-gaf/stable/v"
+                    "http://ftp.geda-project.org/geda-gaf/unstable/v"
                     (version-major+minor version) "/"
                     version "/geda-gaf-" version ".tar.gz"))
               (sha256
                (base32
-                "08dpa506xk4gjbbi8vnxcb640wq4ihlgmhzlssl52nhvxwx7gx5v"))))
+                "14mk45pfz11v54q66gafw2l68n1p5ssvvjmdm8ffgc8x1w5ajfrz"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
-       ;; tests require a writable HOME
-       (alist-cons-before
-        'check 'set-home
-        (lambda _
-          (setenv "HOME" (getenv "TMPDIR")))
-        %standard-phases
-        )
+       (modify-phases %standard-phases
+         ;; tests require a writable HOME
+         (add-before 'check 'set-home
+           (lambda _
+             (setenv "HOME" (getenv "TMPDIR"))
+             #t)))
        #:configure-flags
        (let ((pcb (assoc-ref %build-inputs "pcb")))
          (list (string-append "--with-pcb-datadir=" pcb "/share")
@@ -229,10 +228,6 @@ optimizer; and it can produce photorealistic and design review images.")
               (snippet
                ;; Remove a non-free file.
                '(delete-file "doc/psfig.sty"))
-              (modules '((guix build utils)
-                         (guix build download)
-                         (guix ftp-client)))
-              (imported-modules modules)
               (patches (search-patches "fastcap-mulSetup.patch"
                                        "fastcap-mulGlobal.patch"))))
     (build-system gnu-build-system)

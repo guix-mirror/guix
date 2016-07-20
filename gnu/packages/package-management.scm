@@ -192,7 +192,8 @@
     (propagated-inputs
      `(("gnutls" ,gnutls)                         ;for 'guix download' & co.
        ("guile-json" ,guile-json)
-       ("geiser" ,geiser)))                       ;for guix.el
+       ("geiser" ,geiser)                         ;for guix.el
+       ("emacs-magit-popup" ,emacs-magit-popup))) ;for "M-x guix" command
 
     (home-page "http://www.gnu.org/software/guix")
     (synopsis "Functional package manager for installed software packages and versions")
@@ -474,13 +475,13 @@ transactions from C or Python.")
 (define-public diffoscope
   (package
     (name "diffoscope")
-    (version "51")
+    (version "54")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri name version))
               (sha256
                (base32
-                "18rn6rrwh586228vnaf1nq0wayh19zbvfc0qmnbys6ln2pv2v007"))))
+                "1dv46ywzcll3mlqgvr48mq7rncizfvsic62c6dd2kdhynb22087n"))))
     (build-system python-build-system)
     (arguments
      `(#:phases (modify-phases %standard-phases

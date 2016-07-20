@@ -165,7 +165,9 @@ be output in text, PostScript, PDF or HTML.")
        ("which" ,which) ; for tests/Examples/base-Ex.R
        ("xz" ,xz)))
     (inputs
-     `(("cairo" ,cairo)
+     `(;; We need not only cairo here, but pango to ensure that tests for the
+       ;; "cairo" bitmapType plotting backend succeed.
+       ("pango" ,pango)
        ("curl" ,curl)
        ("tzdata" ,tzdata)
        ("gfortran" ,gfortran)
@@ -596,7 +598,8 @@ legends.")
        ("r-plyr" ,r-plyr)
        ("r-proto" ,r-proto)
        ("r-reshape2" ,r-reshape2)
-       ("r-scales" ,r-scales)))
+       ("r-scales" ,r-scales)
+       ("r-svglite" ,r-svglite)))
     (home-page "http://ggplot2.org")
     (synopsis "An implementation of the grammar of graphics")
     (description
@@ -606,6 +609,55 @@ shared axes are handled automatically, and you can still build up a plot step
 by step from multiple data sources.  It also implements a sophisticated
 multidimensional conditioning system and a consistent interface to map data to
 aesthetic attributes.")
+    (license license:gpl2+)))
+
+(define-public r-gdtools
+  (package
+    (name "r-gdtools")
+    (version "0.0.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "gdtools" version))
+       (sha256
+        (base32
+         "1bmnf9d677f2jy8jnb9ymjz1qzm4yrd0qp6k5qrrly06jfffyx7g"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("r-rcpp" ,r-rcpp)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)))
+    (home-page "http://cran.r-project.org/web/packages/gdtools")
+    (synopsis "Utilities for graphical rendering")
+    (description
+     "The @code{gdtools} package provides functionalities to get font metrics
+and to generate base64 encoded string from raster matrix.")
+    (license license:gpl3)))
+
+(define-public r-svglite
+  (package
+    (name "r-svglite")
+    (version "1.1.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "svglite" version))
+       (sha256
+        (base32
+         "11ryicjglfi6jvkk4jgg5kra42qbs5z2zid7jjhlslpjcljfwc70"))))
+    (build-system r-build-system)
+    (native-inputs  `(("r-rcpp" ,r-rcpp)))
+    (propagated-inputs
+     `(("r-bh" ,r-bh)
+       ("r-gdtools" ,r-gdtools)))
+    (home-page "https://github.com/hadley/svglite")
+    (synopsis "SVG graphics device")
+    (description
+     "@code{svglite} is a graphics device that produces clean
+@dfn{SVG} (Scalable Vector Graphics) output, suitable for use on the web, or
+hand editing.  Compared to the built-in @code{svg()}, @code{svglite} is
+considerably faster, produces smaller files, and leaves text as is.")
     (license license:gpl2+)))
 
 (define-public r-assertthat
@@ -1353,6 +1405,25 @@ diagnostic tests of convergence to the equilibrium distribution of the Markov
 chain.")
     (license license:gpl2+)))
 
+(define-public r-ade4
+  (package
+    (name "r-ade4")
+    (version "1.7-4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (cran-uri "ade4" version))
+        (sha256
+          (base32
+            "17sbicash7z4b63dlrbaf8xx2pbwh62vykzvhdjs43h8jkl881y7"))))
+    (build-system r-build-system)
+    (home-page "http://pbil.univ-lyon1.fr/ADE-4")
+    (synopsis "Multivariate data analysis and graphical display")
+    (description
+     "The ade4 package contains data analysis functions to analyze ecological
+and environmental data in the framework of Euclidean exploratory methods.")
+    (license license:gpl2+)))
+
 (define-public r-xml2
   (package
     (name "r-xml2")
@@ -1375,6 +1446,32 @@ chain.")
     (description
      "This package provides a simple, consistent interface to working with XML
 files in R.  It is built on top of the libxml2 C library.")
+    (license license:gpl2+)))
+
+(define-public r-multitaper
+  (package
+    (name "r-multitaper")
+    (version "1.0-11")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "multitaper" version))
+       (sha256
+        (base32
+         "1s0lmjzpyd7zmc2p1ywv5fm7qkq357p70b76gw9wjlms6d81j1n4"))))
+    (build-system r-build-system)
+    (native-inputs
+     `(("gfortran" ,gfortran)))
+    (home-page "http://github.com/wesleyburr/multitaper/")
+    (synopsis "Multitaper spectral analysis tools")
+    (description
+     "This package implements multitaper spectral estimation
+techniques using prolate spheroidal sequences (Slepians) and sine
+tapers for time series analysis.  It includes an adaptive weighted
+multitaper spectral estimate, a coherence estimate, Thomson's Harmonic
+F-test, and complex demodulation.  The Slepians sequences are
+generated efficiently using a tridiagonal matrix solution, and
+jackknifed confidence intervals are available for most estimates.")
     (license license:gpl2+)))
 
 (define-public r-rversions
@@ -2170,6 +2267,29 @@ parallel.")
 using the parallel package.")
     (license license:gpl2+)))
 
+(define-public r-domc
+  (package
+    (name "r-domc")
+    (version "1.3.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (cran-uri "doMC" version))
+       (sha256
+        (base32
+         "0y47jl6g4f83r14pj8bafdzq1phj7bxy5dwyz3k43d2rr8phk8bn"))))
+    (properties `((upstream-name . "doMC")))
+    (build-system r-build-system)
+    (propagated-inputs
+     `(("r-foreach" ,r-foreach)
+       ("r-iterators" ,r-iterators)))
+    (home-page "http://cran.r-project.org/web/packages/doMC")
+    (synopsis "Foreach parallel adaptor for the 'parallel' package")
+    (description
+     "This package provides a parallel backend for the @code{%dopar%} function
+using the multicore functionality of the parallel package.")
+    (license license:gpl2+)))
+
 (define-public r-dt
   (package
     (name "r-dt")
@@ -2241,6 +2361,32 @@ flexible than the orphaned \"base64\" package.")
 singular and eigenvalue decompositions, as well as for principal component
 analysis of large sparse or dense matrices.")
     (license (list license:gpl2+ license:gpl3+))))
+
+(define-public r-glmnet
+  (package
+   (name "r-glmnet")
+   (version "2.0-5")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (cran-uri "glmnet" version))
+     (sha256
+      (base32
+       "1cbpzmbv837fvq88rgn6mgzgr9f1wqp9fg8gh2kkmngvr1957a9c"))))
+   (build-system r-build-system)
+    (inputs
+     `(("gfortran" ,gfortran)))
+   (propagated-inputs
+    `(("r-foreach" ,r-foreach)))
+   (home-page "http://www.jstatsoft.org/v33/i01")
+   (synopsis "Lasso and elastic-net regularized generalized linear models")
+   (description
+    "The glmnet package provides efficient procedures for fitting the entire
+lasso or elastic-net regularization path for linear and Poisson regression, as
+well as logistic, multinomial, Cox, multiple-response Gaussian and grouped
+multinomial models.  The algorithm uses cyclical coordinate descent in a
+path-wise fashion.")
+   (license license:gpl2+)))
 
 (define-public r-pkgmaker
   (package
