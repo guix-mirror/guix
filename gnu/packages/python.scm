@@ -9748,3 +9748,36 @@ characters, mouse support, and auto suggestions.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
+
+(define-public ptpython
+  (package
+    (name "ptpython")
+    (version "0.34")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "ptpython" version))
+              (sha256
+               (base32
+                "1mmbiyzf0n8hm7z2a562x7w5cbl6jc0zsk6vp40q1z4cyblv1k13"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-docopt" ,python-docopt)
+       ("python-jedi" ,python-jedi)
+       ("python-prompt-toolkit" ,python-prompt-toolkit)
+       ("python-pygments" ,python-pygments)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/jonathanslenders/ptpython")
+    (synopsis "Python Read-Eval-Print-Loop with nice IDE-like features")
+    (description
+     "ptpython is a Python read-eval-print loop with IDE-like features.
+It supports syntax highlighting, multiline editing, autocompletion, mouse,
+color schemes, bracketed paste, Vi and Emacs keybindings, Chinese characters
+etc.")
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay ptpython-2))))))
+
+(define-public ptpython-2
+  (let ((base (package-with-python2 (strip-python2-variant ptpython))))
+    (package
+      (inherit base)
+      (name "ptpython2"))))
