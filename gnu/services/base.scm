@@ -39,6 +39,7 @@
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages lsof)
+  #:use-module (gnu packages terminals)
   #:use-module ((gnu build file-systems)
                 #:select (mount-flags->bit-mask))
   #:use-module (guix gexp)
@@ -116,6 +117,11 @@
             rngd-configuration?
             rngd-service-type
             rngd-service
+
+            kmscon-configuration
+            kmscon-configuration?
+            kmscon-service-type
+
             pam-limits-service-type
             pam-limits-service
 
@@ -1448,6 +1454,43 @@ This service is not part of @var{%base-services}."
   ;; "info mice" and "mouse_set X" to use the right mouse.
   (service gpm-service-type
            (gpm-configuration (gpm gpm) (options options))))
+
+(define-record-type* <kmscon-configuration>
+  kmscon-configuration     make-kmscon-configuration
+  kmscon-configuration?
+  (kmscon                  kmscon-configuration-kmscon
+                           (default kmscon))
+  (virtual-terminal        kmscon-configuration-virtual-terminal)
+  (login-program           kmscon-configuration-login-program
+                           (default #~(string-append #$shadow "/bin/login")))
+  (login-arguments         kmscon-configuration-login-arguments
+                           (default '("-p")))
+  (hardware-acceleration?  kmscon-configuration-hardware-acceleration?
+                           (default #f))) ; #t causes failure
+
+(define kmscon-service-type
+  (shepherd-service-type
+   'kmscon
+   (lambda (config)
+     (let ((kmscon (kmscon-configuration-kmscon config))
+           (virtual-terminal (kmscon-configuration-virtual-terminal config))
+           (login-program (kmscon-configuration-login-program config))
+           (login-arguments (kmscon-configuration-login-arguments config))
+           (hardware-acceleration? (kmscon-configuration-hardware-acceleration? config)))
+
+       (define kmscon-command
+         #~(list
+            (string-append #$kmscon "/bin/kmscon") "--login"
+            "--vt" #$virtual-terminal
+            #$@(if hardware-acceleration? '("--hwaccel") '())
+            "--" #$login-program #$@login-arguments))
+
+       (shepherd-service
+        (documentation "kmscon virtual terminal")
+        (requirement '(user-processes udev dbus-system))
+        (provision (list (symbol-append 'term- (string->symbol virtual-terminal))))
+        (start #~(make-forkexec-constructor #$kmscon-command))
+        (stop #~(make-kill-destructor)))))))
 
 
 (define %base-services

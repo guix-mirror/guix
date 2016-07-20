@@ -7674,6 +7674,37 @@ The Mingetty package to use.
 @end table
 @end deftp
 
+@deffn {Scheme Procedure} kmscon-service-type @var{config}
+Return a service to run @uref{https://www.freedesktop.org/wiki/Software/kmscon,kmscon}
+according to @var{config}, a @code{<kmscon-configuration>} object, which
+specifies the tty to run, among other things.
+@end deffn
+
+@deftp {Data Type} kmscon-configuration
+This is the data type representing the configuration of Kmscon, which
+implements console log-in.
+
+@table @asis
+
+@item @code{virtual-terminal}
+The name of the console this Kmscon runs on---e.g., @code{"tty1"}.
+
+@item @code{login-program} (default: @code{#~(string-append #$shadow "/bin/login")})
+A gexp denoting the name of the log-in program. The default log-in program is
+@command{login} from the Shadow tool suite.
+
+@item @code{login-arguments} (default: @code{'("-p")})
+A list of arguments to pass to @command{login}.
+
+@item @code{hardware-acceleration?} (default: #f)
+Whether to use hardware acceleration.
+
+@item @code{kmscon} (default: @var{kmscon})
+The Kmscon package to use.
+
+@end table
+@end deftp
+
 @cindex name service cache daemon
 @cindex nscd
 @deffn {Scheme Procedure} nscd-service [@var{config}] [#:glibc glibc] @
