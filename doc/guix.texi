@@ -8226,6 +8226,109 @@ Xorg---is provided by the @code{(gnu services xorg)} module.  Note that
 there is no @code{xorg-service} procedure.  Instead, the X server is
 started by the @dfn{login manager}, currently SLiM.
 
+@deftp {Data Type} sddm-configuration
+This is the data type representing the sddm service configuration.
+
+@table @asis
+@item @code{display-server} (default: "x11")
+Select display server to use for the greeter. Valid values are "x11"
+or "wayland".
+
+@item @code{numlock} (default: "on")
+Valid values are "on", "off" or "none".
+
+@item @code{halt-command} (default @code{#~(string-apppend #$shepherd "/sbin/halt")})
+Command to run when halting.
+
+@item @code{reboot-command} (default @code{#~(string-append #$shepherd "/sbin/reboot")})
+Command to run when rebooting.
+
+@item @code{theme} (default "maldives")
+Theme to use. Default themes provided by SDDM are "elarun" or "maldives".
+
+@item @code{themes-directory} (default "/run/current-system/profile/share/sddm/themes")
+Directory to look for themes.
+
+@item @code{faces-directory} (default "/run/current-system/profile/share/sddm/faces")
+Directory to look for faces.
+
+@item @code{default-path} (default "/run/current-system/profile/bin")
+Default PATH to use.
+
+@item @code{minimum-uid} (default 1000)
+Minimum UID to display in SDDM.
+
+@item @code{maximum-uid} (default 2000)
+Maximum UID to display in SDDM
+
+@item @code{remember-last-user?} (default #t)
+Remember last user.
+
+@item @code{remember-last-session?} (default #t)
+Remember last session.
+
+@item @code{hide-users} (default "")
+Usernames to hide from SDDM greeter.
+
+@item @code{hide-shells} (default @code{#~(string-append #$shadow "/sbin/nologin")})
+Users with shells listed will be hidden from the SDDM greeter.
+
+@item @code{session-command} (default @code{#~(string-append #$sddm "/share/sddm/scripts/wayland-session")})
+Script to run before starting a wayland session.
+
+@item @code{sessions-directory} (default "/run/current-system/profile/share/wayland-sessions")
+Directory to look for desktop files starting wayland sessions.
+
+@item @code{xorg-server-path} (default @code{xorg-start-command})
+Path to xorg-server.
+
+@item @code{xauth-path} (default @code{#~(string-append #$xauth "/bin/xauth")})
+Path to xauth.
+
+@item @code{xephyr-path} (default @code{#~(string-append #$xorg-server "/bin/Xephyr")})
+Path to Xephyr.
+
+@item @code{xdisplay-start} (default @code{#~(string-append #$sddm "/share/sddm/scripts/Xsetup")})
+Script to run after starting xorg-server.
+
+@item @code{xdisplay-stop} (default @code{#~(string-append #$sddm "/share/sddm/scripts/Xstop")})
+Script to run before stopping xorg-server.
+
+@item @code{xsession-command} (default: @code{xinitr })
+Script to run before starting a X session.
+
+@item @code{xsessions-directory} (default: "/run/current-system/profile/share/xsessions")
+Directory to look for desktop files starting X sessions.
+
+@item @code{minimum-vt} (default: 7)
+Minimum VT to use.
+
+@item @code{xserver-arguments} (default "-nolisten tcp")
+Arguments to pass to xorg-server.
+
+@item @code{auto-login-user} (default "")
+User to use for auto-login.
+
+@item @code{auto-login-session} (default "")
+Desktop file to use for auto-login.
+
+@item @code{relogin?} (default #f)
+Relogin after logout.
+
+@end table
+@end deftp
+
+@deffn {Scheme Procedure} sddm-service config
+Return a service that spawns the SDDM graphical login manager for config of
+type @code{<sddm-configuration>}.
+
+@example
+  (sddm-service (sddm-configuration
+                 (auto-login-user "Alice")
+                 (auto-login-session "xfce.desktop")))
+@end example
+@end deffn
+
 @deffn {Scheme Procedure} slim-service [#:allow-empty-passwords? #f] @
   [#:auto-login? #f] [#:default-user ""] [#:startx] @
   [#:theme @var{%default-slim-theme}] @

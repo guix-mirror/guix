@@ -391,6 +391,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/services/networking.scm			\
   %D%/services/shepherd.scm			\
   %D%/services/herd.scm				\
+  %D%/services/sddm.scm				\
   %D%/services/spice.scm				\
   %D%/services/ssh.scm				\
   %D%/services/web.scm				\
