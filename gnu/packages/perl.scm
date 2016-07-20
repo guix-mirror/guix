@@ -2027,6 +2027,29 @@ SHA-1 message digest algorithm for use by Perl programs.")
 modules separately and deal with them after the module is done installing.")
     (license (package-license perl))))
 
+(define-public perl-env-path
+  (package
+    (name "perl-env-path")
+    (version "0.19")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/D/DS/DSB/Env-Path-"
+             version
+             ".tar.gz"))
+       (sha256
+        (base32
+         "1qhmj15a66h90pjl2dgnxsb9jj3b1r5mpvnr87cafcl8g69z0jr4"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Env-Path")
+    (synopsis "Advanced operations on path variables")
+    (description "@code{Env::Path} presents an object-oriented interface to
+path variables, defined as that subclass of environment variables which name
+an ordered list of filesystem elements separated by a platform-standard
+separator.")
+    (license (package-license perl))))
+
 (define-public perl-error
   (package
     (name "perl-error")
