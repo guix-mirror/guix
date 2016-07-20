@@ -5633,6 +5633,20 @@ archive}), the daemon may download substitutes from it:
 guix-daemon --substitute-urls=http://example.org:8080
 @end example
 
+As a bonus, @command{guix publish} also serves as a content-addressed
+mirror for source files referenced in @code{origin} records
+(@pxref{origin Reference}).  For instance, assuming @command{guix
+publish} is running on @code{example.org}, the following URL returns the
+raw @file{hello-2.10.tar.gz} file with the given SHA256 hash
+(represented in @code{nix-base32} format, @pxref{Invoking guix hash}):
+
+@example
+http://example.org/file/hello-2.10.tar.gz/sha256/0ssi1@dots{}ndq1i
+@end example
+
+Obviously, these URLs only work for files that are in the store; in
+other cases, they return 404 (``Not Found'').
+
 The following options are available:
 
 @table @code

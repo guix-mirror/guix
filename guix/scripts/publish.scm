@@ -31,6 +31,7 @@
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
   #:use-module (web http)
   #:use-module (web request)
@@ -49,6 +50,7 @@
   #:use-module (guix zlib)
   #:use-module (guix ui)
   #:use-module (guix scripts)
+  #:use-module ((guix build utils) #:select (dump-port))
   #:export (guix-publish))
 
 (define (show-help)
@@ -308,6 +310,25 @@ appropriate duration."
                 store-path)
         (not-found request))))
 
+(define (render-content-addressed-file store request
+                                       name algo hash)
+  "Return the content of the result of the fixed-output derivation NAME that
+has the given HASH of type ALGO."
+  ;; TODO: Support other hash algorithms.
+  (if (and (eq? algo 'sha256) (= 32 (bytevector-length hash)))
+      (let ((item (fixed-output-path name hash
+                                     #:hash-algo algo
+                                     #:recursive? #f)))
+        (if (valid-path? store item)
+            (values `((content-type . (application/octet-stream
+                                       (charset . "ISO-8859-1"))))
+                    ;; XXX: We're not returning the actual contents, deferring
+                    ;; instead to 'http-write'.  This is a hack to work around
+                    ;; <http://bugs.gnu.org/21093>.
+                    item)
+            (not-found request)))
+      (not-found request)))
+
 (define extract-narinfo-hash
   (let ((regexp (make-regexp "^([a-df-np-sv-z0-9]{32}).narinfo$")))
     (lambda (str)
@@ -398,6 +419,34 @@ blocking."
           (swallow-zlib-error
            (close-port port))
           (values)))))
+    (('application/octet-stream . _)
+     ;; Send a raw file in a separate thread.
+     (call-with-new-thread
+      (lambda ()
+        (catch 'system-error
+          (lambda ()
+            (call-with-input-file (utf8->string body)
+              (lambda (input)
+                (let* ((size     (stat:size (stat input)))
+                       (headers  (alist-cons 'content-length size
+                                             (alist-delete 'content-length
+                                                           (response-headers response)
+                                                           eq?)))
+                       (response (write-response (set-field response
+                                                            (response-headers)
+                                                            headers)
+                                                 client))
+                       (output   (response-port response)))
+                  (dump-port input output)
+                  (close-port output)
+                  (values)))))
+          (lambda args
+            ;; If the file was GC'd behind our back, that's fine.  Likewise if
+            ;; the client closes the connection.
+            (unless (memv (system-error-errno args)
+                          (list ENOENT EPIPE ECONNRESET))
+              (apply throw args))
+            (values))))))
     (_
      ;; Handle other responses sequentially.
      (%http-write server client response body))))
@@ -418,7 +467,7 @@ blocking."
     (format #t "~a ~a~%"
             (request-method request)
             (uri-path (request-uri request)))
-    (if (get-request? request) ; reject POST, PUT, etc.
+    (if (get-request? request)                    ;reject POST, PUT, etc.
         (match (request-path-components request)
           ;; /nix-cache-info
           (("nix-cache-info")
@@ -450,6 +499,14 @@ blocking."
                              (_
                               %default-gzip-compression)))
                (not-found request)))
+
+          ;; /nar/file/NAME/sha256/HASH
+          (("file" name "sha256" hash)
+           (guard (c ((invalid-base32-character? c)
+                      (not-found request)))
+             (let ((hash (nix-base32-string->bytevector hash)))
+               (render-content-addressed-file store request
+                                              name 'sha256 hash))))
           (_ (not-found request)))
         (not-found request))))
 
