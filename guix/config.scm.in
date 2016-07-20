@@ -42,7 +42,8 @@
 
 ;;; Commentary:
 ;;;
-;;; Compile-time configuration of Guix.
+;;; Compile-time configuration of Guix.  When adding a substitution variable
+;;; here, make sure to equip (guix scripts pull) to substitute it.
 ;;;
 ;;; Code:
 
