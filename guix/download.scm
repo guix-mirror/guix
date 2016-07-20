@@ -232,10 +232,10 @@
 
 (define %content-addressed-mirrors
   ;; List of content-addressed mirrors.  Each mirror is represented as a
-  ;; procedure that takes an algorithm (symbol) and a hash (bytevector), and
-  ;; returns a URL or #f.
+  ;; procedure that takes a file name, an algorithm (symbol) and a hash
+  ;; (bytevector), and returns a URL or #f.
   ;; TODO: Add more.
-  '(list (lambda (algo hash)
+  '(list (lambda (file algo hash)
            ;; 'tarballs.nixos.org' supports several algorithms.
            (string-append "http://tarballs.nixos.org/"
                           (symbol->string algo) "/"
