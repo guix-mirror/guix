@@ -21,6 +21,7 @@
   #:use-module (guix)
   #:use-module (guix config)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-19)
   #:export (build))
 
 ;;; Commentary:
@@ -70,8 +71,16 @@
          (lambda (file)
            (string-append (dirname file) "/.."))))
 
+
+(define (date-version-string)
+  "Return the current date and hour in UTC timezone, for use as a poor
+person's version identifier."
+  ;; XXX: Replace with a Git commit id.
+  (date->string (current-date 0) "~Y~m~d.~H"))
+
 ;; The procedure below is our return value.
-(define* (build source #:key verbose?
+(define* (build source
+                #:key verbose? (version (date-version-string))
                 #:allow-other-keys
                 #:rest rest)
   "Return a derivation that unpacks SOURCE into STORE and compiles Scheme
@@ -106,7 +115,7 @@ files."
                     #:sbindir #$sbindir
 
                     #:package-name #$%guix-package-name
-                    #:package-version #$%guix-version
+                    #:package-version #$version
                     #:bug-report-address #$%guix-bug-report-address
                     #:home-page-url #$%guix-home-page-url
 
