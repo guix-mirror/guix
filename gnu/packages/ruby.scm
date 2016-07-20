@@ -24,6 +24,7 @@
 (define-module (gnu packages ruby)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages databases)
   #:use-module (gnu packages readline)
@@ -2898,14 +2899,22 @@ differences (added or removed nodes) between two XML/HTML documents.")
 (define-public ruby-rack
   (package
     (name "ruby-rack")
-    (version "1.6.4")
+    (version "2.0.1")
     (source
      (origin
        (method url-fetch)
-       (uri (rubygems-uri "rack" version))
+       ;; Download from GitHub so that the patch can be applied.
+       (uri (string-append
+             "https://github.com/rack/rack/archive/"
+             version
+             ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "09bs295yq6csjnkzj7ncj50i6chfxrhmzg1pk6p0vd2lb9ac8pj5"))))
+         "00k62v8lpyjzghkn0h0awrnqj1jmlcs2wp57py27m43y65v89cp3"))
+       ;; Ignore test which fails inside the build environment but works
+       ;; outside.
+       (patches (search-patches "ruby-rack-ignore-failing-test.patch"))))
     (build-system ruby-build-system)
     (arguments
      '(#:phases
@@ -2930,7 +2939,11 @@ differences (added or removed nodes) between two XML/HTML documents.")
                                  (number->string (+ 33 size-diff))))))
              #t)))))
     (native-inputs
-     `(("ruby-bacon" ,ruby-bacon)))
+     `(("ruby-minitest" ,ruby-minitest)
+       ("ruby-minitest-sprint" ,ruby-minitest-sprint)
+       ("which" ,which)))
+    (propagated-inputs
+     `(("ruby-concurrent" ,ruby-concurrent)))
     (synopsis "Unified web application interface for Ruby")
     (description "Rack provides a minimal, modular and adaptable interface for
 developing web applications in Ruby.  By wrapping HTTP requests and responses,
