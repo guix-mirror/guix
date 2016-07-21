@@ -340,6 +340,13 @@ referring to people, such as
 @uref{https://en.wikipedia.org/wiki/Singular_they, singular
 ``they''@comma{} ``their''@comma{} ``them''}, and so forth.
 
+@item
+Verify that your patch contains only one set of related changes.
+Bundling unrelated changes together makes reviewing harder and slower.
+
+Examples of unrelated changes include the addition of several packages,
+or a package update along with fixes to that package.
+
 @end enumerate
 
 When posting a patch to the mailing list, use @samp{[PATCH] @dots{}} as
