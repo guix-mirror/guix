@@ -4,6 +4,7 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages enlightenment)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnome)
@@ -43,6 +45,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages m4)
 
@@ -659,3 +662,44 @@ many applications simultaneously.
 
 This package provides the library for GLib applications.")
     (license license:lgpl2.1+)))
+
+
+(define-public dbus-c++
+  (package
+    (name "dbus-c++")
+    (version "0.9.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "mirror://sourceforge/dbus-cplusplus/dbus-c%2B%2B/"
+                version "/libdbus-c%2B%2B-" version ".tar.gz"))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0qafmy2i6dzx4n1dqp6pygyy6gjljnb7hwjcj2z11c1wgclsq4dw"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("dbus" ,dbus)))                      ;mentioned in the pkg-config file
+    (inputs
+     `(("efl" ,efl)
+       ("expat" ,expat)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(;; The 'configure' machinery fails to detect that it needs -lpthread.
+       #:configure-flags (list "LDFLAGS=-lpthread")
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'configure 'add-missing-header
+           (lambda _
+             (substitute* "include/dbus-c++/eventloop-integration.h"
+               (("#include <errno.h>")
+                "#include <errno.h>\n#include <unistd.h>")))))))
+    (synopsis "D-Bus API for C++")
+    (description "This package provides D-Bus client API bindings for the C++
+programming langauage.  It also contains the utility
+@command{dbuscxx-xml2cpp}.")
+    (home-page "https://sourceforge.net/projects/dbus-cplusplus/")
+    (license license:lgpl2.1)))
