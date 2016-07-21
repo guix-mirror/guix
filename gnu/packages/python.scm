@@ -1375,8 +1375,8 @@ syntax.")
     (version "2.3.4")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://sourceforge/scons/scons-"
-                                 version ".tar.gz"))
+             (uri (string-append "mirror://sourceforge/scons/scons/" version
+                                 "/scons-" version ".tar.gz"))
              (sha256
               (base32
                "0hdlci43wjz8maryj83mz04ir6rwcdrrzpd7cpzvdlzycqhdfmsb"))))
@@ -3020,7 +3020,7 @@ writing C extensions for Python as easy as Python itself.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/numpy"
+       (uri (string-append "mirror://sourceforge/numpy/NumPy/" version
                            "/numpy-" version ".tar.gz"))
        (sha256
         (base32
@@ -3183,7 +3183,8 @@ association studies (GWAS) on extremely large data sets.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/pyparsing"
+       (uri (string-append "mirror://sourceforge/pyparsing/pyparsing"
+                           "/pyparsing-" version
                            "/pyparsing-" version ".tar.gz"))
        (sha256
         (base32
@@ -3304,7 +3305,8 @@ transcendental functions).")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/matplotlib"
+       (uri (string-append "mirror://sourceforge/matplotlib/matplotlib"
+                           "/matplotlib-" version
                            "/matplotlib-" version ".tar.gz"))
        (sha256
         (base32
@@ -3514,7 +3516,8 @@ functions.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/scipy"
+; http://downloads.sourceforge.net/project/scipy/scipy/0.16.1/scipy-0.16.1.tar.gz
+       (uri (string-append "mirror://sourceforge/scipy/scipy/" version
                            "/scipy-" version ".tar.xz"))
        (sha256
         (base32
@@ -4893,7 +4896,8 @@ as possible in order to be comprehensible and easily extensible.")
     (version "0.14")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/python-xlib/"
+              (uri (string-append "mirror://sourceforge/python-xlib/python-xlib"
+                                  "/" version "/"
                                   "python-xlib-" version ".tar.gz"))
               (sha256
                (base32
@@ -8719,7 +8723,7 @@ the same purpose: to provide Python bindings for libmagic.")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "mirror://sourceforge/s3tools/"
+        (uri (string-append "mirror://sourceforge/s3tools/s3cmd/" version "/"
                             "s3cmd-" version ".tar.gz"))
         (sha256
           (base32

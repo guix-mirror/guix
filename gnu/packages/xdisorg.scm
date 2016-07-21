@@ -108,7 +108,8 @@ program.")
       (origin
         (method url-fetch)
         (uri (string-append
-              "mirror://sourceforge/" name "/" name "-" version ".tar.gz"))
+              "mirror://sourceforge/" name "/" name "/" version "/"
+              name "-" version ".tar.gz"))
         (sha256
           (base32
            "0ibcf46rldnv0r424qcnai1fa5iq3lm5q5rdd7snsi5sb78gmixp"))))
@@ -584,8 +585,8 @@ X Window System.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://sourceforge/libxosd/xosd-"
-                    version ".tar.gz"))
+                    "mirror://sourceforge/libxosd/libxosd/xosd-" version "/"
+                    name "-" version ".tar.gz"))
               (sha256
                (base32
                 "025m7ha89q29swkc7s38knnbn8ysl24g2h5s7imfxflm91psj7sg"))))

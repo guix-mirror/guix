@@ -415,8 +415,8 @@ interaction.")
     (version "0.9.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/podofo/podofo-"
-                                  version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/podofo/podofo/" version
+                                  "/podofo-" version ".tar.gz"))
               (sha256
                (base32
                 "1n12lbq9x15vqn7dc0hsccp56l5jdff1xrhvlfqlbklxx0qiw9pc"))))
@@ -506,8 +506,8 @@ and examining the file structure (pdfshow).")
    (version "5.1.3")
    (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://sourceforge/qpdf/qpdf-"
-                                version ".tar.gz"))
+            (uri (string-append "mirror://sourceforge/qpdf/qpdf/" version
+                                "/qpdf-" version ".tar.gz"))
             (sha256 (base32
                      "1lq1v7xghvl6p4hgrwbps3a13ad6lh4ib3myimb83hxgsgd4n5nm"))))
    (build-system gnu-build-system)
@@ -547,8 +547,8 @@ program capable of converting PDF into other formats.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/xournal/xournal-"
-                           version ".tar.gz"))
+       (uri (string-append "mirror://sourceforge/xournal/xournal/" version
+                           "/xournal-" version ".tar.gz"))
        (sha256
         (base32
          "0c7gjcqhygiyp0ypaipdaxgkbivg6q45vhsj8v5jsi9nh6iqff13"))))

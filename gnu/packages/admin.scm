@@ -346,8 +346,8 @@ login, passwd, su, groupadd, and useradd.")
     (version "1.08")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://sourceforge/mingetty/mingetty-"
-                                 version ".tar.gz"))
+             (uri (string-append "mirror://sourceforge/mingetty/mingetty/"
+                                 version "/mingetty-" version ".tar.gz"))
              (sha256
               (base32
                "05yxrp44ky2kg6qknk1ih0kvwkgbn9fbz77r3vci7agslh5wjm8g"))))
@@ -440,8 +440,8 @@ ONC RPC numbers.")
     (version "0.7.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://sourceforge/netcat/netcat-"
-                                 version ".tar.bz2"))
+             (uri (string-append "mirror://sourceforge/netcat/netcat/" version
+                                 "/netcat-" version ".tar.bz2"))
              (sha256
               (base32
                "1frjcdkhkpzk0f84hx6hmw5l0ynpmji8vcbaxg8h5k2svyxz0nmm"))))
@@ -705,7 +705,8 @@ by bandwidth they use.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/clusterssh/"
-                                  "clusterssh-" version ".tar.gz"))
+                                  "1.%20ClusterSSH%20Series%203/" version
+                                  "/clusterssh-" version ".tar.gz"))
               (sha256
                (base32
                 "1bwggpvaj2al5blg1ynapviv2kpydffpzq2zkhi81najnvzc1rr7"))))
@@ -1112,8 +1113,8 @@ system is under heavy load.")
     (version "1.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/detox/detox-"
-                                  version ".tar.bz2"))
+              (uri (string-append "mirror://sourceforge/detox/detox/" version
+                                  "/detox-" version ".tar.bz2"))
               (sha256
                (base32
                 "1y6vvjqsg54kl49cry73jbfhr04s7wjs779vrr9zrq6kww7dkymb"))))

@@ -88,8 +88,8 @@ and many other languages.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append
-             "mirror://sourceforge/wxwindows/wxGTK-" version ".tar.gz"))
+       (uri (string-append "mirror://sourceforge/wxwindows/" version
+                           "/wxWidgets-" version ".tar.bz2"))
        (sha256
         (base32 "1gjs9vfga60mk4j4ngiwsk9h6c7j22pw26m3asxr1jwvqbr8kkqk"))))
     (inputs

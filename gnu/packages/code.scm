@@ -287,8 +287,8 @@ stack traces.")
     (version "1.12")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/ltp/lcov-"
-                                  version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/ltp/Coverage%20Analysis"
+                                  "/LCOV-" version "/lcov-" version ".tar.gz"))
               (sha256
                (base32
                 "19wfifdpxxivhq9adbphanjfga9bg9spms9v7c3589wndjff8x5l"))))

@@ -309,8 +309,8 @@ device-specific programs to convert and print many types of files.")
     (version "3.16.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/hplip/"
-                                  "hplip-" version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/hplip/hplip/" version
+                                  "/hplip-" version ".tar.gz"))
               (sha256
                (base32
                 "1501qdnkjp1ybgagy5188fmf6cgmj5555ygjl3543nlbwcp31lj2"))))

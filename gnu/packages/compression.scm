@@ -634,7 +634,8 @@ time for compression ratio.")
     (version "4.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/squashfs/"
+              (uri (string-append "mirror://sourceforge/squashfs/squashfs/"
+                                  "squashfs" version "/"
                                   "squashfs" version ".tar.gz"))
               (sha256
                (base32

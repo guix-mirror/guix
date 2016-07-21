@@ -2013,8 +2013,8 @@ packages.")
     (version "3.10.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/math-atlas/atlas"
-                                  version ".tar.bz2"))
+              (uri (string-append "mirror://sourceforge/math-atlas/Stable/"
+                                  version "/atlas" version ".tar.bz2"))
               (sha256
                (base32
                 "0bqh4bdnjdyww4mcpg6kn0x7338mfqbdgysn97dzrwwb26di7ars"))))
@@ -2143,8 +2143,8 @@ Failure to do so will result in a library with poor performance.")
     (source
      (origin
        (method url-fetch)
-      (uri (string-append "mirror://sourceforge/ogl-math/glm-"
-                          version ".zip"))
+       (uri (string-append "mirror://sourceforge/ogl-math/glm-" version
+                           "/glm-" version ".zip"))
        (sha256
         (base32
          "1cnjmi033a16a95v6xfkr1bvfmkd26hzdjka8j1819hgn5b1nr8l"))))
@@ -2362,9 +2362,8 @@ FLANN is written in C++ and contains bindings for C, Octave and Python.")
     (source
       (origin
         (method url-fetch)
-        (uri
-          (string-append
-            "mirror://sourceforge/w-calc/wcalc-" version ".tar.bz2"))
+        (uri (string-append "mirror://sourceforge/w-calc/Wcalc/" version "/"
+                            "wcalc-" version ".tar.bz2"))
         (sha256
           (base32
             "1vi8dl6rccqiq1apmpwawyg2ywx6a1ic1d3cvkf2hlwk1z11fb0f"))))
@@ -2388,8 +2387,8 @@ evaluates expressions using the standard order of operations.")
     (version "3.6")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/xaos/xaos-"
-                                  version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/xaos/XaoS/" version
+                                  "/xaos-" version ".tar.gz"))
               (sha256
                (base32
                 "15cd1cx1dyygw6g2nhjqq3bsfdj8sj8m4va9n75i0f3ryww3x7wq"))))
@@ -2531,7 +2530,7 @@ structured and unstructured grid problems.")))
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/matio/" version "/"
+       (uri (string-append "mirror://sourceforge/matio/matio/" version "/"
                            "matio-" version ".tar.gz"))
        (sha256
         (base32

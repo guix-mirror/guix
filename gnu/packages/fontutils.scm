@@ -397,8 +397,8 @@ and returns a sequence of positioned glyphids from the font.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/potrace/potrace-"
-                          version ".tar.gz"))
+      (uri (string-append "mirror://sourceforge/potrace/" version
+                          "/potrace-" version ".tar.gz"))
       (sha256
        (base32
         "115p2vgyq7p2mf4nidk2x3aa341nvv2v8ml056vbji36df5l6lk2"))))

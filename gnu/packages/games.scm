@@ -1026,7 +1026,9 @@ falling, themeable graphics and sounds, and replays.")
     (version "1.12.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/wesnoth/"
+              (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
+                                  (version-major+minor version) "/wesnoth-"
+                                  version "/"
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32

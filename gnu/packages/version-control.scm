@@ -935,8 +935,8 @@ accessed and migrated on modern systems.")
     (version "4.24")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/aegis/aegis-"
-                                  version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/aegis/aegis/" version
+                                  "/aegis-" version ".tar.gz"))
               (sha256
                (base32
                 "18s86ssarfmc4l17gbpzybca29m5wa37cbaimdji8czlcry3mcjl"))

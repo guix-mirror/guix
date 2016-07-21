@@ -693,7 +693,8 @@ UTF-8 and UTF-16 encoding.")
     (version "2.6.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/tinyxml/tinyxml_"
+              (uri (string-append "mirror://sourceforge/tinyxml/tinyxml/"
+                                  version "/tinyxml_"
                                   (string-join (string-split version #\.) "_")
                                   ".tar.gz"))
               (sha256

@@ -358,10 +358,8 @@ glxgears, glxheads, and glxinfo.")
     (version "1.11.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/glew/glew-"
-                    version
-                    ".tgz"))
+              (uri (string-append "mirror://sourceforge/glew/glew/" version
+                                  "/glew-" version ".tgz"))
               (sha256
                (base32
                 "1mhkllxz49l1x680dmzrv2i82qjrq017sykah3xc90f2d8qcxfv9"))
