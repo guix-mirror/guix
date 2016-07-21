@@ -125,9 +125,7 @@
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((guix-src (assoc-ref inputs "guix-src"))
                     (out      (assoc-ref outputs "out"))
-                    (lisp-dir (string-append out "/share/emacs/"
-                                             ,(version-major+minor version)
-                                             "/site-lisp"))
+                    (lisp-dir (string-append out "/share/emacs/site-lisp"))
                     (unpack   (assoc-ref %standard-phases 'unpack)))
                (mkdir "guix")
                (with-directory-excursion "guix"
