@@ -166,8 +166,8 @@ that are free software, including support for many languages around the
 world.
 
 This package contains the binaries.")
-   (license (license:fsf-free "http://tug.org/texlive/copying.html"))
-   (home-page "http://www.tug.org/texlive/")))
+   (license (license:fsf-free "https://www.tug.org/texlive/copying.html"))
+   (home-page "https://www.tug.org/texlive/")))
 
 (define texlive-texmf
   (package
@@ -230,8 +230,8 @@ that are free software, including support for many languages around the
 world.
 
 This package contains the complete tree of texmf-dist data.")
-   (license (license:fsf-free "http://tug.org/texlive/copying.html"))
-   (home-page "http://www.tug.org/texlive/")))
+   (license (license:fsf-free "https://www.tug.org/texlive/copying.html"))
+   (home-page "https://www.tug.org/texlive/")))
 
 (define-public texlive
   (package
@@ -288,8 +288,8 @@ that are free software, including support for many languages around the
 world.
 
 This package contains the complete TeX Live distribution.")
-   (license (license:fsf-free "http://tug.org/texlive/copying.html"))
-   (home-page "http://www.tug.org/texlive/")))
+   (license (license:fsf-free "https://www.tug.org/texlive/copying.html"))
+   (home-page "https://www.tug.org/texlive/")))
 
 
 ;; texlive-texmf-minimal is a pruned, small version of the texlive tree,
