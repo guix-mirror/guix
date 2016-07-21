@@ -337,4 +337,7 @@ referring to people, such as
 
 When posting a patch to the mailing list, use @samp{[PATCH] @dots{}} as
 a subject.  You may use your email client or the @command{git
-send-email} command.
+send-email} command.  We prefer to get patches in plain text messages,
+either inline or as MIME attachments.  You are advised to pay attention if
+your email client changes anything like line breaks or indentation which
+could could potentially break the patches.
