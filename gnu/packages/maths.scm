@@ -382,7 +382,7 @@ singular value problems.")
 (define-public gnuplot
   (package
     (name "gnuplot")
-    (version "5.0.2")
+    (version "5.0.4")
     (source
      (origin
       (method url-fetch)
@@ -390,7 +390,7 @@ singular value problems.")
                           version "/gnuplot-" version ".tar.gz"))
       (sha256
        (base32
-        "146qn414z96c7cc42a1kb9a4kpjc2q2hfdwk44kjjvgmfp9k2ass"))))
+        "08vpmhl85l48xcccx8jrkamalih2d6z9ppqpsppwii9y2l1p3297"))))
     (build-system gnu-build-system)
     (inputs `(("readline" ,readline)
               ("cairo" ,cairo)
