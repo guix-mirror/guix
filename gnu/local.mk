@@ -105,6 +105,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/ed.scm				\
   %D%/packages/education.scm			\
   %D%/packages/elf.scm				\
+  %D%/packages/elixir.scm			\
   %D%/packages/emacs.scm			\
   %D%/packages/enchant.scm			\
   %D%/packages/engineering.scm			\
@@ -481,6 +482,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/duplicity-piped-password.patch		\
   %D%/packages/patches/duplicity-test_selection-tmp.patch	\
   %D%/packages/patches/elfutils-tests-ptrace.patch		\
+  %D%/packages/patches/elixir-disable-failing-tests.patch	\
   %D%/packages/patches/einstein-build.patch			\
   %D%/packages/patches/emacs-exec-path.patch			\
   %D%/packages/patches/emacs-fix-scheme-indent-function.patch	\
