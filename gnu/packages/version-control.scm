@@ -167,25 +167,23 @@ as well as the classic centralized workflow.")
       #:modules ((srfi srfi-1)
                  ,@%gnu-build-system-modules)
       #:phases
-       (alist-cons-after
-        'configure 'patch-makefile-shebangs
-        (lambda _
-          (substitute* "Makefile"
-            (("/bin/sh") (which "sh"))
-            (("/usr/bin/perl") (which "perl"))
-            (("/usr/bin/python") (which "python"))))
-        (alist-cons-after
-         'install 'install-shell-completion
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let* ((out         (assoc-ref outputs "out"))
-                  (completions (string-append out "/etc/bash_completion.d")))
-             ;; TODO: Install the tcsh and zsh completions in the right place.
-             (mkdir-p completions)
-             (copy-file "contrib/completion/git-completion.bash"
-                        (string-append completions "/git"))
-             #t))
-         (alist-cons-after
-          'install 'split
+      (modify-phases %standard-phases
+        (add-after 'configure 'patch-makefile-shebangs
+          (lambda _
+            (substitute* "Makefile"
+              (("/bin/sh") (which "sh"))
+              (("/usr/bin/perl") (which "perl"))
+              (("/usr/bin/python") (which "python")))))
+        (add-after  'install 'install-shell-completion
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out         (assoc-ref outputs "out"))
+                   (completions (string-append out "/etc/bash_completion.d")))
+              ;; TODO: Install the tcsh and zsh completions in the right place.
+              (mkdir-p completions)
+              (copy-file "contrib/completion/git-completion.bash"
+                         (string-append completions "/git"))
+              #t)))
+        (add-after 'install 'split
           (lambda* (#:key inputs outputs #:allow-other-keys)
             ;; Split the binaries to the various outputs.
             (let* ((out      (assoc-ref outputs "out"))
@@ -257,8 +255,7 @@ as well as the classic centralized workflow.")
               ;; specify a single directory, not a search path.
               (wrap-program (string-append out "/bin/git")
                 `("PATH" ":" prefix
-                  ("$HOME/.guix-profile/libexec/git-core")))))
-          %standard-phases)))))
+                  ("$HOME/.guix-profile/libexec/git-core")))))))))
 
    (native-search-paths
     ;; For HTTPS access, Git needs a single-file certificate bundle, specified
