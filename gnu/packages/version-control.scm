@@ -898,23 +898,23 @@ large, complex patch files.")
                                        "cssc-missing-include.patch"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases (alist-cons-before
-                 'check 'precheck
-                 (lambda _
-                   (begin
-                     (substitute* "tests/common/test-common"
-                       (("/bin/pwd") (which "pwd")))
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'precheck
+           (lambda _
+             (begin
+               (substitute* "tests/common/test-common"
+                 (("/bin/pwd") (which "pwd")))
 
-                     (substitute* "tests/prt/all-512.sh"
-                       (("/bin/sh") (which "sh")))
+               (substitute* "tests/prt/all-512.sh"
+                 (("/bin/sh") (which "sh")))
 
-                     ;; XXX: This test has no hope of passing until there is a "nogroup"
-                     ;; entry (or at least some group to which the guix builder does
-                     ;; not belong) in the /etc/group file of the build environment.
-                     ;; Currently we do not have such a group.  Disable this test for now.
-                     (substitute* "tests/Makefile"
-                       (("test-delta ") ""))))
-                 %standard-phases)))
+               ;; XXX: This test has no hope of passing until there is a "nogroup"
+               ;; entry (or at least some group to which the guix builder does
+               ;; not belong) in the /etc/group file of the build environment.
+               ;; Currently we do not have such a group.  Disable this test for now.
+               (substitute* "tests/Makefile"
+                 (("test-delta ") ""))))))))
     ;; These are needed for the tests
     (native-inputs `(("git" ,git)
                      ("cvs" ,cvs)))
