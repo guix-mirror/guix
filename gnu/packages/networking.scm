@@ -232,7 +232,8 @@ Ethernet devices.")
     (version "1.1.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/ifstatus/ifstatus-v"
+              (uri (string-append "mirror://sourceforge/ifstatus/ifstatus/"
+                                  "ifstatus%20v" version "/ifstatus-v"
                                   version ".tar.gz"))
               (sha256
                (base32
@@ -271,8 +272,8 @@ intended as a substitute for the PPPStatus and EthStatus projects.")
     (version "0.7.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/nload/nload-"
-                                  version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/nload/nload/" version
+                                  "/nload-" version ".tar.gz"))
               (sha256
                (base32
                 "1rb9skch2kgqzigf19x8bzk211jdfjfdkrcvaqyj89jy2pkm3h61"))))

@@ -723,7 +723,8 @@ from the e2fsprogs package.  It is meant to be used in initrds.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/extundelete/"
-                                  version "/extundelete-" version ".tar.bz2"))
+                                  "extundelete/" version "/extundelete-"
+                                  version ".tar.bz2"))
               (sha256
                (base32
                 "1x0r7ylxlp9lbj3d7sqf6j2a222dwy2nfpff05jd6mkh4ihxvyd1"))))
@@ -777,8 +778,8 @@ images more compressible.")
     (version "4.7")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://sourceforge/strace/strace-"
-                                 version ".tar.xz"))
+             (uri (string-append "mirror://sourceforge/strace/strace/" version
+                                 "/strace-" version ".tar.xz"))
              (sha256
               (base32
                "158iwk0pl2mfw93m1843xb7a2zb8p6lh0qim07rca6f1ff4dk764"))))
@@ -1114,8 +1115,8 @@ Linux-based operating systems.")
     (version "1.5")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://sourceforge/bridge/bridge-utils-"
-                                 version ".tar.gz"))
+             (uri (string-append "mirror://sourceforge/bridge/bridge/"
+                                 "bridge-utils-" version ".tar.gz"))
              (sha256
               (base32
                "12367cwqmi0yqphi6j8rkx97q8hw52yq2fx4k0xfclkcizxybya2"))))
@@ -2096,7 +2097,7 @@ thanks to the use of namespaces.")
     (version "9.45")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/" name "/"
+              (uri (string-append "mirror://sourceforge/" name "/" name "/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
@@ -2149,8 +2150,8 @@ WLAN, Bluetooth and mobile broadband.")
     (version "1.7")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/acpiclient/"
-                                  name "-" version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/acpiclient/acpiclient/" 
+                                  version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
                 "01ahldvf0gc29dmbd5zi4rrnrw2i1ajnf30sx2vyaski3jv099fp"))))
@@ -2290,7 +2291,7 @@ protocol in question.")
     (version "0.5.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/libavc1394/"
+              (uri (string-append "mirror://sourceforge/libavc1394/libavc1394/"
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
@@ -2676,7 +2677,7 @@ feature, and a laptop with an accelerometer.  It has no effect on SSDs.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/thinkfan/"
-                                  version "/thinkfan-" version ".tar.gz"))
+                                  "/thinkfan-" version ".tar.gz"))
               (sha256
                (base32
                 "0nz4c48f0i0dljpk5y33c188dnnwg8gz82s4grfl8l64jr4n675n"))

@@ -332,8 +332,8 @@ work.")
       (origin
         (method url-fetch)
         (uri
-         (string-append "mirror://sourceforge/openjpeg.mirror/" name "-"
-                        version ".tar.gz"))
+         (string-append "mirror://sourceforge/openjpeg.mirror/" version "/"
+                        name "-" version ".tar.gz"))
         (sha256
          (base32 "00zzm303zvv4ijzancrsb1cqbph3pgz0nky92k9qx3fq9y0vnchj"))
         (patches (search-patches "openjpeg-use-after-free-fix.patch"
@@ -369,8 +369,8 @@ error-resilience, a Java-viewer for j2k-images, ...")
      (origin
        (method url-fetch)
        (uri
-        (string-append "mirror://sourceforge/openjpeg.mirror/" name "-"
-                       version ".tar.gz"))
+        (string-append "mirror://sourceforge/openjpeg.mirror/" version "/"
+                       name "-" version ".tar.gz"))
        (sha256
         (base32 "1c2xc3nl2mg511b63rk7hrckmy14681p1m44mzw3n1fyqnjm0b0z"))
        (patches (search-patches "openjpeg-use-after-free-fix.patch"
@@ -384,8 +384,8 @@ error-resilience, a Java-viewer for j2k-images, ...")
      (origin
        (method url-fetch)
        (uri
-        (string-append "mirror://sourceforge/openjpeg.mirror/" name "-"
-                       version ".tar.gz"))
+        (string-append "mirror://sourceforge/openjpeg.mirror/" version "/"
+                       name "-" version ".tar.gz"))
        (sha256
         (base32 "11waq9w215zvzxrpv40afyd18qf79mxc28fda80bm3ax98cpppqm"))))))
 
@@ -396,8 +396,7 @@ error-resilience, a Java-viewer for j2k-images, ...")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/giflib/giflib-"
-                                  (first (string-split version #\.))
-                                  ".x/giflib-" version ".tar.bz2"))
+                                  version ".tar.bz2"))
               (sha256
                (base32
                 "1md83dip8rf29y40cm5r7nn19705f54iraz6545zhwa6y8zyq9yz"))))
@@ -443,7 +442,8 @@ compose, and analyze GIF images.")
     (version "4.1.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/giflib/libungif-"
+              (uri (string-append "mirror://sourceforge/giflib/libungif-4.x/"
+                                  "libungif-" version "/libungif-"
                                   version ".tar.bz2"))
               (sha256
                (base32
@@ -463,8 +463,8 @@ compose, and analyze GIF images.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://sourceforge/enlightenment/imlib2-"
-                    version ".tar.bz2"))
+                    "mirror://sourceforge/enlightenment/imlib2-src/" version
+                    "/imlib2-" version ".tar.bz2"))
               (sha256
                (base32
                 "08809xxk2555yj6glixzw9a0x3x8cx55imd89kj3r0h152bn8a3x"))))
@@ -663,8 +663,8 @@ channels.")
     (version "2.0.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/libmng/"
-                                  name "-" version ".tar.xz"))
+              (uri (string-append "mirror://sourceforge/libmng/libmng-devel/"
+                                  version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
                 "1lvxnpds0vcf0lil6ia2036ghqlbl740c4d2sz0q5g6l93fjyija"))))

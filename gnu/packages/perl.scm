@@ -6094,8 +6094,8 @@ as exceptions to standard program flow.")
     (version "20160302")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/perltidy/Perl-Tidy-"
-                                  version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/perltidy/" version
+                                  "/Perl-Tidy-" version ".tar.gz"))
               (sha256
                (base32
                 "19yw63yh5s3pq7k3nkw6nsamg5b8vvwyhgbizslgxg0mqgc4xl3d"))))

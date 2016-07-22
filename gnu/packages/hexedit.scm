@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
+;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16,27 +16,31 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages djvu)
+(define-module (gnu packages hexedit)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages ncurses)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
 
-(define-public djvulibre
+(define-public hexedit
   (package
-    (name "djvulibre")
-    (version "3.5.27")
+    (name "hexedit")
+    (version "1.2.13")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/djvu/DjVuLibre/"
-                                  version "/djvulibre-" version ".tar.gz"))
+              (uri (string-append "http://rigaux.org/"
+                                  name "-" version ".src.tgz"))
               (sha256
                (base32
-                "0psh3zl9dj4n4r3lx25390nx34xz0bg0ql48zdskhq354ljni5p6"))))
+                "1mwdp1ikk64cqmagnrrps5jkn3li3n47maiqh2qc1xbp1ains4ka"))))
     (build-system gnu-build-system)
-    (home-page "http://djvu.sourceforge.net/")
-    (synopsis "Implementation of DjVu, the document format")
-    (description "DjVuLibre is an implementation of DjVu,
-including viewers, browser plugins, decoders, simple encoders, and
-utilities.")
+    (arguments '(#:tests? #f)) ; no check target
+    (inputs `(("ncurses" ,ncurses)))
+    (synopsis "View and edit files or devices in hexadecimal or ASCII")
+    (description "hexedit shows a file both in ASCII and in hexadecimal.  The
+file can be a device as the file is read a piece at a time.  You can modify
+the file and search through it.")
+    (home-page "http://rigaux.org/hexedit.html")
     (license license:gpl2+)))

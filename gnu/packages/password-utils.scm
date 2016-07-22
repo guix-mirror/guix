@@ -53,8 +53,8 @@
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/pwgen/pwgen-"
-                           version ".tar.gz"))
+       (uri (string-append "mirror://sourceforge/pwgen/pwgen/" version
+                           "/pwgen-" version ".tar.gz"))
        (sha256
         (base32 "0mhmw700kkh238fzivcwnwi94bj9f3h36yfh3k3j2v19b0zmjx7b"))))
     (build-system gnu-build-system)

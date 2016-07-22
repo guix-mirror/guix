@@ -323,6 +323,12 @@ related to the hardware---e.g., use of different instruction set
 extensions---or to the operating system kernel---e.g., reliance on
 @code{uname} or @file{/proc} files.
 
+@item
+When writing documentation, please use gender-neutral wording when
+referring to people, such as
+@uref{https://en.wikipedia.org/wiki/Singular_they, singular
+``they''@comma{} ``their''@comma{} ``them''}, and so forth.
+
 @end enumerate
 
 When posting a patch to the mailing list, use @samp{[PATCH] @dots{}} as

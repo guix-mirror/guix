@@ -90,8 +90,8 @@
     (version "1.4rc5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/aa-project/"
-                                  name "-" version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/aa-project/aa-lib/"
+                                  version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1vkh19gb76agvh4h87ysbrgy82hrw88lnsvhynjf4vng629dmpgv"))))
@@ -308,7 +308,8 @@ streams.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://sourceforge/libdv/libdv-" version ".tar.gz"))
+                    "mirror://sourceforge/" name "/" name "/"
+                    version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1fl96f2xh2slkv1i1ix7kqk576a0ak1d33cylm0mbhm96d0761d3"))))
@@ -1094,8 +1095,8 @@ for use with HTML5 video.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://sourceforge/avidemux/avidemux_"
-                   version ".tar.gz"))
+                   "mirror://sourceforge/" name "/" name "/" version "/"
+                   name "_" version ".tar.gz"))
              (sha256
               (base32
                "0nz52yih8sff53inndkh2dba759xjzsh4b8xjww419lcpk0qp6kn"))

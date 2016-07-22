@@ -2387,7 +2387,7 @@ package looks like this:
                (base32
                 "0ssi1wpaf7plaswqqjwigppsg5fyh99vdlb9kzl7c9lng89ndq1i"))))
     (build-system gnu-build-system)
-    (arguments `(#:configure-flags '("--enable-silent-rules")))
+    (arguments '(#:configure-flags '("--enable-silent-rules")))
     (inputs `(("gawk" ,gawk)))
     (synopsis "Hello, GNU world: An example GNU package")
     (description "Guess what GNU Hello prints!")
@@ -2452,11 +2452,43 @@ The @code{arguments} field specifies options for the build system
 @var{gnu-build-system} as a request run @file{configure} with the
 @code{--enable-silent-rules} flag.
 
+@cindex quote
+@cindex quoting
+@findex '
+@findex quote
+What about these quote (@code{'}) characters?  They are Scheme syntax to
+introduce a literal list; @code{'} is synonymous with @code{quote}.
+@xref{Expression Syntax, quoting,, guile, GNU Guile Reference Manual},
+for details.  Here the value of the @code{arguments} field is a list of
+arguments passed to the build system down the road, as with @code{apply}
+(@pxref{Fly Evaluation, @code{apply},, guile, GNU Guile Reference
+Manual}).
+
+The hash-colon (@code{#:}) sequence defines a Scheme @dfn{keyword}
+(@pxref{Keywords,,, guile, GNU Guile Reference Manual}), and
+@code{#:configure-flags} is a keyword used to pass a keyword argument
+to the build system (@pxref{Coding With Keywords,,, guile, GNU Guile
+Reference Manual}).
+
 @item
 The @code{inputs} field specifies inputs to the build process---i.e.,
 build-time or run-time dependencies of the package.  Here, we define an
 input called @code{"gawk"} whose value is that of the @var{gawk}
 variable; @var{gawk} is itself bound to a @code{<package>} object.
+
+@cindex backquote (quasiquote)
+@findex `
+@findex quasiquote
+@cindex comma (unquote)
+@findex ,
+@findex unquote
+@findex ,@@
+@findex unquote-splicing
+Again, @code{`} (a backquote, synonymous with @code{quasiquote}) allows
+us to introduce a literal list in the @code{inputs} field, while
+@code{,} (a comma, synonymous with @code{unquote}) allows us to insert a
+value in that list (@pxref{Expression Syntax, unquote,, guile, GNU Guile
+Reference Manual}).
 
 Note that GCC, Coreutils, Bash, and other essential tools do not need to
 be specified as inputs here.  Instead, @var{gnu-build-system} takes care
@@ -5632,6 +5664,20 @@ archive}), the daemon may download substitutes from it:
 @example
 guix-daemon --substitute-urls=http://example.org:8080
 @end example
+
+As a bonus, @command{guix publish} also serves as a content-addressed
+mirror for source files referenced in @code{origin} records
+(@pxref{origin Reference}).  For instance, assuming @command{guix
+publish} is running on @code{example.org}, the following URL returns the
+raw @file{hello-2.10.tar.gz} file with the given SHA256 hash
+(represented in @code{nix-base32} format, @pxref{Invoking guix hash}):
+
+@example
+http://example.org/file/hello-2.10.tar.gz/sha256/0ssi1@dots{}ndq1i
+@end example
+
+Obviously, these URLs only work for files that are in the store; in
+other cases, they return 404 (``Not Found'').
 
 The following options are available:
 

@@ -70,8 +70,8 @@ view to show two terminals at once.")
     (version "0.9")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/dtach/dtach-"
-                                  version ".tar.gz"))
+              (uri (string-append "mirror://sourceforge/" name "/" name "/"
+                                  version "/" name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1wwj2hlngi8qn2pisvhyfxxs8gyqjlgrrv5lz91w8ly54dlzvs9j"))))

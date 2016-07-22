@@ -3124,7 +3124,7 @@ BAM and Wiggle files in both transcript-coordinate and genomic-coordinate.")
        (method url-fetch)
        (uri
         (string-append "mirror://sourceforge/rseqc/"
-                       version "/RSeQC-" version ".tar.gz"))
+                       "RSeQC-" version ".tar.gz"))
        (sha256
         (base32 "15ly0254yi032qzkdplg00q144qfdsd986gh62829rl5bkxhj330"))
        (modules '((guix build utils)))
@@ -3235,7 +3235,7 @@ to the user's query of interest.")
      (origin
        (method url-fetch)
        (uri
-        (string-append "mirror://sourceforge/samtools/"
+        (string-append "mirror://sourceforge/samtools/samtools/"
                        version "/samtools-" version ".tar.bz2"))
        (sha256
         (base32
@@ -3295,7 +3295,7 @@ viewer.")
      (origin
        (method url-fetch)
        (uri
-        (string-append "mirror://sourceforge/samtools/"
+        (string-append "mirror://sourceforge/samtools/samtools/"
                        version "/samtools-" version ".tar.bz2"))
        (sha256
         (base32 "1m33xsfwz0s8qi45lylagfllqg7fphf4dr0780rsvw75av9wk06h"))))
@@ -4022,9 +4022,8 @@ sequences.")
     (version "1.4.6-p2")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://sourceforge/subread/subread-"
-                    version "-source.tar.gz"))
+              (uri (string-append "mirror://sourceforge/subread/subread-"
+                                  version "/subread-" version "-source.tar.gz"))
               (sha256
                (base32
                 "06sv9mpcsdj6p68y15d6gi70lca3lxmzk0dn61hg0kfsa7rxmsr3"))))

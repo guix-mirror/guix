@@ -694,8 +694,8 @@ Editor.  It is compatible with Power Tab Editor 1.7 and Guitar Pro.")
     (source (origin
               (method url-fetch)
               (uri
-               (string-append "mirror://sourceforge/synthv1/synthv1-"
-                              version ".tar.gz"))
+               (string-append "mirror://sourceforge/synthv1/synthv1/" version
+                              "/synthv1-" version ".tar.gz"))
               (sha256
                (base32
                 "0h5zja78phf9705i9g54zh61iczb24iv7rxhljyms30sjgajig1y"))))

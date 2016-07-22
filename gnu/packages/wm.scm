@@ -336,7 +336,7 @@ drags, snap-to-border support, and virtual desktops.")
     (synopsis "Small and fast window manager")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/fluxbox/"
+              (uri (string-append "mirror://sourceforge/fluxbox/fluxbox/"
                                   version "/fluxbox-" version ".tar.xz"))
               (sha256
                (base32

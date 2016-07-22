@@ -26,6 +26,8 @@
   #:use-module (guix utils)
   #:use-module (guix hash)
   #:use-module (guix store)
+  #:use-module (guix derivations)
+  #:use-module (guix gexp)
   #:use-module (guix base32)
   #:use-module (guix base64)
   #:use-module ((guix records) #:select (recutils->alist))
@@ -209,5 +211,37 @@ References: ~%"
       (lambda (port)
         (display "This file is not a valid store item." port)))
     (response-code (http-get (publish-uri (string-append "/nar/invalid"))))))
+
+(test-equal "/file/NAME/sha256/HASH"
+  "Hello, Guix world!"
+  (let* ((data "Hello, Guix world!")
+         (hash (call-with-input-string data port-sha256))
+         (drv  (run-with-store %store
+                 (gexp->derivation "the-file.txt"
+                                   #~(call-with-output-file #$output
+                                       (lambda (port)
+                                         (display #$data port)))
+                                   #:hash-algo 'sha256
+                                   #:hash hash)))
+         (out  (build-derivations %store (list drv))))
+    (utf8->string
+     (http-get-body
+      (publish-uri
+       (string-append "/file/the-file.txt/sha256/"
+                      (bytevector->nix-base32-string hash)))))))
+
+(test-equal "/file/NAME/sha256/INVALID-NIX-BASE32-STRING"
+  404
+  (let ((uri (publish-uri
+              "/file/the-file.txt/sha256/not-a-nix-base32-string")))
+    (response-code (http-get uri))))
+
+(test-equal "/file/NAME/sha256/INVALID-HASH"
+  404
+  (let ((uri (publish-uri
+              (string-append "/file/the-file.txt/sha256/"
+                             (bytevector->nix-base32-string
+                              (call-with-input-string "" port-sha256))))))
+    (response-code (http-get uri))))
 
 (test-end "publish")

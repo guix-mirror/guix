@@ -41,8 +41,8 @@
    (version "2.6")
    (source (origin
             (method url-fetch)
-            (uri (string-append
-                  "mirror://sourceforge/lcms/lcms2-" version ".tar.gz"))
+            (uri (string-append "mirror://sourceforge/lcms/lcms/" version
+                                "/lcms2-" version ".tar.gz"))
             (sha256 (base32
                      "1c8lgq8gfs3nyplvbx9k8wzfj6r2bqi3f611vb1m8z3476454wji"))))
    (build-system gnu-build-system)

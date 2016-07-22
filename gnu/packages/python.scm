@@ -1394,8 +1394,8 @@ syntax.")
     (version "2.3.4")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://sourceforge/scons/scons-"
-                                 version ".tar.gz"))
+             (uri (string-append "mirror://sourceforge/scons/scons/" version
+                                 "/scons-" version ".tar.gz"))
              (sha256
               (base32
                "0hdlci43wjz8maryj83mz04ir6rwcdrrzpd7cpzvdlzycqhdfmsb"))))
@@ -3039,7 +3039,7 @@ writing C extensions for Python as easy as Python itself.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/numpy"
+       (uri (string-append "mirror://sourceforge/numpy/NumPy/" version
                            "/numpy-" version ".tar.gz"))
        (sha256
         (base32
@@ -3202,7 +3202,8 @@ association studies (GWAS) on extremely large data sets.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/pyparsing"
+       (uri (string-append "mirror://sourceforge/pyparsing/pyparsing"
+                           "/pyparsing-" version
                            "/pyparsing-" version ".tar.gz"))
        (sha256
         (base32
@@ -3323,7 +3324,8 @@ transcendental functions).")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/matplotlib"
+       (uri (string-append "mirror://sourceforge/matplotlib/matplotlib"
+                           "/matplotlib-" version
                            "/matplotlib-" version ".tar.gz"))
        (sha256
         (base32
@@ -3533,7 +3535,8 @@ functions.")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/scipy"
+; http://downloads.sourceforge.net/project/scipy/scipy/0.16.1/scipy-0.16.1.tar.gz
+       (uri (string-append "mirror://sourceforge/scipy/scipy/" version
                            "/scipy-" version ".tar.xz"))
        (sha256
         (base32
@@ -4912,7 +4915,8 @@ as possible in order to be comprehensible and easily extensible.")
     (version "0.14")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/python-xlib/"
+              (uri (string-append "mirror://sourceforge/python-xlib/python-xlib"
+                                  "/" version "/"
                                   "python-xlib-" version ".tar.gz"))
               (sha256
                (base32
@@ -8738,7 +8742,7 @@ the same purpose: to provide Python bindings for libmagic.")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "mirror://sourceforge/s3tools/"
+        (uri (string-append "mirror://sourceforge/s3tools/s3cmd/" version "/"
                             "s3cmd-" version ".tar.gz"))
         (sha256
           (base32
@@ -9763,3 +9767,36 @@ characters, mouse support, and auto suggestions.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
+
+(define-public ptpython
+  (package
+    (name "ptpython")
+    (version "0.34")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "ptpython" version))
+              (sha256
+               (base32
+                "1mmbiyzf0n8hm7z2a562x7w5cbl6jc0zsk6vp40q1z4cyblv1k13"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-docopt" ,python-docopt)
+       ("python-jedi" ,python-jedi)
+       ("python-prompt-toolkit" ,python-prompt-toolkit)
+       ("python-pygments" ,python-pygments)
+       ("python-setuptools" ,python-setuptools)))
+    (home-page "https://github.com/jonathanslenders/ptpython")
+    (synopsis "Python Read-Eval-Print-Loop with nice IDE-like features")
+    (description
+     "ptpython is a Python read-eval-print loop with IDE-like features.
+It supports syntax highlighting, multiline editing, autocompletion, mouse,
+color schemes, bracketed paste, Vi and Emacs keybindings, Chinese characters
+etc.")
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay ptpython-2))))))
+
+(define-public ptpython-2
+  (let ((base (package-with-python2 (strip-python2-variant ptpython))))
+    (package
+      (inherit base)
+      (name "ptpython2"))))

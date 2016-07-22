@@ -636,7 +636,8 @@ of people.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://sourceforge/quvi/libquvi-scripts-" version ".tar.xz"))
+             "mirror://sourceforge/quvi/" (version-major+minor version) "/"
+             name "/" name "-" version ".tar.xz"))
        (sha256
         (base32 "0d0giry6bb57pnidymvdl7i5x9bq3ljk3g4bs294hcr5mj3cq0kw"))))
     (build-system gnu-build-system)
@@ -654,7 +655,8 @@ parse media stream properties.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://sourceforge/quvi/libquvi-" version ".tar.xz"))
+             "mirror://sourceforge/quvi/" (version-major+minor version) "/" name "/"
+             name "-" version ".tar.xz"))
        (sha256
         (base32 "00x9gbmzc5cns0gnfag0hsphcr3cb33vbbb9s7ppvvd6bxz2z1mm"))))
     (build-system gnu-build-system)
@@ -687,7 +689,8 @@ URLs and extracting their actual media files.")
      (origin
        (method url-fetch)
        (uri (string-append
-             "mirror://sourceforge/quvi/quvi-" version ".tar.xz"))
+             "mirror://sourceforge/" name "/"  (version-major+minor version)
+             "/" name "/" name "-" version ".tar.xz"))
        (sha256
         (base32 "09lhl6dv5zpryasx7yjslfrcdcqlsbwapvd5lg7w6sm5x5n3k8ci"))))
     (build-system gnu-build-system)

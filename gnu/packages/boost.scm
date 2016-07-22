@@ -38,7 +38,7 @@
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://sourceforge/boost/boost_"
+                    "mirror://sourceforge/boost/boost/" version "/boost_"
                     (string-map (lambda (x) (if (eq? x #\.) #\_ x)) version)
                     ".tar.bz2"))
               (sha256

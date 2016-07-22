@@ -64,9 +64,9 @@
 (define texlive-texmf-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2016/texlive-20160523-texmf.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2016/texlive-20160523b-texmf.tar.xz")
     (sha256 (base32
-              "0mfp6kq1p2ys5ni9czx9xl0xh264axri25vqw37yzk8jn3py9l08"))))
+              "1dv8vgfzpczqw82hv9g7a8djhhyzywljmrarlcyy6g2qi5q51glr"))))
 
 (define texlive-bin
   (package
@@ -75,9 +75,9 @@
    (source
     (origin
      (method url-fetch)
-      (uri "ftp://tug.org/historic/systems/texlive/2016/texlive-20160523-source.tar.xz")
+      (uri "ftp://tug.org/historic/systems/texlive/2016/texlive-20160523b-source.tar.xz")
       (sha256 (base32
-               "07kb8rsw8d42wy3fj1qgqj26y92spx1lbhx6z73wwdb3msnvh4i9"))))
+               "1v91vahxlxkdra0qz3f132vvx5d9cx2jy84yl1hkch0agyj2rcx8"))))
    (build-system gnu-build-system)
    (inputs
     `(("texlive-extra-src" ,texlive-extra-src)
@@ -167,8 +167,8 @@ that are free software, including support for many languages around the
 world.
 
 This package contains the binaries.")
-   (license (license:fsf-free "http://tug.org/texlive/copying.html"))
-   (home-page "http://www.tug.org/texlive/")))
+   (license (license:fsf-free "https://www.tug.org/texlive/copying.html"))
+   (home-page "https://www.tug.org/texlive/")))
 
 (define texlive-texmf
   (package
@@ -234,8 +234,8 @@ that are free software, including support for many languages around the
 world.
 
 This package contains the complete tree of texmf-dist data.")
-   (license (license:fsf-free "http://tug.org/texlive/copying.html"))
-   (home-page "http://www.tug.org/texlive/")))
+   (license (license:fsf-free "https://www.tug.org/texlive/copying.html"))
+   (home-page "https://www.tug.org/texlive/")))
 
 (define-public texlive
   (package
@@ -296,8 +296,8 @@ that are free software, including support for many languages around the
 world.
 
 This package contains the complete TeX Live distribution.")
-   (license (license:fsf-free "http://tug.org/texlive/copying.html"))
-   (home-page "http://www.tug.org/texlive/")))
+   (license (license:fsf-free "https://www.tug.org/texlive/copying.html"))
+   (home-page "https://www.tug.org/texlive/")))
 
 
 ;; texlive-texmf-minimal is a pruned, small version of the texlive tree,
