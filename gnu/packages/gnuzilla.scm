@@ -76,7 +76,10 @@
       `(("perl" ,perl)
         ("python" ,python-2)))
     (arguments
-      `(#:phases
+      `(;; XXX: parallel build fails, lacking:
+        ;;   mkdir -p "system_wrapper_js/"
+        #:parallel-build? #f
+        #:phases
           (alist-cons-before
            'configure 'chdir
            (lambda _
