@@ -386,7 +386,7 @@ The Liberation Fonts are sponsored by Red Hat.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://sourceforge/project/terminus-font/terminus-font-"
+               "mirror://sourceforge/terminus-font/terminus-font-"
                version
                "/terminus-font-"
                version

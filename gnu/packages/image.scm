@@ -663,8 +663,8 @@ channels.")
     (version "2.0.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/libmng-devel/" version
-                                  "/" name "-" version ".tar.xz"))
+              (uri (string-append "mirror://sourceforge/libmng/libmng-devel/"
+                                  version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
                 "1lvxnpds0vcf0lil6ia2036ghqlbl740c4d2sz0q5g6l93fjyija"))))

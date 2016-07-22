@@ -1869,7 +1869,7 @@ encode and decode wavpack files.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://sourceforge/project/modplug-xmms/"
+                    "mirror://sourceforge/modplug-xmms/"
                     name "/" version "/" name "-" version ".tar.gz"))
               (sha256
                (base32

@@ -80,7 +80,7 @@ as ASCII text.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://sourceforge/project/freeglut/freeglut/"
+                    "mirror://sourceforge/freeglut/freeglut/"
                     version "/freeglut-" version ".tar.gz"))
               (sha256
                (base32
@@ -121,7 +121,7 @@ the X-Consortium license.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://sourceforge/project/ftgl/FTGL%20Source/2.1.3~rc5/"
+                    "mirror://sourceforge/ftgl/FTGL%20Source/2.1.3~rc5/"
                     "ftgl-" version ".tar.gz"))
               (sha256
                (base32

@@ -788,7 +788,7 @@ the API.")
     (version "1.2.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://sourceforge/project/gtkglext/gtkglext/"
+              (uri (string-append "mirror://sourceforge/gtkglext/gtkglext/"
                                   version "/gtkglext-" version ".tar.gz"))
               (sha256
                (base32 "1ya4d2j2aacr9ii5zj4ac95fjpdvlm2rg79mgnk7yvl1dcy3y1z5"))
