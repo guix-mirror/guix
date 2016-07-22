@@ -685,7 +685,7 @@ property manipulation.")
     (version "1.8.16")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://archive.apache.org/dist/subversion/"
+             (uri (string-append "https://archive.apache.org/dist/subversion/"
                                  "subversion-" version ".tar.bz2"))
              (sha256
               (base32
@@ -739,7 +739,7 @@ property manipulation.")
         ("python" ,python-2) ; incompatible with Python 3 (print syntax)
         ("sqlite" ,sqlite)
         ("zlib" ,zlib)))
-    (home-page "http://subversion.apache.org/")
+    (home-page "https://subversion.apache.org/")
     (synopsis "Revision control system")
     (description
      "Subversion exists to be universally recognized and adopted as a
