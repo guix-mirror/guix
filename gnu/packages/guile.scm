@@ -1154,4 +1154,29 @@ SQL databases.  This package implements the interface for SQLite.")
 library}.")
     (license gpl3+)))
 
+(define-public guile-daemon
+  (package
+    (name "guile-daemon")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/alezost/" name
+                                  "/releases/download/v" version
+                                  "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1s90h8qhblhhz4ahn3p5d573a24px6cdjq2w311ibpgwnsni4qvq"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.0)))
+    (home-page "https://github.com/alezost/guile-daemon")
+    (synopsis "Evaluate code in a running Guile process")
+    (description
+     "Guile-Daemon is a small Guile program that loads your initial
+configuration file, and then reads and evaluates Guile expressions that
+you send to a FIFO file.")
+    (license gpl3+)))
+
 ;;; guile.scm ends here
