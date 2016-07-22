@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -912,6 +913,28 @@ demos.  It also acts as a nice screen locker.")
               (string-append
                "http://metadata.ftp-master.debian.org/changelogs/"
                "/main/x/xscreensaver/xscreensaver_5.34-2_copyright")))))
+
+(define-public xdpyprobe
+  (package
+    (name "xdpyprobe")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/alezost/" name
+                                  "/releases/download/v" version
+                                  "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1h09wd2qcg08rj5hcakvdh9q01hkrj8vxly94ax3ch2x06lm0zq8"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)))
+    (home-page "https://github.com/alezost/xdpyprobe")
+    (synopsis "Probe X server for connectivity")
+    (description
+     "Xdpyprobe is a tiny C program whose only purpose is to probe a
+connectivity of the X server running on a particular @code{DISPLAY}.")
+    (license license:gpl3+)))
 
 (define-public rofi
   (package
