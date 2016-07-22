@@ -964,39 +964,37 @@ accessed and migrated on modern systems.")
                                "--sharedstatedir=/var/com/aegis")
        #:parallel-build? #f ; There are some nasty racy rules in the Makefile.
        #:phases
-        (alist-cons-before
-         'configure 'pre-conf
-         (lambda _
-             (substitute* (append '("configure"
-                                    "etc/check-tar-gz.sh"
-                                    "etc/patches.sh"
-                                    "etc/test.sh"
-                                    "script/aexver.in"
-                                    "script/aebisect.in"
-                                    "script/aeintegratq.in"
-                                    "script/tkaegis.in"
-                                    "script/test_funcs.in"
-                                    "web/eg_oss_templ.sh"
-                                    "web/webiface.html"
-                                    "libaegis/getpw_cache.cc")
-                                  (find-files "test" "\\.sh"))
-               (("/bin/sh") (which "sh")))
-             (setenv "SH" (which "sh")))
-         (alist-replace
-          'check
-          (lambda _
-            (let ((home (string-append (getcwd) "/my-new-home")))
-              ;; Some tests need to write to $HOME.
-              (mkdir home)
-              (setenv "HOME" home)
+       (modify-phases %standard-phases
+         (add-before 'configure 'pre-conf
+           (lambda _
+              (substitute* (append '("configure"
+                                     "etc/check-tar-gz.sh"
+                                     "etc/patches.sh"
+                                     "etc/test.sh"
+                                     "script/aexver.in"
+                                     "script/aebisect.in"
+                                     "script/aeintegratq.in"
+                                     "script/tkaegis.in"
+                                     "script/test_funcs.in"
+                                     "web/eg_oss_templ.sh"
+                                     "web/webiface.html"
+                                     "libaegis/getpw_cache.cc")
+                                   (find-files "test" "\\.sh"))
+                           (("/bin/sh") (which "sh")))
+              (setenv "SH" (which "sh"))))
+         (replace 'check
+           (lambda _
+             (let ((home (string-append (getcwd) "/my-new-home")))
+               ;; Some tests need to write to $HOME.
+               (mkdir home)
+               (setenv "HOME" home)
 
-              ;; This test assumes that  flex has been symlinked to "lex".
-              (substitute* "test/00/t0011a.sh"
-                (("type lex")  "type flex"))
+               ;; This test assumes that  flex has been symlinked to "lex".
+               (substitute* "test/00/t0011a.sh"
+                 (("type lex")  "type flex"))
 
-              ;; The author decided to call the check rule "sure".
-              (zero? (system* "make" "sure"))))
-         %standard-phases))))
+               ;; The author decided to call the check rule "sure".
+               (zero? (system* "make" "sure"))))))))
     (home-page "http://aegis.sourceforge.net")
     (synopsis "Project change supervisor")
     (description "Aegis is a project change supervisor, and performs some of
