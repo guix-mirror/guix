@@ -692,41 +692,38 @@ property manipulation.")
                "0imkxn25n6sbcgfldrx4z29npjprb1lxjm5fb89q4297161nx3zi"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-after
-                 'configure 'patch-libtool-wrapper-ls
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   ;; This substitution allows tests svnauthz_tests and
-                   ;; svnlook_tests to pass.  These tests execute svnauthz and
-                   ;; svnlook through their libtool wrapper scripts from svn
-                   ;; hooks, whose empty environments cause "ls: command not
-                   ;; found" errors.  It would be nice if this fix ultimately
-                   ;; made its way into libtool.
-                   (let ((coreutils (assoc-ref inputs "coreutils")))
-                     (substitute* "libtool"
-                       (("\\\\`ls") (string-append "\\`" coreutils "/bin/ls")))))
-                 (alist-cons-after
-                  'install 'install-perl-bindings
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    ;; Follow the instructions from
-                    ;; 'subversion/bindings/swig/INSTALL'.
-                    (let ((out (assoc-ref outputs "out")))
-                      (and (zero? (system* "make" "swig-pl-lib"))
-                           ;; FIXME: Test failures.
-                           ;; (zero? (system* "make" "check-swig-pl"))
-                           (zero? (system* "make" "install-swig-pl-lib"))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'configure 'patch-libtool-wrapper-ls
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; This substitution allows tests svnauthz_tests and svnlook_tests
+             ;; to pass.  These tests execute svnauthz and svnlook through
+             ;; their libtool wrapper scripts from svn hooks, whose empty
+             ;; environments cause "ls: command not found" errors.  It would be
+             ;; nice if this fix ultimately made its way into libtool.
+             (let ((coreutils (assoc-ref inputs "coreutils")))
+               (substitute* "libtool"
+                 (("\\\\`ls") (string-append "\\`" coreutils "/bin/ls"))))))
+         (add-after 'install 'install-perl-bindings
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Follow the instructions from 'subversion/bindings/swig/INSTALL'.
+             (let ((out (assoc-ref outputs "out")))
+               (and (zero? (system* "make" "swig-pl-lib"))
+                    ;; FIXME: Test failures.
+                    ;; (zero? (system* "make" "check-swig-pl"))
+                    (zero? (system* "make" "install-swig-pl-lib"))
 
-                           ;; Set the right installation prefix.
-                           (with-directory-excursion
-                               "subversion/bindings/swig/perl/native"
-                             (and (zero?
-                                   (system* "perl" "Makefile.PL"
-                                            (string-append "PREFIX=" out)))
-                                  (zero?
-                                   (system* "make" "install"
-                                            (string-append "OTHERLDFLAGS="
-                                                           "-Wl,-rpath="
-                                                           out "/lib"))))))))
-                  %standard-phases))))
+                    ;; Set the right installation prefix.
+                    (with-directory-excursion
+                        "subversion/bindings/swig/perl/native"
+                      (and (zero?
+                            (system* "perl" "Makefile.PL"
+                                     (string-append "PREFIX=" out)))
+                           (zero?
+                            (system* "make" "install"
+                                     (string-append "OTHERLDFLAGS="
+                                                    "-Wl,-rpath="
+                                                    out "/lib"))))))))))))
     (native-inputs
       `(("pkg-config" ,pkg-config)
         ;; For the Perl bindings.
