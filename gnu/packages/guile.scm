@@ -6,6 +6,7 @@
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Erik Edrosa <erik.edrosa@gmail.com>
 ;;; Copyright © 2016 Eraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +51,8 @@
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xorg)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -1121,5 +1124,34 @@ It currently supports MySQL, Postgres and SQLite3.")
      "guile-dbi is a library for Guile that provides a convenient interface to
 SQL databases.  This package implements the interface for SQLite.")
     (license gpl2+)))
+
+(define-public guile-xosd
+  (package
+    (name "guile-xosd")
+    (version "0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/alezost/" name
+                                  "/releases/download/v" version
+                                  "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1j0b07kycccfslp5n6q0hz7adwc7k41fpzds2dvrly67gavjqljv"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("guile" ,guile-2.0)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxinerama" ,libxinerama)
+       ("xosd" ,xosd)))
+    (home-page "https://github.com/alezost/guile-xosd")
+    (synopsis "XOSD bindings for Guile")
+    (description
+     "Guile-XOSD provides Guile bindings for @code{libxosd},
+@uref{http://sourceforge.net/projects/libxosd/, the X On Screen Display
+library}.")
+    (license gpl3+)))
 
 ;;; guile.scm ends here
