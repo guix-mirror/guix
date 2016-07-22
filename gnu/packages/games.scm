@@ -1023,7 +1023,7 @@ falling, themeable graphics and sounds, and replays.")
 (define-public wesnoth
   (package
     (name "wesnoth")
-    (version "1.12.5")
+    (version "1.12.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/wesnoth/wesnoth-"
@@ -1032,7 +1032,7 @@ falling, themeable graphics and sounds, and replays.")
                                   name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "07d8ms9ayswg2g530p0zwmz3d77zv68l6nmc718iq9sbv90av6jr"))))
+                "0kifp6g1dsr16m6ngjq2hx19h851fqg326ps3krnhpyix963h3x5"))))
     (build-system cmake-build-system)
     (arguments
      '(#:tests? #f ; no check target
