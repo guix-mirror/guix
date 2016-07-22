@@ -490,19 +490,19 @@ will work.")
      '(#:tests? #f                    ; no tests
        #:make-flags (list (string-append "prefix="
                                          (assoc-ref %outputs "out")))
-       #:phases (alist-cons-after
-                 'unpack 'reset-shFlags-link
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   ;; The link points to a file in the shFlags submodule.
-                   ;; Redirect it to point to our system shFlags.
-                   (let ((shflags (assoc-ref inputs "shflags")))
-                     (begin
-                       (delete-file "gitflow-shFlags")
-                       (symlink (string-append shflags "/src/shflags")
-                                "gitflow-shFlags"))))
-                 (alist-delete
-                  'configure
-                  (alist-delete 'build %standard-phases)))))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'reset-shFlags-link
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The link points to a file in the shFlags submodule.
+             ;; Redirect it to point to our system shFlags.
+             (let ((shflags (assoc-ref inputs "shflags")))
+               (begin
+                 (delete-file "gitflow-shFlags")
+                 (symlink (string-append shflags "/src/shflags")
+                          "gitflow-shFlags")))))
+         (delete 'configure)
+         (delete 'build))))
     (home-page "http://nvie.com/posts/a-successful-git-branching-model/")
     (synopsis "Git extensions for Vincent Driessen's branching model")
     (description
