@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Daniel Pimentel <d4n1@d4n1.org>
+;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,9 +22,12 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module ((guix licenses)
                 #:select (bsd-3))
-  #:use-module (gnu packages compression))
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages gcc)
+  #:use-module (gnu packages python))
 
 (define-public protobuf
   (package
@@ -44,3 +49,30 @@
 yet extensible format.  Google uses Protocol Buffers for almost all of its
 internal RPC protocols and file formats.")
     (license bsd-3)))
+
+(define-public python-protobuf
+  (package
+    (name "python-protobuf")
+    (version "3.0.0b4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "protobuf" version))
+       (sha256
+        (base32
+         "18zvvn8cgbcwi85ws2ny0k4qp33wd525spsb8sxvrj325mbx9cpk"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-six" ,python-six)))
+    (home-page "https://github.com/google/protobuf")
+    (synopsis "Protocol buffers is a data interchange format")
+    (description
+     "Protocol buffers are a language-neutral, platform-neutral extensible
+mechanism for serializing structured data.")
+    (license bsd-3)
+    (properties `((python2-variant . ,(delay python2-protobuf))))))
+
+(define-public python2-protobuf
+  (package (inherit (package-with-python2
+                     (strip-python2-variant python-protobuf)))
+           (native-inputs `(("python2-setuptools" ,python2-setuptools)))))
