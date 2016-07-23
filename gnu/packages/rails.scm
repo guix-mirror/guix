@@ -26,7 +26,7 @@
 (define-public ruby-spring
   (package
     (name "ruby-spring")
-    (version "1.7.1")
+    (version "1.7.2")
     (source
      (origin
        (method url-fetch)
@@ -36,7 +36,7 @@
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "0czc4mkwfngcqmna49a0l98f6wlhdq2i8gwr63lrmk90d9k25x1n"))))
+         "1dd58y0cpsm2izj74yscn0ybfygmgcbbfdw1891g7cq41aai4b35"))))
     (build-system ruby-build-system)
     (arguments
      `(#:test-target "test:unit"
@@ -45,7 +45,9 @@
          (add-before 'check 'remove-bump
            (lambda _
              (substitute* "spring.gemspec"
-               (("gem.add_development_dependency 'bump'") ""))
+               (("gem.add_development_dependency 'bump'") "")
+               (("gem.add_development_dependency 'activesupport'.*")
+                "gem.add_development_dependency 'activesupport'\n"))
              (substitute* "Rakefile"
                (("require \\\"bump/tasks\\\"") ""))
              #t)))))
