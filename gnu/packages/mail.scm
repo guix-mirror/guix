@@ -293,7 +293,7 @@ and corrections.  It is based on a Bayesian filter.")
 (define-public offlineimap
   (package
     (name "offlineimap")
-    (version "6.7.0.1")
+    (version "7.0.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
@@ -301,10 +301,10 @@ and corrections.  It is based on a Bayesian filter.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1ys26v2w3vws08acjs7w5irjgahdxyad00pmj7fhcx91hbvizs80"))))
+                "0hnyfby6ib7i7yblg7qpabdyl35n9l3n0a6agk47w1crpn2lsric"))))
     (build-system python-build-system)
-    (native-inputs `(("python" ,python-2)))
-    (inputs `(("python2-pysqlite" ,python2-pysqlite)))
+    (inputs `(("python2-pysqlite" ,python2-pysqlite)
+              ("python2-six" ,python2-six)))
     (arguments
      ;; The setup.py script expects python-2.
      `(#:python ,python-2
