@@ -535,17 +535,38 @@ build process and its dependencies, whereas Make uses Makefile format.")
                                               "/etc/ssl/certs"))
                     (keytool   (string-append (assoc-ref outputs "jdk")
                                               "/bin/keytool")))
+               (define (extract-cert file target)
+                 (call-with-input-file file
+                   (lambda (in)
+                     (call-with-output-file target
+                       (lambda (out)
+                         (let loop ((line (read-line in 'concat))
+                                    (copying? #f))
+                           (cond
+                            ((eof-object? line) #t)
+                            ((string-prefix? "-----BEGIN" line)
+                             (display line out)
+                             (loop (read-line in 'concat) #t))
+                            ((string-prefix? "-----END" line)
+                             (display line out)
+                             #t)
+                            (else
+                             (when copying? (display line out))
+                             (loop (read-line in 'concat) copying?)))))))))
                (define (import-cert cert)
                  (format #t "Importing certificate ~a\n" (basename cert))
-                 (let* ((port (open-pipe* OPEN_WRITE keytool
-                                          "-import"
-                                          "-alias" (basename cert)
-                                          "-keystore" keystore
-                                          "-storepass" "changeit"
-                                          "-file" cert)))
-                   (display "yes\n" port)
-                   (when (not (zero? (status:exit-val (close-pipe port))))
-                     (error "failed to import" cert))))
+                 (let ((temp "tmpcert"))
+                   (extract-cert cert temp)
+                   (let ((port (open-pipe* OPEN_WRITE keytool
+                                           "-import"
+                                           "-alias" (basename cert)
+                                           "-keystore" keystore
+                                           "-storepass" "changeit"
+                                           "-file" temp)))
+                     (display "yes\n" port)
+                     (when (not (zero? (status:exit-val (close-pipe port))))
+                       (error "failed to import" cert)))
+                   (delete-file temp)))
 
                ;; This is necessary because the certificate directory contains
                ;; files with non-ASCII characters in their names.
