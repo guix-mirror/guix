@@ -902,7 +902,7 @@ access to mpv's powerful playback capabilities.")
 (define-public youtube-dl
   (package
     (name "youtube-dl")
-    (version "2016.06.14")
+    (version "2016.07.22")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://youtube-dl.org/downloads/"
@@ -910,7 +910,7 @@ access to mpv's powerful playback capabilities.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0fmvpqipc1xwagvk7ih4slmv1xz1rb6s8wpndhypwvrq4pnnm9ns"))))
+                "02wcxpcbpvsbvyxcnhhf94ma0x5dcg4fygnxxca2h31dp47dkak9"))))
     (build-system python-build-system)
     (home-page "https://youtube-dl.org")
     (arguments
