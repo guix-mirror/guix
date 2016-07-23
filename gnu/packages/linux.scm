@@ -2791,3 +2791,33 @@ from that to the system kernel's @file{/dev/random} machinery.")
 Linux kernel to retrieve and control processor features related to power saving,
 such as frequency and voltage scaling.")
     (license license:gpl2)))
+
+(define-public haveged
+  (package
+    (name "haveged")
+    (version "1.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.issihosts.com/haveged/haveged-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "059pxlfd4l5dqhd6r3lynzfz4wby2f17294fy17pi9j2jpnn68ww"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.issihosts.com/haveged")
+    (synopsis "Entropy source for the Linux random number generator")
+    (description
+     "haveged generates an unpredictable stream of random numbers for use by
+Linux's @file{/dev/random} and @file{/dev/urandom} devices.  The kernel's
+standard mechanisms for filling the entropy pool may not be sufficient for
+systems with high needs or limited user interaction, such as headless servers.
+@command{haveged} runs as a privileged daemon, harvesting randomness from the
+indirect effects of hardware events on hidden processor state using the HArdware
+Volatile Entropy Gathering and Expansion (HAVEGE) algorithm.  It tunes itself to
+its environment and provides the same built-in test suite for the output stream
+as used on certified hardware security devices.")
+    (license (list (license:non-copyleft "file://nist/mconf.h")
+                   (license:non-copyleft "file://nist/packtest.c")
+                   license:public-domain        ; nist/dfft.c
+                   license:gpl3+))))            ; everything else
