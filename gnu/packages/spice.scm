@@ -34,6 +34,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
   #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xml)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix packages)
@@ -253,3 +254,46 @@ Internet and from a wide variety of machine architectures.")
 resolution scaling on graphical console window resize.")
     (home-page "http://www.spice-space.org")
     (license license:gpl3+)))
+
+(define-public virt-viewer
+  (package
+    (name "virt-viewer")
+    (version "4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                "https://virt-manager.org/download/sources/virt-viewer/"
+                "virt-viewer-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07zsi1fqg05mag1ayniaqj25fzb6dxg76d4ka5196lq4l477nhhw"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("gtk+" ,gtk+)
+        ("libcap" ,libcap)
+        ("libxml2" ,libxml2)
+        ("openssl" ,openssl)
+        ("spice-gtk" ,spice-gtk)
+        ("spice-protocol" ,spice-protocol)))
+    (native-inputs
+      `(("glib:bin" ,glib "bin")
+        ("intltool" ,intltool)
+        ("pkg-config" ,pkg-config)))
+    (arguments
+      `(#:configure-flags
+        '("--with-spice-gtk")
+        #:phases
+         (modify-phases %standard-phases
+           (add-after
+            'install 'wrap-remote-viewer
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let ((out             (assoc-ref outputs "out"))
+                    (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
+                (wrap-program (string-append out "/bin/remote-viewer")
+                  `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))))
+              #t)))))
+    (synopsis "Graphical console client for virtual machines")
+    (description "Graphical console client for virtual machines using SPICE or
+VNC.")
+    (home-page "https://virt-manager.org")
+    (license license:gpl2+)))
