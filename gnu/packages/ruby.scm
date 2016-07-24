@@ -4120,20 +4120,17 @@ call.")
      `(#:test-target "spec"
        #:phases
        (modify-phases %standard-phases
-         (add-before 'build 'remove-git-lsfiles-and-extra-gemspecs
-           (lambda _
-             (for-each (lambda (file)
-                         (substitute* file
-                           (("git ls-files") "find * |sort")))
-                       (list "concurrent-ruby.gemspec"
-                             "support/file_map.rb"))
-             #t))
-         (add-before 'build 'remove-extra-gemspecs
+         (add-before 'replace-git-ls-files 'remove-extra-gemspecs
            (lambda _
              ;; Delete extra gemspec files so 'first-gemspec' chooses the
              ;; correct one.
              (delete-file "concurrent-ruby-edge.gemspec")
              (delete-file "concurrent-ruby-ext.gemspec")
+             #t))
+         (add-before 'build 'replace-git-ls-files2
+           (lambda _
+             (substitute* "support/file_map.rb"
+               (("git ls-files") "find * |sort"))
              #t))
          (add-before 'check 'rake-compile
            ;; Fix the test error described at
