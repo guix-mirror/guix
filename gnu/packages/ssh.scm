@@ -135,7 +135,10 @@ a server that supports the SSH-2 protocol.")
                                         tail))))
             (sha256 (base32
                      "132lh9aanb0wkisji1d6cmsxi520m8nh7c7i9wi6m1s3l38q29x7"))
-            (patches (search-patches "openssh-CVE-2015-8325.patch"))))
+            (patches (search-patches "openssh-CVE-2015-8325.patch"
+                                     "openssh-CVE-2016-6210-1.patch"
+                                     "openssh-CVE-2016-6210-2.patch"
+                                     "openssh-CVE-2016-6210-3.patch"))))
    (build-system gnu-build-system)
    (inputs `(("groff" ,groff)
              ("openssl" ,openssl)

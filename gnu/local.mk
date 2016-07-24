@@ -696,6 +696,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/openjpeg-CVE-2015-6581.patch		\
   %D%/packages/patches/openjpeg-use-after-free-fix.patch	\
   %D%/packages/patches/openssh-CVE-2015-8325.patch		\
+  %D%/packages/patches/openssh-CVE-2016-6210-1.patch		\
+  %D%/packages/patches/openssh-CVE-2016-6210-2.patch		\
+  %D%/packages/patches/openssh-CVE-2016-6210-3.patch		\
   %D%/packages/patches/openssl-runpath.patch			\
   %D%/packages/patches/openssl-c-rehash-in.patch		\
   %D%/packages/patches/openssl-CVE-2016-2177.patch		\
