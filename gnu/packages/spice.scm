@@ -18,10 +18,22 @@
 
 (define-module (gnu packages spice)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gstreamer)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages xiph)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module (guix packages)
@@ -97,3 +109,63 @@ Environments) is a remote-display system built for virtual environments
 which allows users to view a desktop computing environment.")
     (home-page "http://www.spice-space.org")
     (license (list license:bsd-3 license:lgpl2.1+))))
+
+(define-public spice-gtk
+  (package
+    (name "spice-gtk")
+    (version "0.32")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                "http://spice-space.org/download/gtk/"
+                "spice-gtk-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "00pf94xh2xf0h1g13lnavxrysd0d0x22l5jl108cvq1mjc4z8j2c"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("gstreamer" ,gstreamer)
+        ("gst-libav" ,gst-libav)
+        ("gst-plugins-base" ,gst-plugins-base)
+        ("gst-plugins-good" ,gst-plugins-good)
+        ("gst-plugins-bad" ,gst-plugins-bad)
+        ("gst-plugins-ugly" ,gst-plugins-ugly)))
+    (inputs
+      `(("glib-networking" ,glib-networking)
+        ("gtk+" ,gtk+)
+        ("libepoxy" ,libepoxy)
+        ("libjpeg" ,libjpeg)
+        ("libusb" ,libusb)
+        ("libxcb" ,libxcb)
+        ("lz4" ,lz4)
+        ("mesa" ,mesa)
+        ("pixman" ,pixman)
+        ("pulseaudio" ,pulseaudio)
+        ("python" ,python)
+        ("openssl" ,openssl)
+        ("opus" ,opus)
+        ("spice-protocol" ,spice-protocol)
+        ("usbredir" ,usbredir)))
+    (native-inputs
+      `(("glib:bin" ,glib "bin")
+        ("intltool" ,intltool)
+        ("pkg-config" ,pkg-config)))
+    (arguments
+      `(#:configure-flags
+        '("--enable-gstaudio"
+          "--enable-gstvideo"
+          "--enable-pulse")
+        #:phases
+         (modify-phases %standard-phases
+           (add-after
+            'install 'wrap-spicy
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let ((out             (assoc-ref outputs "out"))
+                    (gst-plugin-path (getenv "GST_PLUGIN_SYSTEM_PATH")))
+                (wrap-program (string-append out "/bin/spicy")
+                  `("GST_PLUGIN_SYSTEM_PATH" ":" prefix (,gst-plugin-path))))
+              #t)))))
+    (synopsis "Gtk client and libraries for SPICE remote desktop servers")
+    (description "Gtk client and libraries for SPICE remote desktop servers.")
+    (home-page "http://www.spice-space.org")
+    (license (list license:lgpl2.1+ license:lgpl2.0+))))
