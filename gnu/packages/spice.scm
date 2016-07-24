@@ -18,7 +18,9 @@
 
 (define-module (gnu packages spice)
   #:use-module (gnu packages)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages libusb)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
@@ -50,3 +52,28 @@ to a different (virtual) machine than the one to which the USB device is
 attached.")
     (home-page "http://www.spice-space.org")
     (license (list license:gpl2+ license:lgpl2.0+ license:lgpl2.1+))))
+
+(define-public virglrenderer
+  (package
+    (name "virglrenderer")
+    (version "0.5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                "https://www.freedesktop.org/software/virgl/"
+                "virglrenderer-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "1dj0j8nbyr7nrpds4dqlp43ji8ixjyqhgw6ywlz1r9dn6cs5m5d1"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("libepoxy" ,libepoxy)
+        ("mesa" ,mesa)
+        ("udev" ,eudev)))
+    (native-inputs
+      `(("pkg-config" ,pkg-config)))
+    (synopsis "Virtual 3D GPU library")
+    (description "A virtual 3D GPU library that enables a virtualized operating
+system to use the host GPU to accelerate 3D rendering.")
+    (home-page "https://virgil3d.github.io")
+    (license (list license:expat license:bsd-3))))
