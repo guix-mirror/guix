@@ -5608,17 +5608,14 @@ and MAC network addresses.")
 (define-public python-iso8601
   (package
   (name "python-iso8601")
-  (version "0.1.10")
+  (version "0.1.11")
   (source
     (origin
       (method url-fetch)
-      (uri (string-append
-             "https://pypi.python.org/packages/source/i/iso8601/iso8601-"
-             version
-             ".tar.gz"))
+      (uri (pypi-uri "iso8601" version))
       (sha256
-        (base32
-          "1qf01afxh7j4gja71vxv345if8avg6nnm0ry0zsk6j3030xgy4p7"))))
+       (base32
+        "0c7gh3lsdjds262h0v1sqc66l7hqgfwbakn96qrhdbl0i3vm5yz8"))))
   (build-system python-build-system)
   (inputs
     `(("python-setuptools" ,python-setuptools)))
