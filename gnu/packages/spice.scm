@@ -77,3 +77,23 @@ attached.")
 system to use the host GPU to accelerate 3D rendering.")
     (home-page "https://virgil3d.github.io")
     (license (list license:expat license:bsd-3))))
+
+(define-public spice-protocol
+  (package
+    (name "spice-protocol")
+    (version "0.12.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                "http://www.spice-space.org/download/releases/"
+                "spice-protocol-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0c33kg3vdz3nnl2wjfbgmszz5hbjbvsw6map35dj9hxnpwwf9fi2"))))
+    (build-system gnu-build-system)
+    (synopsis "Protocol headers for the SPICE protocol")
+    (description "SPICE (the Simple Protocol for Independent Computing
+Environments) is a remote-display system built for virtual environments
+which allows users to view a desktop computing environment.")
+    (home-page "http://www.spice-space.org")
+    (license (list license:bsd-3 license:lgpl2.1+))))
