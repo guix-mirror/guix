@@ -218,14 +218,14 @@ an interpreter, a compiler, a debugger, and much more.")
 (define-public sbcl
   (package
     (name "sbcl")
-    (version "1.2.8")
+    (version "1.3.7")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "mirror://sourceforge/sbcl/sbcl/" version "/sbcl-"
                            version "-source.tar.bz2"))
        (sha256
-        (base32 "0ab9lw056yf6y0rjmx3iirn5n59pmssqxf00fbmpyl6qsnpaja1d"))))
+        (base32 "0fjdqnb2rsm2vi9794ywp27jr239ddvzc4xfr0dk49jd4v7p2kc5"))))
     (build-system gnu-build-system)
     (outputs '("out" "doc"))
     ;; Bootstrap with CLISP.
@@ -252,7 +252,11 @@ an interpreter, a compiler, a debugger, and much more.")
                ;; occurs in some .sh files too (which contain Lisp code).  Use
                ;; ISO-8859-1 because some of the files are ISO-8859-1 encoded.
                (with-fluids ((%default-port-encoding #f))
-                 (substitute* (find-files "." "\\.(lisp|sh)$")
+                 ;; The removed file is utf-16-be encoded, which gives substitute*
+                 ;; trouble. It does not contain references to the listed programs.
+                 (substitute* (delete
+                               "./tests/data/compile-file-pos-utf16be.lisp"
+                               (find-files "." "\\.(lisp|sh)$"))
                    (("\"/bin/sh\"") (quoted-path bash "/bin/sh"))
                    (("\"/usr/bin/env\"") (quoted-path coreutils "/usr/bin/env"))
                    (("\"/bin/cat\"") (quoted-path coreutils "/bin/cat"))
