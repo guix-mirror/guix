@@ -316,6 +316,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/slim.scm				\
   %D%/packages/smalltalk.scm			\
   %D%/packages/speech.scm			\
+  %D%/packages/spice.scm			\
   %D%/packages/ssh.scm				\
   %D%/packages/stalonetray.scm			\
   %D%/packages/statistics.scm			\
