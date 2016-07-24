@@ -209,3 +209,47 @@ not only on the machine where it is running, but from anywhere on the
 Internet and from a wide variety of machine architectures.")
     (home-page "http://www.spice-space.org")
     (license (list license:lgpl2.1+ license:lgpl2.0+))))
+
+(define-public spice-vdagent
+  (package
+    (name "spice-vdagent")
+    (version "0.17.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                "http://www.spice-space.org/download/releases/"
+                "spice-vdagent-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0gdkyylyg1hksg0i0anvznqfli2q39335fnrmcd6847frpc8njpi"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       '("--localstatedir=/var")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-makefile.in
+           (lambda _
+             (substitute* "Makefile.in"
+               (((string-append "\\$\\(mkdir_p\\) \\$\\(DESTDIR\\)"
+                                "\\$\\(localstatedir\\)/run/spice-vdagentd"))
+                 "-$(mkdir_p) $(DESTDIR)$(localstatedir)/run/spice-vdagentd"))
+             #t)))))
+    (inputs
+      `(("alsa-lib" ,alsa-lib)
+        ("dbus" ,dbus)
+        ("glib" ,glib)
+        ("libpciaccess" ,libpciaccess)
+        ("libx11" ,libx11)
+        ("libxext" ,libxext)
+        ("libxfixes" ,libxfixes)
+        ("libxinerama" ,libxinerama)
+        ("libxrandr" ,libxrandr)
+        ("spice-protocol" ,spice-protocol)))
+    (native-inputs
+      `(("pkg-config" ,pkg-config)))
+    (synopsis "Spice agent for Linux")
+    (description "Spice-vdagent enables sharing the clipboard and guest display
+resolution scaling on graphical console window resize.")
+    (home-page "http://www.spice-space.org")
+    (license license:gpl3+)))
