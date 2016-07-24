@@ -1831,7 +1831,7 @@ similarity of community members.")
 (define-public fasttree
   (package
    (name "fasttree")
-   (version "2.1.8")
+   (version "2.1.9")
    (source (origin
              (method url-fetch)
              (uri (string-append
@@ -1839,7 +1839,7 @@ similarity of community members.")
                    version ".c"))
              (sha256
               (base32
-               "0dzqc9vr9iiiw21y159xfjl2z90vw0y7r4x6456pcaxiy5hd2wmi"))))
+               "0ljvvw8i1als1wbfzvrf15c3ii2vw9db20a259g6pzg34xyyb97k"))))
    (build-system gnu-build-system)
    (arguments
     `(#:tests? #f ; no "check" target
@@ -1848,37 +1848,37 @@ similarity of community members.")
         (delete 'unpack)
         (delete 'configure)
         (replace 'build
-                 (lambda* (#:key source #:allow-other-keys)
-                   (and (zero? (system* "gcc"
-                                        "-O3"
-                                        "-finline-functions"
-                                        "-funroll-loops"
-                                        "-Wall"
-                                        "-o"
-                                        "FastTree"
-                                        source
-                                        "-lm"))
-                        (zero? (system* "gcc"
-                                        "-DOPENMP"
-                                        "-fopenmp"
-                                        "-O3"
-                                        "-finline-functions"
-                                        "-funroll-loops"
-                                        "-Wall"
-                                        "-o"
-                                        "FastTreeMP"
-                                        source
-                                        "-lm")))))
+          (lambda* (#:key source #:allow-other-keys)
+            (and (zero? (system* "gcc"
+                                 "-O3"
+                                 "-finline-functions"
+                                 "-funroll-loops"
+                                 "-Wall"
+                                 "-o"
+                                 "FastTree"
+                                 source
+                                 "-lm"))
+                 (zero? (system* "gcc"
+                                 "-DOPENMP"
+                                 "-fopenmp"
+                                 "-O3"
+                                 "-finline-functions"
+                                 "-funroll-loops"
+                                 "-Wall"
+                                 "-o"
+                                 "FastTreeMP"
+                                 source
+                                 "-lm")))))
         (replace 'install
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((bin (string-append (assoc-ref outputs "out")
-                                             "/bin")))
-                     (mkdir-p bin)
-                     (copy-file "FastTree"
-                                (string-append bin "/FastTree"))
-                     (copy-file "FastTreeMP"
-                                (string-append bin "/FastTreeMP"))
-                     #t))))))
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((bin (string-append (assoc-ref outputs "out")
+                                      "/bin")))
+              (mkdir-p bin)
+              (copy-file "FastTree"
+                         (string-append bin "/FastTree"))
+              (copy-file "FastTreeMP"
+                         (string-append bin "/FastTreeMP"))
+              #t))))))
    (home-page "http://www.microbesonline.org/fasttree")
    (synopsis "Infers approximately-maximum-likelihood phylogenetic trees")
    (description
