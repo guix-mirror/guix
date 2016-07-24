@@ -279,12 +279,11 @@ libskba (working with X.509 certificates and CMS data).")
        ("readline" ,readline)))
    (arguments
     `(#:phases
-       (alist-cons-before
-        'configure 'patch-config-files
-        (lambda _
-          (substitute* "tests/openpgp/Makefile.in"
-            (("/bin/sh") (which "bash"))))
-       %standard-phases)))))
+      (modify-phases %standard-phase
+        (add-before 'configure 'patch-config-files
+          (lambda _
+            (substitute* "tests/openpgp/Makefile.in"
+              (("/bin/sh") (which "bash"))))))))))
 
 (define-public gnupg-1
   (package (inherit gnupg)
