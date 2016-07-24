@@ -39,22 +39,24 @@
 (define-public iniparser
   (package
     (name "iniparser")
-    (version "3.1")
+    (version "4.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://ndevilla.free.fr/iniparser/iniparser-"
+             (uri (string-append "https://github.com/ndevilla/iniparser/archive/v"
                                  version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
              (sha256
               (base32
-               "1igmxzcy0s25zcy9vmcw0kd13lh60r0b4qg8lnp1jic33f427pxf"))))
+               "1flj7srvh2hp9ls96qz922bklyhw7f27mmn23b16839zpdjddfz0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
                  'configure
                  (lambda* (#:key outputs #:allow-other-keys)
-                   (substitute* "Makefile"
+                   (substitute* '("Makefile" "test/Makefile")
                      (("/usr/lib")
-                      (string-append (assoc-ref outputs "out") "/lib"))))
+                      (string-append (assoc-ref outputs "out") "/lib"))
+                     (("\\?= gcc") "= gcc")))
                  (alist-replace
                   'build
                   (lambda _
@@ -86,7 +88,7 @@
                                  (find-files "html" ".*"))
                        (for-each (copy doc)
                                  '("AUTHORS" "INSTALL" "LICENSE"
-                                   "README"))))
+                                   "README.md"))))
                    %standard-phases)))))
     (home-page "http://ndevilla.free.fr/iniparser")
     (synopsis "Standalone ini file parsing library")
