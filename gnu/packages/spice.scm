@@ -169,3 +169,43 @@ which allows users to view a desktop computing environment.")
     (description "Gtk client and libraries for SPICE remote desktop servers.")
     (home-page "http://www.spice-space.org")
     (license (list license:lgpl2.1+ license:lgpl2.0+))))
+
+(define-public spice
+  (package
+    (name "spice")
+    (version "0.13.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                "http://www.spice-space.org/download/releases/"
+                "spice-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "18hxk47z58cqbix5h477qmvcdmsrwzv984jw4c6fj0ns4h217jwy"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("openssl" ,openssl)
+        ("pixman" ,pixman)
+        ("spice-protocol" ,spice-protocol)))
+    (inputs
+      `(("glib" ,glib)
+        ("libjpeg" ,libjpeg)
+        ("lz4" ,lz4)
+        ("opus" ,opus)
+        ("zlib" ,zlib)))
+    (native-inputs
+      `(("pkg-config" ,pkg-config)
+        ("python" ,python)
+        ("spice-gtk" ,spice-gtk)))
+    (arguments
+      `(#:configure-flags
+        '("--disable-celt051" ; Disable support for unpackaged audio codec
+          "--enable-lz4"
+          "--enable-automated-tests")))
+    (synopsis "Server implementation of the SPICE protocol")
+    (description "SPICE is a remote display system built for virtual
+environments which allows you to view a computing 'desktop' environment
+not only on the machine where it is running, but from anywhere on the
+Internet and from a wide variety of machine architectures.")
+    (home-page "http://www.spice-space.org")
+    (license (list license:lgpl2.1+ license:lgpl2.0+))))
