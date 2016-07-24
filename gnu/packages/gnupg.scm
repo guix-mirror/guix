@@ -236,12 +236,12 @@ compatible to GNU Pth.")
    (arguments
     `(#:configure-flags '("--enable-gpg2-is-gpg")
       #:phases
-       (alist-cons-before
-        'configure 'patch-config-files
-        (lambda _
-          (substitute* "tests/openpgp/defs.inc"
-            (("/bin/pwd") (which "pwd"))))
-       %standard-phases)))
+      (modify-phases %standard-phases
+        (add-before 'configure 'patch-config-files
+          (lambda _
+            (substitute* "tests/openpgp/defs.inc"
+              (("/bin/pwd") (which "pwd")))
+            #t)))))
     (home-page "https://gnupg.org/")
     (synopsis "GNU Privacy Guard")
     (description
