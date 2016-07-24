@@ -15,6 +15,10 @@ our project uses a ``Contributor Covenant'', which was adapted from
 @url{http://contributor-covenant.org/}.  You can find a local version in
 the @file{CODE-OF-CONDUCT} file in the source tree.
 
+Contributors are not required to use their legal name in patches and
+on-line communication; they can use any name or pseudonym of their
+choice.
+
 @menu
 * Building from Git::           The latest and greatest.
 * Running Guix Before It Is Installed::  Hacker tricks.
