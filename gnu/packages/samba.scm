@@ -50,46 +50,43 @@
                "1flj7srvh2hp9ls96qz922bklyhw7f27mmn23b16839zpdjddfz0"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (substitute* '("Makefile" "test/Makefile")
-                     (("/usr/lib")
-                      (string-append (assoc-ref outputs "out") "/lib"))
-                     (("\\?= gcc") "= gcc")))
-                 (alist-replace
-                  'build
-                  (lambda _
-                    (and (zero? (system* "make" "libiniparser.so"))
-                         (symlink "libiniparser.so.0" "libiniparser.so")))
-                  (alist-replace
-                   'install
-                   (lambda* (#:key outputs #:allow-other-keys)
-                     (let* ((out  (assoc-ref outputs "out"))
-                            (lib  (string-append out "/lib"))
-                            (inc  (string-append out "/include"))
-                            (doc  (string-append out "/share/doc"))
-                            (html (string-append doc "/html")))
-                       (define (copy dir)
-                         (lambda (file)
-                           (copy-file file
-                                      (string-append dir "/"
-                                                     (basename file)))))
-                       (mkdir-p lib)
-                       (for-each (copy lib)
-                                 (find-files "." "^lib.*\\.(so\\.|a)"))
-                       (with-directory-excursion lib
-                         (symlink "libiniparser.so.0" "libiniparser.so"))
-                       (mkdir-p inc)
-                       (for-each (copy inc)
-                                 (find-files "src" "\\.h$"))
-                       (mkdir-p html)
-                       (for-each (copy html)
-                                 (find-files "html" ".*"))
-                       (for-each (copy doc)
-                                 '("AUTHORS" "INSTALL" "LICENSE"
-                                   "README.md"))))
-                   %standard-phases)))))
+     '(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (substitute* '("Makefile" "test/Makefile")
+               (("/usr/lib")
+                (string-append (assoc-ref outputs "out") "/lib"))
+               (("\\?= gcc") "= gcc"))))
+         (replace 'build
+           (lambda _
+             (and (zero? (system* "make" "libiniparser.so"))
+                         (symlink "libiniparser.so.0" "libiniparser.so"))))
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out  (assoc-ref outputs "out"))
+                    (lib  (string-append out "/lib"))
+                    (inc  (string-append out "/include"))
+                    (doc  (string-append out "/share/doc"))
+                    (html (string-append doc "/html")))
+               (define (copy dir)
+                 (lambda (file)
+                   (copy-file file
+                              (string-append dir "/"
+                                             (basename file)))))
+               (mkdir-p lib)
+               (for-each (copy lib)
+                         (find-files "." "^lib.*\\.(so\\.|a)"))
+               (with-directory-excursion lib
+                 (symlink "libiniparser.so.0" "libiniparser.so"))
+               (mkdir-p inc)
+               (for-each (copy inc)
+                         (find-files "src" "\\.h$"))
+               (mkdir-p html)
+               (for-each (copy html)
+                         (find-files "html" ".*"))
+               (for-each (copy doc)
+                         '("AUTHORS" "INSTALL" "LICENSE" "README.md"))))))))
     (home-page "http://ndevilla.free.fr/iniparser")
     (synopsis "Standalone ini file parsing library")
     (description
