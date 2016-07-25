@@ -635,7 +635,7 @@ threads.")
        ("stex" ,stex)))
     (native-inputs
      `(("texlive" ,texlive)
-       ("ghostscript" ,ghostscript)
+       ("ghostscript" ,ghostscript-gs)
        ("netpbm" ,netpbm)))
     (outputs '("out" "doc"))
     (arguments
