@@ -2189,7 +2189,14 @@ specifications.")
           ;; Pretend to be on a 64 bit platform to obtain a common directory
           ;; name for the build results on all architectures; nothing else
           ;; seems to depend on it.
-          (("^PLATFORM=.*$") "PLATFORM=ux64\n")))))
+          (("^PLATFORM=.*$") "PLATFORM=ux64\n")
+
+          ;; The check for 'isnan' as it is written fails with
+          ;; "non-floating-point argument in call to function
+          ;; ‘__builtin_isnan’", which leads to the 'NOISNAN' cpp macro
+          ;; definition, which in turn leads to bad things.  Fix the feature
+          ;; test.
+          (("isnan\\(0\\)") "isnan(0.)")))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
