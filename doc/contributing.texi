@@ -15,6 +15,10 @@ our project uses a ``Contributor Covenant'', which was adapted from
 @url{http://contributor-covenant.org/}.  You can find a local version in
 the @file{CODE-OF-CONDUCT} file in the source tree.
 
+Contributors are not required to use their legal name in patches and
+on-line communication; they can use any name or pseudonym of their
+choice.
+
 @menu
 * Building from Git::           The latest and greatest.
 * Running Guix Before It Is Installed::  Hacker tricks.
@@ -333,4 +337,7 @@ referring to people, such as
 
 When posting a patch to the mailing list, use @samp{[PATCH] @dots{}} as
 a subject.  You may use your email client or the @command{git
-send-email} command.
+send-email} command.  We prefer to get patches in plain text messages,
+either inline or as MIME attachments.  You are advised to pay attention if
+your email client changes anything like line breaks or indentation which
+could could potentially break the patches.

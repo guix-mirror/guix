@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -3870,6 +3871,97 @@ running on X server.")
 protocol.")
     (license license:x11)))
 
+(define-public xfontsel
+  (package
+    (name "xfontsel")
+    (version "1.0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://xorg/individual/app/xfontsel-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1grir464hy52a71r3mpm9mzvkf7nwr3vk0b1vc27pd3gp588a38p"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; By default, it tries to install XFontSel file in
+     ;; "/gnu/store/<libxt>/share/X11/app-defaults": it defines this
+     ;; directory from 'libxt' (using 'pkg-config').  To put this file
+     ;; inside output dir and to use it properly, we need to configure
+     ;; --with-appdefaultdir and to wrap 'xfontsel' binary.
+     (let ((app-defaults-dir "/share/X11/app-defaults"))
+       `(#:configure-flags
+         (list (string-append "--with-appdefaultdir="
+                              %output ,app-defaults-dir))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'wrap-xfontsel
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (wrap-program (string-append out "/bin/xfontsel")
+                   `("XAPPLRESDIR" =
+                     (,(string-append out ,app-defaults-dir)))))))))))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxaw" ,libxaw)
+       ("libxmu" ,libxmu)
+       ("libxt" ,libxt)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Browse and select X font names")
+    (description
+     "XFontSel provides a simple way to display the X11 core protocol fonts
+known to your X server, examine samples of each, and retrieve the X Logical
+Font Description (XLFD) full name for a font.")
+    (license license:x11)))
+
+(define-public xfd
+  (package
+    (name "xfd")
+    (version "1.1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://xorg/individual/app/xfd-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0n97iqqap9wyxjan2n520vh4rrf5bc0apsw2k9py94dqzci258y1"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; The same 'app-defaults' problem as with 'xfontsel' package.
+     (let ((app-defaults-dir "/share/X11/app-defaults"))
+       `(#:configure-flags
+         (list (string-append "--with-appdefaultdir="
+                              %output ,app-defaults-dir))
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'install 'wrap-xfd
+             (lambda* (#:key outputs #:allow-other-keys)
+               (let ((out (assoc-ref outputs "out")))
+                 (wrap-program (string-append out "/bin/xfd")
+                   `("XAPPLRESDIR" =
+                     (,(string-append out ,app-defaults-dir)))))))))))
+    (inputs
+     `(("fontconfig" ,fontconfig)
+       ("libx11" ,libx11)
+       ("libxaw" ,libxaw)
+       ("libxft" ,libxft)
+       ("libxmu" ,libxmu)
+       ("libxrender" ,libxrender)))
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://www.x.org/wiki/")
+    (synopsis "Display all the characters in an X font")
+    (description
+     "XFD (X Font Display) package provides an utility that displays a
+window containing the name of the font being displayed, a row of command
+buttons, several lines of text for displaying character metrics, and a grid
+containing one glyph per cell.")
+    (license license:x11)))
 
 (define-public xmodmap
   (package
@@ -4562,7 +4654,17 @@ protocol and arbitrary X extension protocol.")
           (base32
             "0c3563kw9fg15dpgx4dwvl12qz6sdqdns1pxa574hc7i5m42mman"))))
     (build-system gnu-build-system)
-    (propagated-inputs
+    (arguments
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap-mkfontdir
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (wrap-program (string-append (assoc-ref outputs "out")
+                                          "/bin/mkfontdir")
+               `("PATH" ":" prefix
+                 (,(string-append (assoc-ref inputs "mkfontscale")
+                                  "/bin")))))))))
+    (inputs
       `(("mkfontscale" ,mkfontscale)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))

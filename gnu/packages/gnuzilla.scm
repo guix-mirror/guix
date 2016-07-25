@@ -293,16 +293,16 @@ standards.")
 (define-public icecat
   (package
     (name "icecat")
-    (version "38.8.0-gnu1")
+    (version "38.8.0-gnu2")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/gnuzilla/"
-                          (first (string-split version #\-)) "/"
+                          version "/"
                           name "-" version ".tar.bz2"))
       (sha256
        (base32
-        "0v4k47ziqsyfksv9sn4v1xvk4q414rc883hb1qzld63grj2nxxwp"))
+        "1yb7a1zsqpra9cgq8hrzrbm5v31drb9367cwvwiksz0ngqy342hb"))
       (patches (search-patches
                 "icecat-avoid-bundled-includes.patch"
                 "icecat-CVE-2016-2818-pt1.patch"
@@ -405,7 +405,7 @@ standards.")
     (arguments
      `(#:tests? #f          ; no check target
        #:out-of-source? #t  ; must be built outside of the source directory
-
+       #:parallel-build? #f
 
        ;; XXX: There are RUNPATH issues such as
        ;; $prefix/lib/icecat-31.6.0/plugin-container NEEDing libmozalloc.so,

@@ -106,8 +106,7 @@ spying and/or modification by the server.")
     (source
      (origin
       (method url-fetch)
-      ;; Source tarballs are not versioned
-      (uri "http://archive.miek.nl/projects/hdup2/hdup.tar.bz2")
+      (uri "https://fossies.org/linux/privat/old/hdup-2.0.14.tar.bz2")
       (sha256
        (base32
         "02bnczg01cyhajmm4rhbnc0ja0dd9ikv9fwv28asxh1rlx9yr0b7"))))

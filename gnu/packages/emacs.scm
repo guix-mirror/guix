@@ -117,9 +117,7 @@
            (lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((guix-src (assoc-ref inputs "guix-src"))
                     (out      (assoc-ref outputs "out"))
-                    (lisp-dir (string-append out "/share/emacs/"
-                                             ,(version-major+minor version)
-                                             "/site-lisp"))
+                    (lisp-dir (string-append out "/share/emacs/site-lisp"))
                     (unpack   (assoc-ref %standard-phases 'unpack)))
                (mkdir "guix")
                (with-directory-excursion "guix"
@@ -2079,9 +2077,7 @@ It is built on top of the custom theme support in Emacs 24 or later.")
                 "1ha3slc6d9wi9ilkhmwrzkvf308n6ph7b0k69pk369s9304awxzx"))))
     (build-system emacs-build-system)
     (propagated-inputs
-     `(("emacs-dash" ,emacs-dash)
-       ("emacs-f" ,emacs-f)
-       ("emacs-s" ,emacs-s)))
+     `(("emacs-dash" ,emacs-dash)))
     (home-page "http://github.com/bbatsov/solarized-emacs")
     (synopsis "Port of the Solarized theme for Emacs")
     (description

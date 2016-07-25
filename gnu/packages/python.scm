@@ -5028,14 +5028,14 @@ connection to each user.")
 (define-public python-waf
   (package
     (name "python-waf")
-    (version "1.8.8")
+    (version "1.9.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://waf.io/"
                                   "waf-" version ".tar.bz2"))
               (sha256
                (base32
-                "0b5q307fgn6a5d8yjia2d1l4bk1q3ilvc0w8k4isfrrx2gbcw8wn"))))
+                "1nc4qaqx2vsanlpp9mcwvf91xjqpkvcc6fcxd5sb4fwvaxamw5v6"))))
     (build-system python-build-system)
     (arguments
      '(#:phases
@@ -5627,17 +5627,14 @@ and MAC network addresses.")
 (define-public python-iso8601
   (package
   (name "python-iso8601")
-  (version "0.1.10")
+  (version "0.1.11")
   (source
     (origin
       (method url-fetch)
-      (uri (string-append
-             "https://pypi.python.org/packages/source/i/iso8601/iso8601-"
-             version
-             ".tar.gz"))
+      (uri (pypi-uri "iso8601" version))
       (sha256
-        (base32
-          "1qf01afxh7j4gja71vxv345if8avg6nnm0ry0zsk6j3030xgy4p7"))))
+       (base32
+        "0c7gh3lsdjds262h0v1sqc66l7hqgfwbakn96qrhdbl0i3vm5yz8"))))
   (build-system python-build-system)
   (inputs
     `(("python-setuptools" ,python-setuptools)))

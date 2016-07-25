@@ -13,6 +13,7 @@
 Copyright @copyright{} 2012, 2013, 2014, 2015, 2016 Ludovic Courtès@*
 Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@*
 Copyright @copyright{} 2013 Nikita Karetnikov@*
+Copyright @copyright{} 2014, 2015, 2016 Alex Kost@*
 Copyright @copyright{} 2015, 2016 Mathieu Lirzin@*
 Copyright @copyright{} 2014 Pierre-Antoine Rault@*
 Copyright @copyright{} 2015 Taylan Ulrich Bayırlı/Kammer@*
@@ -1207,6 +1208,24 @@ for Chinese languages:
 @example
 guix package -i font-adobe-source-han-sans:cn
 @end example
+
+Older programs such as @command{xterm} do not use Fontconfig and instead
+rely on server-side font rendering.  Such programs require to specify a
+full name of a font using XLFD (X Logical Font Description), like this:
+
+@example
+-*-dejavu sans-medium-r-normal-*-*-100-*-*-*-*-*-1
+@end example
+
+To be able to use such full names for the TrueType fonts installed in
+your Guix profile, you need to extend the font path of the X server:
+
+@example
+xset +fp ~/.guix-profile/share/fonts/truetype
+@end example
+
+After that, you can run @code{xlsfonts} (from @code{xlsfonts} package)
+to make sure your TrueType fonts are listed there.
 
 @subsection X.509 Certificates
 
@@ -4517,8 +4536,9 @@ You can freely access a huge library of build logs!
 
 @cindex package definition, editing
 So many packages, so many source files!  The @command{guix edit} command
-facilitates the life of packagers by pointing their editor at the source
-file containing the definition of the specified packages.  For instance:
+facilitates the life of users and packagers by pointing their editor at
+the source file containing the definition of the specified packages.
+For instance:
 
 @example
 guix edit gcc@@4.9 vim
@@ -4526,8 +4546,14 @@ guix edit gcc@@4.9 vim
 
 @noindent
 launches the program specified in the @code{VISUAL} or in the
-@code{EDITOR} environment variable to edit the recipe of GCC@tie{}4.9.3
+@code{EDITOR} environment variable to view the recipe of GCC@tie{}4.9.3
 and that of Vim.
+
+If you are using a Guix Git checkout (@pxref{Building from Git}), or
+have created your own packages on @code{GUIX_PACKAGE_PATH}
+(@pxref{Defining Packages}), you will be able to edit the package
+recipes. Otherwise, you will be able to examine the read-only recipes
+for packages currently in the store.
 
 If you are using Emacs, note that the Emacs user interface provides the
 @kbd{M-x guix-edit} command and a similar functionality in the ``package

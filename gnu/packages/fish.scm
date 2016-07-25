@@ -29,14 +29,14 @@
 (define-public fish
   (package
     (name "fish")
-    (version "2.3.0")
+    (version "2.3.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://fishshell.com/files/"
+              (uri (string-append "https://fishshell.com/files/"
                                   version "/fish-" version ".tar.gz"))
               (sha256
                (base32
-                "1ralmp7lavdl0plc09ppm232aqsn0crxx6m3hgaa06ibam3sqawi"))
+                "0r46p64lg6da3v6chsa4gisvl04kd3rpy60yih8r870kbp9wm2ij"))
               (modules '((guix build utils)))
               ;; Don't try to install /etc/fish/config.fish.
               (snippet
@@ -61,5 +61,5 @@ has extensive and discoverable help.  A special help command gives access to
 all the fish documentation in your web browser.  Other features include smart
 terminal handling based on terminfo, an easy to search history, and syntax
 highlighting.")
-    (home-page "http://fishshell.com/")
+    (home-page "https://fishshell.com/")
     (license gpl2)))

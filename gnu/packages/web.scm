@@ -2390,18 +2390,21 @@ and IPv6 sockets, intended as a replacement for IO::Socket::INET.")
 (define-public perl-io-socket-ssl
   (package
     (name "perl-io-socket-ssl")
-    (version "2.002")
+    (version "2.033")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/S/SU/SULLR/"
                                   "IO-Socket-SSL-" version ".tar.gz"))
               (sha256
                (base32
-                "1mph52lw6x5v44wf8mw00llzi8pp6k5c4jnrnrvlacrlfv260jb8"))
+                "01qggwmc97kpzx49fp4fxysrjyq8mpnx54nrb087ridj0ch3cf46"))
               (patches (search-patches
                         "perl-io-socket-ssl-openssl-1.0.2f-fix.patch"))))
     (build-system perl-build-system)
-    (propagated-inputs `(("perl-net-ssleay" ,perl-net-ssleay)))
+    (propagated-inputs
+     `(("perl-net-ssleay" ,perl-net-ssleay)
+       ;; for IDN support
+       ("perl-uri" ,perl-uri)))
     (synopsis "Nearly transparent SSL encapsulation for IO::Socket::INET")
     (description
      "IO::Socket::SSL makes using SSL/TLS much easier by wrapping the

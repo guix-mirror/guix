@@ -235,13 +235,14 @@ compatible to GNU Pth.")
        ("sqlite" ,sqlite)
        ("zlib" ,zlib)))
    (arguments
-    `(#:phases
-       (alist-cons-before
-        'configure 'patch-config-files
-        (lambda _
-          (substitute* "tests/openpgp/defs.inc"
-            (("/bin/pwd") (which "pwd"))))
-       %standard-phases)))
+    `(#:configure-flags '("--enable-gpg2-is-gpg")
+      #:phases
+      (modify-phases %standard-phases
+        (add-before 'configure 'patch-config-files
+          (lambda _
+            (substitute* "tests/openpgp/defs.inc"
+              (("/bin/pwd") (which "pwd")))
+            #t)))))
     (home-page "https://gnupg.org/")
     (synopsis "GNU Privacy Guard")
     (description
@@ -280,12 +281,25 @@ libskba (working with X.509 certificates and CMS data).")
        ("readline" ,readline)))
    (arguments
     `(#:phases
-       (alist-cons-before
-        'configure 'patch-config-files
-        (lambda _
-          (substitute* "tests/openpgp/Makefile.in"
-            (("/bin/sh") (which "bash"))))
-       %standard-phases)))))
+      (modify-phases %standard-phases
+        (add-before 'configure 'patch-config-files
+          (lambda _
+            (substitute* "tests/openpgp/Makefile.in"
+              (("/bin/sh") (which "bash")))
+            #t))
+        (add-after 'install 'rename-v2-commands
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Upstream suggests removing the trailing '2' from command names:
+            ;; <http://debbugs.gnu.org/cgi/bugreport.cgi?bug=22883#58>.
+            (let ((out (assoc-ref outputs "out")))
+              (with-directory-excursion (string-append out "/bin")
+                (rename-file "gpgv2" "gpgv")
+                (rename-file "gpg2" "gpg")
+
+                ;; Keep the old name around to ease transition.
+                (symlink "gpgv" "gpgv2")
+                (symlink "gpg" "gpg2")
+                #t)))))))))
 
 (define-public gnupg-1
   (package (inherit gnupg)

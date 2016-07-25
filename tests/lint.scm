@@ -31,6 +31,7 @@
   #:use-module (guix scripts lint)
   #:use-module (guix ui)
   #:use-module (gnu packages)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
   #:use-module (web server)
   #:use-module (web server http)
@@ -319,7 +320,16 @@ string) on HTTP requests."
        (let ((pkg (dummy-package "x"
                     (inputs `(("pkg-config" ,pkg-config))))))
          (check-inputs-should-be-native pkg)))
-         "pkg-config should probably be a native input")))
+         "'pkg-config' should probably be a native input")))
+
+(test-assert "inputs: glib:bin is probably a native input"
+  (->bool
+    (string-contains
+      (with-warnings
+        (let ((pkg (dummy-package "x"
+                     (inputs `(("glib" ,glib "bin"))))))
+          (check-inputs-should-be-native pkg)))
+          "'glib:bin' should probably be a native input")))
 
 (test-assert "patches: file names"
   (->bool

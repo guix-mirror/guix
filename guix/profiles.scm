@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;;
@@ -756,10 +756,51 @@ entries.  It's used to query the MIME type of a given file."
                           #:substitutable? #f)
         (return #f))))
 
+(define (fonts-dir-file manifest)
+  "Return a derivation that builds the @file{fonts.dir} and @file{fonts.scale}
+files for the truetype fonts of the @var{manifest} entries."
+  (define mkfontscale
+    (module-ref (resolve-interface '(gnu packages xorg)) 'mkfontscale))
+
+  (define mkfontdir
+    (module-ref (resolve-interface '(gnu packages xorg)) 'mkfontdir))
+
+  (define build
+    #~(begin
+        (use-modules (srfi srfi-26)
+                     (guix build utils)
+                     (guix build union))
+        (let ((ttf-dirs (filter file-exists?
+                                (map (cut string-append <>
+                                          "/share/fonts/truetype")
+                                     '#$(manifest-inputs manifest)))))
+          (mkdir #$output)
+          (if (null? ttf-dirs)
+              (exit #t)
+              (let* ((fonts-dir   (string-append #$output "/share/fonts"))
+                     (ttf-dir     (string-append fonts-dir "/truetype"))
+                     (mkfontscale (string-append #+mkfontscale
+                                                 "/bin/mkfontscale"))
+                     (mkfontdir   (string-append #+mkfontdir
+                                                 "/bin/mkfontdir")))
+                (mkdir-p fonts-dir)
+                (union-build ttf-dir ttf-dirs
+                             #:log-port (%make-void-port "w"))
+                (with-directory-excursion ttf-dir
+                  (exit (and (zero? (system* mkfontscale))
+                             (zero? (system* mkfontdir))))))))))
+
+  (gexp->derivation "fonts-dir" build
+                    #:modules '((guix build utils)
+                                (guix build union))
+                    #:local-build? #t
+                    #:substitutable? #f))
+
 (define %default-profile-hooks
   ;; This is the list of derivation-returning procedures that are called by
   ;; default when making a non-empty profile.
   (list info-dir-file
+        fonts-dir-file
         ghc-package-cache-file
         ca-certificate-bundle
         gtk-icon-themes
