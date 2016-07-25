@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015 Pjotr Prins <pjotr.public01@thebird.nl>
-;;; Copyright © 2015 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2015, 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -68,6 +68,16 @@ directory."
 
 (define (first-gemspec)
   (first-matching-file "\\.gemspec$"))
+
+(define* (replace-git-ls-files #:key source #:allow-other-keys)
+  "Many gemspec files downloaded from outside rubygems.org use `git ls-files`
+to list of the files to be included in the built gem.  However, since this
+operation is not deterministic, we replace it with `find`."
+  (when (not (gem-archive? source))
+    (let ((gemspec (first-gemspec)))
+      (substitute* gemspec
+        (("`git ls-files`") "`find . -type f |sort`"))))
+  #t)
 
 (define* (extract-gemspec #:key source #:allow-other-keys)
   "Remove the original gemspec, if present, and replace it with a new one.
@@ -162,11 +172,12 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
 (define %standard-phases
   (modify-phases gnu:%standard-phases
     (delete 'configure)
-    (add-before 'build 'extract-gemspec extract-gemspec)
-    (replace 'build build)
     (replace 'unpack unpack)
-    (replace 'install install)
-    (replace 'check check)))
+    (add-before 'build 'extract-gemspec extract-gemspec)
+    (add-after 'extract-gemspec 'replace-git-ls-files replace-git-ls-files)
+    (replace 'build build)
+    (replace 'check check)
+    (replace 'install install)))
 
 (define* (ruby-build #:key inputs (phases %standard-phases)
                      #:allow-other-keys #:rest args)
