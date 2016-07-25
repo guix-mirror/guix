@@ -102,15 +102,15 @@ interface to the Tk widget system.")
 (define-public ecl
   (package
     (name "ecl")
-    (version "15.2.21")
+    (version "16.1.2")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://sourceforge/ecls/ecls/"
-                           (version-major+minor version)
-                           "/ecl-" version ".tgz"))
+       (uri (string-append
+             "https://common-lisp.net/project/ecl/static/files/release/"
+             name "-" version ".tgz"))
        (sha256
-        (base32 "05di23v977byf67rq5bdshw8lqbby1ycbscdcl1vca0z6r1s204j"))))
+        (base32 "16ab8qs3awvdxy8xs8jy82v8r04x4wr70l9l2j45vgag18d2nj1d"))))
     (build-system gnu-build-system)
     ;; src/configure uses 'which' to confirm the existence of 'gzip'.
     (native-inputs `(("which" ,which)))
