@@ -233,7 +233,7 @@ optimizer; and it can produce photorealistic and design review images.")
     (build-system gnu-build-system)
     (native-inputs
      `(("texlive" ,texlive)
-       ("ghostscript" ,ghostscript)))
+       ("ghostscript" ,ghostscript-gs)))
     (arguments
      `(#:make-flags '("CC=gcc" "RM=rm" "SHELL=sh" "all")
        #:parallel-build? #f
