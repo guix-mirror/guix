@@ -119,30 +119,15 @@ interface to the Tk widget system.")
               ("libgc" ,libgc)
               ("libffi" ,libffi)))
     (arguments
-     '(;; During 'make check', ECL fails to initialize with "protocol not
-       ;; supported", presumably because /etc/protocols is missing in the
-       ;; build environment.  See <http://sourceforge.net/p/ecls/bugs/300/>.
-       ;;
-       ;; Should the test suite be re-enabled, it might be necessary to add
-       ;; '#:parallel-tests #f'.  See the same bug report as above.
-       ;;
-       ;; The following might also be necessary, due to 'make check' assuming
-       ;; ECL is installed.  See <http://sourceforge.net/p/ecls/bugs/299/>.
-       ;;
-       ;; #:phases
-       ;; (let* ((check-phase (assq-ref %standard-phases 'check))
-       ;;        (rearranged-phases
-       ;;         (alist-cons-after 'install 'check check-phase
-       ;;                           (alist-delete 'check %standard-phases))))
-       ;;   (alist-cons-before
-       ;;    'check 'pre-check
-       ;;    (lambda* (#:key outputs #:allow-other-keys)
-       ;;      (substitute* '("build/tests/Makefile")
-       ;;        (("ECL=ecl")
-       ;;         (string-append
-       ;;          "ECL=" (assoc-ref outputs "out") "/bin/ecl"))))
-       ;;    rearranged-phases))
-       #:tests? #f))
+     '(#:tests? #t
+       #:make-flags `(,(string-append "ECL="
+                                      (assoc-ref %outputs "out")
+                                      "/bin/ecl"))
+       #:parallel-tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'check)
+         (add-after 'install 'check (assoc-ref %standard-phases 'check)))))
     (home-page "http://ecls.sourceforge.net/")
     (synopsis "Embeddable Common Lisp")
     (description "ECL is an implementation of the Common Lisp language as
