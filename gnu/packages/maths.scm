@@ -2198,11 +2198,10 @@ specifications.")
          (delete 'configure)
          (replace 'build
            (lambda _
-             (with-directory-excursion "lpsolve55"
-               (system* "bash" "ccc"))
-             (with-directory-excursion "lp_solve"
-               (system* "bash" "ccc"))
-             #t))
+             (and (with-directory-excursion "lpsolve55"
+                    (zero? (system* "bash" "ccc")))
+                  (with-directory-excursion "lp_solve"
+                    (zero? (system* "bash" "ccc"))))))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
