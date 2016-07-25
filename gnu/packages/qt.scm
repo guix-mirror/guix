@@ -910,6 +910,33 @@ contain over 620 classes.")
     (inputs
      `(("python" ,python-2)))))
 
+(define-public python-pyqt-5.5
+  (package (inherit python-pyqt)
+    (version "5.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri
+          (string-append "mirror://sourceforge/pyqt/PyQt5/"
+                         "PyQt-" version "/PyQt-gpl-"
+                         version ".tar.gz"))
+        (sha256
+         (base32
+          "056qmkv02wdcfblqdaxiswrgn4wa88sz22i1x58dpb1iniavplfd"))
+       (patches (search-patches "pyqt-configure.patch"))))
+    (native-inputs
+     `(("python-sip" ,python-sip)
+       ("qt" ,qt)))))
+
+(define-public python2-pyqt-5.5
+  (package (inherit python-pyqt-5.5)
+    (name "python2-pyqt")
+    (native-inputs
+     `(("python-sip" ,python2-sip)
+       ("qt" ,qt)))
+    (inputs
+     `(("python" ,python-2)))))
+
 (define-public python-pyqt-4
   (package (inherit python-pyqt)
     (name "python-pyqt")
