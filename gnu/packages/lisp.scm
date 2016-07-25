@@ -4,6 +4,7 @@
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Federico Beffa <beffa@fbengineering.ch>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Andy Patterson <ajpatter@uwaterloo.ca>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -127,7 +128,30 @@ interface to the Tk widget system.")
        #:phases
        (modify-phases %standard-phases
          (delete 'check)
-         (add-after 'install 'check (assoc-ref %standard-phases 'check)))))
+         (add-after 'install 'wrap
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((ecl (assoc-ref outputs "out"))
+                    (input-path (lambda (lib path)
+                                  (string-append
+                                   (assoc-ref inputs lib) path)))
+                    (libraries '("gmp" "libatomic-ops" "libgc" "libffi" "libc"))
+                    (binaries  '("gcc" "ld-wrapper" "binutils"))
+                    (library-directories
+                     (map (lambda (lib) (input-path lib "/lib"))
+                          libraries)))
+
+               (wrap-program (string-append ecl "/bin/ecl")
+                 `("PATH" prefix
+                   ,(map (lambda (binary)
+                           (input-path binary "/bin"))
+                         binaries))
+                 `("CPATH" suffix
+                   ,(map (lambda (lib)
+                           (input-path lib "/include"))
+                         `("linux-headers" ,@libraries)))
+                 `("LIBRARY_PATH" suffix ,library-directories)
+                 `("LD_LIBRARY_PATH" suffix ,library-directories)))))
+         (add-after 'wrap 'check (assoc-ref %standard-phases 'check)))))
     (home-page "http://ecls.sourceforge.net/")
     (synopsis "Embeddable Common Lisp")
     (description "ECL is an implementation of the Common Lisp language as
