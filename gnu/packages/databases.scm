@@ -1013,3 +1013,35 @@ trees (LSM), for sustained throughput under random insert workloads.")
     (license gpl3) ; or GPL-2
     ;; configure.ac: WiredTiger requires a 64-bit build.
     (supported-systems '("x86_64-linux" "mips64el-linux"))))
+
+(define-public perl-db-file
+ (package
+  (name "perl-db-file")
+  (version "1.838")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/P/PM/PMQS/DB_File-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "0yp5d5zr8dk9g6xdh7ygi5bq63q7nxvhd58dk2i3ki4nb7yv2yh9"))))
+  (build-system perl-build-system)
+  (inputs `(("bdb" ,bdb)))
+  (native-inputs `(("perl-test-pod" ,perl-test-pod)))
+  (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before
+                   'configure 'modify-config.in
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (substitute* "config.in"
+                       (("/usr/local/BerkeleyDB") (assoc-ref inputs "bdb")))
+                     #t)))))
+  (home-page "http://search.cpan.org/dist/DB_File")
+  (synopsis
+    "Perl5 access to Berkeley DB version 1.x")
+  (description
+    "The DB::File module provides Perl bindings to the Berkeley DB version 1.x.")
+  (license (package-license perl))))
