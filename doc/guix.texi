@@ -9,6 +9,9 @@
 
 @include version.texi
 
+@c Identifier of the OpenPGP key used to sign tarballs and such.
+@set OPENPGP-SIGNING-KEY-ID 090B11993D9AEBB5
+
 @copying
 Copyright @copyright{} 2012, 2013, 2014, 2015, 2016 Ludovic Courtès@*
 Copyright @copyright{} 2013, 2014, 2016 Andreas Enge@*
@@ -374,6 +377,7 @@ Download the binary tarball from
 where @var{system} is @code{x86_64-linux} for an @code{x86_64} machine
 already running the kernel Linux, and so on.
 
+@c The following is somewhat duplicated in ``System Installation''.
 Make sure to download the associated @file{.sig} file and to verify the
 authenticity of the tarball against it, along these lines:
 
@@ -386,11 +390,12 @@ If that command fails because you do not have the required public key,
 then run this command to import it:
 
 @example
-$ gpg --keyserver pgp.mit.edu --recv-keys 090B11993D9AEBB5
+$ gpg --keyserver pgp.mit.edu --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
 @end example
 
 @noindent
 and rerun the @code{gpg --verify} command.
+@c end authentication part
 
 @item
 As @code{root}, run:
@@ -6133,6 +6138,26 @@ for a GNU/Linux system on Intel/AMD-compatible 64-bit CPUs;
 @item i686-linux
 for a 32-bit GNU/Linux system on Intel-compatible CPUs.
 @end table
+
+@c start duplication of authentication part from ``Binary Installation''
+Make sure to download the associated @file{.sig} file and to verify the
+authenticity of the image against it, along these lines:
+
+@example
+$ wget ftp://alpha.gnu.org/gnu/guix/guixsd-usb-install-@value{VERSION}.@var{system}.xz.sig
+$ gpg --verify guixsd-usb-install-@value{VERSION}.@var{system}.xz.sig
+@end example
+
+If that command fails because you do not have the required public key,
+then run this command to import it:
+
+@example
+$ gpg --keyserver pgp.mit.edu --recv-keys @value{OPENPGP-SIGNING-KEY-ID}
+@end example
+
+@noindent
+and rerun the @code{gpg --verify} command.
+@c end duplication
 
 This image contains a single partition with the tools necessary for an
 installation.  It is meant to be copied @emph{as is} to a large-enough
