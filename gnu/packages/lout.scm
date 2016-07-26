@@ -88,7 +88,7 @@
     (build-system gnu-build-system)               ; actually, just a makefile
     (outputs '("out" "doc"))
     (inputs
-     `(("ghostscript" ,ghostscript)))
+     `(("ghostscript" ,ghostscript-gs)))
     (arguments `(#:modules ((guix build utils)
                             (guix build gnu-build-system)
                             (srfi srfi-1))        ; we need SRFI-1
