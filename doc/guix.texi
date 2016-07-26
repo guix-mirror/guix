@@ -5456,7 +5456,8 @@ details on Bash start-up files.}.
 
 @vindex GUIX_ENVIRONMENT
 @command{guix environment} defines the @code{GUIX_ENVIRONMENT}
-variable in the shell it spawns.  This allows users to, say, define a
+variable in the shell it spawns; its value is the file name of the
+profile of this environment.  This allows users to, say, define a
 specific prompt for development environments in their @file{.bashrc}
 (@pxref{Bash Startup Files,,, bash, The GNU Bash Reference Manual}):
 
@@ -5465,6 +5466,13 @@ if [ -n "$GUIX_ENVIRONMENT" ]
 then
     export PS1="\u@@\h \w [dev]\$ "
 fi
+@end example
+
+@noindent
+... or to browse the profile:
+
+@example
+$ ls "$GUIX_ENVIRONMENT/bin"
 @end example
 
 Additionally, more than one package may be specified, in which case the
