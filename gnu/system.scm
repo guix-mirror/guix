@@ -408,6 +408,17 @@ GUIX_PROFILE=/run/current-system/profile \\
 # Prepend setuid programs.
 export PATH=/run/setuid-programs:$PATH
 
+# Since 'lshd' does not use pam_env, /etc/environment must be explicitly
+# loaded when someone logs in via SSH.  See <http://bugs.gnu.org/22175>.
+# We need 'PATH' to be defined here, for 'cat' and 'cut'.  Do this before
+# reading the user's 'etc/profile' to allow variables to be overridden.
+if [ -f /etc/environment -a -n \"$SSH_CLIENT\" \\
+     -a -z \"$LINUX_MODULE_DIRECTORY\" ]
+then
+  . /etc/environment
+  export `cat /etc/environment | cut -d= -f1`
+fi
+
 if [ -f \"$HOME/.guix-profile/etc/profile\" ]
 then
   # Load the user profile's settings.
@@ -417,16 +428,6 @@ else
   # At least define this one so that basic things just work
   # when the user installs their first package.
   export PATH=\"$HOME/.guix-profile/bin:$PATH\"
-fi
-
-# Since 'lshd' does not use pam_env, /etc/environment must be explicitly
-# loaded when someone logs in via SSH.  See <http://bugs.gnu.org/22175>.
-# We need 'PATH' to be defined here, for 'cat' and 'cut'.
-if [ -f /etc/environment -a -n \"$SSH_CLIENT\" \\
-     -a -z \"$LINUX_MODULE_DIRECTORY\" ]
-then
-  . /etc/environment
-  export `cat /etc/environment | cut -d= -f1`
 fi
 
 # Set the umask, notably for users logging in via 'lsh'.
