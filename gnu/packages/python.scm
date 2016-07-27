@@ -125,9 +125,7 @@
                       "Lib/test/test_import.py"
                       "Lib/test/test_shutil.py"
                       "Lib/test/test_socket.py"
-                      "Lib/test/test_subprocess.py"
-                      ;; The following test apparently fails only on mips64el.
-                      "Lib/test/test_ctypes.py"))
+                      "Lib/test/test_subprocess.py"))
           #t))))
     (outputs '("out"
                "tk"))                     ;tkinter; adds 50 MiB to the closure
@@ -198,6 +196,13 @@
            (lambda _
              ;; 'Lib/test/test_site.py' needs a valid $HOME
              (setenv "HOME" (getcwd))
+             ,@(if (string-prefix? "mips64el" (%current-system))
+
+                   ;; XXX: The following test fails on mips64el.
+                   '((false-if-exception
+                      (delete-file "Lib/test/test_ctypes.py")))
+
+                   '())
              #t))
           (add-after
            'unpack 'set-source-file-times-to-1980
