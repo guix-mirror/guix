@@ -283,7 +283,7 @@ parse JSON formatted strings back into the C representation of JSON objects.")
 (define-public krona-tools
   (package
    (name "krona-tools")
-   (version "2.6.1")
+   (version "2.7")
    (source (origin
              (method url-fetch)
              (uri (string-append
@@ -291,24 +291,14 @@ parse JSON formatted strings back into the C representation of JSON objects.")
                    version "/KronaTools-" version ".tar"))
              (sha256
               (base32
-               "1fj5mf6wbwz7v74n2safbw7fpw32fik19vf0wdbc2srn82i8fiwz"))))
+               "0wvgllcqscsfb4xc09y3fqhx8i38pmr4w55vjs5y79wx56n710iq"))))
    (build-system perl-build-system)
    (arguments
      `(#:phases
        (modify-phases %standard-phases
          ;; There is no configure or build steps.
          (delete 'configure)
-         (replace 'build
-           ;; Remove 'use lib' statements from scripts as PERL5LIB is set
-           ;; correctly during installation.
-           (lambda _
-             (for-each
-              (lambda (executable)
-                (display executable)(display "\n")
-                (substitute* executable
-                  (("use lib \\(`ktGetLibPath`\\);") "")))
-              (find-files "scripts/" ".*"))
-             #t))
+         (delete 'build)
          ;; Install script "install.pl" expects the build directory to remain
          ;; after installation, creating symlinks etc., so re-implement it
          ;; here.
@@ -325,7 +315,9 @@ parse JSON formatted strings back into the C representation of JSON objects.")
                     (copy-file executable (string-append bin "/kt" script))))
                 '("ClassifyBLAST"
                   "GetContigMagnitudes"
-                  "GetTaxIDFromGI"
+                  "GetLCA"
+                  "GetTaxIDFromAcc"
+                  "GetTaxInfo"
                   "ImportBLAST"
                   "ImportDiskUsage"
                   "ImportEC"
@@ -341,13 +333,11 @@ parse JSON formatted strings back into the C representation of JSON objects.")
                   "ImportTaxonomy"
                   "ImportText"
                   "ImportXML"))
-               (copy-recursively "data" (string-append perl "/../data"))
-               (copy-recursively "img" (string-append perl "/../img"))
-               (copy-recursively "taxonomy" (string-append perl "/../taxonomy"))
-               (install-file "src/krona-2.0.js" (string-append perl "/../src"))
-               (substitute* "lib/KronaTools.pm"
-                 (("`ktGetLibPath`")
-                  (string-append "\"" perl "\"")))
+               (for-each 
+                (lambda (directory)
+                  (copy-recursively directory
+                                    (string-append perl "/../" directory)))
+                (list "data" "img" "taxonomy" "src"))
                (install-file "lib/KronaTools.pm" perl))))
          (add-after 'install 'wrap-program
            (lambda* (#:key inputs outputs #:allow-other-keys)
