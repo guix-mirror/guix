@@ -213,7 +213,7 @@ the Nix package manager.")
   ;; hash-bang lines would be exceeded while running the tests.
   (let ((commit "97c8aef15de89799ac01b62dd9b91245c23eefcb"))
     (package (inherit guix-0.10.0)
-      (version (string-append "0.10.0-0." (string-take commit 4)))
+      (version (string-append "0.10.0-1." (string-take commit 4)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
