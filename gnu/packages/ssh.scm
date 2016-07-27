@@ -4,6 +4,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -491,4 +492,24 @@ used to create a secure line of communication between two computers,
 providing shell access to the server system from the client.  It provides
 both the server daemon and the client application, as well as tools for
 manipulating key files.")
+    (license license:gpl2+)))
+
+(define-public sshpass
+  (package
+    (name "sshpass")
+    (version "1.06")
+    (synopsis "Non-interactive password authentication with SSH")
+    (home-page "https://sourceforge.net/projects/sshpass/")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/sshpass/sshpass/"
+                           version "/sshpass-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0q7fblaczb7kwbsz0gdy9267z0sllzgmf0c7z5c9mf88wv74ycn6"))))
+    (build-system gnu-build-system)
+    (description "sshpass is a tool for non-interactivly performing password
+authentication with SSH's so-called @dfn{interactive keyboard password
+authentication}.")
     (license license:gpl2+)))
