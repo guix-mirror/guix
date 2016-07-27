@@ -92,7 +92,8 @@ closes FD."
   (let ((proc (zlib-procedure int "gzread" (list '* '* unsigned-int))))
     (lambda* (gzfile bv #:optional (start 0) (count (bytevector-length bv)))
       "Read up to COUNT bytes from GZFILE into BV at offset START.  Return the
-number of uncompressed bytes actually read."
+number of uncompressed bytes actually read; it is zero if COUNT is zero or if
+the end-of-stream has been reached."
       (let ((ret (proc (gzip-file->pointer gzfile)
                        (bytevector->pointer bv start)
                        count)))
@@ -172,7 +173,6 @@ buffer increases decompression speed."
     (gzdopen (fileno port) "r"))
 
   (define (read! bv start count)
-    ;; XXX: Can 'gzread!' return zero even though we haven't reached the EOF?
     (gzread! gzfile bv start count))
 
   (unless (= buffer-size %default-buffer-size)
