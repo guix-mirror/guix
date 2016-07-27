@@ -103,6 +103,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/dvtm.scm				\
   %D%/packages/ebook.scm			\
   %D%/packages/ed.scm				\
+  %D%/packages/education.scm			\
   %D%/packages/elf.scm				\
   %D%/packages/emacs.scm			\
   %D%/packages/enchant.scm			\
