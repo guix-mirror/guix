@@ -186,7 +186,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.12")
+    (version "5.7.13")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -196,9 +196,10 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                         (string-append
                           "http://downloads.mysql.com/archives/get/file/"
                           name "-" version ".tar.gz")))
+             (patches (search-patches "mysql-fix-failing-test.patch"))
              (sha256
               (base32
-               "11qwbid666fspq143ymi86yva2b01lybaqh26k92rciasav3r11j"))))
+               "11qbib1xpy0zkki7j9ip17hks5kp5zgpcj7x8gy3a4m66lb1mgsh"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
