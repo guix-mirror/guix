@@ -289,6 +289,20 @@ Make sure the package builds on your platform, using @code{guix build
 @var{package}}.
 
 @item
+@cindex bundling
+Make sure the package does not use bundled copies of software already
+available as separate packages.
+
+Sometimes, packages include copies of the source code of their
+dependencies as a convenience for users.  However, as a distribution, we
+want to make sure that such packages end up using the copy we already
+have in the distribution, if there is one.  This improves resource usage
+(the dependency is built and stored only once), and allows the
+distribution to make transverse changes such as applying security
+updates for a given software package in a single place and have them
+affect the whole system---something that bundled copies prevent.
+
+@item
 Take a look at the profile reported by @command{guix size}
 (@pxref{Invoking guix size}).  This will allow you to notice references
 to other packages unwillingly retained.  It may also help determine
