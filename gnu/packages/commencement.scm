@@ -685,8 +685,10 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     ,@(alist-delete "bash" %boot3-inputs)))
 
 (define-public guile-final
+  ;; This package must be public because other modules refer to it.  However,
+  ;; mark it as hidden so that 'fold-packages' ignores it.
   (package-with-bootstrap-guile
-   (package-with-explicit-inputs guile-2.0/fixed
+   (package-with-explicit-inputs (hidden-package guile-2.0/fixed)
                                  %boot4-inputs
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))

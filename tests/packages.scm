@@ -749,6 +749,20 @@
                        r))
                  #f))
 
+(test-assert "fold-packages, hidden package"
+  ;; There are two public variables providing "guile@2.0" ('guile-final' in
+  ;; commencement.scm and 'guile-2.0/fixed' in guile.scm), but only the latter
+  ;; should show up.
+  (match (fold-packages (lambda (p r)
+                          (if (and (string=? (package-name p) "guile")
+                                   (string-prefix? "2.0"
+                                                   (package-version p)))
+                              (cons p r)
+                              r))
+                        '())
+    ((one)
+     (eq? one guile-2.0/fixed))))
+
 (test-assert "find-packages-by-name"
   (match (find-packages-by-name "hello")
     (((? (cut eq? hello <>))) #t)
