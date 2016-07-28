@@ -1911,7 +1911,7 @@ each stack frame.")
 (define-public perl-devel-symdump
   (package
     (name "perl-devel-symdump")
-    (version "2.14")
+    (version "2.17")
     (source
      (origin
        (method url-fetch)
@@ -1919,7 +1919,7 @@ each stack frame.")
                            "Devel-Symdump-" version ".tar.gz"))
        (sha256
         (base32
-         "1phyyxgxsymgzbjd524zlaavvay6vjw34af5zn9153qffqign54v"))))
+         "0qkfjk7bm7jwn9d9qaldg298zvkqh2f19fgvfh5j1rp66mwzql1c"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/dist/Devel-Symdump")
     (synopsis "Dump symbol names or the symbol table")
