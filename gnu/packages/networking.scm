@@ -581,3 +581,27 @@ offline emulation of DNS.")
     "Perl extension for merging IPv4 or IPv6 CIDR addresses")
   (description "Net::CIDR::Lite merges IPv4 or IPv6 CIDR addresses.")
   (license license:gpl1+)))
+
+;; TODO: Use the geolite-mirror-simple.pl script from the example
+;; directory to stay current with the databases. How?
+(define-public perl-geo-ip
+ (package
+  (name "perl-geo-ip")
+  (version "1.50")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/M/MA/MAXMIND/Geo-IP-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "0ar69lrm26rp6sqxjf0p6cvjfprjx8gkxx11r399lvh99rqfl7zr"))))
+  (build-system perl-build-system)
+  (home-page "http://search.cpan.org/dist/Geo-IP")
+  (synopsis
+    "Look up location and network information by IP Address in Perl")
+  (description "The Perl module 'Geo::IP'.  It looks up location and network
+information by IP Address.")
+  (license (package-license perl))))
