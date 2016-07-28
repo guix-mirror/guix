@@ -1,0 +1,30 @@
+perl-net-dns-resolver-programmable used the undocumented and internal
+method Net::DNS::rcodesbyname [0], and that interface is no longer
+exposed.
+
+This patch, copied from [1], makes the program check for the existence
+of the method before trying to use it.
+
+[0]
+<https://rt.cpan.org/Public/Bug/Display.html?id=95901>
+
+[1]
+<https://rt.cpan.org/Public/Bug/Display.html?id=95901#txn-1575108>
+
+diff --git a/lib/Net/DNS/Resolver/Programmable.pm b/lib/Net/DNS/Resolver/Programmable.pm
+index 1af72ce..e09a2f0 100644
+--- a/lib/Net/DNS/Resolver/Programmable.pm
++++ b/lib/Net/DNS/Resolver/Programmable.pm
+@@ -203,8 +203,10 @@ sub send {
+     if (defined(my $resolver_code = $self->{resolver_code})) {
+         ($result, $aa, @answer_rrs) = $resolver_code->($domain, $rr_type, $class);
+     }
+-    
+-    if (not defined($result) or defined($Net::DNS::rcodesbyname{$result})) {
++
++    if (not defined($result)
++         or defined($Net::DNS::Parameters::rcodebyname{$result})
++         or defined($Net::DNS::rcodesbyname{$result})) {
+         # Valid RCODE, return a packet:
+         
+         $aa     = TRUE      if not defined($aa);

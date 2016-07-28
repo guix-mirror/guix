@@ -30,6 +30,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages adns)
   #:use-module (gnu packages algebra)
@@ -469,3 +470,31 @@ application stack itself.")
   (description "Socket6 binds the IPv6 related part of the C socket header
 definitions and structure manipulators for Perl.")
   (license license:bsd-3)))
+
+(define-public perl-net-dns-resolver-programmable
+ (package
+  (name "perl-net-dns-resolver-programmable")
+  (version "v0.003")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/J/JM/JMEHNLE/net-dns-resolver-programmable/"
+             "Net-DNS-Resolver-Programmable-" version ".tar.gz"))
+      (sha256
+        (base32
+          "1v3nl2kaj4fs55n1617n53q8sa3mir06898vpy1rq98zjih24h4d"))
+      (patches
+        (search-patches
+          "perl-net-dns-resolver-programmable-Fix-broken-interface.patch"))))
+  (build-system perl-build-system)
+  (native-inputs
+    `(("perl-module-build" ,perl-module-build)))
+  (inputs `(("perl-net-dns" ,perl-net-dns)))
+  (home-page
+    "http://search.cpan.org/dist/Net-DNS-Resolver-Programmable")
+  (synopsis
+    "Programmable DNS resolver class for offline emulation of DNS")
+  (description "Net::DNS::Resolver::Programmable is a programmable DNS resolver for
+offline emulation of DNS.")
+  (license (package-license perl))))
