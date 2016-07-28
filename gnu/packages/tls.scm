@@ -594,3 +594,28 @@ OpenSSL libraries).")
 arithmetic in Perl.")
   ;; At your option either gpl1+ or the Artistic License
   (license (package-license perl))))
+
+(define-public perl-crypt-openssl-random
+ (package
+  (name "perl-crypt-openssl-random")
+  (version "0.11")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/R/RU/RURBAN/Crypt-OpenSSL-Random-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "0yjcabkibrkafywvdkmd1xpi6br48skyk3l15ni176wvlg38335v"))))
+  (build-system perl-build-system)
+  (inputs `(("openssl" ,openssl)))
+  (arguments perl-crypt-arguments)
+  (home-page
+    "http://search.cpan.org/dist/Crypt-OpenSSL-Random")
+  (synopsis
+    "OpenSSL/LibreSSL pseudo-random number generator access")
+  (description "Crypt::OpenSSL::Random is a OpenSSL/LibreSSL pseudo-random
+number generator")
+  (license (package-license perl))))
