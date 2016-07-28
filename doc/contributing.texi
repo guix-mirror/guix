@@ -300,6 +300,13 @@ For important changes, check that dependent package (if applicable) are
 not affected by the change; @code{guix refresh --list-dependent
 @var{package}} will help you do that (@pxref{Invoking guix refresh}).
 
+Packages with roughly 100 dependents or more usually have to be
+committed to a separate branch.  That branch can then be built
+separately by our build farm, and later merged into @code{master} once
+everything has been successfully built.  This allows us to fix issues
+before they hit users, and to reduce the window during which pre-built
+binaries are not available.
+
 @item
 @cindex determinism, of build processes
 @cindex reproducible builds, checking
