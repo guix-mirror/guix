@@ -436,3 +436,36 @@ application stack itself.")
     "Perl Interface to the Domain Name System")
   (description "Net::DNS is the Perl Interface to the Domain Name System.")
   (license license:x11)))
+
+(define-public perl-socket6
+ (package
+  (name "perl-socket6")
+  (version "0.28")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/U/UM/UMEMOTO/Socket6-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "11j5jzqbzmwlws9zals43ry2f1nw9qy6im7yhn9ck5rikywrmm5z"))))
+  (build-system perl-build-system)
+  (arguments
+   `(#:phases
+     (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (args `("Makefile.PL"
+                            ,(string-append "PREFIX=" out)
+                            "INSTALLDIRS=site")))
+               (setenv "CONFIG_SHELL" (which "sh"))
+               (zero? (apply system* "perl" args))))))))
+  (home-page "http://search.cpan.org/dist/Socket6")
+  (synopsis
+    "IPv6 related part of the C socket.h defines and structure manipulators for Perl")
+  (description "Socket6 binds the IPv6 related part of the C socket header
+definitions and structure manipulators for Perl.")
+  (license license:bsd-3)))
