@@ -6962,3 +6962,33 @@ such that being individual extensions would be wasteful.")
   (description "File::Find::Object is an object-oriented
 File::Find replacement in Perl.")
   (license artistic2.0)))
+
+(define-public perl-file-find-object-rule
+ (package
+  (name "perl-file-find-object-rule")
+  (version "0.0305")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/S/SH/SHLOMIF/File-Find-Object-Rule-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "0hs4n3w99q4ylkhg3qhzcwkxqn7zblfj1zjdgl06ca30afkk4cv6"))))
+  (build-system perl-build-system)
+  (native-inputs
+    `(("perl-module-build" ,perl-module-build)))
+  (inputs
+    `(("perl-class-xsaccessor" ,perl-class-xsaccessor)
+      ("perl-file-find-object" ,perl-file-find-object)
+      ("perl-number-compare" ,perl-number-compare)
+      ("perl-text-glob" ,perl-text-glob)))
+  (home-page
+    "http://search.cpan.org/dist/File-Find-Object-Rule")
+  (synopsis
+    "Alternative interface to File::Find::Object")
+  (description "File::Find::Object::Rule is an alternative Perl
+interface to File::Find::Object.")
+  (license (package-license perl))))
