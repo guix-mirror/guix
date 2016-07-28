@@ -512,11 +512,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/gcc-cross-environment-variables.patch	\
   %D%/packages/patches/gcc-libvtv-runpath.patch			\
   %D%/packages/patches/gcc-5.0-libvtv-runpath.patch		\
-  %D%/packages/patches/gd-CVE-2016-5766.patch			\
-  %D%/packages/patches/gd-CVE-2016-6128.patch			\
-  %D%/packages/patches/gd-CVE-2016-6132.patch			\
-  %D%/packages/patches/gd-CVE-2016-6214.patch			\
-  %D%/packages/patches/gd-fix-test-on-i686.patch		\
+  %D%/packages/patches/gd-fix-tests-on-i686.patch		\
   %D%/packages/patches/gegl-CVE-2012-4433.patch			\
   %D%/packages/patches/geoclue-config.patch			\
   %D%/packages/patches/ghostscript-CVE-2015-3228.patch		\
