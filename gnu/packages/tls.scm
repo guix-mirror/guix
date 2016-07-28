@@ -558,3 +558,39 @@ servers or clients for more complicated applications.")
   (description "Crypt::OpenSSL::RSA does RSA encoding and decoding (using the
 OpenSSL libraries).")
   (license (package-license perl))))
+
+(define perl-crypt-arguments
+   `(#:phases (modify-phases %standard-phases
+      (add-before 'configure 'patch-Makefile.PL
+        (lambda* (#:key inputs #:allow-other-keys)
+          (substitute* "Makefile.PL"
+            (("'LIBS'.*=>.*") (string-append "'LIBS' => ['-L"
+                                             (assoc-ref inputs "openssl")
+                                             "/lib -lcrypto'],")))
+          #t)))))
+
+(define-public perl-crypt-openssl-bignum
+ (package
+  (name "perl-crypt-openssl-bignum")
+  (version "0.06")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/K/KM/KMX/Crypt-OpenSSL-Bignum-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "05yzrdglrrzp191krf77zrwfkmzrfwrsrx1vyskbj94522lszk67"))))
+  (build-system perl-build-system)
+  (inputs `(("openssl" ,openssl)))
+  (arguments perl-crypt-arguments)
+  (home-page
+    "http://search.cpan.org/dist/Crypt-OpenSSL-Bignum")
+  (synopsis
+    "OpenSSL's multiprecision integer arithmetic in Perl")
+  (description "Crypt::OpenSSL::Bignum provides multiprecision integer
+arithmetic in Perl.")
+  ;; At your option either gpl1+ or the Artistic License
+  (license (package-license perl))))
