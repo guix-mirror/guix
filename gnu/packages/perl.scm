@@ -6992,3 +6992,34 @@ File::Find replacement in Perl.")
   (description "File::Find::Object::Rule is an alternative Perl
 interface to File::Find::Object.")
   (license (package-license perl))))
+
+(define-public perl-test-trailingspace
+ (package
+  (name "perl-test-trailingspace")
+  (version "0.0300")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/S/SH/SHLOMIF/Test-TrailingSpace-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "01slmrcjfq38mpdg3hlb7lnnbgsqbn26958y3hzx0zwrif40pigr"))))
+  (build-system perl-build-system)
+  (native-inputs
+    `(("perl-module-build" ,perl-module-build)
+      ("perl-file-find-object" ,perl-file-find-object)
+      ("perl-class-xsaccessor" ,perl-class-xsaccessor)))
+  (inputs
+    `(("perl-file-find-object-rule" ,perl-file-find-object-rule)
+      ("perl-text-glob" ,perl-text-glob)
+      ("perl-number-compare" ,perl-number-compare)))
+  (home-page
+    "http://search.cpan.org/dist/Test-TrailingSpace")
+  (synopsis
+    "Test for trailing space in Perl source files")
+  (description "Test::TrailingSpace tests for trailing spaces
+in Perl source files.")
+  (license x11)))
