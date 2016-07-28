@@ -7023,3 +7023,27 @@ interface to File::Find::Object.")
   (description "Test::TrailingSpace tests for trailing spaces
 in Perl source files.")
   (license x11)))
+
+(define-public perl-encode-detect
+ (package
+  (name "perl-encode-detect")
+  (version "1.01")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/J/JG/JGMYERS/Encode-Detect-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "1wdv9ffgs4xyfh5dnh09dqkmmlbf5m1hxgdgb3qy6v6vlwx8jkc3"))))
+  (build-system perl-build-system)
+  (inputs
+    `(("perl-module-build" ,perl-module-build)))
+  (home-page
+    "http://search.cpan.org/dist/Encode-Detect")
+  (synopsis
+    "Perl Encode::Encoding subclass that detects the encoding of data")
+  (description "Encode::Detect detects the encoding of data for Perl.")
+  (license mpl1.1)))
