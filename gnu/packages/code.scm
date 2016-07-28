@@ -190,7 +190,7 @@ COCOMO model or user-provided parameters.")
 (define-public the-silver-searcher
   (package
     (name "the-silver-searcher")
-    (version "0.31.0")
+    (version "0.32.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -198,7 +198,7 @@ COCOMO model or user-provided parameters.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1a3xncsq3x8pci194k484s5mdqij2sirpz6dj6711n2p8mzq5g31"))
+                "1k543cjpignwvy8avhchz8pkqrqcgcryps36ycy8mz2w5rbhicn5"))
               (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
     (native-inputs
