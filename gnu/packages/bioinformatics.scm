@@ -4932,13 +4932,13 @@ files.")
 (define-public r-summarizedexperiment
   (package
     (name "r-summarizedexperiment")
-    (version "1.2.2")
+    (version "1.2.3")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "SummarizedExperiment" version))
               (sha256
                (base32
-                "1c81acgw3a0ha5fgapfh9xq8yhryqqf8k259n2dz0mgz1k2d9klg"))))
+                "0c43fsrha886sd0diislnlf8r5h5x7fbhphkzcm0rw3k2jz8wlyk"))))
     (properties
      `((upstream-name . "SummarizedExperiment")))
     (build-system r-build-system)
