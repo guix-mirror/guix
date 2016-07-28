@@ -530,3 +530,31 @@ finally access to the SSL api of the SSLeay/OpenSSL package so you can write
 servers or clients for more complicated applications.")
     (license (package-license perl))
     (home-page "http://search.cpan.org/~mikem/Net-SSLeay-1.66/")))
+
+(define-public perl-crypt-openssl-rsa
+ (package
+  (name "perl-crypt-openssl-rsa")
+  (version "0.28")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/P/PE/PERLER/Crypt-OpenSSL-RSA-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "1gnpvv09b2gpifwdzc5jnhama3d1a4c39lzj9hcaicsb8rvzjmsk"))))
+  (build-system perl-build-system)
+  (inputs
+    `(("perl-crypt-openssl-bignum" ,perl-crypt-openssl-bignum)
+      ("perl-crypt-openssl-random" ,perl-crypt-openssl-random)
+      ("openssl" ,openssl)))
+  (arguments perl-crypt-arguments)
+  (home-page
+    "http://search.cpan.org/dist/Crypt-OpenSSL-RSA")
+  (synopsis
+    "RSA encoding and decoding, using the openSSL libraries")
+  (description "Crypt::OpenSSL::RSA does RSA encoding and decoding (using the
+OpenSSL libraries).")
+  (license (package-license perl))))
