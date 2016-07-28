@@ -531,3 +531,31 @@ offline emulation of DNS.")
     "Manages IPv4 and IPv6 addresses and subnets")
   (description "NetAddr::IP manages IPv4 and IPv6 addresses and subsets.")
   (license (package-license perl))))
+
+(define-public perl-net-patricia
+ (package
+  (name "perl-net-patricia")
+  (version "1.22")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/G/GR/GRUBER/Net-Patricia-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "0ln5f57vc8388kyh9vhx2infrdzfhbpgyby74h1qsnhwds95m0vh"))))
+  (build-system perl-build-system)
+  (inputs
+    `(("perl-net-cidr-lite" ,perl-net-cidr-lite)
+      ("perl-socket6" ,perl-socket6)))
+  (home-page
+    "http://search.cpan.org/dist/Net-Patricia")
+  (synopsis
+    "Patricia Trie Perl module for fast IP address lookups")
+  (description
+    "Net::Patricia does IP address lookups quickly in Perl.")
+  ;; The bindings are licensed under GPL2 or later.
+  ;; libpatricia is licensed under 2-clause BSD.
+  (license (list license:gpl2+ license:bsd-2))))
