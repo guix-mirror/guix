@@ -605,3 +605,33 @@ offline emulation of DNS.")
   (description "The Perl module 'Geo::IP'.  It looks up location and network
 information by IP Address.")
   (license (package-license perl))))
+
+(define-public perl-io-socket-inet6
+ (package
+  (name "perl-io-socket-inet6")
+  (version "2.72")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/S/SH/SHLOMIF/IO-Socket-INET6-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "1fqypz6qa5rw2d5y2zq7f49frwra0aln13nhq5gi514j2zx21q45"))))
+  (build-system perl-build-system)
+  (native-inputs
+    `(("perl-module-build" ,perl-module-build)
+      ("perl-test-pod" ,perl-test-pod)
+      ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+  (inputs `(("perl-socket6" ,perl-socket6)))
+  (arguments `(;; Need network socket API
+               #:tests? #f))
+  (home-page
+    "http://search.cpan.org/dist/IO-Socket-INET6")
+  (synopsis
+    "Perl object interface for AF_INET/AF_INET6 domain sockets")
+  (description "IO::Socket::INET6 is an interface for AF_INET/AF_INET6 domain
+sockets in Perl.")
+  (license (package-license perl))))
