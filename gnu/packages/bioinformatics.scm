@@ -4732,13 +4732,13 @@ different technologies, including microarrays, RNA-seq, and quantitative PCR.")
 (define-public r-genomicranges
   (package
     (name "r-genomicranges")
-    (version "1.24.0")
+    (version "1.24.2")
     (source (origin
               (method url-fetch)
               (uri (bioconductor-uri "GenomicRanges" version))
               (sha256
                (base32
-                "1iyzg1npl3rnnslwq3h759vf0xhshnn5v801rnlj6bnxzhn9yaqh"))))
+                "183kdz76rz93v69k6x684bpwa28xixp83bsyf6xfy182h6vh8x89"))))
     (properties
      `((upstream-name . "GenomicRanges")))
     (build-system r-build-system)
