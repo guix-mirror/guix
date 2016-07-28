@@ -161,3 +161,46 @@ functionality with a very small amount of code.")))
      "s6-dns is a suite of DNS client programs and libraries for Unix systems,
 as an alternative to the BIND, djbdns or other DNS clients.")))
 
+(define-public s6-networking
+  (package
+   (name "s6-networking")
+   (version "2.1.1.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "http://skarnet.org/software/s6-networking/s6-networking-"
+                         version ".tar.gz"))
+     (sha256
+      (base32
+       "0r8gfv0l2k449nacjy919gqlgn25q7fjxaqra5r37k7kiikkgqfw"))))
+    (build-system gnu-build-system)
+    (inputs `(("skalibs" ,skalibs)
+              ("execline" ,execline)
+              ("s6" ,s6)
+              ("s6-dns" ,s6-dns)))
+    (arguments
+     '(#:configure-flags (list
+                          (string-append "--with-lib="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs")
+                          (string-append "--with-lib="
+                                         (assoc-ref %build-inputs "execline")
+                                         "/lib/execline")
+                          (string-append "--with-lib="
+                                         (assoc-ref %build-inputs "s6")
+                                         "/lib/s6")
+                          (string-append "--with-lib="
+                                         (assoc-ref %build-inputs "s6-dns")
+                                         "/lib/s6-dns")
+                          (string-append "--with-sysdeps="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs/sysdeps"))
+       #:tests? #f))
+    (home-page "http://skarnet.org/software/s6-networking")
+    (license isc)
+    (synopsis "Suite of network utilities for Unix systems")
+    (description
+     "s6-networking is a suite of small networking utilities for Unix systems.
+It includes command-line client and server management, TCP access control,
+privilege escalation across UNIX domain sockets, IDENT protocol management and
+clock synchronization.")))
