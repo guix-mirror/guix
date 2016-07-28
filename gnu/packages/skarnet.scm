@@ -131,3 +131,33 @@ different sets of independent tools that can be used within or without the
 framework, and that can be assembled together to achieve powerful
 functionality with a very small amount of code.")))
 
+(define-public s6-dns
+  (package
+   (name "s6-dns")
+   (version "2.0.1.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "http://skarnet.org/software/s6-dns/s6-dns-"
+                         version ".tar.gz"))
+     (sha256
+      (base32
+       "1ji47iy8czx4jmi763dxd6lgjbnp4vqqgcijh46ym65l0a97z04w"))))
+    (build-system gnu-build-system)
+    (inputs `(("skalibs" ,skalibs)))
+    (arguments
+     '(#:configure-flags (list
+                          (string-append "--with-lib="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs")
+                          (string-append "--with-sysdeps="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs/sysdeps"))
+       #:tests? #f))
+    (home-page "http://skarnet.org/software/s6-dns")
+    (license isc)
+    (synopsis "Suite of DNS client programs")
+    (description
+     "s6-dns is a suite of DNS client programs and libraries for Unix systems,
+as an alternative to the BIND, djbdns or other DNS clients.")))
+
