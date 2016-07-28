@@ -4627,14 +4627,14 @@ libxml2 and libxslt.")
 (define-public python-beautifulsoup4
   (package
     (name "python-beautifulsoup4")
-    (version "4.4.1")
+    (version "4.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "beautifulsoup4" version))
        (sha256
         (base32
-         "1d36lc4pfkvl74fmzdib2nqnvknm0jddgf2n9yd7im150qyh3m47"))))
+         "1rf94360s8pmn37vxqjl0g74krq2p6nj3wbn6pj94ik6ny44q24f"))))
     (build-system python-build-system)
     (home-page
      "http://www.crummy.com/software/BeautifulSoup/bs4/")
