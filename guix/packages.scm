@@ -81,6 +81,8 @@
             package-maintainers
             package-properties
             package-location
+            hidden-package
+            hidden-package?
             package-field-location
 
             package-direct-sources
@@ -289,6 +291,19 @@ name of its URI."
                                       (number->string (object-address
                                                        package)
                                                       16)))))
+
+(define (hidden-package p)
+  "Return a \"hidden\" version of P--i.e., one that 'fold-packages' and thus,
+user interfaces, ignores."
+  (package
+    (inherit p)
+    (properties `((hidden? . #t)
+                  ,@(package-properties p)))))
+
+(define (hidden-package? p)
+  "Return true if P is \"hidden\"--i.e., must not be visible to user
+interfaces."
+  (assoc-ref (package-properties p) 'hidden?))
 
 (define (package-field-location package field)
   "Return the source code location of the definition of FIELD for PACKAGE, or

@@ -19,6 +19,7 @@
 ;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5014,6 +5015,7 @@ software that do not provide their own configuration interface.")
        ("eog"                       ,eog)
        ("epiphany"                  ,epiphany)
        ("evince"                    ,evince)
+       ("file-roller"               ,file-roller)
        ("gedit"                     ,gedit)
        ("glib-networking"           ,glib-networking)
        ("gnome-backgrounds"         ,gnome-backgrounds)
