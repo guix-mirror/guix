@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015 Claes Wallin <claes.wallin@greatsinodevelopment.com>
+;;; Copyright © 2016 Eric Le Bihan <eric.le.bihan.dev@free.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,3 +91,43 @@ It features conditional loops, getopt-style option handling, file name
 globbing, redirection and other shell concepts, expressed as discrete commands
 rather than in special syntax, minimizing runtime footprint and
 complexity.")))
+
+(define-public s6
+  (package
+   (name "s6")
+   (version "2.3.0.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "http://skarnet.org/software/s6/s6-"
+                         version ".tar.gz"))
+     (sha256
+      (base32
+       "1rp8i228zxzbia1799pdav1kkzdk96fax9bcfyf2gilkdm3s1ja9"))))
+   (build-system gnu-build-system)
+   (inputs `(("skalibs" ,skalibs)
+             ("execline" ,execline)))
+   (arguments
+    '(#:configure-flags (list
+                        (string-append "--with-lib="
+                                       (assoc-ref %build-inputs "skalibs")
+                                       "/lib/skalibs")
+                        (string-append "--with-lib="
+                                       (assoc-ref %build-inputs "execline")
+                                       "/lib/execline")
+                        (string-append "--with-sysdeps="
+                                       (assoc-ref %build-inputs "skalibs")
+                                       "/lib/skalibs/sysdeps"))
+      #:tests? #f))
+   (home-page "http://skarnet.org/software/s6")
+   (license isc)
+   (synopsis "Small suite of programs for process supervision")
+   (description
+    "s6 is a small suite of programs for UNIX, designed to allow process
+supervision (a.k.a. service supervision), in the line of daemontools and
+runit, as well as various operations on processes and daemons.  It is meant to
+be a toolbox for low-level process and service administration, providing
+different sets of independent tools that can be used within or without the
+framework, and that can be assembled together to achieve powerful
+functionality with a very small amount of code.")))
+
