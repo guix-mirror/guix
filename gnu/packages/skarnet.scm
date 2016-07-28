@@ -26,7 +26,7 @@
 (define-public skalibs
   (package
     (name "skalibs")
-    (version "2.3.5.1")
+    (version "2.3.10.0")
     (source
      (origin
       (method url-fetch)
@@ -34,7 +34,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1m31wph4qr4mqgv51nzwd9nw0x5vmpkcxr48i216wn3dpy3mvxwy"))))
+        "0i7af224kl1crxgml09wx0x6q8ab79vnyrllfwv2lnq585wi9mg4"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-force-devr") ; do not analyze /dev/random
