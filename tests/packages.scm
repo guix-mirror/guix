@@ -79,6 +79,10 @@
                     (write
                      (dummy-package "foo" (location #f)))))))
 
+(test-assert "hidden-package"
+  (and (hidden-package? (hidden-package (dummy-package "foo")))
+       (not (hidden-package? (dummy-package "foo")))))
+
 (test-assert "package-field-location"
   (let ()
     (define (goto port line column)
