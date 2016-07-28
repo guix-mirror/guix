@@ -498,3 +498,36 @@ definitions and structure manipulators for Perl.")
   (description "Net::DNS::Resolver::Programmable is a programmable DNS resolver for
 offline emulation of DNS.")
   (license (package-license perl))))
+
+(define-public perl-netaddr-ip
+ (package
+  (name "perl-netaddr-ip")
+  (version "4.079")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/M/MI/MIKER/NetAddr-IP-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "1rx0dinrz9fk9qcg4rwqq5n1dm3xv2arymixpclcv2q2nzgq4npc"))))
+  (build-system perl-build-system)
+  (arguments
+    `(#:phases
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (args `("Makefile.PL"
+                            ,(string-append "PREFIX=" out)
+                            "INSTALLDIRS=site")))
+               (setenv "CONFIG_SHELL" (which "sh"))
+               (zero? (apply system* "perl" args))))))))
+  (home-page
+    "http://search.cpan.org/dist/NetAddr-IP")
+  (synopsis
+    "Manages IPv4 and IPv6 addresses and subnets")
+  (description "NetAddr::IP manages IPv4 and IPv6 addresses and subsets.")
+  (license (package-license perl))))
