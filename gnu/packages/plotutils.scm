@@ -187,6 +187,7 @@ colors, styles, options and details.")
     ;; currently useful.
     (native-inputs
      `(("gs" ,ghostscript-gs)           ;For tests
+       ("gs-2" ,ghostscript)             ;For dvipdfm
        ("texinfo" ,texinfo)             ;For generating documentation
        ("texlive" ,texlive)             ;For tests and documentation
        ("emacs" ,emacs-minimal)
