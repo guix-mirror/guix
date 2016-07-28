@@ -24,6 +24,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages networking)
+  #:use-module (guix build-system perl)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -412,3 +413,26 @@ HTTP(S) request, and receive the reply headers.  It is somewhat similar to
 by firewalls or when you want to monitor the response time of the actual web
 application stack itself.")
     (license license:gpl2)))        ; with permission to link with OpenSSL
+
+(define-public perl-net-dns
+ (package
+  (name "perl-net-dns")
+  (version "1.06")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/N/NL/NLNETLABS/Net-DNS-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "07m5331132h9xkh1i6jv9d80f571yva27iqa31aq4sm31iw7nn53"))))
+  (build-system perl-build-system)
+  (inputs
+    `(("perl-digest-hmac" ,perl-digest-hmac)))
+  (home-page "http://search.cpan.org/dist/Net-DNS")
+  (synopsis
+    "Perl Interface to the Domain Name System")
+  (description "Net::DNS is the Perl Interface to the Domain Name System.")
+  (license license:x11)))
