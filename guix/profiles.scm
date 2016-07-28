@@ -163,9 +163,8 @@
         (call-with-input-file file read-manifest)
         (manifest '()))))
 
-(define* (package->manifest-entry package #:optional output)
-  "Return a manifest entry for the OUTPUT of package PACKAGE.  When OUTPUT is
-omitted or #f, use the first output of PACKAGE."
+(define* (package->manifest-entry package #:optional (output "out"))
+  "Return a manifest entry for the OUTPUT of package PACKAGE."
   (let ((deps (map (match-lambda
                     ((label package)
                      (gexp-input package))
@@ -175,7 +174,7 @@ omitted or #f, use the first output of PACKAGE."
     (manifest-entry
      (name (package-name package))
      (version (package-version package))
-     (output (or output (car (package-outputs package))))
+     (output output)
      (item package)
      (dependencies (delete-duplicates deps))
      (search-paths (package-transitive-native-search-paths package)))))
@@ -188,8 +187,8 @@ denoting a specific output of a package."
    (map (match-lambda
          ((package output)
           (package->manifest-entry package output))
-         (package
-           (package->manifest-entry package)))
+         ((? package? package)
+          (package->manifest-entry package)))
         packages)))
 
 (define (manifest->gexp manifest)

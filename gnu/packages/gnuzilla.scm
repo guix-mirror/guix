@@ -4,6 +4,7 @@
 ;;; Copyright © 2014, 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -572,7 +573,21 @@ standards.")
                  (("@MOZ_APP_NAME@")
                   "icecat"))
                (install-file "debian/icecat.desktop" applications)
-               #t))))))
+               #t)))
+         (add-after 'install-desktop-entry 'install-icons
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (with-directory-excursion "browser/branding/official"
+                 (for-each
+                  (lambda (file)
+                    (let* ((size (string-filter char-numeric? file))
+                           (icons (string-append out "/share/icons/hicolor/"
+                                                 size "x" size "/apps")))
+                      (mkdir-p icons)
+                      (copy-file file (string-append icons "/icecat.png"))))
+                  '("default16.png" "default22.png" "default24.png"
+                    "default32.png" "default48.png" "content/icon64.png"
+                    "mozicon128.png" "default256.png")))))))))
     (home-page "http://www.gnu.org/software/gnuzilla/")
     (synopsis "Entirely free browser derived from Mozilla Firefox")
     (description

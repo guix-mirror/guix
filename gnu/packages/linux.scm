@@ -226,7 +226,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
     (search-path %load-path file)))
 
 (define-public linux-libre
-  (let* ((version "4.6.4")
+  (let* ((version "4.7")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Avoid introducing timestamps
@@ -304,7 +304,7 @@ for SYSTEM and optionally VARIANT, or #f if there is no such configuration."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "1294qw4agax0cnbhh0dk33jz358smhflllg77zv0rd8w9g433xiz"))))
+               "0ah3c70bj7iik5xrmrrixcbcz65pn3nf887x78drv6mdw2ayb0zl"))))
     (build-system gnu-build-system)
     (supported-systems '("x86_64-linux" "i686-linux"))
     (native-inputs `(("perl" ,perl)
@@ -358,13 +358,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.1
   (package
     (inherit linux-libre)
-    (version "4.1.27")
+    (version "4.1.28")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "0bbp782gdj8kz986a8hfygdrj7is0c8wgbb2mpb9gqhkfxcg74kf"))))
+                "02b7hq32cyx3h04k7l3mfzhh09snh5x4pxiwxllwchw94a6lkxl8"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))
@@ -2819,3 +2819,33 @@ from that to the system kernel's @file{/dev/random} machinery.")
 Linux kernel to retrieve and control processor features related to power saving,
 such as frequency and voltage scaling.")
     (license license:gpl2)))
+
+(define-public haveged
+  (package
+    (name "haveged")
+    (version "1.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.issihosts.com/haveged/haveged-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "059pxlfd4l5dqhd6r3lynzfz4wby2f17294fy17pi9j2jpnn68ww"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.issihosts.com/haveged")
+    (synopsis "Entropy source for the Linux random number generator")
+    (description
+     "haveged generates an unpredictable stream of random numbers for use by
+Linux's @file{/dev/random} and @file{/dev/urandom} devices.  The kernel's
+standard mechanisms for filling the entropy pool may not be sufficient for
+systems with high needs or limited user interaction, such as headless servers.
+@command{haveged} runs as a privileged daemon, harvesting randomness from the
+indirect effects of hardware events on hidden processor state using the HArdware
+Volatile Entropy Gathering and Expansion (HAVEGE) algorithm.  It tunes itself to
+its environment and provides the same built-in test suite for the output stream
+as used on certified hardware security devices.")
+    (license (list (license:non-copyleft "file://nist/mconf.h")
+                   (license:non-copyleft "file://nist/packtest.c")
+                   license:public-domain        ; nist/dfft.c
+                   license:gpl3+))))            ; everything else

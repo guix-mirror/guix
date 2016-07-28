@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Matthew Jordan <matthewjordandevops@yandex.com>
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -446,7 +447,9 @@ on stdout instead of using a socket as the Emacsclient does.")
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)
                      ("emacs" ,emacs-minimal)))
-    (inputs `(("git" ,git)))
+    (inputs
+     `(("git" ,git)
+       ("perl" ,perl)))
     (propagated-inputs
      `(("dash" ,emacs-dash)
        ("with-editor" ,emacs-with-editor)))
@@ -479,9 +482,12 @@ on stdout instead of using a socket as the Emacsclient does.")
          (add-before
           'build 'patch-exec-paths
           (lambda* (#:key inputs #:allow-other-keys)
-            (let ((git (assoc-ref inputs "git")))
+            (let ((git  (assoc-ref inputs "git"))
+                  (perl (assoc-ref inputs "perl")))
               (emacs-substitute-variables "lisp/magit-git.el"
                 ("magit-git-executable" (string-append git "/bin/git")))
+              (substitute* "lisp/magit-sequence.el"
+                (("perl") (string-append perl "/bin/perl")))
               #t))))))
     (home-page "http://magit.github.io/")
     (synopsis "Emacs interface for the Git version control system")

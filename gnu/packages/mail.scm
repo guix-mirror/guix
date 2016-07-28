@@ -15,6 +15,7 @@
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -240,14 +241,14 @@ operating systems.")
           'unpack 'patch-paths-in-tests
           (lambda _
             ;; The test programs run several programs using 'system' with
-            ;; hard-coded paths.  Here we patch them all.  We also change "gpg"
-            ;; to "gpg2".  We use ISO-8859-1 here because test-iconv.c contains
+            ;; hard-coded paths.  Here we patch them all.
+            ;; We use ISO-8859-1 here because test-iconv.c contains
             ;; raw byte sequences in several different encodings.
             (with-fluids ((%default-port-encoding #f))
               (substitute* (find-files "tests" "\\.c$")
                 (("(system *\\(\")(/[^ ]*)" all pre prog-path)
                  (let* ((base (basename prog-path))
-                        (prog (which (if (string=? base "gpg") "gpg2" base))))
+                        (prog (which base)))
                    (string-append pre
                                   (or prog (error "not found: " base))))))))))))
     (home-page "http://spruce.sourceforge.net/gmime/")

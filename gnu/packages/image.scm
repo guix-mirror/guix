@@ -8,6 +8,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -801,3 +802,34 @@ the programmer.")
     ;; test/extra/ contains musl-libm, 
     ;; which is MIT/expat licensed, but only used for tests
     (license (license:fsf-free "file://COPYING")))) ;WTFPL version 2
+
+(define-public perceptualdiff
+  (package
+    (name "perceptualdiff")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/myint/perceptualdiff/archive/v"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "0zl6xmp971fffg7fzcz2fbgxg5x2w7l8qa65c008i4kbkc9016ps"))))
+    (build-system cmake-build-system)
+    (inputs `(("freeimage" ,freeimage)))
+    (arguments
+     '(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'fix-tests
+                    ;; cmake-build-system uses a build/ directory outside
+                    ;; of the source tree, one level higher than expected
+                    (lambda _
+                      (substitute* "test/run_tests.bash"
+                        (("../build") "../../build")))))))
+    (home-page "https://github.com/myint/perceptualdiff")
+    (synopsis "Perceptual image comparison utility")
+    (description "PerceptualDiff visually compares two images to determine
+whether they look alike.  It uses a computational model of the human visual
+system to detect similarities.  This allows it too see beyond irrelevant
+differences in file encoding, image quality, and other small variations.")
+    (license license:gpl2+)))

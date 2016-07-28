@@ -58,8 +58,16 @@
     (lambda (response body) body)))
 
 (define (http-get-port uri)
-  (call-with-values (lambda () (http-get uri #:streaming? #t))
-    (lambda (response port) port)))
+  (let ((socket (open-socket-for-uri uri)))
+    ;; Make sure to use an unbuffered port so that we can then peek at the
+    ;; underlying file descriptor via 'call-with-gzip-input-port'.
+    (setvbuf socket _IONBF)
+    (call-with-values
+        (lambda ()
+          (http-get uri #:port socket #:streaming? #t))
+      (lambda (response port)
+        (setvbuf port _IONBF)
+        port))))
 
 (define (publish-uri route)
   (string-append "http://localhost:6789" route))

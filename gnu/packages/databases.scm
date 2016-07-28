@@ -203,7 +203,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.7.12")
+    (version "5.7.13")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
@@ -213,9 +213,10 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                         (string-append
                           "http://downloads.mysql.com/archives/get/file/"
                           name "-" version ".tar.gz")))
+             (patches (search-patches "mysql-fix-failing-test.patch"))
              (sha256
               (base32
-               "11qwbid666fspq143ymi86yva2b01lybaqh26k92rciasav3r11j"))))
+               "11qbib1xpy0zkki7j9ip17hks5kp5zgpcj7x8gy3a4m66lb1mgsh"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -276,7 +277,7 @@ Language.")
 (define-public mariadb
   (package
     (name "mariadb")
-    (version "10.1.14")
+    (version "10.1.16")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://downloads.mariadb.org/f/"
@@ -284,7 +285,7 @@ Language.")
                                   name "-" version ".tar.gz"))
               (sha256
                (base32
-                "04ysdbvj2qapfpaj7s5d2j3m8k9l0yb5k0c2yaini8jrl1s1krqq"))))
+                "14s3wq1c25n62n75hkixl8n7cni4m73w055nsx4czm655k33bjv7"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags
@@ -1030,3 +1031,35 @@ trees (LSM), for sustained throughput under random insert workloads.")
     (license gpl3) ; or GPL-2
     ;; configure.ac: WiredTiger requires a 64-bit build.
     (supported-systems '("x86_64-linux" "mips64el-linux"))))
+
+(define-public perl-db-file
+ (package
+  (name "perl-db-file")
+  (version "1.838")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/P/PM/PMQS/DB_File-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "0yp5d5zr8dk9g6xdh7ygi5bq63q7nxvhd58dk2i3ki4nb7yv2yh9"))))
+  (build-system perl-build-system)
+  (inputs `(("bdb" ,bdb)))
+  (native-inputs `(("perl-test-pod" ,perl-test-pod)))
+  (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-before
+                   'configure 'modify-config.in
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     (substitute* "config.in"
+                       (("/usr/local/BerkeleyDB") (assoc-ref inputs "bdb")))
+                     #t)))))
+  (home-page "http://search.cpan.org/dist/DB_File")
+  (synopsis
+    "Perl5 access to Berkeley DB version 1.x")
+  (description
+    "The DB::File module provides Perl bindings to the Berkeley DB version 1.x.")
+  (license (package-license perl))))

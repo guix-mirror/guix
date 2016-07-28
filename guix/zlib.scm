@@ -92,7 +92,8 @@ closes FD."
   (let ((proc (zlib-procedure int "gzread" (list '* '* unsigned-int))))
     (lambda* (gzfile bv #:optional (start 0) (count (bytevector-length bv)))
       "Read up to COUNT bytes from GZFILE into BV at offset START.  Return the
-number of uncompressed bytes actually read."
+number of uncompressed bytes actually read; it is zero if COUNT is zero or if
+the end-of-stream has been reached."
       (let ((ret (proc (gzip-file->pointer gzfile)
                        (bytevector->pointer bv start)
                        count)))
@@ -167,12 +168,20 @@ closed even if closing GZFILE triggers an exception."
   "Return an input port that decompresses data read from PORT, a file port.
 PORT is automatically closed when the resulting port is closed.  BUFFER-SIZE
 is the size in bytes of the internal buffer, 8 KiB by default; using a larger
-buffer increases decompression speed."
+buffer increases decompression speed.  An error is thrown if PORT contains
+buffered input, which would be lost (and is lost anyway)."
   (define gzfile
-    (gzdopen (fileno port) "r"))
+    (match (drain-input port)
+      (""                                         ;PORT's buffer is empty
+       (gzdopen (fileno port) "r"))
+      (_
+       ;; This is unrecoverable but it's better than having the buffered input
+       ;; be lost, leading to unclear end-of-file or corrupt-data errors down
+       ;; the path.
+       (throw 'zlib-error 'make-gzip-input-port
+              "port contains buffered input" port))))
 
   (define (read! bv start count)
-    ;; XXX: Can 'gzread!' return zero even though we haven't reached the EOF?
     (gzread! gzfile bv start count))
 
   (unless (= buffer-size %default-buffer-size)
@@ -189,8 +198,10 @@ buffer increases decompression speed."
 a file port, as its sink.  PORT is automatically closed when the resulting
 port is closed."
   (define gzfile
-    (gzdopen (fileno port)
-             (string-append "w" (number->string level))))
+    (begin
+      (force-output port)                         ;empty PORT's buffer
+      (gzdopen (fileno port)
+               (string-append "w" (number->string level)))))
 
   (define (write! bv start count)
     (gzwrite gzfile bv start count))
