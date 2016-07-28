@@ -71,11 +71,13 @@
   #:use-module (gnu packages gdb)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages tls)
+  #:use-module (gnu packages networking)
+  #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg)
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl2+ gpl3 gpl3+ lgpl2.1 lgpl2.1+ lgpl3+
-                           non-copyleft (expat . license:expat)))
+                           non-copyleft (expat . license:expat) bsd-3))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
@@ -1261,3 +1263,44 @@ synchronizing with a remote address book, @command{vdirsyncer} is recommended.
 Khard can also be used from within the email client @command{mutt}.")
     (home-page "https://github.com/scheibler/khard")
     (license gpl3+)))
+
+(define-public perl-mail-spf
+ (package
+  (name "perl-mail-spf")
+  (version "v2.9.0")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/J/JM/JMEHNLE/mail-spf/Mail-SPF-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "0qk1rfgfm5drj4iyniiabrasrpqv570vzhgz66lwgb67y4amkjv1"))))
+  (build-system perl-build-system)
+  (native-inputs
+    `(("perl-module-build" ,perl-module-build)
+      ("perl-net-dns-resolver-programmable"
+       ,perl-net-dns-resolver-programmable)))
+  (arguments
+   `(#:phases (modify-phases %standard-phases
+       (add-before 'configure 'modify-Build.PL
+         (lambda* (#:key outputs #:allow-other-keys)
+           (substitute* "Build.PL"
+             (("'/usr/sbin'") (string-append "'"
+                                             (assoc-ref outputs "out")
+                                             "/sbin'")))
+             #t)))))
+  (inputs
+    `(("perl-error" ,perl-error)
+      ("perl-net-dns" ,perl-net-dns)
+      ("perl-netaddr-ip" ,perl-netaddr-ip)
+      ("perl-uri" ,perl-uri)))
+  (home-page
+    "http://search.cpan.org/dist/Mail-SPF")
+  (synopsis
+    "Perl implementation of Sender Policy Framework")
+  (description "Mail::SPF is the Sender Policy Framework implemented
+in Perl.")
+  (license bsd-3)))
