@@ -559,3 +559,25 @@ offline emulation of DNS.")
   ;; The bindings are licensed under GPL2 or later.
   ;; libpatricia is licensed under 2-clause BSD.
   (license (list license:gpl2+ license:bsd-2))))
+
+(define-public perl-net-cidr-lite
+ (package
+  (name "perl-net-cidr-lite")
+  (version "0.21")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/D/DO/DOUGW/Net-CIDR-Lite-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "14shj73zbqmfjbp0qz1fs9j4p2dpvz5hfkm4qfdjbydflbl2b8fg"))))
+  (build-system perl-build-system)
+  (home-page
+    "http://search.cpan.org/dist/Net-CIDR-Lite")
+  (synopsis
+    "Perl extension for merging IPv4 or IPv6 CIDR addresses")
+  (description "Net::CIDR::Lite merges IPv4 or IPv6 CIDR addresses.")
+  (license license:gpl1+)))
