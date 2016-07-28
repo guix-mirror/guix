@@ -623,6 +623,12 @@ audio/video codec library.")
     (arguments
      `(#:configure-flags
        `("--disable-a52" ; FIXME: reenable once available
+
+         ;; Gross workaround for <https://trac.videolan.org/vlc/ticket/16907>.
+         ;; In our case, this led to a test failure:
+         ;;   test_libvlc_equalizer: libvlc/equalizer.c:122: test_equalizer: Assertion `isnan(libvlc_audio_equalizer_get_amp_at_index (equalizer, u_bands))' failed.
+         "ac_cv_c_fast_math=no"
+
          ,(string-append "LDFLAGS=-Wl,-rpath -Wl,"
                          (assoc-ref %build-inputs "ffmpeg")
                          "/lib"))                 ;needed for the tests
