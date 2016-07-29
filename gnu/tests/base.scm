@@ -73,6 +73,8 @@ properties of running system to what's declared in OS, an <operating-system>."
     (with-imported-modules '((gnu build marionette))
       #~(begin
           (use-modules (gnu build marionette)
+                       (srfi srfi-1)
+                       (srfi srfi-26)
                        (srfi srfi-64)
                        (ice-9 match))
 
@@ -82,7 +84,7 @@ properties of running system to what's declared in OS, an <operating-system>."
           (mkdir #$output)
           (chdir #$output)
 
-          (test-begin "mcron")
+          (test-begin "basic")
 
           (test-assert "uname"
             (match (marionette-eval '(uname) marionette)
