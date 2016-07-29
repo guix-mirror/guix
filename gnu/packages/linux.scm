@@ -889,7 +889,7 @@ MIDI functionality to the Linux-based operating system.")
     (synopsis "Program to configure the Linux IP packet filtering rules")
     (description
      "iptables is the userspace command line program used to configure the
-Linux 2.4.x and later IPv4 packet filtering ruleset.  It is targeted towards
+Linux 2.4.x and later IPv4 packet filtering ruleset (firewall).  It is targeted at
 system administrators.  Since Network Address Translation is also configured
 from the packet filter ruleset, iptables is used for this, too.  The iptables
 package also includes ip6tables.  ip6tables is used for configuring the IPv6
