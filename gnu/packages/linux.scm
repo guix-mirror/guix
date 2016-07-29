@@ -2576,7 +2576,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.5.3")
+    (version "4.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2584,7 +2584,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1lzbw275xgv69v4z8hmsf3jnip38116hxhkpv0madk8wv049drz6"))))
+                "06c9l6m3w29dndk17jrlpgr01wykl10h34zva8zc2c571z6mrlaf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
@@ -2600,7 +2600,8 @@ and copy/paste text in the console and in xterm.")
                      ;; For building documentation
                      ("libxml2" ,libxml2)
                      ("docbook-xml" ,docbook-xml)
-                     ("docbook-xsl" ,docbook-xsl)))
+                     ("docbook-xsl" ,docbook-xsl)
+                     ("which" ,which)))
     (home-page "https://btrfs.wiki.kernel.org/")
     (synopsis "Create and manage btrfs copy-on-write file systems")
     (description "Btrfs is a copy-on-write (CoW) filesystem for Linux aimed at
