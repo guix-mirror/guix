@@ -32,14 +32,15 @@
 (define-public protobuf
   (package
     (name "protobuf")
-    (version "2.5.0")
+    (version "2.6.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://protobuf.googlecode.com/files/protobuf-"
+              (uri (string-append "https://github.com/google/protobuf/releases/"
+                                  "download/v" version "/protobuf-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "0xxn9gxhvsgzz2sgmihzf6pf75clr05mqj6218camwrwajpcbgqk"))))
+                "040rcs9fpv4bslhiy43v7dcrzakz4vwwpyqg4jp8bn24sl95ci7f"))))
     (build-system gnu-build-system)
     (inputs `(("zlib" ,zlib)))
     (home-page "http://code.google.com/p/protobuf/")
