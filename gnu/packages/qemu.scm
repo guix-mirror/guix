@@ -33,6 +33,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages spice)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages xdisorg)
   #:use-module (guix build-system gnu)
@@ -132,8 +133,10 @@
        ;; ("pciutils" ,pciutils)
        ("pixman" ,pixman)
        ("sdl" ,sdl)
+       ("spice" ,spice)
        ("util-linux" ,util-linux)
        ;; ("vde2" ,vde2)
+       ("virglrenderer" ,virglrenderer)
        ("zlib" ,zlib)))
     (native-inputs `(("glib:bin" ,glib "bin") ; gtester, etc.
                      ("perl" ,perl)
@@ -174,4 +177,4 @@ server and embedded PowerPC, and S390 guests.")
 
     ;; Remove dependencies on optional libraries, notably GUI libraries.
     (inputs (fold alist-delete (package-inputs qemu)
-                  '("libusb" "mesa" "sdl")))))
+                  '("libusb" "mesa" "sdl" "spice" "virglrenderer")))))
