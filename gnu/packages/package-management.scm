@@ -168,6 +168,7 @@
                           (sha256 hash)))))
        `(("bzip2" ,bzip2)
          ("gzip" ,gzip)
+         ("zlib" ,zlib)                           ;for 'guix publish'
 
          ("sqlite" ,sqlite)
          ("libgcrypt" ,libgcrypt)
