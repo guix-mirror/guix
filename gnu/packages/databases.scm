@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013, 2014, 2015 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2014, 2015 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2016 David Thompson <davet@gnu.org>
@@ -748,7 +748,8 @@ columns, primary keys, unique constraints and relationships.")
        ("postgresql" ,postgresql)))
     (home-page "http://search.cpan.org/dist/DBD-Pg")
     (synopsis "DBI PostgreSQL interface")
-    (description "")
+    (description "This package provides a PostgreSQL driver for the Perl5
+@dfn{Database Interface} (DBI).")
     (license (package-license perl))))
 
 (define-public perl-dbd-mysql
