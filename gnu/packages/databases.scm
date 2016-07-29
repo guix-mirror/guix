@@ -755,15 +755,15 @@ columns, primary keys, unique constraints and relationships.")
 (define-public perl-dbd-mysql
   (package
     (name "perl-dbd-mysql")
-    (version "4.033")
+    (version "4.035")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "mirror://cpan/authors/id/C/CA/CAPTTOFU/"
+       (uri (string-append "mirror://cpan/authors/id/M/MI/MICHIELB/"
                            "DBD-mysql-" version ".tar.gz"))
        (sha256
         (base32
-         "0769xakykps0cx368g4vaips4w3bjk383rianiavq7sq6g6bp66c"))))
+         "0dqrnrk8yjl06xl8hld5wyalk77z0h9j5h1gdk4z9g0nx9js7v5p"))))
     (build-system perl-build-system)
     ;; Tests require running MySQL server
     (arguments `(#:tests? #f))
