@@ -60,7 +60,7 @@
 (define-public qt
   (package
     (name "qt")
-    (version "5.5.1")
+    (version "5.6.1-1")
     (source (origin
              (method url-fetch)
              (uri
@@ -72,7 +72,7 @@
                  version ".tar.xz"))
              (sha256
                (base32
-                 "0615cn4n3n78v48lnmapqz2jizm2pzrjwvsjlnsf4awrsiiqw0kg"))
+                 "1nrn2wivjwdxc9q03gpsi336gcl9l2axi0xjbzsha5v6akmsf26f"))
              (modules '((guix build utils)))
              (snippet
               '(begin
@@ -152,6 +152,14 @@
        #:parallel-build? #f
        #:phases
        (modify-phases %standard-phases
+         (add-after 'configure 'patch-bin-sh
+           (lambda _
+             (substitute* '("qtbase/config.status"
+                            "qtbase/configure"
+                            "qtbase/mkspecs/features/qt_functions.prf"
+                            "qtbase/qmake/library/qmakebuiltins.cpp")
+                          (("/bin/sh") (which "sh")))
+             #t))
          (replace 'configure
            (lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
