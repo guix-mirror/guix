@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 John J. Foerch <jjfoerch@earthlink.net>
+;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1518,17 +1519,13 @@ websites such as Libre.fm.")
 (define-public beets
   (package
     (name "beets")
-    (version "1.3.18")
+    (version "1.3.19")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                     "https://pypi.python.org/packages/"
-                     "14/6f/c9c79c5339ab3ecced265ca18adbf5bae3d4058bae737b6164d738fb4d2c/"
-                     name "-" version ".tar.gz"))
-              (patches (search-patches "beets-image-test-failure.patch"))
+              (uri (pypi-uri "beets" version))
               (sha256
                (base32
-                "09pgyywa5llbc36y0lrr21ywgsp8m2zx6p8ncf8hxik28knd5kld"))))
+                "1vi1dh3fr554bnm8y9pjy09hblw18v6cl2jppzwlp72afri1w93b"))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2 ; only Python 2 is supported
