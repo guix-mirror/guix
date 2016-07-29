@@ -38,6 +38,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -46,13 +47,13 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages spice)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages xdisorg)
-  #:use-module (gnu packages freedesktop))
+  #:use-module (gnu packages xdisorg))
 
 
 
@@ -3073,6 +3074,35 @@ graphics cards.")
      "xf86-video-openchrome is a video driver for the Xorg X server.
 This driver is intended for VIA chipsets featuring the VIA UniChrome,
 UniChrome Pro and Chrome9 integrated graphics processors.")
+    (license license:x11)))
+
+
+(define-public xf86-video-qxl
+  (package
+    (name "xf86-video-qxl")
+    (version "0.1.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                "mirror://xorg/individual/driver/"
+                "xf86-video-qxl-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "018ic9ddxfnjcv2yss0mwk1gq6rmip1hrgi2wxwqkbqx1cpx4yp5"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("fontsproto" ,fontsproto)
+        ("libxfont" ,libxfont)
+        ("spice-protocol" ,spice-protocol)
+        ("xf86dgaproto" ,xf86dgaproto)
+        ("xorg-server" ,xorg-server)
+        ("xproto" ,xproto)))
+    (native-inputs
+      `(("pkg-config" ,pkg-config)))
+    (synopsis "Qxl video driver for X server")
+    (description "xf86-video-qxl is a video driver for the Xorg X server.
+This driver is intended for the spice qxl virtio device.")
+    (home-page "http://www.spice-space.org")
     (license license:x11)))
 
 
