@@ -1563,7 +1563,7 @@ mode-line.")
     (propagated-inputs
      `(("emacs-rich-minority" ,emacs-rich-minority)))
     (home-page "http://github.com/Malabarba/smart-mode-line")
-    (synopsis "Color-coded smart mode-line.")
+    (synopsis "Color-coded smart mode-line")
     (description
      "Smart Mode Line is a mode-line theme for Emacs.  It aims to be easy to
 read from small to large monitors by using colors, a prefix feature, and smart

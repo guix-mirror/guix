@@ -6205,7 +6205,7 @@ extensions.")
      `(("ghc-cereal" ,ghc-cereal)
        ("ghc-network" ,ghc-network)))
     (home-page "https://github.com/vincenthz/hs-socks")
-    (synopsis "SOCKS proxy (version 5) implementation.")
+    (synopsis "SOCKS proxy (version 5) implementation")
     (description
      "This library provides a SOCKS proxy (version 5) implementation.")
     (license license:bsd-3)))

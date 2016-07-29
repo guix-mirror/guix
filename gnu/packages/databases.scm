@@ -765,7 +765,8 @@ columns, primary keys, unique constraints and relationships.")
        ("postgresql" ,postgresql)))
     (home-page "http://search.cpan.org/dist/DBD-Pg")
     (synopsis "DBI PostgreSQL interface")
-    (description "")
+    (description "This package provides a PostgreSQL driver for the Perl5
+@dfn{Database Interface} (DBI).")
     (license (package-license perl))))
 
 (define-public perl-dbd-mysql

@@ -4653,14 +4653,14 @@ libxml2 and libxslt.")
 (define-public python-beautifulsoup4
   (package
     (name "python-beautifulsoup4")
-    (version "4.4.1")
+    (version "4.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "beautifulsoup4" version))
        (sha256
         (base32
-         "1d36lc4pfkvl74fmzdib2nqnvknm0jddgf2n9yd7im150qyh3m47"))))
+         "1rf94360s8pmn37vxqjl0g74krq2p6nj3wbn6pj94ik6ny44q24f"))))
     (build-system python-build-system)
     (home-page
      "http://www.crummy.com/software/BeautifulSoup/bs4/")
@@ -5023,7 +5023,7 @@ connection to each user.")
     (inputs
      `(("python-setuptools" ,python-setuptools)))
     (home-page "https://github.com/cython/backports_abc")
-    (synopsis "Backport of additions to the 'collections.abc' module.")
+    (synopsis "Backport of additions to the 'collections.abc' module")
     (description
      "Python-backports-abc provides a backport of additions to the
 'collections.abc' module in Python-3.5.")
@@ -5998,7 +5998,7 @@ responses, rather than doing any computation.")
     (native-inputs
      `(("python-setuptools" ,python-setuptools)))
     (home-page "https://github.com/pyca/cryptography")
-    (synopsis "Test vectors for the cryptography package.")
+    (synopsis "Test vectors for the cryptography package")
     (description
       "This package contains test vectors for the cryptography package.")
     ;; Distributed under either BSD-3 or ASL2.0
@@ -9297,7 +9297,7 @@ are optionally backed by a C extension built on librdkafka.")
           "02wjrpf001gjdjsaxxbzcwfg19crlk2dbddayrfc2v06f53yrcyw"))))
   (build-system python-build-system)
   (home-page "https://github.com/jquast/wcwidth")
-  (synopsis "Measure number of terminal column cells of wide-character codes.")
+  (synopsis "Measure number of terminal column cells of wide-character codes")
   (description "Wcwidth measures the number of terminal column cells of
 wide-character codes.  It is useful for those implementing a terminal emulator,
 or programs that carefully produce output to be interpreted by one.  It is a

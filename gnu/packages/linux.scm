@@ -341,13 +341,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.4
   (package
     (inherit linux-libre)
-    (version "4.4.15")
+    (version "4.4.16")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "0n3lz4xnciif9v3y769q1pjs9321gvl6a2wr10r40sl1ixlk3ipz"))))
+                "0lgc064r18gxvya5zvv2l4dmcj7161mb34q4frlw9z02ils9d623"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))
@@ -903,7 +903,7 @@ MIDI functionality to the Linux-based operating system.")
     (synopsis "Program to configure the Linux IP packet filtering rules")
     (description
      "iptables is the userspace command line program used to configure the
-Linux 2.4.x and later IPv4 packet filtering ruleset.  It is targeted towards
+Linux 2.4.x and later IPv4 packet filtering ruleset (firewall).  It is targeted at
 system administrators.  Since Network Address Translation is also configured
 from the packet filter ruleset, iptables is used for this, too.  The iptables
 package also includes ip6tables.  ip6tables is used for configuring the IPv6

@@ -102,10 +102,13 @@
    (build-system gnu-build-system)
    (inputs
      `(("fortran" ,gfortran)))
-   (synopsis "Visualize and analyze convolution operations")
+   (synopsis "Visualizing and demonstrating convolution")
    (description
-    "GNU C-Graph demonstrates the theory of convolution underlying
-engineering systems and signal analysis.")
+     "GNU C-Graph is a tool for demonstrating the theory of convolution.
+Thus, it can serve as an excellent aid to students of signal and systems
+theory in visualizing the convolution process.  Rather than forcing the
+student to write code, the program offers an intuitive interface with
+interactive dialogs to guide them.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/c-graph/")))
 
