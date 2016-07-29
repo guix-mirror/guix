@@ -151,46 +151,45 @@
        ;; A more structural fix is needed.
        #:parallel-build? #f
        #:phases
-         (alist-replace
-          'configure
-          (lambda* (#:key outputs #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (substitute* '("configure" "qtbase/configure")
-                (("/bin/pwd") (which "pwd")))
-              (substitute* "qtbase/src/corelib/global/global.pri"
-                (("/bin/ls") (which "ls")))
-              ;; do not pass "--enable-fast-install", which makes the
-              ;; configure process fail
-              (zero? (system*
-                      "./configure"
-                      "-verbose"
-                      "-prefix" out
-                      "-opensource"
-                      "-confirm-license"
-                      ;; Most "-system-..." are automatic, but some use
-                      ;; the bundled copy by default.
-                      "-system-sqlite"
-                      "-system-harfbuzz"
-                      ;; explicitly link with openssl instead of dlopening it
-                      "-openssl-linked"
-                      ;; explicitly link with dbus instead of dlopening it
-                      "-dbus-linked"
-                      ;; drop special machine instructions not supported
-                      ;; on all instances of the target
-                      ,@(if (string-prefix? "x86_64"
-                                            (or (%current-target-system)
-                                                (%current-system)))
-                            '()
-                            '("-no-sse2"))
-                      "-no-sse3"
-                      "-no-ssse3"
-                      "-no-sse4.1"
-                      "-no-sse4.2"
-                      "-no-avx"
-                      "-no-avx2"
-                      "-no-mips_dsp"
-                      "-no-mips_dspr2"))))
-          %standard-phases)))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (substitute* '("configure" "qtbase/configure")
+                 (("/bin/pwd") (which "pwd")))
+               (substitute* "qtbase/src/corelib/global/global.pri"
+                 (("/bin/ls") (which "ls")))
+               ;; do not pass "--enable-fast-install", which makes the
+               ;; configure process fail
+               (zero? (system*
+                       "./configure"
+                       "-verbose"
+                       "-prefix" out
+                       "-opensource"
+                       "-confirm-license"
+                       ;; Most "-system-..." are automatic, but some use
+                       ;; the bundled copy by default.
+                       "-system-sqlite"
+                       "-system-harfbuzz"
+                       ;; explicitly link with openssl instead of dlopening it
+                       "-openssl-linked"
+                       ;; explicitly link with dbus instead of dlopening it
+                       "-dbus-linked"
+                       ;; drop special machine instructions not supported
+                       ;; on all instances of the target
+                       ,@(if (string-prefix? "x86_64"
+                                             (or (%current-target-system)
+                                                 (%current-system)))
+                             '()
+                             '("-no-sse2"))
+                       "-no-sse3"
+                       "-no-ssse3"
+                       "-no-sse4.1"
+                       "-no-sse4.2"
+                       "-no-avx"
+                       "-no-avx2"
+                       "-no-mips_dsp"
+                       "-no-mips_dspr2"))))))))
     (home-page "http://qt-project.org/")
     (synopsis "Cross-platform GUI library")
     (description "Qt is a cross-platform application and UI framework for
