@@ -62,7 +62,7 @@
                 "1xsiivjjyhqcs6dyjcshrnxlgypvyfzacjz7gcjgl88xiw9lylri"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/macchanger")
-    (synopsis "Display or change the MAC address of networking devices")
+    (synopsis "Viewing and manipulating MAC addresses of network interfaces")
     (description "GNU MAC Changer is a utility for viewing and changing MAC
 addresses of networking devices.  New addresses may be set explicitly or
 randomly.  They can include MAC addresses of the same or other hardware vendors
