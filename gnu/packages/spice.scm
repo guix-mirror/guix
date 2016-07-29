@@ -54,7 +54,7 @@
                (base32
                 "1wsnmk4wjpdhbn1zaxg6bmyxspcki2zgy0am9lk037rnl4krwzj0"))))
     (build-system gnu-build-system)
-    (inputs
+    (propagated-inputs
       `(("libusb" ,libusb)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
