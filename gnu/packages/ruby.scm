@@ -4050,7 +4050,7 @@ associated records.")
        ("ruby-minitest-rg" ,ruby-minitest-rg)
        ("ruby-mocha" ,ruby-mocha)
        ("ruby-activesupport" ,ruby-activesupport)))
-    (synopsis "Test mocks for time-dependent functions.")
+    (synopsis "Test mocks for time-dependent functions")
     (description
      "Timecop provides \"time travel\" and \"time freezing\" capabilities,
 making it easier to test time-dependent code.  It provides a unified method to
@@ -4116,4 +4116,3 @@ inspired by Erlang, Clojure, Go, JavaScript, actors and classic concurrency
 patterns.")
     (home-page "http://www.concurrent-ruby.com")
     (license license:expat)))
-

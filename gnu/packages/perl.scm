@@ -5713,7 +5713,7 @@ a minimum of effort.")
      `(("perl-test-tester" ,perl-test-tester)
        ("perl-data-dump" ,perl-data-dump)))
     (home-page "http://search.cpan.org/dist/Test-Trap")
-    (synopsis "Trap exit codes, exceptions, output, etc.")
+    (synopsis "Trap exit codes, exceptions, output, and so on")
     (description "This module is primarily (but not exclusively) for use in
 test scripts: A block eval configurable and extensible but by default trapping
 STDOUT, STDERR, warnings, exceptions, would-be exit codes, and return values
