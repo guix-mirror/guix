@@ -106,6 +106,16 @@ freedesktop.org project.")
 other applications that need to directly deal with input devices.")
     (license license:x11)))
 
+(define-public libinput-minimal
+  (package (inherit libinput)
+    (name "libinput-minimal")
+    (inputs
+     `(("libevdev" ,libevdev)
+       ("mtdev" ,mtdev)))
+    (arguments
+      `(#:configure-flags
+        '("--disable-libwacom")))))
+
 (define-public libxdg-basedir
   (package
     (name "libxdg-basedir")
