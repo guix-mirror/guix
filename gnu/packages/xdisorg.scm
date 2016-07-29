@@ -4,7 +4,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014, 2015, 2016 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
+;;; Copyright © 2015, 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2015 Alexander I.Grafov <grafov@gmail.com>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 xd1le <elisp.vim@gmail.com>
@@ -48,7 +48,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages gnome)               ;for libgudev
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
@@ -976,3 +976,49 @@ connectivity of the X server running on a particular @code{DISPLAY}.")
 applications you regularily use and also allows you to search for an application
 by name.")
     (license license:expat)))
+
+(define-public tint2
+  (package
+    (name "tint2")
+    (version "0.12.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://gitlab.com/o9000/" name
+                                  "/repository/archive.tar.gz?ref=" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0dv7zaj2ahnfclnwnwcz9arrvzxn65yy29z7fqdgifdh3jk1kl2h"))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:tests? #f                      ;no test target
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-installation-prefix
+           (lambda _
+             (substitute* "CMakeLists.txt"
+               (("/etc") "${CMAKE_INSTALL_PREFIX}/etc")))))))
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("imlib2" ,imlib2)
+       ("librsvg" ,librsvg)
+       ("libxcomposite" ,libxcomposite)
+       ("libxdamage" ,libxdamage)
+       ("libxft" ,libxft)
+       ("libxinerama" ,libxinerama)
+       ("libxrandr" ,libxrandr)
+       ("startup-notification" ,startup-notification)))
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://gitlab.com/o9000/tint2")
+    (synopsis "Lightweight task bar")
+    (description
+     "Tint2 is a simple task bar made for modern X window managers.  It was
+specifically made for Openbox but it should also work with other window
+managers (GNOME, KDE, XFCE etc.).
+
+The taskbar includes transparency and color settings for the font, icons,
+border, and background.  It also supports multihead setups, customized mouse
+actions, a built-in clock, a battery monitor and a system tray.")
+    (license license:gpl2)))
