@@ -204,3 +204,45 @@ as an alternative to the BIND, djbdns or other DNS clients.")))
 It includes command-line client and server management, TCP access control,
 privilege escalation across UNIX domain sockets, IDENT protocol management and
 clock synchronization.")))
+
+(define-public s6-rc
+  (package
+   (name "s6-rc")
+   (version "0.0.3.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "http://skarnet.org/software/s6-rc/s6-rc-"
+                         version ".tar.gz"))
+     (sha256
+      (base32
+       "0bl94lbaphbpaaj4wbb86xqgp5bcgrf3m7p80mimw1qsjrvlxfay"))))
+    (build-system gnu-build-system)
+    (inputs `(("skalibs" ,skalibs)
+              ("execline" ,execline)
+              ("s6" ,s6)))
+    (arguments
+     '(#:configure-flags (list
+                          (string-append "--with-lib="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs")
+                          (string-append "--with-lib="
+                                         (assoc-ref %build-inputs "execline")
+                                         "/lib/execline")
+                          (string-append "--with-lib="
+                                         (assoc-ref %build-inputs "s6")
+                                         "/lib/s6")
+                          (string-append "--with-sysdeps="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs/sysdeps"))
+       #:tests? #f))
+    (home-page "http://skarnet.org/software/s6-rc")
+    (license isc)
+    (synopsis "Service manager for s6-based systems")
+    (description
+     "s6-rc is a service manager for s6-based systems, i.e. a suite of
+programs that can start and stop services, both long-running daemons and
+one-time initialization scripts, in the proper order according to a dependency
+tree.  It ensures that long-running daemons are supervised by the s6
+infrastructure, and that one-time scripts are also run in a controlled
+environment.")))
