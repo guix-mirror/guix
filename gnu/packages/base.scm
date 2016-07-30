@@ -719,19 +719,19 @@ GLIBC/HURD for a Hurd host"
 (define-syntax glibc
   (identifier-syntax (glibc-for-target)))
 
-(define-public glibc-2.21
+(define-public glibc-2.22
   ;; The old libc, which we use mostly to build locale data in the old format
   ;; (which the new libc can cope with.)
   (package
     (inherit glibc)
-    (version "2.21")
+    (version "2.22")
     (source (origin
               (inherit (package-source glibc))
               (uri (string-append "mirror://gnu/glibc/glibc-"
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1f135546j34s9bfkydmx2nhh9vwxlx60jldi80zmsnln6wj3dsxf"))
+                "0j49682pm2nh4qbdw35bas82p1pgfnz4d2l7iwfyzvrvj0318wzb"))
               (patches (search-patches "glibc-ldd-x86_64.patch"))))
     (arguments
       (substitute-keyword-arguments (package-arguments glibc)
@@ -742,6 +742,21 @@ GLIBC/HURD for a Hurd host"
                 ;; Use `pwd' instead of `/bin/pwd' for glibc-2.21
                 (substitute* "configure"
                   (("/bin/pwd") "pwd"))))))))))
+
+(define-public glibc-2.21
+  ;; The old libc, which we use mostly to build locale data in the old format
+  ;; (which the new libc can cope with.)
+  (package
+    (inherit glibc-2.22)
+    (version "2.21")
+    (source (origin
+              (inherit (package-source glibc))
+              (uri (string-append "mirror://gnu/glibc/glibc-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "1f135546j34s9bfkydmx2nhh9vwxlx60jldi80zmsnln6wj3dsxf"))
+              (patches (search-patches "glibc-ldd-x86_64.patch"))))))
 
 (define-public glibc-locales
   (package
