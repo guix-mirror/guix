@@ -65,5 +65,7 @@
     (home-page "http://www.stellarium.org/")
     (synopsis "3D sky viewer")
     (description "Stellarium is a planetarium.  It shows a realistic sky in
-3D, just like what you see with the naked eye, binoculars, or a telescope.")
+3D, just like what you see with the naked eye, binoculars, or a telescope.  It
+can be used to control telescopes over a serial port for tracking celestial
+objects.")
     (license license:gpl2+)))
