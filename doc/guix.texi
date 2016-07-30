@@ -9921,6 +9921,17 @@ Finally, @var{extra-options} is a list of additional command-line options
 passed to @command{lircd}.
 @end deffn
 
+@cindex spice
+@subsubheading Spice Service
+
+The @code{(gnu services spice)} module provides the following service.
+
+@deffn {Scheme Procedure} spice-vdagent-service [#:spice-vdagent]
+Returns a service that runs @url{http://www.spice-space.org,VDAGENT}, a daemon
+that enables sharing the clipboard with a vm and setting the guest display
+resolution when the graphical console window resizes.
+@end deffn
+
 @subsubsection Dictionary Services
 The @code{(gnu services dict)} module provides the following service:
 
