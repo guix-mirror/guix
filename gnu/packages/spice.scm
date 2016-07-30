@@ -234,6 +234,13 @@ Internet and from a wide variety of machine architectures.")
                (((string-append "\\$\\(mkdir_p\\) \\$\\(DESTDIR\\)"
                                 "\\$\\(localstatedir\\)/run/spice-vdagentd"))
                  "-$(mkdir_p) $(DESTDIR)$(localstatedir)/run/spice-vdagentd"))
+             #t))
+         (add-after 'unpack 'patch-spice-vdagent.desktop
+           (lambda* (#:key outputs #:allow-other-keys)
+            (substitute* "data/spice-vdagent.desktop"
+              (("Exec=/usr/bin/spice-vdagent\n")
+               (string-append "Exec=" (assoc-ref outputs "out")
+                              "/bin/spice-vdagent")))
              #t)))))
     (inputs
       `(("alsa-lib" ,alsa-lib)
