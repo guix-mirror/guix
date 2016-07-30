@@ -246,3 +246,36 @@ one-time initialization scripts, in the proper order according to a dependency
 tree.  It ensures that long-running daemons are supervised by the s6
 infrastructure, and that one-time scripts are also run in a controlled
 environment.")))
+
+(define-public s6-portable-utils
+  (package
+   (name "s6-portable-utils")
+   (version "2.0.6.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "http://skarnet.org/software/s6-portable-utils/s6-portable-utils-"
+           version ".tar.gz"))
+     (sha256
+      (base32
+       "0jwxj0ma4zd1h6i3i98nsp0miidr54phap7dqwf6c8vafq9psfr3"))))
+    (build-system gnu-build-system)
+    (inputs `(("skalibs" ,skalibs)))
+    (arguments
+     '(#:configure-flags (list
+                          (string-append "--with-lib="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs")
+                          (string-append "--with-sysdeps="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs/sysdeps"))
+       #:tests? #f))
+    (home-page "http://skarnet.org/software/s6-portable-utils")
+    (license isc)
+    (synopsis "Tiny command-line Unix utilities")
+    (description
+     "s6-portable-utils is a set of tiny general Unix utilities, often
+performing well-known tasks such as @command{cut} and @command{grep}, but
+optimized for simplicity and small size.  They were designed for embedded
+systems and other constrained environments, but they work everywhere.")))
