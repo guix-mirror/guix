@@ -118,29 +118,28 @@
                 (string-append "# " all)))
              #t)))))
     (inputs                                       ; TODO: Add optional inputs.
-     `(("sdl" ,sdl)
-       ("mesa" ,mesa)
-       ("libusb" ,libusb)                         ;USB pass-through support
-
-       ;; ("libaio" ,libaio)
+     `(("alsa-lib" ,alsa-lib)
+       ("attr" ,attr)
        ("glib" ,glib)
-       ("ncurses" ,ncurses)
-       ("libpng" ,libpng)
-       ("libjpeg" ,libjpeg-8)
-       ("pixman" ,pixman)
-       ;; ("vde2" ,vde2)
-       ("util-linux" ,util-linux)
-       ("libcap" ,libcap)           ; virtfs support requires libcap & libattr
+       ;; ("libaio" ,libaio)
        ("libattr" ,attr)
+       ("libcap" ,libcap)           ; virtfs support requires libcap & libattr
+       ("libjpeg" ,libjpeg-8)
+       ("libpng" ,libpng)
+       ("libusb" ,libusb)                         ;USB pass-through support
+       ("mesa" ,mesa)
+       ("ncurses" ,ncurses)
        ;; ("pciutils" ,pciutils)
-       ("alsa-lib" ,alsa-lib)
-       ("zlib" ,zlib)
-       ("attr" ,attr)))
-    (native-inputs `(("pkg-config" ,pkg-config)
+       ("pixman" ,pixman)
+       ("sdl" ,sdl)
+       ("util-linux" ,util-linux)
+       ;; ("vde2" ,vde2)
+       ("zlib" ,zlib)))
+    (native-inputs `(("glib:bin" ,glib "bin") ; gtester, etc.
+                     ("perl" ,perl)
+                     ("pkg-config" ,pkg-config)
                      ("python" ,python-2) ; incompatible with Python 3 according to error message
-                     ("glib" ,glib "bin") ; gtester, etc.
-                     ("texinfo" ,texinfo)
-                     ("perl" ,perl)))
+                     ("texinfo" ,texinfo)))
     (home-page "http://www.qemu-project.org")
     (synopsis "Machine emulator and virtualizer")
     (description
@@ -175,4 +174,4 @@ server and embedded PowerPC, and S390 guests.")
 
     ;; Remove dependencies on optional libraries, notably GUI libraries.
     (inputs (fold alist-delete (package-inputs qemu)
-                  '("sdl" "mesa" "libusb")))))
+                  '("libusb" "mesa" "sdl")))))
