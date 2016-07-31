@@ -2247,7 +2247,7 @@ revised simplex and the branch-and-bound methods.")
 (define-public dealii
   (package
     (name "dealii")
-    (version "8.2.1")
+    (version "8.4.1")
     (source
      (origin
        (method url-fetch)
@@ -2255,8 +2255,7 @@ revised simplex and the branch-and-bound methods.")
                            "download/v" version "/dealii-" version ".tar.gz"))
        (sha256
         (base32
-         "185jych0gdnpkjwxni7pd0dda149492zwq2457xdjg76bzj78mnp"))
-       (patches (search-patches "dealii-p4est-interface.patch"))
+         "1bdksvvyp1rj37df1ndh8j3x9nzpc3sazw8nd0hzvnlw0qnyk800"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled sources: UMFPACK, TBB, muParser, and boost
