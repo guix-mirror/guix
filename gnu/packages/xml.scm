@@ -207,7 +207,7 @@ module.")
 (define-public perl-xml-libxml
   (package
     (name "perl-xml-libxml")
-    (version "2.0125")
+    (version "2.0128")
     (source
      (origin
        (method url-fetch)
@@ -215,7 +215,7 @@ module.")
                            "XML-LibXML-" version ".tar.gz"))
        (sha256
         (base32
-         "1mvbv1pwpdqni9ia9b6brg8brnnvfxr8j5x872qsngc92gipyh01"))))
+         "0awgd2gjzy7kn38bqblsigikzl81xsi561phkz9f9b9v3x2vmrr6"))))
     (build-system perl-build-system)
     (propagated-inputs
      `(("perl-xml-namespacesupport" ,perl-xml-namespacesupport)
