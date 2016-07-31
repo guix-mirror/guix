@@ -786,7 +786,7 @@ the 'share/locale' sub-directory of this package.")
          ((#:configure-flags flags)
           `(append ,flags
                    ;; Use $(libdir)/locale/X.Y as is the case by default.
-                   (list (string-append "libc_cv_localedir="
+                   (list (string-append "libc_cv_complocaledir="
                                         (assoc-ref %outputs "out")
                                         "/lib/locale/"
                                         ,(package-version glibc))))))))))
