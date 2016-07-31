@@ -279,3 +279,35 @@ environment.")))
 performing well-known tasks such as @command{cut} and @command{grep}, but
 optimized for simplicity and small size.  They were designed for embedded
 systems and other constrained environments, but they work everywhere.")))
+
+(define-public s6-linux-utils
+  (package
+   (name "s6-linux-utils")
+   (version "2.1.0.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "http://skarnet.org/software/s6-linux-utils/s6-linux-utils-"
+           version ".tar.gz"))
+     (sha256
+      (base32
+       "1bby751blynb7p8wd3npjm71lf10ysmfvqrd3dqrhhajpa2bl8rm"))))
+    (build-system gnu-build-system)
+    (inputs `(("skalibs" ,skalibs)))
+    (arguments
+     '(#:configure-flags (list
+                          (string-append "--with-lib="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs")
+                          (string-append "--with-sysdeps="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs/sysdeps"))
+       #:tests? #f))
+    (home-page "http://skarnet.org/software/s6-linux-utils")
+    (license isc)
+    (synopsis "Set of minimalistic Linux-specific system utilities")
+    (description
+     "s6-linux-utils is a set of minimalistic Linux-specific system utilities,
+such as @command{mount}, @command{umount}, and @command{chroot} commands,
+Linux uevent listeners, a @command{devd} device hotplug daemon, and more.")))
