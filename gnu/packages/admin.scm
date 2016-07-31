@@ -981,18 +981,18 @@ network, which causes enabled computers to power on.")
 (define-public dmidecode
   (package
     (name "dmidecode")
-    (version "2.12")
+    (version "3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://savannah/dmidecode/dmidecode-"
-                    version ".tar.bz2"))
+                    version ".tar.xz"))
               (sha256
                (base32
-                "122hgaw8mpqdfra159lfl6pyk3837giqx6vq42j64fjnbl2z6gwi"))))
+                "0iby0xfk5x3cdr0x0gxj5888jjyjhafvaq0l79civ73jjfqmphvy"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-delete 'configure %standard-phases)
+     '(#:phases (modify-phases %standard-phases (delete 'configure))
        #:tests? #f                                ; no 'check' target
        #:make-flags (list (string-append "prefix="
                                          (assoc-ref %outputs "out")))))
