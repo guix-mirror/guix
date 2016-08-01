@@ -2697,3 +2697,37 @@ with the \"Stamp\" tool within Tux Paint.")
     (description
      "Tux Paint Config is a graphical configuration editor for Tux Paint.")
     (license license:gpl2)))            ;no "or later" present
+
+(define-public supertux
+  (package
+   (name "supertux")
+   (version "0.4.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "https://github.com/SuperTux/supertux/releases/"
+                                "download/v" version
+                                "/supertux-" version ".tar.bz2"))
+            (sha256
+             (base32
+              "10ppmy6w77lxj8bdzjahc9bidgl4qgzr9rimn15rnqay84ydx3fi"))))
+   (arguments '(#:tests? #f
+                #:configure-flags '("-DINSTALL_SUBDIR_BIN=bin")))
+   (build-system cmake-build-system)
+   (inputs `(("sdl2" ,sdl2)
+             ("sdl2-image" ,sdl2-image)
+             ("sdl2-mixer" ,sdl2-mixer)
+             ("openal" ,openal)
+             ("mesa" ,mesa)
+             ("glew" ,glew)
+             ("libvorbis" ,libvorbis)
+             ("libogg" ,libogg)
+             ("physfs" ,physfs)
+             ("curl" ,curl)
+             ("boost" ,boost)))
+   (native-inputs `(("pkg-config" ,pkg-config)))
+   (synopsis "2D platformer game")
+   (description "SuperTux is a free classic 2D jump'n run sidescroller game
+in a style similar to the original Super Mario games covered under
+the GNU GPL.")
+   (home-page "https://supertuxproject.org/")
+   (license license:gpl3+)))
