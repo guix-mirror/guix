@@ -205,7 +205,13 @@ by two spaces; possible infraction~p at ~{~a~^, ~}")
   ;; native inputs.
   (let ((linted package)
         (inputs (package-inputs package))
-        (native-inputs '("pkg-config" "glib:bin" "intltool" "itstool")))
+        (native-inputs
+          '("pkg-config"
+            "extra-cmake-modules"
+            "glib:bin"
+            "intltool"
+            "itstool"
+            "qttools")))
     (match inputs
       (((labels packages . outputs) ...)
        (for-each (lambda (package output)
