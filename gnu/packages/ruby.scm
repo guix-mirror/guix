@@ -908,13 +908,13 @@ Ruby Gems.")
 (define-public ruby-ffi
   (package
     (name "ruby-ffi")
-    (version "1.9.10")
+    (version "1.9.14")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "ffi" version))
               (sha256
                (base32
-                "1m5mprppw0xcrv2mkim5zsk70v089ajzqiq5hpyb0xg96fcyzyxj"))))
+                "1nkcrmxqr0vb1y4rwliclwlj2ajsi4ddpdx2gvzjy0xbkk5iqzfp"))))
     (build-system ruby-build-system)
     ;; FIXME: Before running tests the build system attempts to build libffi
     ;; from sources.
