@@ -194,3 +194,50 @@ with a keyboard, though it also supports mouse.  It is customizable
 and extensible with plugins and scripts.")
     (home-page "http://www.weechat.org/")
     (license license:gpl3)))
+
+(define-public ircii
+  (package
+    (name "ircii")
+    (version "20151120")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://ircii.warped.com/"
+                                 name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "178dc279f5j894qvp96dzz7c0jpryqlcqw5g0dc9yaxg9kgw1lqm"))))
+    (build-system gnu-build-system)
+    ;; TODO: We should package a small socks4/5 library/server to configure
+    ;; ircii with socks client. `ghc-socks' pulls in lots of haskell, which
+    ;; is too big.
+    (arguments
+     `(#:tests? #f
+       #:configure-flags (list
+                          "--enable-ipv6"
+                          "--with-emacs-meta-keys"
+                          (string-append "--with-openssl="
+                                         (assoc-ref %build-inputs "openssl")))
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'patch-bsdinstall-absolute-path-bins
+           (lambda* (#:key inputs #:allow-other-keys)
+             (substitute* "bsdinstall"
+               (("/bin/strip") "strip")
+               (("/bin/cp") "cp")
+               (("/bin/chmod") "chmod")
+               (("/etc/chown") "chown")
+               (("/bin/chgrp") "chgrp")
+               (("/bin/mkdir") "mkdir")
+               (("/bin/rm") "rm")
+               (("/bin/mv") "mv")))))))
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("openssl" ,openssl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("perl" ,perl)))
+    (home-page "http://www.eterna.com.au/ircii/")
+    (synopsis "Terminal-based IRC and ICB client")
+    (description
+     "ircII is a terminal based IRC and ICB client for UNIX systems.")
+    (license license:bsd-3)))
