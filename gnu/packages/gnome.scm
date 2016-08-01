@@ -20,6 +20,7 @@
 ;;; Copyright © 2016 Roel Janssen <roel@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -5388,3 +5389,32 @@ compiled.")
 GLib/GObject code.")
     (home-page "https://wiki.gnome.org/Projects/GFBGraph")
     (license license:lgpl2.1+)))
+
+(define-public libgnomekbd
+  (package
+    (name "libgnomekbd")
+    (version "3.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "02bahnl3vaqyqyr99r9kwka84sxj8qdrz7x0bf97192dysqaa7n4"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")
+       ("intltool" ,intltool)))
+    (propagated-inputs
+     ;; Referred to in .h files and .pc.
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("libxklavier" ,libxklavier)))
+    (home-page "https://www.gnome.org")
+    (synopsis "GNOME keyboard configuration library")
+    (description
+     "Libgnomekbd is a keyboard configuration library for the GNOME desktop
+environment, which can notably display keyboard layouts.")
+    (license license:lgpl2.0+)))

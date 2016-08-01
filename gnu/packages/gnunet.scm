@@ -316,7 +316,9 @@ services.")
     (arguments
      `(#:configure-flags
        (list "--without-libunique"
-             "--with-qrencode")))
+             "--with-qrencode"
+             (string-append "--with-gnunet="
+                            (assoc-ref %build-inputs "gnunet")))))
     (inputs
      `(("gnunet" ,gnunet)
        ("libgcrypt" ,libgcrypt)

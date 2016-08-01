@@ -31,6 +31,7 @@
   #:use-module (guix git-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages databases)
@@ -41,8 +42,11 @@
   #:use-module (gnu packages gnunet)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages music)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages zip)
   #:use-module (gnu packages gl)
@@ -512,3 +516,102 @@ It offers the following features:
 OpenGL programs with character rendering services via an application programming
 interface (API).")
     (license (list license:expat license:lgpl2.1+))))
+
+(define-public python-pygame
+  (package
+    (name "python-pygame")
+    (version "1.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://pygame.org/ftp/pygame-"
+                                  version "release.tar.gz"))
+              (sha256
+               (base32
+                "0cyl0ww4fjlf289pjxa53q4klyn55ajvkgymw0qrdgp4593raq52"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f ; Tests require pygame to be installed first.
+       #:phases
+       (modify-phases %standard-phases
+         ;; Set the paths to the dependencies manually because
+         ;; the configure script does not allow passing them as
+         ;; parameters.  This also means we can skip the configure
+         ;; phase.
+         (add-before 'build 'set-library-paths
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((sdl-ref   (assoc-ref inputs "sdl"))
+                   (font-ref  (assoc-ref inputs "sdl-ttf"))
+                   (image-ref (assoc-ref inputs "sdl-image"))
+                   (mixer-ref (assoc-ref inputs "sdl-mixer"))
+                   (smpeg-ref (assoc-ref inputs "libsmpeg"))
+                   (png-ref   (assoc-ref inputs "libpng"))
+                   (jpeg-ref  (assoc-ref inputs "libjpeg"))
+                   (v4l-ref   (assoc-ref inputs "v4l-utils"))
+                   (out-ref   (assoc-ref outputs "out")))
+               (substitute* "Setup.in"
+                 (("SDL = -I/usr/include/SDL")
+                  (string-append "SDL = -I" sdl-ref "/include/SDL -I.")))
+               (substitute* "Setup.in"
+                 (("FONT = -lSDL_ttf")
+                  (string-append "FONT = -I" font-ref "/include/SDL -L"
+                                             font-ref "/lib -lSDL_ttf")))
+               (substitute* "Setup.in"
+                 (("IMAGE = -lSDL_image")
+                  (string-append "IMAGE = -I" image-ref "/include/SDL -L"
+                                              image-ref "/lib -lSDL_image")))
+               (substitute* "Setup.in"
+                 (("MIXER = -lSDL_mixer")
+                  (string-append "MIXER = -I" mixer-ref "/include/SDL -L"
+                                              mixer-ref "/lib -lSDL_mixer")))
+               (substitute* "Setup.in"
+                 (("SMPEG = -lsmpeg")
+                  (string-append "SMPEG = -I" smpeg-ref "/include/smpeg -L"
+                                              smpeg-ref "/lib -lsmpeg")))
+               (substitute* "Setup.in"
+                 (("PNG = -lpng")
+                  (string-append "PNG = -I" png-ref "/include -L"
+                                            png-ref "/lib -lpng")))
+               (substitute* "Setup.in"
+                 (("JPEG = -ljpeg")
+                  (string-append "JPEG = -I" jpeg-ref "/include -L"
+                                 jpeg-ref "/lib -ljpeg")))
+               (substitute* "Setup.in"
+                 (("^pypm") "#pypm"))
+               (substitute* "src/movie.c")
+               ;; Create a path to a header file provided by v4l-utils.
+               (system* "mkdir" "linux")
+               (system* "ln" "--symbolic"
+                        (string-append v4l-ref "/include/libv4l1-videodev.h")
+                        "linux/videodev.h")
+               (system* "ln" "--symbolic" "Setup.in" "Setup")))))))
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (inputs
+     `(("sdl" ,sdl)
+       ("sdl-image" ,sdl-image)
+       ("sdl-mixer" ,sdl-mixer)
+       ("sdl-ttf" ,sdl-ttf)
+       ("sdl-gfx" ,sdl-gfx)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libX11" ,libx11)
+       ("libsmpeg" ,libsmpeg)
+       ("portmidi" ,portmidi)
+       ("v4l-utils" ,v4l-utils)))
+    (home-page "http://www.pygame.org")
+    (synopsis "SDL wrapper for Python")
+    (description "Pygame is a set of Python modules designed for writing games.
+Pygame adds functionality on top of the excellent SDL library. This allows you
+to create fully featured games and multimedia programs in the python language.")
+    (license (list license:bsd-2
+                   ;; python numeric license as listed by Debian looks like
+                   ;; an Expat-style license with a warranty disclaimer for
+                   ;; the U.S. government and the University of California.
+                   license:expat
+                   license:lgpl2.0+
+                   license:lgpl2.1+
+                   license:gpl3+
+                   license:psfl
+                   license:public-domain
+                   license:lgpl2.1+))))

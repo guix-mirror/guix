@@ -55,12 +55,15 @@
   #:use-module (gnu packages audio)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages boost)
+  #:use-module (gnu packages fltk)
   #:use-module (gnu packages fribidi)
   #:use-module (gnu packages game-development)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gperf)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libcanberra)
@@ -70,6 +73,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages netpbm)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages xorg)
@@ -94,9 +98,7 @@
   #:use-module (gnu packages video)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages tcl)
-  #:use-module (gnu packages fribidi)
   #:use-module (gnu packages xdisorg)
-  #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system cmake)
@@ -1871,14 +1873,14 @@ and a game metadata scraper.")
 (define openttd-engine
   (package
     (name "openttd-engine")
-    (version "1.6.0")
+    (version "1.6.1")
     (source
      (origin (method url-fetch)
              (uri (string-append "http://binaries.openttd.org/releases/"
                                  version "/openttd-" version "-source.tar.xz"))
              (sha256
               (base32
-               "1cjf9gz7d0sn7893wv9d00q724sxv3d81bgb0c5f5ppz2ssyc4jc"))
+               "1ak32fj5xkk2fvmm3g8i7wzmk4bh2ijsp8fzvvw5wj6365p9j24v"))
              (modules '((guix build utils)))
              (snippet
               ;; The DOS port contains proprietary software.
@@ -1918,7 +1920,8 @@ and a game metadata scraper.")
 passengers by land, water and air.  It is a re-implementation of Transport
 Tycoon Deluxe with many enhancements including multiplayer mode,
 internationalization support, conditional orders and the ability to clone,
-autoreplace and autoupdate vehicles.")
+autoreplace and autoupdate vehicles.  This package only includes the game engine.  When you start
+it you will be prompted to download a graphics set.")
     (home-page "http://openttd.org/")
     ;; This package is GPLv2, except for a few files located in
     ;; "src/3rdparty/" which are under the 3-clause BSD, LGPLv2.1+ and Zlib
@@ -2531,3 +2534,162 @@ safety of the Chromium vessel.")
     ;; Clarified Artistic License for everything but sound, which is covered
     ;; by the Expat License.
     (license (list license:clarified-artistic license:expat))))
+
+(define-public tuxpaint
+  (package
+    (name "tuxpaint")
+    (version "0.9.22")                  ;keep VER_DATE below in sync
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/tuxpaint/tuxpaint/"
+                           version "/tuxpaint-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1qrbrdck9yxpcg3si6jb9i11w8lw9h4hqad0pfaxgyiniqpr7gca"))
+       (modules '((guix build utils)))
+       (snippet
+        '(begin
+           ;; Remove win32 directory which contains binary dll's and the
+           ;; deprecated visualc directory.
+           (for-each delete-file-recursively '("win32" "visualc"))
+           (substitute* "Makefile"
+             ;; Do not rely on $(GPERF) being an absolute file name
+             (("\\[ -x \\$\\(GPERF\\) \\]")
+              "$(GPERF) --version >/dev/null 2>&1"))))
+       (patches (search-patches "tuxpaint-stamps-path.patch"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gperf" ,gperf)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("cairo" ,cairo)
+       ("fribidi" ,fribidi)
+       ("gettext" ,gnu-gettext)
+       ("libpng" ,libpng)
+       ("librsvg" ,librsvg)
+       ("libpaper" ,libpaper)
+       ("netpbm" ,netpbm)
+       ("sdl" ,(sdl-union (list sdl sdl-mixer sdl-ttf sdl-image)))))
+    ;; TODO: Use system fonts rather than those in data/fonts
+    (arguments
+     `(#:make-flags `("VER_DATE=2014-08-23"
+                      "GPERF=gperf" "CC=gcc"
+                      "SDL_PCNAME=sdl SDL_image SDL_mixer SDL_ttf"
+                      ,(string-append "PREFIX=" %output)
+                      "GNOME_PREFIX=$(PREFIX)"
+                      "COMPLETIONDIR=$(PREFIX)/etc/bash_completion.d")
+       #:tests? #f                      ;No tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)   ;no configure phase
+                  (add-after 'install 'fix-import
+                    (lambda* (#:key inputs outputs #:allow-other-keys)
+                      (let* ((out (assoc-ref outputs "out"))
+                             (net (assoc-ref inputs "netpbm"))
+                             (tpi (string-append out "/bin/tuxpaint-import")))
+                        (substitute* tpi
+                          ;; Point to installation prefix so that the default
+                          ;; configure file is found.
+                          (("/usr/local") out))
+                        ;; tuxpaint-import uses a bunch of programs from
+                        ;; netpbm, so make sure it knows where those are
+                        (wrap-program tpi
+                          `("PATH" ":" prefix
+                            (,(string-append net "/bin"))))))))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "TUXPAINT_STAMPS_PATH")
+            (files '("share/tuxpaint/stamps")))))
+    (home-page "http://www.tuxpaint.org")
+    (synopsis "Drawing software for children")
+    (description
+     "Tux Paint is a free drawing program designed for young children (kids
+ages 3 and up).  It has a simple, easy-to-use interface; fun sound effects;
+and an encouraging cartoon mascot who helps guide children as they use the
+program.  It provides a blank canvas and a variety of drawing tools to help
+your child be creative.")
+    (license license:gpl2+)))
+
+(define-public tuxpaint-stamps
+  (package
+    (name "tuxpaint-stamps")
+    (version "2014.08.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/tuxpaint/tuxpaint-stamps/"
+                           (string-map (λ (x) (if (eq? x #\.) #\- x)) version)
+                           "/tuxpaint-stamps-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rhlwrjz44wp269v3rid4p8pi0i615pzifm1ym6va64gn1bms06q"))))
+    (build-system trivial-build-system)
+    (native-inputs
+     `(("tar" ,tar)
+       ("gzip" ,gzip)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+                   (setenv "PATH"
+                           (string-append
+                            (assoc-ref %build-inputs "tar") "/bin" ":"
+                            (assoc-ref %build-inputs "gzip") "/bin"))
+                   (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
+                   (chdir (string-append ,name "-" ,version))
+                   (let ((dir (string-append %output "/share/tuxpaint/stamps")))
+                     (mkdir-p dir)
+                     (copy-recursively "stamps" dir)))))
+    (home-page (package-home-page tuxpaint))
+    (synopsis "Stamp images for Tux Paint")
+    (description
+     "This package contains a set of \"Rubber Stamp\" images which can be used
+with the \"Stamp\" tool within Tux Paint.")
+    (license license:gpl2+)))
+
+(define-public tuxpaint-config
+  (package
+    (name "tuxpaint-config")
+    (version "0.0.13")                  ;keep VER_DATE below in sync
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/tuxpaint/tuxpaint-config/"
+                           version "/tuxpaint-config-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1z12s46mvy87qs3vgq9m0ki9pp21zqc52mmgphahpihw3s7haf6v"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("gettext" ,gnu-gettext)))
+    (inputs
+     `(("fltk" ,fltk)
+       ("libpaper" ,libpaper)
+       ;; TODO: Should the following be propagated by fltk?
+       ("libx11" ,libx11)
+       ("libxft" ,libxft)
+       ("mesa" ,mesa)))
+    (arguments
+     `(#:make-flags `("VER_DATE=2014-08-23"
+                      "CONFDIR=/etc/tuxpaint" ;don't write to store
+                      ,(string-append "PREFIX=" %output)
+                      "GNOME_PREFIX=$(PREFIX)")
+       #:tests? #f                      ;no tests
+       #:phases (modify-phases %standard-phases
+                  (delete 'configure)   ;no configure phase
+                  (add-before 'install 'gzip-no-name
+                    (lambda* _
+                      (substitute* "Makefile"
+                        ;; tuxpaint-config compresses its own documentation;
+                        ;; make sure it uses flags for reproducibility.
+                        (("gzip") "gzip --no-name"))))
+                  (add-before 'install 'make-install-dirs
+                    (lambda* (#:key outputs #:allow-other-keys)
+                      (let ((out (assoc-ref outputs "out")))
+                        (mkdir-p (string-append out "/bin"))
+                        #t))))))
+    (home-page (package-home-page tuxpaint))
+    (synopsis "Configure Tux Paint")
+    (description
+     "Tux Paint Config is a graphical configuration editor for Tux Paint.")
+    (license license:gpl2)))            ;no "or later" present

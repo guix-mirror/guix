@@ -358,13 +358,13 @@ It has been modified to remove all non-free binary blobs.")
 (define-public linux-libre-4.1
   (package
     (inherit linux-libre)
-    (version "4.1.28")
+    (version "4.1.29")
     (source (origin
               (method url-fetch)
               (uri (linux-libre-urls version))
               (sha256
                (base32
-                "02b7hq32cyx3h04k7l3mfzhh09snh5x4pxiwxllwchw94a6lkxl8"))))
+                "1ygd89x5plkpxisafhnrnfbw69a257sza2gw15wj9jkzxs36a1jp"))))
     (native-inputs
      (let ((conf (kernel-config (or (%current-target-system)
                                     (%current-system))
@@ -2590,7 +2590,7 @@ and copy/paste text in the console and in xterm.")
 (define-public btrfs-progs
   (package
     (name "btrfs-progs")
-    (version "4.5.3")
+    (version "4.6.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://kernel.org/linux/kernel/"
@@ -2598,7 +2598,7 @@ and copy/paste text in the console and in xterm.")
                                   "btrfs-progs-v" version ".tar.xz"))
               (sha256
                (base32
-                "1lzbw275xgv69v4z8hmsf3jnip38116hxhkpv0madk8wv049drz6"))))
+                "06c9l6m3w29dndk17jrlpgr01wykl10h34zva8zc2c571z6mrlaf"))))
     (build-system gnu-build-system)
     (outputs '("out"
                "static"))      ; static versions of binaries in "out" (~16MiB!)
@@ -2628,7 +2628,8 @@ and copy/paste text in the console and in xterm.")
                      ;; For building documentation
                      ("libxml2" ,libxml2)
                      ("docbook-xml" ,docbook-xml)
-                     ("docbook-xsl" ,docbook-xsl)))
+                     ("docbook-xsl" ,docbook-xsl)
+                     ("which" ,which)))
     (home-page "https://btrfs.wiki.kernel.org/")
     (synopsis "Create and manage btrfs copy-on-write file systems")
     (description "Btrfs is a copy-on-write (CoW) filesystem for Linux aimed at

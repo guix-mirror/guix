@@ -8,6 +8,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
+;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +34,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
+  #:use-module (guix svn-download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system glib-or-gtk)
@@ -1524,3 +1526,39 @@ implementation.")
 your graphical desktop and encodes it as a video.  This is a useful tool for
 making @dfn{screencasts}.")
     (license license:gpl2+)))
+
+(define-public libsmpeg
+  (package
+    (name "libsmpeg")
+    (version "0.4.5")
+    (source (origin
+              (method svn-fetch)
+              (uri (svn-reference
+                    (url "svn://svn.icculus.org/smpeg/trunk/")
+                    (revision 401))) ; last revision before smpeg2 (for SDL 2.0)
+              (sha256
+               (base32
+                "18yfkr70lr1x1hc8snn2ldnbzdcc7b64xmkqrfk8w59gpg7sl1xn"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (add-after 'unpack 'autogen.sh
+                    (lambda _
+                      (zero? (system* "sh" "autogen.sh")))))))
+    (native-inputs
+     `(("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (inputs
+     `(("sdl" ,sdl2)))
+    (home-page "http://icculus.org/smpeg/")
+    (synopsis "SDL MPEG decoding library")
+    (description
+     "SMPEG (SDL MPEG Player Library) is a free MPEG1 video player library
+with sound support.  Video playback is based on the ubiquitous Berkeley MPEG
+player, mpeg_play v2.2.  Audio is played through a slightly modified mpegsound
+library, part of splay v0.8.2.  SMPEG supports MPEG audio (MP3), MPEG-1 video,
+and MPEG system streams.")
+    (license (list license:expat
+                   license:lgpl2.1
+                   license:lgpl2.1+
+                   license:gpl2))))

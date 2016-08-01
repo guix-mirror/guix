@@ -115,13 +115,13 @@ interactive dialogs to guide them.")
 (define-public units
   (package
    (name "units")
-   (version "2.12")
+   (version "2.13")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/units/units-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "1jxvjknz2jhq773jrwx9gc1df3gfy73yqmkjkygqxzpi318yls3q"))))
+                     "1awhjw9zjlfb8s5g3yyx63f7ddfcr1sanlbxpqifmrgq24ql198b"))))
    (build-system gnu-build-system)
    (synopsis "Conversion between thousands of scales")
    (description

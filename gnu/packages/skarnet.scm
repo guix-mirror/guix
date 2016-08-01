@@ -204,3 +204,110 @@ as an alternative to the BIND, djbdns or other DNS clients.")))
 It includes command-line client and server management, TCP access control,
 privilege escalation across UNIX domain sockets, IDENT protocol management and
 clock synchronization.")))
+
+(define-public s6-rc
+  (package
+   (name "s6-rc")
+   (version "0.0.3.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append "http://skarnet.org/software/s6-rc/s6-rc-"
+                         version ".tar.gz"))
+     (sha256
+      (base32
+       "0bl94lbaphbpaaj4wbb86xqgp5bcgrf3m7p80mimw1qsjrvlxfay"))))
+    (build-system gnu-build-system)
+    (inputs `(("skalibs" ,skalibs)
+              ("execline" ,execline)
+              ("s6" ,s6)))
+    (arguments
+     '(#:configure-flags (list
+                          (string-append "--with-lib="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs")
+                          (string-append "--with-lib="
+                                         (assoc-ref %build-inputs "execline")
+                                         "/lib/execline")
+                          (string-append "--with-lib="
+                                         (assoc-ref %build-inputs "s6")
+                                         "/lib/s6")
+                          (string-append "--with-sysdeps="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs/sysdeps"))
+       #:tests? #f))
+    (home-page "http://skarnet.org/software/s6-rc")
+    (license isc)
+    (synopsis "Service manager for s6-based systems")
+    (description
+     "s6-rc is a service manager for s6-based systems, i.e. a suite of
+programs that can start and stop services, both long-running daemons and
+one-time initialization scripts, in the proper order according to a dependency
+tree.  It ensures that long-running daemons are supervised by the s6
+infrastructure, and that one-time scripts are also run in a controlled
+environment.")))
+
+(define-public s6-portable-utils
+  (package
+   (name "s6-portable-utils")
+   (version "2.0.6.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "http://skarnet.org/software/s6-portable-utils/s6-portable-utils-"
+           version ".tar.gz"))
+     (sha256
+      (base32
+       "0jwxj0ma4zd1h6i3i98nsp0miidr54phap7dqwf6c8vafq9psfr3"))))
+    (build-system gnu-build-system)
+    (inputs `(("skalibs" ,skalibs)))
+    (arguments
+     '(#:configure-flags (list
+                          (string-append "--with-lib="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs")
+                          (string-append "--with-sysdeps="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs/sysdeps"))
+       #:tests? #f))
+    (home-page "http://skarnet.org/software/s6-portable-utils")
+    (license isc)
+    (synopsis "Tiny command-line Unix utilities")
+    (description
+     "s6-portable-utils is a set of tiny general Unix utilities, often
+performing well-known tasks such as @command{cut} and @command{grep}, but
+optimized for simplicity and small size.  They were designed for embedded
+systems and other constrained environments, but they work everywhere.")))
+
+(define-public s6-linux-utils
+  (package
+   (name "s6-linux-utils")
+   (version "2.1.0.0")
+   (source
+    (origin
+     (method url-fetch)
+     (uri (string-append
+           "http://skarnet.org/software/s6-linux-utils/s6-linux-utils-"
+           version ".tar.gz"))
+     (sha256
+      (base32
+       "1bby751blynb7p8wd3npjm71lf10ysmfvqrd3dqrhhajpa2bl8rm"))))
+    (build-system gnu-build-system)
+    (inputs `(("skalibs" ,skalibs)))
+    (arguments
+     '(#:configure-flags (list
+                          (string-append "--with-lib="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs")
+                          (string-append "--with-sysdeps="
+                                         (assoc-ref %build-inputs "skalibs")
+                                         "/lib/skalibs/sysdeps"))
+       #:tests? #f))
+    (home-page "http://skarnet.org/software/s6-linux-utils")
+    (license isc)
+    (synopsis "Set of minimalistic Linux-specific system utilities")
+    (description
+     "s6-linux-utils is a set of minimalistic Linux-specific system utilities,
+such as @command{mount}, @command{umount}, and @command{chroot} commands,
+Linux uevent listeners, a @command{devd} device hotplug daemon, and more.")))

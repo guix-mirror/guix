@@ -54,14 +54,14 @@ internal RPC protocols and file formats.")
 (define-public python-protobuf
   (package
     (name "python-protobuf")
-    (version "3.0.0b4")
+    (version "3.0.0")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "protobuf" version))
        (sha256
         (base32
-         "18zvvn8cgbcwi85ws2ny0k4qp33wd525spsb8sxvrj325mbx9cpk"))))
+         "1xbgbfg4g43bihkyw1a2giqa2gxmqc5wkh0fzqcb90qi1z1hpi7c"))))
     (build-system python-build-system)
     (inputs
      `(("python-six" ,python-six)))
