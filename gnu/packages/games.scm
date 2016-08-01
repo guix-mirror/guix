@@ -2169,7 +2169,7 @@ http://lavachat.symlynx.com/unix/")
                                     "-Cdata"
                                     "--transform"
                                     (string-append "s/"
-                                                   name "-1.5.3/"
+                                                   name "-" ,version "/"
                                                    name "/")))
                          (list ,@(map car data-sources)))
                #t))
