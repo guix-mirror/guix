@@ -150,14 +150,14 @@ adding and extracting files to/from a tar archive.")
 (define-public gzip
   (package
    (name "gzip")
-   (version "1.6")
+   (version "1.8")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gzip/gzip-"
-                                version ".tar.gz"))
+                                version ".tar.xz"))
             (sha256
              (base32
-              "0zlgdm4v3dndrbiz7b67mbbj25dpwqbmbzjiycssvrfrcfvq7swp"))))
+              "1lxv3p4iyx7833mlihkn5wfwmz4cys5nybwpz3dfawag8kn6f5zz"))))
    (build-system gnu-build-system)
    (synopsis "General file (de)compression (using lzw)")
    (arguments

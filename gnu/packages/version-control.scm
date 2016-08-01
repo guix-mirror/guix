@@ -174,7 +174,12 @@ as well as the classic centralized workflow.")
               (("/bin/sh") (which "sh"))
               (("/usr/bin/perl") (which "perl"))
               (("/usr/bin/python") (which "python")))))
-        (add-after  'install 'install-shell-completion
+        (add-after 'configure 'add-PM.stamp
+          (lambda _
+            ;; Add the "PM.stamp" to avoid "no rule to make target".
+            (call-with-output-file "perl/PM.stamp" (const #t))
+            #t))
+        (add-after 'install 'install-shell-completion
           (lambda* (#:key outputs #:allow-other-keys)
             (let* ((out         (assoc-ref outputs "out"))
                    (completions (string-append out "/etc/bash_completion.d")))

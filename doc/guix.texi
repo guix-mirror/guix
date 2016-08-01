@@ -6394,8 +6394,9 @@ builds to @file{/gnu/store} which, initially, is an in-memory file system.
 
 Next, you have to edit a file and
 provide the declaration of the operating system to be installed.  To
-that end, the installation system comes with two text editors: GNU nano
-(@pxref{Top,,, nano, GNU nano Manual}), and GNU Zile, an Emacs clone.
+that end, the installation system comes with three text editors: GNU nano
+(@pxref{Top,,, nano, GNU nano Manual}), GNU Zile (an Emacs clone), and
+nvi (a clone of the original BSD @command{vi} editor).
 We strongly recommend storing that file on the target root file system, say,
 as @file{/mnt/etc/config.scm}.  Failing to do that, you will have lost your
 configuration file once you have rebooted into the newly-installed system.
@@ -7739,7 +7740,6 @@ non-privileged processes; the second entry lifts any restriction of the
 maximum address space that can be locked in memory.  These settings are
 commonly used for real-time audio systems.
 @end deffn
-
 
 @node Scheduled Job Execution
 @subsubsection Scheduled Job Execution

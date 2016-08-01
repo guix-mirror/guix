@@ -106,7 +106,7 @@
          version "-gnu.tar.xz")))
 
 (define-public linux-libre-headers
-  (let* ((version "3.14.37")
+  (let* ((version "4.1.18")
          (build-phase
           (lambda (arch)
             `(lambda _
@@ -144,7 +144,7 @@
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "1blxr2bsvfqi9khj4cpspv434bmx252zak2wsbi2mgl60zh77gza"))))
+               "1bddh2rg645lavhjkk9z75vflba5y0g73z2fjwgbfrj5jb44x9i7"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (arguments
@@ -469,11 +469,10 @@ providing the system administrator with some help in common tasks.")
                     (("build_kill=yes") "build_kill=no"))
                   #t))))
     (build-system gnu-build-system)
+    (outputs '("out"
+               "static"))      ; >2 MiB of static .a libraries
     (arguments
      `(#:configure-flags (list "--disable-use-tty-group"
-
-                               ;; Do not build .a files to save 2 MiB.
-                               "--disable-static"
 
                                ;; Install completions where our
                                ;; bash-completion package expects them.
@@ -499,6 +498,19 @@ providing the system administrator with some help in common tasks.")
                        (substitute* "tests/ts/misc/mcookie"
                          (("/etc/services")
                           (string-append net "/etc/services")))
+                       #t)))
+                  (add-after
+                   'install 'move-static-libraries
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let ((out    (assoc-ref outputs "out"))
+                           (static (assoc-ref outputs "static")))
+                       (mkdir-p (string-append static "/lib"))
+                       (with-directory-excursion out
+                         (for-each (lambda (file)
+                                     (rename-file file
+                                                  (string-append static "/"
+                                                                 file)))
+                                   (find-files "lib" "\\.a$")))
                        #t))))))
     (inputs `(("zlib" ,zlib)
               ("ncurses" ,ncurses)))
@@ -527,7 +539,9 @@ block devices, UUIDs, TTYs, and many other tools.")
                                   "procps-ng-" version ".tar.xz"))
               (sha256
                (base32
-                "1va4n0mpsq327ca9dqp4hnrpgs6821rp0f2m0jyc1bfjl9lk2jg9"))))
+                "1va4n0mpsq327ca9dqp4hnrpgs6821rp0f2m0jyc1bfjl9lk2jg9"))
+              (patches
+               (list (search-patch "procps-non-linux.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:modules ((guix build utils)
@@ -1562,7 +1576,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
 (define-public kmod
   (package
     (name "kmod")
-    (version "17")
+    (version "22")
     (source (origin
               (method url-fetch)
               (uri
@@ -1570,7 +1584,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
                               "kmod-" version ".tar.xz"))
               (sha256
                (base32
-                "1yid3a9b64a60ybj66fk2ysrq5klnl0ijl4g624cl16y8404g9rv"))
+                "10lzfkmnpq6a43a3gkx7x633njh216w0bjwz31rv8a1jlgg1sfxs"))
               (patches (search-patches "kmod-module-directory.patch"))))
     (build-system gnu-build-system)
     (native-inputs
@@ -2586,12 +2600,26 @@ and copy/paste text in the console and in xterm.")
                (base32
                 "06c9l6m3w29dndk17jrlpgr01wykl10h34zva8zc2c571z6mrlaf"))))
     (build-system gnu-build-system)
+    (outputs '("out"
+               "static"))      ; static versions of binaries in "out" (~16MiB!)
     (arguments
-     '(#:test-target "test"
+     '(#:phases (modify-phases %standard-phases
+                 (add-after 'build 'build-static
+                   (lambda _ (zero? (system* "make" "static"))))
+                 (add-after 'install 'install-static
+                   (let ((staticbin (string-append (assoc-ref %outputs "static")
+                                                  "/bin")))
+                     (lambda _
+                       (zero? (system* "make"
+                                       (string-append "bindir=" staticbin)
+                                       "install-static"))))))
+       #:test-target "test"
        #:parallel-tests? #f)) ; tests fail when run in parallel
     (inputs `(("e2fsprogs" ,e2fsprogs)
               ("libblkid" ,util-linux)
+              ("libblkid:static" ,util-linux "static")
               ("libuuid" ,util-linux)
+              ("libuuid:static" ,util-linux "static")
               ("zlib" ,zlib)
               ("lzo" ,lzo)))
     (native-inputs `(("pkg-config" ,pkg-config)

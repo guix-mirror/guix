@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
+;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015, 2016 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014, 2015, 2016 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
@@ -20,7 +21,7 @@
 ;;; Copyright © 2016 Albin Söderqvist <albin@fripost.org>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
-;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il"
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2370,9 +2371,9 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
                           (perl    (string-append (assoc-ref %build-inputs
                                                              "perl")
                                                   "/bin"))
-                          (gunzip  (string-append (assoc-ref %build-inputs
+                          (gzip    (string-append (assoc-ref %build-inputs
                                                              "gzip")
-                                                  "/bin/gunzip"))
+                                                  "/bin/gzip"))
                           (tar     (string-append (assoc-ref %build-inputs
                                                              "tar")
                                                   "/bin/tar"))
@@ -2382,7 +2383,7 @@ Super Game Boy, BS-X Satellaview, and Sufami Turbo.")
                      (begin
                        (mkdir out)
                        (copy-file tarball "grue-hunter.tar.gz")
-                       (zero? (system* gunzip "grue-hunter.tar.gz"))
+                       (zero? (system* gzip "-d" "grue-hunter.tar.gz"))
                        (zero? (system* tar "xvf"  "grue-hunter.tar"))
 
                        (mkdir-p bin)
