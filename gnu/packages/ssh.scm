@@ -143,7 +143,8 @@ a server that supports the SSH-2 protocol.")
    (build-system gnu-build-system)
    (inputs `(("groff" ,groff)
              ("openssl" ,openssl)
-             ("zlib" ,zlib)))
+             ("zlib" ,zlib)
+             ("xauth" ,xauth)))                   ;for 'ssh -X' and 'ssh -Y'
    (arguments
     `(#:test-target "tests"
       #:phases
