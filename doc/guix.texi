@@ -4985,6 +4985,8 @@ list of updaters).  Currently, @var{updater} may be one of:
 the updater for GNU packages;
 @item gnome
 the updater for GNOME packages;
+@item kde
+the updater for KDE packages;
 @item xorg
 the updater for X.org packages;
 @item elpa
