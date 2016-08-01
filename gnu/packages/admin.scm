@@ -183,14 +183,14 @@ graphs and can export its output to different formats.")
 (define-public htop
   (package
    (name "htop")
-   (version "2.0.1")
+   (version "2.0.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://hisham.hm/htop/releases/"
                   version "/htop-" version ".tar.gz"))
             (sha256
              (base32
-              "0rjn9ybqx5sav7z4gn18f1q6k23nmqyb6yydfgghzdznz9nn447l"))))
+              "11zlwadm6dpkrlfvf3z3xll26yyffa7qrxd1w72y1kl0rgffk6qp"))))
    (build-system gnu-build-system)
    (inputs
     `(("ncurses" ,ncurses)))
