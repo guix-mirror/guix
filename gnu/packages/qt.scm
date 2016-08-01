@@ -393,6 +393,13 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                  (("/bin/pwd") (which "pwd")))
                (substitute* "src/corelib/global/global.pri"
                  (("/bin/ls") (which "ls")))
+               ;; The configuration files for other Qt5 packages are searched
+               ;; through a call to "find_package" in Qt5Config.cmake, which
+               ;; disables the use of CMAKE_PREFIX_PATH via the parameter
+               ;; "NO_DEFAULT_PATH". Re-enable it so that the different
+               ;; components can be installed in different places.
+               (substitute* (find-files "." ".*\\.cmake")
+                 (("NO_DEFAULT_PATH") ""))
                ;; do not pass "--enable-fast-install", which makes the
                ;; configure process fail
                (zero? (system*
