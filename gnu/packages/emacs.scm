@@ -2697,6 +2697,30 @@ identifiers based on their names.  Each identifier gets a color based on a hash
 of its name.")
     (license license:bsd-2)))
 
+(define-public emacs-visual-fill-column
+  (package
+    (name "emacs-visual-fill-column")
+    (version "1.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://codeload.github.com/joostkremers/"
+                                  "visual-fill-column/tar.gz/" version))
+              (file-name (string-append name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "12vn7kdq2mpz9hgibbn1vhpf23lcm7c26k3fkz8nidhygwl5x5lq"))))
+    (build-system emacs-build-system)
+    (home-page "https://github.com/joostkremers/visual-fill-column")
+    (synopsis "Fill-column for visual-line-mode")
+    (description
+     "@code{visual-fill-column-mode} is a small Emacs minor mode that mimics
+the effect of @code{fill-column} in @code{visual-line-mode}.  Instead of
+wrapping lines at the window edge, which is the standard behaviour of
+@code{visual-line-mode}, it wraps lines at @code{fill-column}.  If
+@code{fill-column} is too large for the window, the text is wrapped at the
+window edge.")
+    (license license:gpl3+)))
+
 (define-public emacs-ido-completing-read+
   (package
     (name "emacs-ido-completing-read+")
