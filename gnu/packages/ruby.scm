@@ -4116,3 +4116,25 @@ inspired by Erlang, Clojure, Go, JavaScript, actors and classic concurrency
 patterns.")
     (home-page "http://www.concurrent-ruby.com")
     (license license:expat)))
+
+(define-public ruby-pkg-config
+  (package
+    (name "ruby-pkg-config")
+    (version "1.1.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (rubygems-uri "pkg-config" version))
+       (sha256
+        (base32
+         "0lljiqnm0b4z6iy87lzapwrdfa6ps63x2z5zbs038iig8dqx2g0z"))))
+    (build-system ruby-build-system)
+    (arguments
+     ;; Tests require extra files not included in the gem.
+     `(#:tests? #f))
+    (synopsis "Detect libraries for compiling Ruby native extensions")
+    (description
+     "@code{pkg-config} can be used in your extconf.rb to properly detect need
+libraries for compiling Ruby native extensions.")
+    (home-page "https://github.com/ruby-gnome2/pkg-config")
+    (license license:lgpl2.0+)))
