@@ -4423,6 +4423,8 @@ users.")
                              "rundir=/tmp"
                              "statedir=/tmp"
                              "install")))))))
+    (propagated-inputs
+     `(("glib" ,glib)))
     (native-inputs
      `(("glib:bin" ,glib "bin") ; for gdbus-codegen
        ("gobject-introspection" ,gobject-introspection)
