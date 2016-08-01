@@ -14,7 +14,93 @@ Please send Guix bug reports to bug-guix@gnu.org.
 
 ** Package management
 
+*** Substitute display adjusts to client locale and terminal width
+*** New ‘--free-space’ option for ‘guix gc’
+*** ‘guix gc’ shows the amount of disk space freed
+*** Source code downloads fall back to content-addressed mirrors
+*** ‘guix graph’ can now be passed a store file name
+*** Building the profile is faster, noticeably so on slow file systems
+*** Profiles now include XDG desktop and MIME databases
+*** ‘guix size’ can be passed more than one package
+*** ‘--check’ and ‘--rounds’ save the differing build output upon failure
 *** New Emacs interface for package locations: M-x guix-locations
+
+See “Package Source Locations” in the manual.
+*** Emacs modes show the full profile name in buffer names
+*** Emacs “Package Info” buffer now have a “Build Log” button
+*** ‘guix environment’ sets $GUIX_ENVIRONMENT to the environment’s profile
+*** New ‘--ttl’ option for ‘guix publish’
+*** New ‘--compression’ option for ‘guix publish’
+*** ‘guix publish’ serves source files over content-address “/file” URLs
+*** New ‘hackage’ updater for ‘guix refresh’
+*** ‘guix lint -c cve’ uses a faster caching method
+*** ‘guix lint -c cve’ now reports up to 3-year-old vulnerabilities
+*** ‘guix lint -c source,home-page’ reports suspiciously small HTTP replies
+*** ‘guix lint -c inputs-should-be-native’ makes more suggestions
+
+** Distribution
+
+*** New services
+
+urandom-seed-service, dicod-service, gc-root-service-type, mcron-service,
+rngd-service, dropbear-service, pam-limits-service (See “Services” in the
+manual for details.)
+
+*** ‘mapped-device’ can refer to partitions using a LUKS UUID
+*** New ‘raid-device-type’, for RAID devices using mdadm
+*** ‘console-keymap-service’ can be given several file names
+*** Java package names are now prefixed with “java-”
+*** New modular Qt packages, to replace the monolithic ‘qt’ package
+*** The ‘gnupg’ 2.0/2.1 packages provide the ‘gpg’ command instead of ‘gpg2’
+*** More packages are bit-reproducible: vlc, libxslt, nasm
+*** XXX new packages
+*** XXX package updates
+
+** Programming interfaces
+
+*** New ‘with-imported-modules’ form provided by (guix gexp)
+
+It supersedes the #:modules parameter of ‘gexp->derivation’, ‘compute-file’,
+‘gexp->script’, ‘program-file’, etc, as well as the ‘imported-modules’ fields
+of <origin> and <shepherd-service>.  See “G-Expressions” in the manual.
+
+*** New (gnu tests) and (gnu build marionette) modules for system tests
+
+See <http://savannah.gnu.org/forum/forum.php?forum_id=8605> for background.
+
+*** New (guix zlib) module
+*** New (guix hg-download) module, for Mercurial checkouts
+*** (guix download) supports HTTP basic authentication
+*** (guix svn-download) supports authentication
+*** The ‘source’ of packages can be a ‘local-file’ or any lowerable object
+*** Part of (guix utils) moved to the new (guix combinators)
+*** GNU updater honors the ‘ftp-server’ and ‘ftp-directory’ package properties
+*** CVE linter honors the ‘cpe-name’ and ‘cpe-version’ package properties
+*** ‘add-to-store’ and ‘local-file’ have a new #:select? parameter
+
+** Noteworthy bug fixes
+
+*** Perl no longer references GCC (<http://bugs.gnu.org/23077>)
+*** Grafting now fails upon I/O errors (<http://bugs.gnu.org/23581>)
+*** GuixSD random source is now properly seeded (<http://bugs.gnu.org/23605>)
+*** ‘call-with-container’ gracefully reports mount errors
+    (<http://bugs.gnu.org/23306>)
+*** ‘herd start cow-store’ now bind-mounts the target /tmp
+*** ‘guix environment’ now honors ‘--system’ (<http://bugs.gnu.org/23682>)
+*** ‘guix publish’ properly encodes archive URIs (<http://bugs.gnu.org/21888>)
+*** ‘NIX_CONF_DIR’ is now ignored (<http://bugs.gnu.org/22459>)
+*** The shell of user ‘nobody’ is ‘nologin’ (<http://bugs.gnu.org/23971>)
+*** Source code location is more precise in error messages involving records
+    (<http://bugs.gnu.org/23969>)
+*** ‘guix --version’ is correct in the presence of ‘guix pull’
+    (<http://bugs.gnu.org/19278>)
+*** Git commits are now signed, for eventual authentication by ‘guix pull’
+    (in preparation of a fix for <http://bugs.gnu.org/22883>)
+
+** Native language support
+
+*** New translation: zh_CN (Simplified Chinese)
+*** Updated translations: fr
 
 * Changes in 0.10.0 (since 0.9.0)
 
