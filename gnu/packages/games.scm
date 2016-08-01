@@ -2185,6 +2185,8 @@ http://lavachat.symlynx.com/unix/")
                (let ((out (assoc-ref outputs "out")))
                  (copy-recursively "config"
                                    (string-append out "/config"))
+                 (copy-file "doc/examples/servinit.cfg"
+                            (string-append out "/config/servinit.cfg"))
                  (copy-recursively "data"
                                    (string-append out "/data")))
                #t))
