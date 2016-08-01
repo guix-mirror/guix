@@ -389,11 +389,13 @@ CLEANFILES =					\
 # there that are newer than the local .scm files (for instance because the
 # user ran 'make install' recently).  When that happens, we end up loading
 # those previously-installed .go files, which may be stale, thereby breaking
-# the whole thing.
+# the whole thing.  Likewise, set 'XDG_CACHE_HOME' to avoid loading possibly
+# stale files from ~/.cache/guile/ccache.
 %.go: make-go ; @:
 make-go: $(MODULES) guix/config.scm guix/tests.scm
 	$(AM_V_at)echo "Compiling Scheme modules..." ;			\
 	unset GUILE_LOAD_COMPILED_PATH ;				\
+	XDG_CACHE_HOME=/nowhere						\
 	host=$(host) srcdir="$(top_srcdir)"				\
 	$(top_builddir)/pre-inst-env					\
 	$(GUILE) -L "$(top_builddir)" -L "$(top_srcdir)"		\
