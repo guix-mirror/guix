@@ -187,6 +187,11 @@ This package contains the binaries.")
     `(#:modules ((guix build gnu-build-system)
                  (guix build utils)
                  (srfi srfi-26))
+
+      ;; This package takes 4 GiB, which we can't afford to distribute from
+      ;; our servers.
+      #:substitutable? #f
+
       #:phases
         (modify-phases (map (cut assq <> %standard-phases)
                             '(set-paths unpack patch-source-shebangs))
@@ -301,7 +306,8 @@ This package contains the complete TeX Live distribution.")
 
 
 ;; texlive-texmf-minimal is a pruned, small version of the texlive tree,
-;; in particular dropping documentation and fonts.
+;; in particular dropping documentation and fonts.  It weighs in at 470 MiB
+;; instead of 4 GiB.
 (define texlive-texmf-minimal
   (package (inherit texlive-texmf)
    (name "texlive-texmf-minimal")
