@@ -124,7 +124,7 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "7.2p2")
+   (version "7.3p1")
    (source (origin
             (method url-fetch)
             (uri (let ((tail (string-append name "-" version ".tar.gz")))
@@ -135,11 +135,7 @@ a server that supports the SSH-2 protocol.")
                          (string-append "http://ftp2.fr.openbsd.org/pub/OpenBSD/OpenSSH/portable/"
                                         tail))))
             (sha256 (base32
-                     "132lh9aanb0wkisji1d6cmsxi520m8nh7c7i9wi6m1s3l38q29x7"))
-            (patches (search-patches "openssh-CVE-2015-8325.patch"
-                                     "openssh-CVE-2016-6210-1.patch"
-                                     "openssh-CVE-2016-6210-2.patch"
-                                     "openssh-CVE-2016-6210-3.patch"))))
+                     "1k5y1wi29d47cgizbryxrhc1fbjsba2x8l5mqfa9b9nadnd9iyrz"))))
    (build-system gnu-build-system)
    (inputs `(("groff" ,groff)
              ("openssl" ,openssl)
