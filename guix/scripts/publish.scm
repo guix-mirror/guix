@@ -50,6 +50,7 @@
   #:use-module (guix zlib)
   #:use-module (guix ui)
   #:use-module (guix scripts)
+  #:use-module ((guix utils) #:select (compressed-file?))
   #:use-module ((guix build utils) #:select (dump-port))
   #:export (guix-publish))
 
@@ -199,6 +200,9 @@ compression disabled~%"))
 if STORE-PATH is invalid.  Produce a URL that corresponds to COMPRESSION.  The
 narinfo is signed with KEY."
   (let* ((path-info  (query-path-info store store-path))
+         (compression (if (compressed-file? store-path)
+                          %no-compression
+                          compression))
          (url        (encode-and-join-uri-path
                       `("nar"
                         ,@(match compression

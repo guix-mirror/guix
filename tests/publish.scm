@@ -200,6 +200,20 @@ References: ~%"
                   (_ #f)))
               (recutils->alist body)))))
 
+(unless (zlib-available?)
+  (test-skip 1))
+(test-equal "/*.narinfo for a compressed file"
+  '("none" "nar")          ;compression-less nar
+  ;; Assume 'guix publish -C' is already running on port 6799.
+  (let* ((item (add-text-to-store %store "fake.tar.gz"
+                                  "This is a fake compressed file."))
+         (url  (string-append "http://localhost:6799/"
+                              (store-path-hash-part item) ".narinfo"))
+         (body (http-get-port url))
+         (info (recutils->alist body)))
+    (list (assoc-ref info "Compression")
+          (dirname (assoc-ref info "URL")))))
+
 (test-equal "/nar/ with properly encoded '+' sign"
   "Congrats!"
   (let ((item (add-text-to-store %store "fake-gtk+" "Congrats!")))
