@@ -1909,37 +1909,48 @@ to reproduce user environments.")
 (define-public ruby-nokogiri
   (package
     (name "ruby-nokogiri")
-    (version "1.6.7.2")
+    (version "1.6.8")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "nokogiri" version))
               (sha256
                (base32
-                "11sbmpy60ynak6s3794q32lc99hs448msjy8rkp84ay7mq7zqspv"))))
+                "17pjhvm4yigriizxbbpx266nnh6nckdm33m3j4ws9dcg99daz91p"))))
     (build-system ruby-build-system)
     (arguments
      ;; Tests fail because Nokogiri can only test with an installed extension,
      ;; and also because many test framework dependencies are missing.
-     '(#:tests? #f
+     `(#:tests? #f
        #:gem-flags (list "--" "--use-system-libraries"
                          (string-append "--with-xml2-include="
                                         (assoc-ref %build-inputs "libxml2")
                                         "/include/libxml2" ))
        #:phases
        (modify-phases %standard-phases
-         (add-after 'extract-gemspec 'update-dependency
-           (lambda _
-             (substitute* ".gemspec" (("2.0.0.rc2") "2.0"))
+         (add-before 'build 'patch-extconf
+           ;; 'pkg-config' is not included in the GEM_PATH during
+           ;; installation, so we add it directly to the load path.
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let* ((pkg-config (assoc-ref inputs "ruby-pkg-config"))
+                    (pkg-config-home (gem-home pkg-config
+                                               ,(package-version ruby))))
+               (substitute* "ext/nokogiri/extconf.rb"
+                 (("gem 'pkg-config'.*")
+                  (string-append "$:.unshift '"
+                                 pkg-config-home
+                                 "/gems/pkg-config-"
+                                 ,(package-version ruby-pkg-config)
+                                 "/lib'\n"))))
              #t)))))
     (native-inputs
-     `(("ruby-hoe" ,ruby-hoe)
-       ("ruby-rake-compiler" ,ruby-rake-compiler)))
+     `(("ruby-hoe" ,ruby-hoe)))
     (inputs
      `(("zlib" ,zlib)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)))
     (propagated-inputs
-     `(("ruby-mini-portile" ,ruby-mini-portile-2)))
+     `(("ruby-mini-portile" ,ruby-mini-portile-2)
+       ("ruby-pkg-config" ,ruby-pkg-config)))
     (synopsis "HTML, XML, SAX, and Reader parser for Ruby")
     (description "Nokogiri (鋸) parses and searches XML/HTML, and features
 both CSS3 selector and XPath 1.0 support.")
