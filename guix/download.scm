@@ -224,7 +224,52 @@
        "http://ftp.de.debian.org/debian/"
        "http://ftp.fr.debian.org/debian/"
        "http://ftp.debian.org/debian/"
-       "http://archive.debian.org/debian/"))))
+       "http://archive.debian.org/debian/")
+      (kde
+       ;; Mirrors from http://files.kde.org/extra/mirrors.html
+       ;; Europe
+       "http://mirror.easyname.at/kde"
+       "http://mirror.karneval.cz/pub/kde"
+       "http://ftp.fi.muni.cz/pub/kde/"
+       "http://mirror.oss.maxcdn.com/kde/"
+       "http://ftp5.gwdg.de/pub/linux/kde/"
+       "http://ftp-stud.fht-esslingen.de/Mirrors/ftp.kde.org/pub/kde/"
+       "http://mirror.klaus-uwe.me/kde/ftp/"
+       "http://kde.beta.mirror.ga/"
+       "http://kde.alpha.mirror.ga/"
+       "http://mirror.netcologne.de/kde"
+       "http://vesta.informatik.rwth-aachen.de/ftp/pub/mirror/kde/"
+       "http://ftp.rz.uni-wuerzburg.de/pub/unix/kde/"
+       "http://mirrors.dotsrc.org/kde/"
+       "http://ftp.funet.fi/pub/mirrors/ftp.kde.org/pub/kde/"
+       "http://kde-mirror.freenux.org/"
+       "http://mirrors.ircam.fr/pub/KDE/"
+       "http://www-ftp.lip6.fr/pub/X11/kde/"
+       "http://fr2.rpmfind.net/linux/KDE/"
+       "http://kde.mirror.anlx.net/"
+       "http://www.mirrorservice.org/sites/ftp.kde.org/pub/kde/"
+       "http://ftp.heanet.ie/mirrors/ftp.kde.org/"
+       "http://ftp.nluug.nl/pub/windowing/kde/"
+       "http://ftp.surfnet.nl/windowing/kde/"
+       "http://ftp.icm.edu.pl/pub/unix/kde/"
+       "http://ftp.pbone.net/pub/kde/"
+       "http://piotrkosoft.net/pub/mirrors/ftp.kde.org/"
+       "http://mirrors.fe.up.pt/pub/kde/"
+       "http://ftp.iasi.roedu.net/pub/mirrors/ftp.kde.org/"
+       "http://ftp.acc.umu.se/mirror/kde.org/ftp/"
+       "http://kde.ip-connect.vn.ua/"
+       ;; North America
+       "http://mirror.its.dal.ca/kde/"
+       "http://mirror.csclub.uwaterloo.ca/kde/"
+       "http://mirror.cc.columbia.edu/pub/software/kde/"
+       "http://mirrors-usa.go-parts.com/kde"
+       "http://kde.mirrors.hoobly.com/"
+       "http://ftp.ussg.iu.edu/kde/"
+       "http://mirrors.mit.edu/kde/"
+       "http://kde.mirrors.tds.net/pub/kde/"
+       ;; Oceania
+       "http://ftp.kddlabs.co.jp/pub/X11/kde/"
+       "http://kde.mirror.uber.com.au/"))))
 
 (define %mirror-file
   ;; Copy of the list of mirrors to a file.  This allows us to keep a single
