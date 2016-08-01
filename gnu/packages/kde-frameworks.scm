@@ -30,6 +30,7 @@
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
@@ -852,6 +853,42 @@ exposed on DBus.  It allows you to manage modem devices and access to
 information available for your modem devices, like signal, location and
 messages.")
     (license license:lgpl2.1+)))
+
+(define-public networkmanager-qt
+  (package
+    (name "networkmanager-qt")
+    (version "5.24.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/frameworks/"
+                            (version-major+minor version) "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "11wy0ds0hqbba900ggkcxjfqc9n65xlzc3h1zv9433nn5d75v6fy"))))
+     (build-system cmake-build-system)
+     (native-inputs
+      `(("extra-cmake-modules" ,extra-cmake-modules)
+        ("dbus" ,dbus)
+        ("pkg-config" ,pkg-config)))
+     (inputs
+      `(("network-manager", network-manager)
+        ("qtbase" ,qtbase)))
+     (arguments
+      `(#:phases
+         (modify-phases %standard-phases
+           (replace 'check
+             (lambda* _
+               (setenv "DBUS_FATAL_WARNINGS" "0")
+               (zero? (system* "dbus-launch" "ctest" ".")))))))
+     (home-page "https://community.kde.org/Frameworks")
+     (synopsis "Qt wrapper for NetworkManager DBus API")
+     (description "NetworkManagerQt provides access to all NetworkManager
+features exposed on DBus.  It allows you to manage your connections and control
+your network devices and also provides a library for parsing connection settings
+which are used in DBus communication.")
+     (license license:lgpl2.1+)))
 
 (define-public oxygen-icons
   (package
