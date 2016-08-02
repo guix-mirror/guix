@@ -81,14 +81,7 @@
        (documentation "Map a device node using Linux's device mapper.")
        (start #~(lambda () #$(open source target)))
        (stop #~(lambda _ (not #$(close source target))))
-       (respawn? #f)
-
-       ;; Add the modules needed by LUKS-DEVICE-MAPPING.
-       ;; FIXME: This info should be propagated via gexps.
-       (modules `((rnrs bytevectors)              ;bytevector?
-                  ((gnu build file-systems)
-                   #:select (find-partition-by-luks-uuid))
-                  ,@%default-modules)))))))
+       (respawn? #f))))))
 
 (define (device-mapping-service mapped-device)
   "Return a service that sets up @var{mapped-device}."
@@ -105,6 +98,11 @@
   (with-imported-modules '((gnu build file-systems)
                            (guix build bournish))
     #~(let ((source #$source))
+        ;; XXX: 'use-modules' should be at the top level.
+        (use-modules (rnrs bytevectors)           ;bytevector?
+                     ((gnu build file-systems)
+                      #:select (find-partition-by-luks-uuid)))
+
         (zero? (system* (string-append #$cryptsetup "/sbin/cryptsetup")
                         "open" "--type" "luks"
 
