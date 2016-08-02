@@ -6680,17 +6680,17 @@ facilities for defining, registering and looking up components.")
 (define-public python2-zope-component
   (package-with-python2 python-zope-component))
 
-(define-public python2-pythondialog
+(define-public python-pythondialog
   (package
-    (name "python2-pythondialog")
+    (name "python-pythondialog")
     (version "3.4.0")
     (source
      (origin
        (method url-fetch)
-       (uri (pypi-uri "python2-pythondialog" version))
+       (uri (pypi-uri "pythondialog" version))
        (sha256
         (base32
-         "0d8k7lxk50imdyx85lv8j98i4c93a71iwpapnl1506rpkbm9qvd9"))))
+         "1728ghsran47jczn9bhlnkvk5bvqmmbihabgif5h705b84r1272c"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
@@ -6704,7 +6704,6 @@ facilities for defining, registering and looking up components.")
                  (("os.getenv\\(\"PATH\", \":/bin:/usr/bin\"\\)")
                   (string-append "os.getenv(\"PATH\")  + \":" dialog "/bin\"")))
                #t))))
-       #:python ,python-2
        #:tests? #f)) ; no test suite
     (propagated-inputs
      `(("dialog" ,dialog)))
@@ -6713,7 +6712,20 @@ facilities for defining, registering and looking up components.")
     (description "A Python wrapper for the dialog utility.  Its purpose is to
 provide an easy to use, pythonic and comprehensive Python interface to dialog.
 This allows one to make simple text-mode user interfaces on Unix-like systems")
-    (license lgpl2.1)))
+    (license lgpl2.1)
+    (properties `((python2-variant . ,(delay python2-pythondialog))))))
+
+(define-public python2-pythondialog
+  (let ((base (package-with-python2 (strip-python2-variant python-pythondialog))))
+    (package
+      (inherit base)
+      (version (package-version python-pythondialog))
+      (source (origin
+                (method url-fetch)
+                (uri (pypi-uri "python2-pythondialog" version))
+                (sha256
+                 (base32
+                  "0d8k7lxk50imdyx85lv8j98i4c93a71iwpapnl1506rpkbm9qvd9")))))))
 
 (define-public python-pyrfc3339
   (package
