@@ -118,7 +118,6 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/file.scm				\
   %D%/packages/finance.scm			\
   %D%/packages/firmware.scm			\
-  %D%/packages/fish.scm				\
   %D%/packages/flashing-tools.scm		\
   %D%/packages/flex.scm				\
   %D%/packages/fltk.scm				\
