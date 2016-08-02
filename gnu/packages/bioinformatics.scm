@@ -51,7 +51,9 @@
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages java)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages logging)
@@ -70,6 +72,7 @@
   #:use-module (gnu packages ruby)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tbb)
+  #:use-module (gnu packages tex)
   #:use-module (gnu packages textutils)
   #:use-module (gnu packages time)
   #:use-module (gnu packages tls)
@@ -1602,6 +1605,33 @@ data and settings.")
     (supported-systems '("x86_64-linux"))
     (license (license:non-copyleft "file://src/COPYING"
                                    "See src/COPYING in the distribution."))))
+
+(define-public discrover
+  (package
+    (name "discrover")
+    (version "1.6.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/maaskola/discrover/archive/"
+                           version ".tar.gz"))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0rah9ja4m0rl5mldd6vag9rwrivw1zrqxssfq8qx64m7961fp68k"))))
+    (build-system cmake-build-system)
+    (arguments `(#:tests? #f)) ; there are no tests
+    (inputs
+     `(("boost" ,boost)
+       ("cairo" ,cairo)))
+    (native-inputs
+     `(("texlive" ,texlive)
+       ("imagemagick" ,imagemagick)))
+    (home-page "http://dorina.mdc-berlin.de/public/rajewsky/discrover/")
+    (synopsis "Discover discriminative nucleotide sequence motifs")
+    (description "Discrover is a motif discovery method to find binding sites
+of nucleic acid binding proteins.")
+    (license license:gpl3+)))
 
 (define-public eigensoft
   (let ((revision "1")
