@@ -20,10 +20,14 @@
   #:use-module (guix packages)
   #:use-module (guix licenses)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages golang)
   #:use-module (gnu packages indent)
   #:use-module (gnu packages llvm)
   #:use-module (gnu packages perl)
@@ -256,3 +260,59 @@ fuzzed code.  The compact synthesized corpora produced by the tool are also
 useful for seeding other, more labor- or resource-intensive testing regimes
 down the road.")
       (license asl2.0))))
+
+(define-public stress-make
+  (let ((commit "506e6cfd98d165f22bee91c408b7c20117a682c4")
+        (revision "0"))                 ;No official source distribution
+    (package
+      (name "stress-make")
+      (version (string-append "1.0-" revision "." (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/losalamos/stress-make.git")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "1j330yqhc7plwin04qxbh8afpg5nfnw1xvnmh8rk6mmqg9w6ik70"))))
+      (build-system gnu-build-system)
+      (native-inputs
+       `(("autoconf" ,autoconf)
+         ("automake" ,automake)
+         ("go" ,go)))
+      (inputs
+       `(("make-source" ,(package-source gnu-make))))
+      (arguments
+       ;; stress-make's configure script insists on having a tarball and does
+       ;; not accept a directory name instead.  To let the gnu-build-system's
+       ;; patch-* phases work properly, we unpack the source first, then
+       ;; repack before the configure phase.
+       `(#:configure-flags '("--with-make-tar=./make.tar.xz")
+         #:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'unpack-make
+             (lambda* (#:key inputs #:allow-other-keys)
+               (zero? (system* "tar" "xf" (assoc-ref inputs "make-source")))))
+           (add-before 'configure 'repack-make
+             (lambda _
+               (zero? (system* "tar" "cJf" "./make.tar.xz"
+                               (string-append "make-"
+                                              ,(package-version gnu-make))))))
+           (add-before 'configure 'bootstrap
+             (lambda _
+               (zero? (system* "autoreconf" "-vfi")))))))
+      (home-page "https://github.com/losalamos/stress-make")
+      (synopsis "Expose race conditions in Makefiles")
+      (description
+       "Stress Make is a customized GNU Make that explicitely managess the
+order in which concurrent jobs are run in order to provoke erroneous behavior
+into becoming manifest.  It can run jobs in the order they're launched, in
+backwards order, or in random order.  The thought is that if code builds
+correctly with Stress Make then it is likely that the @code{Makefile} contains
+no race conditions.")
+      ;; stress-make wrapper is under BSD-3-modifications-must-be-indicated,
+      ;; and patched GNU Make is under its own license.
+      (license (list (non-copyleft "COPYING.md")
+                     (package-license gnu-make))))))
