@@ -7445,11 +7445,12 @@ Configuration System}).  System services are typically daemons launched
 when the system boots, or other actions needed at that time---e.g.,
 configuring network access.
 
-Services are managed by the GNU@tie{}Shepherd (@pxref{Introduction,,,
-shepherd, The GNU Shepherd Manual}).  On a running system, the
-@command{herd} command allows you to list the available services, show
-their status, start and stop them, or do other specific operations
-(@pxref{Jump Start,,, shepherd, The GNU Shepherd Manual}).  For example:
+GuixSD has a broad definition of ``service'' (@pxref{Service
+Composition}), but many services are managed by the GNU@tie{}Shepherd
+(@pxref{Shepherd Services}).  On a running system, the @command{herd}
+command allows you to list the available services, show their status,
+start and stop them, or do other specific operations (@pxref{Jump
+Start,,, shepherd, The GNU Shepherd Manual}).  For example:
 
 @example
 # herd status
