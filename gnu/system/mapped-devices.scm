@@ -131,23 +131,26 @@
 (define (open-raid-device sources target)
   "Return a gexp that assembles SOURCES (a list of devices) to the RAID device
 TARGET (e.g., \"/dev/md0\"), using 'mdadm'."
-  #~(begin
-      (use-modules (srfi srfi-1) (ice-9 format))
+  #~(let ((sources '#$sources)
 
-      (let ((sources '#$sources))
-        (let loop ((attempts 0))
-          (unless (every file-exists? sources)
-            (when (> attempts 20)
-              (error "RAID devices did not show up; bailing out"
-                     sources))
+          ;; XXX: We're not at the top level here.  We could use a
+          ;; non-top-level 'use-modules' form but that doesn't work when the
+          ;; code is eval'd, like the Shepherd does.
+          (every   (@ (srfi srfi-1) every))
+          (format  (@ (ice-9 format) format)))
+      (let loop ((attempts 0))
+        (unless (every file-exists? sources)
+          (when (> attempts 20)
+            (error "RAID devices did not show up; bailing out"
+                   sources))
 
-            (format #t "waiting for RAID source devices~{ ~a~}...~%"
-                    sources)
-            (sleep 1)
-            (loop (+ 1 attempts))))
+          (format #t "waiting for RAID source devices~{ ~a~}...~%"
+                  sources)
+          (sleep 1)
+          (loop (+ 1 attempts))))
 
-        (zero? (system* (string-append #$mdadm "/sbin/mdadm")
-                        "--assemble" #$target sources)))))
+      (zero? (system* (string-append #$mdadm "/sbin/mdadm")
+                      "--assemble" #$target sources))))
 
 (define (close-raid-device sources target)
   "Return a gexp that stops the RAID device TARGET."
