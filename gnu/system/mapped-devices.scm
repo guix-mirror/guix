@@ -135,12 +135,16 @@ TARGET (e.g., \"/dev/md0\"), using 'mdadm'."
       (use-modules (srfi srfi-1) (ice-9 format))
 
       (let ((sources '#$sources))
-        (let loop ()
+        (let loop ((attempts 0))
           (unless (every file-exists? sources)
+            (when (> attempts 20)
+              (error "RAID devices did not show up; bailing out"
+                     sources))
+
             (format #t "waiting for RAID source devices~{ ~a~}...~%"
                     sources)
             (sleep 1)
-            (loop)))
+            (loop (+ 1 attempts))))
 
         (zero? (system* (string-append #$mdadm "/sbin/mdadm")
                         "--assemble" #$target sources)))))
