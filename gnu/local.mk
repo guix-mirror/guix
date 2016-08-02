@@ -310,6 +310,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/search.scm			\
   %D%/packages/serialization.scm		\
   %D%/packages/serveez.scm			\
+  %D%/packages/shells.scm			\
   %D%/packages/shellutils.scm			\
   %D%/packages/shishi.scm			\
   %D%/packages/skarnet.scm			\
