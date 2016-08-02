@@ -69,27 +69,29 @@ common build settings used in software produced by the KDE community.")
 (define-public kwindowsystem
   (package
     (name "kwindowsystem")
-    (version "5.21.0")
+    (version "5.24.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "http://download.kde.org/stable/frameworks/"
+        (uri (string-append "mirror://kde/stable/frameworks/"
                             (version-major+minor version) "/"
                             name "-" version ".tar.xz"))
         (sha256
          (base32
-          "13lfwpw5a4in0mp5y8d15jg6xhhrka2qmw73wrdzcvj22n6ldzzi"))))
+          "0w5ym8msl80v3q65253pdpj9f1fmb658rnndlbkrgpmm1rv1n6dz"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("pkg-config" ,pkg-config)
+       ("qttools" ,qttools)
        ("xorg-server" ,xorg-server))) ; for the tests
     (inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("libxrender" ,libxrender)
-       ("qt" ,qt)
+     `(("libxrender" ,libxrender)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
        ("xcb-utils-keysyms" ,xcb-util-keysyms)))
     (arguments
-     `(#:tests? #f)) ; FIXME: The first seven tests fail with "Exception".
+     `(#:tests? #f)) ; FIXME: 8/10 tests fail.
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "KDE access to the windowing system")
     (description "KWindowSystem provides information about and allows
