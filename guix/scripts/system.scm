@@ -242,7 +242,7 @@ expression in %STORE-MONAD."
   (lambda (store)
     (warn-on-system-error
      (guard (c ((shepherd-error? c)
-                (report-shepherd-error c)))
+                (values (report-shepherd-error c) store)))
        (values (run-with-store store (begin mbody ...))
                store)))))
 
