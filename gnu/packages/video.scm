@@ -9,6 +9,7 @@
 ;;; Copyright © 2015 Alex Vong <alexvong1995@gmail.com>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016 Dmitry Nikolaev <cameltheman@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1517,6 +1518,7 @@ implementation.")
               ("libxfixes" ,libxfixes)
               ("libxdamage" ,libxdamage)
               ("libxext" ,libxext)
+              ("alsa-lib" ,alsa-lib)
               ("libvorbis" ,libvorbis)
               ("libtheora" ,libtheora)))
     (home-page "http://recordmydesktop.sourceforge.net/")
