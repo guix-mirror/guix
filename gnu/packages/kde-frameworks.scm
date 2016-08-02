@@ -55,7 +55,7 @@ common build settings used in software produced by the KDE community.")
 (define-public kwindowsystem
   (package
     (name "kwindowsystem")
-    (version "5.24.0")
+    (version "5.21.0")
     (source
       (origin
         (method url-fetch)
@@ -93,7 +93,7 @@ lower level classes for interaction with the X Windowing System.")
 (define-public oxygen-icons
   (package
     (name "oxygen-icons")
-    (version "5.24.0")
+    (version "5.21.0")
     (source
       (origin
         (method url-fetch)
