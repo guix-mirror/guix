@@ -128,20 +128,24 @@
    (open open-luks-device)
    (close close-luks-device)))
 
-(define (open-raid-device source target)
-  "Return a gexp that assembles SOURCE (a list of devices) to the RAID device
-TARGET, using 'mdadm'."
-  #~(let ((every (@ (srfi srfi-1) every)))
-      (let loop ()
-        (unless (every file-exists? '#$source)
-          (format #t "waiting a bit...~%")
-          (sleep 1)
-          (loop)))
-       (zero? (system* (string-append #$mdadm "/sbin/mdadm")
-                                      "--assemble" #$target
-                                      #$@source))))
+(define (open-raid-device sources target)
+  "Return a gexp that assembles SOURCES (a list of devices) to the RAID device
+TARGET (e.g., \"/dev/md0\"), using 'mdadm'."
+  #~(begin
+      (use-modules (srfi srfi-1) (ice-9 format))
 
-(define (close-raid-device source target)
+      (let ((sources '#$sources))
+        (let loop ()
+          (unless (every file-exists? sources)
+            (format #t "waiting for RAID source devices~{ ~a~}...~%"
+                    sources)
+            (sleep 1)
+            (loop)))
+
+        (zero? (system* (string-append #$mdadm "/sbin/mdadm")
+                        "--assemble" #$target sources)))))
+
+(define (close-raid-device sources target)
   "Return a gexp that stops the RAID device TARGET."
   #~(zero? (system* (string-append #$mdadm "/sbin/mdadm")
                     "--stop" #$target)))
