@@ -66,7 +66,8 @@
         (lambda ()
           (http-get uri #:port socket #:streaming? #t))
       (lambda (response port)
-        (setvbuf port _IONBF)
+        ;; Don't (setvbuf port _IONBF) because of <http://bugs.gnu.org/19610>
+        ;; (PORT might be a custom binary input port).
         port))))
 
 (define (publish-uri route)
