@@ -233,27 +233,27 @@ history mechanism, job control and a C-like syntax.")
                 "0dsr450v8nydvpk8ry276fvbznlrjgddgp7zvhcw4cv69i9lr4ps"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre")
-                 #:phases (alist-cons-before
-                           'configure 'fix-sh
-                           (lambda _
-                             ;; Some of the files are ISO-8859-1 encoded.
-                             (with-fluids ((%default-port-encoding #f))
-                               (substitute*
-                                   '("configure"
-                                     "configure.ac"
-                                     "Src/exec.c"
-                                     "Src/mkmakemod.sh"
-                                     "Config/installfns.sh"
-                                     "Config/defs.mk.in"
-                                     "Test/E01options.ztst"
-                                     "Test/A05execution.ztst"
-                                     "Test/A01grammar.ztst"
-                                     "Test/A06assign.ztst"
-                                     "Test/B02typeset.ztst"
-                                     "Completion/Unix/Command/_init_d"
-                                     "Util/preconfig")
-                                 (("/bin/sh") (which "sh")))))
-                           %standard-phases)))
+                 #:phases
+                 (modify-phases %standard-phases
+                   (add-before 'configure 'fix-sh
+                     (lambda _
+                       ;; Some of the files are ISO-8859-1 encoded.
+                       (with-fluids ((%default-port-encoding #f))
+                                    (substitute*
+                                        '("configure"
+                                          "configure.ac"
+                                          "Src/exec.c"
+                                          "Src/mkmakemod.sh"
+                                          "Config/installfns.sh"
+                                          "Config/defs.mk.in"
+                                          "Test/E01options.ztst"
+                                          "Test/A05execution.ztst"
+                                          "Test/A01grammar.ztst"
+                                          "Test/A06assign.ztst"
+                                          "Test/B02typeset.ztst"
+                                          "Completion/Unix/Command/_init_d"
+                                          "Util/preconfig")
+                                      (("/bin/sh") (which "sh")))))))))
     (native-inputs `(("autoconf" ,autoconf)))
     (inputs `(("ncurses" ,ncurses)
               ("pcre" ,pcre)
