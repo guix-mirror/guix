@@ -73,10 +73,21 @@
 (define (publish-uri route)
   (string-append "http://localhost:6789" route))
 
+(define-syntax-rule (with-separate-output-ports exp ...)
+  ;; Since ports aren't thread-safe in Guile 2.0, duplicate the output and
+  ;; error ports to make sure the two threads don't end up stepping on each
+  ;; other's toes.
+  (with-output-to-port (duplicate-port (current-output-port) "w")
+    (lambda ()
+      (with-error-to-port (duplicate-port (current-error-port) "w")
+        (lambda ()
+          exp ...)))))
+
 ;; Run a local publishing server in a separate thread.
-(call-with-new-thread
- (lambda ()
-   (guix-publish "--port=6789" "-C0")))       ;attempt to avoid port collision
+(with-separate-output-ports
+ (call-with-new-thread
+  (lambda ()
+    (guix-publish "--port=6789" "-C0"))))     ;attempt to avoid port collision
 
 (define (wait-until-ready port)
   ;; Wait until the server is accepting connections.
@@ -186,9 +197,10 @@ References: ~%"
   `(("StorePath" . ,%item)
     ("URL" . ,(string-append "nar/gzip/" (basename %item)))
     ("Compression" . "gzip"))
-  (let ((thread (call-with-new-thread
-                 (lambda ()
-                   (guix-publish "--port=6799" "-C5")))))
+  (let ((thread (with-separate-output-ports
+                 (call-with-new-thread
+                  (lambda ()
+                    (guix-publish "--port=6799" "-C5"))))))
     (wait-until-ready 6799)
     (let* ((url  (string-append "http://localhost:6799/"
                                 (store-path-hash-part %item) ".narinfo"))
