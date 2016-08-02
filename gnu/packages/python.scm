@@ -6936,13 +6936,13 @@ WebSocket usage in Python programs.")
 (define-public python-atomicwrites
   (package
     (name "python-atomicwrites")
-    (version "1.0.0")
+    (version "1.1.0")
     (source (origin
              (method url-fetch)
              (uri (pypi-uri "atomicwrites" version))
              (sha256
               (base32
-               "019fa4771q7fb1167yfbh6msdzcqini6v7i59rmf72mzdjd7x5qv"))))
+               "1s01dci8arsl9d9vr5nz1fk9znldp1z3l4yl43f0c27z12b8yxl0"))))
     (build-system python-build-system)
     (synopsis "Atomic file writes in Python")
     (description "Library for atomic file writes using platform dependent tools
