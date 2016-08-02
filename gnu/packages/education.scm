@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
+;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,8 +22,17 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages sdl)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -69,3 +79,62 @@
 can be used to control telescopes over a serial port for tracking celestial
 objects.")
     (license license:gpl2+)))
+
+(define-public gcompris
+  (package
+    (name "gcompris")
+    (version "15.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://gcompris.net/download/gtk/src/gcompris-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0f7wa27vvpn9ansp2aald1pajqlx5d51mvj07ba503yvl7i77fka"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; Use SDL mixer because otherwise GCompris would need an old version
+       ;; of Gstreamer.
+       (list "--enable-sdlmixer"
+             "LDFLAGS=-lgmodule-2.0")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'set-paths 'set-sdl-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "CPATH"
+                     (string-append (assoc-ref inputs "sdl-mixer")
+                                    "/include/SDL"))
+             #t)))))
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("librsvg" ,librsvg)
+       ("libxml2" ,libxml2)
+       ("sdl-mixer" ,sdl-mixer)
+       ("sqlite" ,sqlite)
+       ("glib:bin" ,glib)
+       ("python" ,python)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("texinfo" ,texinfo)
+       ("texi2html" ,texi2html)
+       ("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://gcompris.net")
+    (synopsis "Educational software suite")
+    (description "GCompris is an educational software suite comprising of
+numerous activities for children aged 2 to 10.  Some of the activities are
+game orientated, but nonetheless still educational.  Below you can find a list
+of categories with some of the activities available in that category.
+
+@enumerate
+@item computer discovery: keyboard, mouse, different mouse gestures, ...
+@item arithmetic: table memory, enumeration, double entry table, mirror image, ...
+@item science: the canal lock, the water cycle, the submarine, electric simulation ...
+@item geography: place the country on the map
+@item games: chess, memory, connect 4, oware, sudoku ...
+@item reading: reading practice
+@item other: learn to tell time, puzzle of famous paintings, vector drawing, cartoon making, ...
+@end enumerate
+")
+    (license license:gpl3+)))
