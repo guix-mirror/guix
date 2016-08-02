@@ -2088,7 +2088,7 @@ is attributed to Albert Einstein.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.hoopajoo.net/static/projects/powwow-"
+                    "https://www.hoopajoo.net/static/projects/powwow-"
                     version ".tar.gz"))
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
