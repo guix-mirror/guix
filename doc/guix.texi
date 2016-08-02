@@ -7402,7 +7402,7 @@ read locale data produced with libc 2.22; worse, that program
 data@footnote{Versions 2.23 and later of GNU@tie{}libc will simply skip
 the incompatible locale data, which is already an improvement.}.
 Similarly, a program linked against libc 2.22 can read most, but not
-all, the locale data from libc 2.21 (specifically, @code{LC_COLLATE}
+all, of the locale data from libc 2.21 (specifically, @code{LC_COLLATE}
 data is incompatible); thus calls to @code{setlocale} may fail, but
 programs will not abort.
 
