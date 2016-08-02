@@ -535,6 +535,7 @@ store.")
             ;;
             ;; `--localedir' is not honored, so work around it.
             ;; See <http://sourceware.org/ml/libc-alpha/2013-03/msg00093.html>.
+            ;; FIXME: This hack no longer works on 2.23!
             (string-append "libc_cv_localedir=/run/current-system/locale/"
                            ,version)
 
