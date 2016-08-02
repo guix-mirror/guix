@@ -109,22 +109,21 @@ lower level classes for interaction with the X Windowing System.")
 (define-public oxygen-icons
   (package
     (name "oxygen-icons")
-    (version "5.21.0")
+    (version "5.24.0")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "http://download.kde.org/stable/frameworks/"
+        (uri (string-append "mirror://kde/stable/frameworks/"
                             (version-major+minor version) "/"
-                            name "5-"version ".tar.xz"))
+                            name "5" "-" version ".tar.xz"))
         (sha256
          (base32
-          "00qh1h3xx392hh73zdlknc1j9i2sck9ys74a9ffkf6an4rl0hws5"))))
+          "1c7spjbzk04725vv0ly7vmyvwa96mfa5ki2pm146ld4888a896wm"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
     (inputs
-     `(("extra-cmake-modules" ,extra-cmake-modules)
-       ("qtbase" ,qtbase)))
+     `(("qtbase" ,qtbase)))
     (home-page "https://community.kde.org/Frameworks")
     (synopsis "Oxygen provides the standard icon theme for the KDE desktop")
     (description "Oxygen icon theme for the KDE desktop")
