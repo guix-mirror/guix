@@ -30,7 +30,7 @@
 (define-public extra-cmake-modules
   (package
     (name "extra-cmake-modules")
-    (version kde-frameworks-version)
+    (version "5.21.0")
     (source
       (origin
         (method url-fetch)
