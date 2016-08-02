@@ -9902,6 +9902,9 @@ directories are created when the service is activated.
 @node Various Services
 @subsubsection Various Services
 
+@cindex lirc
+@subsubheading Lirc Service
+
 The @code{(gnu services lirc)} module provides the following service.
 
 @deffn {Scheme Procedure} lirc-service [#:lirc lirc] @
