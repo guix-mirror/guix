@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014, 2015 David Thompson <davet@gnu.org>
+;;; Copyright © 2014 Kevin Lemonnier <lemonnierk@ulrar.net>
 ;;; Copyright © 2015 Jeff Mickey <j@codemac.net>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (gnu packages documentation)
   #:use-module (gnu packages libedit)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -213,3 +215,57 @@ interactive login shell and a shell script command processor.  It includes a
 command-line editor, programmable word completion, spelling correction, a
 history mechanism, job control and a C-like syntax.")
     (license bsd-4)))
+
+(define-public zsh
+  (package
+    (name "zsh")
+    (version "5.2")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append
+                           "http://www.zsh.org/pub/zsh-" version
+                           ".tar.gz")
+                         (string-append
+                           "http://www.zsh.org/pub/old/zsh-" version
+                           ".tar.gz")))
+              (sha256
+               (base32
+                "0dsr450v8nydvpk8ry276fvbznlrjgddgp7zvhcw4cv69i9lr4ps"))))
+    (build-system gnu-build-system)
+    (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre")
+                 #:phases (alist-cons-before
+                           'configure 'fix-sh
+                           (lambda _
+                             ;; Some of the files are ISO-8859-1 encoded.
+                             (with-fluids ((%default-port-encoding #f))
+                               (substitute*
+                                   '("configure"
+                                     "configure.ac"
+                                     "Src/exec.c"
+                                     "Src/mkmakemod.sh"
+                                     "Config/installfns.sh"
+                                     "Config/defs.mk.in"
+                                     "Test/E01options.ztst"
+                                     "Test/A05execution.ztst"
+                                     "Test/A01grammar.ztst"
+                                     "Test/A06assign.ztst"
+                                     "Test/B02typeset.ztst"
+                                     "Completion/Unix/Command/_init_d"
+                                     "Util/preconfig")
+                                 (("/bin/sh") (which "sh")))))
+                           %standard-phases)))
+    (native-inputs `(("autoconf" ,autoconf)))
+    (inputs `(("ncurses" ,ncurses)
+              ("pcre" ,pcre)
+              ("perl" ,perl)))
+    (synopsis "Powerful shell for interactive use and scripting")
+    (description "The Z shell (zsh) is a Unix shell that can be used
+as an interactive login shell and as a powerful command interpreter
+for shell scripting.  Zsh can be thought of as an extended Bourne shell
+with a large number of improvements, including some features of bash,
+ksh, and tcsh.")
+    (home-page "http://www.zsh.org/")
+
+    ;; The whole thing is under an MIT/X11-style license, but there's one
+    ;; command, 'Completion/Unix/Command/_darcs', which is under GPLv2+.
+    (license gpl2+)))
