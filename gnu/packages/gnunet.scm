@@ -50,6 +50,7 @@
   #:use-module (gnu packages tls)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
+  #:use-module (gnu packages backup)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -81,17 +82,12 @@
    ;; FIXME:
    ;; The following dependencies are all optional, but should be
    ;; available for maximum coverage:
-   ;; * libarchive
-   ;; * libgif (giflib)
-   ;; * libgtk+ >= 3.0.0 (may probably drop glib then as a propagated input of
-   ;;                     gtk)
-   ;; * libgsf
    ;; * libmagic (file)
-   ;; * libmpeg2
-   ;; * libmp4v2
-   ;; * librpm
-   ;; * libsmf
-   ;; * libtidy
+   ;; * libmp4v2        ; package it
+   ;; * librpm          ; package it
+   ;; * libsmf          ; package it
+   ;; * libtidy         ; package it
+   ;; * libgif (giflib) ; investigate failure
    (inputs
     `(("exiv2" ,exiv2)
       ("flac" ,flac)
@@ -100,14 +96,23 @@
       ("glib" ,glib)
       ("gstreamer" ,gstreamer)
       ("gst-plugins-base" ,gst-plugins-base)
+      ("gtk+" ,gtk+)
+      ("libarchive" ,libarchive)
+      ("libgsf" ,libgsf)
       ("libjpeg" ,libjpeg)
+      ("libltdl" ,libltdl)
+      ("libmpeg2" ,libmpeg2)
       ("libogg" ,libogg)
       ("libtiff" ,libtiff)
-      ("libltdl" ,libltdl)
       ("libvorbis" ,libvorbis)
       ("zlib" ,zlib)))
    (native-inputs
-      `(("pkg-config" ,pkg-config)))
+    `(("pkg-config" ,pkg-config)))
+   (arguments
+    `(#:configure-flags
+      (list (string-append "--with-ltdl="
+                           (assoc-ref %build-inputs "libltdl")))
+      #:parallel-tests? #f))
    (synopsis "Library to extract meta-data from media files")
    (description
     "GNU libextractor is a library for extracting metadata from files.  It
