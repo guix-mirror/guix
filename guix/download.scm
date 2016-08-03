@@ -227,6 +227,7 @@
        "http://ftp.debian.org/debian/"
        "http://archive.debian.org/debian/")
       (kde
+       "http://download.kde.org"
        ;; Mirrors from http://files.kde.org/extra/mirrors.html
        ;; Europe
        "http://mirror.easyname.at/kde"
