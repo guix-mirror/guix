@@ -5,6 +5,7 @@
 ;;; Copyright © 2015 Alex Kost <alezost@gmail.com>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
+;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +63,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages rdf)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages video)
   #:use-module (gnu packages webkit)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xml)
@@ -2421,3 +2423,26 @@ module to handle that particular file type.")
 with support for HD extensions.")
     (home-page "https://github.com/foo86/dcadec")
     (license license:lgpl2.1+)))
+
+(define-public bs1770gain
+  (package
+    (name "bs1770gain")
+    (version "0.4.10")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/bs1770gain/bs1770gain/"
+                           version "/bs1770gain-" version ".tar.gz"))
+       (sha256
+        (base32
+         "1syr8qchs8091z9ayivj723szlidx81gll099bmk9kgpykmckd62"))))
+    (build-system gnu-build-system)
+    (inputs `(("ffmpeg" ,ffmpeg)
+              ("sox" ,sox)))
+    (home-page "http://bs1770gain.sourceforge.net/")
+    (synopsis "Tool to adjust loudness of media files")
+    (description
+     "BS1770GAIN is a loudness scanner compliant with ITU-R BS.1770 and its
+flavors EBU R128, ATSC A/85, and ReplayGain 2.0.  It helps normalizing the
+loudness of audio and video files to the same level.")
+    (license license:gpl2+)))
