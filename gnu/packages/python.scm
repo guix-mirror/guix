@@ -8836,12 +8836,7 @@ LDFLAGS and parse the output to build extensions with setup.py.")
          "126s53fkpx04f33a829yqqk8fj4png3qwg4m66cvlmhmwc8zihb4"))))
     (build-system python-build-system)
     (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         ;; python setup.py test does not work as of 0.98
-         ;; but there is only the one test file
-         (replace 'check
-           (lambda _ (zero? (system* "python" "test_bz2file.py")))))))
+     `(#:tests? #f)) ; Tests use deprecated python modules.
     (home-page "https://github.com/nvawda/bz2file")
     (synopsis "Read and write bzip2-compressed files")
     (description
@@ -8858,7 +8853,15 @@ development version of CPython that are not available in older releases.")
     (package
       (inherit base)
       (native-inputs
-       `(("python2-setuptools" ,python2-setuptools))))))
+       `(("python2-setuptools" ,python2-setuptools)))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           ;; 'python setup.py test' does not work as of 0.98.
+           ;; There is only the one test file, so we run it directly.
+           (replace 'check
+                    (lambda _ (zero? (system* "python"
+                                              "test_bz2file.py"))))))))))
 
 (define-public python-cysignals
   (package
