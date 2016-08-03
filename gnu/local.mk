@@ -244,6 +244,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/mpi.scm				\
   %D%/packages/multiprecision.scm		\
   %D%/packages/music.scm			\
+  %D%/packages/musl.scm				\
   %D%/packages/mtools.scm			\
   %D%/packages/nano.scm				\
   %D%/packages/ncdu.scm				\
