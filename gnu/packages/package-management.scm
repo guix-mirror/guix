@@ -67,17 +67,17 @@
                      arch "-linux"
                      "/20131110/guile-2.0.9.tar.xz")))
 
-(define-public guix-0.10.0
+(define-public guix-0.11.0
   (package
     (name "guix")
-    (version "0.10.0")
+    (version "0.11.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://alpha.gnu.org/gnu/guix/guix-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0d4afwy7bpqi4k4bzvwc4ga4shwssis1nrvdw53qjyg9bw1a8lbn"))))
+               "1cwrbpv4dq7aczwksmcfw9w8r2bzrb5ld9zvjcr90i804hjpcb93"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list
@@ -212,9 +212,9 @@ the Nix package manager.")
   ;;
   ;; Note: use a very short commit id; with a longer one, the limit on
   ;; hash-bang lines would be exceeded while running the tests.
-  (let ((commit "97c8aef15de89799ac01b62dd9b91245c23eefcb"))
-    (package (inherit guix-0.10.0)
-      (version (string-append "0.10.0-1." (string-take commit 4)))
+  (let ((commit "4420940f20a2f36f29519f686bca7b85be6be5c9"))
+    (package (inherit guix-0.11.0)
+      (version (string-append "0.11.0-1." (string-take commit 4)))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -224,10 +224,10 @@ the Nix package manager.")
                       (commit commit)))
                 (sha256
                  (base32
-                  "0sdxq87mbvig7785gzf52ywmvl3p1q1qgsczmkzrlw988xkma1dr"))
+                  "1c1rqsfc4vrclkk03aj1m8r1lzk9pfa61ax9hhhj5nw23bilsixc"))
                 (file-name (string-append "guix-" version "-checkout"))))
       (arguments
-       (substitute-keyword-arguments (package-arguments guix-0.10.0)
+       (substitute-keyword-arguments (package-arguments guix-0.11.0)
          ((#:configure-flags flags)
           ;; Set 'DOT_USER_PROGRAM' to the empty string so we don't keep a
           ;; reference to Graphviz, whose closure is pretty big (too big for
@@ -251,7 +251,7 @@ the Nix package manager.")
          ("texinfo" ,texinfo)
          ("graphviz" ,graphviz)
          ("help2man" ,help2man)
-         ,@(package-native-inputs guix-0.10.0))))))
+         ,@(package-native-inputs guix-0.11.0))))))
 
 (define-public guix guix-devel)
 

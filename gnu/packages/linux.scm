@@ -2363,7 +2363,15 @@ MPEG-2 and audio over Linux IEEE 1394.")
                      (substitute* "udev-md-raid-arrays.rules"
                        (("/usr/bin/(readlink|basename)" all program)
                         (string-append coreutils "/bin/" program)))))
-                 (alist-delete 'configure %standard-phases))
+                 (alist-cons-before
+                  'build 'remove-W-error
+                  (lambda _
+                    ;; We cannot build with -Werror on i686 due to a
+                    ;; 'sign-compare' warning in util.c.
+                    (substitute* "Makefile"
+                      (("-Werror") ""))
+                    #t)
+                  (alist-delete 'configure %standard-phases)))
        ;;tests must be done as root
        #:tests? #f))
     (home-page "http://neil.brown.name/blog/mdadm")

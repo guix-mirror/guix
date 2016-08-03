@@ -1241,7 +1241,7 @@ programs to authenticate Web servers accessed over HTTPS.
 
 When using Guix on a foreign distro, you can install this package and
 define the relevant environment variables so that packages know where to
-look for certificates.  @pxref{X.509 Certificates}, for detailed
+look for certificates.  @xref{X.509 Certificates}, for detailed
 information.
 
 @subsection Emacs Packages
@@ -7836,7 +7836,7 @@ gexps to introduce job definitions that are passed to mcron
   #~(job "5 0 * * *"            ;Vixie cron syntax
          "guix gc -F 1G"))
 
-(define idutils-jobs
+(define idutils-job
   ;; Update the index database as user "charlie" at 12:15PM
   ;; and 19:15PM.  This runs from the user's home directory.
   #~(job '(next-minute-from (next-hour '(12 19)) '(15))
@@ -7861,8 +7861,8 @@ list of gexps denoting mcron job specifications.
 
 This is a shorthand for:
 @example
-  (service mcron-service-type
-           (mcron-configuration (mcron mcron) (jobs jobs)))
+(service mcron-service-type
+         (mcron-configuration (mcron mcron) (jobs jobs)))
 @end example
 @end deffn
 
@@ -7872,7 +7872,7 @@ This is the type of the @code{mcron} service, whose value is an
 
 This service type can be the target of a service extension that provides
 it additional job specifications (@pxref{Service Composition}).  In
-other words, it is possible to define services that provide addition
+other words, it is possible to define services that provide additional
 mcron jobs to run.
 @end defvr
 
