@@ -527,7 +527,7 @@ store.")
             ;; Set the default locale path.  In practice, $LOCPATH may be
             ;; defined to point whatever locales users want.  However, setuid
             ;; binaries don't honor $LOCPATH, so they'll instead look into
-            ;; $libc_cv_localedir; we choose /run/current-system/locale/X.Y,
+            ;; $libc_cv_complocaledir; we choose /run/current-system/locale/X.Y,
             ;; with the idea that it is going to be populated by the sysadmin.
             ;; The "X.Y" sub-directory is because locale data formats are
             ;; incompatible across libc versions; see
@@ -535,8 +535,7 @@ store.")
             ;;
             ;; `--localedir' is not honored, so work around it.
             ;; See <http://sourceware.org/ml/libc-alpha/2013-03/msg00093.html>.
-            ;; FIXME: This hack no longer works on 2.23!
-            (string-append "libc_cv_localedir=/run/current-system/locale/"
+            (string-append "libc_cv_complocaledir=/run/current-system/locale/"
                            ,version)
 
             (string-append "--with-headers="
