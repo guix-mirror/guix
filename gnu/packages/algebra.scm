@@ -36,7 +36,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages tcsh)
+  #:use-module (gnu packages shells)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)

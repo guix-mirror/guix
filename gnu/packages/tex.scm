@@ -45,7 +45,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages ruby)
-  #:use-module (gnu packages tcsh)
+  #:use-module (gnu packages shells)
   #:use-module (gnu packages base)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xdisorg)
