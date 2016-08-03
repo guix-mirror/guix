@@ -5431,3 +5431,43 @@ GLib/GObject code.")
      "Libgnomekbd is a keyboard configuration library for the GNOME desktop
 environment, which can notably display keyboard layouts.")
     (license license:lgpl2.0+)))
+
+;;; This package is no longer maintained:
+;;; https://wiki.gnome.org/Attic/LibUnique
+;;; "Unique is now in maintenance mode, and its usage is strongly discouraged.
+;;; Applications should use the GtkApplication class provided by GTK+ 3.0."
+(define-public libunique
+  (package
+    (name "libunique")
+    (version "3.0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
+              (sha256
+               (base32
+                "0f70lkw66v9cj72q0iw1s2546r6bwwcd8idcm3621fg2fgh2rw58"))))
+    (build-system glib-or-gtk-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-static"
+                           "--disable-dbus" ; use gdbus
+                           "--enable-introspection")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection)
+       ("glib:bin" ,glib "bin")
+       ("gtk-doc" ,gtk-doc)))
+    (propagated-inputs
+     ;; Referred to in .h files and .pc.
+     `(("gtk+" ,gtk+)))
+    (home-page "https://wiki.gnome.org/Attic/LibUnique")
+    (synopsis "Library for writing single instance applications")
+    (description
+     "Libunique is a library for writing single instance applications.  If you
+launch a single instance application twice, the second instance will either just
+quit or will send a message to the running instance.  Libunique makes it easy to
+write this kind of application, by providing a base class, taking care of all
+the IPC machinery needed to send messages to a running instance, and also
+handling the startup notification side.")
+    (license license:lgpl2.1+)))
