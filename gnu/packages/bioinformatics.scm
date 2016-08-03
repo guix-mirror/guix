@@ -2108,6 +2108,8 @@ basic tasks but can change to using POSIX regular expressions, PCRE, hash
 lookups or multi-pattern searching as required.  By default fxtract looks in
 the sequence of each record but can also be told to look in the header,
 comment or quality sections.")
+      ;; 'util' requires SSE instructions.
+      (supported-systems '("x86_64-linux"))
       (license license:expat))))
 
 (define-public grit
