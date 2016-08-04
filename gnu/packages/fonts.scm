@@ -126,7 +126,7 @@ TrueType (TTF) files.")
 (define-public font-dejavu
   (package
     (name "font-dejavu")
-    (version "2.35")
+    (version "2.34")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/dejavu/dejavu/"
@@ -134,7 +134,7 @@ TrueType (TTF) files.")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "122d35y93r820zhi6d7m9xhakdib10z51v63lnlg67qhhrardmzn"))))
+               "0pgb0a3ngamidacmrvasg51ck3gp8gn93w6sf1s8snwzx4x2r9yh"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))

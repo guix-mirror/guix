@@ -153,7 +153,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 ("libelf" ,libelf)
                 ("zlib" ,zlib)))
 
-      ;; GCC < 5 is one of the few packages that doesn't ship .info files.
+      ;; GCC is one of the few packages that doesn't ship .info files.
       (native-inputs `(("texinfo" ,texinfo)))
 
       (arguments
@@ -352,9 +352,7 @@ Go.  It also includes runtime support libraries for these languages.")
               (sha256
                (base32
                 "1ny4smkp5bzs3cp8ss7pl6lk8yss0d9m4av1mvdp72r1x695akxq"))
-              (patches (search-patches "gcc-5.0-libvtv-runpath.patch"))))
-    ;; GCC 5 ships with .info files, so no need for Texinfo.
-    (native-inputs '())))
+              (patches (search-patches "gcc-5.0-libvtv-runpath.patch"))))))
 
 (define-public gcc-6
   (package

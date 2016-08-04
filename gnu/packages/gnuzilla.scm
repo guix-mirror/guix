@@ -77,10 +77,7 @@
       `(("perl" ,perl)
         ("python" ,python-2)))
     (arguments
-      `(;; XXX: parallel build fails, lacking:
-        ;;   mkdir -p "system_wrapper_js/"
-        #:parallel-build? #f
-        #:phases
+      `(#:phases
           (alist-cons-before
            'configure 'chdir
            (lambda _
@@ -120,10 +117,7 @@ in C/C++.")
                '(substitute* '("js/src/config/milestone.pl")
                   (("defined\\(@TEMPLATE_FILE)") "@TEMPLATE_FILE")))))
     (arguments
-     '(;; XXX: parallel build fails, lacking:
-       ;;   mkdir -p "system_wrapper_js/"
-       #:parallel-build? #f
-       #:phases
+     '(#:phases
        (modify-phases %standard-phases
          (replace
           'configure

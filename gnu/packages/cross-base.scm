@@ -121,14 +121,6 @@ may be either a libc package or #f.)"
                                "--disable-libquadmath"
                                "--disable-decimal-float" ;would need libc
                                "--disable-libcilkrts"
-
-                               ;; When target is any OS other than 'none' these
-                               ;; libraries will fail if there is no libc
-                               ;; present. See
-                               ;; <https://lists.gnu.org/archive/html/guix-devel/2016-02/msg01311.html>
-                               "--disable-libitm"
-                               "--disable-libvtv"
-                               "--disable-libsanitizer"
                                )))
 
                  ,(if libc
@@ -175,25 +167,24 @@ may be either a libc package or #f.)"
               `(alist-cons-before
                 'configure 'set-cross-path
                 (lambda* (#:key inputs #:allow-other-keys)
-                  ;; Add the cross kernel headers to CROSS_CPATH, and remove them
-                  ;; from CPATH.
+                  ;; Add the cross Linux headers to CROSS_C_*_INCLUDE_PATH,
+                  ;; and remove them from C_*INCLUDE_PATH.
                   (let ((libc  (assoc-ref inputs "libc"))
-                        (kernel (assoc-ref inputs "xkernel-headers")))
+                        (linux (assoc-ref inputs "xlinux-headers")))
                     (define (cross? x)
                       ;; Return #t if X is a cross-libc or cross Linux.
                       (or (string-prefix? libc x)
-                          (string-prefix? kernel x)))
+                          (string-prefix? linux x)))
                     (let ((cpath (string-append
                                   libc "/include"
-                                  ":" kernel "/include")))
+                                  ":" linux "/include")))
                       (for-each (cut setenv <> cpath)
                                 '("CROSS_C_INCLUDE_PATH"
                                   "CROSS_CPLUS_INCLUDE_PATH"
                                   "CROSS_OBJC_INCLUDE_PATH"
                                   "CROSS_OBJCPLUS_INCLUDE_PATH")))
                     (setenv "CROSS_LIBRARY_PATH"
-                            (string-append libc "/lib:"
-                                           kernel "/lib")) ;for Hurd's libihash
+                            (string-append libc "/lib"))
                     (for-each
                      (lambda (var)
                        (and=> (getenv var)
@@ -264,9 +255,9 @@ GCC that does not target a libc; otherwise, target that libc."
                                (alist-delete "libc" %final-inputs))))
            (if libc
                `(("libc" ,libc)
-                 ("xkernel-headers"                ;the target headers
+                 ("xlinux-headers"                ;the target headers
                   ,@(assoc-ref (package-propagated-inputs libc)
-                               "kernel-headers"))
+                               "linux-headers"))
                  ,@inputs)
                inputs))))
 
@@ -343,10 +334,10 @@ XBINUTILS and the cross tool chain."
                ,flags))
        ((#:phases phases)
         `(alist-cons-before
-          'configure 'set-cross-kernel-headers-path
+          'configure 'set-cross-linux-headers-path
           (lambda* (#:key inputs #:allow-other-keys)
-            (let* ((kernel (assoc-ref inputs "kernel-headers"))
-                   (cpath (string-append kernel "/include")))
+            (let* ((linux (assoc-ref inputs "linux-headers"))
+                   (cpath (string-append linux "/include")))
               (for-each (cut setenv <> cpath)
                         '("CROSS_C_INCLUDE_PATH"
                           "CROSS_CPLUS_INCLUDE_PATH"
@@ -355,9 +346,9 @@ XBINUTILS and the cross tool chain."
               #t))
           ,phases))))
 
-    ;; Shadow the native "kernel-headers" because glibc's recipe expects the
-    ;; "kernel-headers" input to point to the right thing.
-    (propagated-inputs `(("kernel-headers" ,xlinux-headers)))
+    ;; Shadow the native "linux-headers" because glibc's recipe expects the
+    ;; "linux-headers" input to point to the right thing.
+    (propagated-inputs `(("linux-headers" ,xlinux-headers)))
 
     ;; FIXME: 'static-bash' should really be an input, not a native input, but
     ;; to do that will require building an intermediate cross libc.

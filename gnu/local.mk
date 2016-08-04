@@ -440,7 +440,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/audacity-fix-ffmpeg-binding.patch	\
   %D%/packages/patches/automake-skip-amhello-tests.patch	\
   %D%/packages/patches/automake-regexp-syntax.patch		\
-  %D%/packages/patches/automake-test-gzip-warning.patch		\
   %D%/packages/patches/avahi-localstatedir.patch		\
   %D%/packages/patches/avidemux-install-to-lib.patch		\
   %D%/packages/patches/awesome-reproducible-png.patch		\
@@ -468,9 +467,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/clucene-contribs-lib.patch               \
   %D%/packages/patches/cursynth-wave-rand.patch			\
   %D%/packages/patches/dbus-helper-search-path.patch		\
+  %D%/packages/patches/dealii-p4est-interface.patch		\
   %D%/packages/patches/devil-CVE-2009-3994.patch		\
   %D%/packages/patches/devil-fix-libpng.patch			\
-  %D%/packages/patches/dico-idxgcide-bug.patch			\
   %D%/packages/patches/dico-libtool-deterministic.patch		\
   %D%/packages/patches/diffutils-gets-undeclared.patch		\
   %D%/packages/patches/dfu-programmer-fix-libusb.patch		\
@@ -489,6 +488,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/eudev-rules-directory.patch		\
   %D%/packages/patches/evilwm-lost-focus-bug.patch		\
   %D%/packages/patches/expat-CVE-2012-6702-and-CVE-2016-5300.patch	\
+  %D%/packages/patches/expat-CVE-2015-1283.patch		\
   %D%/packages/patches/expat-CVE-2015-1283-refix.patch		\
   %D%/packages/patches/expat-CVE-2016-0718.patch		\
   %D%/packages/patches/fastcap-mulGlobal.patch			\
@@ -522,9 +522,12 @@ dist_patch_DATA =						\
   %D%/packages/patches/gimp-CVE-2016-4994.patch			\
   %D%/packages/patches/glib-networking-ssl-cert-file.patch	\
   %D%/packages/patches/glib-tests-timer.patch			\
+  %D%/packages/patches/glibc-CVE-2015-7547.patch		\
   %D%/packages/patches/glibc-bootstrap-system.patch		\
+  %D%/packages/patches/glibc-hurd-extern-inline.patch		\
   %D%/packages/patches/glibc-ldd-x86_64.patch			\
   %D%/packages/patches/glibc-locales.patch			\
+  %D%/packages/patches/glibc-locale-incompatibility.patch	\
   %D%/packages/patches/glibc-o-largefile.patch			\
   %D%/packages/patches/glibc-versioned-locpath.patch		\
   %D%/packages/patches/gmp-arm-asm-nothumb.patch		\
@@ -603,6 +606,11 @@ dist_patch_DATA =						\
   %D%/packages/patches/liba52-link-with-libm.patch		\
   %D%/packages/patches/liba52-set-soname.patch			\
   %D%/packages/patches/liba52-use-mtune-not-mcpu.patch		\
+  %D%/packages/patches/libarchive-bsdtar-test.patch		\
+  %D%/packages/patches/libarchive-CVE-2013-0211.patch		\
+  %D%/packages/patches/libarchive-CVE-2016-1541.patch		\
+  %D%/packages/patches/libarchive-fix-lzo-test-case.patch	\
+  %D%/packages/patches/libarchive-mtree-filename-length-fix.patch \
   %D%/packages/patches/libbonobo-activation-test-race.patch	\
   %D%/packages/patches/libcanberra-sound-theme-freedesktop.patch \
   %D%/packages/patches/libcmis-fix-test-onedrive.patch		\
@@ -637,8 +645,9 @@ dist_patch_DATA =						\
   %D%/packages/patches/libwmf-CVE-2015-0848+CVE-2015-4588.patch	\
   %D%/packages/patches/libwmf-CVE-2015-4695.patch		\
   %D%/packages/patches/libwmf-CVE-2015-4696.patch		\
-  %D%/packages/patches/libxslt-generated-ids.patch		\
+  %D%/packages/patches/libxslt-CVE-2015-7995.patch		\
   %D%/packages/patches/lirc-localstatedir.patch			\
+  %D%/packages/patches/libpthread-glibc-preparation.patch	\
   %D%/packages/patches/lm-sensors-hwmon-attrs.patch		\
   %D%/packages/patches/lua-CVE-2014-5461.patch                      \
   %D%/packages/patches/lua-pkgconfig.patch                      \
@@ -658,6 +667,10 @@ dist_patch_DATA =						\
   %D%/packages/patches/mcrypt-CVE-2012-4426.patch			\
   %D%/packages/patches/mcrypt-CVE-2012-4527.patch			\
   %D%/packages/patches/mhash-keygen-test-segfault.patch		\
+  %D%/packages/patches/mit-krb5-CVE-2015-8629.patch		\
+  %D%/packages/patches/mit-krb5-CVE-2015-8630.patch		\
+  %D%/packages/patches/mit-krb5-CVE-2015-8631.patch		\
+  %D%/packages/patches/mit-krb5-init-context-null-spnego.patch	\
   %D%/packages/patches/mpc123-initialize-ao.patch		\
   %D%/packages/patches/mplayer2-theora-fix.patch		\
   %D%/packages/patches/module-init-tools-moduledir.patch	\
@@ -746,7 +759,6 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
   %D%/packages/patches/python2-pygobject-2-gi-info-type-error-domain.patch \
   %D%/packages/patches/qt4-ldflags.patch			\
-  %D%/packages/patches/rapicorn-isnan.patch			\
   %D%/packages/patches/ratpoison-shell.patch			\
   %D%/packages/patches/readline-link-ncurses.patch		\
   %D%/packages/patches/ripperx-missing-file.patch		\
@@ -773,6 +785,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/t1lib-CVE-2010-2642.patch		\
   %D%/packages/patches/t1lib-CVE-2011-0764.patch		\
   %D%/packages/patches/t1lib-CVE-2011-1552+CVE-2011-1553+CVE-2011-1554.patch		\
+  %D%/packages/patches/tar-d_ino_in_dirent-fix.patch		\
   %D%/packages/patches/tar-skip-unreliable-tests.patch		\
   %D%/packages/patches/tcl-mkindex-deterministic.patch		\
   %D%/packages/patches/tclxml-3.2-install.patch			\

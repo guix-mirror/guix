@@ -6,7 +6,6 @@
 ;;; Copyright © 2015 Paul van der Walt <paul@denknerd.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Christopher Allan Webber <cwebber@dustycloud.org>
-;;; Copyright © 2016 Nils Gillmann <ng0@libertad.pw>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,7 +49,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.22")
+    (version "1.21")
     (source
      (origin
       (method url-fetch)
@@ -58,7 +57,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0ywxwswizmkyciy480kzczxn6nhbgzf3z8my4nk43nvv67k4x87j"))))
+        "0kdq2cbnk84fr4jqcv689rlxpbyl6bda2cn6y3ll19v3mlydpnxp"))))
     (build-system gnu-build-system)
     (home-page "https://gnupg.org")
     (synopsis "Library of error values for GnuPG components")
@@ -74,14 +73,14 @@ Daemon and possibly more in the future.")
 (define-public libgcrypt
   (package
     (name "libgcrypt")
-    (version "1.7.0")
+    (version "1.6.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "14pspxwrqcgfklw3dgmywbxqwdzcym7fznfrqh9rk4vl8jkpxrmh"))))
+               "0959mwfzsxhallxdqlw359xg180ll2skxwyy35qawmfl89cbr7pl"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error-host" ,libgpg-error)))

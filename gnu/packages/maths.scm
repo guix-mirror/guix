@@ -2192,14 +2192,7 @@ specifications.")
           ;; Pretend to be on a 64 bit platform to obtain a common directory
           ;; name for the build results on all architectures; nothing else
           ;; seems to depend on it.
-          (("^PLATFORM=.*$") "PLATFORM=ux64\n")
-
-          ;; The check for 'isnan' as it is written fails with
-          ;; "non-floating-point argument in call to function
-          ;; ‘__builtin_isnan’", which leads to the 'NOISNAN' cpp macro
-          ;; definition, which in turn leads to bad things.  Fix the feature
-          ;; test.
-          (("isnan\\(0\\)") "isnan(0.)")))))
+          (("^PLATFORM=.*$") "PLATFORM=ux64\n")))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; no check target
@@ -2208,10 +2201,11 @@ specifications.")
          (delete 'configure)
          (replace 'build
            (lambda _
-             (and (with-directory-excursion "lpsolve55"
-                    (zero? (system* "bash" "ccc")))
-                  (with-directory-excursion "lp_solve"
-                    (zero? (system* "bash" "ccc"))))))
+             (with-directory-excursion "lpsolve55"
+               (system* "bash" "ccc"))
+             (with-directory-excursion "lp_solve"
+               (system* "bash" "ccc"))
+             #t))
          (replace 'install
            (lambda* (#:key outputs #:allow-other-keys)
              (let* ((out (assoc-ref outputs "out"))
@@ -2247,7 +2241,7 @@ revised simplex and the branch-and-bound methods.")
 (define-public dealii
   (package
     (name "dealii")
-    (version "8.4.1")
+    (version "8.2.1")
     (source
      (origin
        (method url-fetch)
@@ -2255,7 +2249,8 @@ revised simplex and the branch-and-bound methods.")
                            "download/v" version "/dealii-" version ".tar.gz"))
        (sha256
         (base32
-         "1bdksvvyp1rj37df1ndh8j3x9nzpc3sazw8nd0hzvnlw0qnyk800"))
+         "185jych0gdnpkjwxni7pd0dda149492zwq2457xdjg76bzj78mnp"))
+       (patches (search-patches "dealii-p4est-interface.patch"))
        (modules '((guix build utils)))
        (snippet
         ;; Remove bundled sources: UMFPACK, TBB, muParser, and boost

@@ -36,7 +36,6 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libidn)
-  #:use-module (gnu packages linux)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages perl)
@@ -48,7 +47,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "4.8")
+    (version "4.7")
     (source
      (origin
       (method url-fetch)
@@ -56,7 +55,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "04y5m29pqmvkfdbppmsdifyx89v8xclxzklpfc7a1fkr9p4jz07s"))))
+        "1j8iixynchziw1y39lnibyl5h81m4p78w3i4f28q2vgwjgf801x4"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (home-page "http://www.gnu.org/software/libtasn1/")
@@ -66,7 +65,21 @@
 for transmitting machine-neutral encodings of data objects in computer
 networking, allowing for formal validation of data according to some
 specifications.")
+    (replacement libtasn1/fixed)
     (license license:lgpl2.0+)))
+
+(define libtasn1/fixed                            ;for CVE-2016-4008
+  (package
+    (inherit libtasn1)
+    (source
+     (let ((version "4.8"))
+       (origin
+         (method url-fetch)
+         (uri (string-append "mirror://gnu/libtasn1/libtasn1-"
+                             version ".tar.gz"))
+         (sha256
+          (base32
+           "04y5m29pqmvkfdbppmsdifyx89v8xclxzklpfc7a1fkr9p4jz07s")))))))
 
 (define-public p11-kit
   (package
@@ -109,7 +122,7 @@ living in the same process.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.5.2")
+    (version "3.4.7")
     (source (origin
              (method url-fetch)
              (uri
@@ -120,7 +133,7 @@ living in the same process.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "10l5pv7qc5c850aamih3pdkbqpc4v2a6g164dzd7c7fjpxffji9b"))))
+               "0nifi3mr5jhz608pidkp8cjs4vwfj1m2qczsjrgpnp99615rxgn1"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
@@ -159,8 +172,7 @@ living in the same process.")
                "debug"
                "doc"))                            ;4.1 MiB of man pages
     (native-inputs
-     `(("net-tools" ,net-tools)
-       ("pkg-config" ,pkg-config)
+     `(("pkg-config" ,pkg-config)
        ("which" ,which)))
     (inputs
      `(("guile" ,guile-2.0)
@@ -171,7 +183,7 @@ living in the same process.")
        ("libidn" ,libidn)
        ("nettle" ,nettle)
        ("zlib" ,zlib)))
-    (home-page "https://www.gnu.org/software/gnutls/")
+    (home-page "http://www.gnu.org/software/gnutls/")
     (synopsis "Transport layer security library")
     (description
      "GnuTLS is a secure communications library implementing the SSL, TLS
@@ -185,7 +197,8 @@ required structures.")
 (define-public openssl
   (package
    (name "openssl")
-   (version "1.0.2h")
+   (version "1.0.2g")
+   (replacement openssl/fixed)
    (source (origin
              (method url-fetch)
              (uri (list (string-append "ftp://ftp.openssl.org/source/"
@@ -195,25 +208,15 @@ required structures.")
                                        "/" name "-" version ".tar.gz")))
              (sha256
               (base32
-               "06996ds1rk8xhnyb5y273a7xkcxhggp4bq1g02rab55d7bjhfh0x"))
+               "0cxajjayi859czi545ddafi24m9nwsnjsw4q82zrmqvwj2rv315p"))
              (patches (search-patches "openssl-runpath.patch"
-                                      "openssl-c-rehash-in.patch"
-                                      "openssl-CVE-2016-2177.patch"
-                                      "openssl-CVE-2016-2178.patch"))))
+                                      "openssl-c-rehash-in.patch"))))
    (build-system gnu-build-system)
-   (outputs '("out"
-              "doc"                               ;1.5MiB of man3 pages
-              "static"))                          ;6MiB of .a files
    (native-inputs `(("perl" ,perl)))
    (arguments
-    `(#:disallowed-references (,perl)
-      #:parallel-build? #f
+    `(#:parallel-build? #f
       #:parallel-tests? #f
       #:test-target "test"
-
-      ;; Changes to OpenSSL sometimes cause Perl to "sneak in" to the closure,
-      ;; so we explicitly disallow it here.
-      #:disallowed-references ,(list (canonical-package perl))
       #:phases
       (modify-phases %standard-phases
         (add-before
@@ -260,33 +263,6 @@ required structures.")
                        (find-files (string-append out "/lib")
                                    "\\.so"))
              #t)))
-        (add-after 'install 'move-static-libraries
-          (lambda* (#:key outputs #:allow-other-keys)
-            ;; Move static libraries to the "static" output.
-            (let* ((out    (assoc-ref outputs "out"))
-                   (lib    (string-append out "/lib"))
-                   (static (assoc-ref outputs "static"))
-                   (slib   (string-append static "/lib")))
-              (mkdir-p slib)
-              (for-each (lambda (file)
-                          (install-file file slib)
-                          (delete-file file))
-                        (find-files lib "\\.a$"))
-              #t)))
-        (add-after 'install 'move-man3-pages
-          (lambda* (#:key outputs #:allow-other-keys)
-            ;; Move section 3 man pages to "doc".
-            (let* ((out    (assoc-ref outputs "out"))
-                   (man3   (string-append out "/share/man/man3"))
-                   (doc    (assoc-ref outputs "doc"))
-                   (target (string-append doc "/share/man/man3")))
-              (mkdir-p target)
-              (for-each (lambda (file)
-                          (rename-file file
-                                       (string-append target "/"
-                                                      (basename file))))
-                        (find-files man3))
-              #t)))
         (add-before
          'patch-source-shebangs 'patch-tests
          (lambda* (#:key inputs native-inputs #:allow-other-keys)
@@ -322,6 +298,27 @@ required structures.")
     "OpenSSL is an implementation of SSL/TLS.")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
+
+(define openssl/fixed
+  (package
+    (inherit openssl)
+    (source
+     (let ((name "openssl")
+           (version "1.0.2h"))
+       (origin
+         (method url-fetch)
+         (uri (list (string-append "ftp://ftp.openssl.org/source/"
+                                   name "-" version ".tar.gz")
+                    (string-append "ftp://ftp.openssl.org/source/old/"
+                                   (string-trim-right version char-set:letter)
+                                   "/" name "-" version ".tar.gz")))
+         (sha256
+          (base32
+           "06996ds1rk8xhnyb5y273a7xkcxhggp4bq1g02rab55d7bjhfh0x"))
+         (patches (search-patches "openssl-runpath.patch"
+                                  "openssl-c-rehash-in.patch"
+                                  "openssl-CVE-2016-2177.patch"
+                                  "openssl-CVE-2016-2178.patch")))))))
 
 (define-public libressl
   (package

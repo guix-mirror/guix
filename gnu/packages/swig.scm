@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2015 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -41,9 +41,10 @@
               (base32
                "0g1a69vrqxgsnr1wkx851ljn73a2x3jqzxa66s2l3w0kyblbjk4z"))))
     (build-system gnu-build-system)
-    (native-inputs `(("boost" ,boost)
-                     ("pcre" ,pcre "bin")))       ;for 'pcre-config'
-    (inputs `(;; Provide these to run the corresponding tests.
+    (native-inputs `(("boost" ,boost)))
+    (inputs `(("pcre" ,pcre)
+
+              ;; Provide these to run the corresponding tests.
               ("guile" ,guile-2.0)
               ("perl" ,perl)))
               ;; FIXME: reactivate input python as soon as the test failures

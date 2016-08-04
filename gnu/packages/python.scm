@@ -101,7 +101,7 @@
 (define-public python-2.7
   (package
     (name "python")
-    (version "2.7.11")
+    (version "2.7.10")
     (source
      (origin
       (method url-fetch)
@@ -109,44 +109,56 @@
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
-        "0iiz844riiznsyhhyy962710pz228gmhv8qi3yk4w4jhmx2lqawn"))
-      (patches (search-patches "python-2.7-search-paths.patch"
-                               "python-2-deterministic-build-info.patch"
-                               "python-2.7-source-date-epoch.patch"))
-      (modules '((guix build utils)))
-      ;; suboptimal to delete failing tests here, but if we delete them in the
-      ;; arguments then we need to make sure to strip out that phase when it
-      ;; gets inherited by python and python-minimal.
-      (snippet
-       '(begin
-          (for-each delete-file
-                    '("Lib/test/test_compileall.py"
-                      "Lib/test/test_distutils.py"
-                      "Lib/test/test_import.py"
-                      "Lib/test/test_shutil.py"
-                      "Lib/test/test_socket.py"
-                      "Lib/test/test_subprocess.py"))
-          #t))))
+        "1h7zbrf9pkj29hlm18b10548ch9757f75m64l47sy75rh43p7lqw"))
+      (patches (search-patches
+                "python-2.7-search-paths.patch"
+                "python-2-deterministic-build-info.patch"
+                "python-2.7-source-date-epoch.patch"))))
     (outputs '("out"
                "tk"))                     ;tkinter; adds 50 MiB to the closure
     (build-system gnu-build-system)
     (arguments
-     `(;; 356 tests OK.
-       ;; 6 tests failed:
-       ;;     test_compileall test_distutils test_import test_shutil test_socket
-       ;;     test_subprocess
-       ;; 39 tests skipped:
+     `(#:tests? #f
+       ;; 268 tests OK.
+       ;; 103 tests failed:
+       ;;     test_distutils test_shutil test_signal test_site test_slice
+       ;;     test_smtplib test_smtpnet test_socket test_socketserver
+       ;;     test_softspace test_sort test_spwd test_sqlite test_ssl
+       ;;     test_startfile test_stat test_str test_strftime test_string
+       ;;     test_stringprep test_strop test_strptime test_strtod test_struct
+       ;;     test_structmembers test_structseq test_subprocess test_sunau
+       ;;     test_sunaudiodev test_sundry test_symtable test_syntax test_sys
+       ;;     test_sys_setprofile test_sys_settrace test_sysconfig test_tarfile
+       ;;     test_tcl test_telnetlib test_tempfile test_textwrap test_thread
+       ;;     test_threaded_import test_threadedtempfile test_threading
+       ;;     test_threading_local test_threadsignals test_time test_timeit
+       ;;     test_timeout test_tk test_tokenize test_tools test_trace
+       ;;     test_traceback test_transformer test_ttk_guionly test_ttk_textonly
+       ;;     test_tuple test_typechecks test_ucn test_unary
+       ;;     test_undocumented_details test_unicode test_unicode_file
+       ;;     test_unicodedata test_univnewlines test_univnewlines2k test_unpack
+       ;;     test_urllib test_urllib2 test_urllib2_localnet test_urllib2net
+       ;;     test_urllibnet test_urlparse test_userdict test_userlist
+       ;;     test_userstring test_uu test_uuid test_wait3 test_wait4
+       ;;     test_warnings test_wave test_weakref test_weakset test_whichdb
+       ;;     test_winreg test_winsound test_with test_wsgiref test_xdrlib
+       ;;     test_xml_etree test_xml_etree_c test_xmllib test_xmlrpc
+       ;;     test_xpickle test_xrange test_zipfile test_zipfile64
+       ;;     test_zipimport test_zipimport_support test_zlib
+       ;; 30 tests skipped:
        ;;     test_aepack test_al test_applesingle test_bsddb test_bsddb185
        ;;     test_bsddb3 test_cd test_cl test_codecmaps_cn test_codecmaps_hk
-       ;;     test_codecmaps_jp test_codecmaps_kr test_codecmaps_tw test_curses
-       ;;     test_dl test_gdb test_gl test_imageop test_imgfile test_ioctl
-       ;;     test_kqueue test_linuxaudiodev test_macos test_macostools
-       ;;     test_msilib test_ossaudiodev test_scriptpackages test_smtpnet
-       ;;     test_socketserver test_startfile test_sunaudiodev test_timeout
-       ;;     test_tk test_ttk_guionly test_urllib2net test_urllibnet
-       ;;     test_winreg test_winsound test_zipfile64
-       ;; 4 skips unexpected on linux2:
-       ;;     test_bsddb test_bsddb3 test_gdb test_ioctl
+       ;;     test_codecmaps_jp test_codecmaps_kr test_codecmaps_tw test_crypt
+       ;;     test_curses test_dl test_gdb test_gl test_idle test_imageop
+       ;;     test_imgfile test_ioctl test_kqueue test_linuxaudiodev test_macos
+       ;;     test_macostools test_msilib test_nis test_ossaudiodev
+       ;;     test_scriptpackages
+       ;; 6 skips unexpected on linux2:
+       ;;     test_bsddb test_bsddb3 test_crypt test_gdb test_idle test_ioctl
+       ;; One of the typical errors:
+       ;; test_unicode
+       ;; test test_unicode crashed -- <type 'exceptions.OSError'>: [Errno 2] No
+       ;; such file or directory
        #:test-target "test"
        #:configure-flags
        (list "--enable-shared"                    ;allow embedding
@@ -196,13 +208,6 @@
            (lambda _
              ;; 'Lib/test/test_site.py' needs a valid $HOME
              (setenv "HOME" (getcwd))
-             ,@(if (string-prefix? "mips64el" (%current-system))
-
-                   ;; XXX: The following test fails on mips64el.
-                   '((false-if-exception
-                      (delete-file "Lib/test/test_ctypes.py")))
-
-                   '())
              #t))
           (add-after
            'unpack 'set-source-file-times-to-1980
@@ -216,37 +221,6 @@
                           (utime file circa-1980 circa-1980)
                           #t))
                #t)))
-          (add-after 'install 'remove-tests
-            ;; Remove 25 MiB of unneeded unit tests.  Keep test_support.*
-            ;; because these files are used by some libraries out there.
-            (lambda* (#:key outputs #:allow-other-keys)
-              (let ((out (assoc-ref outputs "out")))
-                (match (scandir (string-append out "/lib")
-                                (lambda (name)
-                                  (string-prefix? "python" name)))
-                  ((pythonX.Y)
-                   (let ((testdir (string-append out "/lib/" pythonX.Y
-                                                 "/test")))
-                     (with-directory-excursion testdir
-                       (for-each delete-file-recursively
-                                 (scandir testdir
-                                          (match-lambda
-                                            ((or "." "..") #f)
-                                            (file
-                                             (not
-                                              (string-prefix? "test_support."
-                                                              file))))))
-                       (call-with-output-file "__init__.py" (const #t))
-                       #t)))))))
-          (add-before 'strip 'make-libraries-writable
-            (lambda* (#:key outputs #:allow-other-keys)
-              ;; Make .so files writable so they can be stripped.
-              (let ((out (assoc-ref outputs "out")))
-                (for-each (lambda (file)
-                            (chmod file #o755))
-                          (find-files (string-append out "/lib")
-                                      "\\.so"))
-                #t)))
           (add-after 'install 'move-tk-inter
             (lambda* (#:key outputs #:allow-other-keys)
               ;; When Tkinter support is built move it to a separate output so
@@ -379,8 +353,8 @@ data types.")
                   (lambda (old new)
                     (symlink (string-append python old)
                              (string-append bin "/" new)))
-                  '("python3" "pydoc3" "idle3")
-                  '("python"  "pydoc"  "idle"))))))
+                  `("python3" ,"pydoc3" ,"idle3")
+                  `("python"  ,"pydoc"  ,"idle"))))))
     (synopsis "Wrapper for the Python 3 commands")
     (description
      "This package provides wrappers for the commands of Python@tie{}3.x such
@@ -3672,14 +3646,14 @@ simple and Pythonic domain language.")
 (define-public python-alembic
   (package
     (name "python-alembic")
-    (version "0.8.7")
+    (version "0.8.4")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "alembic" version))
        (sha256
         (base32
-         "0ias6fdzwr2s220fnjspkdgm9510bd0cnap0hx5y4zy4srba9f3z"))))
+         "0jk23a852l3ybv7gfz81xzslyrnqnpjds5x15zd234y9rh9gq1w5"))))
     (build-system python-build-system)
     (native-inputs
      `(("python-mock" ,python-mock)

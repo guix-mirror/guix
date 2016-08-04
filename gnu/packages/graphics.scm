@@ -4,7 +4,6 @@
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
-;;; Copyright © 2016 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -301,8 +300,7 @@ visual effects work for film.")
                                   "rapicorn-" version ".tar.xz"))
               (sha256
                (base32
-                "1y51yjrpsihas1jy905m9p3r8iiyhq6bwi2690c564i5dnix1f9d"))
-              (patches (search-patches "rapicorn-isnan.patch"))))
+                "1y51yjrpsihas1jy905m9p3r8iiyhq6bwi2690c564i5dnix1f9d"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases

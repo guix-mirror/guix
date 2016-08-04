@@ -102,7 +102,6 @@ MODULES =					\
   guix/build/rpath.scm				\
   guix/build/cvs.scm				\
   guix/build/svn.scm				\
-  guix/build/syscalls.scm                       \
   guix/build/gremlin.scm			\
   guix/build/emacs-utils.scm			\
   guix/build/graft.scm				\
@@ -156,6 +155,13 @@ MODULES +=					\
   guix/import/cpan.scm				\
   guix/scripts/import/gem.scm			\
   guix/import/gem.scm
+
+endif
+
+if BUILD_SYSCALLS_MODULE
+
+MODULES +=					\
+  guix/build/syscalls.scm
 
 endif
 
@@ -379,6 +385,13 @@ EXTRA_DIST +=					\
 
 endif !BUILD_DAEMON_OFFLOAD
 
+if !BUILD_SYSCALLS_MODULE
+
+EXTRA_DIST +=					\
+  guix/build/syscalls.scm
+
+endif !BUILD_SYSCALLS_MODULE
+
 
 CLEANFILES =					\
   $(GOBJECTS)					\
@@ -389,13 +402,11 @@ CLEANFILES =					\
 # there that are newer than the local .scm files (for instance because the
 # user ran 'make install' recently).  When that happens, we end up loading
 # those previously-installed .go files, which may be stale, thereby breaking
-# the whole thing.  Likewise, set 'XDG_CACHE_HOME' to avoid loading possibly
-# stale files from ~/.cache/guile/ccache.
+# the whole thing.
 %.go: make-go ; @:
 make-go: $(MODULES) guix/config.scm guix/tests.scm
 	$(AM_V_at)echo "Compiling Scheme modules..." ;			\
 	unset GUILE_LOAD_COMPILED_PATH ;				\
-	XDG_CACHE_HOME=/nowhere						\
 	host=$(host) srcdir="$(top_srcdir)"				\
 	$(top_builddir)/pre-inst-env					\
 	$(GUILE) -L "$(top_builddir)" -L "$(top_srcdir)"		\

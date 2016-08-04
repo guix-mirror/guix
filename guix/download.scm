@@ -282,15 +282,8 @@
   ;; List of content-addressed mirrors.  Each mirror is represented as a
   ;; procedure that takes a file name, an algorithm (symbol) and a hash
   ;; (bytevector), and returns a URL or #f.
-  ;; Note: Avoid 'https' to mitigate <http://bugs.gnu.org/22774>.
   ;; TODO: Add more.
   '(list (lambda (file algo hash)
-           ;; Files served by 'guix publish' are accessible under a single
-           ;; hash algorithm.
-           (string-append "http://mirror.hydra.gnu.org/file/"
-                          file "/" (symbol->string algo) "/"
-                          (bytevector->nix-base32-string hash)))
-         (lambda (file algo hash)
            ;; 'tarballs.nixos.org' supports several algorithms.
            (string-append "http://tarballs.nixos.org/"
                           (symbol->string algo) "/"

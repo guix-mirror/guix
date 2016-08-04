@@ -405,7 +405,7 @@ interface.  It is implemented as a frontend to @code{klick}.")
        ("font-tex-gyre" ,font-tex-gyre)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
-       ("ghostscript" ,ghostscript-gs)
+       ("ghostscript" ,ghostscript)
        ("pango" ,pango)
        ("python" ,python-2)))
     (native-inputs

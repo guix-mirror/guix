@@ -280,6 +280,19 @@ AC_DEFUN([GUIX_ASSERT_CXX11], [
   fi
 ])
 
+dnl GUIX_CHECK_LIBC_MOUNT
+dnl
+dnl Check whether libc provides 'mount'.  On GNU/Hurd it doesn't (yet).
+AC_DEFUN([GUIX_CHECK_LIBC_MOUNT], [
+  AC_CACHE_CHECK([whether libc provides 'mount'], [guix_cv_libc_has_mount],
+    [GUILE_CHECK([retval], [(dynamic-func \"mount\" (dynamic-link))])
+     if test "$retval" = 0; then
+       guix_cv_libc_has_mount="yes"
+     else
+       guix_cv_libc_has_mount="no"
+     fi])
+])
+
 dnl GUIX_LIBGCRYPT_LIBDIR VAR
 dnl
 dnl Attempt to determine libgcrypt's LIBDIR; store the result in VAR.

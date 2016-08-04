@@ -62,7 +62,7 @@
   (define (boot fetch)
     (lambda* (url hash-algo hash
               #:optional name #:key system)
-      (fetch url hash-algo hash name
+      (fetch url hash-algo hash
              #:guile %bootstrap-guile
              #:system system)))
 

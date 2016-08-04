@@ -29,7 +29,7 @@
 (define-public zsh
   (package
     (name "zsh")
-    (version "5.2")
+    (version "5.1.1")
     (source (origin
               (method url-fetch)
               (uri (list (string-append
@@ -40,7 +40,7 @@
                            ".tar.gz")))
               (sha256
                (base32
-                "0dsr450v8nydvpk8ry276fvbznlrjgddgp7zvhcw4cv69i9lr4ps"))))
+                "11shllzhq53fg8ngy3bgbmpf09fn2czifg7hsb41nxi3410mpvcl"))))
     (build-system gnu-build-system)
     (arguments `(#:configure-flags '("--with-tcsetpgrp" "--enable-pcre")
                  #:phases (alist-cons-before

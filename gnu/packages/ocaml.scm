@@ -569,7 +569,6 @@ libpanel, librsvg and quartz.")
     (native-inputs
      `(("ocaml" ,ocaml)
        ;; For documentation
-       ("ghostscript-gs" ,ghostscript-gs)
        ("ghostscript" ,ghostscript)
        ("texlive" ,texlive)
        ("hevea" ,hevea)

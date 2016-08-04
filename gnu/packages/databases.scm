@@ -86,7 +86,6 @@
        ("automake" ,automake)
        ("gettext" ,gnu-gettext)
        ("libtool" ,libtool)
-       ("pcre" ,pcre "bin")                       ;for 'pcre-config'
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)
@@ -95,6 +94,7 @@
        ("raptor2" ,raptor2)
        ("readline" ,readline)
        ("avahi" ,avahi)
+       ("pcre" ,pcre)
        ("cyrus-sasl" ,cyrus-sasl)
        ("openssl" ,openssl)
        ("util-linux" ,util-linux)))
@@ -114,14 +114,14 @@ either single machines or networked clusters.")
 (define-public gdbm
   (package
     (name "gdbm")
-    (version "1.12")
+    (version "1.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gdbm/gdbm-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1smwz4x5qa4js0zf1w3asq6z7mh20zlgwbh2bk5dczw6xrk22yyr"))))
+                "1hz3jgh3pd4qzp6jy0l8pd8x01g9abw7csnrlnj1a2sxy122z4cd"))))
     (arguments `(#:configure-flags '("--enable-libgdbm-compat")))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/gdbm/")
@@ -136,20 +136,18 @@ and provides interfaces to the traditional file format.")
 (define-public bdb
   (package
     (name "bdb")
-    (version "6.2.23")
+    (version "5.3.21")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.oracle.com/berkeley-db/db-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "1isxx4jfmnh913jzhp8hhfngbk6dsg46f4kjpvvc56maj64jqqa7"))))
+              (uri (string-append "http://download.oracle.com/berkeley-db/db-" version
+                                  ".tar.gz"))
+              (sha256 (base32
+                       "1f2g2612lf8djbwbwhxsvmffmf9d7693kh2l20195pqp0f9jmnfx"))))
     (build-system gnu-build-system)
     (outputs '("out"                             ; programs, libraries, headers
                "doc"))                           ; 94 MiB of HTML docs
     (arguments
      '(#:tests? #f                            ; no check target available
-       #:disallowed-references ("doc")
        #:phases
        (alist-replace
         'configure
@@ -166,9 +164,6 @@ and provides interfaces to the traditional file format.")
                       (string-append "--prefix=" out)
                       (string-append "CONFIG_SHELL=" (which "bash"))
                       (string-append "SHELL=" (which "bash"))
-
-                      ;; Remove 7 MiB of .a files.
-                      "--disable-static"
 
                       ;; The compatibility mode is needed by some packages,
                       ;; notably iproute2.
@@ -187,18 +182,6 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                            "See LICENSE in the distribution."))
     (home-page
      "http://www.oracle.com/us/products/database/berkeley-db/overview/index.html")))
-
-(define-public bdb-5.3
-  (package (inherit bdb)
-    (name "bdb")
-    (version "5.3.28")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://download.oracle.com/berkeley-db/db-"
-                                  version ".tar.gz"))
-              (sha256
-               (base32
-                "0a1n5hbl7027fbz5lm0vp0zzfp1hmxnz14wx3zl9563h83br5ag0"))))))
 
 (define-public mysql
   (package
@@ -482,7 +465,7 @@ for example from a shell script.")
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.12.2")
+   (version "3.10.0")
    (source (origin
             (method url-fetch)
             ;; TODO: Download from sqlite.org once this bug :
@@ -513,7 +496,7 @@ for example from a shell script.")
                    ))
             (sha256
              (base32
-              "1fwss0i2lixv39b27gkqiibdd2syym90wh3qbiaxnfgxk867f07x"))))
+              "0hhhv6si0pyf5i8bv7a71953m0b4gk6s3j2h09caf7vif0njkk23"))))
    (build-system gnu-build-system)
    (inputs `(("readline" ,readline)))
    (arguments

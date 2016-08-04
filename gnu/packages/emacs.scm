@@ -110,6 +110,14 @@
              (substitute* (find-files "." "^Makefile\\.in$")
                (("/bin/pwd")
                 "pwd"))))
+         (add-after 'install 'remove-info.info
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Remove 'info.info', which is provided by Texinfo <= 6.0.
+             ;; TODO: Remove this phase when we switch to Texinfo 6.1.
+             (let ((out (assoc-ref outputs "out")))
+               (delete-file
+                (string-append out "/share/info/info.info.gz"))
+               #t)))
          (add-after 'install 'install-site-start
            ;; Copy guix-emacs.el from Guix and add it to site-start.el.  This
            ;; way, Emacs packages provided by Guix and installed in

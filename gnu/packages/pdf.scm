@@ -88,10 +88,7 @@
     `(#:tests? #f ; no test data provided with the tarball
       #:configure-flags
       '("--enable-xpdf-headers" ; to install header files
-        "--enable-zlib"
-
-        ;; Saves 8 MiB of .a files.
-        "--disable-static")
+        "--enable-zlib")
       #:phases
       (alist-cons-before
        'configure 'setenv
@@ -512,38 +509,27 @@ and examining the file structure (pdfshow).")
             (uri (string-append "mirror://sourceforge/qpdf/qpdf/" version
                                 "/qpdf-" version ".tar.gz"))
             (sha256 (base32
-                     "1lq1v7xghvl6p4hgrwbps3a13ad6lh4ib3myimb83hxgsgd4n5nm"))
-            (modules '((guix build utils)))
-            (snippet
-             ;; Replace shebang with the bi-lingual shell/Perl trick to remove
-             ;; dependency on Perl.
-             '(substitute* "qpdf/fix-qdf"
-                (("#!/usr/bin/env perl")
-                 "\
-eval '(exit $?0)' && eval 'exec perl -wS \"$0\" ${1+\"$@\"}'
-  & eval 'exec perl -wS \"$0\" $argv:q'
-    if 0;\n")))))
+                     "1lq1v7xghvl6p4hgrwbps3a13ad6lh4ib3myimb83hxgsgd4n5nm"))))
    (build-system gnu-build-system)
    (arguments
-    `(#:disallowed-references (,perl)
-      #:phases (alist-cons-before
-                'configure 'patch-paths
-                (lambda _
-                  (substitute* "make/libtool.mk"
-                    (("SHELL=/bin/bash")
-                     (string-append "SHELL=" (which "bash"))))
-                  (substitute* (append
-                                '("qtest/bin/qtest-driver")
-                                (find-files "." "\\.test"))
-                    (("/usr/bin/env") (which "env"))))
-                %standard-phases)))
+      '(#:phases (alist-cons-before
+                  'configure 'patch-paths
+                  (lambda _
+                    (substitute* "make/libtool.mk"
+                      (("SHELL=/bin/bash")
+                       (string-append "SHELL=" (which "bash"))))
+                    (substitute* (append
+                                  '("qtest/bin/qtest-driver")
+                                  (find-files "." "\\.test"))
+                      (("/usr/bin/env") (which "env"))))
+                  %standard-phases)))
    (native-inputs
-    `(("pkg-config" ,pkg-config)
-      ("perl" ,perl)))
+    `(("pkg-config" ,pkg-config)))
    (propagated-inputs
     `(("pcre" ,pcre)))
    (inputs
-    `(("zlib" ,zlib)))
+    `(("zlib" ,zlib)
+      ("perl" ,perl)))
    (synopsis "Command-line tools and library for transforming PDF files")
    (description
     "QPDF is a command-line program that does structural, content-preserving

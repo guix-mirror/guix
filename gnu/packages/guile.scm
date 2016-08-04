@@ -166,8 +166,7 @@ without requiring the source code to be rewritten.")
    (outputs '("out" "debug"))
 
    (arguments
-    `(#:configure-flags '("--disable-static")     ;saves 3MiB
-      #:phases (alist-cons-before
+    `(#:phases (alist-cons-before
                 'configure 'pre-configure
                 (lambda* (#:key inputs #:allow-other-keys)
                   ;; Tell (ice-9 popen) the file name of Bash.

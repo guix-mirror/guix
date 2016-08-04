@@ -90,7 +90,15 @@
                         "-Dinstallstyle=lib/perl5"
                         "-Duseshrplib"
                         (string-append "-Dlocincpth=" libc "/include")
-                        (string-append "-Dloclibpth=" libc "/lib"))))))
+                        (string-append "-Dloclibpth=" libc "/lib")
+
+                        ;; Force the library search path to contain only libc
+                        ;; because it is recorded in Config.pm and
+                        ;; Config_heavy.pl; we don't want to keep a reference
+                        ;; to everything that's in $LIBRARY_PATH at build
+                        ;; time (Binutils, bzip2, file, etc.)
+                        (string-append "-Dlibpth=" libc "/lib")
+                        (string-append "-Dplibpth=" libc "/lib"))))))
 
          (add-before
           'strip 'make-shared-objects-writable
@@ -101,34 +109,7 @@
                    (lib (string-append out "/lib")))
               (for-each (lambda (dso)
                           (chmod dso #o755))
-                        (find-files lib "\\.so$")))))
-
-         (add-after 'install 'remove-extra-references
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let* ((out     (assoc-ref outputs "out"))
-                    (libc    (assoc-ref inputs "libc"))
-                    (config1 (car (find-files (string-append out "/lib/perl5")
-                                              "^Config_heavy\\.pl$")))
-                    (config2 (find-files (string-append out "/lib/perl5")
-                                         "^Config\\.pm$")))
-               ;; Force the library search path to contain only libc because
-               ;; it is recorded in Config.pm and Config_heavy.pl; we don't
-               ;; want to keep a reference to everything that's in
-               ;; $LIBRARY_PATH at build time (GCC, Binutils, bzip2, file,
-               ;; etc.)
-               (substitute* config1
-                 (("^incpth=.*$")
-                  (string-append "incpth='" libc "/include'\n"))
-                 (("^(libpth|plibpth|libspath)=.*$" _ variable)
-                  (string-append variable "='" libc "/lib'\n")))
-
-               (for-each (lambda (file)
-                           (substitute* config2
-                             (("libpth => .*$")
-                              (string-append "libpth => '" libc
-                                             "/lib',\n"))))
-                         config2)
-               #t))))))
+                        (find-files lib "\\.so$"))))))))
     (native-search-paths (list (search-path-specification
                                 (variable "PERL5LIB")
                                 (files '("lib/perl5/site_perl")))))

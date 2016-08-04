@@ -34,8 +34,9 @@
 
 (define-public openldap
   (package
+   (replacement openldap-2.4.44)
    (name "openldap")
-   (version "2.4.44")
+   (version "2.4.42")
    (source (origin
             (method url-fetch)
 
@@ -52,9 +53,9 @@
                         "openldap-release/openldap-" version ".tgz")))
             (sha256
              (base32
-              "0044p20hx07fwgw2mbwj1fkx04615hhs1qyx4mawj2bhqvrnppnp"))))
+              "0qwfpb5ipp2l76v11arghq5mr0sjc6xhjfg8a0kgsaw5qpib1dzf"))))
    (build-system gnu-build-system)
-   (inputs `(("bdb" ,bdb-5.3)
+   (inputs `(("bdb" ,bdb)
              ("openssl" ,openssl)
              ("cyrus-sasl" ,cyrus-sasl)
              ("groff" ,groff)
@@ -77,3 +78,24 @@
     "OpenLDAP is a free implementation of the Lightweight Directory Access Protocol.")
    (license openldap2.8)
    (home-page "http://www.openldap.org/")))
+
+(define openldap-2.4.44
+  (package
+    (inherit openldap)
+    (replacement #f)
+    (source
+      (let ((version "2.4.44"))
+        (origin
+          (method url-fetch)
+          (uri (list (string-append
+                      "ftp://mirror.switch.ch/mirror/OpenLDAP/"
+                      "openldap-release/openldap-" version ".tgz")
+                     (string-append
+                      "ftp://ftp.OpenLDAP.org/pub/OpenLDAP/"
+                      "openldap-release/openldap-" version ".tgz")
+                     (string-append
+                      "ftp://ftp.dti.ad.jp/pub/net/OpenLDAP/"
+                      "openldap-release/openldap-" version ".tgz")))
+          (sha256
+           (base32
+            "0044p20hx07fwgw2mbwj1fkx04615hhs1qyx4mawj2bhqvrnppnp")))))))

@@ -270,24 +270,21 @@
                 (name "perl-boot0")
                 (replacement #f)
                 (arguments
-                 ;; At the very least, this must not depend on GCC & co.
-                 (let ((args `(#:disallowed-references
-                               ,(list %bootstrap-binutils))))
-                   (substitute-keyword-arguments (package-arguments perl)
-                     ((#:phases phases)
-                      `(modify-phases ,phases
-                         ;; Pthread support is missing in the bootstrap compiler
-                         ;; (broken spec file), so disable it.
-                         (add-before 'configure 'disable-pthreads
-                           (lambda _
-                             (substitute* "Configure"
-                               (("^libswanted=(.*)pthread" _ before)
-                                (string-append "libswanted=" before)))))))))))))
-    (package-with-bootstrap-guile
-     (package-with-explicit-inputs perl
-                                   %boot0-inputs
-                                   (current-source-location)
-                                   #:guile %bootstrap-guile))))
+                 (substitute-keyword-arguments (package-arguments perl)
+                   ((#:phases phases)
+                    `(modify-phases ,phases
+                       ;; Pthread support is missing in the bootstrap compiler
+                       ;; (broken spec file), so disable it.
+                       (add-before 'configure 'disable-pthreads
+                         (lambda _
+                           (substitute* "Configure"
+                             (("^libswanted=(.*)pthread" _ before)
+                              (string-append "libswanted=" before))))))))))))
+   (package-with-bootstrap-guile
+    (package-with-explicit-inputs perl
+                                  %boot0-inputs
+                                  (current-source-location)
+                                  #:guile %bootstrap-guile))))
 
 (define (linux-libre-headers-boot0)
   "Return Linux-Libre header files for the bootstrap environment."
@@ -309,12 +306,7 @@
   ;; Also, use %BOOT0-INPUTS to avoid building Perl once more.
   (let ((texinfo (package (inherit texinfo)
                    (native-inputs '())
-                   (inputs `(("perl" ,perl-boot0)))
-
-                   ;; Some of Texinfo 6.1's tests would fail with "Couldn't
-                   ;; set UTF-8 character type in locale" but we don't have a
-                   ;; UTF-8 locale at this stage, so skip them.
-                   (arguments '(#:tests? #f)))))
+                   (inputs `(("perl" ,perl-boot0))))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs texinfo %boot0-inputs
                                    (current-source-location)
@@ -363,7 +355,7 @@
                                    "export CPATH\n"
                                    all "\n"))))
                ,phases)))))
-     (propagated-inputs `(("kernel-headers" ,(linux-libre-headers-boot0))))
+     (propagated-inputs `(("linux-headers" ,(linux-libre-headers-boot0))))
      (native-inputs
       `(("texinfo" ,texinfo-boot0)
         ("perl" ,perl-boot0)))

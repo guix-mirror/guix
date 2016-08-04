@@ -35,7 +35,6 @@
   #:use-module (gnu packages grub)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages nvi)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-26)
   #:export (self-contained-tarball
@@ -402,7 +401,6 @@ Use Alt-F2 for documentation.
                      ;; space; furthermore util-linux's fdisk is already
                      ;; available here, so we keep that.
                      bash-completion
-                     nvi                          ;:wq!
                      %base-packages))))
 
 ;; Return it here so 'guix system' can consume it directly.

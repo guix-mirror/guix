@@ -443,7 +443,7 @@ OpenGL graphics API.")
 (define-public libepoxy
   (package
     (name "libepoxy")
-    (version "1.3.1")
+    (version "1.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -453,7 +453,7 @@ OpenGL graphics API.")
               (file-name (string-append name "-" version ".tar.gz"))
               (sha256
                (base32
-                "1d1brhwfmlzgnphmdwlvn5wbcrxsdyzf1qfcf8nb89xqzznxs037"))))
+                "1xp8g6b7xlbym2rj4vkbl6xpb7ijq7glpv656mc7k9b01x22ihs2"))))
     (arguments
      `(#:phases
        (alist-cons-after
