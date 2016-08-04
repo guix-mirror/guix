@@ -135,8 +135,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
 (define-public libarchive
   (package
     (name "libarchive")
-    (replacement libarchive/fixed)
-    (version "3.1.2")
+    (version "3.2.1")
     (source
      (origin
        (method url-fetch)
@@ -144,12 +143,7 @@ backups (called chunks) to allow easy burning to CD/DVD.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0pixqnrcf35dnqgv0lp7qlcw7k13620qkhgxr288v7p4iz6ym1zb"))
-       (patches
-        (search-patches "libarchive-mtree-filename-length-fix.patch"
-                        "libarchive-fix-lzo-test-case.patch"
-                        "libarchive-CVE-2013-0211.patch"
-                        "libarchive-bsdtar-test.patch"))))
+         "1lngng84k1kkljl74q0cdqc3s82vn2kimfm02dgm4d6m7x71mvkj"))))
     (build-system gnu-build-system)
     ;; TODO: Add -L/path/to/nettle in libarchive.pc.
     (inputs
@@ -180,7 +174,10 @@ backups (called chunks) to allow easy burning to CD/DVD.")
                 (zero? (system* "./libarchive_test" "^test_*_disk*"))
                 (zero? (system* "./bsdcpio_test" "^test_owner_parse"))
                 (zero? (system* "./bsdtar_test"))))
-         %standard-phases))))
+         %standard-phases))
+       ;; libarchive/test/test_write_format_gnutar_filenames.c needs to be
+       ;; compiled with C99 or C11 or a gnu variant.
+       #:configure-flags '("CFLAGS=-O2 -g -std=c99")))
     (home-page "http://libarchive.org/")
     (synopsis "Multi-format archive and compression library")
     (description
@@ -192,14 +189,6 @@ serially iterate through the archive, writers serially add things to the
 archive.  In particular, note that there is currently no built-in support for
 random access nor for in-place modification.")
     (license license:bsd-2)))
-
-(define libarchive/fixed
-  (package
-    (inherit libarchive)
-    (source (origin
-              (inherit (package-source libarchive))
-              (patches (cons (search-patch "libarchive-CVE-2016-1541.patch")
-                             (origin-patches (package-source libarchive))))))))
 
 (define-public rdup
   (package

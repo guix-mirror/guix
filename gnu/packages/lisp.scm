@@ -148,7 +148,7 @@ interface to the Tk widget system.")
                  `("CPATH" suffix
                    ,(map (lambda (lib)
                            (input-path lib "/include"))
-                         `("linux-headers" ,@libraries)))
+                         `("kernel-headers" ,@libraries)))
                  `("LIBRARY_PATH" suffix ,library-directories)
                  `("LD_LIBRARY_PATH" suffix ,library-directories)))))
          (add-after 'wrap 'check (assoc-ref %standard-phases 'check)))))
