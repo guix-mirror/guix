@@ -369,6 +369,7 @@ GNU_SYSTEM_MODULES =				\
   %D%/packages/yubico.scm			\
   %D%/packages/zile.scm				\
   %D%/packages/zip.scm				\
+  %D%/packages/zsh.scm				\
 						\
   %D%/services.scm				\
   %D%/services/avahi.scm			\
