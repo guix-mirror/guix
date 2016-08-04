@@ -8855,7 +8855,8 @@ development version of CPython that are not available in older releases.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)))
       (arguments
-       `(#:phases
+       `(#:python ,python-2
+         #:phases
          (modify-phases %standard-phases
            ;; 'python setup.py test' does not work as of 0.98.
            ;; There is only the one test file, so we run it directly.
