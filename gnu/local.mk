@@ -739,6 +739,7 @@ dist_patch_DATA =						\
   %D%/packages/patches/python-ipython-inputhook-ctype.patch	\
   %D%/packages/patches/python-rarfile-fix-tests.patch		\
   %D%/packages/patches/python2-rdflib-drop-sparqlwrapper.patch	\
+  %D%/packages/patches/python-statsmodels-fix-tests.patch	\
   %D%/packages/patches/python-configobj-setuptools.patch	\
   %D%/packages/patches/python-paste-remove-website-test.patch	\
   %D%/packages/patches/python-paste-remove-timing-test.patch	\
