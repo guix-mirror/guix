@@ -1200,7 +1200,8 @@ information.")
                 "0hpxcij9xx9ny3gs9p0iz4r8zslw8wqymbyababiyl7603a6x90y"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:parallel-tests? #f
+       #:phases
        (modify-phases %standard-phases
          (add-before
              'configure 'fix-docbook
