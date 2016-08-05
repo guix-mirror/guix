@@ -10023,3 +10023,30 @@ binary or text.")
       (inputs
        `(("python2-enum34" ,python2-enum34)
          ,@(package-inputs base))))))
+
+(define-public python-nltk
+  (package
+    (name "python-nltk")
+    (version "3.2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "nltk" version))
+              (sha256
+               (base32
+                "0skxbhnymwlspjkzga0f7x1hg3y50fwpfghs8g8k7fh6f4nknlym"))))
+    (build-system python-build-system)
+    (home-page "http://nltk.org/")
+    (synopsis "Natural Language Toolkit")
+    (description "It provides interfaces to over 50 corpora and lexical
+resources such as WordNet, along with a suite of text processing libraries
+for classification, tokenization, stemming, tagging, parsing, and semantic
+reasoning, wrappers for natural language processing libraries.")
+    (license license:asl2.0)
+    (properties `((python2-variant . ,(delay python2-nltk))))))
+
+(define-public python2-nltk
+  (let ((base (package-with-python2 (strip-python2-variant python-nltk))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
