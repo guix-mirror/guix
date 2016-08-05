@@ -1180,4 +1180,29 @@ configuration file, and then reads and evaluates Guile expressions that
 you send to a FIFO file.")
     (license gpl3+)))
 
+(define-public guile-commonmark
+  (package
+    (name "guile-commonmark")
+    (version "0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/OrangeShark/" name
+                                  "/releases/download/v" version
+                                  "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "12cb5fqvvgc87f5xp0ih5az305wnjia89l5jba83d0r2p8bfy0b0"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("guile" ,guile-2.0)))
+    (synopsis "CommonMark parser for Guile")
+    (description
+     "guile-commonmark is a library for parsing CommonMark, a fully specified
+variant of Markdown.  The library is written in Guile Scheme and is designed
+to transform a CommonMark document to SXML.  guile-commonmark tries to closely
+follow the @uref{http://commonmark.org/, CommonMark spec}, the main difference
+is no support for parsing block and inline level HTML.")
+    (home-page "https://github.com/OrangeShark/guile-commonmark")
+    (license lgpl3+)))
+
 ;;; guile.scm ends here
