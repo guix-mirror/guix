@@ -9992,3 +9992,34 @@ hardware-accelerated multitouch applications.")
 
 (define-public python2-kivy-next
   (package-with-python2 python-kivy-next))
+
+(define-public python-binaryornot
+  (package
+    (name "python-binaryornot")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "binaryornot" version))
+              (sha256
+               (base32
+                "1j4f51dxic39mdwf6alj7gd769wy6mhk916v031wjali51xkh3xb"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-chardet" ,python-chardet)
+       ("python-hypothesis" ,python-hypothesis)))
+    (home-page "https://github.com/audreyr/binaryornot")
+    (synopsis "Package to check if a file is binary or text")
+    (description "Ultra-lightweight pure Python package to check if a file is
+binary or text.")
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-binaryornot))))))
+
+(define-public python2-binaryornot
+  (let ((base (package-with-python2 (strip-python2-variant python-binaryornot))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base)))
+      (inputs
+       `(("python2-enum34" ,python2-enum34)
+         ,@(package-inputs base))))))
