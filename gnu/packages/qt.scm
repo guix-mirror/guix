@@ -769,30 +769,6 @@ developers using C++ or QML, a CSS & JavaScript like language.")
     (inputs
      `(("qtbase" ,qtbase)))))
 
-(define-public qjson
-  (package
-    (name "qjson")
-    (version "0.8.1")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "https://github.com/flavio/qjson/archive/"
-                                 version ".tar.gz"))
-             (file-name (string-append name "-" version ".tar.gz"))
-             (sha256
-              (base32
-               "163fspi0xc705irv79qw861fmh68pjyla9vx3kqiq6xrdhb9834j"))))
-    (build-system cmake-build-system)
-    (inputs
-     `(("qt" ,qt-4)))
-    (arguments
-     `(#:tests? #f)) ; no test target
-    (home-page "http://qjson.sourceforge.net/")
-    (synopsis "Qt-based library for handling JSON")
-    (description "QJson is a Qt-based library that maps JSON data to QVariant
-objects and vice versa.  JSON arrays are mapped to QVariantList instances,
-while JSON objects are mapped to QVariantMap.")
-    (license lgpl2.1+)))
-
 (define-public python-sip
   (package
     (name "python-sip")
