@@ -10162,3 +10162,29 @@ List.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
+
+(define-public python-publicsuffix2
+  (package
+    (name "python-publicsuffix2")
+    (version "2.20160621")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "publicsuffix2" version ".tar.bz2"))
+       (sha256
+        (base32
+         "06lx603gdwad5hc3hmn763ngq0rq9bzz1ni3ga72nzk5n872arkd"))))
+    (build-system python-build-system)
+    (home-page "https://github.com/pombredanne/python-publicsuffix2")
+    (synopsis "Get a public suffix for a domain name using the Public Suffix List")
+    (description "Get a public suffix for a domain name using the Public Suffix
+List.  Forked from and using the same API as the publicsuffix package.")
+    (license (list license:expat license:mpl2.0))
+    (properties `((python2-variant . ,(delay python2-publicsuffix2))))))
+
+(define-public python2-publicsuffix2
+  (let ((base (package-with-python2 (strip-python2-variant python-publicsuffix2))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
