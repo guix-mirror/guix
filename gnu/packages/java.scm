@@ -812,7 +812,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
          ,@(package-inputs icedtea-6))))))
 
 (define-public icedtea-8
-  (let* ((version "3.0.1")
+  (let* ((version "3.1.0")
          (drop (lambda (name hash)
                  (origin
                    (method url-fetch)
@@ -821,7 +821,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                          "/icedtea8/" version "/" name ".tar.xz"))
                    (sha256 (base32 hash))))))
     (package (inherit icedtea-7)
-      (version "3.0.1")
+      (version "3.1.0")
       (source (origin
                 (method url-fetch)
                 (uri (string-append
@@ -829,7 +829,7 @@ build process and its dependencies, whereas Make uses Makefile format.")
                       version ".tar.xz"))
                 (sha256
                  (base32
-                  "1wislw090zx955rf9sppimdzqf044mpj96xp54vljv6yw46y6v1l"))
+                  "1d1kj8a6jbvcbzhmfrx2pca7pinsvpxd7zij9h93g13dmm0ncqbm"))
                 (modules '((guix build utils)))
                 (snippet
                  '(substitute* "Makefile.am"
@@ -870,28 +870,31 @@ build process and its dependencies, whereas Make uses Makefile format.")
        `(("jdk" ,icedtea-7 "jdk")
          ("openjdk-src"
           ,(drop "openjdk"
-                 "1141wfz6vz889f5naj7zdbyw42ibw0ixvkd808lfcrwxlgznyxlb"))
+                 "1p6xgf00w754y3xdrccs67gjhb0181q49dk67h5v43aixkx7z7y1"))
          ("corba-drop"
           ,(drop "corba"
-                 "0l3fmfw88hf8709z033az1x6wzmcb0jnakj2br1r721zw01i0da2"))
+                 "088wnyfdhqkvc41pl3swnynbxx7x5lha6qg7q0biai6ya114scsy"))
          ("jaxp-drop"
           ,(drop "jaxp"
-                 "1i1pvyrdkk3w8vcnk6kfcbsjkfpbbrcywiypdl39bf2ishixbaf0"))
+                 "18xc4sib85z2zhz4k5lvi5b4vn88zqjpa3wi8gav81vz5gyysn3d"))
          ("jaxws-drop"
           ,(drop "jaxws"
-                 "0f1kglci65zsfy8ygw5w2zza7v1280znihvls4kraz06dgsc2y73"))
+                 "1my72q2zjly4imn834zgf4rysn48gbr8i81rxzrfdqgzzinxf6l1"))
          ("jdk-drop"
           ,(drop "jdk"
-                 "1pcwb1kjd1ph4jbv07icgk0fb8jqnck2y24qjfd7dzg7gm45c1am"))
+                 "1ab2h7pppph82h3xhh1m5dha77j3wnhksq7c7f8yfcsyhr5hm243"))
          ("langtools-drop"
           ,(drop "langtools"
-                 "1jjil9s244wp0blj1qkzk7sy7y1jrxb4wq18c1rj2q2pa88n00i6"))
+                 "07bzcw2ml4apjfd0ydc3v44fnnwinwri114fig2mdcn1n388szra"))
          ("hotspot-drop"
           ,(drop "hotspot"
-                 "1pl0cz1gja6z5zbywni1x1pj4qkh745fpj55fcmj4lpfj2p98my1"))
+                 "0x5ic8cz3w9s8m8ynh31qlf47c6nwc512bp8ddwgmvsdxyiiwn1k"))
          ("nashorn-drop"
           ,(drop "nashorn"
-                 "1p0ynm2caraq1sal38qrrf42yah7j14c9vfwdv6h5h4rliahs177"))
+                 "0zyd8pyv1il8c9npw7wz1mwxhlq510ill20nhc7i8fq7gignzcsn"))
+         ("shenandoah-drop"
+          ,(drop "shenandoah"
+                 "1shisljn60zw9j4nahh07vw85gj25gfiy7z196fdw0pi95va6qwk"))
          ,@(fold alist-delete (package-native-inputs icedtea-7)
                  '("gcj" "openjdk-src" "corba-drop" "jaxp-drop" "jaxws-drop"
                    "jdk-drop" "langtools-drop" "hotspot-drop")))))))
