@@ -22,7 +22,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (guix hash)
   #:use-module (guix base32)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix utils)
   #:use-module ((guix build download) #:prefix build:)
   #:export (factorize-uri
@@ -112,12 +112,12 @@ recursively apply the procedure to the sub-list."
 (define (string->license str)
   "Convert the string STR into a license object."
   (match str
-    ("GNU LGPL" lgpl2.0)
-    ("GPL" gpl3)
-    ((or "BSD" "BSD License") bsd-3)
-    ((or "MIT" "MIT license" "Expat license") expat)
-    ("Public domain" public-domain)
-    ((or "Apache License, Version 2.0" "Apache 2.0") asl2.0)
+    ("GNU LGPL" license:lgpl2.0)
+    ("GPL" license:gpl3)
+    ((or "BSD" "BSD License") license:bsd-3)
+    ((or "MIT" "MIT license" "Expat license") license:expat)
+    ("Public domain" license:public-domain)
+    ((or "Apache License, Version 2.0" "Apache 2.0") license:asl2.0)
     (_ #f)))
 
 (define (license->symbol license)
@@ -125,12 +125,12 @@ recursively apply the procedure to the sub-list."
 to in the (guix licenses) module, or #f if there is no such known license."
   ;; TODO: Traverse list public variables in (guix licenses) instead so we
   ;; don't have to maintain a list manualy.
-  (assoc-ref `((,lgpl2.0 . lgpl2.0)
-               (,gpl3 . gpl3)
-               (,bsd-3 . bsd-3)
-               (,expat . expat)
-               (,public-domain . public-domain)
-               (,asl2.0 . asl2.0))
+  (assoc-ref `((,license:lgpl2.0 . license:lgpl2.0)
+               (,license:gpl3 . license:gpl3)
+               (,license:bsd-3 . license:bsd-3)
+               (,license:expat . license:expat)
+               (,license:public-domain . license:public-domain)
+               (,license:asl2.0 . license:asl2.0))
              license))
 
 (define (snake-case str)
