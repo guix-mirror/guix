@@ -10050,3 +10050,29 @@ reasoning, wrappers for natural language processing libraries.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
+
+(define-public python-pymongo
+  (package
+    (name "python-pymongo")
+    (version "3.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "pymongo" version))
+              (sha256
+               (base32
+                "07mra6w86wjqy4lx5fvimidjhhfzd562gfjn8grsnbv2q8pk0i9x"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-certifi" ,python-certifi)))
+    (home-page "http://github.com/mongodb/mongo-python-driver")
+    (synopsis "Python driver for MongoDB")
+    (description "Python driver for MongoDB.")
+    (license license:asl2.0)
+    (properties `((python2-variant . ,(delay python2-pymongo))))))
+
+(define-public python2-pymongo
+  (let ((base (package-with-python2 (strip-python2-variant python-pymongo))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
