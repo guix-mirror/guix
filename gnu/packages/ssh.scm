@@ -144,7 +144,7 @@ a server that supports the SSH-2 protocol.")
              ("xauth" ,xauth)))                   ;for 'ssh -X' and 'ssh -Y'
    (arguments
     `(#:test-target "tests"
-      #:configure-flags '("--sysconfdir=/etc"
+      #:configure-flags '("--sysconfdir=/etc/ssh"
 
                           ;; Default value of 'PATH' used by sshd.
                           "--with-default-path=/run/current-system/profile/bin"

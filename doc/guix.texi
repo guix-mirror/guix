@@ -8199,6 +8199,40 @@ root.
 The other options should be self-descriptive.
 @end deffn
 
+@deffn {Scheme Procedure} openssh-service [#:pid-file "/var/run/sshd.pid"] @
+       [#:port-number 22] [#:permit-root-login 'without-password] @
+       [#:allow-empty-passwords #f] [#:password-authentication? #t] @
+       [#:pubkey-authentication? #t] [#:rsa-authentication? #t] @
+       [#:x11-forwarding? #f] [#:protocol-number "2"]
+Run the @command{sshd} program from @var{openssh} on port
+@var{port-number}.  @command{sshd} runs an SSH daemon and writes its PID
+to @var{pid-file}.  It understands SSH protocol
+@var{protocol-number}. The @var{protocol-number} can be either 1 or 2.
+
+@var{permit-root-login} takes one of @code{#t}, @code{'without-password}
+and @code{#f}.  It is used to allow root login through SSH.
+@code{'without-password} means that root login is allowed, but not with
+password-based authentication.
+
+When @var{allow-empty-passwords?} is true, users with empty passwords
+may log in.  When false, they may not.
+
+When @var{password-authentication?} is true, users may log in with their
+password.  When false, they have to use other means of authentication.
+
+When @var{pubkey-authentication?} is true, users may log in using public
+key authentication.  When false, users have to use other means of
+authentication.  Authorized public keys are stored in
+@file{~/.ssh/authorized_keys}.  This is used only by protocol version 2.
+
+When @var{rsa-authentication?} is true, users may log in using pure RSA
+authentication.  When false, users have to use other means of
+authentication.  This is used only by protocol 1.
+
+When @var{x11-forwarding?} is true, @command{ssh} options @option{-X}
+and @option{-Y} will work.
+@end deffn
+
 @deffn {Scheme Procedure} dropbear-service [@var{config}]
 Run the @uref{https://matt.ucc.asn.au/dropbear/dropbear.html,Dropbear SSH
 daemon} with the given @var{config}, a @code{<dropbear-configuration>}
