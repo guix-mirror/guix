@@ -10076,3 +10076,30 @@ reasoning, wrappers for natural language processing libraries.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
+
+(define-public python-sh
+  (package
+    (name "python-sh")
+    (version "1.11")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "sh" version))
+              (sha256
+               (base32
+                "192r0mpv6dmkysjzhc43ddffiwb5g7c76bgr1mb1z2xz9awbj3sr"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f)) ; no tests
+    (home-page "https://github.com/amoffat/sh")
+    (synopsis "Python subprocess interface")
+    (description "Abstracts process invocation by providing a function
+interface for programs.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-sh))))))
+
+(define-public python2-sh
+  (let ((base (package-with-python2 (strip-python2-variant python-sh))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
