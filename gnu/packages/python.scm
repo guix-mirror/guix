@@ -5876,30 +5876,33 @@ implementations of ASN.1-based codecs and protocols.")
 (define-public python2-pyasn1-modules
   (package-with-python2 python-pyasn1-modules))
 
-(define-public python2-ipaddress
+(define-public python-ipaddress
   (package
-    (name "python2-ipaddress")
-    (version "1.0.14")
-    (source
-     (origin
-       (method url-fetch)
-       (uri (string-append "https://pypi.python.org/packages/source/i/"
-                           "ipaddress/ipaddress-" version ".tar.gz"))
-       (sha256
-        (base32
-         "0givid4963n57nsjibms2fc347zmcs188q1hw9al1dkc9kj4nvr2"))))
+    (name "python-ipaddress")
+    (version "1.0.16")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "ipaddress" version))
+              (sha256
+               (base32
+                "1c3imabdrw8nfksgjjflzg7h4ynjckqacb188rf541m74arq4cas"))))
     (build-system python-build-system)
-    (arguments
-     `(#:tests? #f  ; no tests
-       #:python ,python-2))
     (home-page "https://github.com/phihag/ipaddress")
     (synopsis "IP address manipulation library")
     (description
-     "This package provides a fast, lightweight IPv4/IPv6 manipulation library
-in Python.  This library is used to create, poke at, and manipulate IPv4 and
-IPv6 addresses and networks.  This is a port of the Python 3.3 ipaddress
-module to older versions of Python.")
-    (license license:psfl)))
+      "This package provides a fast, lightweight IPv4/IPv6 manipulation library
+ in Python.  This library is used to create, poke at, and manipulate IPv4 and
+ IPv6 addresses and networks.  This is a port of the Python 3.3 ipaddress
+ module to older versions of Python.")
+    (license license:psfl)
+    (properties `((python2-variant . ,(delay python2-ipaddress))))))
+
+(define-public python2-ipaddress
+  (let ((base (package-with-python2 (strip-python2-variant python-ipaddress))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
 
 (define-public python2-ipaddr
   (package
