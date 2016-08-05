@@ -10103,3 +10103,35 @@ interface for programs.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
+
+(define-public python-schematics
+  (package
+    (name "python-schematics")
+    (version "1.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://github.com/schematics/schematics/archive/v" version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
+        (sha256
+         (base32
+          "19v1i69bf3bzarfxmbv0v6ivpcn758x3shvbiy9l2hy0lvqwnp6l"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-six" ,python-six)))
+    (arguments
+     `(#:tests? #f)) ; requires a bunch of not very nice packages with fixed
+                     ; version requirements (eg python-coveralls)
+    (home-page "https://github.com/schematics/schematics")
+    (synopsis "Python Data Structures for Humans")
+    (description "Python Data Structures for Humans.")
+    (license license:bsd-3)
+    (properties `((python2-variant . ,(delay python2-schematics))))))
+
+(define-public python2-schematics
+  (let ((base (package-with-python2 (strip-python2-variant python-schematics))))
+    (package (inherit base)
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
