@@ -10188,3 +10188,36 @@ List.  Forked from and using the same API as the publicsuffix package.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
+
+(define-public python-url
+  (package
+    (name "python-url")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (pypi-uri "url" version))
+              (sha256
+               (base32
+                "0v879yadcz9qxfl41ak6wkga1kimp9cflla9ddz03hjjvgkqy5ki"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-publicsuffix" ,python-publicsuffix)))
+    (native-inputs
+     `(("python-coverage" ,python-coverage)
+       ("python-nose" ,python-nose)))
+    (arguments
+     `(#:tests? #f)) ; FIXME: tests fail with "ImportError: No module named 'tests'"
+    (home-page "http://github.com/seomoz/url-py")
+    (synopsis "URL Parsing")
+    (description "Library for parsing urls.")
+    (license license:expat)
+    (properties `((python2-variant . ,(delay python2-url))))))
+
+(define-public python2-url
+  (let ((base (package-with-python2 (strip-python2-variant python-url))))
+    (package (inherit base)
+      (inputs
+       `(("python2-publicsuffix" ,python2-publicsuffix)))
+      (native-inputs
+       `(("python2-setuptools" ,python2-setuptools)
+         ,@(package-native-inputs base))))))
