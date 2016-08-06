@@ -30,6 +30,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages freedesktop)
   #:use-module (gnu packages gettext)
@@ -1461,3 +1462,66 @@ different physical units.  It supports converting different prefixes (e.g. kilo,
 mega, giga) as well as converting between different unit systems (e.g. liters,
 gallons).")
     (license license:lgpl2.1+)))
+
+
+;; Tier 3
+;;
+;; Tier 3 frameworks are generally more powerful, comprehensive packages, and
+;; consequently have more complex dependencies.
+
+(define-public baloo
+  (package
+    (name "baloo")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1ayfdg6j9lvas17ryjdv4a0kaj6vw3bxfy2x9nadl0gkc9pak4nh"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("kcoreaddons" ,kcoreaddons)
+       ("kfilemetadata" ,kfilemetadata)))
+    (native-inputs
+     `(("dbus" ,dbus)
+       ("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kbookmarks" ,kbookmarks)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kidletime" ,kidletime)
+       ("kio" ,kio)
+       ("kitemviews" ,kitemviews)
+       ("ki18n" ,ki18n)
+       ("kjobwidgets" ,kjobwidgets)
+       ("kservice" ,kservice)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("lmdb" ,lmdb)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("solid" ,solid)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t))
+         (replace 'check
+           (lambda _
+             (setenv "DBUS_FATAL_WARNINGS" "0")
+             (zero? (system* "dbus-launch" "ctest" ".")))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "File searching and indexing")
+    (description "Baloo provides file searching and indexing.  It does so by
+maintaining an index of the contents of your files.")
+    ;; dual licensed
+    (license (list license:gpl2+ license:lgpl2.1+))))
