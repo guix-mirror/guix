@@ -1673,6 +1673,12 @@ engineering.")
         (base32
          "1p1vvmzfky1ax3yv9ld10xgqwydhmglxpgq3skrfc4539nrq9phw"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       ;; Don't create 'icon-theme.cache'.
+       (let* ((coreutils (assoc-ref %build-inputs "coreutils"))
+              (true      (string-append coreutils "/bin/true")))
+         (list (string-append "GTK_UPDATE_ICON_CACHE=" true)))))
     (inputs
      `(("gtk+" ,gtk+)
        ("gtk+-2" ,gtk+-2)
