@@ -2973,26 +2973,26 @@ Ruby classes.")
     (home-page "https://ms-ati.github.io/docile/")
     (license license:expat)))
 
-(define-public ruby-gherkin3
+(define-public ruby-gherkin
   (package
-    (name "ruby-gherkin3")
-    (version "3.1.1")
+    (name "ruby-gherkin")
+    (version "4.0.0")
     (source
       (origin
         (method url-fetch)
-        (uri (rubygems-uri "gherkin3" version))
+        (uri (rubygems-uri "gherkin" version))
         (sha256
           (base32
-            "0xsyxhqa1gwcxzvsdy4didaiq5vam8ma3fbwbw2w60via4k6r1z9"))))
+            "1ripjv97hg746xszx9isal8z8vrlb98asc2rdxl291b3hr6pj0pr"))))
     (build-system ruby-build-system)
     (native-inputs
      `(("bundler" ,bundler)))
     (arguments
      '(#:tests? #f)) ; needs simplecov, among others
     (synopsis "Gherkin parser for Ruby")
-    (description "Gherkin 3 is a parser and compiler for the Gherkin language.
-It is intended to replace Gherkin 2 and be used by all Cucumber
-implementations to parse '.feature' files.")
+    (description "Gherkin is a parser and compiler for the Gherkin language.
+It is intended be used by all Cucumber implementations to parse '.feature'
+files.")
     (home-page "https://github.com/cucumber/gherkin3")
     (license license:expat)))
 
@@ -3009,7 +3009,7 @@ implementations to parse '.feature' files.")
          "0qj2fsqvp94nggnikbnrfvnmzr1pl6ifmdsxj69kdw1kkab30jjr"))))
     (build-system ruby-build-system)
     (propagated-inputs
-     `(("ruby-gherkin3" ,ruby-gherkin3)))
+     `(("ruby-gherkin" ,ruby-gherkin)))
     (native-inputs
      `(("bundler" ,bundler)))
     (arguments
