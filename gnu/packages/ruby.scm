@@ -2982,14 +2982,14 @@ implementations to parse '.feature' files.")
 (define-public ruby-cucumber-core
   (package
     (name "ruby-cucumber-core")
-    (version "1.3.0")
+    (version "1.5.0")
     (source
      (origin
        (method url-fetch)
        (uri (rubygems-uri "cucumber-core" version))
        (sha256
         (base32
-         "12mrzf0s96izpq0k10lahlkgwc4fjs0zfs344rh8r8h3w3jyppr8"))))
+         "0qj2fsqvp94nggnikbnrfvnmzr1pl6ifmdsxj69kdw1kkab30jjr"))))
     (build-system ruby-build-system)
     (propagated-inputs
      `(("ruby-gherkin3" ,ruby-gherkin3)))
