@@ -40,15 +40,14 @@
 (define-public curl
   (package
    (name "curl")
-   (replacement curl-7.50.1)
-   (version "7.47.0")
+   (version "7.50.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://curl.haxx.se/download/curl-"
                                 version ".tar.lzma"))
             (sha256
              (base32
-              "1n284wdqzwb4bkmv0fnh36zl6lhlzy3clw2b7pn28kpgdy09ly7p"))))
+              "0qc3qp3h18v24irzw7dgg1jf39v4hnz8irv83v9lbn9rxzrpdcdj"))))
    (build-system gnu-build-system)
    (outputs '("out"
               "doc"))                             ;1.2 MiB of man3 pages
@@ -84,10 +83,6 @@
          (lambda _
            (substitute* "tests/runtests.pl"
              (("/bin/sh") (which "sh")))
-           ;; Test #1135 requires extern-scan.pl, which is not part of the
-           ;; tarball due to a mistake.  It has been fixed upstream.  We can
-           ;; simply disable the test as it is specific to VMS and OS/400.
-           (delete-file "tests/data/test1135")
 
            ;; XXX FIXME: Test #1510 seems to work on some machines and not
            ;; others, possibly based on the kernel version.  It works on GuixSD
@@ -124,16 +119,3 @@ tunneling, and so on.")
    (license (license:non-copyleft "file://COPYING"
                                   "See COPYING in the distribution."))
    (home-page "http://curl.haxx.se/")))
-
-(define curl-7.50.1
-  (package
-    (inherit curl)
-    (source
-      (let ((version "7.50.1"))
-        (origin
-          (method url-fetch)
-          (uri (string-append "https://curl.haxx.se/download/curl-"
-                              version ".tar.lzma"))
-          (sha256
-           (base32
-            "0qc3qp3h18v24irzw7dgg1jf39v4hnz8irv83v9lbn9rxzrpdcdj")))))))
