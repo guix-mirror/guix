@@ -1926,3 +1926,44 @@ representation with images in HTML.  It supports setting different themes for
 emoticons coming from different providers.")
     ;; dual licensed, image files are licensed under cc-by-sa4.0
     (license (list license:gpl2+ license:lgpl2.1+ license:cc-by-sa4.0))))
+
+(define-public kglobalaccel
+  (package
+    (name "kglobalaccel")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "123v0ld1q88hbm3d0mqgq6lcivfkqh7pbz4hb4n76ab5v43qc15c"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("kconfig" ,kconfig)
+       ("kcrash" ,kcrash)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("libxcb" ,libxcb)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
+       ("xcb-util-keysyms" ,xcb-util-keysyms)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Global desktop keyboard shortcuts")
+    (description "KGlobalAccel allows you to have global accelerators that are
+independent of the focused window.  Unlike regular shortcuts, the application's
+window does not need focus for them to be activated.")
+    (license license:lgpl2.1+)))
