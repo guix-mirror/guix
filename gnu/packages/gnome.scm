@@ -645,9 +645,14 @@ update-desktop-database: updates the database containing a cache of MIME types
        (base32
         "0fjh9qmmgj34zlgxb09231ld7khys562qxbpsjlaplq2j85p57im"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       ;; Don't create 'icon-theme.cache'.
+       (let* ((coreutils (assoc-ref %build-inputs "coreutils"))
+              (true      (string-append coreutils "/bin/true")))
+         (list (string-append "GTK_UPDATE_ICON_CACHE=" true)))))
     (native-inputs
-     `(("gtk+" ,gtk+) ; for gtk-update-icon-cache
-       ("icon-naming-utils" ,icon-naming-utils)
+     `(("icon-naming-utils" ,icon-naming-utils)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (home-page "http://art.gnome.org/")
@@ -669,7 +674,9 @@ update-desktop-database: updates the database containing a cache of MIME types
                                   name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0ddfwwqx8s63qbqimmbb015lqsab4s0rvy1j81jdsh7k95rqh2ks"))))))
+                "0ddfwwqx8s63qbqimmbb015lqsab4s0rvy1j81jdsh7k95rqh2ks"))))
+    (native-inputs
+     `(("gtk-encode-symbolic-svg" ,gtk+ "bin")))))
 
 (define-public shared-mime-info
   (package
