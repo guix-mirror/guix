@@ -480,7 +480,15 @@ forgotten when the session ends.")
        ;; FIXME: Tests fail with:
        ;;   ImportError: No module named gi.repository
        ;; Where should that module come from?
-       #:tests? #f))
+       #:tests? #f
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'skip-gtk-update-icon-cache
+           ;; Don't create 'icon-theme.cache'.
+           (lambda _
+             (substitute* "data/Makefile"
+               (("gtk-update-icon-cache") "true"))
+             #t)))))
     (inputs
      `(("libspectre" ,libspectre)
        ("djvulibre" ,djvulibre)
