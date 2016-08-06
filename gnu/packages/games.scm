@@ -2680,6 +2680,7 @@ with the \"Stamp\" tool within Tux Paint.")
                       "CONFDIR=/etc/tuxpaint" ;don't write to store
                       ,(string-append "PREFIX=" %output)
                       "GNOME_PREFIX=$(PREFIX)")
+       #:parallel-build? #f             ;race conditions
        #:tests? #f                      ;no tests
        #:phases (modify-phases %standard-phases
                   (delete 'configure)   ;no configure phase
