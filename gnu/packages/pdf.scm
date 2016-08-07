@@ -344,7 +344,7 @@ using the DjVuLibre library.")
 (define-public zathura-pdf-poppler
   (package
     (name "zathura-pdf-poppler")
-    (version "0.2.5")
+    (version "0.2.6")
     (source (origin
               (method url-fetch)
               (uri
@@ -352,7 +352,7 @@ using the DjVuLibre library.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "1b0chsds8iwjm4g629p6a67nb6wgra65pw2vvngd7g35dmcjgcv0"))))
+                "1maqiv7yv8d8hymlffa688c5z71v85kbzmx2j88i8z349xx0rsyi"))))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs `(("girara" ,girara)))
     (inputs
