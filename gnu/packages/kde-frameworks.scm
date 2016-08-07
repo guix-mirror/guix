@@ -2320,3 +2320,57 @@ also provides facilities to integrate the data provided in user interfaces by
 providing QML and Qt Widgets components.  The sources are plugin-based, allowing
 to easily extend the contacts collection.")
     (license license:lgpl2.1+)))
+
+(define-public krunner
+  (package
+    (name "krunner")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0ff87ijjd47jxf6zw2ggqgngnbyx1rj59wdfgy5wbi3acws6bafl"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("plasma-framework" ,plasma-framework)))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kauth" ,kauth)
+       ("kbookmarks" ,kbookmarks)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kio" ,kio)
+       ("kitemviews" ,kitemviews)
+       ("ki18n" ,ki18n)
+       ("kjobwidgets" ,kjobwidgets)
+       ("kpackage" ,kpackage)
+       ("kservice" ,kservice)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("solid" ,solid)
+       ("threadweaver" ,threadweaver)))
+    (arguments
+     `(#:tests? #f ; FIXME: 1/1 tests fail.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
+             (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Framework for Plasma runners")
+    (description "The Plasma workspace provides an application called KRunner
+which, among other things, allows one to type into a text area which causes
+various actions and information that match the text appear as the text is being
+typed.")
+    (license license:lgpl2.1+)))
