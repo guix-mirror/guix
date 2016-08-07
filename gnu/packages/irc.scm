@@ -241,3 +241,28 @@ and extensible with plugins and scripts.")
     (description
      "ircII is a terminal based IRC and ICB client for UNIX systems.")
     (license license:bsd-3)))
+
+(define-public ii
+  (package
+    (name "ii")
+    (version "1.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://dl.suckless.org/tools/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "176cqwnn6h7w4kbfd66hzqa243l26pqp2b06bii0nmnm0rkaqwis"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags (list (string-append "PREFIX=" %output)
+                          "CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; no configure
+    (home-page "http://tools.suckless.org/ii/")
+    (synopsis "FIFO and filesystem-based IRC client")
+    (description
+     "ii (Irc it) is a minimalist FIFO and filesystem based IRC client.")
+    (license license:expat)))
