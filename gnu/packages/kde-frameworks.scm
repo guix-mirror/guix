@@ -1684,3 +1684,44 @@ using the XBEL format.")
     (description "KCMUtils provides various classes to work with KCModules.
 KCModules can be created with the KConfigWidgets framework.")
     (license license:lgpl2.1+)))
+
+(define-public kconfigwidgets
+  (package
+    (name "kconfigwidgets")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0v25r50gh5i984lzlv0rradghglcfqf0gsfmnkn23h87b86fm9l2"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("kauth" ,kauth)
+       ("kcodecs" ,kcodecs)
+       ("kconfig" ,kconfig)
+       ("kwidgetsaddons" ,kwidgetsaddons)))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kcoreaddons" ,kcoreaddons)
+       ("kguiaddons" ,kguiaddons)
+       ("ki18n" ,ki18n)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Widgets for configuration dialogs")
+    (description "KConfigWidgets provides easy-to-use classes to create
+configuration dialogs, as well as a set of widgets which uses KConfig to store
+their settings.")
+    ;; dual licensed
+    (license (list license:gpl2+ license:lgpl2.1+))))
