@@ -2485,3 +2485,48 @@ can embed in your application, either as a KPart or using the KF5::TextEditor
 library.")
     ;; triple licensed
     (license (list license:gpl2+ license:lgpl2.0+ license:lgpl2.1+))))
+
+(define-public ktextwidgets
+  (package
+    (name "ktextwidgets")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1q10xav2gkii6s3m31c9xvxf1988l7k2lpib6pyhgsidflmwjm02"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("ki18n" ,ki18n)
+       ("sonnet" ,sonnet)))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kauth" ,kauth)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kiconthemes" ,kiconthemes)
+       ("kservice" ,kservice)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Text editing widgets")
+    (description "KTextWidgets provides widgets for displaying and editing text.
+It supports rich text as well as plain text.")
+    ;; dual licensed
+    (license (list license:lgpl2.0+ license:lgpl2.1+))))
