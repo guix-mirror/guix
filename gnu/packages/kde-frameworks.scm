@@ -1785,3 +1785,36 @@ intergrate QML with KDE Frameworks specific features, and a series of QML import
 that offer bindings to some of the Frameworks.")
     ;; dual licensed
     (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public kded
+  (package
+    (name "kded")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0ngpxdxb596myn5r4kjxahx195bwklq33yvgjvcbxi2clg2wccaj"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdoctools" ,kdoctools)
+       ("kinit" ,kinit)
+       ("kservice" ,kservice)
+       ("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Central daemon of KDE work spaces")
+    (description "KDED stands for KDE Daemon.  KDED runs in the background and
+performs a number of small tasks.  Some of these tasks are built in, others are
+started on demand.")
+    ;; dual licensed
+    (license (list license:lgpl2.0+ license:lgpl2.1+))))
