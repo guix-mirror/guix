@@ -1603,3 +1603,45 @@ the data that the activitiy manager collects - which documents have been opened
 by which applications, and what documents have been linked to which activity.")
     ;; triple licensed
     (license (list license:lgpl2.0+ license:lgpl2.1+ license:lgpl3+))))
+
+(define-public kbookmarks
+  (package
+    (name "kbookmarks")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "10d8dnhvbrwp0dbmz93cqfdff6ir8iy3yiwaf9ihj6ma124qlyjn"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("kwidgetsaddons" ,kwidgetsaddons)))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("kauth" ,kauth)
+       ("kcodecs" ,kcodecs)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kiconthemes" ,kiconthemes)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Bookmarks management library")
+    (description "KBookmarks lets you access and manipulate bookmarks stored
+using the XBEL format.")
+    (license license:lgpl2.1+)))
