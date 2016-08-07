@@ -1645,3 +1645,42 @@ by which applications, and what documents have been linked to which activity.")
     (description "KBookmarks lets you access and manipulate bookmarks stored
 using the XBEL format.")
     (license license:lgpl2.1+)))
+
+(define-public kcmutils
+  (package
+    (name "kcmutils")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0aws1c76s6wbp0xpr6qv6cfwq8dw82v00pkf9gy84sbxknwjnizk"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("kconfigwidgets" ,kconfigwidgets)
+       ("kservice" ,kservice)))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kauth" ,kauth)
+       ("kcodecs" ,kcodecs)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kdeclarative" ,kdeclarative)
+       ("kiconthemes" ,kiconthemes)
+       ("kitemviews" ,kitemviews)
+       ("ki18n" ,ki18n)
+       ("kpackage" ,kpackage)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Utilities for KDE System Settings modules")
+    (description "KCMUtils provides various classes to work with KCModules.
+KCModules can be created with the KConfigWidgets framework.")
+    (license license:lgpl2.1+)))
