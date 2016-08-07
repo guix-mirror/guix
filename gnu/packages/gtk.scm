@@ -12,6 +12,7 @@
 ;;; Copyright © 2016 Fabian Harfert <fhmgufs@web.de>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
 ;;; Copyright © 2016 Patrick Hetu <patrick.hetu@auf.org>
+;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1153,7 +1154,7 @@ write GNOME applications.")
 (define-public girara
   (package
     (name "girara")
-    (version "0.2.4")
+    (version "0.2.6")
     (source (origin
               (method url-fetch)
               (uri
@@ -1161,7 +1162,7 @@ write GNOME applications.")
                               version ".tar.gz"))
               (sha256
                (base32
-                "0pnfdsg435b5vc4x8l9pgm77aj7ram1q0bzrp9g4a3bh1r64xq1f"))))
+                "03wsxj27hvcbs3x96nah7j3paclifwlfag8kdph4kldl48srp9pb"))))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("gettext" ,gnu-gettext)))
     (inputs `(("gtk+" ,gtk+)
