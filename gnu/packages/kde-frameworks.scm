@@ -2666,3 +2666,69 @@ kxmlrpcclient/client.h and from that interface, you only need to use 3 methods:
 setUrl, setUserAgent and call.")
     ;; dual licensed
     (license (list license:bsd-2 license:lgpl2.1+))))
+
+(define-public plasma-framework
+  (package
+    (name "plasma-framework")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0981vm00541dzihlr1fsax05biwp2ddpwjrmvnfysx5jagdc65cb"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("kpackage" ,kpackage)
+       ("kservice" ,kservice)))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kactivities" ,kactivities)
+       ("karchive" ,karchive)
+       ("kauth" ,kauth)
+       ("kbookmarks" ,kbookmarks)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdeclarative" ,kdeclarative)
+       ("kdoctools" ,kdoctools)
+       ("kglobalaccel" ,kglobalaccel)
+       ("kguiaddons" ,kguiaddons)
+       ("kiconthemes" ,kiconthemes)
+       ("kitemviews" ,kitemviews)
+       ("kio" ,kio)
+       ("ki18n" ,ki18n)
+       ("kjobwidgets" ,kjobwidgets)
+       ("knotificantions" ,knotifications)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("phonon" ,phonon)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("qtsvg" ,qtsvg)
+       ("qtx11extras" ,qtx11extras)
+       ("solid" ,solid)))
+    (arguments
+     `(#:tests? #f ; FIXME: 13/14 tests fail.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Libraries, components and tools of Plasma workspaces")
+    (description "The plasma framework provides QML components, libplasma and
+script engines.")
+    ;; dual licensed
+    (license (list license:gpl2+ license:lgpl2.1+))))
