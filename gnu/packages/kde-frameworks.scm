@@ -2623,3 +2623,46 @@ and hooks in the application code.  The framework supports merging of multiple
 descriptions for integrating actions from plugins.")
     ;; dual licensed
     (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public kxmlrpcclient
+  (package
+    (name "kxmlrpcclient")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "06ap6ipzqimz1rfrcr7z8zc7idy7sg4a97dws7h52i34ms7jqnc8"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("kio" ,kio)))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kauth" ,kauth)
+       ("kbookmarks" ,kbookmarks)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kitemviews" ,kitemviews)
+       ("ki18n" ,ki18n)
+       ("kjobwidgets" ,kjobwidgets)
+       ("kservice" ,kservice)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)
+       ("solid" ,solid)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "XML-RPC client")
+    (description "This library contains simple XML-RPC Client support.  It is a
+complete client and is easy to use.  Only one interface is exposed,
+kxmlrpcclient/client.h and from that interface, you only need to use 3 methods:
+setUrl, setUserAgent and call.")
+    ;; dual licensed
+    (license (list license:bsd-2 license:lgpl2.1+))))
