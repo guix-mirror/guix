@@ -275,15 +275,15 @@ without modification.")
 (define-public bash-completion
   (package
     (name "bash-completion")
-    (version "2.1")
+    (version "2.3")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://bash-completion.alioth.debian.org/files/"
-                    "bash-completion-" version ".tar.bz2"))
+                    "https://github.com/scop/" name "/releases/download/"
+                    version "/" name "-" version ".tar.xz"))
               (sha256
                (base32
-                "0kxf8s5bw7y50x0ksb77d3kv0dwadixhybl818w27y6mlw26hq1b"))
+                "1sg82nmsr00ig37skln2qvmi8mgbxgdvycm3ygzs8gbz66pq3q5j"))
               (patches
                (search-patches "bash-completion-directories.patch"))))
     (build-system gnu-build-system)
