@@ -2186,3 +2186,45 @@ KIO enabled infrastructure.")
 for applications.  It uses libattica to support the Open Collaboration Services
 specification.")
     (license license:lgpl2.1+)))
+
+(define-public knotifyconfig
+  (package
+    (name "knotifyconfig")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1dij841fnqia4p44x2wnpdvl8cn3nkj833y0fah50fmipjc8r70b"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kauth" ,kauth)
+       ("kbookmarks" ,kbookmarks)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kio" ,kio)
+       ("kitemviews" ,kitemviews)
+       ("ki18n" ,ki18n)
+       ("kjobwidgets" ,kjobwidgets)
+       ("knotifications" ,knotifications)
+       ("kservice" ,kservice)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("phonon" ,phonon)
+       ("qtbase" ,qtbase)
+       ("solid" ,solid)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Configuration dialog for desktop notifications")
+    (description "KNotifyConfig provides a configuration dialog for desktop
+notifications which can be embedded in your application.")
+    ;; dual licensed
+    (license (list license:lgpl2.0+ license:lgpl2.1+))))
