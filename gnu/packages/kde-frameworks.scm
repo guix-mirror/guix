@@ -1855,3 +1855,34 @@ to display the widgets provided by various KDE frameworks, as well as a utility
 (kgendesignerplugin) that can be used to generate other such plugins from
 ini-style description files.")
     (license license:lgpl2.1+)))
+
+(define-public kdesu
+  (package
+    (name "kdesu")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1ivcnhgvq75xvl0w9g7m45qzallz42ijaq0n1ap09lpdfmjbnrxk"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("kpty" ,kpty)))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("ki18n" ,ki18n)
+       ("kservice" ,kservice)
+       ("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "User interface for running shell commands with root privileges")
+    (description "KDESU provides functionality for building GUI front ends for
+(password asking) console mode programs.  kdesu and kdessh use it to interface
+with su and ssh respectively.")
+    (license license:lgpl2.1+)))
