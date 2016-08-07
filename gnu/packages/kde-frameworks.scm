@@ -2014,3 +2014,47 @@ window does not need focus for them to be activated.")
     (description "This library contains classes to improve the handling of icons
 in applications using the KDE Frameworks.")
     (license license:lgpl2.1+)))
+
+(define-public kinit
+  (package
+    (name "kinit")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1i7l6gid5hrrfglw1c461gpjg51dwz7cl4lx7ll8vz2ha8mz4d3n"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kauth" ,kauth)
+       ("kbookmarks" ,kbookmarks)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kcrash" ,kcrash)
+       ("kio" ,kio)
+       ("kitemviews" ,kitemviews)
+       ("ki18n" ,ki18n)
+       ("kjobwidgets" ,kjobwidgets)
+       ("kservice" ,kservice)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)
+       ("solid" ,solid)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Library to speed up start of applications on KDE workspaces")
+    (description "Kdeinit is a process launcher similar to init used for booting
+UNIX.  It launches processes by forking and then loading a dynamic library which
+contains a 'kdemain(...)' function.  Using kdeinit to launch KDE applications
+makes starting KDE applications faster and reduces memory consumption.")
+    ;; dual licensed
+    (license (list license:lgpl2.0+ license:lgpl2.1+))))
