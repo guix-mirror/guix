@@ -45,6 +45,7 @@
   #:use-module (gnu packages polkit)
   #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages web)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
@@ -2417,3 +2418,70 @@ services.  Services can be applications or libraries.  They can be bound to MIME
 types or handled by application specific code.")
     ;; triple licensed
     (license (list license:gpl2+ license:gpl3+ license:lgpl2.1+))))
+
+(define-public ktexteditor
+  (package
+    (name "ktexteditor")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1ykj1kvm7k1vxb1w235d5hp2swwdqjyp2y4c3pxbvkn999h9x5q5"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("kparts" ,kparts)))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("karchive" ,karchive)
+       ("kauth" ,kauth)
+       ("kbookmarks" ,kbookmarks)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kguiaddons" ,kguiaddons)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("kitemviews" ,kitemviews)
+       ("ki18n" ,ki18n)
+       ("kjobwidgets" ,kjobwidgets)
+       ("kservice" ,kservice)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kxmlgui" ,kxmlgui)
+       ("libgit2" ,libgit2)
+       ("perl" ,perl)
+       ("qtbase" ,qtbase)
+       ("qtscript" ,qtscript)
+       ("qtxmlpatterns" ,qtxmlpatterns)
+       ("solid" ,solid)
+       ("sonnet" ,sonnet)))
+    (arguments
+     `(#:tests? #f ; FIXME: 2/54 tests fail: Cannot find fontdirectory qtbase/lib/font
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'setup
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "XDG_DATA_DIRS" ; FIXME build phase doesn't find parts.desktop
+                     (string-append (assoc-ref inputs "kparts") "/share"))
+             #t))
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Full text editor component")
+    (description "KTextEditor provides a powerful text editor component that you
+can embed in your application, either as a KPart or using the KF5::TextEditor
+library.")
+    ;; triple licensed
+    (license (list license:gpl2+ license:lgpl2.0+ license:lgpl2.1+))))
