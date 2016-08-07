@@ -520,6 +520,38 @@ ing, and tagging large collections of email messages.")
 useful for email address completion.")
     (license license:expat)))
 
+(define-public python-notmuch
+  (package
+    (name "python-notmuch")
+    (version "0.22.1")
+    ;; Notmuch python bindings are now unavailable on pypi.  The
+    ;; bindings are distributed via the notmuch release tarball.
+    (source (package-source notmuch))
+    (build-system python-build-system)
+    (inputs `(("notmuch" ,notmuch)))
+    (arguments
+     `(#:tests? #f  ; no "test" target
+       #:phases
+       (modify-phases %standard-phases
+         ;; This python package lives in a subdirectory of the notmuch source
+         ;; tree, so chdir into it before building.
+         (add-after 'unpack 'enter-python-dir
+           (lambda _ (chdir "bindings/python") #t))
+         ;; Make sure the correct notmuch shared library gets loaded.
+         (add-before 'build 'set-libnotmuch-file-name
+           (lambda* (#:key inputs #:allow-other-keys)
+             (let ((notmuch (assoc-ref inputs "notmuch")))
+               (substitute* "notmuch/globals.py"
+                 (("libnotmuch\\.so\\.")
+                  (string-append notmuch "/lib/libnotmuch.so.")))
+               #t))))))
+    (home-page "http://notmuchmail.org/")
+    (synopsis "Python bindings of the Notmuch mail indexing library")
+    (description
+     "This package provides Python bindings to use the Notmuch mail indexing
+and search library.")
+    (license gpl3+)))
+
 (define-public python2-notmuch
   (package
     (name "python2-notmuch")
