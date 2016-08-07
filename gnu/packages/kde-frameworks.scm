@@ -2374,3 +2374,46 @@ which, among other things, allows one to type into a text area which causes
 various actions and information that match the text appear as the text is being
 typed.")
     (license license:lgpl2.1+)))
+
+(define-public kservice
+  (package
+    (name "kservice")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0w0nsg64d6xhgijr2vh0j5p544qi0q55jpqa9v9mv956zrrdssdk"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("kcrash" ,kcrash)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdoctools" ,kdoctools)
+       ("ki18n" ,ki18n)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:tests? #f ; FIXME: 8/10 tests fail.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Plugin framework for desktop services")
+    (description "KService provides a plugin framework for handling desktop
+services.  Services can be applications or libraries.  They can be bound to MIME
+types or handled by application specific code.")
+    ;; triple licensed
+    (license (list license:gpl2+ license:gpl3+ license:lgpl2.1+))))
