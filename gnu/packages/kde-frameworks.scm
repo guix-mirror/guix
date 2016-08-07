@@ -1725,3 +1725,63 @@ configuration dialogs, as well as a set of widgets which uses KConfig to store
 their settings.")
     ;; dual licensed
     (license (list license:gpl2+ license:lgpl2.1+))))
+
+(define-public kdeclarative
+  (package
+    (name "kdeclarative")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "00ik9q1r6y6g5rkdq96yczgrxmcg85x00lipyljvc3x6xw6bixbz"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("kconfig" ,kconfig)
+       ("kpackage" ,kpackage)))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("xorg-server" ,xorg-server)))
+    (inputs
+     `(("kauth" ,kauth)
+       ("kbookmarks" ,kbookmarks)
+       ("kcodecs" ,kcodecs)
+       ("kcompletion" ,kcompletion)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kglobalaccel" ,kglobalaccel)
+       ("kguiaddons" ,kguiaddons)
+       ("kiconthemes" ,kiconthemes)
+       ("kio" ,kio)
+       ("kitemviews" ,kitemviews)
+       ("ki18n" ,ki18n)
+       ("kjobwidgets" ,kjobwidgets)
+       ("kservice" ,kservice)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("kxmlgui" ,kxmlgui)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)
+       ("solid" ,solid)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'start-xorg-server
+           (lambda* (#:key inputs #:allow-other-keys)
+             ;; The test suite requires a running X server.
+             (system (string-append (assoc-ref inputs "xorg-server")
+                                    "/bin/Xvfb :1 -screen 0 640x480x24 &"))
+             (setenv "DISPLAY" ":1")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Integration of QML and KDE work spaces")
+    (description "KDeclarative provides integration of QML and KDE work spaces.
+It's comprises two parts: a library used by the C++ part of your application to
+intergrate QML with KDE Frameworks specific features, and a series of QML imports
+that offer bindings to some of the Frameworks.")
+    ;; dual licensed
+    (license (list license:gpl2+ license:lgpl2.1+))))
