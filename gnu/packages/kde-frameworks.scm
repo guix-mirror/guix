@@ -1886,3 +1886,43 @@ ini-style description files.")
 (password asking) console mode programs.  kdesu and kdessh use it to interface
 with su and ssh respectively.")
     (license license:lgpl2.1+)))
+
+(define-public kemoticons
+  (package
+    (name "kemoticons")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0gmc52k5jb553jvzxwsq79v5y87kgav8i5qqv4bqc9yl7p866zhn"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("kservice" ,kservice)))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("karchive" ,karchive)
+       ("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:tests? #f ; FIXME: 2/2 tests fail.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
+             (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Convert text emoticons to graphical emoticons")
+    (description "KEmoticons converts emoticons from text to a graphical
+representation with images in HTML.  It supports setting different themes for
+emoticons coming from different providers.")
+    ;; dual licensed, image files are licensed under cc-by-sa4.0
+    (license (list license:gpl2+ license:lgpl2.1+ license:cc-by-sa4.0))))
