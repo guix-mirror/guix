@@ -2530,3 +2530,44 @@ library.")
 It supports rich text as well as plain text.")
     ;; dual licensed
     (license (list license:lgpl2.0+ license:lgpl2.1+))))
+
+(define-public kwallet
+  (package
+    (name "kwallet")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0zad5h4vsvcl2xv3vxsjwh42b71xbp6x6rj8cvmw8szr2rzz9gsx"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("gpgmepp" ,gpgmepp)
+       ("kauth" ,kauth)
+       ("kcodecs" ,kcodecs)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdoctools" ,kdoctools)
+       ("kiconthemes" ,kiconthemes)
+       ("ki18n" ,ki18n)
+       ("knotifications" ,knotifications)
+       ("kservice" ,kservice)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("libgcrypt" ,libgcrypt)
+       ("phonon" ,phonon)
+       ("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Safe desktop-wide storage for passwords")
+    (description "This framework contains an interface to KWallet, a safe
+desktop-wide storage for passwords and the kwalletd daemon used to safely store
+the passwords on KDE work spaces.")
+    (license license:lgpl2.1+)))
