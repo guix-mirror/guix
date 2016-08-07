@@ -25,6 +25,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (gnu packages acl)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages boost)
@@ -2058,3 +2059,75 @@ contains a 'kdemain(...)' function.  Using kdeinit to launch KDE applications
 makes starting KDE applications faster and reduces memory consumption.")
     ;; dual licensed
     (license (list license:lgpl2.0+ license:lgpl2.1+))))
+
+(define-public kio
+  (package
+    (name "kio")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0zncj9yf8zaylazlwvirylpk9vki3j889b1x2s0aav54vvj7vdi5"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("kbookmarks" ,kbookmarks)
+       ("kconfig" ,kconfig)
+       ("kcompletion" ,kcompletion)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kitemviews" ,kitemviews)
+       ("kjobwidgets" ,kjobwidgets)
+       ("kservice" ,kservice)
+       ("kxmlgui" ,kxmlgui)
+       ("solid" ,solid)))
+    (native-inputs
+     `(("dbus" ,dbus)
+       ("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("acl" ,acl)
+       ("karchive" ,karchive)
+       ("kauth" ,kauth)
+       ("kcodecs" ,kcodecs)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("kdbusaddons" ,kdbusaddons)
+       ("kdoctools" ,kdoctools)
+       ("kiconthemes" ,kiconthemes)
+       ("ki18n" ,ki18n)
+       ("knotifications" ,knotifications)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwallet" ,kwallet)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("qtbase" ,qtbase)
+       ("qtx11extras" ,qtx11extras)
+       ("sonnet" ,sonnet)))
+    (arguments
+     `(#:tests? #f ; FIXME: 41/50 tests fail.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (setenv "XDG_RUNTIME_DIR" (getcwd))
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+             (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+    ;;(replace 'check
+    ;;  (lambda _
+    ;;    (setenv "DBUS_FATAL_WARNINGS" "0")
+    ;;    (zero? (system* "dbus-launch" "ctest" ".")))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Network transparent access to files and data")
+    (description "This framework implements a lot of file management functions.
+It supports accessing files locally as well as via HTTP and FTP out of the box
+and can be extended by plugins to support other protocols as well.  There is a
+variety of plugins available, e.g. to support access via SSH.  The framework can
+also be used to bridge a native protocol to a file-based interface.  This makes
+the data accessible in all applications using the KDE file dialog or any other
+KIO enabled infrastructure.")
+    (license license:lgpl2.1+)))
