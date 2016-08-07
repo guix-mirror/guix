@@ -77,6 +77,34 @@ modules provided by CMake to find common software.  In addition, it provides
 common build settings used in software produced by the KDE community.")
     (license license:bsd-3)))
 
+(define-public phonon
+  (package
+    (name "phonon")
+    (version "4.9.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/phonon"
+                            "/" version "/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1q5hvsk4sfcb91625wcmldy7kgjmfpmpmkgzi6mxkqdd307v8x5v"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (arguments
+     `(#:configure-flags
+       '("-DCMAKE_CXX_FLAGS=-fPIC"
+         "-DPHONON_BUILD_PHONON4QT5=ON")))
+    (home-page "https://phonon.kde.org")
+    (synopsis "KDE's multimedia library")
+    (description "KDE's multimedia library.")
+    (license license:lgpl2.1+)))
+
+
 ;; Tier 1
 ;;
 ;; Tier 1 frameworks depend only on Qt (and possibly a small number of other
