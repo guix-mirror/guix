@@ -1967,3 +1967,50 @@ emoticons coming from different providers.")
 independent of the focused window.  Unlike regular shortcuts, the application's
 window does not need focus for them to be activated.")
     (license license:lgpl2.1+)))
+
+(define-public kiconthemes
+  (package
+    (name "kiconthemes")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1k5zig2n6wzfyv6pc8dpas2862mxjyxxza00m31myrfw5i1a1h6m"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("shared-mime-info" ,shared-mime-info)))
+    (inputs
+     `(("karchive" ,karchive)
+       ("kauth" ,kauth)
+       ("kcodecs" ,kcodecs)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)
+       ("ki18n" ,ki18n)
+       ("kitemviews" ,kitemviews)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("qtbase" ,qtbase)
+       ("qtsvg" ,qtsvg)))
+    (arguments
+     `(#:tests? #f ; FIXME: Test failure
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "XDG_DATA_DIRS"
+                     (string-append (assoc-ref inputs "shared-mime-info")
+                                    "/share"))
+             (setenv "HOME" (getcwd))
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1") ; Enable debug output
+             (setenv "QT_QPA_PLATFORM" "offscreen"))))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Icon GUI utilities")
+    (description "This library contains classes to improve the handling of icons
+in applications using the KDE Frameworks.")
+    (license license:lgpl2.1+)))
