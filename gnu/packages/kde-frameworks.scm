@@ -1571,3 +1571,35 @@ daemon, a library for interacting with that daemon, and plugins for integration
 with other frameworks.")
     ;; triple licensed
     (license (list license:gpl2+ license:lgpl2.0+ license:lgpl2.1+))))
+
+;; NOTE: This package is listed as a tier 2 package even though it requires
+;;       kactivities - a tier 3 package.
+(define-public kactivities-stats
+  (package
+    (name "kactivities-stats")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1z3xvpifxbd05b2xaxxyiypcpid7jgjb1qpwiyjj1gnfp4rjmzpc"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("boost" ,boost)
+       ("kactivities" ,kactivities)
+       ("kconfig" ,kconfig)
+       ("qtbase" ,qtbase)
+       ("qtdeclarative" ,qtdeclarative)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Access usage statistics collected by the activity manager")
+    (description "The KActivitiesStats library provides a querying mechanism for
+the data that the activitiy manager collects - which documents have been opened
+by which applications, and what documents have been linked to which activity.")
+    ;; triple licensed
+    (license (list license:lgpl2.0+ license:lgpl2.1+ license:lgpl3+))))
