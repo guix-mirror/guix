@@ -52,7 +52,12 @@
 #endif
 
 
-#define CHROOT_ENABLED HAVE_CHROOT && HAVE_SYS_MOUNT_H && defined(MS_BIND) && defined(MS_PRIVATE) && defined(CLONE_NEWNS) && defined(SYS_pivot_root)
+#define CHROOT_ENABLED HAVE_CHROOT && HAVE_SYS_MOUNT_H && defined(MS_BIND) && defined(MS_PRIVATE)
+#define CLONE_ENABLED defined(CLONE_NEWNS)
+
+#if defined(SYS_pivot_root)
+#define pivot_root(new_root, put_old) (syscall(SYS_pivot_root, new_root,put_old))
+#endif
 
 #if CHROOT_ENABLED
 #include <sys/socket.h>
@@ -2005,7 +2010,7 @@ void DerivationGoal::startBuilder()
        - The UTS namespace ensures that builders see a hostname of
          localhost rather than the actual hostname.
     */
-#if CHROOT_ENABLED
+#if __linux__
     if (useChroot) {
 	char stack[32 * 1024];
 	int flags = CLONE_NEWPID | CLONE_NEWNS | CLONE_NEWIPC | CLONE_NEWUTS | SIGCHLD;
@@ -2186,10 +2191,8 @@ void DerivationGoal::runChild()
             if (mkdir("real-root", 0) == -1)
                 throw SysError("cannot create real-root directory");
 
-#define pivot_root(new_root, put_old) (syscall(SYS_pivot_root, new_root, put_old))
             if (pivot_root(".", "real-root") == -1)
                 throw SysError(format("cannot pivot old root directory onto '%1%'") % (chrootRootDir + "/real-root"));
-#undef pivot_root
 
             if (chroot(".") == -1)
                 throw SysError(format("cannot change root directory to '%1%'") % chrootRootDir);
