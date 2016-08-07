@@ -1818,3 +1818,40 @@ performs a number of small tasks.  Some of these tasks are built in, others are
 started on demand.")
     ;; dual licensed
     (license (list license:lgpl2.0+ license:lgpl2.1+))))
+
+(define-public kdesignerplugin
+  (package
+    (name "kdesignerplugin")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "0i0s8pwwhwh5hyyvkv0cnj0yyv0g5bnm5xw18knv2yagiy4bvb2j"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)
+       ("qttools" ,qttools)))
+    (inputs
+     `(("kconfig" ,kconfig)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kdoctools" ,kdoctools)
+       ("qtbase" ,qtbase)))
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Integrating KDE frameworks widgets with Qt Designer")
+    (description "This framework provides plugins for Qt Designer that allow it
+to display the widgets provided by various KDE frameworks, as well as a utility
+(kgendesignerplugin) that can be used to generate other such plugins from
+ini-style description files.")
+    (license license:lgpl2.1+)))
