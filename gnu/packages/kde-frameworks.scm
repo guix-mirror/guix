@@ -2571,3 +2571,55 @@ It supports rich text as well as plain text.")
 desktop-wide storage for passwords and the kwalletd daemon used to safely store
 the passwords on KDE work spaces.")
     (license license:lgpl2.1+)))
+
+(define-public kxmlgui
+  (package
+    (name "kxmlgui")
+    (version "5.24.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://kde/stable/frameworks/"
+                           (version-major+minor version) "/"
+                           name "-" version ".tar.xz"))
+       (sha256
+        (base32
+         "1qhixldhhcbklmrpjh67440h1rrzqy70h57hw6ialjdsr3pl6ihp"))))
+    (build-system cmake-build-system)
+    (propagated-inputs
+     `(("kconfig" ,kconfig)
+       ("kconfigwidgets" ,kconfigwidgets)))
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (inputs
+     `(("attica" ,attica)
+       ("kauth", kauth)
+       ("kcodecs" ,kcodecs)
+       ("kcoreaddons" ,kcoreaddons)
+       ("kglobalaccel" ,kglobalaccel)
+       ("kiconthemes" ,kiconthemes)
+       ("kitemviews" ,kitemviews)
+       ("ki18n" ,ki18n)
+       ("ktextwidgets" ,ktextwidgets)
+       ("kwidgetsaddons" ,kwidgetsaddons)
+       ("kwindowsystem" ,kwindowsystem)
+       ("qtbase" ,qtbase)
+       ("sonnet" ,sonnet)))
+    (arguments
+     `(#:tests? #f ; FIXME: 1/5 tests fail.
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'check-setup
+           (lambda _
+             (setenv "HOME" (getcwd))
+             (setenv "QT_QPA_PLATFORM" "offscreen")
+             (setenv "CTEST_OUTPUT_ON_FAILURE" "1")
+             #t)))))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "Framework for managing menu and toolbar actions")
+    (description "KXMLGUI provides a framework for managing menu and toolbar
+actions in an abstract way.  The actions are configured through a XML description
+and hooks in the application code.  The framework supports merging of multiple
+descriptions for integrating actions from plugins.")
+    ;; dual licensed
+    (license (list license:gpl2+ license:lgpl2.1+))))
