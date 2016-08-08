@@ -223,6 +223,7 @@ fonts to/from the WOFF2 format.")
 (define-public fontconfig
   (package
    (name "fontconfig")
+   (replacement fontconfig/fixed)
    (version "2.11.94")
    (source (origin
             (method url-fetch)
@@ -274,6 +275,13 @@ high quality, anti-aliased and subpixel rendered text on a display.")
    (license (license:non-copyleft "file://COPYING"
                        "See COPYING in the distribution."))
    (home-page "http://www.freedesktop.org/wiki/Software/fontconfig")))
+
+(define fontconfig/fixed
+  (package
+    (inherit fontconfig)
+    (source (origin
+              (inherit (package-source fontconfig))
+              (patches (search-patches "fontconfig-CVE-2016-5384.patch"))))))
 
 (define-public t1lib
   (package
