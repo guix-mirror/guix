@@ -110,6 +110,32 @@ common build settings used in software produced by the KDE community.")
     (description "KDE's multimedia library.")
     (license license:lgpl2.1+)))
 
+(define-public gpgmepp
+  (package
+    (name "gpgmepp")
+    (version "16.04.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://kde/stable/applications"
+                            "/" version "/src/"
+                            name "-" version ".tar.xz"))
+        (sha256
+         (base32
+          "1850pdysi7c1w0nxnhcbrhnkrfqyrcl0laxyjcw1g1ln764pwcmj"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("extra-cmake-modules" ,extra-cmake-modules)))
+    (propagated-inputs
+     `(("boost" ,boost)
+       ("gpgme" ,gpgme)))
+    (inputs
+     `(("qtbase" ,qtbase)))
+    (home-page "https://community.kde.org/Frameworks")
+    (synopsis "C++ bindings/wrapper for gpgme")
+    (description "C++ bindings/wrapper for gpgme.")
+    (license license:lgpl2.1+)))
+
 
 ;; Tier 1
 ;;
