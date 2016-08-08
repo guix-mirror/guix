@@ -1840,13 +1840,13 @@ net/http library.")
 (define-public ruby-arel
   (package
     (name "ruby-arel")
-    (version "6.0.3")
+    (version "7.1.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "arel" version))
               (sha256
                (base32
-                "1a270mlajhrmpqbhxcqjqypnvgrq4pgixpv3w9gwp1wrrapnwrzk"))))
+                "0d6kfsh7qf5gls0n1nrppxv89zyli27kw8nklpq2by3z7cxjcvjg"))))
     (build-system ruby-build-system)
     (arguments '(#:tests? #f)) ; no tests
     (home-page "https://github.com/rails/arel")
