@@ -5548,13 +5548,13 @@ should be stored on various operating systems.")
 (define-public python-msgpack
   (package
     (name "python-msgpack")
-    (version "0.4.7")
+    (version "0.4.8")
     (source (origin
               (method url-fetch)
               (uri (pypi-uri "msgpack-python" version))
               (sha256
                (base32
-                "0syd7bs83qs9qmxw540jbgsildbqk4yb57fmrlns1021llli402y"))))
+                "11pqk5braa6wndpnr1dhg64js82vjgxnm0lzy73rwl831zgijaqs"))))
     (build-system python-build-system)
     (synopsis "MessagePack (de)serializer")
     (description "MessagePack is a fast, compact binary serialization format,
