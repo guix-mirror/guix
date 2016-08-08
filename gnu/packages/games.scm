@@ -101,6 +101,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages tcl)
   #:use-module (gnu packages xdisorg)
+  #:use-module (gnu packages tls)
+  #:use-module (gnu packages pcre)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system haskell)
   #:use-module (guix build-system python)
@@ -2735,6 +2737,42 @@ in a style similar to the original Super Mario games covered under
 the GNU GPL.")
    (home-page "https://supertuxproject.org/")
    (license license:gpl3+)))
+
+(define-public tintin++
+  (package
+    (name "tintin++")
+    (version "2.01.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://sourceforge.net/projects/tintin"
+                                  "/files/TinTin++ Source Code/" version
+                                  "/tintin" "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "195wrfcys8yy953gdrl1gxryhjnx9lg1vqgxm3dyzm8bi18aa2yc"))))
+    (inputs
+     `(("gnutls" ,gnutls)
+       ("pcre" ,pcre)
+       ("readline" ,readline)
+       ("zlib" ,zlib)))
+    (arguments
+     '(#:tests? #f ; no test suite
+       #:phases
+       (modify-phases %standard-phases
+         ;; The source is in tt/src.
+         (add-before 'configure 'chdir
+           (lambda _
+             (chdir "src")
+             #t)))))
+    (build-system gnu-build-system)
+    (home-page "http://tintin.sourceforge.net/")
+    (synopsis "MUD client")
+    (description
+     "TinTin++ is a MUD client which supports MCCP (Mud Client Compression Protocol),
+MMCP (Mud Master Chat Protocol), xterm 256 colors, most TELNET options used by MUDs,
+as well as those required to login via telnet on Linux / Mac OS X servers, and an
+auto mapper with a VT100 map display.")
+    (license license:gpl2+)))
 
 (define-public laby
   (package
