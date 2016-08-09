@@ -38,7 +38,7 @@
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.icculus.org/openbox/releases/" name "-"
+                    "http://openbox.org/dist/openbox/" name "-"
                     version ".tar.xz"))
               (sha256
                (base32
