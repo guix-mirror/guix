@@ -7,6 +7,7 @@
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Alex Griffin <a@ajgrf.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -2519,3 +2520,48 @@ loudness of audio and video files to the same level.")
 code, used in @code{libtoxcore}.")
       (home-page "https://github.com/irungentoo/filter_audio")
       (license license:bsd-3))))
+
+(define-public gsm
+  (package
+    (name "gsm")
+    (version "1.0.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri
+        (string-append "http://www.quut.com/" name "/" name
+                       "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0b1mx69jq88wva3wk0hi6fcl5a52qhnq2f9p3f3jdh5k61ma252q"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "tst"
+       #:phases
+       (modify-phases %standard-phases
+         (add-before 'install 'pre-install
+           (lambda _
+             (let ((out (assoc-ref %outputs "out")))
+               (substitute* "Makefile"
+                 (("INSTALL_ROOT\t=")
+                  (string-append "INSTALL_ROOT\t=\t" out)))
+               (mkdir-p (string-append out "/inc"))
+               (mkdir-p (string-append out "/man"))
+               (mkdir-p (string-append out "/man/man1"))
+               (mkdir-p (string-append out "/man/man3"))
+               (mkdir-p (string-append out "/bin"))
+               (mkdir-p (string-append out "/lib")))))
+         (add-after 'install 'post-install
+           (lambda _
+             (let ((out (assoc-ref %outputs "out")))
+               (rename-file (string-append out "/inc")
+                            (string-append out "/include"))
+               (mkdir-p (string-append out "/include/gsm"))
+               (copy-recursively "inc"
+                                 (string-append out "/include/gsm")))))
+         (delete 'configure))))
+    (synopsis "GSM 06.10 lossy speech compression library")
+    (description "This C library provides an encoder and a decoder for the GSM
+06.10 RPE-LTP lossy speech compression algorithm.")
+    (home-page "http://quut.com/gsm/")
+    (license (license:non-copyleft "file://COPYRIGHT"))))
