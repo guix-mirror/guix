@@ -266,3 +266,28 @@ and extensible with plugins and scripts.")
     (description
      "ii (Irc it) is a minimalist FIFO and filesystem based IRC client.")
     (license license:expat)))
+
+(define-public sic
+  (package
+    (name "sic")
+    (version "1.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://dl.suckless.org/tools/"
+                                  name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "11aiavxp44yayibc58bvimi8mrxvbw1plbci8cnbl4syk42zj1xc"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; no tests
+       #:make-flags (list "CC=gcc"
+                          (string-append "PREFIX=" %output))
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)))) ; no configure
+    (home-page "http://tools.suckless.org/sic/")
+    (synopsis "Simple IRC client")
+    (description
+     "sic is a simple IRC client, even more minimalistic than ii.")
+    (license license:expat)))
