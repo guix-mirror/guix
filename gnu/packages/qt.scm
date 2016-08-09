@@ -175,6 +175,10 @@
                        "-prefix" out
                        "-opensource"
                        "-confirm-license"
+                       ;; Do not build examples; if desired, these could go
+                       ;; into a separate output, but for the time being, we
+                       ;; prefer to save the space and build time.
+                       "-nomake" "examples"
                        ;; Most "-system-..." are automatic, but some use
                        ;; the bundled copy by default.
                        "-system-sqlite"
