@@ -6935,3 +6935,30 @@ such that being individual extensions would be wasteful.")
     (license (package-license perl))))
 
 ;;; END: Core module overrides
+
+(define-public perl-file-find-object
+ (package
+  (name "perl-file-find-object")
+  (version "v0.2.13")
+  (source
+    (origin
+      (method url-fetch)
+      (uri (string-append
+             "mirror://cpan/authors/id/S/SH/SHLOMIF/File-Find-Object-"
+             version
+             ".tar.gz"))
+      (sha256
+        (base32
+          "0gf13b76b824s73r5rp00v8xrd6dnb5yi5jjavfc394scqv6ldh4"))))
+  (build-system perl-build-system)
+  (native-inputs
+    `(("perl-module-build" ,perl-module-build)))
+  (inputs
+    `(("perl-class-xsaccessor" ,perl-class-xsaccessor)))
+  (home-page
+    "http://search.cpan.org/dist/File-Find-Object")
+  (synopsis
+    "Object-oriented File::Find replacement in Perl")
+  (description "File::Find::Object is an object-oriented
+File::Find replacement in Perl.")
+  (license artistic2.0)))
