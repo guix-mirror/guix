@@ -120,18 +120,44 @@ GEM-FLAGS are passed to the 'gem' invokation, if present."
                            1))
          (out (assoc-ref outputs "out"))
          (gem-home (string-append out "/lib/ruby/gems/" ruby-version ".0"))
-         (gem-name (first-matching-file "\\.gem$")))
+         (gem-file (first-matching-file "\\.gem$"))
+         (gem-file-basename (basename gem-file))
+         (gem-name (substring gem-file-basename
+                              0
+                              (- (string-length gem-file-basename) 4)))
+         (gem-directory (string-append gem-home "/gems/" gem-name)))
     (setenv "GEM_HOME" gem-home)
     (mkdir-p gem-home)
-    (and (apply system* "gem" "install" gem-name
+    (and (apply system* "gem" "install" gem-file
                 "--local" "--ignore-dependencies"
                 ;; Executables should go into /bin, not /lib/ruby/gems.
                 "--bindir" (string-append out "/bin")
                 gem-flags)
-         ;; Remove the cached gem file as this is unnecessary and contains
-         ;; timestamped files rendering builds not reproducible.
-         (begin (delete-file (string-append gem-home "/cache/" gem-name))
-                #t))))
+         (begin
+           ;; Remove the cached gem file as this is unnecessary and contains
+           ;; timestamped files rendering builds not reproducible.
+           (let ((cached-gem (string-append gem-home "/cache/" gem-file)))
+             (log-file-deletion cached-gem)
+             (delete-file cached-gem))
+           ;; For gems with native extensions, several Makefile-related files
+           ;; are created that contain timestamps or other elements making
+           ;; them not reproducible.  They are unnecessary so we remove them.
+           (if (file-exists? (string-append gem-directory "/ext"))
+               (begin
+                 (for-each (lambda (file)
+                             (log-file-deletion file)
+                             (delete-file file))
+                           (append
+                            (find-files (string-append gem-home "/doc")
+                                        "page-Makefile.ri")
+                            (find-files (string-append gem-home "/extensions")
+                                        "gem_make.out")
+                            (find-files (string-append gem-directory "/ext")
+                                        "Makefile")))))
+           #t))))
+
+(define (log-file-deletion file)
+  (display (string-append "deleting '" file "' for reproducibility\n")))
 
 (define %standard-phases
   (modify-phases gnu:%standard-phases
