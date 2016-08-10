@@ -245,13 +245,13 @@ an extensible architecture with a swappable backend.")
 (define ruby-rspec-support
   (package
     (name "ruby-rspec-support")
-    (version "3.2.2")
+    (version "3.5.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rspec-support" version))
               (sha256
                (base32
-                "194zry5195ls2hni7r9824vqb5d3qfg4jb15fgj8glfy0rvw3zxl"))))
+                "10vf3k3d472y573mag2kzfsfrf6rv355s13kadnpryk8d36yq5r0"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -263,13 +263,13 @@ an extensible architecture with a swappable backend.")
 (define-public ruby-rspec-core
   (package
     (name "ruby-rspec-core")
-    (version "3.2.3")
+    (version "3.5.1")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rspec-core" version))
               (sha256
                (base32
-                "0k2471iw30gc2cvv67damrx666pmsvx8l0ahk3hm20dhfnmcmpvv"))))
+                "0brfq51fwkkh5g6vw7smky5fvip46pryi243jmin0nzn7iwh9j5g"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -316,13 +316,13 @@ standard diff-like tool.")
 (define-public ruby-rspec-expectations
   (package
     (name "ruby-rspec-expectations")
-    (version "3.2.1")
+    (version "3.5.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rspec-expectations" version))
               (sha256
                (base32
-                "01kmchabgpdcaqdsqg8r0g5gy385xhp1k1jsds3w264ypin17n14"))))
+                "0bbqfrb1x8gmwf8x2xhhwvvlhwbbafq4isbvlibxi6jk602f09gs"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -350,13 +350,13 @@ outcomes of a code example.")
 (define-public ruby-rspec-mocks
   (package
     (name "ruby-rspec-mocks")
-    (version "3.2.1")
+    (version "3.5.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rspec-mocks" version))
               (sha256
                (base32
-                "09yig1lwgxl8fsns71z3xhv7wkg7zvagydh37pvaqpw92dz55jv2"))))
+                "0nl3ksivh9wwrjjd47z5dggrwx40v6gpb3a0gzbp1gs06a5dmk24"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
@@ -384,13 +384,13 @@ support for stubbing and mocking.")
 (define-public ruby-rspec
   (package
     (name "ruby-rspec")
-    (version "3.2.0")
+    (version "3.5.0")
     (source (origin
               (method url-fetch)
               (uri (rubygems-uri "rspec" version))
               (sha256
                (base32
-                "0lkz01j4yxcwb3g5w6r1l9khnyw3sxib4rrh4npd2pxh390fcc4f"))))
+                "16g3mmih999f0b6vcz2c3qsc7ks5zy4lj1rzjh8hf6wk531nvc6s"))))
     (build-system ruby-build-system)
     (arguments
      '(#:tests? #f)) ; avoid dependency cycles
