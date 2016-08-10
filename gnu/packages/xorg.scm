@@ -641,7 +641,8 @@ For example: '6x10', '9x15bold', etc.")
             "19cq7iq0pfad0nc2v28n681fdq3fcw1l1hzaq0wpkgpx7bc1zjsk"))))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontdir" ,mkfontdir)))
+      `(("mkfontdir" ,mkfontdir)
+        ("mkfontscale" ,mkfontscale)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
