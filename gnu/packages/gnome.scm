@@ -8,7 +8,7 @@
 ;;; Copyright © 2015 Mathieu Lirzin <mthl@openmailbox.org>
 ;;; Copyright © 2015 Andy Wingo <wingo@igalia.com>
 ;;; Copyright © 2015 David Hashe <david.hashe@dhashe.com>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015, 2016 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 David Thompson <davet@gnu.org>
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
@@ -4857,8 +4857,8 @@ as SASL, TLS and VeNCrypt.  Additionally it supports encoding extensions.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (inputs
-     ;; TODO: add gvfs support.
      `(("dconf" ,dconf)
+       ("gvfs" ,gvfs)
        ("exempi" ,exempi)
        ("gnome-desktop" ,gnome-desktop)
        ;; XXX: gtk+ is required by libnautilus-extension.pc
