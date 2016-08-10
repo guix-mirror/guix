@@ -3953,7 +3953,7 @@ part of the Prawn PDF generator.")
 (define-public ruby-puma
   (package
     (name "ruby-puma")
-    (version "3.4.0")
+    (version "3.6.0")
     (source
      (origin
        (method url-fetch)
@@ -3963,14 +3963,22 @@ part of the Prawn PDF generator.")
        (file-name (string-append name "-" version ".tar.gz"))
        (sha256
         (base32
-         "10svyj2jk949y1dmkxyzipk1ddzl4iz9limrcws1zhpganpvq3j8"))
-       ;; Ignore broken test reported upstream.
+         "08aws79n9slcr50d9lwm011cp1pxvr1409c2jmyjxywvrc0a30v1"))
+       ;; Ignore broken tests reported upstream.
        ;; https://github.com/puma/puma/issues/995
+       ;; https://github.com/puma/puma/issues/1044
        (patches (search-patches "ruby-puma-ignore-broken-test.patch"))))
     (build-system ruby-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
+         (add-after 'unpack 'delete-integration-tests
+           (lambda _
+             ;; One broken test in this file cannot be easily removed in
+             ;; isolation, it probably causes race conditions.  So we delete
+             ;; the entire file.
+             (delete-file "test/test_integration.rb")
+             #t))
          (add-before 'build 'fix-gemspec
            (lambda _
              (substitute* "puma.gemspec"
