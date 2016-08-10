@@ -884,7 +884,8 @@ For example: '6x10', '9x15bold', etc.")
             "0jp3zc0qfdaqfkgzrb44vi9vi0a8ygb35wp082yz7rvvxhmg9sya"))))
     (build-system gnu-build-system)
     (inputs
-      `(("mkfontdir" ,mkfontdir)))
+      `(("mkfontdir" ,mkfontdir)
+        ("mkfontscale" ,mkfontscale)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "https://www.x.org/wiki/")
