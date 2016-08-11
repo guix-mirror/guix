@@ -313,16 +313,16 @@ in future and NTLM based authentication is most likey never be supported.")
                 "1qsb0y882yfgwnpy6f98pi5xqm6kykdsrxzvaal37hs7szjhky0s"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-after
-                 'install 'wrap
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Make sure 'mosh' can find 'mosh-client' and
-                   ;; 'mosh-server'.
-                   (let* ((out (assoc-ref outputs "out"))
-                          (bin (string-append out "/bin")))
-                     (wrap-program (string-append bin "/mosh")
-                                   `("PATH" ":" prefix (,bin)))))
-                 %standard-phases)))
+     '(#:phases
+       (modify-phases %standard-phases
+         (add-after 'install 'wrap
+           (lambda* (#:key outputs #:allow-other-keys)
+             ;; Make sure 'mosh' can find 'mosh-client' and
+             ;; 'mosh-server'.
+             (let* ((out (assoc-ref outputs "out"))
+                    (bin (string-append out "/bin")))
+               (wrap-program (string-append bin "/mosh")
+                             `("PATH" ":" prefix (,bin)))))))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
