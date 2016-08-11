@@ -28,17 +28,18 @@
 (define-public freeipmi
   (package
     (name "freeipmi")
-    (version "1.5.2")
+    (version "1.5.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/freeipmi/freeipmi-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0xgfwk6lxwwzq8pbyxjl5xxpybs9p4qwgb7q0ykf048xwxha4kvk"))))
+               "0s4q7imc4r3g9lkd92bnvw70679q83b0irrlw895i5nc05dj4djx"))))
     (build-system gnu-build-system)
     (inputs
-     `(("readline" ,readline) ("libgcrypt" ,libgcrypt)))
+     `(("readline" ,readline)
+       ("libgcrypt" ,libgcrypt)))
     (home-page "http://www.gnu.org/software/freeipmi/")
     (synopsis "Platform management, including sensor and power monitoring")
     (description
