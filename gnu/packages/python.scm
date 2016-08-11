@@ -3014,14 +3014,12 @@ is designed to have a low barrier to entry.")
      `(("python" ,python)))
     (arguments
      `(#:phases
-       (alist-cons-before
-        'check 'set-HOME
-        ;; some tests require access to "$HOME/.cython"
-        (lambda* _ (setenv "HOME" "/tmp"))
-        (alist-replace
-         'check
-         (lambda _ (zero? (system* "python" "runtests.py" "-vv")))
-         %standard-phases))))
+       (modify-phases %standard-phases
+         (add-before 'check 'set-HOME
+           ;; some tests require access to "$HOME/.cython"
+           (lambda _ (setenv "HOME" "/tmp")))
+         (replace 'check
+           (lambda _ (zero? (system* "python" "runtests.py" "-vv")))))))
     (home-page "http://cython.org/")
     (synopsis "C extensions for Python")
     (description "Cython is an optimising static compiler for both the Python
