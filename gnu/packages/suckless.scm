@@ -129,7 +129,7 @@ numbers of user-defined menu items efficiently.")
 (define-public st
   (package
     (name "st")
-    (version "0.6")
+    (version "0.7")
     (source
      (origin
        (method url-fetch)
@@ -137,7 +137,7 @@ numbers of user-defined menu items efficiently.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0avsfc1qp8zvshsfjwwrkvk411jlqy58z225bsdhjkl1qc40qcc5"))))
+         "00309qiw20rc89696pk8bdr7ik4r1aarik7jxqk8k66cdj80v1zp"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; no tests
@@ -156,7 +156,6 @@ numbers of user-defined menu items efficiently.")
        ("libxft" ,libxft)
        ("libxcomposite" ,libxcomposite)
        ("compositeproto" ,compositeproto)
-       ("libxext" ,libxext)
        ("xextproto" ,xextproto)
        ("libxrender" ,libxrender)
        ("fontconfig" ,fontconfig)
