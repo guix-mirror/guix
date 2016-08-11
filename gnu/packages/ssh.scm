@@ -307,8 +307,7 @@ in future and NTLM based authentication is most likey never be supported.")
     (version "1.2.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://mosh.mit.edu/mosh-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://mosh.org/mosh-" version ".tar.gz"))
               (sha256
                (base32
                 "1qsb0y882yfgwnpy6f98pi5xqm6kykdsrxzvaal37hs7szjhky0s"))))
@@ -334,7 +333,7 @@ in future and NTLM based authentication is most likey never be supported.")
        ("ncurses" ,ncurses)
        ("protobuf" ,protobuf)
        ("boost-headers" ,boost)))
-    (home-page "http://mosh.mit.edu/")
+    (home-page "https://mosh.org/")
     (synopsis "Remote shell tolerant to intermittent connectivity")
     (description
      "Remote terminal application that allows roaming, supports intermittent
