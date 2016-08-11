@@ -275,23 +275,22 @@ libssh library.")
      ;; Replace configure phase as the ./configure script does not link
      ;; CONFIG_SHELL and SHELL passed as parameters
      '(#:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs inputs system build target
-                        #:allow-other-keys #:rest args)
-          (let* ((configure (assoc-ref %standard-phases 'configure))
-                 (prefix (assoc-ref outputs "out"))
-                 (bash   (which "bash"))
-                 ;; Set --build and --host flags as the provided config.guess
-                 ;; is not able to detect them
-                 (flags `(,(string-append "--prefix=" prefix)
-                          ,(string-append "--build=" build)
-                          ,(string-append "--host=" (or target build)))))
-            (setenv "CONFIG_SHELL" bash)
-            (zero? (apply system* bash
-                          (string-append "." "/configure")
-                          flags))))
-        %standard-phases)))
+       (modify-phases %standard-phases
+         (replace 'configure
+           (lambda* (#:key outputs inputs system build target
+                           #:allow-other-keys #:rest args)
+             (let* ((configure (assoc-ref %standard-phases 'configure))
+                    (prefix (assoc-ref outputs "out"))
+                    (bash   (which "bash"))
+                    ;; Set --build and --host flags as the provided config.guess
+                    ;; is not able to detect them
+                    (flags `(,(string-append "--prefix=" prefix)
+                             ,(string-append "--build=" build)
+                             ,(string-append "--host=" (or target build)))))
+               (setenv "CONFIG_SHELL" bash)
+               (zero? (apply system* bash
+                             (string-append "." "/configure")
+                             flags))))))))
     (home-page "http://www.agroman.net/corkscrew")
     (synopsis "Tunneling SSH through HTTP proxies")
     (description
