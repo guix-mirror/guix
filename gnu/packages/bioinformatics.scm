@@ -4395,6 +4395,11 @@ is one that takes arguments.")
      "SNAP is a fast and accurate aligner for short DNA reads.  It is
 optimized for modern read lengths of 100 bases or higher, and takes advantage
 of these reads to align data quickly through a hash-based indexing scheme.")
+    ;; 32-bit systems are not supported by the unpatched code.
+    ;; Following the bug reports https://github.com/amplab/snap/issues/68 and
+    ;; https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=812378 we see that
+    ;; systems without a lot of memory cannot make good use of this program.
+    (supported-systems '("x86_64-linux"))
     (license license:asl2.0)))
 
 (define-public sortmerna
