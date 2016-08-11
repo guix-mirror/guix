@@ -45,7 +45,7 @@
                 #:select (asl2.0 bsd-4 bsd-3 bsd-2 non-copyleft cc0 x11 x11-style
                           gpl2 gpl2+ gpl3 gpl3+ lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+ agpl3+
                           isc mpl2.0 psfl public-domain repoze unlicense x11-style
-                          zpl2.1))
+                          zpl2.1 lgpl3))
   #:use-module ((guix licenses) #:select (expat zlib) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
@@ -9850,3 +9850,39 @@ etc.")
     (package
       (inherit base)
       (name "ptpython2"))))
+
+(define-public python-stem
+  (package
+    (name "python-stem")
+    (version "1.4.1b")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "stem" version ".tar.bz2"))
+       (sha256
+        (base32
+         "09a3amp1y351nwz088ckiibbp666qi2lxwkyknavswfm400s0ns7"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (zero? (system* "./run_tests.py" "--unit")))))))
+    (native-inputs
+     `(("python-mock" ,python-mock)
+       ("python-pep8" ,python-pep8)
+       ("python-pyflakes" ,python-pyflakes)))
+    (inputs
+     `(("python-pycrypto" ,python-pycrypto)))
+    (home-page "https://stem.torproject.org/")
+    (synopsis
+     "Python controller library that allows applications to interact with Tor")
+    (description
+     "Stem is a Python controller library for Tor.  With it you can use Tor's
+control protocol to script against the Tor process and read descriptor data
+relays publish about themselves.")
+    (license lgpl3)))
+
+(define-public python2-stem
+  (package-with-python2 python-stem))
