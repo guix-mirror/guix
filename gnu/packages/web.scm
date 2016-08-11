@@ -3293,7 +3293,11 @@ It uses the uwsgi protocol for all the networking/interprocess communications.")
                                   "/" name "-" version ".tar.gz"))
               (sha256
                (base32
-                "0g29kyz4ykasdcrb0zmbrp2jqs9kv1wz9swx849i2d1ncknbzln4"))))
+                "0g29kyz4ykasdcrb0zmbrp2jqs9kv1wz9swx849i2d1ncknbzln4"))
+              ;; This patch has been pushed and the vulnerability will be
+              ;; fixed in the next release after 1.5.
+              ;; https://github.com/stedolan/jq/issues/995
+              (patches (search-patches "jq-CVE-2015-8863.patch"))))
     (inputs
      `(("oniguruma" ,oniguruma)))
     (native-inputs
