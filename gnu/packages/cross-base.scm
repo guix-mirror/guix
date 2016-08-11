@@ -464,62 +464,62 @@ XBINUTILS and the cross tool chain."
       ((or "i586-pc-gnu" "i586-gnu") glibc/hurd)
       (_ glibc/linux)))
 
-  (package (inherit glibc)
-    (name (string-append "glibc-cross-" target))
-    (arguments
-     (substitute-keyword-arguments
-         `(;; Disable stripping (see above.)
-           #:strip-binaries? #f
+  ;; Use (cross-libc-for-target ...) to determine the correct libc to use.
+  (let ((libc (cross-libc-for-target target)))
+    (package (inherit libc)
+      (name (string-append "glibc-cross-" target))
+      (arguments
+       (substitute-keyword-arguments
+           `(;; Disable stripping (see above.)
+             #:strip-binaries? #f
 
-           ;; This package is used as a target input, but it should not have
-           ;; the usual cross-compilation inputs since that would include
-           ;; itself.
-           #:implicit-cross-inputs? #f
+             ;; This package is used as a target input, but it should not have
+             ;; the usual cross-compilation inputs since that would include
+             ;; itself.
+             #:implicit-cross-inputs? #f
 
-           ;; We need SRFI 26.
-           #:modules ((guix build gnu-build-system)
-                      (guix build utils)
-                      (srfi srfi-26))
+             ;; We need SRFI 26.
+             #:modules ((guix build gnu-build-system)
+                        (guix build utils)
+                        (srfi srfi-26))
 
-           ;; Package-arguments does not use the correct libc, so we use
-           ;; (cross-libc-for-target ...) to determine the correct one.
-           ,@(package-arguments (cross-libc-for-target target)))
-       ((#:configure-flags flags)
-        `(cons ,(string-append "--host=" target)
+             ,@(package-arguments libc))
+         ((#:configure-flags flags)
+          `(cons ,(string-append "--host=" target)
                ,flags))
-       ((#:phases phases)
-        `(alist-cons-before
-          'configure 'set-cross-kernel-headers-path
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let* ((kernel (assoc-ref inputs "kernel-headers"))
-                   (cpath (string-append kernel "/include")))
-              (for-each (cut setenv <> cpath)
-                        '("CROSS_C_INCLUDE_PATH"
-                          "CROSS_CPLUS_INCLUDE_PATH"
-                          "CROSS_OBJC_INCLUDE_PATH"
-                          "CROSS_OBJCPLUS_INCLUDE_PATH"))
-              (setenv "CROSS_LIBRARY_PATH"
-                      (string-append kernel "/lib")) ;for Hurd's libihash
-              #t))
-          ,phases))))
+         ((#:phases phases)
+          `(alist-cons-before
+            'configure 'set-cross-kernel-headers-path
+            (lambda* (#:key inputs #:allow-other-keys)
+              (let* ((kernel (assoc-ref inputs "kernel-headers"))
+                     (cpath (string-append kernel "/include")))
+                (for-each (cut setenv <> cpath)
+                          '("CROSS_C_INCLUDE_PATH"
+                            "CROSS_CPLUS_INCLUDE_PATH"
+                            "CROSS_OBJC_INCLUDE_PATH"
+                            "CROSS_OBJCPLUS_INCLUDE_PATH"))
+                (setenv "CROSS_LIBRARY_PATH"
+                        (string-append kernel "/lib")) ;for Hurd's libihash
+                #t))
+            ,phases))))
 
-    ;; Shadow the native "kernel-headers" because glibc's recipe expects the
-    ;; "kernel-headers" input to point to the right thing.
-    (propagated-inputs `(("kernel-headers" ,xheaders)))
+      ;; Shadow the native "kernel-headers" because glibc's recipe expects the
+      ;; "kernel-headers" input to point to the right thing.
+      (propagated-inputs `(("kernel-headers" ,xheaders)))
 
-    ;; FIXME: 'static-bash' should really be an input, not a native input, but
-    ;; to do that will require building an intermediate cross libc.
-    (inputs '())
+      ;; FIXME: 'static-bash' should really be an input, not a native input, but
+      ;; to do that will require building an intermediate cross libc.
+      (inputs '())
 
-    (native-inputs `(("cross-gcc" ,xgcc)
-                     ("cross-binutils" ,xbinutils)
-                     ,@(if (string-match (or "i586-pc-gnu" "i586-gnu") target)
-                           `(("cross-mig"
-                              ,@(assoc-ref (package-native-inputs xheaders)
-                                           "cross-mig")))
-                           '())
-                     ,@(package-inputs glibc)     ;FIXME: static-bash
-                     ,@(package-native-inputs glibc)))))
+      (native-inputs `(("cross-gcc" ,xgcc)
+                       ("cross-binutils" ,xbinutils)
+                       ,@(if (string-match (or "i586-pc-gnu" "i586-gnu") target)
+                             `(("cross-mig"
+                                ,@(assoc-ref (package-native-inputs xheaders)
+                                             "cross-mig")))
+                             '())
+                       ,@(package-inputs libc)     ;FIXME: static-bash
+                       ,@(package-native-inputs libc))))))
 
 
 ;;;
