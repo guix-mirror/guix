@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2015, 2016 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages python)
   #:use-module (gnu packages pcre)
@@ -35,17 +37,14 @@
 (define-public dico
   (package
     (name "dico")
-    (version "2.2")
+    (version "2.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/dico/dico-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "04pjks075x20d19l623mj50bw64g8i41s63z4kzzqcbg9qg96x64"))
-             (patches (search-patches "cpio-gets-undeclared.patch"
-                                      "dico-libtool-deterministic.patch"
-                                      "dico-idxgcide-bug.patch"))))
+               "13by0zimx90v2j8v7n4k9y3xwmh4q9jdc2f4f8yjs3x7f5bzm2pk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list (string-append "--with-guile-site-dir=" %output
@@ -62,10 +61,11 @@
     (inputs
      `(("m4" ,m4)                                 ;used at run time
        ("pcre" ,pcre)
-       ;; ("python" ,python-2)
+       ("python" ,python-2)
        ("guile" ,guile-2.0)
        ("gsasl" ,gsasl)
-       ("readline" ,readline-6.2)
+       ("groff" ,groff)
+       ("readline" ,readline)
        ("zlib" ,zlib)
        ;; ("wordnet" ,wordnet) ;FIXME: link failure
        ("libltdl" ,libltdl)))
