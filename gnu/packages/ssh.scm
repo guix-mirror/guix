@@ -304,13 +304,13 @@ in future and NTLM based authentication is most likey never be supported.")
 (define-public mosh
   (package
     (name "mosh")
-    (version "1.2.5")
+    (version "1.2.6")
     (source (origin
               (method url-fetch)
               (uri (string-append "https://mosh.org/mosh-" version ".tar.gz"))
               (sha256
                (base32
-                "1qsb0y882yfgwnpy6f98pi5xqm6kykdsrxzvaal37hs7szjhky0s"))))
+                "118fhpm754wpklf1blnlq5xbvrxqml6rdfs3b07wg666zkxvg0ky"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
