@@ -723,9 +723,12 @@ MIME type."
 (define (xdg-mime-database manifest)
   "Return a derivation that builds the @file{mime.cache} database from manifest
 entries.  It's used to query the MIME type of a given file."
-  (mlet %store-monad ((shared-mime-info
+  (define shared-mime-info  ; lazy reference
+    (module-ref (resolve-interface '(gnu packages gnome)) 'shared-mime-info))
+
+  (mlet %store-monad ((glib
                        (manifest-lookup-package
-                        manifest "shared-mime-info")))
+                        manifest "glib")))
     (define build
       (with-imported-modules  '((guix build utils)
                                 (guix build union))
@@ -738,7 +741,8 @@ entries.  It's used to query the MIME type of a given file."
                    (pkgdirs (filter file-exists?
                                     (map (cut string-append <>
                                               "/share/mime/packages")
-                                         '#$(manifest-inputs manifest))))
+                                         (cons #+shared-mime-info
+                                               '#$(manifest-inputs manifest)))))
                    (update-mime-database (string-append
                                           #+shared-mime-info
                                           "/bin/update-mime-database")))
@@ -748,8 +752,8 @@ entries.  It's used to query the MIME type of a given file."
               (setenv "XDG_DATA_HOME" datadir)
               (exit (zero? (system* update-mime-database destdir)))))))
 
-    ;; Don't run the hook when 'shared-mime-info' is referenced.
-    (if shared-mime-info
+    ;; Don't run the hook when there are no GLib based applications.
+    (if glib
         (gexp->derivation "xdg-mime-database" build
                           #:local-build? #t
                           #:substitutable? #f)
