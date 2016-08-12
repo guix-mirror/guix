@@ -13,6 +13,7 @@
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Kei Kebreau <kei@openmailbox.org>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -962,3 +963,41 @@ handles the 7z format which features very high compression ratios.")
     (license (list license:lgpl2.1+
                    license:gpl2+
                    license:public-domain))))
+
+(define-public gzstream
+  (package
+    (name "gzstream")
+    (version "1.5")
+    (source (origin
+              (method url-fetch)
+              (uri
+                ;; No versioned URL, but last release was in 2003.
+                "http://www.cs.unc.edu/Research/compgeom/gzstream/gzstream.tgz")
+                (file-name (string-append name "-" version ".tgz"))
+                (sha256
+                 (base32
+                  "00y19pqjsdj5zcrx4p9j56pl73vayfwnb7y2hvp423nx0cwv5b4r"))
+                (modules '((guix build utils)))
+                (snippet
+                 ;; Remove pre-compiled object.
+                 '(delete-file "gzstream.o"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:test-target "test"
+       #:phases
+       (modify-phases %standard-phases
+         (delete 'configure)
+         (replace 'install
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (lib (string-append out "/lib"))
+                    (include (string-append out "/include")))
+               (install-file "libgzstream.a" lib)
+               (install-file "gzstream.h" include)
+               #t))))))
+    (propagated-inputs `(("zlib" ,zlib)))
+    (home-page "http://www.cs.unc.edu/Research/compgeom/gzstream/")
+    (synopsis "Compressed C++ iostream")
+    (description "gzstream is a small library for providing zlib
+functionality in a C++ iostream.")
+    (license license:lgpl2.1+)))
