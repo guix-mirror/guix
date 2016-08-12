@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2015, 2016 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2015 Stefan Reichör <stefan@xsteve.at>
 ;;; Copyright © 2016 Raimon Grau <raimonster@gmail.com>
@@ -8,6 +8,7 @@
 ;;; Copyright © 2016 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2016 Nicolas Goaziou <mail@nicolasgoaziou.fr>
 ;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -690,3 +691,37 @@ information by IP Address.")
   (description "IO::Socket::INET6 is an interface for AF_INET/AF_INET6 domain
 sockets in Perl.")
   (license (package-license perl))))
+
+(define-public proxychains-ng
+  (package
+    (name "proxychains-ng")
+    (version "4.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/rofl0r/" name "/releases/"
+                                  "download/v" version "/" name "-" version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "1dkncdzw852488gkh5zhn4b5i03qyj8rgh1wcvcva7yd12c19i6w"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f ; there are no tests
+       #:make-flags '("CC=gcc")
+       #:phases
+       (modify-phases %standard-phases
+         (add-after 'unpack 'fix-configure-script
+           (lambda _
+             ;; The configure script is very intolerant to unknown arguments,
+             ;; such as "CONFIG_SHELL".
+             (substitute* "configure"
+               (("\\*\\) break ;;" line)
+                (string-append "[A-Z]*) shift ;;\n"
+                               line)))
+             #t)))))
+    (synopsis "Redirect any TCP connection through a proxy or proxy chain")
+    (description "Proxychains-ng is a preloader which hooks calls to sockets
+in dynamically linked programs and redirects them through one or more SOCKS or
+HTTP proxies.")
+    (home-page "https://github.com/rofl0r/proxychains-ng")
+    (license license:gpl2+)))
