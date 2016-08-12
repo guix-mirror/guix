@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2016 Ricardo Wurmus <rekado@elephly.net>
+;;; Copyright © 2017 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix licenses)
   #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages ghostscript)
@@ -34,7 +36,8 @@
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages lua)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages zip))
 
 (define-public a2ps
   (package
@@ -146,6 +149,30 @@ HTML or RTF formats, to be stored in files or sent immediately to a printer.
 It also includes the capability to perform syntax highlighting for several
 different programming languages.")
     (license gpl3+)))
+
+(define-public fmt
+  (package
+    (name "fmt")
+    (version "3.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/fmtlib/fmt/releases/download/"
+                    version "/fmt-" version ".zip"))
+              (sha256
+               (base32
+                "0l4514mk83cjimynci3ghrfdchjy8cya1qa45c1fg2lsj7fg16jc"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)))
+    (home-page "http://fmtlib.net/latest/")
+    (synopsis "Small and fast C++ formatting library")
+    (description
+     "@code{fmt} (formerly @code{cppformat}) is a formatting library for C++.
+It can be used as a safe alternative to @code{printf} or as a fast alternative
+to @code{IOStreams}.")
+    ;; The library is bsd-2, but documentation and tests include other licenses.
+    (license (list bsd-2 bsd-3 psfl))))
 
 (define-public source-highlight
   (package
