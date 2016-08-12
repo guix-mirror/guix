@@ -2,6 +2,7 @@
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
 ;;; Copyright © 2016 Lukas Gradl <lgradl@openmailbox.org>
 ;;; Copyright © 2016 David Craven <david@craven.ch>
+;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -169,4 +170,33 @@ serialization.")
 including serialization and deserialization to and from strings.  It can also
 preserve existing comment in unserialization/serialization steps, making
 it a convenient format to store user input files.")
+    (license license:expat)))
+
+(define-public capnproto
+  (package
+    (name "capnproto")
+    (version "0.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://capnproto.org/capnproto-c++-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1yvaadhgakskqq5wpv53hd6fc3pp17mrdldw4i5cvgck4iwprcfd"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         (add-before 'check 'do-not-require-/etc/services
+           (lambda _
+             ;; Workaround for test that tries to resolve port name from
+             ;; /etc/services, which is not present in build environment.
+             (substitute* "src/kj/async-io-test.c++" ((":http") ":80"))
+             #t)))))
+    (home-page "https://capnproto.org")
+    (synopsis "Capability-based RPC and serialization system")
+    (description
+     "Cap'n Proto is a very fast data interchange format and capability-based
+RPC system.  Think JSON, except binary.  Or think Protocol Buffers, except faster.")
     (license license:expat)))
