@@ -4521,14 +4521,18 @@ features useful for text console applications.")
 (define-public python-urwidtrees
   (package
     (name "python-urwidtrees")
-    (version "1.0.1.1")
+    (version "1.0.2")
     (source
       (origin
         (method url-fetch)
-        (uri (pypi-uri "urwidtrees" version))
+        ;; package author intends on distributing via github rather than pypi:
+        ;; https://github.com/pazz/alot/issues/877#issuecomment-230173331
+        (uri (string-append "https://github.com/pazz/urwidtrees/archive/"
+                            version ".tar.gz"))
+        (file-name (string-append name "-" version ".tar.gz"))
         (sha256
           (base32
-            "1zcvy12s7h3fazf33d6y7b4v19p8hg95xqwhqlmw6jz9fq76v9h8"))))
+            "0d30lyd3s2a97rhqfax5w9ssqds2z6aydqx3c6j2c2lk3cb4ngvh"))))
     (build-system python-build-system)
     (arguments
      '(#:tests? #f)) ; no tests
