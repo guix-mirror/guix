@@ -273,6 +273,7 @@ ASS/SSA (Advanced Substation Alpha/SubStation Alpha) subtitle format.")
     (inputs
      `(("freeglut" ,freeglut)
        ("ftgl" ,ftgl)
+       ("imlib2" ,imlib2)
        ("libx11" ,libx11)
        ("mesa" ,mesa)
        ("ncurses" ,ncurses)
