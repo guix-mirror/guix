@@ -28,6 +28,7 @@
 ;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;; Copyright © 2016 Marius Bakke <mbakke@fastmail.com>
 ;;; Copyright © 2016 Stefan Reichoer <stefan@xsteve.at>
+;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,6 +73,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages networking)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages openstack)
   #:use-module (gnu packages password-utils)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -10032,6 +10034,49 @@ etc.")
     (package
       (inherit base)
       (name "ptpython2"))))
+
+(define-public python-requests-oauthlib
+  (package
+    (name "python-requests-oauthlib")
+    (version "0.6.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "requests-oauthlib" version))
+       (sha256
+        (base32
+         "0ykff67sjcl227c23g0rxzfx34rr5bf21kwv0z3zmgk0lfmch7hn"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (modify-phases %standard-phases
+         ;; removes tests that require network access
+         (add-before 'check 'pre-check
+           (lambda _
+             (delete-file "tests/test_core.py")
+             #t)))))
+    (native-inputs
+     `(("python-requests-mock" ,python-requests-mock)
+       ("python-mock" ,python-mock)))
+    (inputs
+     `(("python-oauthlib" ,python-oauthlib)
+       ("python-requests" ,python-requests)))
+    (home-page
+     "https://github.com/requests/requests-oauthlib")
+    (synopsis
+     "OAuthlib authentication support for Requests")
+    (description
+     "Requests-OAuthlib uses the Python Requests and OAuthlib libraries to
+provide an easy-to-use Python interface for building OAuth1 and OAuth2 clients.")
+    (license license:isc)
+    (properties `((python2-variant . ,(delay python2-requests-oauthlib))))))
+
+(define-public python2-requests-oauthlib
+  (let ((base (package-with-python2 (strip-python2-variant python-requests-oauthlib))))
+    (package
+      (inherit base)
+      (native-inputs `(("python2-setuptools" ,python2-setuptools)
+                       ,@(package-native-inputs base))))))
 
 (define-public python-stem
   (package
