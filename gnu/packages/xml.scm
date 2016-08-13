@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Mathieu Lirzin <mthl@gnu.org>
 ;;; Copyright © 2016 Leo Famulari <leo@famulari.name>
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
+;;; Copyright © 2016 Jan Nieuwenhuizen <janneke@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -775,3 +776,35 @@ used to transform, query, validate, and edit XML documents.  XPath is used to
 match and extract data, and elements can be added, deleted or modified using
 XSLT and EXSLT.")
    (license license:x11)))
+
+(define-public xlsx2csv
+  (package
+    (name "xlsx2csv")
+    (version "0.7.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://github.com/dilshod/"
+                   name "/archive/release/" version ".tar.gz"))
+             (file-name (string-append name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1gpn6kaa7l1ai8c9zx2j3acf04bvxq79pni8jjfjrk01smjbyyql"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2 ; Use python-2 for the test script.
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'check
+           (lambda _
+             (substitute* "test/run"
+               ;; Run tests with `python' only
+               (("^(PYTHON_VERSIONS = ).*" all m) (string-append m "['']")))
+             (zero? (system* "test/run")))))))
+    (home-page "https://github.com/dilshod/xlsx2csv")
+    (synopsis "XLSX to CSV converter")
+    (description
+     "Xlsx2csv is a program to convert Microsoft Excel 2007 XML (XLSX and
+XLSM) format spreadsheets into plaintext @dfn{comma separated values} (CSV)
+files.  It is designed to be fast and to handle large input files.")
+    (license license:gpl2+)))
