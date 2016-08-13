@@ -408,7 +408,9 @@ attachments, create new maildirs, and so on.")
     (version "0.3.7")
     (source (origin
               (method url-fetch)
-              ; v0.3.7 not on PyPi yet, so use github instead
+              ;; package author intends on distributing via github rather
+              ;; than pypi:
+              ;; https://github.com/pazz/alot/issues/877#issuecomment-230173331
               (uri (string-append "https://github.com/pazz/alot/archive/"
                                   version ".tar.gz"))
               (file-name (string-append "alot-" version ".tar.gz"))
@@ -418,8 +420,8 @@ attachments, create new maildirs, and so on.")
     (build-system python-build-system)
     (arguments
      `(#:tests? #f ; no tests
-       ; python 3 is unsupported, more info:
-       ; https://github.com/pazz/alot/blob/0.3.7/docs/source/faq.rst
+       ;; python 3 is unsupported, more info:
+       ;; https://github.com/pazz/alot/blob/0.3.7/docs/source/faq.rst
        #:python ,python-2))
     (inputs
      `(("python2-magic" ,python2-magic)
