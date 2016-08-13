@@ -24,6 +24,7 @@
 ;;; Copyright © 2016 Sou Bunnbu <iyzsong@gmail.com>
 ;;; Copyright © 2016 Troy Sankey <sankeytms@gmail.com>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2016 Dylan Jeffers <sapientech@sapientech@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -58,7 +59,9 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages image)
@@ -74,6 +77,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages statistics)
   #:use-module (gnu packages tex)
   #:use-module (gnu packages texinfo)
@@ -9915,3 +9919,67 @@ and/or Xon/Xoff.  The port is accessed in RAW mode.")
       (native-inputs
        `(("python2-setuptools" ,python2-setuptools)
          ,@(package-native-inputs base))))))
+
+(define-public python-kivy
+  (package
+    (name "python-kivy")
+    (version "1.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (pypi-uri "kivy" version))
+       (file-name (string-append name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0zk3g1j1z0lzcm9d0k1lprrs95zr8n8k5pdg3p5qlsn26jz4bg19"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f              ; Tests require many optional packages
+       #:phases
+       (modify-phases %standard-phases
+         (replace 'build (lambda _ (zero? (system* "make" "force"))))
+         (add-after 'patch-generated-file-shebangs 'set-sdl-paths
+           (lambda* (#:key inputs #:allow-other-keys)
+             (setenv "KIVY_SDL2_PATH"
+                     (string-append (assoc-ref inputs "sdl-union")
+                                    "/include/SDL2"))
+             #t)))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python-cython" ,python-cython)
+       ("gstreamer" ,gstreamer)
+       ("mesa" ,mesa)
+       ("sdl-union"
+        ,(sdl-union (list sdl2 sdl2-image sdl2-mixer sdl2-ttf)))))
+    (home-page "http://kivy.org")
+    (synopsis
+     "Multitouch application framework")
+    (description
+     "A software library for rapid development of
+hardware-accelerated multitouch applications.")
+    (license license:expat)))
+
+(define-public python2-kivy
+  (package-with-python2 python-kivy))
+
+(define-public python-kivy-next
+  (let ((commit "a988c5e7a47da56263ff39514264a3de516ef2fe")
+        (revision "1"))
+    (package (inherit python-kivy)
+      (name "python-kivy-next")
+      (version (string-append "1.9.1" revision "."
+                              (string-take commit 7)))
+      (source
+       (origin
+         (method git-fetch)
+         (uri (git-reference
+               (url "https://github.com/kivy/kivy")
+               (commit commit)))
+         (file-name (string-append name "-" version "-checkout"))
+         (sha256
+          (base32
+           "0jk92b4a8l7blkvkgkjihk171s0dfnq582cckff5srwc8kal5m0p")))))))
+
+(define-public python2-kivy-next
+  (package-with-python2 python-kivy-next))
