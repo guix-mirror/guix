@@ -4487,21 +4487,21 @@ and written in Python.")
 (define-public python-urwid
   (package
     (name "python-urwid")
-    (version "1.3.0")
+    (version "1.3.1")
     (source
      (origin
        (method url-fetch)
        (uri (pypi-uri "urwid" version))
        (sha256
         (base32
-         "18mb0yy94sjc434rd61m2sfnw27sa0nyrszpj5a9r9zh7fnlzw19"))))
+         "18cnd1wdjcas08x5qwa5ayw6jsfcn33w4d9f7q3s29fy6qzc1kng"))))
     (build-system python-build-system)
     (arguments
      `(#:phases
        (modify-phases %standard-phases
          ;; Disable failing test. Bug filed upstream:
          ;; https://github.com/wardi/urwid/issues/164
-         ;; TODO: check again for python-urwid > 1.3.0 or python > 3.4.3.
+         ;; TODO: check again for python-urwid > 1.3.1 or python > 3.4.3.
          (add-after 'unpack 'disable-failing-test
           (lambda _
             (substitute* "urwid/tests/test_event_loops.py"
