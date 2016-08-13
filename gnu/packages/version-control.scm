@@ -9,7 +9,6 @@
 ;;; Copyright © 2015, 2016 Efraim Flashner <efraim@flashner.co.il>
 ;;; Copyright © 2015 Kyle Meyer <kyle@kyleam.com>
 ;;; Copyright © 2015 Ricardo Wurmus <rekado@elephly.net>
-;;; Coypright © 2016 ng0 <ng0@we.make.ritual.n0.is>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,8 +27,8 @@
 
 (define-module (gnu packages version-control)
   #:use-module ((guix licenses)
-                #:select (asl2.0 bsd-2 bsd-3 expat
-                          gpl1+ gpl2 gpl2+ gpl3+ isc lgpl2.1
+                #:select (asl2.0 bsd-2 bsd-3
+                          gpl1+ gpl2 gpl2+ gpl3+ lgpl2.1
                           public-domain x11-style))
   #:use-module (guix utils)
   #:use-module (guix packages)
@@ -1251,33 +1250,3 @@ access and administration over HTTP CGI or via a built-in HTTP server.  It has
 a built-in wiki, built-in file browsing, built-in tickets system, etc.")
     (license (list public-domain        ;src/miniz.c, src/shell.c
                    bsd-2))))
-
-(define-public stagit
-  (package
-    (name "stagit")
-    (version "0.4")
-    (source (origin
-              (method url-fetch)
-              (uri (string-append "http://dl.2f30.org/releases/"
-                                  name "-" version ".tar.gz"))
-              (sha256
-               (base32
-                "0z5r06wqrfnsz24ci4hjqbd62svclvhkgzaq9npsyjcp6jnf7izc"))))
-    (build-system gnu-build-system)
-    (arguments
-     `(#:tests? #f ; no tests
-       #:make-flags (list "CC=gcc"
-                          (string-append "PREFIX=" %output))
-       #:phases
-       (modify-phases %standard-phases
-         (delete 'configure)))) ; no configure
-    (inputs
-     `(("libgit2" ,libgit2)))
-    (home-page "http://2f30.org")
-    (synopsis "Static Git web page generator")
-    (description "Stagit creates static web pages for Git repositories.  The
-results can be served with an HTTP server.")
-    ;; The source code distribution is Expat-licensed, but the source files
-    ;; 'reallocarray.c', 'strlcat.c', and 'strlcpy.c' are released under the ISC
-    ;; license.
-    (license (list expat isc))))
