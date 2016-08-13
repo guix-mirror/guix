@@ -608,12 +608,12 @@ useful features.")
        ("expat" ,expat)
        ("zlib" ,zlib)))
     (arguments
-      '(#:phases (alist-cons-after
-                  'unpack 'autogen
-                  (lambda _
-                    (setenv "NOCONFIGURE" "true")
-                    (zero? (system* "sh" "autogen.sh")))
-                  %standard-phases)
+      '(#:phases
+        (modify-phases %standard-phases
+          (add-after 'unpack 'autogen
+            (lambda _
+              (setenv "NOCONFIGURE" "true")
+              (zero? (system* "sh" "autogen.sh")))))
         #:configure-flags
         '("--disable-static" "--disable-db")))
     (home-page "http://www.etpan.org/libetpan.html")
