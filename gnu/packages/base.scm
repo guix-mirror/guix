@@ -325,14 +325,14 @@ functionality beyond that which is outlined in the POSIX standard.")
 (define-public gnu-make
   (package
    (name "make")
-   (version "4.2")
+   (version "4.2.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/make/make-" version
                                 ".tar.bz2"))
             (sha256
              (base32
-              "0pv5rvz5pp4njxiz3syf786d2xp4j7gzddwjvgw5zmz55yvf6p2f"))
+              "12f5zzyq2w56g95nni65hc0g5p7154033y2f3qmjvd016szn5qnn"))
             (patches (search-patches "make-impure-dirs.patch"))))
    (build-system gnu-build-system)
    (native-inputs `(("pkg-config" ,pkg-config)))  ; to detect Guile
