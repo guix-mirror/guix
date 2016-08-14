@@ -700,6 +700,27 @@ subclasses and can be overridden.")
 type for perl.")
     (license (package-license perl))))
 
+(define-public perl-class-errorhandler
+  (package
+    (name "perl-class-errorhandler")
+    (version "0.04")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/T/TO/TOKUHIROM/"
+                                  "Class-ErrorHandler-" version ".tar.gz"))
+              (sha256
+               (base32
+                "00j5f0z4riyq7i95jww291dpmbn0hmmvkcbrh7p0p8lpqz7jsb9l"))))
+    (build-system perl-build-system)
+    (home-page "http://search.cpan.org/dist/Class-ErrorHandler")
+    (synopsis "Base class for error handling")
+    (description
+     "@code{Class::ErrorHandler} provides an error-handling mechanism that is generic
+enough to be used as the base class for a variety of OO classes.  Subclasses inherit
+its two error-handling methods, error and errstr, to communicate error messages back
+to the calling program.")
+    (license (package-license perl))))
+
 (define-public perl-class-factory-util
   (package
     (name "perl-class-factory-util")
