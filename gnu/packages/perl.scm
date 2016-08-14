@@ -4634,6 +4634,31 @@ up inheritance from those modules at the same time.")
 directory specifications in a cross-platform manner.")
     (license (package-license perl))))
 
+(define-public perl-path-tiny
+  (package
+    (name "perl-path-tiny")
+    (version "0.096")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/D/DA/DAGOLDEN/"
+                                  "Path-Tiny-" version ".tar.gz"))
+              (sha256
+               (base32
+                "08dmr6ijjg3dp7h9dxix0nmad0fw16c6qzs4qc0hdz500gd64sr2"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:tests? #f)) ; Tests require additional test modules to be packaged
+    ;; (native-inputs
+    ;;  `(("perl-test-failwarnings" ,perl-test-failwarnings)
+    ;;    ("perl-test-mockrandom" ,perl-test-mockrandom)))
+    (inputs
+     `(("perl-unicode-utf8" ,perl-unicode-utf8)))
+    (home-page "http://search.cpan.org/dist/Path-Tiny")
+    (synopsis "File path utility")
+    (description "This module provides a small, fast utility for working
+with file paths.")
+    (license asl2.0)))
+
 (define-public perl-perlio-utf8_strict
   (package
     (name "perl-perlio-utf8-strict")
