@@ -5773,6 +5773,29 @@ string comparison functions of Test::More, but which are more suitable when
 you test against long strings.")
     (license (package-license perl))))
 
+(define-public perl-test-manifest
+  (package
+    (name "perl-test-manifest")
+    (version "2.02")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/B/BD/BDFOY/"
+                                  "Test-Manifest-" version ".tar.gz"))
+              (sha256
+               (base32
+                "15ik52l9macrrfizf4y6wj71d4lx7w590h2dfajnkmbxmz786iq6"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-pod" ,perl-test-pod)
+       ("perl-test-pod-coverage" ,perl-test-pod-coverage)))
+    (home-page "http://search.cpan.org/dist/Test-Manifest")
+    (synopsis "Interact with a t/test_manifest file")
+    (description "@code{Test::Manifest} overrides the default test file order.  Instead of
+running all of the t/*.t files in ASCII-betical order, it looks in the t/test_manifest
+file to find out which tests you want to run and the order in which you want to run them.
+It constructs the right value for the build system to do the right thing.")
+    (license (package-license perl))))
+
 (define-public perl-test-mockobject
   (package
     (name "perl-test-mockobject")
