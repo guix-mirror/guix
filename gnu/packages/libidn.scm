@@ -27,13 +27,14 @@
 (define-public libidn
   (package
    (name "libidn")
-   (version "1.32")
+   (version "1.33")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libidn/libidn-" version
                                 ".tar.gz"))
-            (sha256 (base32
-                     "1xf4hphhahcjm2xwx147lfpsavjwv9l4c2gf6hx71zxywbz5lpds"))))
+            (sha256
+             (base32
+              "068fjg2arlppjqqpzd714n1lf6gxkpac9v5yyvp1qwmv6nvam9s4"))))
    (build-system gnu-build-system)
 ;; FIXME: No Java and C# libraries are currently built.
    (synopsis "Internationalized string processing library")
