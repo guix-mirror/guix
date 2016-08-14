@@ -497,7 +497,7 @@ To use substitutes from @code{hydra.gnu.org} or one of its mirrors
 @end enumerate
 
 This completes root-level install of Guix.  Each user will need to
-perform additional steps to make their Guix envionment ready for use,
+perform additional steps to make their Guix environment ready for use,
 @pxref{Application Setup}.
 
 You can confirm that Guix is working by installing a sample package into
@@ -2125,7 +2125,7 @@ database of the daemon actually exist in @file{/gnu/store}.
 When provided, @var{options} must be a comma-separated list containing one
 or more of @code{contents} and @code{repair}.
 
-When passing @option{--verify=contents}, the daemon computse the
+When passing @option{--verify=contents}, the daemon computes the
 content hash of each store item and compares it against its hash in the
 database.  Hash mismatches are reported as data corruptions.  Because it
 traverses @emph{all the files in the store}, this command can take a
@@ -8505,7 +8505,7 @@ Data type representing the configuration of @var{mysql-service}.
 Package object of the MySQL database server, can be either @var{mariadb}
 or @var{mysql}.
 
-For MySQL, a temorary root password will be displayed at activation time.
+For MySQL, a temporary root password will be displayed at activation time.
 For MariaDB, the root password is empty.
 @end table
 @end deftp
@@ -9856,7 +9856,7 @@ inspect and transform configurations from within Scheme.
 
 However, it could be that you just want to get a @code{dovecot.conf} up
 and running.  In that case, you can pass an
-@code{opaque-dovecot-configuration} as the @code{#:config} paramter to
+@code{opaque-dovecot-configuration} as the @code{#:config} parameter to
 @code{dovecot-service}.  As its name indicates, an opaque configuration
 does not have easy reflective capabilities.
 
@@ -10709,7 +10709,7 @@ faster.
 
 @item -m 256
 RAM available to the guest OS, in mebibytes.  Defaults to 128@tie{}MiB,
-which may be insufficent for some operations.
+which may be insufficient for some operations.
 
 @item /tmp/qemu-image
 The file name of the qcow2 image.
@@ -10954,7 +10954,7 @@ Here is an example of how a service is created and manipulated:
 The @code{modify-services} form provides a handy way to change the
 parameters of some of the services of a list such as
 @var{%base-services} (@pxref{Base Services, @code{%base-services}}).  It
-evalutes to a list of services.  Of course, you could always use
+evaluates to a list of services.  Of course, you could always use
 standard list combinators such as @code{map} and @code{fold} to do that
 (@pxref{SRFI-1, List Library,, guile, GNU Guile Reference Manual});
 @code{modify-services} simply provides a more concise form for this
@@ -10979,7 +10979,7 @@ bound within the @var{body} to the service parameters---e.g., a
 The @var{body} should evaluate to the new service parameters, which will
 be used to configure the new service.  This new service will replace the
 original in the resulting list.  Because a service's service parameters
-are created using @code{define-record-type*}, you can write a succint
+are created using @code{define-record-type*}, you can write a succinct
 @var{body} that evaluates to the new service parameters by using the
 @code{inherit} feature that @code{define-record-type*} provides.
 
