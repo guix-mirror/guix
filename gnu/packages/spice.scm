@@ -78,12 +78,12 @@
           ("autoconf" ,autoconf)
           ("automake" ,automake)
           ("libtool" ,libtool)))
-    (arguments
-     `(#:phases
-       (modify-phases %standard-phases
-         (add-after 'unpack 'autogen
-           (lambda* _
-             (system* "sh" "autogen.sh"))))))
+      (arguments
+       `(#:phases
+         (modify-phases %standard-phases
+           (add-after 'unpack 'autogen
+             (lambda _
+               (zero? (system* "autoreconf" "-vfi")))))))
       (synopsis "Tools for sending USB device traffic over a network")
       (description "Usbredir is a network protocol for sending USB device traffic
   over a network connection.  It can be used to redirect traffic from a USB device
