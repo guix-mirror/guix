@@ -2945,6 +2945,31 @@ represent \"Uniform Resource Identifier references\" as specified in RFC 2396
 and updated by RFC 2732.")
     (home-page "http://search.cpan.org/dist/URI/")))
 
+(define-public perl-uri-fetch
+  (package
+    (name "perl-uri-fetch")
+    (version "0.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/N/NE/NEILB/"
+                                  "URI-Fetch-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0rw6xiqm70s218aii9id3hf8j3pz6n22xnwd8v9m1ff2bnh63c0d"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:tests? #f)) ; Tests require internet connection to succeed
+    (inputs
+     `(("perl-class-errorhandler" ,perl-class-errorhandler)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-uri" ,perl-uri)))
+    (home-page "http://search.cpan.org/dist/URI-Fetch")
+    (synopsis "Smart URI fetching/caching")
+    (description "@code{URI::Fetch} is a smart client for fetching HTTP pages,
+notably syndication feeds (RSS, Atom, and others), in an intelligent, bandwidth-
+and time-saving way.")
+    (license (package-license perl))))
+
 (define-public perl-uri-find
   (package
     (name "perl-uri-find")
