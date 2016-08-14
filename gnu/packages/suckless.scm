@@ -3,6 +3,9 @@
 ;;; Copyright © 2015 Amirouche Boubekki <amirouche@hypermove.net>
 ;;; Copyright © 2016 Al McElrath <hello@yrns.org>
 ;;; Copyright © 2016 ng0 <ng0@we.make.ritual.n0.is>
+;;; Copyright © 2015 Dmitry Bogatov <KAction@gnu.org>
+;;; Copyright © 2015 Leo Famulari <leo@famulari.name>
+;;; Copyright © 2016 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +30,7 @@
   #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages gnome)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages fonts)
   #:use-module (gnu packages pkg-config)
@@ -199,4 +203,45 @@ drawing.")
 display websites and follow links.  It supports the XEmbed protocol which
 makes it possible to embed it in another application.  Furthermore, one can
 point surf to another URI by setting its XProperties.")
+    (license license:x11)))
+
+(define-public sent
+  (package
+    (name "sent")
+    (version "0.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://dl.suckless.org/tools/sent-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0xhh752hwaa26k4q6wvrb9jnpbnylss2aw6z11j7l9rav7wn3fak"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (modify-phases %standard-phases
+                  (delete 'configure))  ;no configuration
+       #:tests? #f                      ;no test suite
+       #:make-flags (let ((pkg-config (lambda (flag)
+                                        (string-append
+                                         "$(shell pkg-config " flag " "
+                                         "xft fontconfig x11 libpng)"))))
+                      (list
+                       "CC=gcc"
+                       (string-append "PREFIX=" %output)
+                       (string-append "INCS=-I. " (pkg-config "--cflags"))
+                       (string-append "LIBS=" (pkg-config "--libs") " -lm")))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libpng" ,libpng)
+       ("libx11" ,libx11)
+       ("libxft" ,libxft)
+       ("fontconfig" ,fontconfig)))
+    (synopsis "Plaintext presentation tool")
+    (description "Sent uses plaintext files and PNG images to create slideshow
+presentations.  Each paragraph represents a slide in the presentation.
+Especially for presentations using the Takahashi method this is very nice and
+allows you to write down the presentation for a quick lightning talk within a
+few minutes.")
+    (home-page "http://tools.suckless.org/sent")
     (license license:x11)))
