@@ -6679,6 +6679,30 @@ described in Unicode Standard Annex #14.  The @code{East_Asian_Width} property
 defined by Annex #11 is used to determine breaking positions.")
     (license (package-license perl))))
 
+(define-public perl-unicode-utf8
+  (package
+    (name "perl-unicode-utf8")
+    (version "0.60")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/C/CH/CHANSEN/"
+                                  "Unicode-UTF8-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1g3fp47slsk7wbz3189kpg342lfs7lpsy570jxnx7s9v59dg5k7n"))))
+    (build-system perl-build-system)
+    (native-inputs
+     `(("perl-test-fatal" ,perl-test-fatal)
+       ("perl-test-leaktrace" ,perl-test-leaktrace)
+       ("perl-variable-magic" ,perl-variable-magic)
+       ("perl-test-pod" ,perl-test-pod)))
+    (home-page "http://search.cpan.org/dist/Unicode-UTF8")
+    (synopsis "Encoding and decoding of UTF-8 encoding form")
+    (description
+     "This module provides functions to encode and decode UTF-8 encoding form
+as specified by Unicode and ISO/IEC 10646:2011.")
+    (license (package-license perl))))
+
 (define-public perl-universal-can
   (package
     (name "perl-universal-can")
