@@ -445,7 +445,36 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                        "-no-avx"
                        "-no-avx2"
                        "-no-mips_dsp"
-                       "-no-mips_dspr2"))))))))
+                       "-no-mips_dspr2")))))
+         (add-after 'install 'patch-qt_config.prf
+           (lambda* (#:key outputs #:allow-other-keys)
+             (let* ((out (assoc-ref outputs "out"))
+                    (qt_config.prf (string-append
+                                    out "/mkspecs/features/qt_config.prf")))
+               ;; For each Qt module, let `qmake' uses search paths in the
+               ;; module directory instead of all in QT_INSTALL_PREFIX.
+               (substitute* qt_config.prf
+                 (("\\$\\$\\[QT_INSTALL_HEADERS\\]")
+                  "$$replace(dir, mkspecs/modules, include)")
+                 (("\\$\\$\\[QT_INSTALL_LIBS\\]")
+                  "$$replace(dir, mkspecs/modules, lib)")
+                 (("\\$\\$\\[QT_HOST_LIBS\\]")
+                  "$$replace(dir, mkspecs/modules, lib)")
+                 (("\\$\\$\\[QT_INSTALL_PLUGINS\\]")
+                  "$$replace(dir, mkspecs/modules, plugins)")
+                 (("\\$\\$\\[QT_INSTALL_LIBEXECS\\]")
+                  "$$replace(dir, mkspecs/modules, libexec)")
+                 (("\\$\\$\\[QT_INSTALL_BINS\\]")
+                  "$$replace(dir, mkspecs/modules, bin)")
+                 (("\\$\\$\\[QT_INSTALL_IMPORTS\\]")
+                  "$$replace(dir, mkspecs/modules, imports)")
+                 (("\\$\\$\\[QT_INSTALL_QML\\]")
+                  "$$replace(dir, mkspecs/modules, qml)"))
+               #t))))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "QMAKEPATH")
+            (files '("")))))
     (home-page "https://www.qt.io/")
     (synopsis "Cross-platform GUI library")
     (description "Qt is a cross-platform application and UI framework for
