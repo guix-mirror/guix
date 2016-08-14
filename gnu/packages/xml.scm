@@ -631,6 +631,45 @@ encoding of the message to be send into XML, sending the message to the
 server, collect the answer, and finally decoding the XML to Perl.")
     (license (package-license perl))))
 
+(define-public perl-xml-feed
+  (package
+    (name "perl-xml-feed")
+    (version "0.53")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/D/DA/DAVECROSS/"
+                                  "XML-Feed-" version ".tar.gz"))
+              (sha256
+               (base32
+                "07b165g6wk8kqwpl49r3n0kag6p2nrkyp3ch0h8qyxb6nrnkkq7c"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:tests? #f)) ; Tests require internet connection
+    (native-inputs
+     `(("perl-module-build" ,perl-module-build)
+       ("perl-uri" ,perl-uri)
+       ("perl-class-data-inheritable" ,perl-class-data-inheritable)))
+    (inputs
+     `(("perl-class-errorhandler" ,perl-class-errorhandler)
+       ("perl-datetime" ,perl-datetime)
+       ("perl-datetime-format-mail" ,perl-datetime-format-mail)
+       ("perl-datetime-format-w3cdtf" ,perl-datetime-format-w3cdtf)
+       ("perl-feed-find" ,perl-feed-find)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-libwww-perl" ,perl-libwww)
+       ("perl-module-pluggable" ,perl-module-pluggable)
+       ("perl-uri-fetch" ,perl-uri-fetch)
+       ("perl-xml-atom" ,perl-xml-atom)
+       ("perl-xml-libxml" ,perl-xml-libxml)
+       ("perl-xml-rss" ,perl-xml-rss)))
+    (home-page "http://search.cpan.org/dist/XML-Feed")
+    (synopsis "XML Syndication Feed Support")
+    (description "@code{XML::Feed} is a syndication feed parser for both RSS and
+Atom feeds.  It also implements feed auto-discovery for finding feeds, given a URI.
+@code{XML::Feed} supports the following syndication feed formats:
+RSS 0.91, RSS 1.0, RSS 2.0, Atom")
+    (license (package-license perl))))
+
 (define-public perl-xml-xpath
   (package
     (name "perl-xml-xpath")
