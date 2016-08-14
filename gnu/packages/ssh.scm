@@ -344,7 +344,7 @@ especially over Wi-Fi, cellular, and long-distance links.")
 (define-public dropbear
   (package
     (name "dropbear")
-    (version "2016.73")
+    (version "2016.74")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -352,7 +352,7 @@ especially over Wi-Fi, cellular, and long-distance links.")
                     name "-" version ".tar.bz2"))
               (sha256
                (base32
-                "1mzg18jss1bsmcnn88zv7kv5yj01hzimndnd5636hfq9kgva8qaw"))))
+                "14c8f4gzixf0j9fkx68jgl85q7b05852kk0vf09gi6h0xmafl817"))))
     (build-system gnu-build-system)
     (arguments  `(#:tests? #f)) ; There is no "make check" or anything similar
     (inputs `(("zlib" ,zlib)))
