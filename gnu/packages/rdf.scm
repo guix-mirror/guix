@@ -267,7 +267,7 @@ ideal (e.g. in LV2 implementations or embedded applications).")
 (define-public sord
   (package
     (name "sord")
-    (version "0.12.2")
+    (version "0.14.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.drobilla.net/sord-"
@@ -275,7 +275,7 @@ ideal (e.g. in LV2 implementations or embedded applications).")
                                  ".tar.bz2"))
              (sha256
               (base32
-               "0rq7vafdv4vsxi6xk9zf5shr59w3kppdhqbj78185rz5gp9kh1dx"))))
+               "16piw1s3l95cf9x3rdcplp9l52k2lxq8drwg2q50ygm4avndhmkn"))))
     (build-system waf-build-system)
     (arguments
      `(#:tests? #f ; no check target
