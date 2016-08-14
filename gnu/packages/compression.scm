@@ -11,6 +11,7 @@
 ;;; Copyright © 2016 Ben Woodcroft <donttrustben@gmail.com>
 ;;; Copyright © 2016 Danny Milosavljevic <dannym@scratchpost.org>
 ;;; Copyright © 2016 Tobias Geerinckx-Rice <me@tobias.gr>
+;;; Copyright © 2016 David Craven <david@craven.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -871,3 +872,26 @@ even LZMA can provide, or a higher speed than gzip while compressing as
 well as bzip2.")
     (license (list license:gpl3+
                    license:public-domain)))) ; most files in lzma/
+
+(define-public snappy
+  (package
+    (name "snappy")
+    (version "1.1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/google/snappy/releases/download/"
+                    version "/" name "-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1wzf8yif5ym2gj52db6v5m1pxnmn258i38x7llk9x346y2nq47ig"))))
+    (build-system gnu-build-system)
+    (home-page "https://github.com/google/snappy")
+    (synopsis "Fast compressor/decompressor")
+    (description "Snappy is a compression/decompression library. It does not
+aim for maximum compression, or compatibility with any other compression library;
+instead, it aims for very high speeds and reasonable compression. For instance,
+compared to the fastest mode of zlib, Snappy is an order of magnitude faster
+for most inputs, but the resulting compressed files are anywhere from 20% to
+100% bigger.")
+    (license license:asl2.0)))
